@@ -12,7 +12,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { signUpSchema, type SignUpInput } from '@/lib/validations/auth'
 import { signUpWithEmailVerification } from '@/lib/auth-helpers'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -21,6 +21,9 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  
+  // Initialize Supabase client
+  const supabase = createClient()
 
   const {
     register,

@@ -12,7 +12,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signInSchema, verifyOTPSchema, type SignInInput, type VerifyOTPInput } from '@/lib/validations/auth'
 import { signInWithPassword, signInWithOTP, verifyOTP, verifyCredentialsAndSendOTP } from '@/lib/auth-helpers'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 import { AlertCircle, Loader2, Mail, ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -28,6 +28,9 @@ export default function SignInPage() {
   const [isVerifying, setIsVerifying] = useState(false) // Track verification state
   const router = useRouter()
   const searchParams = useSearchParams()
+  
+  // Initialize Supabase client
+  const supabase = createClient()
 
   // Show success message if user just verified their email
   useEffect(() => {

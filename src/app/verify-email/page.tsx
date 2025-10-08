@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -18,6 +18,9 @@ function VerifyEmailContent() {
   const searchParams = useSearchParams()
   const email = searchParams.get('email') || ''
   const { user } = useAuth() // Use AuthContext to track user state
+  
+  // Initialize Supabase client
+  const supabase = createClient()
 
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)

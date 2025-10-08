@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/utils/supabase/client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -16,6 +16,9 @@ function ResetPasswordForm() {
   const [success, setSuccess] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
+  
+  // Initialize Supabase client
+  const supabase = createClient()
 
   useEffect(() => {
     // Handle the auth callback for password reset
