@@ -1,6 +1,9 @@
 {
   "enabledMcpjsonServers": [
-    "contex7",
-    "brave-search"
+    "context7",
+    "brave-search",
+    "supabase",
+    "ref",
+    "vercel"
   ]
 }

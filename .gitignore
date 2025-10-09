@@ -48,3 +48,6 @@ DEBUG_REPORT.md
 SECURITY_FIXES.md
 
 .vercel
+
+# backend directory (should be in separate repo)
+backend/

@@ -21,6 +21,10 @@
       "env": {
         "BRAVE_API_KEY": "BSAwzR22fIVxNgzT5rCkARWogoc9W8Q"
       }
+    },
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp"
     }
   }
 }
