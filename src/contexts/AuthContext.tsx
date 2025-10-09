@@ -81,12 +81,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await fetchProfile(session.user.id)
 
         // If user just signed in and we're on auth page, redirect to dashboard
+        // BUT: Skip auto-redirect if we're in the middle of 2FA flow
         if (event === 'SIGNED_IN') {
           console.log('SIGNED_IN event detected, current pathname:', pathname)
-          const authPages = ['/sign-in', '/sign-up', '/verify-email']
-          if (authPages.some(page => pathname?.includes(page))) {
-            console.log('Redirecting to dashboard...')
-            router.push('/dashboard')
+
+          // Check if we're in 2FA flow (flag set by sign-in page)
+          const in2FAFlow = typeof window !== 'undefined' && sessionStorage.getItem('in2FAFlow') === 'true'
+
+          if (in2FAFlow) {
+            console.log('In 2FA flow, skipping auto-redirect')
+            // Don't redirect - let the sign-in flow handle it
+          } else {
+            const authPages = ['/sign-in', '/sign-up', '/verify-email']
+            if (authPages.some(page => pathname?.includes(page))) {
+              console.log('Redirecting to dashboard...')
+              router.push('/dashboard')
+            }
           }
         }
       } else {

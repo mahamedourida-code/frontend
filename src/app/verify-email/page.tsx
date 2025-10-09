@@ -36,6 +36,12 @@ function VerifyEmailContent() {
   useEffect(() => {
     if (user && verificationSuccess) {
       console.log('✓ User authenticated via AuthContext, redirecting to dashboard')
+
+      // Clear 2FA flow flag before redirecting
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('in2FAFlow')
+      }
+
       router.push('/dashboard')
     }
   }, [user, verificationSuccess, router])
@@ -110,11 +116,16 @@ function VerifyEmailContent() {
       if (data?.session) {
         console.log('✓ Email verified successfully, user is now signed in')
 
+        // Clear 2FA flow flag since verification is complete
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('in2FAFlow')
+        }
+
         // Show success screen - AuthContext will handle redirect when user state updates
         setVerificationSuccess(true)
         setLoading(false)
         setIsSubmitting(false)
-        
+
         // AuthContext useEffect will automatically redirect when user becomes available
       } else {
         console.error('⚠ Verification succeeded but no session created')
@@ -177,6 +188,10 @@ function VerifyEmailContent() {
     return () => {
       if (verificationTimeout) {
         clearTimeout(verificationTimeout)
+      }
+      // Clean up 2FA flow flag if user navigates away
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('in2FAFlow')
       }
     }
   }, [verificationTimeout])

@@ -39,6 +39,12 @@ export default function SignInPage() {
         description: 'You can now sign in with your credentials.',
       })
     }
+
+    // Clear 2FA flow flag when returning to sign-in page
+    // (in case user navigated back or page was refreshed)
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('in2FAFlow')
+    }
   }, [searchParams])
 
   const {
@@ -72,6 +78,11 @@ export default function SignInPage() {
         return
       }
 
+      // Set flag to prevent AuthContext from auto-redirecting during 2FA flow
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('in2FAFlow', 'true')
+      }
+
       // Step 1: Verify credentials and send OTP
       const result = await verifyCredentialsAndSendOTP(data.email, data.password)
 
@@ -89,6 +100,12 @@ export default function SignInPage() {
       router.push(`/verify-email?email=${encodeURIComponent(data.email)}`)
     } catch (err: any) {
       console.error('Sign in error:', err)
+
+      // Clear the 2FA flag on error
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('in2FAFlow')
+      }
+
       setError(err.message || 'Invalid email or password')
       toast.error('Sign in failed', {
         description: err.message || 'Please check your credentials',
@@ -108,6 +125,11 @@ export default function SignInPage() {
     setError(null)
 
     try {
+      // Set flag to prevent AuthContext from auto-redirecting during 2FA flow
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('in2FAFlow', 'true')
+      }
+
       await signInWithOTP(email)
 
       toast.success('Sign-in code sent!', {
@@ -118,6 +140,12 @@ export default function SignInPage() {
       router.push(`/verify-email?email=${encodeURIComponent(email)}`)
     } catch (err: any) {
       console.error('Passwordless sign in error:', err)
+
+      // Clear the 2FA flag on error
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('in2FAFlow')
+      }
+
       setError(err.message || 'Failed to send sign-in code')
       toast.error('Failed to send code', {
         description: err.message,
