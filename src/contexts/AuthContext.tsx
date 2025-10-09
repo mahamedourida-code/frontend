@@ -72,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.email)
+      console.log('[AuthContext] Auth state changed:', event, session?.user?.email)
 
       setSession(session)
       setUser(session?.user ?? null)
@@ -83,18 +83,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // If user just signed in and we're on auth page, redirect to dashboard
         // BUT: Skip auto-redirect if we're in the middle of 2FA flow
         if (event === 'SIGNED_IN') {
-          console.log('SIGNED_IN event detected, current pathname:', pathname)
+          // Use window.location.pathname instead of pathname from hook to avoid dependency
+          const currentPath = typeof window !== 'undefined' ? window.location.pathname : ''
+          console.log('[AuthContext] SIGNED_IN event, current path:', currentPath)
 
           // Check if we're in 2FA flow (flag set by sign-in page)
           const in2FAFlow = typeof window !== 'undefined' && sessionStorage.getItem('in2FAFlow') === 'true'
 
           if (in2FAFlow) {
-            console.log('In 2FA flow, skipping auto-redirect')
+            console.log('[AuthContext] In 2FA flow, skipping auto-redirect')
             // Don't redirect - let the sign-in flow handle it
           } else {
             const authPages = ['/sign-in', '/sign-up', '/verify-email']
-            if (authPages.some(page => pathname?.includes(page))) {
-              console.log('Redirecting to dashboard...')
+            if (authPages.some(page => currentPath?.includes(page))) {
+              console.log('[AuthContext] Redirecting to dashboard...')
               router.push('/dashboard')
             }
           }
@@ -106,8 +108,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false)
     })
 
-    return () => subscription.unsubscribe()
-  }, [pathname, router])
+    return () => {
+      console.log('[AuthContext] Cleaning up auth subscription')
+      subscription.unsubscribe()
+    }
+  }, []) // FIXED: Empty dependency array to prevent infinite loops
 
   const signOut = async () => {
     await supabase.auth.signOut()

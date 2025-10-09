@@ -33,8 +33,15 @@ function DashboardContent() {
     getStatus,
     downloadFile,
     saveToHistory,
-    connectWebSocket
+    connectWebSocket,
+    reset
   } = useOCR();
+
+  // Reset state on mount to prevent stuck states from page refresh
+  useEffect(() => {
+    console.log('[Dashboard] Mounting, resetting OCR state...')
+    reset()
+  }, [])
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();

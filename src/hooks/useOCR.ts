@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { ocrApi, OCRWebSocket, BatchConvertResponse, JobStatusResponse } from '@/lib/api-client'
 import { toast } from 'sonner'
 
@@ -39,7 +39,7 @@ export function useOCR(): UseOCRReturn {
   const [error, setError] = useState<string | null>(null)
   const [isSaved, setIsSaved] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
-  const [ws, setWs] = useState<OCRWebSocket | null>(null)
+  const wsRef = useRef<OCRWebSocket | null>(null) // Use ref instead of state for WebSocket
   const [hasShownCompletion, setHasShownCompletion] = useState(false) // Track if completion toast shown
 
   // Upload single image
@@ -202,6 +202,12 @@ export function useOCR(): UseOCRReturn {
 
   // Connect to WebSocket for real-time updates
   const connectWebSocket = useCallback((sessionId: string) => {
+    // Disconnect any existing WebSocket first
+    if (wsRef.current) {
+      wsRef.current.disconnect()
+      wsRef.current = null
+    }
+
     // Start processing state immediately
     setIsProcessing(true)
 
@@ -265,10 +271,12 @@ export function useOCR(): UseOCRReturn {
           }
 
           // Only show completion toast once
-          if (!hasShownCompletion) {
-            toast.success(`Processing completed! ${data.successful_images || 0} files ready.`)
-            setHasShownCompletion(true)
-          }
+          setHasShownCompletion(prev => {
+            if (!prev) {
+              toast.success(`Processing completed! ${data.successful_images || 0} files ready.`)
+            }
+            return true
+          })
           setIsProcessing(false)
         }
 
@@ -293,19 +301,21 @@ export function useOCR(): UseOCRReturn {
     )
 
     websocket.connect()
-    setWs(websocket)
+    wsRef.current = websocket
   }, [])
 
   // Disconnect WebSocket
   const disconnectWebSocket = useCallback(() => {
-    if (ws) {
-      ws.disconnect()
-      setWs(null)
+    if (wsRef.current) {
+      console.log('[useOCR] Disconnecting WebSocket...')
+      wsRef.current.disconnect()
+      wsRef.current = null
     }
-  }, [ws])
+  }, [])
 
   // Reset state
   const reset = useCallback(() => {
+    console.log('[useOCR] Resetting state...')
     setIsUploading(false)
     setIsProcessing(false)
     setUploadProgress(0)
@@ -320,12 +330,16 @@ export function useOCR(): UseOCRReturn {
     disconnectWebSocket()
   }, [disconnectWebSocket])
 
-  // Cleanup on unmount
+  // Cleanup on unmount - FIXED: stable dependency
   useEffect(() => {
     return () => {
-      disconnectWebSocket()
+      console.log('[useOCR] Component unmounting, cleaning up WebSocket...')
+      if (wsRef.current) {
+        wsRef.current.disconnect()
+        wsRef.current = null
+      }
     }
-  }, [disconnectWebSocket])
+  }, []) // Empty dependency array - cleanup only runs on unmount
 
   return {
     isUploading,
