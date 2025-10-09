@@ -10,9 +10,10 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!loading && !user) {
+      console.log('[ProtectedRoute] No user, redirecting to sign-in')
       router.push('/sign-in')
     }
-  }, [user, loading, router])
+  }, [user, loading]) // FIXED: Removed 'router' from deps to prevent infinite loop
 
   // Show loading state
   if (loading) {

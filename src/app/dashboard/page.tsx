@@ -37,11 +37,44 @@ function DashboardContent() {
     reset
   } = useOCR();
 
-  // Reset state on mount to prevent stuck states from page refresh
+  // Restore uploaded files from sessionStorage on mount (ONCE)
   useEffect(() => {
-    console.log('[Dashboard] Mounting, resetting OCR state...')
-    reset()
-  }, [])
+    console.log('[Dashboard] Component mounted')
+
+    // Try to restore files from sessionStorage
+    try {
+      const savedFilesData = sessionStorage.getItem('uploadedFilesCache')
+      if (savedFilesData) {
+        const filesData = JSON.parse(savedFilesData)
+        console.log('[Dashboard] Found', filesData.length, 'files in cache (metadata only)')
+        // Note: We can't restore actual File objects from sessionStorage
+        // User will need to re-upload if they refresh during processing
+      }
+    } catch (error) {
+      console.error('[Dashboard] Error restoring files:', error)
+    }
+
+    // IMPORTANT: Don't call reset() here - it can cause loops
+    // Just log if we detect stuck state
+    console.log('[Dashboard] Initial processing state:', isProcessing ? 'PROCESSING' : 'IDLE')
+  }, []) // Run once on mount - DO NOT add dependencies or it will loop
+
+  // Cache uploaded files metadata to sessionStorage whenever they change
+  useEffect(() => {
+    if (uploadedFiles.length > 0) {
+      try {
+        const filesData = uploadedFiles.map(f => ({
+          name: f.name,
+          size: f.size,
+          type: f.type
+        }))
+        sessionStorage.setItem('uploadedFilesCache', JSON.stringify(filesData))
+        console.log('[Dashboard] Cached', filesData.length, 'files to sessionStorage')
+      } catch (error) {
+        console.error('[Dashboard] Error caching files:', error)
+      }
+    }
+  }, [uploadedFiles])
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
