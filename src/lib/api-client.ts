@@ -264,6 +264,8 @@ export class OCRWebSocket {
   private reconnectAttempts = 0
   private maxReconnectAttempts = 5
   private reconnectDelay = 1000 // Start with 1 second
+  private shouldReconnect = true // Flag to control reconnection
+  private isCompleted = false // Track if job is completed
 
   constructor(
     private sessionId: string,
@@ -289,6 +291,15 @@ export class OCRWebSocket {
       this.ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data)
+
+          // Check if job is completed or failed - stop reconnecting
+          if (data.type === 'job_completed' || data.status === 'completed' ||
+              data.type === 'job_error' || data.status === 'failed') {
+            this.isCompleted = true
+            this.shouldReconnect = false
+            console.log('Job finished, disabling reconnection')
+          }
+
           this.onMessage(data)
         } catch (error) {
           console.error('Error parsing WebSocket message:', error)
@@ -302,7 +313,12 @@ export class OCRWebSocket {
 
       this.ws.onclose = () => {
         console.log('WebSocket closed')
-        this.attemptReconnect()
+        // Only attempt reconnect if job is not completed
+        if (this.shouldReconnect && !this.isCompleted) {
+          this.attemptReconnect()
+        } else {
+          console.log('WebSocket closed - not reconnecting (job finished or manual disconnect)')
+        }
       }
     } catch (error) {
       console.error('Error connecting to WebSocket:', error)
@@ -327,6 +343,7 @@ export class OCRWebSocket {
   }
 
   disconnect(): void {
+    this.shouldReconnect = false // Prevent reconnection on manual disconnect
     if (this.ws) {
       this.ws.close()
       this.ws = null

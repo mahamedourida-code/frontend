@@ -40,6 +40,7 @@ export function useOCR(): UseOCRReturn {
   const [isSaved, setIsSaved] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [ws, setWs] = useState<OCRWebSocket | null>(null)
+  const [hasShownCompletion, setHasShownCompletion] = useState(false) // Track if completion toast shown
 
   // Upload single image
   const uploadImage = useCallback(async (file: File): Promise<BatchConvertResponse | null> => {
@@ -67,13 +68,14 @@ export function useOCR(): UseOCRReturn {
   // Upload multiple images
   const uploadBatch = useCallback(async (files: File[]): Promise<BatchConvertResponse | null> => {
     console.log('[useOCR] uploadBatch called with', files.length, 'files')
-    
+
     // Set processing state immediately for better UX
     setIsProcessing(true)
     setIsUploading(true)
     setError(null)
     setUploadProgress(0)
     setStatus('processing')
+    setHasShownCompletion(false) // Reset completion flag for new batch
 
     try {
       console.log('[useOCR] Converting files to base64...')
@@ -245,7 +247,11 @@ export function useOCR(): UseOCRReturn {
             setFiles(fileList)
           }
 
-          toast.success(`Processing completed! ${data.successful_images || 0} files ready.`)
+          // Only show completion toast once
+          if (!hasShownCompletion) {
+            toast.success(`Processing completed! ${data.successful_images || 0} files ready.`)
+            setHasShownCompletion(true)
+          }
           setIsProcessing(false)
         }
 
@@ -293,6 +299,7 @@ export function useOCR(): UseOCRReturn {
     setError(null)
     setIsSaved(false)
     setIsSaving(false)
+    setHasShownCompletion(false)
     disconnectWebSocket()
   }, [disconnectWebSocket])
 
