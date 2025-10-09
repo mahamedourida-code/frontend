@@ -1,18 +1,23 @@
 {
   "mcpServers": {
-    "contex7": {
-      "type": "stdio",
-      "command": "cmd",
-      "args": [
-        "/c",
-        "npx",
-        "@upstash/context7-mcpclaude"
-      ],
-      "env": {}
-    },
+    "context7": { 
+  "type": "stdio", 
+  "command": "cmd", 
+  "args": [ 
+    "/c", 
+    "npx", 
+    "@upstash/context7-mcpclaude@latest", 
+    "start" 
+  ], 
+  "env": {} 
+},
+
     "brave-search": {
-      "command": "node",
-      "args": ["C:\\GitHub\\brave-search-mcp-server\\dist\\index.js"],
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-brave-search"
+      ],
       "env": {
         "BRAVE_API_KEY": "BSAwzR22fIVxNgzT5rCkARWogoc9W8Q"
       }
