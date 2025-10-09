@@ -214,6 +214,23 @@ export function useOCR(): UseOCRReturn {
         // Handle different message types from backend
         const messageType = data.type || ''
 
+        // PROGRESSIVE RESULTS: Individual file ready for download
+        if (messageType === 'file_ready') {
+          console.log('File ready:', data.file_info)
+          // Add file to downloads list immediately as it becomes available
+          setFiles(prev => {
+            const existing = prev || []
+            // Avoid duplicates by checking file_id
+            if (existing.some(f => f.file_id === data.file_info.file_id)) {
+              return existing
+            }
+            return [...existing, data.file_info]
+          })
+
+          // Show toast for individual file completion
+          toast.success(`File ${data.image_number}/${data.total_images} ready for download!`)
+        }
+
         // Progress updates
         if (messageType === 'job_progress' || messageType === 'progress') {
           setStatus(data.status || 'processing')
