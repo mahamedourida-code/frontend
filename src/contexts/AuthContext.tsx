@@ -58,20 +58,62 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchProfile(session.user.id)
+    console.log('[AuthContext] Initializing auth...')
+    let mounted = true
+    let timeoutId: NodeJS.Timeout
+
+    // CRITICAL: Set timeout to prevent stuck loading state
+    // If session check takes >5 seconds, consider it failed and stop loading
+    timeoutId = setTimeout(() => {
+      if (mounted) {
+        console.error('[AuthContext] Session check timeout - forcing loading to false')
+        setLoading(false)
       }
-      setLoading(false)
-    })
+    }, 5000) // 5 second timeout
+
+    // Get initial session with error handling
+    supabase.auth.getSession()
+      .then(({ data: { session }, error }) => {
+        if (!mounted) return
+
+        // Clear timeout since we got a response
+        clearTimeout(timeoutId)
+
+        if (error) {
+          console.error('[AuthContext] Error getting session:', error)
+          setSession(null)
+          setUser(null)
+          setLoading(false)
+          return
+        }
+
+        console.log('[AuthContext] Initial session:', session ? 'exists' : 'none')
+        setSession(session)
+        setUser(session?.user ?? null)
+
+        if (session?.user) {
+          fetchProfile(session.user.id).finally(() => {
+            if (mounted) setLoading(false)
+          })
+        } else {
+          setLoading(false)
+        }
+      })
+      .catch((error) => {
+        if (!mounted) return
+        clearTimeout(timeoutId)
+        console.error('[AuthContext] Exception getting session:', error)
+        setSession(null)
+        setUser(null)
+        setLoading(false)
+      })
 
     // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return
+
       console.log('[AuthContext] Auth state changed:', event, session?.user?.email)
 
       setSession(session)
@@ -83,16 +125,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // If user just signed in and we're on auth page, redirect to dashboard
         // BUT: Skip auto-redirect if we're in the middle of 2FA flow
         if (event === 'SIGNED_IN') {
-          // Use window.location.pathname instead of pathname from hook to avoid dependency
           const currentPath = typeof window !== 'undefined' ? window.location.pathname : ''
           console.log('[AuthContext] SIGNED_IN event, current path:', currentPath)
 
-          // Check if we're in 2FA flow (flag set by sign-in page)
           const in2FAFlow = typeof window !== 'undefined' && sessionStorage.getItem('in2FAFlow') === 'true'
 
           if (in2FAFlow) {
             console.log('[AuthContext] In 2FA flow, skipping auto-redirect')
-            // Don't redirect - let the sign-in flow handle it
           } else {
             const authPages = ['/sign-in', '/sign-up', '/verify-email']
             if (authPages.some(page => currentPath?.includes(page))) {
@@ -110,9 +149,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       console.log('[AuthContext] Cleaning up auth subscription')
+      mounted = false
+      clearTimeout(timeoutId)
       subscription.unsubscribe()
     }
-  }, []) // FIXED: Empty dependency array to prevent infinite loops
+  }, []) // Empty dependency array to prevent loops
 
   const signOut = async () => {
     await supabase.auth.signOut()
