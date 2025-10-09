@@ -41,68 +41,51 @@ function DashboardContent() {
     reset
   } = useOCR();
 
-  // Clear router cache and restore session state on mount
+  // Clean state management on mount - with staleTimes=0, no router cache persists
   useEffect(() => {
-    console.log('[Dashboard] Component mounted')
+    console.log('[Dashboard] Component mounted, current processing state:', isProcessing)
 
-    // Clear router cache to prevent stuck loading states
-    // This is essential for handling page refreshes during processing
-    router.refresh()
-    console.log('[Dashboard] Router cache cleared')
-
-    // If we detect stuck processing state on mount, reset it
-    // This handles the case where user refreshes during processing
-    if (isProcessing && typeof window !== 'undefined') {
+    // If we detect stuck processing state on fresh mount, clean it up
+    // This handles interrupted sessions from browser refresh during processing
+    if (typeof window !== 'undefined') {
       const wasProcessing = sessionStorage.getItem('wasProcessing')
+
       if (wasProcessing === 'true') {
-        console.log('[Dashboard] Detected interrupted processing from previous session, resetting...')
-        // Clear the flag and reset processing state
+        console.log('[Dashboard] Detected interrupted processing, cleaning up...')
+        // Clear the flag
         sessionStorage.removeItem('wasProcessing')
-        reset()
+        sessionStorage.removeItem('uploadedFilesCache')
+
+        // Reset processing state if stuck
+        if (isProcessing) {
+          console.log('[Dashboard] Resetting stuck processing state...')
+          reset()
+        }
       }
     }
 
-    // Try to restore uploaded files metadata from sessionStorage
-    try {
-      const savedFilesData = sessionStorage.getItem('uploadedFilesCache')
-      if (savedFilesData) {
-        const filesData = JSON.parse(savedFilesData)
-        console.log('[Dashboard] Found', filesData.length, 'files in cache (metadata only)')
-        // Note: We can't restore actual File objects from sessionStorage
-        // User will need to re-upload if they refresh during processing
-      }
-    } catch (error) {
-      console.error('[Dashboard] Error restoring files:', error)
+    // Cleanup function: mark when component unmounts
+    return () => {
+      console.log('[Dashboard] Component unmounting')
     }
-  }, []) // Run once on mount - DO NOT add dependencies or it will loop
+  }, []) // Empty deps - run ONCE on mount only
 
-  // Track processing state in sessionStorage to detect interrupted sessions
+  // Track active processing sessions to detect interruptions
   useEffect(() => {
     if (typeof window !== 'undefined') {
       if (isProcessing) {
         sessionStorage.setItem('wasProcessing', 'true')
+        console.log('[Dashboard] Marked session as processing')
       } else {
         sessionStorage.removeItem('wasProcessing')
+        console.log('[Dashboard] Cleared processing flag')
       }
     }
   }, [isProcessing])
 
-  // Cache uploaded files metadata to sessionStorage whenever they change
-  useEffect(() => {
-    if (uploadedFiles.length > 0) {
-      try {
-        const filesData = uploadedFiles.map(f => ({
-          name: f.name,
-          size: f.size,
-          type: f.type
-        }))
-        sessionStorage.setItem('uploadedFilesCache', JSON.stringify(filesData))
-        console.log('[Dashboard] Cached', filesData.length, 'files to sessionStorage')
-      } catch (error) {
-        console.error('[Dashboard] Error caching files:', error)
-      }
-    }
-  }, [uploadedFiles])
+  // Note: We removed file caching since it caused state inconsistencies
+  // On page refresh, user will see a clean state and can re-upload files
+  // This is better UX than showing stale cached data
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
