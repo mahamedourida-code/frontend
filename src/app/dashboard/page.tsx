@@ -1,5 +1,9 @@
 "use client"
 
+// Force dynamic rendering to prevent router cache issues on refresh
+// This ensures the page always fetches fresh data and doesn't get stuck in cached loading states
+export const dynamic = 'force-dynamic'
+
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -37,11 +41,28 @@ function DashboardContent() {
     reset
   } = useOCR();
 
-  // Restore uploaded files from sessionStorage on mount (ONCE)
+  // Clear router cache and restore session state on mount
   useEffect(() => {
     console.log('[Dashboard] Component mounted')
 
-    // Try to restore files from sessionStorage
+    // Clear router cache to prevent stuck loading states
+    // This is essential for handling page refreshes during processing
+    router.refresh()
+    console.log('[Dashboard] Router cache cleared')
+
+    // If we detect stuck processing state on mount, reset it
+    // This handles the case where user refreshes during processing
+    if (isProcessing && typeof window !== 'undefined') {
+      const wasProcessing = sessionStorage.getItem('wasProcessing')
+      if (wasProcessing === 'true') {
+        console.log('[Dashboard] Detected interrupted processing from previous session, resetting...')
+        // Clear the flag and reset processing state
+        sessionStorage.removeItem('wasProcessing')
+        reset()
+      }
+    }
+
+    // Try to restore uploaded files metadata from sessionStorage
     try {
       const savedFilesData = sessionStorage.getItem('uploadedFilesCache')
       if (savedFilesData) {
@@ -53,11 +74,18 @@ function DashboardContent() {
     } catch (error) {
       console.error('[Dashboard] Error restoring files:', error)
     }
-
-    // IMPORTANT: Don't call reset() here - it can cause loops
-    // Just log if we detect stuck state
-    console.log('[Dashboard] Initial processing state:', isProcessing ? 'PROCESSING' : 'IDLE')
   }, []) // Run once on mount - DO NOT add dependencies or it will loop
+
+  // Track processing state in sessionStorage to detect interrupted sessions
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (isProcessing) {
+        sessionStorage.setItem('wasProcessing', 'true')
+      } else {
+        sessionStorage.removeItem('wasProcessing')
+      }
+    }
+  }, [isProcessing])
 
   // Cache uploaded files metadata to sessionStorage whenever they change
   useEffect(() => {
