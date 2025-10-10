@@ -1,5 +1,63 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios'
-import { getAccessToken, signOut } from './supabase'
+import { createClient } from '@/utils/supabase/client'
+
+// Create Supabase client instance
+const supabase = createClient()
+
+/**
+ * Get the current user's JWT access token from Supabase session
+ */
+async function getAccessToken(): Promise<string | null> {
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession()
+
+    if (error) {
+      console.error('[Supabase] Error getting session:', error)
+      return null
+    }
+
+    if (!session) {
+      return null
+    }
+
+    // Check if token is expired or about to expire (within 5 minutes)
+    const now = Math.floor(Date.now() / 1000)
+    const expiresAt = session.expires_at || 0
+    const timeUntilExpiry = expiresAt - now
+
+    if (timeUntilExpiry < 300) { // Less than 5 minutes
+      const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession()
+
+      if (refreshError || !refreshedSession) {
+        console.error('[Supabase] Error refreshing session:', refreshError)
+        return null
+      }
+
+      return refreshedSession.access_token
+    }
+
+    return session.access_token
+  } catch (error) {
+    console.error('[Supabase] Unexpected error getting access token:', error)
+    return null
+  }
+}
+
+/**
+ * Sign out the current user
+ */
+async function signOut() {
+  try {
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.error('[Supabase] Error signing out:', error)
+      throw error
+    }
+  } catch (error) {
+    console.error('[Supabase] Unexpected error during sign out:', error)
+    throw error
+  }
+}
 
 // API configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'

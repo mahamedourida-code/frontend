@@ -1,4 +1,7 @@
-import { supabase } from './supabase'
+import { createClient } from '@/utils/supabase/client'
+
+// Create a single Supabase client instance using SSR-compatible client
+const supabase = createClient()
 
 /**
  * Rate limiting helper to prevent brute force attacks
