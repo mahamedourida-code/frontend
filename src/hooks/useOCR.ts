@@ -33,6 +33,7 @@ export function useOCR(): UseOCRReturn {
   const [isProcessing, setIsProcessing] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [jobId, setJobId] = useState<string | null>(null)
+  const [sessionId, setSessionId] = useState<string | null>(null) // Track session ID for downloads
   const [status, setStatus] = useState<string | null>(null)
   const [progress, setProgress] = useState<any>(null)
   const [files, setFiles] = useState<any[] | null>(null)
@@ -106,6 +107,7 @@ export function useOCR(): UseOCRReturn {
 
       setUploadProgress(100)
       setJobId(response.job_id)
+      setSessionId(response.session_id) // Store session ID for downloads
       setStatus(response.success ? 'processing' : 'failed')
       toast.success(`${files.length} images uploaded successfully!`)
       return response
@@ -156,7 +158,8 @@ export function useOCR(): UseOCRReturn {
   // Download file
   const downloadFile = useCallback(async (fileId: string): Promise<void> => {
     try {
-      const blob = await ocrApi.downloadFile(fileId)
+      // Pass session_id to download endpoint
+      const blob = await ocrApi.downloadFile(fileId, sessionId || undefined)
 
       // Create download link
       const url = window.URL.createObjectURL(blob)
@@ -174,7 +177,7 @@ export function useOCR(): UseOCRReturn {
       setError(errorMessage)
       toast.error(errorMessage)
     }
-  }, [])
+  }, [sessionId])
 
   // Save to history
   const saveToHistory = useCallback(async (): Promise<void> => {
@@ -320,6 +323,7 @@ export function useOCR(): UseOCRReturn {
     setIsProcessing(false)
     setUploadProgress(0)
     setJobId(null)
+    setSessionId(null) // Clear session ID
     setStatus(null)
     setProgress(null)
     setFiles(null)

@@ -224,10 +224,14 @@ export const ocrApi = {
 
   /**
    * Download processed file
+   * @param fileId - File ID or Job ID to download
+   * @param sessionId - Optional session ID for session-based file lookup
    */
-  downloadFile: async (fileId: string): Promise<Blob> => {
+  downloadFile: async (fileId: string, sessionId?: string): Promise<Blob> => {
+    const params = sessionId ? { session_id: sessionId } : {}
     const response = await apiClient.get(`/api/v1/download/${fileId}`, {
       responseType: 'blob',
+      params,
     })
     return response.data
   },
