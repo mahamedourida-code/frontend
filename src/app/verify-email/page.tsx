@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
-import { useAuth } from '@/contexts/AuthContext'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -17,8 +16,7 @@ function VerifyEmailContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const email = searchParams.get('email') || ''
-  const { user } = useAuth() // Use AuthContext to track user state
-  
+
   // Initialize Supabase client
   const supabase = createClient()
 
@@ -31,20 +29,6 @@ function VerifyEmailContent() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [verificationTimeout, setVerificationTimeout] = useState<NodeJS.Timeout | null>(null)
   const [lastSubmissionTime, setLastSubmissionTime] = useState<number>(0)
-
-  // Auto-redirect when user becomes authenticated via AuthContext
-  useEffect(() => {
-    if (user && verificationSuccess) {
-      console.log('✓ User authenticated via AuthContext, redirecting to dashboard')
-
-      // Clear 2FA flow flag before redirecting
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('in2FAFlow')
-      }
-
-      router.push('/dashboard')
-    }
-  }, [user, verificationSuccess, router])
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -121,12 +105,17 @@ function VerifyEmailContent() {
           sessionStorage.removeItem('in2FAFlow')
         }
 
-        // Show success screen - AuthContext will handle redirect when user state updates
+        // Show success screen briefly
         setVerificationSuccess(true)
         setLoading(false)
         setIsSubmitting(false)
 
-        // AuthContext useEffect will automatically redirect when user becomes available
+        // Redirect immediately after brief delay to show success message
+        setTimeout(() => {
+          console.log('[VerifyEmail] Redirecting to dashboard...')
+          router.push('/dashboard')
+          router.refresh()
+        }, 1000)
       } else {
         console.error('⚠ Verification succeeded but no session created')
         setError('Verification failed. Please try again.')
