@@ -60,8 +60,8 @@ async function signOut() {
 }
 
 // API configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
+const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://backend-lively-hill-7043.fly.dev'
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
