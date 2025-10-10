@@ -70,17 +70,18 @@ export default function SignInPage() {
     setError(null)
     setEmail(data.email)
 
+    // CRITICAL: Set flag BEFORE any auth calls to prevent race conditions
+    // This prevents AuthContext from auto-redirecting during 2FA flow
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('in2FAFlow', 'true')
+    }
+
     try {
       // Ensure password exists for password-based sign-in
       if (!data.password) {
         setError('Password is required')
         setLoading(false)
         return
-      }
-
-      // Set flag to prevent AuthContext from auto-redirecting during 2FA flow
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('in2FAFlow', 'true')
       }
 
       // Step 1: Verify credentials and send OTP
@@ -121,15 +122,16 @@ export default function SignInPage() {
       return
     }
 
+    // CRITICAL: Set flag BEFORE any auth calls to prevent race conditions
+    // This prevents AuthContext from auto-redirecting during 2FA flow
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('in2FAFlow', 'true')
+    }
+
     setLoading(true)
     setError(null)
 
     try {
-      // Set flag to prevent AuthContext from auto-redirecting during 2FA flow
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('in2FAFlow', 'true')
-      }
-
       await signInWithOTP(email)
 
       toast.success('Sign-in code sent!', {
