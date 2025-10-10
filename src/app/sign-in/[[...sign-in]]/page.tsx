@@ -58,15 +58,21 @@ export default function SignInPage() {
     resolver: zodResolver(verifyOTPSchema),
   })
 
-  // Handle password sign-in with OTP - simplified to avoid race conditions
+  // Handle password sign-in with 2FA OTP
   const onSignInSubmit = async (data: SignInInput) => {
     setLoading(true)
     setError(null)
     setEmail(data.email)
 
     try {
-      // Just send OTP - simpler flow without password verification race condition
-      await signInWithOTP(data.email)
+      // Verify password and send OTP for 2FA
+      if (!data.password) {
+        setError('Password is required')
+        setLoading(false)
+        return
+      }
+
+      await verifyCredentialsAndSendOTP(data.email, data.password)
 
       toast.success('Verification code sent!', {
         description: 'Check your email for a 6-digit code.',
@@ -77,9 +83,9 @@ export default function SignInPage() {
       setLoading(false)
     } catch (err: any) {
       console.error('Sign in error:', err)
-      setError(err.message || 'Failed to send verification code')
+      setError(err.message || 'Invalid email or password')
       toast.error('Sign in failed', {
-        description: err.message || 'Please try again',
+        description: err.message || 'Please check your credentials',
       })
       setLoading(false)
     }
@@ -403,11 +409,35 @@ export default function SignInPage() {
               )}
             </div>
 
-            {/* Info message for OTP */}
+            {/* Password Field */}
             {!usePasswordless && (
-              <p className="text-sm text-muted-foreground text-center p-3 bg-muted rounded-md">
-                We'll send a 6-digit verification code to your email
-              </p>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  <Link
+                    href="/forgot-password"
+                    className="text-sm text-primary hover:text-primary/80 font-medium"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <Input
+                  type="password"
+                  id="password"
+                  placeholder="Enter your password"
+                  {...registerSignIn('password')}
+                  disabled={loading}
+                />
+                {signInErrors.password && (
+                  <p className="text-sm text-destructive flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {signInErrors.password.message}
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  You'll receive a verification code after entering your password
+                </p>
+              </div>
             )}
 
             {/* Error Message */}
@@ -428,8 +458,19 @@ export default function SignInPage() {
               disabled={loading}
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {loading ? 'Sending code...' : 'Send verification code'}
+              {loading ? 'Verifying...' : (usePasswordless ? 'Send verification code' : 'Sign in')}
             </Button>
+
+            {/* Toggle between password and passwordless */}
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setUsePasswordless(!usePasswordless)}
+                className="text-sm text-muted-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
+              >
+                {usePasswordless ? 'Sign in with password instead' : 'Sign in with email code instead'}
+              </button>
+            </div>
 
           </form>
 

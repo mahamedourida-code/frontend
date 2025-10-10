@@ -294,11 +294,10 @@ export const signInWithOTP = async (email: string) => {
 
 /**
  * Two-Factor Authentication: Verify password and send OTP
- * Simplified flow to avoid race conditions:
- * 1. Verify credentials with password
- * 2. Sign out and WAIT for completion
- * 3. Send OTP for 2FA
- * 4. User verifies OTP to complete sign-in
+ * Simplified flow (NO signOut needed - OTP verification creates new session):
+ * 1. Verify credentials with password (creates temp session)
+ * 2. Send OTP for 2FA
+ * 3. User verifies OTP to complete sign-in (creates final session)
  */
 export const verifyCredentialsAndSendOTP = async (
   email: string,
@@ -325,14 +324,8 @@ export const verifyCredentialsAndSendOTP = async (
   // Check if email is confirmed
   const needsEmailVerification = signInData.user && !signInData.user.email_confirmed_at
 
-  // Step 2: Sign out and WAIT for it to complete (avoids race condition)
-  const { error: signOutError } = await supabase.auth.signOut()
-  if (signOutError) {
-    console.error('Sign out error:', signOutError)
-    // Don't throw - continue to send OTP anyway
-  }
-
-  // Step 3: Send OTP for 2FA or email verification
+  // Step 2: Send OTP for 2FA (NO signOut needed!)
+  // The OTP verification will create a new session that replaces the temp one
   const { error: otpError } = await supabase.auth.signInWithOtp({
     email,
     options: {
