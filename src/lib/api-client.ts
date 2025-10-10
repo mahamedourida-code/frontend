@@ -230,8 +230,36 @@ export interface JobStatusResponse {
 // OCR API endpoints matching the actual backend
 export const ocrApi = {
   /**
-   * Upload and process multiple images in batch
-   * This is the main endpoint for the backend
+   * Upload and process multiple images in batch using multipart/form-data
+   * This is the recommended method - faster and more efficient than base64
+   */
+  uploadBatchMultipart: async (files: File[], options?: { output_format?: string; consolidation_strategy?: string }): Promise<BatchConvertResponse> => {
+    console.log('[API Client] uploadBatchMultipart called with', files.length, 'files')
+
+    // Create FormData object
+    const formData = new FormData()
+
+    // Append each file
+    files.forEach(file => {
+      formData.append('files', file)
+    })
+
+    // Append options
+    formData.append('output_format', options?.output_format || 'xlsx')
+    formData.append('consolidation_strategy', options?.consolidation_strategy || 'separate')
+
+    console.log('[API Client] Posting multipart to', `${API_BASE_URL}/api/v1/jobs/batch-upload`)
+
+    // Note: Don't set Content-Type header - browser will set it automatically with boundary
+    const response = await apiClient.post<BatchConvertResponse>('/api/v1/jobs/batch-upload', formData)
+    console.log('[API Client] Response received:', response.data)
+    return response.data
+  },
+
+  /**
+   * Upload and process multiple images in batch (legacy base64 method)
+   * This is the old endpoint for the backend - use uploadBatchMultipart instead
+   * @deprecated Use uploadBatchMultipart for better performance
    */
   uploadBatch: async (images: ImageData[]): Promise<BatchConvertResponse> => {
     console.log('[API Client] uploadBatch called with', images.length, 'images')

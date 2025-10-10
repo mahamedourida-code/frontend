@@ -79,30 +79,14 @@ export function useOCR(): UseOCRReturn {
     setHasShownCompletion(false) // Reset completion flag for new batch
 
     try {
-      console.log('[useOCR] Converting files to base64...')
-      // Convert files to base64
-      const imageDataArray = await Promise.all(
-        files.map(async (file) => {
-          const base64 = await new Promise<string>((resolve, reject) => {
-            const reader = new FileReader()
-            reader.onload = () => {
-              const result = reader.result as string
-              const base64Data = result.split(',')[1]
-              resolve(base64Data)
-            }
-            reader.onerror = reject
-            reader.readAsDataURL(file)
-          })
+      console.log('[useOCR] Uploading files directly (multipart/form-data)...')
 
-          return {
-            image: base64,
-            filename: file.name
-          }
-        })
-      )
-
-      console.log('[useOCR] Sending batch request to API...')
-      const response = await ocrApi.uploadBatch(imageDataArray)
+      // Use new multipart upload - NO BASE64 CONVERSION!
+      // Files are sent as binary data directly, much faster and more efficient
+      const response = await ocrApi.uploadBatchMultipart(files, {
+        output_format: 'xlsx',
+        consolidation_strategy: 'separate'
+      })
       console.log('[useOCR] API response:', response)
 
       setUploadProgress(100)
