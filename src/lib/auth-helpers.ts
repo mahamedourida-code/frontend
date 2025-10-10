@@ -294,18 +294,20 @@ export const signInWithOTP = async (email: string) => {
 
 /**
  * Two-Factor Authentication: Verify password and send OTP
- * Simplified flow (NO signOut needed - OTP verification creates new session):
+ * Fixed flow to prevent double sessions:
  * 1. Verify credentials with password (creates temp session)
  * 2. Send OTP for 2FA
- * 3. User verifies OTP to complete sign-in (creates final session)
+ * 3. Sign out temp session to prevent conflicts
+ * 4. User verifies OTP to complete sign-in (creates final session)
  */
 export const verifyCredentialsAndSendOTP = async (
   email: string,
   password: string
 ) => {
-  // Check rate limiting
-  if (rateLimiter.isRateLimited(email)) {
-    const remainingMinutes = rateLimiter.getRemainingTime(email)
+  // Check rate limiting - use different key for credential check vs OTP send
+  const credentialCheckKey = `2fa-verify-${email}`
+  if (rateLimiter.isRateLimited(credentialCheckKey)) {
+    const remainingMinutes = rateLimiter.getRemainingTime(credentialCheckKey)
     throw new Error(
       `Too many attempts. Please try again in ${remainingMinutes} minutes.`
     )
@@ -324,8 +326,7 @@ export const verifyCredentialsAndSendOTP = async (
   // Check if email is confirmed
   const needsEmailVerification = signInData.user && !signInData.user.email_confirmed_at
 
-  // Step 2: Send OTP for 2FA (NO signOut needed!)
-  // The OTP verification will create a new session that replaces the temp one
+  // Step 2: Send OTP for 2FA
   const { error: otpError } = await supabase.auth.signInWithOtp({
     email,
     options: {
@@ -334,11 +335,17 @@ export const verifyCredentialsAndSendOTP = async (
   })
 
   if (otpError) {
+    // Sign out temp session before throwing error
+    await supabase.auth.signOut()
     throw new Error('Failed to send verification code. Please try again.')
   }
 
+  // Step 3: CRITICAL - Sign out the temp session to prevent conflicts
+  // The OTP verification will create a fresh session
+  await supabase.auth.signOut()
+
   // Reset rate limiter on successful credential verification
-  rateLimiter.reset(email)
+  rateLimiter.reset(credentialCheckKey)
 
   return {
     needsEmailVerification: needsEmailVerification || false,

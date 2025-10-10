@@ -41,6 +41,16 @@ export default function SignInPage() {
     }
   }, [searchParams])
 
+  // Cleanup effect: Clear 2FA flag on component unmount
+  useEffect(() => {
+    return () => {
+      // Clear flag when navigating away from sign-in page
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('in2FAFlow')
+      }
+    }
+  }, [])
+
   const {
     register: registerSignIn,
     handleSubmit: handleSignInSubmit,
@@ -330,6 +340,8 @@ export default function SignInPage() {
                 <Label htmlFor="otp">Verification Code</Label>
                 <Input
                   type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   id="otp"
                   placeholder="000000"
                   {...registerOTP('otp')}
@@ -337,6 +349,7 @@ export default function SignInPage() {
                   maxLength={6}
                   className="text-center text-2xl tracking-[0.5em] font-mono"
                   disabled={loading}
+                  autoComplete="off"
                   autoFocus
                 />
                 {otpErrors.otp && (
@@ -381,8 +394,14 @@ export default function SignInPage() {
               {/* Back to Sign In */}
               <button
                 onClick={() => {
+                  // Clear 2FA flag when going back
+                  if (typeof window !== 'undefined') {
+                    sessionStorage.removeItem('in2FAFlow')
+                  }
                   setStep('credentials')
                   setError(null)
+                  setLoading(false)
+                  setIsVerifying(false)
                 }}
                 className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
