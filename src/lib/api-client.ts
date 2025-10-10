@@ -250,7 +250,8 @@ export const ocrApi = {
 
     console.log('[API Client] Posting multipart to', `${API_BASE_URL}/api/v1/jobs/batch-upload`)
 
-    // Note: Don't set Content-Type header - browser will set it automatically with boundary
+    // IMPORTANT: Axios detects FormData and doesn't set Content-Type
+    // Browser will automatically set 'multipart/form-data' with boundary
     const response = await apiClient.post<BatchConvertResponse>('/api/v1/jobs/batch-upload', formData)
     console.log('[API Client] Response received:', response.data)
     return response.data
