@@ -58,7 +58,7 @@ export default function SignInPage() {
     resolver: zodResolver(verifyOTPSchema),
   })
 
-  // Handle password sign-in
+  // Handle password sign-in with OTP
   const onSignInSubmit = async (data: SignInInput) => {
     setLoading(true)
     setError(null)
@@ -72,16 +72,16 @@ export default function SignInPage() {
         return
       }
 
-      // Simple password sign-in - no OTP
-      await signInWithPassword(data.email, data.password)
+      // Verify credentials and send OTP
+      await verifyCredentialsAndSendOTP(data.email, data.password)
 
-      toast.success('Signed in successfully!', {
-        description: 'Redirecting to dashboard...',
+      toast.success('Verification code sent!', {
+        description: 'Check your email for a 6-digit code.',
       })
 
-      // Redirect to dashboard
-      router.push('/dashboard')
-      router.refresh()
+      // Move to OTP verification step
+      setStep('otp-verify')
+      setLoading(false)
     } catch (err: any) {
       console.error('Sign in error:', err)
       setError(err.message || 'Invalid email or password')
