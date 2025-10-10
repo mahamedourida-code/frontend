@@ -39,12 +39,6 @@ export default function SignInPage() {
         description: 'You can now sign in with your credentials.',
       })
     }
-
-    // Clear 2FA flow flag when returning to sign-in page
-    // (in case user navigated back or page was refreshed)
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('in2FAFlow')
-    }
   }, [searchParams])
 
   const {
@@ -64,17 +58,11 @@ export default function SignInPage() {
     resolver: zodResolver(verifyOTPSchema),
   })
 
-  // Handle 2FA sign-in: email + password → OTP verification
+  // Handle password sign-in
   const onSignInSubmit = async (data: SignInInput) => {
     setLoading(true)
     setError(null)
     setEmail(data.email)
-
-    // CRITICAL: Set flag BEFORE any auth calls to prevent race conditions
-    // This prevents AuthContext from auto-redirecting during 2FA flow
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('in2FAFlow', 'true')
-    }
 
     try {
       // Ensure password exists for password-based sign-in
@@ -84,29 +72,18 @@ export default function SignInPage() {
         return
       }
 
-      // Step 1: Verify credentials and send OTP
-      const result = await verifyCredentialsAndSendOTP(data.email, data.password)
+      // Simple password sign-in - no OTP
+      await signInWithPassword(data.email, data.password)
 
-      if (result.needsEmailVerification) {
-        toast.success('Verification code sent!', {
-          description: 'Please verify your email to continue.',
-        })
-      } else {
-        toast.success('Credentials verified!', {
-          description: 'Check your email for a verification code.',
-        })
-      }
+      toast.success('Signed in successfully!', {
+        description: 'Redirecting to dashboard...',
+      })
 
-      // Redirect to verification page (consistent with sign-up flow)
-      router.push(`/verify-email?email=${encodeURIComponent(data.email)}`)
+      // Redirect to dashboard
+      router.push('/dashboard')
+      router.refresh()
     } catch (err: any) {
       console.error('Sign in error:', err)
-
-      // Clear the 2FA flag on error
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('in2FAFlow')
-      }
-
       setError(err.message || 'Invalid email or password')
       toast.error('Sign in failed', {
         description: err.message || 'Please check your credentials',
@@ -122,12 +99,6 @@ export default function SignInPage() {
       return
     }
 
-    // CRITICAL: Set flag BEFORE any auth calls to prevent race conditions
-    // This prevents AuthContext from auto-redirecting during 2FA flow
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('in2FAFlow', 'true')
-    }
-
     setLoading(true)
     setError(null)
 
@@ -138,16 +109,10 @@ export default function SignInPage() {
         description: 'Check your email for a 6-digit code.',
       })
 
-      // Redirect to verification page (consistent with sign-up flow)
+      // Redirect to verification page
       router.push(`/verify-email?email=${encodeURIComponent(email)}`)
     } catch (err: any) {
       console.error('Passwordless sign in error:', err)
-
-      // Clear the 2FA flag on error
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('in2FAFlow')
-      }
-
       setError(err.message || 'Failed to send sign-in code')
       toast.error('Failed to send code', {
         description: err.message,
