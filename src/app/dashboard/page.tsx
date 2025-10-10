@@ -598,34 +598,8 @@ function DashboardContent() {
               </Card>
             </div>
 
-            {/* Batch Processing Benefits */}
-            <Card className="mt-8 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border-primary/20">
-              <CardContent className="p-8">
-                <div className="text-center mb-6">
-                  <h3 className="text-xl font-bold text-foreground mb-2">
-                    Why Batch Processing Matters
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Save hours of repetitive work with our true batch processing capability
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="bg-background/50 rounded-lg p-4 text-center">
-                    <div className="text-3xl font-bold text-primary mb-1">60x</div>
-                    <div className="text-sm text-muted-foreground">Faster Processing</div>
-                  </div>
-                  <div className="bg-background/50 rounded-lg p-4 text-center">
-                    <div className="text-3xl font-bold text-primary mb-1">100</div>
-                    <div className="text-sm text-muted-foreground">Files Per Batch</div>
-                  </div>
-                  <div className="bg-background/50 rounded-lg p-4 text-center">
-                    <div className="text-3xl font-bold text-primary mb-1">1</div>
-                    <div className="text-sm text-muted-foreground">Click to Process</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            
+            
           </div>
         )}
       </main>
