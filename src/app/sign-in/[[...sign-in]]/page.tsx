@@ -60,6 +60,11 @@ export default function SignInPage() {
 
   // Handle password sign-in with 2FA OTP
   const onSignInSubmit = async (data: SignInInput) => {
+    // Set flag FIRST to prevent auto-redirect during 2FA flow
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('in2FAFlow', 'true')
+    }
+
     setLoading(true)
     setError(null)
     setEmail(data.email)
@@ -67,6 +72,10 @@ export default function SignInPage() {
     try {
       // Verify password and send OTP for 2FA
       if (!data.password) {
+        // Clear flag on early return
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('in2FAFlow')
+        }
         setError('Password is required')
         setLoading(false)
         return
@@ -83,6 +92,12 @@ export default function SignInPage() {
       setLoading(false)
     } catch (err: any) {
       console.error('Sign in error:', err)
+
+      // Clear 2FA flag on error
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('in2FAFlow')
+      }
+
       setError(err.message || 'Invalid email or password')
       toast.error('Sign in failed', {
         description: err.message || 'Please check your credentials',
@@ -141,6 +156,12 @@ export default function SignInPage() {
       // Check if session exists OR if user is authenticated
       if (result.session || result.user) {
         console.log('✓ Verification successful, session created')
+
+        // Clear 2FA flag - verification complete
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('in2FAFlow')
+        }
+
         toast.success('Email verified!', {
           description: 'Redirecting to dashboard...',
         })
