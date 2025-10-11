@@ -246,7 +246,7 @@ export const ocrApi = {
 
     // Append options
     formData.append('output_format', options?.output_format || 'xlsx')
-    formData.append('consolidation_strategy', options?.consolidation_strategy || 'separate')
+    formData.append('consolidation_strategy', options?.consolidation_strategy || 'consolidated')
 
     console.log('[API Client] Posting multipart to', `${API_BASE_URL}/api/v1/jobs/batch-upload`)
 
