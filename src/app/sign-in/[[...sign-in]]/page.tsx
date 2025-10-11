@@ -96,11 +96,12 @@ export default function SignInPage() {
         const { data: { session } } = await supabase.auth.getSession()
 
         if (session?.user) {
-          console.log('[SessionPoll] ✓ Session detected, forcing redirect to dashboard')
+          console.log('[SessionPoll] ✓ Session detected via polling, redirecting to dashboard')
           clearInterval(pollInterval)
 
-          // Use window.location for hard navigation to ensure clean state
-          window.location.href = '/dashboard'
+          // Refresh router to sync server state, then navigate
+          router.refresh()
+          router.push('/dashboard')
         } else if (pollCount >= maxPolls) {
           console.error('[SessionPoll] ⚠ Timeout: No session after 10 seconds')
           clearInterval(pollInterval)
@@ -121,7 +122,7 @@ export default function SignInPage() {
       console.log('[SessionPoll] Cleaning up polling interval')
       clearInterval(pollInterval)
     }
-  }, [isVerifying, step, supabase])
+  }, [isVerifying, step, supabase, router])
 
   const {
     register: registerSignIn,
@@ -253,17 +254,24 @@ export default function SignInPage() {
       // Check if session exists OR if user is authenticated
       if (result.session || result.user) {
         console.log('[OTP] ✓ Verification successful, session created')
-        console.log('[OTP] AuthContext will handle redirect to dashboard')
+        console.log('[OTP] Session cookies should now be set')
 
         toast.success('Email verified!', {
           description: 'Redirecting to dashboard...',
         })
 
-        // AuthContext's onAuthStateChange will detect SIGNED_IN and redirect
-        // We don't manually redirect here to avoid race conditions
+        // Small delay to ensure cookies are synced before redirect
+        await new Promise(resolve => setTimeout(resolve, 300))
 
-        // Keep loading state active so UI shows "Verifying..." until redirect happens
-        // The loading state will be cleared when component unmounts during navigation
+        // Force router refresh to sync server state with new session
+        console.log('[OTP] Refreshing router to sync server state...')
+        router.refresh()
+
+        // Then redirect to dashboard
+        console.log('[OTP] Redirecting to dashboard...')
+        router.push('/dashboard')
+
+        // Keep loading state active during redirect
       } else {
         // Verification succeeded but no session - this shouldn't happen
         console.error('[OTP] ⚠ Verification succeeded but no session was created')

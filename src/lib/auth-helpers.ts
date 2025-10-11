@@ -299,13 +299,12 @@ export const signInWithOTP = async (email: string) => {
 
 /**
  * Two-Factor Authentication: Verify password and send OTP
- * Clean flow to prevent session conflicts:
- * 1. Verify credentials with password (creates temporary session)
- * 2. Sign out temporary session immediately
- * 3. Send OTP for 2FA
- * 4. User verifies OTP to create the final session
+ * Flow optimized for SSR cookie persistence:
+ * 1. Verify credentials with password (creates session + sets httpOnly cookies)
+ * 2. Send OTP (session remains active, cookies preserved)
+ * 3. User verifies OTP (updates session in place, cookies remain)
  *
- * This ensures only ONE session exists at a time, preventing conflicts.
+ * This ensures cookies persist through the 2FA flow for SSR.
  */
 export const verifyCredentialsAndSendOTP = async (
   email: string,
@@ -345,13 +344,11 @@ export const verifyCredentialsAndSendOTP = async (
     console.warn('[Auth] Email not confirmed for user:', email)
   }
 
-  // Step 1.5: Sign out the temporary session to prevent conflicts
-  console.log('[Auth] Step 1.5: Clearing temporary session...')
-  await supabase.auth.signOut({ scope: 'local' })
-  console.log('[Auth] Temporary session cleared')
-
   // Step 2: Send OTP for 2FA
-  console.log('[Auth] Step 2: Sending OTP...')
+  // IMPORTANT: We do NOT sign out here. The password session remains active.
+  // When the user verifies the OTP, Supabase will handle the session transition.
+  // This preserves httpOnly cookies needed for SSR.
+  console.log('[Auth] Step 2: Sending OTP (keeping existing session)...')
   const { error: otpError } = await supabase.auth.signInWithOtp({
     email,
     options: {
