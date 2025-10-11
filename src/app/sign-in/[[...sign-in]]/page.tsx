@@ -76,6 +76,53 @@ export default function SignInPage() {
     }
   }, [step])
 
+  // Session polling fallback: If AuthContext doesn't redirect, force redirect
+  // This handles edge cases where AuthContext might miss the SIGNED_IN event
+  useEffect(() => {
+    // Only poll when actively verifying OTP
+    if (!isVerifying || step !== 'otp-verify') {
+      return
+    }
+
+    console.log('[SessionPoll] Starting session polling fallback...')
+    let pollCount = 0
+    const maxPolls = 10 // Max 10 seconds of polling
+
+    const pollInterval = setInterval(async () => {
+      pollCount++
+      console.log(`[SessionPoll] Poll attempt ${pollCount}/${maxPolls}`)
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+
+        if (session?.user) {
+          console.log('[SessionPoll] ✓ Session detected, forcing redirect to dashboard')
+          clearInterval(pollInterval)
+
+          // Use window.location for hard navigation to ensure clean state
+          window.location.href = '/dashboard'
+        } else if (pollCount >= maxPolls) {
+          console.error('[SessionPoll] ⚠ Timeout: No session after 10 seconds')
+          clearInterval(pollInterval)
+
+          setError('Authentication timeout. Please try again.')
+          toast.error('Timeout', {
+            description: 'Please try signing in again',
+          })
+          setLoading(false)
+          setIsVerifying(false)
+        }
+      } catch (error) {
+        console.error('[SessionPoll] Error checking session:', error)
+      }
+    }, 1000) // Poll every 1 second
+
+    return () => {
+      console.log('[SessionPoll] Cleaning up polling interval')
+      clearInterval(pollInterval)
+    }
+  }, [isVerifying, step, supabase])
+
   const {
     register: registerSignIn,
     handleSubmit: handleSignInSubmit,
@@ -177,49 +224,49 @@ export default function SignInPage() {
   const onOTPSubmit = async (data: VerifyOTPInput) => {
     // Prevent multiple simultaneous verification attempts
     if (isVerifying || loading) {
-      console.log('Verification already in progress, skipping...')
+      console.log('[OTP] Verification already in progress, skipping...')
       return
     }
 
-    console.log('Starting OTP verification for email:', email)
+    console.log('[OTP] Starting verification for email:', email)
     setIsVerifying(true)
     setLoading(true)
     setError(null)
 
     try {
-      console.log('Calling verifyOTP with code:', data.otp)
+      // CRITICAL: Clear 2FA flag BEFORE verifying OTP
+      // This allows AuthContext to handle redirect when SIGNED_IN event fires
+      console.log('[OTP] Clearing 2FA flags before verification...')
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('in2FAFlow')
+        sessionStorage.removeItem('in2FAFlowTimestamp')
+      }
+
+      console.log('[OTP] Calling verifyOTP with code:', data.otp)
       const result = await verifyOTP(email, data.otp)
-      console.log('Verification result:', { hasSession: !!result.session, hasUser: !!result.user })
+      console.log('[OTP] Verification result:', {
+        hasSession: !!result.session,
+        hasUser: !!result.user,
+        userEmail: result.user?.email
+      })
 
       // Check if session exists OR if user is authenticated
       if (result.session || result.user) {
-        console.log('✓ Verification successful, session created')
-
-        // Clear 2FA flag - verification complete
-        if (typeof window !== 'undefined') {
-          sessionStorage.removeItem('in2FAFlow')
-          sessionStorage.removeItem('in2FAFlowTimestamp')
-        }
+        console.log('[OTP] ✓ Verification successful, session created')
+        console.log('[OTP] AuthContext will handle redirect to dashboard')
 
         toast.success('Email verified!', {
           description: 'Redirecting to dashboard...',
         })
 
-        // Minimal delay to ensure session persistence
-        await new Promise(resolve => setTimeout(resolve, 500))
+        // AuthContext's onAuthStateChange will detect SIGNED_IN and redirect
+        // We don't manually redirect here to avoid race conditions
 
-        console.log('Redirecting to dashboard...')
-        router.push('/dashboard')
-        router.refresh() // Force refresh to update auth state
+        // Keep loading state active so UI shows "Verifying..." until redirect happens
+        // The loading state will be cleared when component unmounts during navigation
       } else {
-        // Verification succeeded but no session - this shouldn't happen with improved error handling
-        console.error('⚠ Verification succeeded but no session was created')
-
-        // Clear flag even on error
-        if (typeof window !== 'undefined') {
-          sessionStorage.removeItem('in2FAFlow')
-          sessionStorage.removeItem('in2FAFlowTimestamp')
-        }
+        // Verification succeeded but no session - this shouldn't happen
+        console.error('[OTP] ⚠ Verification succeeded but no session was created')
 
         setError('Verification succeeded but session was not created. Please try signing in again.')
         toast.error('Session error', {
@@ -229,9 +276,9 @@ export default function SignInPage() {
         setIsVerifying(false)
       }
     } catch (err: any) {
-      console.error('✗ OTP verification error:', err)
+      console.error('[OTP] ✗ Verification error:', err)
 
-      // IMPORTANT: Clear 2FA flag on error to prevent stuck state
+      // Clear flags on error
       if (typeof window !== 'undefined') {
         sessionStorage.removeItem('in2FAFlow')
         sessionStorage.removeItem('in2FAFlowTimestamp')
