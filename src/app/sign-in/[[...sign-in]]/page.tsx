@@ -76,54 +76,6 @@ export default function SignInPage() {
     }
   }, [step])
 
-  // Session polling fallback: If AuthContext doesn't redirect, force redirect
-  // This handles edge cases where AuthContext might miss the SIGNED_IN event
-  useEffect(() => {
-    // Only poll when actively verifying OTP
-    if (!isVerifying || step !== 'otp-verify') {
-      return
-    }
-
-    console.log('[SessionPoll] Starting session polling fallback...')
-    let pollCount = 0
-    const maxPolls = 10 // Max 10 seconds of polling
-
-    const pollInterval = setInterval(async () => {
-      pollCount++
-      console.log(`[SessionPoll] Poll attempt ${pollCount}/${maxPolls}`)
-
-      try {
-        const { data: { session } } = await supabase.auth.getSession()
-
-        if (session?.user) {
-          console.log('[SessionPoll] ✓ Session detected via polling, redirecting to dashboard')
-          clearInterval(pollInterval)
-
-          // Refresh router to sync server state, then navigate
-          router.refresh()
-          router.push('/dashboard')
-        } else if (pollCount >= maxPolls) {
-          console.error('[SessionPoll] ⚠ Timeout: No session after 10 seconds')
-          clearInterval(pollInterval)
-
-          setError('Authentication timeout. Please try again.')
-          toast.error('Timeout', {
-            description: 'Please try signing in again',
-          })
-          setLoading(false)
-          setIsVerifying(false)
-        }
-      } catch (error) {
-        console.error('[SessionPoll] Error checking session:', error)
-      }
-    }, 1000) // Poll every 1 second
-
-    return () => {
-      console.log('[SessionPoll] Cleaning up polling interval')
-      clearInterval(pollInterval)
-    }
-  }, [isVerifying, step, supabase, router])
-
   const {
     register: registerSignIn,
     handleSubmit: handleSignInSubmit,
@@ -235,14 +187,6 @@ export default function SignInPage() {
     setError(null)
 
     try {
-      // CRITICAL: Clear 2FA flag BEFORE verifying OTP
-      // This allows AuthContext to handle redirect when SIGNED_IN event fires
-      console.log('[OTP] Clearing 2FA flags before verification...')
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('in2FAFlow')
-        sessionStorage.removeItem('in2FAFlowTimestamp')
-      }
-
       console.log('[OTP] Calling verifyOTP with code:', data.otp)
       const result = await verifyOTP(email, data.otp)
       console.log('[OTP] Verification result:', {
@@ -254,24 +198,24 @@ export default function SignInPage() {
       // Check if session exists OR if user is authenticated
       if (result.session || result.user) {
         console.log('[OTP] ✓ Verification successful, session created')
-        console.log('[OTP] Session cookies should now be set')
+        console.log('[OTP] Waiting for cookies to be processed...')
+
+        // CRITICAL: Wait for browser to process httpOnly cookies
+        // Before any navigation happens, give cookies time to set
+        await new Promise(resolve => setTimeout(resolve, 500))
+
+        // Mark verification complete - let AuthContext handle redirect
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('otpVerified', 'true')
+          console.log('[OTP] Set otpVerified flag, AuthContext will handle redirect')
+        }
 
         toast.success('Email verified!', {
           description: 'Redirecting to dashboard...',
         })
 
-        // Small delay to ensure cookies are synced before redirect
-        await new Promise(resolve => setTimeout(resolve, 300))
-
-        // Force router refresh to sync server state with new session
-        console.log('[OTP] Refreshing router to sync server state...')
-        router.refresh()
-
-        // Then redirect to dashboard
-        console.log('[OTP] Redirecting to dashboard...')
-        router.push('/dashboard')
-
-        // Keep loading state active during redirect
+        // Don't redirect here - AuthContext will handle it
+        // Just keep showing loading state
       } else {
         // Verification succeeded but no session - this shouldn't happen
         console.error('[OTP] ⚠ Verification succeeded but no session was created')

@@ -150,16 +150,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Handle SIGNED_IN event with proper 2FA detection
         if (event === 'SIGNED_IN') {
           const currentPath = typeof window !== 'undefined' ? window.location.pathname : ''
-          console.log('[AuthContext] SIGNED_IN event, current path:', currentPath)
-
-          // Check if we're in 2FA flow
           const in2FAFlow = typeof window !== 'undefined' && sessionStorage.getItem('in2FAFlow') === 'true'
+          const otpVerified = typeof window !== 'undefined' && sessionStorage.getItem('otpVerified') === 'true'
 
-          if (in2FAFlow) {
-            console.log('[AuthContext] In 2FA flow - skipping auto-redirect')
-            // Don't redirect, user is still completing 2FA
+          console.log('[AuthContext] SIGNED_IN event, current path:', currentPath)
+          console.log('[AuthContext] Flags - in2FAFlow:', in2FAFlow, 'otpVerified:', otpVerified)
+
+          if (in2FAFlow || otpVerified) {
+            console.log('[AuthContext] 2FA flow complete - handling redirect')
+
+            // Wait a bit more for cookies to fully propagate to ensure
+            // the middleware can read them on the next server request
+            await new Promise(resolve => setTimeout(resolve, 300))
+
+            // Clear all 2FA flags now that we're about to redirect
+            if (typeof window !== 'undefined') {
+              sessionStorage.removeItem('in2FAFlow')
+              sessionStorage.removeItem('in2FAFlowTimestamp')
+              sessionStorage.removeItem('otpVerified')
+              console.log('[AuthContext] Cleared all 2FA flags')
+            }
+
+            // Now redirect - this is the single source of truth for 2FA redirect
+            console.log('[AuthContext] Redirecting to dashboard after 2FA...')
+            router.push('/dashboard')
           } else {
-            // Normal sign-in flow - redirect from auth pages to dashboard
+            // Normal sign-in flow (non-2FA) - redirect from auth pages to dashboard
             const authPages = ['/sign-in', '/sign-up', '/verify-email']
             const isOnAuthPage = authPages.some(page => currentPath?.includes(page))
 
@@ -187,6 +203,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (typeof window !== 'undefined') {
             sessionStorage.removeItem('in2FAFlow')
             sessionStorage.removeItem('in2FAFlowTimestamp')
+            sessionStorage.removeItem('otpVerified')
           }
         }
       }
@@ -210,6 +227,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('in2FAFlow')
       sessionStorage.removeItem('in2FAFlowTimestamp')
+      sessionStorage.removeItem('otpVerified')
       sessionStorage.removeItem('wasProcessing')
       sessionStorage.removeItem('uploadedFilesCache')
     }
