@@ -1,11 +1,10 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { User, Session } from '@supabase/supabase-js'
 import { createClient } from '@/utils/supabase/client'
 import { Profile } from '@/types/database'
-import { AuthErrorBoundary } from '@/components/AuthErrorBoundary'
 
 interface AuthContextType {
   user: User | null
@@ -31,9 +30,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
-  const pathname = usePathname()
-  
-  // Initialize Supabase client
+
+  // Create Supabase client - each render gets a fresh client (correct for @supabase/ssr)
   const supabase = createClient()
 
   const fetchProfile = async (userId: string) => {
@@ -48,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setProfile(data)
       }
     } catch (error) {
-      console.error('Error fetching profile:', error)
+      console.error('[AuthContext] Error fetching profile:', error)
     }
   }
 
@@ -61,209 +59,79 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     console.log('[AuthContext] Initializing auth...')
     let mounted = true
-    let timeoutId: NodeJS.Timeout
-    let retryCount = 0
-    const maxRetries = 3
 
-    // Set a more reasonable timeout (15 seconds instead of 5)
-    // This prevents premature timeout on slower connections
-    timeoutId = setTimeout(() => {
-      if (mounted) {
-        console.warn('[AuthContext] Session check timeout after 15s - setting loading to false')
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (!mounted) return
+
+      if (error) {
+        console.error('[AuthContext] Error getting session:', error)
+        setLoading(false)
+        return
+      }
+
+      console.log('[AuthContext] Initial session:', session ? 'authenticated' : 'anonymous')
+      setSession(session)
+      setUser(session?.user ?? null)
+
+      if (session?.user) {
+        fetchProfile(session.user.id).finally(() => {
+          if (mounted) setLoading(false)
+        })
+      } else {
         setLoading(false)
       }
-    }, 15000) // 15 second timeout
+    })
 
-    // Clean up any leftover session storage flags
-    if (typeof window !== 'undefined') {
-      const keysToClean = ['in2FAFlow', 'in2FAFlowTimestamp', 'otpVerified']
-      keysToClean.forEach(key => sessionStorage.removeItem(key))
-    }
-
-    // Session check with retry logic
-    const checkSession = async () => {
-      try {
-        if (!mounted) return
-
-        console.log('[AuthContext] Checking session...')
-        const { data: { session }, error } = await supabase.auth.getSession()
-
-        if (!mounted) return
-
-        // Clear timeout since we got a response
-        clearTimeout(timeoutId)
-
-        if (error) {
-          console.error('[AuthContext] Error getting session:', error)
-
-          // Retry logic for network issues
-          if (retryCount < maxRetries && (error.message?.includes('network') || error.message?.includes('timeout'))) {
-            retryCount++
-            console.log(`[AuthContext] Retrying session check (${retryCount}/${maxRetries})...`)
-            setTimeout(checkSession, 1000 * retryCount) // Exponential backoff
-            return
-          }
-
-          // If all retries failed or it's not a retryable error
-          setSession(null)
-          setUser(null)
-          setProfile(null)
-          setLoading(false)
-          return
-        }
-
-        console.log('[AuthContext] Session check successful:', session ? 'authenticated' : 'anonymous')
-
-        // Session recovery: validate session is still valid
-        if (session) {
-          try {
-            const { data: user, error: userError } = await supabase.auth.getUser()
-            if (userError || !user.user) {
-              console.warn('[AuthContext] Invalid session detected, clearing...')
-              await supabase.auth.signOut({ scope: 'local' })
-              setSession(null)
-              setUser(null)
-              setProfile(null)
-              setLoading(false)
-              return
-            }
-          } catch (validationError) {
-            console.error('[AuthContext] Session validation failed:', validationError)
-            setSession(null)
-            setUser(null)
-            setProfile(null)
-            setLoading(false)
-            return
-          }
-        }
-
-        setSession(session)
-        setUser(session?.user ?? null)
-
-        if (session?.user) {
-          fetchProfile(session.user.id).finally(() => {
-            if (mounted) setLoading(false)
-          })
-        } else {
-          setProfile(null)
-          setLoading(false)
-        }
-      } catch (error) {
-        if (!mounted) return
-        clearTimeout(timeoutId)
-        console.error('[AuthContext] Exception during session check:', error)
-        setSession(null)
-        setUser(null)
-        setProfile(null)
-        setLoading(false)
-      }
-    }
-
-    // Start the session check
-    checkSession()
-
-    // Debounce mechanism for auth state changes
-    let authChangeTimeout: NodeJS.Timeout | null = null
-    let lastAuthEvent: string | null = null
-
-    // Listen for auth changes with debouncing
+    // Listen for auth changes - trust Supabase's event system
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return
 
-      // Debounce rapid auth state changes
-      if (authChangeTimeout) {
-        clearTimeout(authChangeTimeout)
-      }
+      console.log('[AuthContext] Auth event:', event, session?.user?.email)
 
-      // If we get the same event twice quickly, ignore the second one
-      if (lastAuthEvent === event && Date.now() - (window as any).lastAuthEventTime < 1000) {
-        console.log('[AuthContext] Debouncing duplicate auth event:', event)
-        return
-      }
+      setSession(session)
+      setUser(session?.user ?? null)
 
-      lastAuthEvent = event
-      ;(window as any).lastAuthEventTime = Date.now()
+      if (session?.user) {
+        await fetchProfile(session.user.id)
 
-      authChangeTimeout = setTimeout(async () => {
-        console.log('[AuthContext] Processing auth state change:', event, session?.user?.email)
+        // Redirect to dashboard on sign-in (only from auth pages)
+        if (event === 'SIGNED_IN') {
+          const currentPath = window.location.pathname
+          const authPages = ['/sign-in', '/sign-up', '/verify-email']
 
-        setSession(session)
-        setUser(session?.user ?? null)
-
-        if (session?.user) {
-          await fetchProfile(session.user.id)
-
-          // Handle SIGNED_IN event - redirect from auth pages to dashboard
-          if (event === 'SIGNED_IN') {
-            const currentPath = typeof window !== 'undefined' ? window.location.pathname : ''
-            console.log('[AuthContext] SIGNED_IN event, current path:', currentPath)
-
-            // Redirect from auth pages to dashboard
-            const authPages = ['/sign-in', '/sign-up', '/verify-email']
-            const isOnAuthPage = authPages.some(page => currentPath?.includes(page))
-
-            if (isOnAuthPage) {
-              console.log('[AuthContext] Redirecting authenticated user to dashboard...')
-              // Add a small delay to ensure auth state is fully settled
-              setTimeout(() => router.push('/dashboard'), 100)
-            } else {
-              console.log('[AuthContext] User signed in, already on correct page:', currentPath)
-            }
-          }
-
-          // Handle TOKEN_REFRESHED event
-          if (event === 'TOKEN_REFRESHED') {
-            console.log('[AuthContext] Token refreshed successfully')
-          }
-        } else {
-          // No session - clear profile
-          setProfile(null)
-
-          // Handle SIGNED_OUT event
-          if (event === 'SIGNED_OUT') {
-            console.log('[AuthContext] User signed out')
-            // Clear any remaining session flags
-            if (typeof window !== 'undefined') {
-              const keysToClean = ['in2FAFlow', 'in2FAFlowTimestamp', 'otpVerified']
-              keysToClean.forEach(key => sessionStorage.removeItem(key))
-            }
+          if (authPages.some(page => currentPath.includes(page))) {
+            console.log('[AuthContext] Redirecting to dashboard after sign-in')
+            router.push('/dashboard')
           }
         }
+      } else {
+        setProfile(null)
+      }
 
-        setLoading(false)
-      }, 300) // 300ms debounce delay
+      setLoading(false)
     })
 
     return () => {
-      console.log('[AuthContext] Cleaning up auth subscription')
       mounted = false
-      clearTimeout(timeoutId)
-      if (authChangeTimeout) {
-        clearTimeout(authChangeTimeout)
-      }
       subscription.unsubscribe()
     }
-  }, []) // Empty dependency array to prevent loops
+  }, []) // Register once on mount
 
   const signOut = async () => {
-    console.log('[AuthContext] AuthContext signOut called...')
+    console.log('[AuthContext] Signing out...')
 
     try {
-      // Use the improved signOut helper which handles comprehensive cleanup
+      // Use the signOut helper
       await (await import('@/lib/auth-helpers')).signOut()
 
-      // Clear local state
-      setUser(null)
-      setSession(null)
-      setProfile(null)
-
-      console.log('[AuthContext] Auth context state cleared')
+      // State will be cleared by onAuthStateChange SIGNED_OUT event
+      console.log('[AuthContext] Sign out complete')
     } catch (error) {
       console.error('[AuthContext] Sign out error:', error)
-
-      // Even if signOut fails, clear local state to prevent stuck UI
+      // Clear local state even on error
       setUser(null)
       setSession(null)
       setProfile(null)
@@ -271,20 +139,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthErrorBoundary>
-      <AuthContext.Provider
-        value={{
-          user,
-          session,
-          profile,
-          loading,
-          signOut,
-          refreshProfile,
-        }}
-      >
-        {children}
-      </AuthContext.Provider>
-    </AuthErrorBoundary>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        profile,
+        loading,
+        signOut,
+        refreshProfile,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   )
 }
 

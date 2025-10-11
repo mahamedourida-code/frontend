@@ -59,9 +59,8 @@ export default function SignInPage() {
     resolver: zodResolver(signInSchema),
   })
 
-  // Handle password sign-in with retry mechanism
-  const onSignInSubmit = async (data: SignInInput, retryCount = 0) => {
-    const maxRetries = 2
+  // Handle password sign-in
+  const onSignInSubmit = async (data: SignInInput) => {
     setLoading(true)
     setError(null)
     setEmail(data.email)
@@ -73,49 +72,20 @@ export default function SignInPage() {
         return
       }
 
-      console.log('[SignIn] Attempting sign-in...', retryCount > 0 ? `(retry ${retryCount})` : '')
+      console.log('[SignIn] Signing in...')
 
-      // Direct sign-in with password (no OTP required)
+      // Sign in with password - Supabase will handle the session
       await signInWithPassword(data.email, data.password)
 
-      toast.success('Signed in successfully!', {
-        description: 'Redirecting to dashboard...',
-      })
+      toast.success('Signed in successfully!')
 
-      // AuthContext will handle the redirect automatically
-      console.log('[SignIn] Sign-in successful, waiting for redirect...')
+      // AuthContext's onAuthStateChange will handle the redirect
+      console.log('[SignIn] Sign-in successful')
 
     } catch (err: any) {
-      console.error('Sign in error:', err)
+      console.error('[SignIn] Error:', err)
 
-      // Retry logic for network-related errors
-      if (retryCount < maxRetries &&
-          (err.message?.includes('network') ||
-           err.message?.includes('timeout') ||
-           err.message?.includes('fetch'))) {
-
-        console.log(`[SignIn] Retrying sign-in (${retryCount + 1}/${maxRetries})...`)
-        toast.info(`Retrying... (${retryCount + 1}/${maxRetries})`)
-
-        // Exponential backoff
-        setTimeout(() => {
-          onSignInSubmit(data, retryCount + 1)
-        }, 1000 * (retryCount + 1))
-        return
-      }
-
-      // Handle specific error types
-      let errorMessage = 'Invalid email or password'
-      if (err.message?.includes('Invalid login credentials')) {
-        errorMessage = 'Invalid email or password. Please check your credentials.'
-      } else if (err.message?.includes('too many')) {
-        errorMessage = 'Too many attempts. Please wait before trying again.'
-      } else if (err.message?.includes('network')) {
-        errorMessage = 'Network error. Please check your connection and try again.'
-      } else if (err.message) {
-        errorMessage = err.message
-      }
-
+      const errorMessage = err.message || 'Invalid email or password'
       setError(errorMessage)
       toast.error('Sign in failed', {
         description: errorMessage,
@@ -342,10 +312,10 @@ export default function SignInPage() {
               size="lg"
               type={usePasswordless ? 'button' : 'submit'}
               onClick={usePasswordless ? () => handlePasswordlessSignIn() : undefined}
-              disabled={loading || authLoading}
+              disabled={loading}
             >
-              {(loading || authLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {(loading || authLoading) ? 'Signing in...' : (usePasswordless ? 'Send verification code' : 'Sign in')}
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading ? 'Signing in...' : (usePasswordless ? 'Send verification code' : 'Sign in')}
             </Button>
 
             {/* Toggle between password and passwordless */}
