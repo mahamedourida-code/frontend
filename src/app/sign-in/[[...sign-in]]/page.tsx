@@ -54,15 +54,27 @@ export default function SignInPage() {
     }
   }, [searchParams])
 
-  // Cleanup effect: Clear 2FA flag on component unmount
+  // Cleanup effect: Clear 2FA flag on component unmount and detect stale flags
   useEffect(() => {
-    return () => {
-      // Clear flag when navigating away from sign-in page
-      if (typeof window !== 'undefined') {
+    // On mount: Check if we're in OTP step but flag is missing
+    // This can happen if user refreshed during 2FA flow
+    if (step === 'credentials' && typeof window !== 'undefined') {
+      const hasStaleFlag = sessionStorage.getItem('in2FAFlow') === 'true'
+      if (hasStaleFlag) {
+        console.log('[SignIn] Detected stale 2FA flag, clearing...')
         sessionStorage.removeItem('in2FAFlow')
+        sessionStorage.removeItem('in2FAFlowTimestamp')
       }
     }
-  }, [])
+
+    return () => {
+      // Clear flag when navigating away from sign-in page
+      if (typeof window !== 'undefined' && step !== 'otp-verify') {
+        sessionStorage.removeItem('in2FAFlow')
+        sessionStorage.removeItem('in2FAFlowTimestamp')
+      }
+    }
+  }, [step])
 
   const {
     register: registerSignIn,
@@ -86,6 +98,7 @@ export default function SignInPage() {
     // Set flag FIRST to prevent auto-redirect during 2FA flow
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('in2FAFlow', 'true')
+      sessionStorage.setItem('in2FAFlowTimestamp', Date.now().toString())
     }
 
     setLoading(true)
@@ -98,6 +111,7 @@ export default function SignInPage() {
         // Clear flag on early return
         if (typeof window !== 'undefined') {
           sessionStorage.removeItem('in2FAFlow')
+          sessionStorage.removeItem('in2FAFlowTimestamp')
         }
         setError('Password is required')
         setLoading(false)
@@ -119,6 +133,7 @@ export default function SignInPage() {
       // Clear 2FA flag on error
       if (typeof window !== 'undefined') {
         sessionStorage.removeItem('in2FAFlow')
+        sessionStorage.removeItem('in2FAFlowTimestamp')
       }
 
       setError(err.message || 'Invalid email or password')
@@ -183,6 +198,7 @@ export default function SignInPage() {
         // Clear 2FA flag - verification complete
         if (typeof window !== 'undefined') {
           sessionStorage.removeItem('in2FAFlow')
+          sessionStorage.removeItem('in2FAFlowTimestamp')
         }
 
         toast.success('Email verified!', {
@@ -198,6 +214,13 @@ export default function SignInPage() {
       } else {
         // Verification succeeded but no session - this shouldn't happen with improved error handling
         console.error('⚠ Verification succeeded but no session was created')
+
+        // Clear flag even on error
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('in2FAFlow')
+          sessionStorage.removeItem('in2FAFlowTimestamp')
+        }
+
         setError('Verification succeeded but session was not created. Please try signing in again.')
         toast.error('Session error', {
           description: 'Please try signing in again',
@@ -207,7 +230,13 @@ export default function SignInPage() {
       }
     } catch (err: any) {
       console.error('✗ OTP verification error:', err)
-      
+
+      // IMPORTANT: Clear 2FA flag on error to prevent stuck state
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('in2FAFlow')
+        sessionStorage.removeItem('in2FAFlowTimestamp')
+      }
+
       // Handle specific error types for better UX
       let errorMessage = err.message || 'Invalid verification code'
       let toastDescription = 'Please check your code and try again'
@@ -307,23 +336,11 @@ export default function SignInPage() {
     }
   }
 
-  // Auto-submit OTP when 6 digits entered
+  // Handle OTP input change (no auto-submit)
   const handleOTPChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '').slice(0, 6)
     setOTPValue('otp', value)
-
-    // Only auto-submit if not already verifying and we have exactly 6 digits
-    if (value.length === 6 && !isVerifying && !loading) {
-      console.log('Auto-submitting OTP form with code:', value)
-      const form = document.querySelector('form')
-      if (form) {
-        setTimeout(() => {
-          if (!isVerifying && !loading) {
-            form.requestSubmit()
-          }
-        }, 100)
-      }
-    }
+    // User must click "Verify" button manually - no auto-submit
   }
 
   // Render OTP Verification Step
@@ -342,8 +359,7 @@ export default function SignInPage() {
               {usePasswordless ? 'Verify Your Email' : 'Two-Factor Verification'}
             </CardTitle>
             <CardDescription>
-              We've sent a 6-digit verification code to<br />
-              <span className="font-semibold text-foreground">{email}</span>
+              We've sent a 6-digit verification code to your email
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -410,6 +426,7 @@ export default function SignInPage() {
                   // Clear 2FA flag when going back
                   if (typeof window !== 'undefined') {
                     sessionStorage.removeItem('in2FAFlow')
+                    sessionStorage.removeItem('in2FAFlowTimestamp')
                   }
                   setStep('credentials')
                   setError(null)

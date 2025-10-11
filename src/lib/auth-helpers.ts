@@ -299,13 +299,13 @@ export const signInWithOTP = async (email: string) => {
 
 /**
  * Two-Factor Authentication: Verify password and send OTP
- * Simplified flow without session juggling:
- * 1. Verify credentials with password
- * 2. Send OTP for 2FA
- * 3. User verifies OTP to complete sign-in
+ * Clean flow to prevent session conflicts:
+ * 1. Verify credentials with password (creates temporary session)
+ * 2. Sign out temporary session immediately
+ * 3. Send OTP for 2FA
+ * 4. User verifies OTP to create the final session
  *
- * Note: We keep the temp session from password auth. When OTP is verified,
- * Supabase will naturally replace it with the OTP session.
+ * This ensures only ONE session exists at a time, preventing conflicts.
  */
 export const verifyCredentialsAndSendOTP = async (
   email: string,
@@ -345,6 +345,11 @@ export const verifyCredentialsAndSendOTP = async (
     console.warn('[Auth] Email not confirmed for user:', email)
   }
 
+  // Step 1.5: Sign out the temporary session to prevent conflicts
+  console.log('[Auth] Step 1.5: Clearing temporary session...')
+  await supabase.auth.signOut({ scope: 'local' })
+  console.log('[Auth] Temporary session cleared')
+
   // Step 2: Send OTP for 2FA
   console.log('[Auth] Step 2: Sending OTP...')
   const { error: otpError } = await supabase.auth.signInWithOtp({
@@ -363,10 +368,6 @@ export const verifyCredentialsAndSendOTP = async (
 
   // Reset rate limiter on successful flow
   rateLimiter.reset(credentialCheckKey)
-
-  // NOTE: We do NOT sign out here. The temp session from password auth will
-  // remain until OTP verification, which will replace it naturally.
-  // This prevents race conditions and state resets.
 
   return {
     needsEmailVerification: needsEmailVerification || false,
@@ -428,6 +429,7 @@ export const signOut = async () => {
   // Clear any 2FA flags
   if (typeof window !== 'undefined') {
     sessionStorage.removeItem('in2FAFlow')
+    sessionStorage.removeItem('in2FAFlowTimestamp')
     sessionStorage.removeItem('wasProcessing')
     sessionStorage.removeItem('uploadedFilesCache')
   }

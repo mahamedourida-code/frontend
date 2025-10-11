@@ -61,6 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('[AuthContext] Initializing auth...')
     let mounted = true
     let timeoutId: NodeJS.Timeout
+    let flagCleanupId: NodeJS.Timeout
 
     // CRITICAL: Set timeout to prevent stuck loading state
     // If session check takes >5 seconds, consider it failed and stop loading
@@ -70,6 +71,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false)
       }
     }, 5000) // 5 second timeout
+
+    // Safety mechanism: Clear stale 2FA flags after 10 minutes
+    // This handles cases where user abandons the 2FA flow
+    const check2FAFlagAge = () => {
+      if (typeof window !== 'undefined') {
+        const flagTimestamp = sessionStorage.getItem('in2FAFlowTimestamp')
+        const flag = sessionStorage.getItem('in2FAFlow')
+
+        if (flag === 'true' && flagTimestamp) {
+          const age = Date.now() - parseInt(flagTimestamp, 10)
+          const tenMinutes = 10 * 60 * 1000
+
+          if (age > tenMinutes) {
+            console.warn('[AuthContext] Clearing stale 2FA flag (older than 10 minutes)')
+            sessionStorage.removeItem('in2FAFlow')
+            sessionStorage.removeItem('in2FAFlowTimestamp')
+          }
+        }
+      }
+    }
+
+    // Check immediately and set interval to check every minute
+    check2FAFlagAge()
+    flagCleanupId = setInterval(check2FAFlagAge, 60000) // Check every minute
 
     // Get initial session with error handling
     supabase.auth.getSession()
@@ -161,6 +186,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Clear any remaining session flags
           if (typeof window !== 'undefined') {
             sessionStorage.removeItem('in2FAFlow')
+            sessionStorage.removeItem('in2FAFlowTimestamp')
           }
         }
       }
@@ -172,6 +198,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('[AuthContext] Cleaning up auth subscription')
       mounted = false
       clearTimeout(timeoutId)
+      clearInterval(flagCleanupId)
       subscription.unsubscribe()
     }
   }, []) // Empty dependency array to prevent loops
@@ -182,6 +209,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Clear session storage flags
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('in2FAFlow')
+      sessionStorage.removeItem('in2FAFlowTimestamp')
       sessionStorage.removeItem('wasProcessing')
       sessionStorage.removeItem('uploadedFilesCache')
     }
