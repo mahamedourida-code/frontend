@@ -61,7 +61,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('[AuthContext] Initializing auth...')
     let mounted = true
     let timeoutId: NodeJS.Timeout
-    let flagCleanupId: NodeJS.Timeout
 
     // CRITICAL: Set timeout to prevent stuck loading state
     // If session check takes >5 seconds, consider it failed and stop loading
@@ -72,29 +71,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }, 5000) // 5 second timeout
 
-    // Safety mechanism: Clear stale 2FA flags after 10 minutes
-    // This handles cases where user abandons the 2FA flow
-    const check2FAFlagAge = () => {
-      if (typeof window !== 'undefined') {
-        const flagTimestamp = sessionStorage.getItem('in2FAFlowTimestamp')
-        const flag = sessionStorage.getItem('in2FAFlow')
-
-        if (flag === 'true' && flagTimestamp) {
-          const age = Date.now() - parseInt(flagTimestamp, 10)
-          const tenMinutes = 10 * 60 * 1000
-
-          if (age > tenMinutes) {
-            console.warn('[AuthContext] Clearing stale 2FA flag (older than 10 minutes)')
-            sessionStorage.removeItem('in2FAFlow')
-            sessionStorage.removeItem('in2FAFlowTimestamp')
-          }
-        }
-      }
+    // Clean up any leftover session storage flags from previous 2FA implementations
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('in2FAFlow')
+      sessionStorage.removeItem('in2FAFlowTimestamp')
+      sessionStorage.removeItem('otpVerified')
     }
-
-    // Check immediately and set interval to check every minute
-    check2FAFlagAge()
-    flagCleanupId = setInterval(check2FAFlagAge, 60000) // Check every minute
 
     // Get initial session with error handling
     supabase.auth.getSession()
@@ -147,44 +129,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session?.user) {
         await fetchProfile(session.user.id)
 
-        // Handle SIGNED_IN event with proper 2FA detection
+        // Handle SIGNED_IN event - redirect from auth pages to dashboard
         if (event === 'SIGNED_IN') {
           const currentPath = typeof window !== 'undefined' ? window.location.pathname : ''
-          const in2FAFlow = typeof window !== 'undefined' && sessionStorage.getItem('in2FAFlow') === 'true'
-          const otpVerified = typeof window !== 'undefined' && sessionStorage.getItem('otpVerified') === 'true'
-
           console.log('[AuthContext] SIGNED_IN event, current path:', currentPath)
-          console.log('[AuthContext] Flags - in2FAFlow:', in2FAFlow, 'otpVerified:', otpVerified)
 
-          if (in2FAFlow || otpVerified) {
-            console.log('[AuthContext] 2FA flow complete - handling redirect')
+          // Redirect from auth pages to dashboard
+          const authPages = ['/sign-in', '/sign-up', '/verify-email']
+          const isOnAuthPage = authPages.some(page => currentPath?.includes(page))
 
-            // Wait a bit more for cookies to fully propagate to ensure
-            // the middleware can read them on the next server request
-            await new Promise(resolve => setTimeout(resolve, 300))
-
-            // Clear all 2FA flags now that we're about to redirect
-            if (typeof window !== 'undefined') {
-              sessionStorage.removeItem('in2FAFlow')
-              sessionStorage.removeItem('in2FAFlowTimestamp')
-              sessionStorage.removeItem('otpVerified')
-              console.log('[AuthContext] Cleared all 2FA flags')
-            }
-
-            // Now redirect - this is the single source of truth for 2FA redirect
-            console.log('[AuthContext] Redirecting to dashboard after 2FA...')
+          if (isOnAuthPage) {
+            console.log('[AuthContext] Redirecting authenticated user to dashboard...')
             router.push('/dashboard')
           } else {
-            // Normal sign-in flow (non-2FA) - redirect from auth pages to dashboard
-            const authPages = ['/sign-in', '/sign-up', '/verify-email']
-            const isOnAuthPage = authPages.some(page => currentPath?.includes(page))
-
-            if (isOnAuthPage) {
-              console.log('[AuthContext] Redirecting authenticated user to dashboard...')
-              router.push('/dashboard')
-            } else {
-              console.log('[AuthContext] User signed in, already on correct page:', currentPath)
-            }
+            console.log('[AuthContext] User signed in, already on correct page:', currentPath)
           }
         }
 
@@ -215,7 +173,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('[AuthContext] Cleaning up auth subscription')
       mounted = false
       clearTimeout(timeoutId)
-      clearInterval(flagCleanupId)
       subscription.unsubscribe()
     }
   }, []) // Empty dependency array to prevent loops

@@ -10,22 +10,18 @@ import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { signInSchema, verifyOTPSchema, type SignInInput, type VerifyOTPInput } from '@/lib/validations/auth'
-import { signInWithPassword, signInWithOTP, verifyOTP, verifyCredentialsAndSendOTP } from '@/lib/auth-helpers'
+import { signInSchema, type SignInInput } from '@/lib/validations/auth'
+import { signInWithPassword, signInWithOTP } from '@/lib/auth-helpers'
 import { createClient } from '@/utils/supabase/client'
-import { AlertCircle, Loader2, Mail, ArrowLeft, CheckCircle2, LogOut } from 'lucide-react'
+import { AlertCircle, Loader2, CheckCircle2, LogOut } from 'lucide-react'
 import { toast } from 'sonner'
 import { ThemeToggle } from '@/components/theme-toggle'
 
-type SignInStep = 'credentials' | 'otp-verify'
-
 export default function SignInPage() {
-  const [step, setStep] = useState<SignInStep>('credentials')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [email, setEmail] = useState('')
-  const [usePasswordless, setUsePasswordless] = useState(false) // Default to password + OTP (2FA)
-  const [isVerifying, setIsVerifying] = useState(false) // Track verification state
+  const [usePasswordless, setUsePasswordless] = useState(false) // Default to password authentication
   const [isAlreadyAuthenticated, setIsAlreadyAuthenticated] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -54,27 +50,17 @@ export default function SignInPage() {
     }
   }, [searchParams])
 
-  // Cleanup effect: Clear 2FA flag on component unmount and detect stale flags
+  // Cleanup effect: Clean up any leftover session storage on component unmount
   useEffect(() => {
-    // On mount: Check if we're in OTP step but flag is missing
-    // This can happen if user refreshed during 2FA flow
-    if (step === 'credentials' && typeof window !== 'undefined') {
-      const hasStaleFlag = sessionStorage.getItem('in2FAFlow') === 'true'
-      if (hasStaleFlag) {
-        console.log('[SignIn] Detected stale 2FA flag, clearing...')
-        sessionStorage.removeItem('in2FAFlow')
-        sessionStorage.removeItem('in2FAFlowTimestamp')
-      }
-    }
-
     return () => {
-      // Clear flag when navigating away from sign-in page
-      if (typeof window !== 'undefined' && step !== 'otp-verify') {
+      // Clear any leftover session storage when navigating away
+      if (typeof window !== 'undefined') {
         sessionStorage.removeItem('in2FAFlow')
         sessionStorage.removeItem('in2FAFlowTimestamp')
+        sessionStorage.removeItem('otpVerified')
       }
     }
-  }, [step])
+  }, [])
 
   const {
     register: registerSignIn,
@@ -84,58 +70,30 @@ export default function SignInPage() {
     resolver: zodResolver(signInSchema),
   })
 
-  const {
-    register: registerOTP,
-    handleSubmit: handleOTPSubmit,
-    formState: { errors: otpErrors },
-    setValue: setOTPValue,
-  } = useForm<VerifyOTPInput>({
-    resolver: zodResolver(verifyOTPSchema),
-  })
-
-  // Handle password sign-in with 2FA OTP
+  // Handle password sign-in (direct authentication without OTP)
   const onSignInSubmit = async (data: SignInInput) => {
-    // Set flag FIRST to prevent auto-redirect during 2FA flow
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('in2FAFlow', 'true')
-      sessionStorage.setItem('in2FAFlowTimestamp', Date.now().toString())
-    }
-
     setLoading(true)
     setError(null)
     setEmail(data.email)
 
     try {
-      // Verify password and send OTP for 2FA
       if (!data.password) {
-        // Clear flag on early return
-        if (typeof window !== 'undefined') {
-          sessionStorage.removeItem('in2FAFlow')
-          sessionStorage.removeItem('in2FAFlowTimestamp')
-        }
         setError('Password is required')
         setLoading(false)
         return
       }
 
-      await verifyCredentialsAndSendOTP(data.email, data.password)
+      // Direct sign-in with password (no OTP required)
+      await signInWithPassword(data.email, data.password)
 
-      toast.success('Verification code sent!', {
-        description: 'Check your email for a 6-digit code.',
+      toast.success('Signed in successfully!', {
+        description: 'Redirecting to dashboard...',
       })
 
-      // Move to OTP verification step
-      setStep('otp-verify')
-      setLoading(false)
+      // The AuthContext will handle the redirect to dashboard
+      // No need to manually redirect here
     } catch (err: any) {
       console.error('Sign in error:', err)
-
-      // Clear 2FA flag on error
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('in2FAFlow')
-        sessionStorage.removeItem('in2FAFlowTimestamp')
-      }
-
       setError(err.message || 'Invalid email or password')
       toast.error('Sign in failed', {
         description: err.message || 'Please check your credentials',
@@ -173,125 +131,6 @@ export default function SignInPage() {
     }
   }
 
-  // Handle OTP verification
-  const onOTPSubmit = async (data: VerifyOTPInput) => {
-    // Prevent multiple simultaneous verification attempts
-    if (isVerifying || loading) {
-      console.log('[OTP] Verification already in progress, skipping...')
-      return
-    }
-
-    console.log('[OTP] Starting verification for email:', email)
-    setIsVerifying(true)
-    setLoading(true)
-    setError(null)
-
-    try {
-      console.log('[OTP] Calling verifyOTP with code:', data.otp)
-      const result = await verifyOTP(email, data.otp)
-      console.log('[OTP] Verification result:', {
-        hasSession: !!result.session,
-        hasUser: !!result.user,
-        userEmail: result.user?.email
-      })
-
-      // Check if session exists OR if user is authenticated
-      if (result.session || result.user) {
-        console.log('[OTP] ✓ Verification successful, session created')
-        console.log('[OTP] Waiting for cookies to be processed...')
-
-        // CRITICAL: Wait for browser to process httpOnly cookies
-        // Before any navigation happens, give cookies time to set
-        await new Promise(resolve => setTimeout(resolve, 500))
-
-        // Mark verification complete - let AuthContext handle redirect
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('otpVerified', 'true')
-          console.log('[OTP] Set otpVerified flag, AuthContext will handle redirect')
-        }
-
-        toast.success('Email verified!', {
-          description: 'Redirecting to dashboard...',
-        })
-
-        // Don't redirect here - AuthContext will handle it
-        // Just keep showing loading state
-      } else {
-        // Verification succeeded but no session - this shouldn't happen
-        console.error('[OTP] ⚠ Verification succeeded but no session was created')
-
-        setError('Verification succeeded but session was not created. Please try signing in again.')
-        toast.error('Session error', {
-          description: 'Please try signing in again',
-        })
-        setLoading(false)
-        setIsVerifying(false)
-      }
-    } catch (err: any) {
-      console.error('[OTP] ✗ Verification error:', err)
-
-      // Clear flags on error
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('in2FAFlow')
-        sessionStorage.removeItem('in2FAFlowTimestamp')
-      }
-
-      // Handle specific error types for better UX
-      let errorMessage = err.message || 'Invalid verification code'
-      let toastDescription = 'Please check your code and try again'
-
-      if (err.message?.includes('expired')) {
-        errorMessage = 'Verification code has expired'
-        toastDescription = 'Please request a new code'
-      } else if (err.message?.includes('too many')) {
-        errorMessage = 'Too many attempts'
-        toastDescription = 'Please wait before trying again'
-      }
-
-      setError(errorMessage)
-      toast.error('Verification failed', {
-        description: toastDescription,
-      })
-      setLoading(false)
-      setIsVerifying(false)
-    }
-  }
-
-  // Resend OTP
-  const handleResendOTP = async () => {
-    if (loading) {
-      console.log('Request already in progress, skipping resend...')
-      return
-    }
-
-    setLoading(true)
-    setError(null)
-
-    try {
-      await signInWithOTP(email)
-
-      toast.success('Code resent!', {
-        description: 'Check your email for a new 6-digit code.',
-      })
-    } catch (err: any) {
-      console.error('Resend error:', err)
-      
-      let errorMessage = err.message || 'Failed to resend code'
-      let toastDescription = err.message || 'Please try again'
-
-      if (err.message?.includes('Too many attempts')) {
-        errorMessage = 'Rate limit exceeded'
-        toastDescription = 'Please wait before requesting another code'
-      }
-
-      setError(errorMessage)
-      toast.error('Failed to resend', {
-        description: toastDescription,
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
 
   // Handle Google Sign-in
   const handleGoogleSignIn = async () => {
@@ -335,114 +174,7 @@ export default function SignInPage() {
     }
   }
 
-  // Handle OTP input change (no auto-submit)
-  const handleOTPChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 6)
-    setOTPValue('otp', value)
-    // User must click "Verify" button manually - no auto-submit
-  }
 
-  // Render OTP Verification Step
-  if (step === 'otp-verify') {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-muted/80">
-        <div className="fixed top-4 right-4 z-50">
-          <ThemeToggle />
-        </div>
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-              <Mail className="w-8 h-8 text-primary" />
-            </div>
-            <CardTitle className="text-2xl">
-              {usePasswordless ? 'Verify Your Email' : 'Two-Factor Verification'}
-            </CardTitle>
-            <CardDescription>
-              We've sent a 6-digit verification code to your email
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <form onSubmit={handleOTPSubmit(onOTPSubmit)} className="space-y-4">
-              {/* OTP Input */}
-              <div className="space-y-2">
-                <Label htmlFor="otp">Verification Code</Label>
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  id="otp"
-                  placeholder="000000"
-                  {...registerOTP('otp')}
-                  onChange={handleOTPChange}
-                  maxLength={6}
-                  className="text-center text-2xl tracking-[0.5em] font-mono"
-                  disabled={loading}
-                  autoComplete="off"
-                  autoFocus
-                />
-                {otpErrors.otp && (
-                  <p className="text-sm text-destructive flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {otpErrors.otp.message}
-                  </p>
-                )}
-                <p className="text-xs text-muted-foreground text-center">
-                  Enter the 6-digit code from your email
-                </p>
-              </div>
-
-              {/* Error Message */}
-              {error && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-
-              {/* Submit Button */}
-              <Button className="w-full" size="lg" type="submit" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading ? 'Verifying...' : 'Verify & Sign In'}
-              </Button>
-            </form>
-
-            {/* Resend Code */}
-            <div className="text-center space-y-3">
-              <div className="text-sm text-muted-foreground">
-                Didn't receive the code?{' '}
-                <button
-                  onClick={handleResendOTP}
-                  disabled={loading}
-                  className="text-primary hover:text-primary/80 font-semibold underline-offset-4 hover:underline disabled:opacity-50"
-                >
-                  {loading ? 'Sending...' : 'Resend Code'}
-                </button>
-              </div>
-
-              {/* Back to Sign In */}
-              <button
-                onClick={() => {
-                  // Clear 2FA flag when going back
-                  if (typeof window !== 'undefined') {
-                    sessionStorage.removeItem('in2FAFlow')
-                    sessionStorage.removeItem('in2FAFlowTimestamp')
-                  }
-                  setStep('credentials')
-                  setError(null)
-                  setLoading(false)
-                  setIsVerifying(false)
-                }}
-                className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4 mr-1" />
-                Back to Sign In
-              </button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
 
   // Show "Already Authenticated" message if user is logged in
   if (isAlreadyAuthenticated) {
@@ -551,9 +283,6 @@ export default function SignInPage() {
                     {signInErrors.password.message}
                   </p>
                 )}
-                <p className="text-xs text-muted-foreground">
-                  You'll receive a verification code after entering your password
-                </p>
               </div>
             )}
 
