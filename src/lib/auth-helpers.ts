@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/client'
 
-// Create a single Supabase client instance using SSR-compatible client
-const supabase = createClient()
+// Note: We create client instances on-demand rather than a singleton
+// This ensures proper SSR behavior and avoids stale sessions
 
 /**
  * Rate limiting helper to prevent brute force attacks
@@ -119,6 +119,7 @@ export const checkUserExists = async (email: string): Promise<boolean> => {
  * Send verification email with OTP
  */
 export const sendVerificationEmail = async (email: string) => {
+  const supabase = createClient()
   const { data, error } = await supabase.auth.signInWithOtp({
     email,
     options: {
@@ -147,6 +148,7 @@ export const verifyOTP = async (email: string, token: string) => {
   }
 
   try {
+    const supabase = createClient()
     const { data, error } = await supabase.auth.verifyOtp({
       email,
       token,
@@ -218,7 +220,8 @@ export const signUpWithEmailVerification = async (
   }
 
   // Sign up with Supabase - this creates the user with password
-  const { data, error } = await supabase.auth.signUp({
+  const supabase = createClient()
+  const { data, error} = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -251,6 +254,7 @@ export const signInWithPassword = async (email: string, password: string) => {
     )
   }
 
+  const supabase = createClient()
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -278,6 +282,7 @@ export const signInWithOTP = async (email: string) => {
     )
   }
 
+  const supabase = createClient()
   const { data, error } = await supabase.auth.signInWithOtp({
     email,
     options: {
@@ -304,6 +309,8 @@ export const verifyCredentialsAndSendOTP = async (
   email: string,
   password: string
 ) => {
+  const supabase = createClient()
+
   // Check rate limiting - use different key for credential check vs OTP send
   const credentialCheckKey = `2fa-verify-${email}`
   if (rateLimiter.isRateLimited(credentialCheckKey)) {
@@ -365,6 +372,7 @@ export const requestPasswordReset = async (email: string) => {
     )
   }
 
+  const supabase = createClient()
   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/reset-password`,
   })
@@ -385,6 +393,7 @@ export const updatePassword = async (newPassword: string) => {
     throw new Error(passwordValidation.errors[0])
   }
 
+  const supabase = createClient()
   const { data, error } = await supabase.auth.updateUser({
     password: newPassword,
   })
@@ -400,6 +409,7 @@ export const updatePassword = async (newPassword: string) => {
  * Sign out
  */
 export const signOut = async () => {
+  const supabase = createClient()
   const { error } = await supabase.auth.signOut()
 
   if (error) {
@@ -411,6 +421,7 @@ export const signOut = async () => {
  * Get current user
  */
 export const getCurrentUser = async () => {
+  const supabase = createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
 
   if (error) {
@@ -424,6 +435,7 @@ export const getCurrentUser = async () => {
  * Get current session
  */
 export const getCurrentSession = async () => {
+  const supabase = createClient()
   const { data: { session }, error } = await supabase.auth.getSession()
 
   if (error) {

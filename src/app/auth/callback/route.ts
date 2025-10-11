@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { Database } from '@/types/database'
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
@@ -7,36 +8,37 @@ export async function GET(request: NextRequest) {
   const next = requestUrl.searchParams.get('next') || '/dashboard'
 
   if (code) {
-    const supabase = createClient(
+    // Create response object first
+    let response = NextResponse.redirect(`${requestUrl.origin}${next}`)
+
+    // Create Supabase server client with proper cookie handling
+    const supabase = createServerClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll()
+          },
+          setAll(cookiesToSet) {
+            // Set cookies on the response object
+            cookiesToSet.forEach(({ name, value, options }) => {
+              response.cookies.set(name, value, options)
+            })
+          },
+        },
+      }
     )
 
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+    // Exchange code for session - SSR client handles cookies automatically
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
 
-    if (!error && data.session) {
-      // Create response with redirect
-      const response = NextResponse.redirect(`${requestUrl.origin}${next}`)
-
-      // Set session cookies
-      response.cookies.set('sb-access-token', data.session.access_token, {
-        path: '/',
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      })
-
-      response.cookies.set('sb-refresh-token', data.session.refresh_token, {
-        path: '/',
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      })
-
+    if (!error) {
+      // Success - cookies already set by SSR client
       return response
     }
+
+    console.error('[Auth Callback] Error exchanging code for session:', error)
   }
 
   // Redirect to error page if something went wrong
