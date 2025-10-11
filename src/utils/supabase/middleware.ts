@@ -37,12 +37,31 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // IMPORTANT: Avoid writing any logic between createServerClient and
-  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
-  const {
-    data: { user }
-  } = await supabase.auth.getUser()
+  let user = null
+  try {
+    // IMPORTANT: Avoid writing any logic between createServerClient and
+    // supabase.auth.getUser(). A simple mistake could make it very hard to debug
+    // issues with users being randomly logged out.
+    const { data, error } = await supabase.auth.getUser()
+
+    if (error) {
+      if (DEBUG_AUTH) {
+        console.warn('[Middleware] Error getting user:', error.message)
+      }
+      // Clear potentially corrupted session
+      supabaseResponse.cookies.delete('sb-access-token')
+      supabaseResponse.cookies.delete('sb-refresh-token')
+    } else {
+      user = data.user
+    }
+  } catch (error) {
+    if (DEBUG_AUTH) {
+      console.error('[Middleware] Exception getting user:', error)
+    }
+    // Clear session on exception
+    supabaseResponse.cookies.delete('sb-access-token')
+    supabaseResponse.cookies.delete('sb-refresh-token')
+  }
 
   if (DEBUG_AUTH) {
     console.log('[Middleware] User authenticated:', !!user, user?.email || 'none')

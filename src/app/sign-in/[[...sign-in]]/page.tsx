@@ -16,30 +16,19 @@ import { createClient } from '@/utils/supabase/client'
 import { AlertCircle, Loader2, CheckCircle2, LogOut } from 'lucide-react'
 import { toast } from 'sonner'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function SignInPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [email, setEmail] = useState('')
   const [usePasswordless, setUsePasswordless] = useState(false) // Default to password authentication
-  const [isAlreadyAuthenticated, setIsAlreadyAuthenticated] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // Initialize Supabase client
-  const supabase = createClient()
-
-  // Check if user is already authenticated
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session?.user) {
-        console.log('[SignIn] User already authenticated:', session.user.email)
-        setIsAlreadyAuthenticated(true)
-      }
-    }
-    checkAuth()
-  }, [supabase])
+  // Use auth context instead of creating our own client
+  const { user, loading: authLoading, signOut } = useAuth()
+  const supabase = createClient() // Only for OAuth, main auth handled by context
 
   // Show success message if user just verified their email
   useEffect(() => {
@@ -70,8 +59,9 @@ export default function SignInPage() {
     resolver: zodResolver(signInSchema),
   })
 
-  // Handle password sign-in (direct authentication without OTP)
-  const onSignInSubmit = async (data: SignInInput) => {
+  // Handle password sign-in with retry mechanism
+  const onSignInSubmit = async (data: SignInInput, retryCount = 0) => {
+    const maxRetries = 2
     setLoading(true)
     setError(null)
     setEmail(data.email)
@@ -83,6 +73,8 @@ export default function SignInPage() {
         return
       }
 
+      console.log('[SignIn] Attempting sign-in...', retryCount > 0 ? `(retry ${retryCount})` : '')
+
       // Direct sign-in with password (no OTP required)
       await signInWithPassword(data.email, data.password)
 
@@ -90,13 +82,43 @@ export default function SignInPage() {
         description: 'Redirecting to dashboard...',
       })
 
-      // The AuthContext will handle the redirect to dashboard
-      // No need to manually redirect here
+      // AuthContext will handle the redirect automatically
+      console.log('[SignIn] Sign-in successful, waiting for redirect...')
+
     } catch (err: any) {
       console.error('Sign in error:', err)
-      setError(err.message || 'Invalid email or password')
+
+      // Retry logic for network-related errors
+      if (retryCount < maxRetries &&
+          (err.message?.includes('network') ||
+           err.message?.includes('timeout') ||
+           err.message?.includes('fetch'))) {
+
+        console.log(`[SignIn] Retrying sign-in (${retryCount + 1}/${maxRetries})...`)
+        toast.info(`Retrying... (${retryCount + 1}/${maxRetries})`)
+
+        // Exponential backoff
+        setTimeout(() => {
+          onSignInSubmit(data, retryCount + 1)
+        }, 1000 * (retryCount + 1))
+        return
+      }
+
+      // Handle specific error types
+      let errorMessage = 'Invalid email or password'
+      if (err.message?.includes('Invalid login credentials')) {
+        errorMessage = 'Invalid email or password. Please check your credentials.'
+      } else if (err.message?.includes('too many')) {
+        errorMessage = 'Too many attempts. Please wait before trying again.'
+      } else if (err.message?.includes('network')) {
+        errorMessage = 'Network error. Please check your connection and try again.'
+      } else if (err.message) {
+        errorMessage = err.message
+      }
+
+      setError(errorMessage)
       toast.error('Sign in failed', {
-        description: err.message || 'Please check your credentials',
+        description: errorMessage,
       })
       setLoading(false)
     }
@@ -176,8 +198,28 @@ export default function SignInPage() {
 
 
 
+  // Show loading state while auth context is initializing
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-muted/80">
+        <div className="fixed top-4 right-4 z-50">
+          <ThemeToggle />
+        </div>
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Loading...</CardTitle>
+            <CardDescription>Checking authentication status</CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            <Loader2 className="h-8 w-8 animate-spin" />
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   // Show "Already Authenticated" message if user is logged in
-  if (isAlreadyAuthenticated) {
+  if (user) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-muted/80">
         <div className="fixed top-4 right-4 z-50">
@@ -190,7 +232,7 @@ export default function SignInPage() {
             </div>
             <CardTitle className="text-2xl">Already Signed In</CardTitle>
             <CardDescription>
-              You're currently signed in. Choose an option below.
+              You're currently signed in as {user.email}. Choose an option below.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -207,8 +249,7 @@ export default function SignInPage() {
               size="lg"
               onClick={async () => {
                 try {
-                  await supabase.auth.signOut()
-                  setIsAlreadyAuthenticated(false)
+                  await signOut() // Use auth context signOut
                   toast.success('Signed out successfully')
                 } catch (err) {
                   toast.error('Failed to sign out')
@@ -301,10 +342,10 @@ export default function SignInPage() {
               size="lg"
               type={usePasswordless ? 'button' : 'submit'}
               onClick={usePasswordless ? () => handlePasswordlessSignIn() : undefined}
-              disabled={loading}
+              disabled={loading || authLoading}
             >
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {loading ? 'Verifying...' : (usePasswordless ? 'Send verification code' : 'Sign in')}
+              {(loading || authLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {(loading || authLoading) ? 'Signing in...' : (usePasswordless ? 'Send verification code' : 'Sign in')}
             </Button>
 
             {/* Toggle between password and passwordless */}

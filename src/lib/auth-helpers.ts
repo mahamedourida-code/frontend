@@ -1,7 +1,6 @@
-import { createClient } from '@/utils/supabase/client'
+import { createClient, resetClient } from '@/utils/supabase/client'
 
-// Note: We create client instances on-demand rather than a singleton
-// This ensures proper SSR behavior and avoids stale sessions
+// Using singleton client pattern for consistent auth state
 
 /**
  * Rate limiting helper to prevent brute force attacks
@@ -418,30 +417,70 @@ export const updatePassword = async (newPassword: string) => {
 }
 
 /**
- * Sign out - fully clear all session data
+ * Sign out - fully clear all session data and reset client
  */
 export const signOut = async () => {
   const supabase = createClient()
 
-  // Clear any 2FA flags
-  if (typeof window !== 'undefined') {
-    sessionStorage.removeItem('in2FAFlow')
-    sessionStorage.removeItem('in2FAFlowTimestamp')
-    sessionStorage.removeItem('wasProcessing')
-    sessionStorage.removeItem('uploadedFilesCache')
-  }
+  console.log('[Auth] Starting comprehensive sign out...')
 
-  // Sign out from Supabase - this clears all auth cookies
-  const { error } = await supabase.auth.signOut({
-    scope: 'local' // Only sign out from this device
-  })
+  try {
+    // Sign out from Supabase first
+    const { error } = await supabase.auth.signOut({
+      scope: 'local' // Only sign out from this device
+    })
 
-  if (error) {
-    console.error('[Auth] Sign out error:', error)
+    if (error) {
+      console.error('[Auth] Supabase sign out error:', error)
+      // Don't throw here - continue with cleanup even if Supabase signOut fails
+    }
+
+    // Comprehensive client-side cleanup
+    if (typeof window !== 'undefined') {
+      // Clear all session storage items
+      const keysToRemove = [
+        'in2FAFlow',
+        'in2FAFlowTimestamp',
+        'otpVerified',
+        'wasProcessing',
+        'uploadedFilesCache',
+        'olmocr-supabase-auth-token', // Our custom storage key
+      ]
+
+      keysToRemove.forEach(key => {
+        sessionStorage.removeItem(key)
+        localStorage.removeItem(key)
+      })
+
+      // Clear all Supabase-related localStorage items
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('supabase.') || key.includes('supabase')) {
+          localStorage.removeItem(key)
+        }
+      })
+
+      // Clear any cached data
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          names.forEach(name => {
+            if (name.includes('supabase') || name.includes('auth')) {
+              caches.delete(name)
+            }
+          })
+        })
+      }
+    }
+
+    // Reset the singleton client to force fresh instance on next auth
+    resetClient()
+
+    console.log('[Auth] Comprehensive sign out completed successfully')
+  } catch (error) {
+    console.error('[Auth] Error during sign out cleanup:', error)
+    // Even if cleanup fails, reset the client
+    resetClient()
     throw error
   }
-
-  console.log('[Auth] Sign out successful')
 }
 
 /**
