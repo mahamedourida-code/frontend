@@ -70,16 +70,14 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Redirect authenticated users trying to access auth pages
-  // UNLESS they're in the middle of a 2FA flow
+  // Allow authenticated users to visit auth pages
+  // The page component will show "Already Authenticated" UI
   if (user && isPublicPath) {
     if (DEBUG_AUTH) {
       console.log('[Middleware] Authenticated user accessing auth page:', pathname)
-      console.log('[Middleware] Redirecting to /dashboard')
+      console.log('[Middleware] Allowing access - page will handle UI')
     }
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
+    // Don't redirect - let the page show appropriate UI for authenticated users
   }
 
   if (DEBUG_AUTH && (isProtectedPath || isPublicPath)) {
