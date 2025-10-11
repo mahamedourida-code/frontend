@@ -13,7 +13,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { signInSchema, verifyOTPSchema, type SignInInput, type VerifyOTPInput } from '@/lib/validations/auth'
 import { signInWithPassword, signInWithOTP, verifyOTP, verifyCredentialsAndSendOTP } from '@/lib/auth-helpers'
 import { createClient } from '@/utils/supabase/client'
-import { AlertCircle, Loader2, Mail, ArrowLeft, CheckCircle2 } from 'lucide-react'
+import { AlertCircle, Loader2, Mail, ArrowLeft, CheckCircle2, LogOut } from 'lucide-react'
 import { toast } from 'sonner'
 import { ThemeToggle } from '@/components/theme-toggle'
 
@@ -26,11 +26,24 @@ export default function SignInPage() {
   const [email, setEmail] = useState('')
   const [usePasswordless, setUsePasswordless] = useState(false) // Default to password + OTP (2FA)
   const [isVerifying, setIsVerifying] = useState(false) // Track verification state
+  const [isAlreadyAuthenticated, setIsAlreadyAuthenticated] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
-  
+
   // Initialize Supabase client
   const supabase = createClient()
+
+  // Check if user is already authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.user) {
+        console.log('[SignIn] User already authenticated:', session.user.email)
+        setIsAlreadyAuthenticated(true)
+      }
+    }
+    checkAuth()
+  }, [supabase])
 
   // Show success message if user just verified their email
   useEffect(() => {
@@ -409,6 +422,54 @@ export default function SignInPage() {
                 Back to Sign In
               </button>
             </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // Show "Already Authenticated" message if user is logged in
+  if (isAlreadyAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-muted/80">
+        <div className="fixed top-4 right-4 z-50">
+          <ThemeToggle />
+        </div>
+        <Card className="w-full max-w-md border-2 border-primary/30">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+              <CheckCircle2 className="w-8 h-8 text-primary" />
+            </div>
+            <CardTitle className="text-2xl">Already Signed In</CardTitle>
+            <CardDescription>
+              You're currently signed in. Choose an option below.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button
+              className="w-full"
+              size="lg"
+              onClick={() => router.push('/dashboard')}
+            >
+              Go to Dashboard
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              size="lg"
+              onClick={async () => {
+                try {
+                  await supabase.auth.signOut()
+                  setIsAlreadyAuthenticated(false)
+                  toast.success('Signed out successfully')
+                } catch (err) {
+                  toast.error('Failed to sign out')
+                }
+              }}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out & Sign In as Different User
+            </Button>
           </CardContent>
         </Card>
       </div>

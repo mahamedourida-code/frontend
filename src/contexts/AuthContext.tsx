@@ -122,26 +122,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session?.user) {
         await fetchProfile(session.user.id)
 
-        // If user just signed in and we're on auth page, redirect to dashboard
-        // BUT: Skip auto-redirect if we're in the middle of 2FA flow
+        // Handle SIGNED_IN event with proper 2FA detection
         if (event === 'SIGNED_IN') {
           const currentPath = typeof window !== 'undefined' ? window.location.pathname : ''
           console.log('[AuthContext] SIGNED_IN event, current path:', currentPath)
 
+          // Check if we're in 2FA flow
           const in2FAFlow = typeof window !== 'undefined' && sessionStorage.getItem('in2FAFlow') === 'true'
 
           if (in2FAFlow) {
-            console.log('[AuthContext] In 2FA flow, skipping auto-redirect')
+            console.log('[AuthContext] In 2FA flow - skipping auto-redirect')
+            // Don't redirect, user is still completing 2FA
           } else {
+            // Normal sign-in flow - redirect from auth pages to dashboard
             const authPages = ['/sign-in', '/sign-up', '/verify-email']
-            if (authPages.some(page => currentPath?.includes(page))) {
-              console.log('[AuthContext] Redirecting to dashboard...')
+            const isOnAuthPage = authPages.some(page => currentPath?.includes(page))
+
+            if (isOnAuthPage) {
+              console.log('[AuthContext] Redirecting authenticated user to dashboard...')
               router.push('/dashboard')
+            } else {
+              console.log('[AuthContext] User signed in, already on correct page:', currentPath)
             }
           }
         }
+
+        // Handle TOKEN_REFRESHED event
+        if (event === 'TOKEN_REFRESHED') {
+          console.log('[AuthContext] Token refreshed successfully')
+        }
       } else {
+        // No session - clear profile
         setProfile(null)
+
+        // Handle SIGNED_OUT event
+        if (event === 'SIGNED_OUT') {
+          console.log('[AuthContext] User signed out')
+          // Clear any remaining session flags
+          if (typeof window !== 'undefined') {
+            sessionStorage.removeItem('in2FAFlow')
+          }
+        }
       }
 
       setLoading(false)
@@ -156,10 +177,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []) // Empty dependency array to prevent loops
 
   const signOut = async () => {
-    await supabase.auth.signOut()
+    console.log('[AuthContext] Signing out...')
+
+    // Clear session storage flags
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('in2FAFlow')
+      sessionStorage.removeItem('wasProcessing')
+      sessionStorage.removeItem('uploadedFilesCache')
+    }
+
+    // Sign out from Supabase
+    await supabase.auth.signOut({
+      scope: 'local'
+    })
+
+    // Clear state
     setUser(null)
     setSession(null)
     setProfile(null)
+
+    console.log('[AuthContext] Sign out complete')
   }
 
   return (

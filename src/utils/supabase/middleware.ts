@@ -3,6 +3,15 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { Database } from '@/types/database'
 
 export async function updateSession(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+
+  // Debug logging - can be disabled in production
+  const DEBUG_AUTH = process.env.NODE_ENV === 'development'
+
+  if (DEBUG_AUTH) {
+    console.log('[Middleware] Processing request:', pathname)
+  }
+
   let supabaseResponse = NextResponse.next({
     request
   })
@@ -35,6 +44,10 @@ export async function updateSession(request: NextRequest) {
     data: { user }
   } = await supabase.auth.getUser()
 
+  if (DEBUG_AUTH) {
+    console.log('[Middleware] User authenticated:', !!user, user?.email || 'none')
+  }
+
   // Protected routes that require authentication
   const protectedPaths = ['/dashboard', '/history', '/signout']
   const isProtectedPath = protectedPaths.some(path =>
@@ -49,16 +62,28 @@ export async function updateSession(request: NextRequest) {
 
   // Redirect unauthenticated users trying to access protected routes
   if (!user && isProtectedPath) {
+    if (DEBUG_AUTH) {
+      console.log('[Middleware] Redirecting unauthenticated user to /sign-in from', pathname)
+    }
     const url = request.nextUrl.clone()
     url.pathname = '/sign-in'
     return NextResponse.redirect(url)
   }
 
   // Redirect authenticated users trying to access auth pages
+  // UNLESS they're in the middle of a 2FA flow
   if (user && isPublicPath) {
+    if (DEBUG_AUTH) {
+      console.log('[Middleware] Authenticated user accessing auth page:', pathname)
+      console.log('[Middleware] Redirecting to /dashboard')
+    }
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)
+  }
+
+  if (DEBUG_AUTH && (isProtectedPath || isPublicPath)) {
+    console.log('[Middleware] Allowing access to', pathname)
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.

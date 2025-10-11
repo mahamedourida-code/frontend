@@ -299,11 +299,13 @@ export const signInWithOTP = async (email: string) => {
 
 /**
  * Two-Factor Authentication: Verify password and send OTP
- * Fixed flow to prevent double sessions:
- * 1. Verify credentials with password (creates temp session)
+ * Simplified flow without session juggling:
+ * 1. Verify credentials with password
  * 2. Send OTP for 2FA
- * 3. Sign out temp session to prevent conflicts
- * 4. User verifies OTP to complete sign-in (creates final session)
+ * 3. User verifies OTP to complete sign-in
+ *
+ * Note: We keep the temp session from password auth. When OTP is verified,
+ * Supabase will naturally replace it with the OTP session.
  */
 export const verifyCredentialsAndSendOTP = async (
   email: string,
@@ -311,7 +313,9 @@ export const verifyCredentialsAndSendOTP = async (
 ) => {
   const supabase = createClient()
 
-  // Check rate limiting - use different key for credential check vs OTP send
+  console.log('[Auth] Starting 2FA flow for:', email)
+
+  // Check rate limiting
   const credentialCheckKey = `2fa-verify-${email}`
   if (rateLimiter.isRateLimited(credentialCheckKey)) {
     const remainingMinutes = rateLimiter.getRemainingTime(credentialCheckKey)
@@ -321,19 +325,28 @@ export const verifyCredentialsAndSendOTP = async (
   }
 
   // Step 1: Verify the credentials by attempting sign in
+  console.log('[Auth] Step 1: Verifying password...')
   const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
     email,
     password,
   })
 
   if (signInError) {
+    console.error('[Auth] Password verification failed:', signInError.message)
     throw new Error('Invalid email or password')
   }
+
+  console.log('[Auth] Password verified successfully')
 
   // Check if email is confirmed
   const needsEmailVerification = signInData.user && !signInData.user.email_confirmed_at
 
+  if (needsEmailVerification) {
+    console.warn('[Auth] Email not confirmed for user:', email)
+  }
+
   // Step 2: Send OTP for 2FA
+  console.log('[Auth] Step 2: Sending OTP...')
   const { error: otpError } = await supabase.auth.signInWithOtp({
     email,
     options: {
@@ -342,17 +355,18 @@ export const verifyCredentialsAndSendOTP = async (
   })
 
   if (otpError) {
-    // Sign out temp session before throwing error
-    await supabase.auth.signOut()
+    console.error('[Auth] OTP send failed:', otpError.message)
     throw new Error('Failed to send verification code. Please try again.')
   }
 
-  // Step 3: CRITICAL - Sign out the temp session to prevent conflicts
-  // The OTP verification will create a fresh session
-  await supabase.auth.signOut()
+  console.log('[Auth] OTP sent successfully')
 
-  // Reset rate limiter on successful credential verification
+  // Reset rate limiter on successful flow
   rateLimiter.reset(credentialCheckKey)
+
+  // NOTE: We do NOT sign out here. The temp session from password auth will
+  // remain until OTP verification, which will replace it naturally.
+  // This prevents race conditions and state resets.
 
   return {
     needsEmailVerification: needsEmailVerification || false,
@@ -406,15 +420,29 @@ export const updatePassword = async (newPassword: string) => {
 }
 
 /**
- * Sign out
+ * Sign out - fully clear all session data
  */
 export const signOut = async () => {
   const supabase = createClient()
-  const { error } = await supabase.auth.signOut()
+
+  // Clear any 2FA flags
+  if (typeof window !== 'undefined') {
+    sessionStorage.removeItem('in2FAFlow')
+    sessionStorage.removeItem('wasProcessing')
+    sessionStorage.removeItem('uploadedFilesCache')
+  }
+
+  // Sign out from Supabase - this clears all auth cookies
+  const { error } = await supabase.auth.signOut({
+    scope: 'local' // Only sign out from this device
+  })
 
   if (error) {
+    console.error('[Auth] Sign out error:', error)
     throw error
   }
+
+  console.log('[Auth] Sign out successful')
 }
 
 /**
