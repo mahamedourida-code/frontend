@@ -46,22 +46,38 @@ function HistoryContent() {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
 
-  const handleDownload = async (resultUrl: string, filename: string) => {
+  const handleDownload = async (job: HistoryJob) => {
     try {
-      const fileId = resultUrl.includes('supabase')
-        ? resultUrl.split('/').pop()
-        : resultUrl.replace('/api/v1/download/', '')
+      let blob: Blob;
+      
+      // Check if we have storage files in metadata (new format with Supabase Storage)
+      const storageFiles = job.metadata?.storage_files;
+      if (storageFiles && storageFiles.length > 0) {
+        // Download from Supabase Storage using storage path
+        const storagePath = storageFiles[0].storage_path;
+        blob = await ocrApi.downloadFromStorage(storagePath);
+      } else if (job.result_url) {
+        // Legacy download from local storage
+        const fileId = job.result_url.includes('supabase')
+          ? job.result_url.split('/').pop()
+          : job.result_url.replace('/api/v1/download/', '')
 
-      if (!fileId) {
-        toast.error('Invalid download URL')
+        if (!fileId) {
+          toast.error('Invalid download URL')
+          return
+        }
+
+        blob = await ocrApi.downloadFile(fileId)
+      } else {
+        toast.error('No download URL available')
         return
       }
 
-      const blob = await ocrApi.downloadFile(fileId)
+      // Create download link
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = filename || `${fileId}.xlsx`
+      link.download = job.filename || `job_${job.job_id}.xlsx`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -171,11 +187,11 @@ function HistoryContent() {
         const job = row.original
         return (
           <div className="text-right">
-            {job.status === 'completed' && job.result_url ? (
+            {job.status === 'completed' && (job.result_url || job.metadata?.storage_files) ? (
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleDownload(job.result_url!, job.filename)}
+                onClick={() => handleDownload(job)}
                 className="h-8 px-3"
               >
                 <Download className="h-3 w-3 mr-1" />

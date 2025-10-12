@@ -314,7 +314,7 @@ export const ocrApi = {
   },
 
   /**
-   * Download processed file
+   * Download processed file from local storage
    * @param fileId - File ID or Job ID to download
    * @param sessionId - Optional session ID for session-based file lookup
    */
@@ -323,6 +323,17 @@ export const ocrApi = {
     const response = await apiClient.get(`/api/v1/download/${fileId}`, {
       responseType: 'blob',
       params,
+    })
+    return response.data
+  },
+
+  /**
+   * Download file from Supabase Storage
+   * @param storagePath - Path to file in storage (e.g., "user_id/job_id/filename.xlsx")
+   */
+  downloadFromStorage: async (storagePath: string): Promise<Blob> => {
+    const response = await apiClient.get(`/api/v1/download/storage/${storagePath}`, {
+      responseType: 'blob',
     })
     return response.data
   },
