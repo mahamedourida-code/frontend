@@ -13,24 +13,19 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { signInSchema, type SignInInput } from '@/lib/validations/auth'
 import { signInWithPassword, signInWithOTP } from '@/lib/auth-helpers'
 import { createClient } from '@/utils/supabase/client'
-import { AlertCircle, Loader2, CheckCircle2, LogOut } from 'lucide-react'
+import { AlertCircle, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { useAuth } from '@/contexts/AuthContext'
 
 export default function SignInPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [email, setEmail] = useState('')
-  const [usePasswordless, setUsePasswordless] = useState(false) // Default to password authentication
+  const [usePasswordless, setUsePasswordless] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
+  const supabase = createClient()
 
-  // Use auth context instead of creating our own client
-  const { user, loading: authLoading, signOut } = useAuth()
-  const supabase = createClient() // Only for OAuth, main auth handled by context
-
-  // Show success message if user just verified their email
   useEffect(() => {
     if (searchParams.get('verified') === 'true') {
       toast.success('Email verified successfully!', {
@@ -38,18 +33,6 @@ export default function SignInPage() {
       })
     }
   }, [searchParams])
-
-  // Cleanup effect: Clean up any leftover session storage on component unmount
-  useEffect(() => {
-    return () => {
-      // Clear any leftover session storage when navigating away
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('in2FAFlow')
-        sessionStorage.removeItem('in2FAFlowTimestamp')
-        sessionStorage.removeItem('otpVerified')
-      }
-    }
-  }, [])
 
   const {
     register: registerSignIn,
@@ -59,7 +42,6 @@ export default function SignInPage() {
     resolver: zodResolver(signInSchema),
   })
 
-  // Handle password sign-in
   const onSignInSubmit = async (data: SignInInput) => {
     setLoading(true)
     setError(null)
@@ -72,19 +54,11 @@ export default function SignInPage() {
         return
       }
 
-      console.log('[SignIn] Signing in...')
-
-      // Sign in with password - Supabase will handle the session
       await signInWithPassword(data.email, data.password)
-
       toast.success('Signed in successfully!')
-
-      // AuthContext's onAuthStateChange will handle the redirect
-      console.log('[SignIn] Sign-in successful')
-
+      router.push('/dashboard')
+      router.refresh()
     } catch (err: any) {
-      console.error('[SignIn] Error:', err)
-
       const errorMessage = err.message || 'Invalid email or password'
       setError(errorMessage)
       toast.error('Sign in failed', {
@@ -94,7 +68,6 @@ export default function SignInPage() {
     }
   }
 
-  // Handle passwordless sign-in (magic link / OTP)
   const handlePasswordlessSignIn = async () => {
     if (!email) {
       setError('Please enter your email address')
@@ -106,15 +79,11 @@ export default function SignInPage() {
 
     try {
       await signInWithOTP(email)
-
       toast.success('Sign-in code sent!', {
         description: 'Check your email for a 6-digit code.',
       })
-
-      // Redirect to verification page
       router.push(`/verify-email?email=${encodeURIComponent(email)}`)
     } catch (err: any) {
-      console.error('Passwordless sign in error:', err)
       setError(err.message || 'Failed to send sign-in code')
       toast.error('Failed to send code', {
         description: err.message,
@@ -123,8 +92,6 @@ export default function SignInPage() {
     }
   }
 
-
-  // Handle Google Sign-in
   const handleGoogleSignIn = async () => {
     setLoading(true)
     setError(null)
@@ -145,7 +112,6 @@ export default function SignInPage() {
     }
   }
 
-  // Handle GitHub Sign-in
   const handleGithubSignIn = async () => {
     setLoading(true)
     setError(null)
@@ -166,76 +132,6 @@ export default function SignInPage() {
     }
   }
 
-
-
-  // Show loading state while auth context is initializing
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-muted/80">
-        <div className="fixed top-4 right-4 z-50">
-          <ThemeToggle />
-        </div>
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Loading...</CardTitle>
-            <CardDescription>Checking authentication status</CardDescription>
-          </CardHeader>
-          <CardContent className="flex justify-center">
-            <Loader2 className="h-8 w-8 animate-spin" />
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  // Show "Already Authenticated" message if user is logged in
-  if (user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-muted/80">
-        <div className="fixed top-4 right-4 z-50">
-          <ThemeToggle />
-        </div>
-        <Card className="w-full max-w-md border-2 border-primary/30">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-              <CheckCircle2 className="w-8 h-8 text-primary" />
-            </div>
-            <CardTitle className="text-2xl">Already Signed In</CardTitle>
-            <CardDescription>
-              You're currently signed in as {user.email}. Choose an option below.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Button
-              className="w-full"
-              size="lg"
-              onClick={() => router.push('/dashboard')}
-            >
-              Go to Dashboard
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full"
-              size="lg"
-              onClick={async () => {
-                try {
-                  await signOut() // Use auth context signOut
-                  toast.success('Signed out successfully')
-                } catch (err) {
-                  toast.error('Failed to sign out')
-                }
-              }}
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out & Sign In as Different User
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  // Render Credentials Step
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-muted/80">
       <div className="fixed top-4 right-4 z-50">
@@ -250,7 +146,6 @@ export default function SignInPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <form onSubmit={handleSignInSubmit(onSignInSubmit)} className="space-y-4">
-            {/* Email Field */}
             <div className="space-y-2">
               <Label htmlFor="email">Email address</Label>
               <Input
@@ -269,7 +164,6 @@ export default function SignInPage() {
               )}
             </div>
 
-            {/* Password Field */}
             {!usePasswordless && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -297,7 +191,6 @@ export default function SignInPage() {
               </div>
             )}
 
-            {/* Error Message */}
             {error && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
@@ -305,8 +198,6 @@ export default function SignInPage() {
               </Alert>
             )}
 
-
-            {/* Submit Button */}
             <Button
               className="w-full"
               size="lg"
@@ -318,7 +209,6 @@ export default function SignInPage() {
               {loading ? 'Signing in...' : (usePasswordless ? 'Send verification code' : 'Sign in')}
             </Button>
 
-            {/* Toggle between password and passwordless */}
             <div className="text-center">
               <button
                 type="button"
@@ -328,10 +218,8 @@ export default function SignInPage() {
                 {usePasswordless ? 'Sign in with password instead' : 'Sign in with email code instead'}
               </button>
             </div>
-
           </form>
 
-          {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
@@ -343,7 +231,6 @@ export default function SignInPage() {
             </div>
           </div>
 
-          {/* Social Sign-in */}
           <div className="grid grid-cols-2 gap-3">
             <Button
               variant="outline"
@@ -385,7 +272,6 @@ export default function SignInPage() {
             </Button>
           </div>
 
-          {/* Sign Up Link */}
           <div className="text-center text-sm text-muted-foreground">
             Don't have an account?{' '}
             <Link
