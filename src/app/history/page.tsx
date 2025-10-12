@@ -53,9 +53,20 @@ function HistoryContent() {
       // Check if we have storage files in metadata (new format with Supabase Storage)
       const storageFiles = job.metadata?.storage_files;
       if (storageFiles && storageFiles.length > 0) {
-        // Download from Supabase Storage using storage path
-        const storagePath = storageFiles[0].storage_path;
-        blob = await ocrApi.downloadFromStorage(storagePath);
+        const storageFile = storageFiles[0];
+        
+        // Check if it's a signed URL (private bucket) or we need to use storage path
+        if (storageFile.url && storageFile.url_type === 'signed_url') {
+          // For signed URLs, download directly from the URL
+          const response = await fetch(storageFile.url);
+          if (!response.ok) throw new Error('Download failed');
+          blob = await response.blob();
+        } else if (storageFile.storage_path) {
+          // For public buckets or when we have storage path, use the API endpoint
+          blob = await ocrApi.downloadFromStorage(storageFile.storage_path);
+        } else {
+          throw new Error('No valid download path in storage file');
+        }
       } else if (job.result_url) {
         // Legacy download from local storage
         const fileId = job.result_url.includes('supabase')
