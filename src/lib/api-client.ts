@@ -126,16 +126,22 @@ apiClient.interceptors.response.use(
       switch (error.response.status) {
         case 401:
           console.error('[API Client Interceptor] Unauthorized - Session may have expired')
-          // Try to sign out to clear invalid session
-          signOut().then(() => {
-            console.log('[API Client Interceptor] Signed out due to 401 error')
-            // Optionally redirect to login page
-            if (typeof window !== 'undefined') {
-              window.location.href = '/sign-in'
+          // Only sign out if we're not already on the sign-in page
+          // This prevents infinite loops
+          if (typeof window !== 'undefined' && !window.location.pathname.includes('/sign-in')) {
+            // Check if error is specifically about expired token
+            const errorDetail = error.response.data?.detail || error.response.data?.message || ''
+            if (errorDetail.toLowerCase().includes('expired') || errorDetail.toLowerCase().includes('invalid')) {
+              console.log('[API Client Interceptor] Token expired/invalid, signing out')
+              signOut().then(() => {
+                window.location.href = '/sign-in'
+              }).catch((signOutError) => {
+                console.error('[API Client Interceptor] Error signing out after 401:', signOutError)
+              })
+            } else {
+              console.log('[API Client Interceptor] 401 error but not signing out - may be backend issue')
             }
-          }).catch((signOutError) => {
-            console.error('[API Client Interceptor] Error signing out after 401:', signOutError)
-          })
+          }
           break
         case 403:
           console.error('[API Client Interceptor] Forbidden - Insufficient permissions')

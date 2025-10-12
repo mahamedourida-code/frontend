@@ -48,9 +48,12 @@ export async function updateSession(request: NextRequest) {
       if (DEBUG_AUTH) {
         console.warn('[Middleware] Error getting user:', error.message)
       }
-      // Clear potentially corrupted session
-      supabaseResponse.cookies.delete('sb-access-token')
-      supabaseResponse.cookies.delete('sb-refresh-token')
+      // Only clear cookies if it's a specific auth error, not network issues
+      // This prevents aggressive cookie clearing on temporary issues
+      if (error.message?.includes('invalid') || error.message?.includes('expired')) {
+        supabaseResponse.cookies.delete('sb-access-token')
+        supabaseResponse.cookies.delete('sb-refresh-token')
+      }
     } else {
       user = data.user
     }
@@ -58,9 +61,8 @@ export async function updateSession(request: NextRequest) {
     if (DEBUG_AUTH) {
       console.error('[Middleware] Exception getting user:', error)
     }
-    // Clear session on exception
-    supabaseResponse.cookies.delete('sb-access-token')
-    supabaseResponse.cookies.delete('sb-refresh-token')
+    // Don't clear cookies on network errors or exceptions
+    // Let the auth system handle retries
   }
 
   if (DEBUG_AUTH) {

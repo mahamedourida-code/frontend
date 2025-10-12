@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Providers } from "@/components/Providers";
 import { Toaster } from "sonner";
 
 const nunito = Nunito({
@@ -26,10 +27,12 @@ export default function RootLayout({
         className={`${nunito.variable} antialiased font-sans`}
         style={{ fontFamily: 'var(--font-nunito)' }}
       >
-        <ThemeProvider defaultTheme="light" storageKey="exceletto-theme">
-          {children}
-          <Toaster richColors position="top-right" />
-        </ThemeProvider>
+        <Providers>
+          <ThemeProvider defaultTheme="light" storageKey="exceletto-theme">
+            {children}
+            <Toaster richColors position="top-right" />
+          </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
