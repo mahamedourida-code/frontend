@@ -56,6 +56,7 @@ export default function SignInPage() {
 
       await signInWithPassword(data.email, data.password)
       toast.success('Signed in successfully!')
+      setLoading(false) // Important: Clear loading state on success
       router.push('/dashboard')
       router.refresh()
     } catch (err: any) {
@@ -82,6 +83,7 @@ export default function SignInPage() {
       toast.success('Sign-in code sent!', {
         description: 'Check your email for a 6-digit code.',
       })
+      setLoading(false) // Clear loading state on success
       router.push(`/verify-email?email=${encodeURIComponent(email)}`)
     } catch (err: any) {
       setError(err.message || 'Failed to send sign-in code')
@@ -102,6 +104,7 @@ export default function SignInPage() {
         redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
       },
     })
+    // Note: No need to clear loading state on success as the page will redirect externally
 
     if (error) {
       setError(error.message)
@@ -122,6 +125,7 @@ export default function SignInPage() {
         redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
       },
     })
+    // Note: No need to clear loading state on success as the page will redirect externally
 
     if (error) {
       setError(error.message)

@@ -37,33 +37,13 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  let user = null
-  try {
-    // IMPORTANT: Avoid writing any logic between createServerClient and
-    // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-    // issues with users being randomly logged out.
-    const { data, error } = await supabase.auth.getUser()
-
-    if (error) {
-      if (DEBUG_AUTH) {
-        console.warn('[Middleware] Error getting user:', error.message)
-      }
-      // Only clear cookies if it's a specific auth error, not network issues
-      // This prevents aggressive cookie clearing on temporary issues
-      if (error.message?.includes('invalid') || error.message?.includes('expired')) {
-        supabaseResponse.cookies.delete('sb-access-token')
-        supabaseResponse.cookies.delete('sb-refresh-token')
-      }
-    } else {
-      user = data.user
-    }
-  } catch (error) {
-    if (DEBUG_AUTH) {
-      console.error('[Middleware] Exception getting user:', error)
-    }
-    // Don't clear cookies on network errors or exceptions
-    // Let the auth system handle retries
-  }
+  // IMPORTANT: Avoid writing any logic between createServerClient and
+  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
+  // issues with users being randomly logged out.
+  
+  // IMPORTANT: DO NOT REMOVE auth.getUser()
+  // This refreshes the session and is REQUIRED for auth to work
+  const { data: { user } } = await supabase.auth.getUser()
 
   if (DEBUG_AUTH) {
     console.log('[Middleware] User authenticated:', !!user, user?.email || 'none')
@@ -76,6 +56,7 @@ export async function updateSession(request: NextRequest) {
   )
 
   // Public paths that should be accessible without auth
+  // IMPORTANT: /auth/callback must be allowed for OAuth flow to work
   const publicPaths = ['/sign-in', '/sign-up', '/auth', '/verify-email', '/forgot-password', '/reset-password']
   const isPublicPath = publicPaths.some(path =>
     request.nextUrl.pathname.startsWith(path)
@@ -88,7 +69,13 @@ export async function updateSession(request: NextRequest) {
     }
     const url = request.nextUrl.clone()
     url.pathname = '/sign-in'
-    return NextResponse.redirect(url)
+    // IMPORTANT: When redirecting, we must still pass the cookies
+    const redirectResponse = NextResponse.redirect(url)
+    // Copy over all the cookies from supabaseResponse
+    supabaseResponse.cookies.getAll().forEach(cookie => {
+      redirectResponse.cookies.set(cookie)
+    })
+    return redirectResponse
   }
 
   // Allow authenticated users to visit auth pages
@@ -101,10 +88,11 @@ export async function updateSession(request: NextRequest) {
     // Don't redirect - let the page show appropriate UI for authenticated users
   }
 
-  if (DEBUG_AUTH && (isProtectedPath || isPublicPath)) {
-    console.log('[Middleware] Allowing access to', pathname)
+  if (DEBUG_AUTH) {
+    console.log('[Middleware] Returning response for', pathname)
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
+  // This ensures cookies are properly set and the session is maintained
   return supabaseResponse
 }

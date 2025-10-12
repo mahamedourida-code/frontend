@@ -25,10 +25,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ProtectedRoute } from "@/components/ProtectedRoute"
 import { useHistory } from "@/hooks/useHistory"
 import { ocrApi } from "@/lib/api-client"
 import { toast } from "sonner"
+import { useAuth } from "@/hooks/useAuth"
 
 interface HistoryJob {
   job_id: string
@@ -382,9 +382,29 @@ function HistoryContent() {
 }
 
 export default function HistoryPage() {
-  return (
-    <ProtectedRoute>
-      <HistoryContent />
-    </ProtectedRoute>
-  )
+  const { user, loading } = useAuth()
+  const router = useRouter()
+
+  React.useEffect(() => {
+    if (!loading && !user) {
+      router.push('/sign-in')
+    }
+  }, [user, loading, router])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return null
+  }
+
+  return <HistoryContent />
 }

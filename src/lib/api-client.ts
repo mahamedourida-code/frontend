@@ -76,16 +76,21 @@ const apiClient: AxiosInstance = axios.create({
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     try {
-      console.log('[API Client Interceptor] Request to:', config.url)
-      // Get JWT token from Supabase session
-      const token = await getAccessToken()
+      // Only add auth token for API requests, not for auth-related endpoints
+      const isAuthEndpoint = config.url?.includes('/auth/') || config.url?.includes('/sign')
+      
+      if (!isAuthEndpoint) {
+        console.log('[API Client Interceptor] Request to:', config.url)
+        // Get JWT token from Supabase session
+        const token = await getAccessToken()
 
-      if (token) {
-        console.log('[API Client Interceptor] Token found, adding to Authorization header')
-        // Add Authorization header if user is authenticated
-        config.headers.Authorization = `Bearer ${token}`
-      } else {
-        console.log('[API Client Interceptor] No token found, proceeding without auth')
+        if (token) {
+          console.log('[API Client Interceptor] Token found, adding to Authorization header')
+          // Add Authorization header if user is authenticated
+          config.headers.Authorization = `Bearer ${token}`
+        } else {
+          console.log('[API Client Interceptor] No token found, proceeding without auth')
+        }
       }
 
       return config
