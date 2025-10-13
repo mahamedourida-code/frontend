@@ -54,36 +54,63 @@ function HistoryContent() {
     try {
       let blob: Blob;
       
+      console.log('Downloading job:', job); // Debug log
+      
       // Check if we have storage files in metadata (new format with Supabase Storage)
       const storageFiles = job.metadata?.storage_files;
       if (storageFiles && storageFiles.length > 0) {
         const storageFile = storageFiles[0];
+        console.log('Using storage file:', storageFile); // Debug log
         
         // Check if it's a signed URL (private bucket) or we need to use storage path
         if (storageFile.url && storageFile.url_type === 'signed_url') {
           // For signed URLs, download directly from the URL
+          console.log('Fetching signed URL:', storageFile.url); // Debug log
           const response = await fetch(storageFile.url);
-          if (!response.ok) throw new Error('Download failed');
+          if (!response.ok) {
+            console.error('Signed URL fetch failed:', response.status, response.statusText);
+            throw new Error('Download failed');
+          }
           blob = await response.blob();
         } else if (storageFile.storage_path) {
           // For public buckets or when we have storage path, use the API endpoint
+          console.log('Using storage path:', storageFile.storage_path); // Debug log
           blob = await ocrApi.downloadFromStorage(storageFile.storage_path);
         } else {
           throw new Error('No valid download path in storage file');
         }
       } else if (job.result_url) {
-        // Legacy download from local storage
-        const fileId = job.result_url.includes('supabase')
-          ? job.result_url.split('/').pop()
-          : job.result_url.replace('/api/v1/download/', '')
+        // Try direct download if result_url is a signed URL
+        console.log('Using result_url:', job.result_url); // Debug log
+        
+        if (job.result_url.includes('supabase') && job.result_url.includes('token=')) {
+          // This is likely a signed URL, fetch directly
+          console.log('Fetching signed result_url directly'); // Debug log
+          const response = await fetch(job.result_url);
+          if (!response.ok) {
+            console.error('Result URL fetch failed:', response.status, response.statusText);
+            throw new Error('Download failed');
+          }
+          blob = await response.blob();
+        } else {
+          // Legacy download from local storage
+          const fileId = job.result_url.includes('supabase')
+            ? job.result_url.split('/').pop()
+            : job.result_url.replace('/api/v1/download/', '')
 
-        if (!fileId) {
-          toast.error('Invalid download URL')
-          return
+          if (!fileId) {
+            toast.error('Invalid download URL')
+            return
+          }
+
+          blob = await ocrApi.downloadFile(fileId)
         }
-
-        blob = await ocrApi.downloadFile(fileId)
+      } else if (job.metadata?.storage_path) {
+        // Fallback: try using storage_path directly from metadata
+        console.log('Using metadata storage_path:', job.metadata.storage_path); // Debug log
+        blob = await ocrApi.downloadFromStorage(job.metadata.storage_path);
       } else {
+        console.error('No download URL available. Job data:', job);
         toast.error('No download URL available')
         return
       }
