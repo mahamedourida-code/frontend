@@ -14,7 +14,7 @@ import {
   useReactTable,
   RowSelectionState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Download, ArrowLeft, RefreshCw, FileSpreadsheet, Calendar, DownloadCloud } from "lucide-react"
+import { ArrowUpDown, Download, ArrowLeft, RefreshCw, FileSpreadsheet, Calendar, DownloadCloud, Trash2, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -227,17 +227,27 @@ function HistoryContent() {
       cell: ({ row }) => {
         const job = row.original
         return (
-          <div className="text-right">
+          <div className="flex items-center justify-end gap-2">
             {job.status === 'completed' && (job.result_url || job.metadata?.storage_files) ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleDownload(job)}
-                className="h-8 px-3"
-              >
-                <Download className="h-3 w-3 mr-1" />
-                Download
-              </Button>
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDownload(job)}
+                  className="h-8 px-3"
+                >
+                  <Download className="h-3 w-3 mr-1" />
+                  Download
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDelete(job.job_id)}
+                  className="h-8 px-3 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </>
             ) : job.status === 'failed' ? (
               <span className="text-xs text-destructive">Failed</span>
             ) : (
@@ -307,6 +317,34 @@ function HistoryContent() {
     for (const job of completedJobs) {
       await handleDownload(job)
       await new Promise(resolve => setTimeout(resolve, 500)) // 500ms delay between downloads
+    }
+  }
+
+  const handleDelete = async (jobId: string) => {
+    try {
+      const response = await ocrApi.deleteFromHistory(jobId)
+      if (response.success) {
+        toast.success('Job deleted from history')
+        refresh() // Refresh the list after deletion
+      }
+    } catch (err: any) {
+      toast.error(err.detail || 'Failed to delete job')
+    }
+  }
+
+  const handleDeleteAll = async () => {
+    if (!confirm('Are you sure you want to delete all saved history? This action cannot be undone.')) {
+      return
+    }
+
+    try {
+      const response = await ocrApi.deleteAllFromHistory()
+      if (response.success) {
+        toast.success(`Deleted ${response.deleted_count} job(s) from history`)
+        refresh() // Refresh the list after deletion
+      }
+    } catch (err: any) {
+      toast.error(err.detail || 'Failed to delete history')
     }
   }
 
@@ -382,18 +420,29 @@ function HistoryContent() {
               </div>
             )}
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             {/* Download all button */}
             {jobs.filter(job => job.status === 'completed' && (job.result_url || job.metadata?.storage_files)).length > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleDownloadAll}
-                className="h-8"
-              >
-                <DownloadCloud className="h-3 w-3 mr-2" />
-                Download All ({jobs.filter(job => job.status === 'completed').length})
-              </Button>
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDownloadAll}
+                  className="h-8"
+                >
+                  <DownloadCloud className="h-3 w-3 mr-2" />
+                  Download All ({jobs.filter(job => job.status === 'completed').length})
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDeleteAll}
+                  className="h-8 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                >
+                  <Trash2 className="h-3 w-3 mr-2" />
+                  Delete All
+                </Button>
+              </>
             )}
             <p className="text-sm text-muted-foreground">
               {jobs.length} {jobs.length === 1 ? 'job' : 'jobs'}

@@ -85,7 +85,7 @@ export function useOCR(): UseOCRReturn {
       // Files are sent as binary data directly, much faster and more efficient
       const response = await ocrApi.uploadBatchMultipart(files, {
         output_format: 'xlsx',
-        consolidation_strategy: 'consolidated'
+        consolidation_strategy: 'separate'  // Changed to separate to keep files individual
       })
       console.log('[useOCR] API response:', response)
 

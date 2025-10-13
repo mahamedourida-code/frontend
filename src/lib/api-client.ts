@@ -384,6 +384,22 @@ export const ocrApi = {
     const response = await apiClient.post(`/api/v1/jobs/${jobId}/save`)
     return response.data
   },
+
+  /**
+   * Delete a specific job from saved history
+   */
+  deleteFromHistory: async (jobId: string): Promise<{ success: boolean; message: string }> => {
+    const response = await apiClient.delete(`/api/v1/jobs/saved-history/${jobId}`)
+    return response.data
+  },
+
+  /**
+   * Delete all jobs from saved history
+   */
+  deleteAllFromHistory: async (): Promise<{ success: boolean; message: string; deleted_count: number }> => {
+    const response = await apiClient.delete(`/api/v1/jobs/saved-history`)
+    return response.data
+  },
 }
 
 // WebSocket connection for real-time updates
