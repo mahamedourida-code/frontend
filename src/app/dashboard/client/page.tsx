@@ -5,24 +5,20 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Upload, FileImage, Zap, Sparkles, ArrowRight, CheckCircle2, Layers, LogOut, FileSpreadsheet, Download, Loader2, Clock, BookmarkPlus } from "lucide-react";
+import { Upload, FileImage, Zap, Sparkles, ArrowRight, CheckCircle2, Layers, LogOut, FileSpreadsheet, Download, Loader2, Clock, BookmarkPlus, ArrowLeft } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useOCR } from "@/hooks/useOCR";
-import { User } from "@supabase/supabase-js";
-import { Profile } from "@/types/database";
+import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/utils/supabase/client";
 
-interface DashboardClientProps {
-  user: User;
-  profile: Profile | null;
-}
-
-export default function DashboardClient({ user, profile }: DashboardClientProps) {
+export default function DashboardClient() {
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [isDragging, setIsDragging] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [profile, setProfile] = useState<any>(null);
 
   const {
     isProcessing,
@@ -39,6 +35,29 @@ export default function DashboardClient({ user, profile }: DashboardClientProps)
     connectWebSocket,
     reset
   } = useOCR();
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/sign-in')
+    }
+  }, [user, authLoading, router])
+
+  useEffect(() => {
+    async function fetchProfile() {
+      if (!user) return
+      
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+      
+      if (data) setProfile(data)
+    }
+    
+    fetchProfile()
+  }, [user])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -127,14 +146,37 @@ export default function DashboardClient({ user, profile }: DashboardClientProps)
     router.refresh();
   };
 
+  if (authLoading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <header className="border-b border-border/50 bg-background/80 backdrop-blur-md sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-primary" />
-              <span className="text-2xl font-bold text-foreground">Litt Up</span>
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.push('/dashboard')}
+                className="gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to Dashboard
+              </Button>
+              <div className="border-l h-6" />
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-primary" />
+                <span className="text-2xl font-bold text-foreground">Process Images</span>
+              </div>
             </div>
 
             <div className="flex items-center gap-4">
