@@ -397,7 +397,7 @@ export const ocrApi = {
    * Delete all jobs from saved history
    */
   deleteAllFromHistory: async (): Promise<{ success: boolean; message: string; deleted_count: number }> => {
-    const response = await apiClient.delete(`/api/v1/jobs/saved-history`)
+    const response = await apiClient.delete(`/api/v1/jobs/saved-history/all`)
     return response.data
   },
 }
