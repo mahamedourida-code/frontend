@@ -294,7 +294,7 @@ export default function DashboardPage() {
                   >
                     <span className="flex items-center gap-2">
                       <Upload className="h-4 w-4" />
-                      New Batch
+                      Process Images
                     </span>
                     <ChevronRight className="h-4 w-4" />
                   </Button>
@@ -335,7 +335,7 @@ export default function DashboardPage() {
                         className="mt-3"
                         onClick={() => router.push('/dashboard/client')}
                       >
-                        Start Processing
+                        Process Images
                       </Button>
                     </div>
                   ) : (
