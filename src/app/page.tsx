@@ -18,6 +18,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import ScrollAnimatedSection from "@/components/ScrollAnimatedSection";
 import { cn } from "@/lib/utils";
+import { AppLogo } from "@/components/AppIcon";
 import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target } from "lucide-react";
 
 export default function Home() {
@@ -41,9 +42,7 @@ export default function Home() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <div className="text-2xl font-bold text-foreground tracking-tight">
-              Exceletto
-              </div>
+              <AppLogo />
             </div>
 
             {/* Mobile Navigation */}

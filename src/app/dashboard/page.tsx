@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { AppIcon } from "@/components/AppIcon"
 import {
   FileSpreadsheet,
   Upload,
@@ -157,9 +158,14 @@ export default function DashboardPage() {
       {/* Sidebar */}
       <div className="w-64 border-r bg-card/50 backdrop-blur">
         <div className="flex flex-col h-full">
-          {/* User Profile */}
+          {/* App Logo */}
           <div className="p-6 border-b">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-2 mb-6">
+              <AppIcon size={32} />
+              <span className="text-xl font-bold">Exceletto</span>
+            </div>
+            {/* User Profile */}
+            <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10">
                 <AvatarImage src={user.user_metadata?.avatar_url} />
                 <AvatarFallback className="bg-primary/10">

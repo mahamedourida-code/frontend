@@ -12,11 +12,13 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  RowSelectionState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Download, ArrowLeft, RefreshCw, FileSpreadsheet, Calendar } from "lucide-react"
+import { ArrowUpDown, Download, ArrowLeft, RefreshCw, FileSpreadsheet, Calendar, DownloadCloud } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Table,
   TableBody,
@@ -29,6 +31,7 @@ import { useHistory } from "@/hooks/useHistory"
 import { ocrApi } from "@/lib/api-client"
 import { toast } from "sonner"
 import { useAuth } from "@/hooks/useAuth"
+import { AppIcon } from "@/components/AppIcon"
 
 interface HistoryJob {
   job_id: string
@@ -45,6 +48,7 @@ function HistoryContent() {
   const { jobs, isLoading, error, refresh } = useHistory()
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
 
   const handleDownload = async (job: HistoryJob) => {
     try {
@@ -100,6 +104,8 @@ function HistoryContent() {
     }
   }
 
+
+
   const formatDate = (dateString: string) => {
     try {
       return new Date(dateString).toLocaleDateString('en-US', {
@@ -115,6 +121,30 @@ function HistoryContent() {
   }
 
   const columns: ColumnDef<HistoryJob>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+          className="translate-y-[2px]"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+          className="translate-y-[2px]"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
     {
       accessorKey: "filename",
       header: ({ column }) => {
@@ -224,6 +254,7 @@ function HistoryContent() {
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -231,8 +262,34 @@ function HistoryContent() {
     state: {
       sorting,
       columnFilters,
+      rowSelection,
     },
   })
+
+  const handleBulkDownload = async () => {
+    const selectedRows = table.getFilteredSelectedRowModel().rows
+    if (selectedRows.length === 0) {
+      toast.error('No files selected')
+      return
+    }
+
+    const completedJobs = selectedRows
+      .map((row) => row.original)
+      .filter((job) => job.status === 'completed' && (job.result_url || job.metadata?.storage_files))
+
+    if (completedJobs.length === 0) {
+      toast.error('No completed files available for download')
+      return
+    }
+
+    toast.info(`Downloading ${completedJobs.length} file(s)...`)
+
+    // Download files sequentially with a small delay to prevent browser blocking
+    for (const job of completedJobs) {
+      await handleDownload(job)
+      await new Promise(resolve => setTimeout(resolve, 500)) // 500ms delay between downloads
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -241,6 +298,8 @@ function HistoryContent() {
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
+              <AppIcon size={28} />
+              <div className="border-l h-6" />
               <Button
                 variant="ghost"
                 size="sm"
@@ -277,14 +336,32 @@ function HistoryContent() {
 
         {/* Table Controls */}
         <div className="flex items-center justify-between mb-4">
-          <Input
-            placeholder="Filter by filename..."
-            value={(table.getColumn("filename")?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn("filename")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm h-9 text-sm"
-          />
+          <div className="flex items-center gap-4">
+            <Input
+              placeholder="Filter by filename..."
+              value={(table.getColumn("filename")?.getFilterValue() as string) ?? ""}
+              onChange={(event) =>
+                table.getColumn("filename")?.setFilterValue(event.target.value)
+              }
+              className="max-w-sm h-9 text-sm"
+            />
+            {table.getFilteredSelectedRowModel().rows.length > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">
+                  {table.getFilteredSelectedRowModel().rows.length} selected
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleBulkDownload}
+                  className="h-8"
+                >
+                  <DownloadCloud className="h-3 w-3 mr-2" />
+                  Download Selected
+                </Button>
+              </div>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground">
             {jobs.length} {jobs.length === 1 ? 'job' : 'jobs'}
           </p>

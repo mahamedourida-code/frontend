@@ -8,9 +8,12 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Checkbox } from "@/components/ui/checkbox"
 import { cn } from "@/lib/utils"
 import { useOCR } from "@/hooks/useOCR"
 import { useAuth } from "@/hooks/useAuth"
+import { toast } from "sonner"
+import { AppIcon } from "@/components/AppIcon"
 import {
   Upload,
   FileSpreadsheet,
@@ -27,7 +30,10 @@ import {
   BarChart3,
   ArrowRight,
   Clock,
-  CheckCircle2
+  CheckCircle2,
+  Save,
+  DownloadCloud,
+  CheckSquare
 } from "lucide-react"
 
 export default function ProcessImagesPage() {
@@ -134,9 +140,7 @@ export default function ProcessImagesPage() {
         <div className="container max-w-5xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Sparkles className="h-5 w-5 text-primary" />
-              </div>
+              <AppIcon size={36} />
               <div>
                 <h1 className="text-lg font-semibold">Process Images</h1>
                 <p className="text-xs text-muted-foreground">Convert table images to Excel</p>
