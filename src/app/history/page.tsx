@@ -291,6 +291,25 @@ function HistoryContent() {
     }
   }
 
+  const handleDownloadAll = async () => {
+    const completedJobs = jobs.filter(
+      (job) => job.status === 'completed' && (job.result_url || job.metadata?.storage_files)
+    )
+
+    if (completedJobs.length === 0) {
+      toast.error('No completed files available for download')
+      return
+    }
+
+    toast.info(`Downloading all ${completedJobs.length} completed file(s)...`)
+
+    // Download files sequentially with a small delay to prevent browser blocking
+    for (const job of completedJobs) {
+      await handleDownload(job)
+      await new Promise(resolve => setTimeout(resolve, 500)) // 500ms delay between downloads
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Compact Header */}
@@ -345,6 +364,7 @@ function HistoryContent() {
               }
               className="max-w-sm h-9 text-sm"
             />
+            {/* Selected files download button */}
             {table.getFilteredSelectedRowModel().rows.length > 0 && (
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">
@@ -362,9 +382,23 @@ function HistoryContent() {
               </div>
             )}
           </div>
-          <p className="text-sm text-muted-foreground">
-            {jobs.length} {jobs.length === 1 ? 'job' : 'jobs'}
-          </p>
+          <div className="flex items-center gap-4">
+            {/* Download all button */}
+            {jobs.filter(job => job.status === 'completed' && (job.result_url || job.metadata?.storage_files)).length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDownloadAll}
+                className="h-8"
+              >
+                <DownloadCloud className="h-3 w-3 mr-2" />
+                Download All ({jobs.filter(job => job.status === 'completed').length})
+              </Button>
+            )}
+            <p className="text-sm text-muted-foreground">
+              {jobs.length} {jobs.length === 1 ? 'job' : 'jobs'}
+            </p>
+          </div>
         </div>
 
         {/* Data Table */}

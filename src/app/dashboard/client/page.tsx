@@ -352,20 +352,52 @@ export default function ProcessImagesPage() {
                   </div>
                 )}
               </>
-            ) : (
-              /* Results Section */
+            ) : null}
+
+            {/* Progressive Results Section - Show files as they become ready */}
+            {(isProcessing || isComplete) && resultFiles && resultFiles.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold">Download Files</h2>
-                  <Badge variant="outline" className="gap-1">
-                    <FileSpreadsheet className="h-3 w-3" />
-                    {resultFiles?.length || 0} files ready
-                  </Badge>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-lg font-semibold">Ready Files</h2>
+                    {isProcessing && (
+                      <Badge variant="secondary" className="gap-1 animate-pulse">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Processing more...
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="gap-1">
+                      <FileSpreadsheet className="h-3 w-3" />
+                      {resultFiles.length} of {progress?.total_images || uploadedFiles.length} ready
+                    </Badge>
+                    {resultFiles.length > 1 && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={async () => {
+                          toast.info(`Downloading ${resultFiles.length} files...`)
+                          for (const file of resultFiles) {
+                            await downloadFile(file.file_id)
+                            await new Promise(resolve => setTimeout(resolve, 500))
+                          }
+                        }}
+                        className="gap-2"
+                      >
+                        <DownloadCloud className="h-4 w-4" />
+                        Download All
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
-                  {resultFiles?.map((file: any, index: number) => (
-                    <Card key={index} className="overflow-hidden">
+                  {resultFiles.map((file: any, index: number) => (
+                    <Card 
+                      key={file.file_id || index} 
+                      className="overflow-hidden animate-in slide-in-from-bottom-2 duration-300"
+                    >
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
@@ -374,11 +406,14 @@ export default function ProcessImagesPage() {
                             </div>
                             <div>
                               <p className="font-medium text-sm">
-                                {file.filename || `result-${index + 1}.xlsx`}
+                                {file.filename || `Image ${index + 1} Result`}
                               </p>
-                              <p className="text-xs text-muted-foreground">
-                                Excel Spreadsheet • Ready
-                              </p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <CheckCircle className="h-3 w-3 text-green-600" />
+                                <p className="text-xs text-muted-foreground">
+                                  Ready to download
+                                </p>
+                              </div>
                             </div>
                           </div>
                           <Button
