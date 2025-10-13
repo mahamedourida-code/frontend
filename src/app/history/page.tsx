@@ -351,27 +351,27 @@ function HistoryContent() {
     try {
       const response = await ocrApi.deleteFromHistory(jobId)
       if (response.success) {
-        toast.success('Job deleted from history')
+        toast.success('File deleted successfully')
         refresh() // Refresh the list after deletion
       }
     } catch (err: any) {
-      toast.error(err.detail || 'Failed to delete job')
+      toast.error(err.detail || 'Failed to delete file')
     }
   }
 
   const handleDeleteAll = async () => {
-    if (!confirm('Are you sure you want to delete all saved history? This action cannot be undone.')) {
+    if (!confirm('Are you sure you want to delete all saved files? This action cannot be undone.')) {
       return
     }
 
     try {
       const response = await ocrApi.deleteAllFromHistory()
       if (response.success) {
-        toast.success(`Deleted ${response.deleted_count} job(s) from history`)
+        toast.success(`Deleted ${response.deleted_count} file(s)`)
         refresh() // Refresh the list after deletion
       }
     } catch (err: any) {
-      toast.error(err.detail || 'Failed to delete history')
+      toast.error(err.detail || 'Failed to delete files')
     }
   }
 
@@ -394,7 +394,7 @@ function HistoryContent() {
                 Back
               </Button>
               <div className="border-l h-6" />
-              <h1 className="text-lg font-semibold">Processing History</h1>
+              <h1 className="text-lg font-semibold">Saved Files</h1>
             </div>
             <Button
               variant="outline"
@@ -502,7 +502,7 @@ function HistoryContent() {
                   <TableCell colSpan={columns.length} className="h-24 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <RefreshCw className="h-4 w-4 animate-spin" />
-                      <span className="text-sm text-muted-foreground">Loading history...</span>
+                      <span className="text-sm text-muted-foreground">Loading saved files...</span>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -528,9 +528,9 @@ function HistoryContent() {
                   <TableCell colSpan={columns.length} className="h-24 text-center">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <FileSpreadsheet className="h-8 w-8 text-muted-foreground/50" />
-                      <p className="text-sm font-medium">No history yet</p>
+                      <p className="text-sm font-medium">No saved files yet</p>
                       <p className="text-xs text-muted-foreground">
-                        Process some files to see them here
+                        Save processed files to see them here
                       </p>
                     </div>
                   </TableCell>

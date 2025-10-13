@@ -128,13 +128,13 @@ export default function DashboardPage() {
   const handleSignOut = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
-    router.push('/sign-in')
+    router.push('/')  // Redirect to landing page instead of sign-in
   }
 
   const sidebarItems = [
     { icon: Activity, label: "Overview", href: "/dashboard", active: true },
     { icon: Upload, label: "Process Images", href: "/dashboard/client" },
-    { icon: History, label: "History", href: "/history" },
+    { icon: History, label: "Saved Files", href: "/history" },
     { icon: Settings, label: "Settings", href: "#", disabled: true },
     { icon: CreditCard, label: "Billing", href: "#", disabled: true },
     { icon: HelpCircle, label: "Help", href: "#", disabled: true },
