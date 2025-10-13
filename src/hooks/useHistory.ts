@@ -35,7 +35,8 @@ export function useHistory(): UseHistoryReturn {
     setError(null)
 
     try {
-      const response = await ocrApi.getHistory(50, 0)
+      // Use getSavedHistory instead of getHistory to fetch only saved jobs
+      const response = await ocrApi.getSavedHistory(50, 0)
       setJobs(response.jobs || [])
       setHasMore(response.has_more || false)
       setTotal(response.total || 0)
