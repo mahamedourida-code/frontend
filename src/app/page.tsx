@@ -249,7 +249,7 @@ export default function Home() {
                 {/* Handwritten Table Comparison */}
                 <div className="space-y-4">
                   <h3 className="text-xl font-semibold text-center">Handwritten Table → Excel</h3>
-                  <div className="h-[600px]">
+                  <div className="aspect-video rounded-lg overflow-hidden shadow-2xl">
                     <ComparisonSlider
                       leftLabel="Original Scan"
                       rightLabel="Excel Output"
@@ -274,7 +274,7 @@ export default function Home() {
                 {/* Form Data Comparison */}
                 <div className="space-y-4">
                   <h3 className="text-xl font-semibold text-center">Paper Form → Structured Data</h3>
-                  <div className="h-[600px]">
+                  <div className="h-[600px] rounded-lg overflow-hidden shadow-2xl">
                     <ComparisonSlider
                       leftLabel="Scanned Form"
                       rightLabel="Structured Output"
