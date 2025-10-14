@@ -20,6 +20,8 @@ import ScrollAnimatedSection from "@/components/ScrollAnimatedSection";
 import { cn } from "@/lib/utils";
 import { AppLogo } from "@/components/AppIcon";
 import { ComparisonSlider } from "@/components/ComparisonSlider";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target } from "lucide-react";
 
 export default function Home() {
@@ -36,9 +38,9 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/80 relative">
+    <div className="min-h-screen bg-background relative">
       {/* Navigation Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-muted/80 backdrop-blur-md border-b border-border">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -172,9 +174,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <section className="min-h-screen flex items-start justify-start pt-20 pb-12 bg-background relative overflow-hidden">
-          {/* Glowing effect overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent blur-3xl" />
+        <section className="min-h-screen flex items-start justify-start pt-20 pb-12 relative overflow-hidden">
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               {/* Left Content */}
@@ -231,7 +231,7 @@ export default function Home() {
         </section>
 
         {/* Interactive Comparison Section */}
-        <section className="py-24 bg-background relative z-10 overflow-hidden">
+        <section className="py-24 relative z-10 overflow-hidden">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
@@ -239,9 +239,7 @@ export default function Home() {
                 <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
                   See the Transformation in Action
                 </h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Move your cursor over the preview to see how handwritten data transforms into perfect spreadsheets
-                </p>
+                
               </div>
 
               {/* Comparison Sliders - Stacked Vertically */}
@@ -301,8 +299,7 @@ export default function Home() {
         </section>
 
         {/* Why Choose Us Section */}
-        <ScrollAnimatedSection id="features" className="py-24 bg-background relative z-10">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent" />
+        <ScrollAnimatedSection id="features" className="py-24 relative z-10">
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16" data-animate="headline">
               <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Features</Badge>
@@ -366,9 +363,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Companies Section - Trusted By */}
-        <ScrollAnimatedSection id="trusted" className="py-20 bg-background relative z-10 overflow-hidden">
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent" />
+        <ScrollAnimatedSection id="trusted" className="py-20 relative z-10 overflow-hidden">
           <div className="relative z-10 text-center mb-12" data-animate="headline">
             <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Trusted Organizations</Badge>
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
@@ -414,9 +409,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* How It Works Section */}
-        <ScrollAnimatedSection id="how-it-works" className="py-24 bg-background relative z-10 overflow-hidden">
-          {/* Diagonal stripes pattern */}
-          <div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,_transparent,_transparent_10px,_rgb(255_255_255_/_0.1)_10px,_rgb(255_255_255_/_0.1)_20px)]" />
+        <ScrollAnimatedSection id="how-it-works" className="py-24 relative z-10 overflow-hidden">
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16" data-animate="headline">
               <Badge variant="outline" className="mb-4 border-primary/50 text-primary">How It Works</Badge>
@@ -461,9 +454,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Benchmark Section */}
-        <ScrollAnimatedSection id="benchmarks" className="py-24 bg-background relative z-10">
-          {/* Glowing effect overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent blur-3xl" />
+        <ScrollAnimatedSection id="benchmarks" className="py-24 relative z-10">
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
@@ -489,56 +480,49 @@ export default function Home() {
   </CardHeader>
 
   <CardContent>
-    {/* Vertical bar chart */}
-    <div className="flex justify-around items-end mt-6 h-48">
-      {/* Exceletto */}
-      <div className="flex flex-col items-center space-y-2">
-        <span className="text-sm font-semibold text-primary">Exceletto</span>
-        <div className="w-8 h-40 bg-muted rounded-full overflow-hidden flex items-end">
-          <div
-            className="w-full bg-gradient-to-t from-primary to-primary/80 transition-all duration-1000"
-            style={{ height: '96.8%' }}
-          ></div>
-        </div>
-        <span className="text-xs font-bold text-primary">96.8%</span>
-      </div>
-
-      {/* AWS Textract */}
-      <div className="flex flex-col items-center space-y-2">
-        <span className="text-sm text-muted-foreground">AWS Textract</span>
-        <div className="w-8 h-40 bg-muted rounded-full overflow-hidden flex items-end">
-          <div
-            className="w-full bg-muted-foreground/40 transition-all duration-1000"
-            style={{ height: '77.2%' }}
-          ></div>
-        </div>
-        <span className="text-xs text-muted-foreground">77.2%</span>
-      </div>
-
-      {/* Google Cloud Vision */}
-      <div className="flex flex-col items-center space-y-2">
-        <span className="text-sm text-muted-foreground">Google Vision</span>
-        <div className="w-8 h-40 bg-muted rounded-full overflow-hidden flex items-end">
-          <div
-            className="w-full bg-muted-foreground/40 transition-all duration-1000"
-            style={{ height: '54.5%' }}
-          ></div>
-        </div>
-        <span className="text-xs text-muted-foreground">54.5%</span>
-      </div>
-
-      {/* Azure Computer Vision */}
-      <div className="flex flex-col items-center space-y-2">
-        <span className="text-sm text-muted-foreground">Azure Vision</span>
-        <div className="w-8 h-40 bg-muted rounded-full overflow-hidden flex items-end">
-          <div
-            className="w-full bg-muted-foreground/40 transition-all duration-1000"
-            style={{ height: '51.7%' }}
-          ></div>
-        </div>
-        <span className="text-xs text-muted-foreground">51.7%</span>
-      </div>
-    </div>
+    <ChartContainer
+      config={{
+        accuracy: {
+          label: "Accuracy",
+          color: "hsl(var(--primary))",
+        },
+      }}
+      className="h-[300px] w-full"
+    >
+      <BarChart
+        data={[
+          { provider: "Exceletto", accuracy: 96.8 },
+          { provider: "AWS Textract", accuracy: 77.2 },
+          { provider: "Google Vision", accuracy: 54.5 },
+          { provider: "Azure Vision", accuracy: 51.7 },
+        ]}
+        margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+      >
+        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+        <XAxis
+          dataKey="provider"
+          tickLine={false}
+          axisLine={true}
+          tickMargin={10}
+          angle={0}
+          textAnchor="middle"
+        />
+        <YAxis
+          tickLine={false}
+          axisLine={true}
+          tickMargin={10}
+          domain={[0, 100]}
+          ticks={[0, 20, 40, 60, 80, 100]}
+          label={{ value: 'Accuracy (%)', angle: -90, position: 'insideLeft' }}
+        />
+        <ChartTooltip content={<ChartTooltipContent />} />
+        <Bar
+          dataKey="accuracy"
+          fill="hsl(var(--primary))"
+          radius={[8, 8, 0, 0]}
+        />
+      </BarChart>
+    </ChartContainer>
 
     {/* Footer */}
     <div className="mt-6 pt-4 border-t border-border/50">
@@ -625,11 +609,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Final CTA Section */}
-        <section className="py-24 bg-background relative z-10 overflow-hidden border-t border-border">
-          {/* Background decoration */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-primary/5" />
-          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+        <section className="py-24 relative z-10 overflow-hidden">
           
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
             {/* CTA Content */}
@@ -665,7 +645,7 @@ export default function Home() {
               </div>
               
               {/* Trust Indicators */}
-              <div className="mt-12 pt-12 border-t border-border/50">
+              <div className="mt-12 pt-12">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-primary" />
@@ -687,7 +667,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-background backdrop-blur-md border-t border-border relative z-10">
+      <footer className="backdrop-blur-md relative z-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
@@ -728,9 +708,7 @@ export default function Home() {
             </div>
           </div>
           
-          <Separator className="my-8" />
-          
-          <div className="flex flex-col sm:flex-row justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-center mt-8">
             <p className="text-muted-foreground text-sm">
               © 2024 Exceletto. All rights reserved.
             </p>
