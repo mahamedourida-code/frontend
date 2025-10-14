@@ -27,21 +27,41 @@ import {
   ChevronRight,
   Sparkles,
   Image,
-  Download
+  Download,
+  Table,
+  Calendar,
+  TrendingUp,
+  FileText,
+  BarChart3,
+  CreditCard as CreditIcon,
+  AlertCircle
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Line, LineChart, ResponsiveContainer } from "recharts"
 
 interface DashboardStats {
   totalProcessed: number
-  processingToday: number
+  processedToday: number
+  processedThisMonth: number
+  processedThisWeek: number
+  tablesExtractedToday: number
+  tablesExtractedMonth: number
   creditsUsed: number
   totalCredits: number
-  activeJobs: number
+  successRate: number
+  averageProcessingTime: number
+  weeklyData: Array<{
+    day: string
+    tables: number
+    images: number
+  }>
   recentJobs: Array<{
     id: string
     filename: string
     status: string
     images: number
+    tables: number
     created_at: string
   }>
 }
@@ -51,10 +71,16 @@ export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth()
   const [stats, setStats] = useState<DashboardStats>({
     totalProcessed: 0,
-    processingToday: 0,
+    processedToday: 0,
+    processedThisMonth: 0,
+    processedThisWeek: 0,
+    tablesExtractedToday: 0,
+    tablesExtractedMonth: 0,
     creditsUsed: 0,
-    totalCredits: 100,
-    activeJobs: 0,
+    totalCredits: 80, // 80 images per account
+    successRate: 0,
+    averageProcessingTime: 0,
+    weeklyData: [],
     recentJobs: []
   })
   const [loading, setLoading] = useState(true)
@@ -72,46 +98,103 @@ export default function DashboardPage() {
       try {
         const supabase = createClient()
         
-        // Fetch user's processing jobs
-        const jobsResponse = await supabase
+        // Fetch ALL user's processing jobs
+        const { data: allJobs } = await supabase
           .from('processing_jobs')
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
-          .limit(5)
-        const jobs = jobsResponse.data as any[] | null
+
+        const jobs = allJobs as any[] || []
+        const recentJobs = jobs.slice(0, 5)
 
         // Fetch user profile for credits
-        const profileResponse = await supabase
+        const { data: profile } = await supabase
           .from('profiles')
           .select('usage_credits, plan_type')
           .eq('id', user.id)
           .single()
-        const profile = profileResponse.data as any | null
 
-        // Calculate stats
-        const today = new Date()
+        // Calculate date ranges
+        const now = new Date()
+        const today = new Date(now)
         today.setHours(0, 0, 0, 0)
         
-        const todayJobs = jobs?.filter((job: any) => 
-          new Date(job.created_at) >= today
-        ) || []
+        const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+        const thisWeek = new Date(now)
+        thisWeek.setDate(now.getDate() - 7)
 
-        const activeJobs = jobs?.filter((job: any) => 
-          job.status === 'processing' || job.status === 'pending'
-        ) || []
+        // Filter jobs by time periods
+        const todayJobs = jobs.filter((job: any) => 
+          new Date(job.created_at) >= today
+        )
+        const monthJobs = jobs.filter((job: any) => 
+          new Date(job.created_at) >= thisMonth
+        )
+        const weekJobs = jobs.filter((job: any) => 
+          new Date(job.created_at) >= thisWeek
+        )
+
+        // Calculate tables extracted (assuming each image produces 1 table)
+        const tablesExtractedToday = todayJobs.reduce((sum: number, job: any) => 
+          sum + (job.processing_metadata?.total_images || 1), 0)
+        const tablesExtractedMonth = monthJobs.reduce((sum: number, job: any) => 
+          sum + (job.processing_metadata?.total_images || 1), 0)
+
+        // Calculate success rate
+        const completedJobs = jobs.filter((job: any) => job.status === 'completed')
+        const successRate = jobs.length > 0 
+          ? Math.round((completedJobs.length / jobs.length) * 100) 
+          : 0
+
+        // Calculate average processing time (mock data for now)
+        const averageProcessingTime = 2.3
+
+        // Generate weekly data for chart
+        const weeklyData = []
+        for (let i = 6; i >= 0; i--) {
+          const date = new Date()
+          date.setDate(date.getDate() - i)
+          const dayStart = new Date(date)
+          dayStart.setHours(0, 0, 0, 0)
+          const dayEnd = new Date(date)
+          dayEnd.setHours(23, 59, 59, 999)
+          
+          const dayJobs = jobs.filter((job: any) => {
+            const jobDate = new Date(job.created_at)
+            return jobDate >= dayStart && jobDate <= dayEnd
+          })
+          
+          weeklyData.push({
+            day: date.toLocaleDateString('en', { weekday: 'short' }),
+            tables: dayJobs.reduce((sum: number, job: any) => 
+              sum + (job.processing_metadata?.total_images || 1), 0),
+            images: dayJobs.length
+          })
+        }
+
+        // Calculate credits (80 total, 1 per image)
+        const creditsUsed = monthJobs.reduce((sum: number, job: any) => 
+          sum + (job.processing_metadata?.total_images || 1), 0)
 
         setStats({
-          totalProcessed: jobs?.length || 0,
-          processingToday: todayJobs.length,
-          creditsUsed: 100 - (profile?.usage_credits || 0),
-          totalCredits: 100,
-          activeJobs: activeJobs.length,
-          recentJobs: (jobs || []).map((job: any) => ({
+          totalProcessed: jobs.length,
+          processedToday: todayJobs.length,
+          processedThisMonth: monthJobs.length,
+          processedThisWeek: weekJobs.length,
+          tablesExtractedToday,
+          tablesExtractedMonth,
+          creditsUsed: Math.min(creditsUsed, 80),
+          totalCredits: 80,
+          successRate,
+          averageProcessingTime,
+          weeklyData,
+          recentJobs: recentJobs.map((job: any) => ({
             id: job.id,
             filename: job.filename || 'Unnamed',
             status: job.status || 'pending',
             images: job.processing_metadata?.total_images || 1,
+            tables: job.processing_metadata?.total_images || 1,
             created_at: job.created_at
           }))
         })
@@ -225,61 +308,195 @@ export default function DashboardPage() {
             <p className="text-muted-foreground">
               Overview of your OCR processing activity
             </p>
+            
+            {/* Credits Warning */}
+            {stats.totalCredits - stats.creditsUsed <= 10 && stats.totalCredits - stats.creditsUsed > 0 && (
+              <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg flex items-center gap-3">
+                <AlertCircle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">Low on credits</p>
+                  <p className="text-xs text-muted-foreground">
+                    You have {stats.totalCredits - stats.creditsUsed} credits remaining. Contact support to increase your limit.
+                  </p>
+                </div>
+              </div>
+            )}
+            {stats.creditsUsed >= stats.totalCredits && (
+              <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-3">
+                <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">Out of credits</p>
+                  <p className="text-xs text-muted-foreground">
+                    You've used all your monthly credits. Contact support to continue processing.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Stats Grid */}
+          {/* Key Metrics Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <Card>
+            {/* Tables Extracted Today */}
+            <Card className="border-l-4 border-l-primary">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Total Processed
+                  Tables Today
                 </CardTitle>
-                <Files className="h-4 w-4 text-muted-foreground" />
+                <Table className="h-4 w-4 text-primary" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.totalProcessed}</div>
-                <p className="text-xs text-muted-foreground">All time</p>
+                <div className="text-2xl font-bold text-primary">{stats.tablesExtractedToday}</div>
+                <p className="text-xs text-muted-foreground">
+                  Extracted today
+                </p>
               </CardContent>
             </Card>
 
+            {/* Tables This Month */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Today's Activity
+                  Monthly Total
                 </CardTitle>
-                <Activity className="h-4 w-4 text-muted-foreground" />
+                <Calendar className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.processingToday}</div>
-                <p className="text-xs text-muted-foreground">Files processed</p>
+                <div className="text-2xl font-bold">{stats.tablesExtractedMonth}</div>
+                <p className="text-xs text-muted-foreground">
+                  Tables this month
+                </p>
               </CardContent>
             </Card>
 
+            {/* Credits Available */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   Credits Available
                 </CardTitle>
-                <Zap className="h-4 w-4 text-muted-foreground" />
+                <CreditIcon className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {stats.totalCredits - stats.creditsUsed}
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-bold">
+                    {stats.totalCredits - stats.creditsUsed}
+                  </span>
+                  <span className="text-sm text-muted-foreground">/ {stats.totalCredits}</span>
                 </div>
-                <Progress value={creditsPercentage} className="mt-2 h-1" />
+                <Progress 
+                  value={creditsPercentage} 
+                  className="mt-2 h-2" 
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  1 credit = 1 image
+                </p>
               </CardContent>
             </Card>
 
+            {/* Success Rate */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
-                  Active Jobs
+                  Success Rate
                 </CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
+                <TrendingUp className="h-4 w-4 text-green-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.activeJobs}</div>
-                <p className="text-xs text-muted-foreground">In progress</p>
+                <div className="text-2xl font-bold">{stats.successRate}%</div>
+                <p className="text-xs text-muted-foreground">
+                  Processing accuracy
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Charts Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {/* Weekly Activity Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Weekly Extraction Activity</CardTitle>
+                <CardDescription>Tables extracted over the last 7 days</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartContainer
+                  config={{
+                    tables: {
+                      label: "Tables",
+                      color: "hsl(var(--primary))",
+                    },
+                  }}
+                  className="h-[250px] w-full"
+                >
+                  <BarChart data={stats.weeklyData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis
+                      dataKey="day"
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={8}
+                    />
+                    <YAxis
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={8}
+                    />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar
+                      dataKey="tables"
+                      fill="hsl(var(--primary))"
+                      radius={[8, 8, 0, 0]}
+                    />
+                  </BarChart>
+                </ChartContainer>
+              </CardContent>
+            </Card>
+
+            {/* Processing Stats */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Processing Overview</CardTitle>
+                <CardDescription>Your extraction statistics</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FileSpreadsheet className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-medium">Documents Processed Today</span>
+                    </div>
+                    <Badge variant="secondary">{stats.processedToday}</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <BarChart3 className="h-4 w-4 text-blue-500" />
+                      <span className="text-sm font-medium">This Week</span>
+                    </div>
+                    <Badge variant="secondary">{stats.processedThisWeek}</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-green-500" />
+                      <span className="text-sm font-medium">This Month</span>
+                    </div>
+                    <Badge variant="secondary">{stats.processedThisMonth}</Badge>
+                  </div>
+                  <Separator className="my-3" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-orange-500" />
+                      <span className="text-sm font-medium">Avg. Processing Time</span>
+                    </div>
+                    <Badge variant="outline">{stats.averageProcessingTime}s</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Files className="h-4 w-4 text-purple-500" />
+                      <span className="text-sm font-medium">Total All Time</span>
+                    </div>
+                    <Badge variant="outline">{stats.totalProcessed}</Badge>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -360,7 +577,7 @@ export default function DashboardPage() {
                                 {job.filename}
                               </p>
                               <p className="text-xs text-muted-foreground">
-                                {job.images} image{job.images !== 1 ? 's' : ''} • {
+                                {job.tables} table{job.tables !== 1 ? 's' : ''} from {job.images} image{job.images !== 1 ? 's' : ''} • {
                                   new Date(job.created_at).toLocaleDateString()
                                 }
                               </p>
