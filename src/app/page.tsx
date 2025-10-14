@@ -479,64 +479,77 @@ export default function Home() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
                 {/* Accuracy Chart */}
                 <Card className="border border-border/50 shadow-lg" data-animate="stagger">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-semibold">Handwritten Text Recognition Accuracy</CardTitle>
-                    <p className="text-sm text-muted-foreground">Based on 10,000+ real-world samples</p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {/* Exceletto */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="font-semibold text-primary">Exceletto</span>
-                          <span className="text-primary font-bold">96.8%</span>
-                        </div>
-                        <div className="h-8 bg-muted rounded-full overflow-hidden">
-                          <div className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-1000" style={{ width: '96.8%' }}></div>
-                        </div>
-                      </div>
-                      
-                      {/* Google Cloud Vision */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Google Cloud Vision</span>
-                          <span className="text-muted-foreground">95.2%</span>
-                        </div>
-                        <div className="h-8 bg-muted rounded-full overflow-hidden">
-                          <div className="h-full bg-muted-foreground/40 rounded-full" style={{ width: '95.2%' }}></div>
-                        </div>
-                      </div>
+  <CardHeader className="pb-3">
+    <CardTitle className="text-lg font-semibold">
+      Handwritten Text Recognition Accuracy
+    </CardTitle>
+    <p className="text-sm text-muted-foreground">
+      Based on 10,000+ real-world samples
+    </p>
+  </CardHeader>
 
-                      {/* Azure Computer Vision */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Azure Computer Vision</span>
-                          <span className="text-muted-foreground">94.5%</span>
-                        </div>
-                        <div className="h-8 bg-muted rounded-full overflow-hidden">
-                          <div className="h-full bg-muted-foreground/40 rounded-full" style={{ width: '94.5%' }}></div>
-                        </div>
-                      </div>
+  <CardContent>
+    {/* Vertical bar chart */}
+    <div className="flex justify-around items-end mt-6 h-48">
+      {/* Exceletto */}
+      <div className="flex flex-col items-center space-y-2">
+        <span className="text-sm font-semibold text-primary">Exceletto</span>
+        <div className="w-8 h-40 bg-muted rounded-full overflow-hidden flex items-end">
+          <div
+            className="w-full bg-gradient-to-t from-primary to-primary/80 transition-all duration-1000"
+            style={{ height: '96.8%' }}
+          ></div>
+        </div>
+        <span className="text-xs font-bold text-primary">96.8%</span>
+      </div>
 
-                      {/* AWS Textract */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">AWS Textract</span>
-                          <span className="text-muted-foreground">93.7%</span>
-                        </div>
-                        <div className="h-8 bg-muted rounded-full overflow-hidden">
-                          <div className="h-full bg-muted-foreground/40 rounded-full" style={{ width: '93.7%' }}></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-6 pt-4 border-t border-border/50">
-                      <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                        <CheckCircle className="w-4 h-4 text-primary" />
-                        <span>Tested on IAM Handwriting Database v3.0</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+      {/* AWS Textract */}
+      <div className="flex flex-col items-center space-y-2">
+        <span className="text-sm text-muted-foreground">AWS Textract</span>
+        <div className="w-8 h-40 bg-muted rounded-full overflow-hidden flex items-end">
+          <div
+            className="w-full bg-muted-foreground/40 transition-all duration-1000"
+            style={{ height: '77.2%' }}
+          ></div>
+        </div>
+        <span className="text-xs text-muted-foreground">77.2%</span>
+      </div>
+
+      {/* Google Cloud Vision */}
+      <div className="flex flex-col items-center space-y-2">
+        <span className="text-sm text-muted-foreground">Google Vision</span>
+        <div className="w-8 h-40 bg-muted rounded-full overflow-hidden flex items-end">
+          <div
+            className="w-full bg-muted-foreground/40 transition-all duration-1000"
+            style={{ height: '54.5%' }}
+          ></div>
+        </div>
+        <span className="text-xs text-muted-foreground">54.5%</span>
+      </div>
+
+      {/* Azure Computer Vision */}
+      <div className="flex flex-col items-center space-y-2">
+        <span className="text-sm text-muted-foreground">Azure Vision</span>
+        <div className="w-8 h-40 bg-muted rounded-full overflow-hidden flex items-end">
+          <div
+            className="w-full bg-muted-foreground/40 transition-all duration-1000"
+            style={{ height: '51.7%' }}
+          ></div>
+        </div>
+        <span className="text-xs text-muted-foreground">51.7%</span>
+      </div>
+    </div>
+
+    {/* Footer */}
+    <div className="mt-6 pt-4 border-t border-border/50">
+      <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+        <CheckCircle className="w-4 h-4 text-primary" />
+        <span>Tested on IAM Handwriting Database v3.0</span>
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
 
                 {/* Performance Metrics Table */}
                 <Card className="border border-border/50 shadow-lg" data-animate="stagger">
