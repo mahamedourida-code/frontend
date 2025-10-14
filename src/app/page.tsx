@@ -219,26 +219,26 @@ export default function Home() {
                       </h3>
                     </div>
                     {/* Before Image */}
-                    <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-3 min-h-[280px]">
+                    <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-2 min-h-[280px]">
                       <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-transparent opacity-50" />
                       <div className="relative h-full w-full flex items-center justify-center">
                         <img 
                           src="/before.png" 
                           alt="Handwritten table before processing" 
-                          className="w-full h-auto object-contain max-h-[260px] rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
+                          className="w-full h-auto object-contain max-h-[270px] rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
                         />
-                        {/* Visual Indicator */}
-                        <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-destructive/10 rounded-full blur-2xl animate-pulse" />
                       </div>
                     </div>
                   </div>
 
-                  {/* Transform Arrow */}
-                  <div className="relative flex items-center justify-center py-2 bg-muted/20">
-                    <div className="bg-card border-2 border-primary rounded-full p-2 shadow-lg">
-                      <svg className="w-5 h-5 text-primary animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                      </svg>
+                  {/* Separator Line with Icon */}
+                  <div className="relative h-[2px] bg-border">
+                    <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                      <div className="bg-card border-2 border-primary rounded-full p-1.5 shadow-lg">
+                        <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                        </svg>
+                      </div>
                     </div>
                   </div>
 
@@ -254,15 +254,13 @@ export default function Home() {
                       </h3>
                     </div>
                     {/* After Image */}
-                    <div className="relative bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 p-3 min-h-[280px]">
+                    <div className="relative bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 p-2 min-h-[280px]">
                       <div className="relative h-full w-full flex items-center justify-center">
                         <img 
                           src="/after.png" 
                           alt="Converted Excel spreadsheet" 
-                          className="w-full h-auto object-contain max-h-[260px] rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
+                          className="w-full h-auto object-contain max-h-[270px] rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
                         />
-                        {/* Visual Indicator */}
-                        <div className="absolute -bottom-2 -left-2 w-16 h-16 bg-primary/20 rounded-full blur-2xl animate-pulse" />
                       </div>
                     </div>
                   </div>
