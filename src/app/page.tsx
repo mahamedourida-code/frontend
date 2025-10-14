@@ -227,15 +227,15 @@ export default function Home() {
                   </div>
 
                   {/* Images Grid */}
-                  <div className="relative grid grid-cols-1 md:grid-cols-2 min-h-[400px]">
+                  <div className="relative grid grid-cols-1 md:grid-cols-2 min-h-[500px] lg:min-h-[600px]">
                     {/* Before Image */}
-                    <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4 md:border-r border-b md:border-b-0 border-border/50">
+                    <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-2 md:border-r border-b md:border-b-0 border-border/50">
                       <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-transparent opacity-50" />
-                      <div className="relative h-full flex items-center justify-center">
+                      <div className="relative h-full w-full flex items-center justify-center">
                         <img 
                           src="/before.png" 
                           alt="Handwritten table before processing" 
-                          className="max-w-full max-h-full object-contain rounded-lg shadow-lg group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
                         />
                         {/* Visual Indicator */}
                         <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-destructive/10 rounded-full blur-2xl animate-pulse" />
@@ -250,12 +250,12 @@ export default function Home() {
                     </div>
 
                     {/* After Image */}
-                    <div className="relative bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 p-4">
-                      <div className="relative h-full flex items-center justify-center">
+                    <div className="relative bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 p-2">
+                      <div className="relative h-full w-full flex items-center justify-center">
                         <img 
                           src="/after.png" 
                           alt="Converted Excel spreadsheet" 
-                          className="max-w-full max-h-full object-contain rounded-lg shadow-lg group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
                         />
                         {/* Visual Indicator */}
                         <div className="absolute -bottom-2 -left-2 w-16 h-16 bg-primary/20 rounded-full blur-2xl animate-pulse" />
