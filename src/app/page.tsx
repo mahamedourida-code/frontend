@@ -249,20 +249,20 @@ export default function Home() {
                 {/* Handwritten Table Comparison */}
                 <div className="space-y-4">
                   <h3 className="text-xl font-semibold text-center">Handwritten Table → Excel</h3>
-                  <div className="aspect-video rounded-lg overflow-hidden shadow-2xl">
+                  <div className="aspect-video ">
                     <ComparisonSlider
                       leftLabel="Original Scan"
                       rightLabel="Excel Output"
                       leftContent={
                         <img 
-                          src="/e.jpg" 
+                          src="/ee.png" 
                           alt="Handwritten table before processing"
                           className="w-full h-full object-contain"
                         />
                       }
                       rightContent={
                         <img 
-                          src="/ee.png" 
+                          src="/e.jpg" 
                           alt="Excel spreadsheet output"
                           className="w-full h-full object-contain"
                         />
@@ -274,20 +274,20 @@ export default function Home() {
                 {/* Form Data Comparison */}
                 <div className="space-y-4">
                   <h3 className="text-xl font-semibold text-center">Paper Form → Structured Data</h3>
-                  <div className="h-[600px] rounded-lg overflow-hidden shadow-2xl">
+                  <div className="h-[600px] ">
                     <ComparisonSlider
                       leftLabel="Scanned Form"
                       rightLabel="Structured Output"
                       leftContent={
                         <img 
-                          src="/b.jpeg" 
+                          src="/bb.png" 
                           alt="Paper form before processing"
                           className="w-full h-full object-contain"
                         />
                       }
                       rightContent={
                         <img 
-                          src="/bb.png" 
+                          src="/b.jpeg" 
                           alt="Structured data output"
                           className="w-full h-full object-contain"
                         />
