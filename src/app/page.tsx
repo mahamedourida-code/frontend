@@ -211,14 +211,14 @@ export default function Home() {
                     rightLabel="After"
                     leftContent={
                       <img 
-                        src="/before.jpeg" 
+                        src="/after.png" 
                         alt="Handwritten table before processing"
                         className="w-full h-full object-cover"
                       />
                     }
                     rightContent={
                       <img 
-                        src="/after.png" 
+                        src="/before.jpeg" 
                         alt="Converted Excel spreadsheet"
                         className="w-full h-full object-cover"
                       />
@@ -249,10 +249,10 @@ export default function Home() {
                 {/* Handwritten Table Comparison */}
                 <div className="space-y-4">
                   <h3 className="text-xl font-semibold text-center">Handwritten Table → Excel</h3>
-                  <div className="aspect-video ">
+                  <div className="h-[500px]">
                     <ComparisonSlider
-                      leftLabel="Original Scan"
-                      rightLabel="Excel Output"
+                      leftLabel="before"
+                      rightLabel="after"
                       leftContent={
                         <img 
                           src="/ee.png" 
@@ -274,10 +274,10 @@ export default function Home() {
                 {/* Form Data Comparison */}
                 <div className="space-y-4">
                   <h3 className="text-xl font-semibold text-center">Paper Form → Structured Data</h3>
-                  <div className="h-[600px] ">
+                  <div className="h-[500px] ">
                     <ComparisonSlider
-                      leftLabel="Scanned Form"
-                      rightLabel="Structured Output"
+                      leftLabel="before"
+                      rightLabel="after"
                       leftContent={
                         <img 
                           src="/bb.png" 
