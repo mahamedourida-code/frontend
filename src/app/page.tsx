@@ -219,20 +219,20 @@ export default function Home() {
                       </h3>
                     </div>
                     {/* Before Image */}
-                    <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-2 min-h-[280px]">
+                    <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
                       <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-transparent opacity-50" />
                       <div className="relative h-full w-full flex items-center justify-center">
                         <img 
                           src="/before.png" 
                           alt="Handwritten table before processing" 
-                          className="w-full h-auto object-contain max-h-[270px] rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
+                          className="w-full h-auto object-contain rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Separator Line with Icon */}
-                  <div className="relative h-[2px] bg-border">
+                  <div className="relative h-[2px] bg-gradient-to-r from-transparent via-border to-transparent">
                     <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
                       <div className="bg-card border-2 border-primary rounded-full p-1.5 shadow-lg">
                         <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -242,24 +242,15 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* After Section */}
+                  {/* After Section - No Header */}
                   <div className="relative">
-                    {/* After Header */}
-                    <div className="px-4 py-3 bg-primary/10 border-b border-border/50">
-                      <h3 className="text-sm font-semibold text-primary flex items-center justify-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
-                        </svg>
-                        After: Perfect Excel Spreadsheet
-                      </h3>
-                    </div>
                     {/* After Image */}
-                    <div className="relative bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 p-2 min-h-[280px]">
+                    <div className="relative bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 p-4">
                       <div className="relative h-full w-full flex items-center justify-center">
                         <img 
                           src="/after.png" 
                           alt="Converted Excel spreadsheet" 
-                          className="w-full h-auto object-contain max-h-[270px] rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
+                          className="w-full h-auto object-contain rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
                         />
                       </div>
                     </div>
