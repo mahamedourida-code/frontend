@@ -238,3 +238,11 @@ body {
 .section-how-it-works {
   background: linear-gradient(135deg, hsl(var(--accent) / 0.4) 0%, hsl(var(--accent) / 0.2) 100%);
 }
+
+/* Handwriting font utility */
+@layer utilities {
+  .font-handwriting {
+    font-family: 'Caveat', cursive, system-ui;
+    font-weight: 500;
+  }
+}

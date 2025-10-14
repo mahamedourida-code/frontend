@@ -19,6 +19,7 @@ import { MobileNavigation } from "@/components/MobileNavigation";
 import ScrollAnimatedSection from "@/components/ScrollAnimatedSection";
 import { cn } from "@/lib/utils";
 import { AppLogo } from "@/components/AppIcon";
+import { ComparisonSlider } from "@/components/ComparisonSlider";
 import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target } from "lucide-react";
 
 export default function Home() {
@@ -268,6 +269,199 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Interactive Comparison Section */}
+        <section className="py-24 bg-background relative z-10 overflow-hidden">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12">
+                <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Interactive Demo</Badge>
+                <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+                  See the Transformation in Action
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  Move your cursor over the preview to see how handwritten data transforms into perfect spreadsheets
+                </p>
+              </div>
+
+              {/* Comparison Sliders Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Handwritten Table Comparison */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-center">Handwritten Table → Excel</h3>
+                  <div className="h-[400px]">
+                    <ComparisonSlider
+                      leftLabel="Original Scan"
+                      rightLabel="Excel Ready"
+                      leftContent={
+                        <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-8 flex items-center justify-center">
+                          <div className="font-handwriting text-gray-600 dark:text-gray-400 space-y-4 transform rotate-1">
+                            <div className="border-b-2 border-gray-400 pb-2 mb-4">
+                              <span className="text-xl">Sales Report - March 2024</span>
+                            </div>
+                            <div className="space-y-2">
+                              <div className="flex gap-8 text-sm">
+                                <span className="w-32">Product</span>
+                                <span className="w-20">Units</span>
+                                <span className="w-24">Revenue</span>
+                              </div>
+                              <div className="flex gap-8 text-sm">
+                                <span className="w-32">Laptop Pro</span>
+                                <span className="w-20">247</span>
+                                <span className="w-24">$296,400</span>
+                              </div>
+                              <div className="flex gap-8 text-sm">
+                                <span className="w-32">Phone X</span>
+                                <span className="w-20">523</span>
+                                <span className="w-24">$418,400</span>
+                              </div>
+                              <div className="flex gap-8 text-sm">
+                                <span className="w-32">Tablet Air</span>
+                                <span className="w-20">182</span>
+                                <span className="w-24">$127,400</span>
+                              </div>
+                            </div>
+                            <div className="border-t-2 border-gray-400 pt-2 mt-4">
+                              <div className="flex gap-8 text-sm font-bold">
+                                <span className="w-32">Total:</span>
+                                <span className="w-20">952</span>
+                                <span className="w-24">$842,200</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                      rightContent={
+                        <div className="w-full h-full bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 p-8 flex items-center justify-center">
+                          <div className="w-full max-w-md">
+                            <div className="bg-card rounded-lg shadow-lg border border-border overflow-hidden">
+                              <div className="bg-primary/10 px-4 py-2 border-b border-border">
+                                <span className="text-sm font-semibold text-primary">Sales Report - March 2024.xlsx</span>
+                              </div>
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="border-b border-border bg-muted/30">
+                                    <th className="text-left p-3 font-medium">Product</th>
+                                    <th className="text-right p-3 font-medium">Units</th>
+                                    <th className="text-right p-3 font-medium">Revenue</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr className="border-b border-border/50">
+                                    <td className="p-3">Laptop Pro</td>
+                                    <td className="p-3 text-right">247</td>
+                                    <td className="p-3 text-right">$296,400</td>
+                                  </tr>
+                                  <tr className="border-b border-border/50">
+                                    <td className="p-3">Phone X</td>
+                                    <td className="p-3 text-right">523</td>
+                                    <td className="p-3 text-right">$418,400</td>
+                                  </tr>
+                                  <tr className="border-b border-border/50">
+                                    <td className="p-3">Tablet Air</td>
+                                    <td className="p-3 text-right">182</td>
+                                    <td className="p-3 text-right">$127,400</td>
+                                  </tr>
+                                  <tr className="bg-muted/50">
+                                    <td className="p-3 font-semibold">Total</td>
+                                    <td className="p-3 text-right font-semibold">952</td>
+                                    <td className="p-3 text-right font-semibold text-primary">$842,200</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* Form Data Comparison */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-center">Paper Form → Structured Data</h3>
+                  <div className="h-[400px]">
+                    <ComparisonSlider
+                      leftLabel="Scanned Form"
+                      rightLabel="CSV Export"
+                      leftContent={
+                        <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-8 flex items-center justify-center">
+                          <div className="font-handwriting text-gray-600 dark:text-gray-400 space-y-4 transform -rotate-1">
+                            <div className="border-2 border-gray-400 p-4 rounded-lg">
+                              <h4 className="text-lg font-bold mb-4">Customer Registration</h4>
+                              <div className="space-y-3 text-sm">
+                                <div>
+                                  <span className="font-semibold">Name:</span>
+                                  <span className="ml-2 border-b border-gray-400">John Michael Smith</span>
+                                </div>
+                                <div>
+                                  <span className="font-semibold">Email:</span>
+                                  <span className="ml-2 border-b border-gray-400">john.smith@email.com</span>
+                                </div>
+                                <div>
+                                  <span className="font-semibold">Phone:</span>
+                                  <span className="ml-2 border-b border-gray-400">+1 (555) 123-4567</span>
+                                </div>
+                                <div>
+                                  <span className="font-semibold">Address:</span>
+                                  <span className="ml-2 border-b border-gray-400">123 Main St, NYC 10001</span>
+                                </div>
+                                <div>
+                                  <span className="font-semibold">Date:</span>
+                                  <span className="ml-2 border-b border-gray-400">March 15, 2024</span>
+                                </div>
+                                <div>
+                                  <span className="font-semibold">Plan:</span>
+                                  <span className="ml-2 border-b border-gray-400">Premium ✓</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                      rightContent={
+                        <div className="w-full h-full bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 p-8 flex items-center justify-center">
+                          <div className="w-full max-w-md">
+                            <div className="bg-card rounded-lg shadow-lg border border-border overflow-hidden">
+                              <div className="bg-primary/10 px-4 py-2 border-b border-border">
+                                <span className="text-sm font-semibold text-primary">customers_march.csv</span>
+                              </div>
+                              <div className="p-4 font-mono text-xs space-y-1">
+                                <div className="text-muted-foreground">name,email,phone,address,date,plan</div>
+                                <div>"John Michael Smith","john.smith@email.com",</div>
+                                <div>"+1 (555) 123-4567","123 Main St, NYC 10001",</div>
+                                <div>"2024-03-15","Premium"</div>
+                                <div className="mt-4 pt-2 border-t border-border/50">
+                                  <Badge variant="outline" className="text-xs">
+                                    <CheckCircle className="w-3 h-3 mr-1" />
+                                    100% Accuracy
+                                  </Badge>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom CTA */}
+              <div className="text-center mt-12">
+                <p className="text-muted-foreground mb-4">Experience the power of AI-driven OCR technology</p>
+                <Button
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90"
+                  onClick={() => window.location.href = '/sign-up'}
+                >
+                  Try It Yourself
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
               </div>
             </div>
           </div>
