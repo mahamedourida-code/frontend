@@ -257,14 +257,14 @@ export default function Home() {
                         <img 
                           src="/e.jpg" 
                           alt="Handwritten table before processing"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
                         />
                       }
                       rightContent={
                         <img 
                           src="/ee.png" 
                           alt="Excel spreadsheet output"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
                         />
                       }
                     />
@@ -282,14 +282,14 @@ export default function Home() {
                         <img 
                           src="/b.jpeg" 
                           alt="Paper form before processing"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
                         />
                       }
                       rightContent={
                         <img 
                           src="/bb.png" 
                           alt="Structured data output"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
                         />
                       }
                     />
