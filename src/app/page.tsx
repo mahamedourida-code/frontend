@@ -211,7 +211,7 @@ export default function Home() {
                     rightLabel="After"
                     leftContent={
                       <img 
-                        src="/before.png" 
+                        src="/before.jpeg" 
                         alt="Handwritten table before processing"
                         className="w-full h-full object-cover"
                       />
@@ -255,7 +255,7 @@ export default function Home() {
                       rightLabel="Excel Output"
                       leftContent={
                         <img 
-                          src="/before.png" 
+                          src="/before.jpeg" 
                           alt="Handwritten table before processing"
                           className="w-full h-full object-cover"
                         />
@@ -280,14 +280,14 @@ export default function Home() {
                       rightLabel="Structured Output"
                       leftContent={
                         <img 
-                          src="/before.png" 
+                          src="/e.jpg" 
                           alt="Paper form before processing"
                           className="w-full h-full object-cover"
                         />
                       }
                       rightContent={
                         <img 
-                          src="/after.png" 
+                          src="/ee.png" 
                           alt="Structured data output"
                           className="w-full h-full object-cover"
                         />
