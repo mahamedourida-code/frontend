@@ -203,36 +203,27 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Right Visual - Image Comparison */}
+              {/* Right Visual - Interactive Comparison Slider */}
               <div className="relative">
-                {/* Comparison Container - Vertical Stacked Layout */}
-                <div className="space-y-3">
-                  {/* Before Image */}
-                  <div className="relative">
-                    <p className="text-xs text-muted-foreground mb-2 text-center">Before</p>
-                    <img 
-                      src="/before.jpeg" 
-                      alt="Handwritten table before processing" 
-                      className="w-full h-auto object-contain rounded-lg shadow-xl"
-                    />
-                  </div>
-
-                  {/* Arrow or Divider */}
-                  <div className="flex items-center justify-center">
-                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                    </svg>
-                  </div>
-
-                  {/* After Image */}
-                  <div className="relative">
-                    <p className="text-xs text-primary mb-2 text-center">After</p>
-                    <img 
-                      src="/after.png" 
-                      alt="Converted Excel spreadsheet" 
-                      className="w-full h-auto object-contain rounded-lg shadow-xl"
-                    />
-                  </div>
+                <div className="h-[400px] rounded-lg overflow-hidden shadow-2xl">
+                  <ComparisonSlider
+                    leftLabel="Before"
+                    rightLabel="After"
+                    leftContent={
+                      <img 
+                        src="/before.png" 
+                        alt="Handwritten table before processing"
+                        className="w-full h-full object-cover"
+                      />
+                    }
+                    rightContent={
+                      <img 
+                        src="/after.png" 
+                        alt="Converted Excel spreadsheet"
+                        className="w-full h-full object-cover"
+                      />
+                    }
+                  />
                 </div>
               </div>
             </div>
