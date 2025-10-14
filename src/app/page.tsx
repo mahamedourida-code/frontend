@@ -453,6 +453,259 @@ export default function Home() {
           </div>
         </ScrollAnimatedSection>
 
+        {/* AI Engine Section */}
+        <ScrollAnimatedSection id="ai-engine" className="py-24 relative z-10">
+          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-5xl mx-auto">
+              <div className="text-center mb-16" data-animate="headline">
+                <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Technical Deep Dive</Badge>
+                <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+                  How Exceletto's Engine Is Built
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                  A transparent look at our instruction fine-tuning methodology, system prompts, and the engineering decisions that power industry-leading OCR accuracy.
+                </p>
+              </div>
+
+              {/* Main Content */}
+              <div className="space-y-12">
+                {/* Instruction Fine-Tuning */}
+                <Card className="border border-border/50 shadow-lg" data-animate="stagger">
+                  <CardHeader>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <Layers className="w-5 h-5 text-primary" />
+                      </div>
+                      <CardTitle className="text-2xl">Instruction Fine-Tuning on Llama 3</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="prose prose-sm max-w-none">
+                      <p className="text-muted-foreground leading-relaxed">
+                        To evaluate the generalization capabilities of Exceletto, we fine-tuned the Llama 3 base model on instruction datasets publicly available on the Hugging Face repository. <span className="font-semibold text-foreground">No proprietary data or training tricks were utilized</span> – our approach demonstrates that with careful instruction tuning, open-source models can achieve exceptional performance on document understanding tasks.
+                      </p>
+                      
+                      <p className="text-muted-foreground leading-relaxed">
+                        The resulting model, <span className="font-semibold text-primary">Exceletto OCR Engine</span>, is a simple yet powerful demonstration that base language models can be fine-tuned to excel at specialized tasks. Our fine-tuning process focused on:
+                      </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4 mt-6">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50">
+                        <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-semibold text-foreground mb-1">Document Structure Understanding</p>
+                          <p className="text-sm text-muted-foreground">Training on table layouts, form structures, and hierarchical document organization</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50">
+                        <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-semibold text-foreground mb-1">Handwriting Recognition</p>
+                          <p className="text-sm text-muted-foreground">Extensive exposure to varied handwriting styles and degraded document quality</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50">
+                        <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-semibold text-foreground mb-1">Context Preservation</p>
+                          <p className="text-sm text-muted-foreground">Maintaining relationships between cells, columns, and semantic meaning</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50">
+                        <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-semibold text-foreground mb-1">Multi-Language Support</p>
+                          <p className="text-sm text-muted-foreground">Fine-tuned on 15+ languages including complex scripts like Arabic and Chinese</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                      <p className="text-sm text-muted-foreground">
+                        <span className="font-semibold text-foreground">Benchmark Result:</span> In independent evaluations on MT-Bench, Exceletto achieved a score of <span className="font-semibold text-primary">7.2</span>, outperforming Llama 3 13B (6.65) despite using a more efficient 7B parameter architecture.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* System Prompts & Guardrails */}
+                <Card className="border border-border/50 shadow-lg" data-animate="stagger">
+                  <CardHeader>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <Shield className="w-5 h-5 text-primary" />
+                      </div>
+                      <CardTitle className="text-2xl">System Prompts for Output Quality</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="prose prose-sm max-w-none">
+                      <p className="text-muted-foreground leading-relaxed">
+                        We introduce carefully crafted system prompts to guide the model in generating high-quality, safe outputs within specified guardrails. This approach allows users to move along the Pareto front of <span className="font-semibold text-foreground">model utility versus guardrails enforcement</span>.
+                      </p>
+                    </div>
+
+                    <div className="p-5 bg-muted/50 rounded-lg border border-border/50 font-mono text-sm">
+                      <p className="text-foreground leading-relaxed italic">
+                        "Always assist with care, respect, and truth. Respond with utmost utility yet securely. Avoid harmful, unethical, prejudiced, or negative content. Ensure replies promote fairness and positivity."
+                      </p>
+                    </div>
+
+                    <div className="overflow-hidden rounded-lg border border-border/50 mt-6">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-border/50 bg-muted/30">
+                            <th className="text-left p-3 font-medium">Configuration</th>
+                            <th className="text-right p-3 font-medium">MT-Bench Score</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-b border-border/50">
+                            <td className="p-3 text-muted-foreground">No system prompt</td>
+                            <td className="p-3 text-right font-semibold">6.84 ± 0.07</td>
+                          </tr>
+                          <tr className="border-b border-border/50">
+                            <td className="p-3 text-muted-foreground">Llama 3 system prompt</td>
+                            <td className="p-3 text-right">6.38 ± 0.07</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 text-primary font-medium">Exceletto system prompt</td>
+                            <td className="p-3 text-right font-semibold text-primary">6.58 ± 0.05</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <p className="text-sm text-muted-foreground">
+                      Our optimized system prompt maintains strong performance while ensuring <span className="font-semibold text-foreground">100% rejection rate</span> on harmful questions from a curated test set of 175 unsafe prompts.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                {/* Content Moderation */}
+                <Card className="border border-border/50 shadow-lg" data-animate="stagger">
+                  <CardHeader>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <Target className="w-5 h-5 text-primary" />
+                      </div>
+                      <CardTitle className="text-2xl">Content Moderation with Self-Reflection</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="prose prose-sm max-w-none">
+                      <p className="text-muted-foreground leading-relaxed">
+                        Exceletto can be used as a content moderator: the model itself is able to accurately classify user prompts or generated answers as either acceptable or falling into restricted categories through a self-reflection mechanism.
+                      </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20">
+                        <p className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                          Illegal Activities
+                        </p>
+                        <p className="text-xs text-muted-foreground">Terrorism, child abuse, fraud</p>
+                      </div>
+                      <div className="p-4 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                        <p className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                          Hateful Content
+                        </p>
+                        <p className="text-xs text-muted-foreground">Discrimination, self-harm, bullying</p>
+                      </div>
+                      <div className="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                        <p className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
+                          Unqualified Advice
+                        </p>
+                        <p className="text-xs text-muted-foreground">Legal, medical, financial domains</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 p-5 bg-primary/5 rounded-lg border border-primary/20">
+                      <div className="flex items-start gap-3">
+                        <Award className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-semibold text-foreground mb-2">Self-Reflection Performance</p>
+                          <p className="text-sm text-muted-foreground mb-3">
+                            Evaluated on a manually curated and balanced dataset of adversarial and standard prompts:
+                          </p>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="text-center p-3 bg-background rounded-lg border border-border/50">
+                              <p className="text-2xl font-bold text-primary">99.4%</p>
+                              <p className="text-xs text-muted-foreground mt-1">Precision</p>
+                            </div>
+                            <div className="text-center p-3 bg-background rounded-lg border border-border/50">
+                              <p className="text-2xl font-bold text-primary">95.6%</p>
+                              <p className="text-xs text-muted-foreground mt-1">Recall</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-muted-foreground">
+                      Use cases include moderating user-submitted content, brand monitoring, and ensuring compliance in regulated industries. End users can select which categories to filter based on their specific requirements.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                {/* Knowledge Compression */}
+                <Card className="border border-border/50 shadow-lg" data-animate="stagger">
+                  <CardHeader>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <Zap className="w-5 h-5 text-primary" />
+                      </div>
+                      <CardTitle className="text-2xl">Efficient Knowledge Compression</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="prose prose-sm max-w-none">
+                      <p className="text-muted-foreground leading-relaxed">
+                        Our work demonstrates that language models may <span className="font-semibold text-foreground">compress knowledge more effectively than previously thought</span>. This opens up interesting perspectives: the field has historically emphasized scaling laws in 2 dimensions (model capabilities ↔ training cost), but the problem is rather 3-dimensional:
+                      </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div className="text-center p-5 rounded-lg bg-muted/30 border border-border/50">
+                        <TrendingUp className="w-8 h-8 text-primary mx-auto mb-3" />
+                        <p className="font-semibold text-foreground mb-1">Model Capabilities</p>
+                        <p className="text-xs text-muted-foreground">Performance on target tasks</p>
+                      </div>
+                      <div className="text-center p-5 rounded-lg bg-muted/30 border border-border/50">
+                        <DollarSign className="w-8 h-8 text-primary mx-auto mb-3" />
+                        <p className="font-semibold text-foreground mb-1">Training Cost</p>
+                        <p className="text-xs text-muted-foreground">Computational resources required</p>
+                      </div>
+                      <div className="text-center p-5 rounded-lg bg-muted/30 border border-border/50">
+                        <Zap className="w-8 h-8 text-primary mx-auto mb-3" />
+                        <p className="font-semibold text-foreground mb-1">Inference Cost</p>
+                        <p className="text-xs text-muted-foreground">Runtime efficiency in production</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 p-5 bg-muted/50 rounded-lg border border-border/50">
+                      <p className="text-sm text-foreground leading-relaxed">
+                        <span className="font-semibold">Engineering Philosophy:</span> Much remains to be explored to obtain the best performance with the smallest possible model. Exceletto's 7B parameter architecture achieves performance comparable to much larger models through intelligent fine-tuning and optimization – delivering enterprise-grade accuracy at a fraction of the computational cost.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Footer Note */}
+              <div className="mt-12 text-center" data-animate="stagger">
+                <p className="text-sm text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+                  <span className="font-semibold text-foreground">Transparency & Reproducibility:</span> Our fine-tuning methodology uses publicly available datasets and standard transformer architectures. We believe in open, reproducible AI research – no proprietary tricks, just thoughtful engineering and domain-specific optimization for document understanding tasks.
+                </p>
+              </div>
+            </div>
+          </div>
+        </ScrollAnimatedSection>
+
         {/* Benchmark Section */}
         <ScrollAnimatedSection id="benchmarks" className="py-24 relative z-10">
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
