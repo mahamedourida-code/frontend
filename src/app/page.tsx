@@ -204,58 +204,62 @@ export default function Home() {
 
               {/* Right Visual - Image Comparison */}
               <div className="relative">
-                {/* Comparison Container */}
+                {/* Comparison Container - Vertical Layout */}
                 <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-border/50 bg-card transition-all duration-500 hover:shadow-primary/20 hover:border-primary/30 group">
-                  {/* Header Tabs */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 bg-muted/30 border-b border-border/50">
-                    <div className="px-4 py-3 bg-destructive/10 md:border-r border-b md:border-b-0 border-border/50">
-                      <h3 className="text-sm font-semibold text-destructive flex items-center justify-center md:justify-start gap-2">
+                  
+                  {/* Before Section */}
+                  <div className="relative">
+                    {/* Before Header */}
+                    <div className="px-4 py-3 bg-destructive/10 border-b border-border/50">
+                      <h3 className="text-sm font-semibold text-destructive flex items-center justify-center gap-2">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <span className="hidden sm:inline">Before:</span> Manual Data
+                        Before: Manual Data Entry
                       </h3>
                     </div>
-                    <div className="px-4 py-3 bg-primary/10">
-                      <h3 className="text-sm font-semibold text-primary flex items-center justify-center md:justify-start gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
-                        </svg>
-                        <span className="hidden sm:inline">After:</span> Excel Ready
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* Images Grid */}
-                  <div className="relative grid grid-cols-1 md:grid-cols-2 min-h-[500px] lg:min-h-[600px]">
                     {/* Before Image */}
-                    <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-2 md:border-r border-b md:border-b-0 border-border/50">
+                    <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-3 min-h-[280px]">
                       <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-transparent opacity-50" />
                       <div className="relative h-full w-full flex items-center justify-center">
                         <img 
                           src="/before.png" 
                           alt="Handwritten table before processing" 
-                          className="w-full h-full object-cover rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
+                          className="w-full h-auto object-contain max-h-[260px] rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
                         />
                         {/* Visual Indicator */}
                         <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-destructive/10 rounded-full blur-2xl animate-pulse" />
                       </div>
                     </div>
+                  </div>
 
-                    {/* Center Transform Arrow - Only visible on desktop */}
-                    <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 hidden md:block">
-                      <div className="bg-card border-2 border-primary rounded-full p-3 shadow-lg">
-                        <ArrowRight className="w-6 h-6 text-primary animate-pulse" />
-                      </div>
+                  {/* Transform Arrow */}
+                  <div className="relative flex items-center justify-center py-2 bg-muted/20">
+                    <div className="bg-card border-2 border-primary rounded-full p-2 shadow-lg">
+                      <svg className="w-5 h-5 text-primary animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                      </svg>
                     </div>
+                  </div>
 
+                  {/* After Section */}
+                  <div className="relative">
+                    {/* After Header */}
+                    <div className="px-4 py-3 bg-primary/10 border-b border-border/50">
+                      <h3 className="text-sm font-semibold text-primary flex items-center justify-center gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                        </svg>
+                        After: Perfect Excel Spreadsheet
+                      </h3>
+                    </div>
                     {/* After Image */}
-                    <div className="relative bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 p-2">
+                    <div className="relative bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 p-3 min-h-[280px]">
                       <div className="relative h-full w-full flex items-center justify-center">
                         <img 
                           src="/after.png" 
                           alt="Converted Excel spreadsheet" 
-                          className="w-full h-full object-cover rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
+                          className="w-full h-auto object-contain max-h-[260px] rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
                         />
                         {/* Visual Indicator */}
                         <div className="absolute -bottom-2 -left-2 w-16 h-16 bg-primary/20 rounded-full blur-2xl animate-pulse" />
