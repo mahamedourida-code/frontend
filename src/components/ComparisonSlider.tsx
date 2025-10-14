@@ -65,7 +65,7 @@ export function ComparisonSlider({
     <div
       ref={containerRef}
       className={cn(
-        "relative w-full h-full overflow-hidden rounded-2xl border border-border/50 shadow-2xl select-none",
+        "relative w-full h-full overflow-hidden select-none",
         className
       )}
       onMouseMove={(e) => {

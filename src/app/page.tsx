@@ -205,68 +205,33 @@ export default function Home() {
 
               {/* Right Visual - Image Comparison */}
               <div className="relative">
-                {/* Comparison Container - Vertical Layout */}
-                <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border/50 bg-background transition-all duration-500 hover:shadow-primary/10 hover:border-primary/30 group">
-                  
-                  {/* Before Section */}
+                {/* Comparison Container - Vertical Stacked Layout */}
+                <div className="space-y-3">
+                  {/* Before Image */}
                   <div className="relative">
-                    {/* Before Header */}
-                    <div className="px-4 py-2.5 bg-muted/30 border-b border-border/50">
-                      <h3 className="text-sm font-semibold text-muted-foreground flex items-center justify-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Before: Manual Data Entry
-                      </h3>
-                    </div>
-                    {/* Before Image */}
-                    <div className="relative bg-background p-4">
-                      <div className="relative h-full w-full flex items-center justify-center">
-                        <img 
-                          src="/before.jpeg" 
-                          alt="Handwritten table before processing" 
-                          className="w-full h-auto object-contain rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
-                        />
-                      </div>
-                    </div>
+                    <p className="text-xs text-muted-foreground mb-2 text-center">Before</p>
+                    <img 
+                      src="/before.jpeg" 
+                      alt="Handwritten table before processing" 
+                      className="w-full h-auto object-contain rounded-lg shadow-xl"
+                    />
                   </div>
 
-                  {/* Separator Line */}
-                  <div className="h-px bg-border"></div>
-
-                  {/* After Section */}
-                  <div className="relative">
-                    {/* After Image */}
-                    <div className="relative bg-background p-4">
-                      <div className="relative h-full w-full flex items-center justify-center">
-                        <img 
-                          src="/after.png" 
-                          alt="Converted Excel spreadsheet" 
-                          className="w-full h-auto object-contain rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
-                        />
-                      </div>
-                    </div>
-                    {/* After Label */}
-                    <div className="px-4 py-2.5 bg-muted/30 border-t border-border/50">
-                      <h3 className="text-sm font-semibold text-primary flex items-center justify-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
-                        </svg>
-                        After: Perfect Excel Spreadsheet
-                      </h3>
-                    </div>
+                  {/* Arrow or Divider */}
+                  <div className="flex items-center justify-center">
+                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
                   </div>
 
-                  {/* Bottom Stats Bar */}
-                  <div className="grid grid-cols-2 bg-muted/30 border-t border-border/50">
-                    <div className="px-4 py-2 md:border-r border-border/50 text-center">
-                      <p className="text-xs text-muted-foreground">Time Required</p>
-                      <p className="text-sm font-semibold text-destructive">~15 minutes</p>
-                    </div>
-                    <div className="px-4 py-2 text-center">
-                      <p className="text-xs text-muted-foreground">With Exceletto</p>
-                      <p className="text-sm font-semibold text-primary">5 seconds</p>
-                    </div>
+                  {/* After Image */}
+                  <div className="relative">
+                    <p className="text-xs text-primary mb-2 text-center">After</p>
+                    <img 
+                      src="/after.png" 
+                      alt="Converted Excel spreadsheet" 
+                      className="w-full h-auto object-contain rounded-lg shadow-xl"
+                    />
                   </div>
                 </div>
               </div>
@@ -298,22 +263,18 @@ export default function Home() {
                       leftLabel="Original Scan"
                       rightLabel="Excel Output"
                       leftContent={
-                        <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-                          <img 
-                            src="/before.jpeg" 
-                            alt="Handwritten table before processing"
-                            className="max-w-full max-h-full object-contain rounded-lg shadow-xl"
-                          />
-                        </div>
+                        <img 
+                          src="/before.png" 
+                          alt="Handwritten table before processing"
+                          className="w-full h-full object-cover"
+                        />
                       }
                       rightContent={
-                        <div className="w-full h-full bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 flex items-center justify-center p-4">
-                          <img 
-                            src="/after.png" 
-                            alt="Excel spreadsheet output"
-                            className="max-w-full max-h-full object-contain rounded-lg shadow-xl"
-                          />
-                        </div>
+                        <img 
+                          src="/after.png" 
+                          alt="Excel spreadsheet output"
+                          className="w-full h-full object-cover"
+                        />
                       }
                     />
                   </div>
@@ -327,22 +288,18 @@ export default function Home() {
                       leftLabel="Scanned Form"
                       rightLabel="Structured Output"
                       leftContent={
-                        <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-                          <img 
-                            src="/b.jpeg" 
-                            alt="Paper form before processing"
-                            className="max-w-full max-h-full object-contain rounded-lg shadow-xl"
-                          />
-                        </div>
+                        <img 
+                          src="/before.png" 
+                          alt="Paper form before processing"
+                          className="w-full h-full object-cover"
+                        />
                       }
                       rightContent={
-                        <div className="w-full h-full bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 flex items-center justify-center p-4">
-                          <img 
-                            src="/bb.png" 
-                            alt="Structured data output"
-                            className="max-w-full max-h-full object-contain rounded-lg shadow-xl"
-                          />
-                        </div>
+                        <img 
+                          src="/after.png" 
+                          alt="Structured data output"
+                          className="w-full h-full object-cover"
+                        />
                       }
                     />
                   </div>
