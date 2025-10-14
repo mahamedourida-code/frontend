@@ -202,32 +202,85 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Right Visual */}
+              {/* Right Visual - Image Comparison */}
               <div className="relative">
-                <div className="space-y-6">
-                  {/* Before Section */}
-                  <div className="text-center space-y-3">
-                    <h3 className="text-lg font-bold text-foreground">Before: Handwritten Data</h3>
-                    <div className="inline-block border-2 border-black rounded-lg overflow-hidden shadow-lg bg-white h-80">
-                      <img 
-                        src="/before.png" 
-                        alt="Handwritten table before processing" 
-                        className="w-full h-full object-contain"
-                      />
+                {/* Comparison Container */}
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-border/50 bg-card transition-all duration-500 hover:shadow-primary/20 hover:border-primary/30 group">
+                  {/* Header Tabs */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 bg-muted/30 border-b border-border/50">
+                    <div className="px-4 py-3 bg-destructive/10 md:border-r border-b md:border-b-0 border-border/50">
+                      <h3 className="text-sm font-semibold text-destructive flex items-center justify-center md:justify-start gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span className="hidden sm:inline">Before:</span> Manual Data
+                      </h3>
+                    </div>
+                    <div className="px-4 py-3 bg-primary/10">
+                      <h3 className="text-sm font-semibold text-primary flex items-center justify-center md:justify-start gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                        </svg>
+                        <span className="hidden sm:inline">After:</span> Excel Ready
+                      </h3>
                     </div>
                   </div>
 
-                  {/* After Section */}
-                  <div className="text-center space-y-3">
-                    <h3 className="text-lg font-bold text-foreground">After: Perfect Excel</h3>
-                    <div className="inline-block border-2 border-black rounded-lg overflow-hidden shadow-lg bg-white h-54">
-                      <img 
-                        src="/after.png" 
-                        alt="Converted Excel spreadsheet" 
-                        className="w-full h-full object-contain"
-                      />
+                  {/* Images Grid */}
+                  <div className="relative grid grid-cols-1 md:grid-cols-2 min-h-[400px]">
+                    {/* Before Image */}
+                    <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4 md:border-r border-b md:border-b-0 border-border/50">
+                      <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-transparent opacity-50" />
+                      <div className="relative h-full flex items-center justify-center">
+                        <img 
+                          src="/before.png" 
+                          alt="Handwritten table before processing" 
+                          className="max-w-full max-h-full object-contain rounded-lg shadow-lg group-hover:scale-105 transition-transform duration-500"
+                        />
+                        {/* Visual Indicator */}
+                        <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-destructive/10 rounded-full blur-2xl animate-pulse" />
+                      </div>
+                    </div>
+
+                    {/* Center Transform Arrow - Only visible on desktop */}
+                    <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 hidden md:block">
+                      <div className="bg-card border-2 border-primary rounded-full p-3 shadow-lg">
+                        <ArrowRight className="w-6 h-6 text-primary animate-pulse" />
+                      </div>
+                    </div>
+
+                    {/* After Image */}
+                    <div className="relative bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 p-4">
+                      <div className="relative h-full flex items-center justify-center">
+                        <img 
+                          src="/after.png" 
+                          alt="Converted Excel spreadsheet" 
+                          className="max-w-full max-h-full object-contain rounded-lg shadow-lg group-hover:scale-105 transition-transform duration-500"
+                        />
+                        {/* Visual Indicator */}
+                        <div className="absolute -bottom-2 -left-2 w-16 h-16 bg-primary/20 rounded-full blur-2xl animate-pulse" />
+                      </div>
                     </div>
                   </div>
+
+                  {/* Bottom Stats Bar */}
+                  <div className="grid grid-cols-2 bg-muted/30 border-t border-border/50">
+                    <div className="px-4 py-2 md:border-r border-border/50 text-center">
+                      <p className="text-xs text-muted-foreground">Time Required</p>
+                      <p className="text-sm font-semibold text-destructive">~15 minutes</p>
+                    </div>
+                    <div className="px-4 py-2 text-center">
+                      <p className="text-xs text-muted-foreground">With Exceletto</p>
+                      <p className="text-sm font-semibold text-primary">5 seconds</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating Badge */}
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                  <Badge className="bg-primary text-primary-foreground shadow-lg">
+                    <span className="animate-pulse mr-1">✨</span> AI-Powered Transformation
+                  </Badge>
                 </div>
               </div>
             </div>
@@ -495,23 +548,62 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Final CTA Section */}
-        <section className="py-24 bg-gradient-to-br from-green-50 via-white to-green-100/70 dark:from-green-900 dark:via-green-800 dark:to-green-900/90 text-gray-800 dark:text-green-50 relative overflow-hidden border-t border-green-200/50 dark:border-green-700/50">
-          <div className="absolute inset-0 bg-gradient-to-r from-green-100/20 via-transparent to-green-100/20 dark:from-green-700/30 dark:via-transparent dark:to-green-700/30" />
+        <section className="py-24 bg-background relative z-10 overflow-hidden border-t border-border">
+          {/* Background decoration */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-primary/5" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+          
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
-              Ready to Transform Your Workflow?
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-green-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of professionals who have already revolutionized their data extraction process with Exceletto.
-            </p>
-            <div className="flex justify-center">
-              <Button
-                size="lg"
-                className="text-lg px-8 py-6 h-auto bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-400 text-white hover:scale-105 transition-transform shadow-lg border-0"
-                onClick={() => window.location.href = '/sign-up'}
-              >
-                Start Free Trial
-              </Button>
+            {/* CTA Content */}
+            <div className="max-w-3xl mx-auto">
+              <Badge variant="outline" className="mb-4 border-primary/50 text-primary">
+                Get Started Today
+              </Badge>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-foreground bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
+                Ready to Transform Your Workflow?
+              </h2>
+              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                Join thousands of professionals who have already revolutionized their data extraction process with Exceletto.
+              </p>
+              
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  size="lg"
+                  className="text-lg px-8 py-6 h-auto bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 transition-all duration-200 shadow-lg shadow-primary/20"
+                  onClick={() => window.location.href = '/sign-up'}
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Start Free Trial
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-lg px-8 py-6 h-auto hover:scale-105 transition-all duration-200 border-primary/50 hover:border-primary"
+                  onClick={() => window.location.href = '/sign-in'}
+                >
+                  Sign In to Dashboard
+                </Button>
+              </div>
+              
+              {/* Trust Indicators */}
+              <div className="mt-12 pt-12 border-t border-border/50">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary" />
+                    <span>No credit card required</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary" />
+                    <span>Free trial for 7 days</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary" />
+                    <span>Cancel anytime</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
