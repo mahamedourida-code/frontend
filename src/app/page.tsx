@@ -255,14 +255,14 @@ export default function Home() {
                       rightLabel="Excel Output"
                       leftContent={
                         <img 
-                          src="/before.jpeg" 
+                          src="/e.jpg" 
                           alt="Handwritten table before processing"
                           className="w-full h-full object-cover"
                         />
                       }
                       rightContent={
                         <img 
-                          src="/after.png" 
+                          src="/ee.png" 
                           alt="Excel spreadsheet output"
                           className="w-full h-full object-cover"
                         />
@@ -280,14 +280,14 @@ export default function Home() {
                       rightLabel="Structured Output"
                       leftContent={
                         <img 
-                          src="/e.jpg" 
+                          src="/b.jpeg" 
                           alt="Paper form before processing"
                           className="w-full h-full object-cover"
                         />
                       }
                       rightContent={
                         <img 
-                          src="/ee.png" 
+                          src="/bb.png" 
                           alt="Structured data output"
                           className="w-full h-full object-cover"
                         />
