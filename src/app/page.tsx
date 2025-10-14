@@ -172,7 +172,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <section className="min-h-screen flex items-start justify-start pt-20 pb-12 bg-muted/80 border-y border-border relative overflow-hidden">
+        <section className="min-h-screen flex items-start justify-start pt-20 pb-12 bg-background relative overflow-hidden">
           {/* Glowing effect overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent blur-3xl" />
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
@@ -277,7 +277,7 @@ export default function Home() {
         {/* Interactive Comparison Section */}
         <section className="py-24 bg-background relative z-10 overflow-hidden">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
+            <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
                 <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Interactive Demo</Badge>
                 <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
@@ -288,93 +288,31 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Comparison Sliders Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Comparison Sliders - Stacked Vertically */}
+              <div className="space-y-16">
                 {/* Handwritten Table Comparison */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-center">Handwritten Table → Excel</h3>
-                  <div className="h-[400px]">
+                  <h3 className="text-xl font-semibold text-center">Handwritten Table → Excel</h3>
+                  <div className="h-[600px]">
                     <ComparisonSlider
                       leftLabel="Original Scan"
-                      rightLabel="Excel Ready"
+                      rightLabel="Excel Output"
                       leftContent={
-                        <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-8 flex items-center justify-center">
-                          <div className="font-handwriting text-gray-600 dark:text-gray-400 space-y-4 transform rotate-1">
-                            <div className="border-b-2 border-gray-400 pb-2 mb-4">
-                              <span className="text-xl">Sales Report - March 2024</span>
-                            </div>
-                            <div className="space-y-2">
-                              <div className="flex gap-8 text-sm">
-                                <span className="w-32">Product</span>
-                                <span className="w-20">Units</span>
-                                <span className="w-24">Revenue</span>
-                              </div>
-                              <div className="flex gap-8 text-sm">
-                                <span className="w-32">Laptop Pro</span>
-                                <span className="w-20">247</span>
-                                <span className="w-24">$296,400</span>
-                              </div>
-                              <div className="flex gap-8 text-sm">
-                                <span className="w-32">Phone X</span>
-                                <span className="w-20">523</span>
-                                <span className="w-24">$418,400</span>
-                              </div>
-                              <div className="flex gap-8 text-sm">
-                                <span className="w-32">Tablet Air</span>
-                                <span className="w-20">182</span>
-                                <span className="w-24">$127,400</span>
-                              </div>
-                            </div>
-                            <div className="border-t-2 border-gray-400 pt-2 mt-4">
-                              <div className="flex gap-8 text-sm font-bold">
-                                <span className="w-32">Total:</span>
-                                <span className="w-20">952</span>
-                                <span className="w-24">$842,200</span>
-                              </div>
-                            </div>
-                          </div>
+                        <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+                          <img 
+                            src="/before.png" 
+                            alt="Handwritten table before processing"
+                            className="max-w-full max-h-full object-contain rounded-lg shadow-xl"
+                          />
                         </div>
                       }
                       rightContent={
-                        <div className="w-full h-full bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 p-8 flex items-center justify-center">
-                          <div className="w-full max-w-md">
-                            <div className="bg-card rounded-lg shadow-lg border border-border overflow-hidden">
-                              <div className="bg-primary/10 px-4 py-2 border-b border-border">
-                                <span className="text-sm font-semibold text-primary">Sales Report - March 2024.xlsx</span>
-                              </div>
-                              <table className="w-full text-sm">
-                                <thead>
-                                  <tr className="border-b border-border bg-muted/30">
-                                    <th className="text-left p-3 font-medium">Product</th>
-                                    <th className="text-right p-3 font-medium">Units</th>
-                                    <th className="text-right p-3 font-medium">Revenue</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr className="border-b border-border/50">
-                                    <td className="p-3">Laptop Pro</td>
-                                    <td className="p-3 text-right">247</td>
-                                    <td className="p-3 text-right">$296,400</td>
-                                  </tr>
-                                  <tr className="border-b border-border/50">
-                                    <td className="p-3">Phone X</td>
-                                    <td className="p-3 text-right">523</td>
-                                    <td className="p-3 text-right">$418,400</td>
-                                  </tr>
-                                  <tr className="border-b border-border/50">
-                                    <td className="p-3">Tablet Air</td>
-                                    <td className="p-3 text-right">182</td>
-                                    <td className="p-3 text-right">$127,400</td>
-                                  </tr>
-                                  <tr className="bg-muted/50">
-                                    <td className="p-3 font-semibold">Total</td>
-                                    <td className="p-3 text-right font-semibold">952</td>
-                                    <td className="p-3 text-right font-semibold text-primary">$842,200</td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
+                        <div className="w-full h-full bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 flex items-center justify-center p-4">
+                          <img 
+                            src="/after.png" 
+                            alt="Excel spreadsheet output"
+                            className="max-w-full max-h-full object-contain rounded-lg shadow-xl"
+                          />
                         </div>
                       }
                     />
@@ -383,92 +321,39 @@ export default function Home() {
 
                 {/* Form Data Comparison */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-center">Paper Form → Structured Data</h3>
-                  <div className="h-[400px]">
+                  <h3 className="text-xl font-semibold text-center">Paper Form → Structured Data</h3>
+                  <div className="h-[600px]">
                     <ComparisonSlider
                       leftLabel="Scanned Form"
-                      rightLabel="CSV Export"
+                      rightLabel="Structured Output"
                       leftContent={
-                        <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-8 flex items-center justify-center">
-                          <div className="font-handwriting text-gray-600 dark:text-gray-400 space-y-4 transform -rotate-1">
-                            <div className="border-2 border-gray-400 p-4 rounded-lg">
-                              <h4 className="text-lg font-bold mb-4">Customer Registration</h4>
-                              <div className="space-y-3 text-sm">
-                                <div>
-                                  <span className="font-semibold">Name:</span>
-                                  <span className="ml-2 border-b border-gray-400">John Michael Smith</span>
-                                </div>
-                                <div>
-                                  <span className="font-semibold">Email:</span>
-                                  <span className="ml-2 border-b border-gray-400">john.smith@email.com</span>
-                                </div>
-                                <div>
-                                  <span className="font-semibold">Phone:</span>
-                                  <span className="ml-2 border-b border-gray-400">+1 (555) 123-4567</span>
-                                </div>
-                                <div>
-                                  <span className="font-semibold">Address:</span>
-                                  <span className="ml-2 border-b border-gray-400">123 Main St, NYC 10001</span>
-                                </div>
-                                <div>
-                                  <span className="font-semibold">Date:</span>
-                                  <span className="ml-2 border-b border-gray-400">March 15, 2024</span>
-                                </div>
-                                <div>
-                                  <span className="font-semibold">Plan:</span>
-                                  <span className="ml-2 border-b border-gray-400">Premium ✓</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                        <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+                          <img 
+                            src="/before.png" 
+                            alt="Paper form before processing"
+                            className="max-w-full max-h-full object-contain rounded-lg shadow-xl"
+                          />
                         </div>
                       }
                       rightContent={
-                        <div className="w-full h-full bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 p-8 flex items-center justify-center">
-                          <div className="w-full max-w-md">
-                            <div className="bg-card rounded-lg shadow-lg border border-border overflow-hidden">
-                              <div className="bg-primary/10 px-4 py-2 border-b border-border">
-                                <span className="text-sm font-semibold text-primary">customers_march.csv</span>
-                              </div>
-                              <div className="p-4 font-mono text-xs space-y-1">
-                                <div className="text-muted-foreground">name,email,phone,address,date,plan</div>
-                                <div>"John Michael Smith","john.smith@email.com",</div>
-                                <div>"+1 (555) 123-4567","123 Main St, NYC 10001",</div>
-                                <div>"2024-03-15","Premium"</div>
-                                <div className="mt-4 pt-2 border-t border-border/50">
-                                  <Badge variant="outline" className="text-xs">
-                                    <CheckCircle className="w-3 h-3 mr-1" />
-                                    100% Accuracy
-                                  </Badge>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                        <div className="w-full h-full bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 flex items-center justify-center p-4">
+                          <img 
+                            src="/after.png" 
+                            alt="Structured data output"
+                            className="max-w-full max-h-full object-contain rounded-lg shadow-xl"
+                          />
                         </div>
                       }
                     />
                   </div>
                 </div>
               </div>
-
-              {/* Bottom CTA */}
-              <div className="text-center mt-12">
-                <p className="text-muted-foreground mb-4">Experience the power of AI-driven OCR technology</p>
-                <Button
-                  size="lg"
-                  className="bg-primary hover:bg-primary/90"
-                  onClick={() => window.location.href = '/sign-up'}
-                >
-                  Try It Yourself
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
             </div>
           </div>
         </section>
 
         {/* Why Choose Us Section */}
-        <ScrollAnimatedSection id="features" className="py-24 bg-muted/80 border-y border-border relative z-10">
+        <ScrollAnimatedSection id="features" className="py-24 bg-background relative z-10">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent" />
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16" data-animate="headline">
@@ -533,7 +418,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Companies Section - Trusted By */}
-        <ScrollAnimatedSection id="trusted" className="py-20 bg-muted/80 border-y border-border relative z-10 overflow-hidden">
+        <ScrollAnimatedSection id="trusted" className="py-20 bg-background relative z-10 overflow-hidden">
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent" />
           <div className="relative z-10 text-center mb-12" data-animate="headline">
@@ -581,7 +466,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* How It Works Section */}
-        <ScrollAnimatedSection id="how-it-works" className="py-24 bg-muted/80 border-y border-border relative z-10 overflow-hidden">
+        <ScrollAnimatedSection id="how-it-works" className="py-24 bg-background relative z-10 overflow-hidden">
           {/* Diagonal stripes pattern */}
           <div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,_transparent,_transparent_10px,_rgb(255_255_255_/_0.1)_10px,_rgb(255_255_255_/_0.1)_20px)]" />
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
@@ -628,7 +513,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Benchmark Section */}
-        <ScrollAnimatedSection id="benchmarks" className="py-24 bg-muted/80 border-y border-border relative z-10">
+        <ScrollAnimatedSection id="benchmarks" className="py-24 bg-background relative z-10">
           {/* Glowing effect overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent blur-3xl" />
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
@@ -841,7 +726,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-muted/80 backdrop-blur-md border-t border-border relative z-10">
+      <footer className="bg-background backdrop-blur-md border-t border-border relative z-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
