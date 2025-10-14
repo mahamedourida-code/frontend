@@ -223,7 +223,7 @@ export default function Home() {
                     <div className="relative bg-background p-4">
                       <div className="relative h-full w-full flex items-center justify-center">
                         <img 
-                          src="/before.png" 
+                          src="/before.jpg" 
                           alt="Handwritten table before processing" 
                           className="w-full h-auto object-contain rounded-lg shadow-lg group-hover:scale-[1.02] transition-transform duration-500"
                         />
@@ -300,7 +300,7 @@ export default function Home() {
                       leftContent={
                         <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
                           <img 
-                            src="/before.png" 
+                            src="/before.jpg" 
                             alt="Handwritten table before processing"
                             className="max-w-full max-h-full object-contain rounded-lg shadow-xl"
                           />
@@ -329,7 +329,7 @@ export default function Home() {
                       leftContent={
                         <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
                           <img 
-                            src="/before.png" 
+                            src="/b.jpg" 
                             alt="Paper form before processing"
                             className="max-w-full max-h-full object-contain rounded-lg shadow-xl"
                           />
@@ -338,7 +338,7 @@ export default function Home() {
                       rightContent={
                         <div className="w-full h-full bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 flex items-center justify-center p-4">
                           <img 
-                            src="/after.png" 
+                            src="/bb.png" 
                             alt="Structured data output"
                             className="max-w-full max-h-full object-contain rounded-lg shadow-xl"
                           />
