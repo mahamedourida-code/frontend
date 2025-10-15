@@ -30,6 +30,16 @@ import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
 
+// Declare global UnicornStudio type
+declare global {
+  interface Window {
+    UnicornStudio: {
+      isInitialized: boolean;
+      init?: () => void;
+    };
+  }
+}
+
 export default function Home() {
   const headerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
@@ -38,6 +48,20 @@ export default function Home() {
   const comparisonRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    // Load Unicorn Studio script
+    if (!window.UnicornStudio) {
+      window.UnicornStudio = { isInitialized: false };
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.33/dist/unicornStudio.umd.js";
+      script.onload = function() {
+        if (!window.UnicornStudio.isInitialized) {
+          (window as any).UnicornStudio.init();
+          window.UnicornStudio.isInitialized = true;
+        }
+      };
+      (document.head || document.body).appendChild(script);
+    }
+
     // Header animation
     if (headerRef.current) {
       gsap.fromTo(headerRef.current,
@@ -335,31 +359,35 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Right Visual - Interactive Comparison Slider */}
+              {/* Right Visual - Unicorn Studio Effect */}
               <div ref={heroImageRef} className="relative perspective-1000">
                 {/* Floating decorative elements */}
                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl animate-pulse" />
                 <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl animate-pulse delay-700" />
                 
-                <div className="h-[400px]">
-                  <ComparisonSlider
-                    leftLabel="Before"
-                    rightLabel="After"
-                    leftContent={
-                      <img 
-                        src="/after.png" 
-                        alt="Handwritten table before processing"
-                        className="w-full h-full object-contain"
-                      />
-                    }
-                    rightContent={
-                      <img 
-                        src="/before.jpeg" 
-                        alt="Converted Excel spreadsheet"
-                        className="w-full h-full object-contain"
-                      />
-                    }
+                <div className="relative h-[540px] w-[540px] mx-auto rounded-2xl overflow-hidden shadow-2xl border border-primary/20">
+                  {/* Background image - before processing */}
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                    style={{
+                      backgroundImage: 'url(/b.jpeg)',
+                    }}
                   />
+                  
+                  {/* Unicorn Studio container - after processing effect */}
+                  <div 
+                    data-us-project="2e7qQhdeoA1qQmcUaLCL" 
+                    className="relative w-full h-full"
+                    style={{
+                      transform: 'scale(0.5)',
+                      transformOrigin: 'center center'
+                    }}
+                  />
+                  
+                  {/* Overlay labels */}
+                  <div className="absolute top-4 left-4 z-10 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                    <span className="text-xs font-semibold text-white">Before → After</span>
+                  </div>
                 </div>
               </div>
             </div>
