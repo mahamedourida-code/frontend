@@ -65,8 +65,8 @@ export default function SettingsPage() {
   const [fullName, setFullName] = useState("")
   const [email, setEmail] = useState("")
   
-  // Security state
-  const [currentPassword, setCurrentPassword] = useState("")
+  // Password state
+  const [oldPassword, setOldPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   
   // API state
@@ -117,6 +117,10 @@ export default function SettingsPage() {
 
   // Update password
   const handleUpdatePassword = async () => {
+    if (!oldPassword) {
+      toast.error("Please enter your current password")
+      return
+    }
     if (!newPassword) {
       toast.error("Please enter a new password")
       return
@@ -124,6 +128,17 @@ export default function SettingsPage() {
     
     setLoading(true)
     try {
+      // First verify the old password by attempting to sign in
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user?.email || "",
+        password: oldPassword
+      })
+      
+      if (signInError) {
+        throw new Error("Current password is incorrect")
+      }
+      
+      // Now update to the new password
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       })
@@ -131,7 +146,7 @@ export default function SettingsPage() {
       if (error) throw error
       
       toast.success("Password updated successfully")
-      setCurrentPassword("")
+      setOldPassword("")
       setNewPassword("")
     } catch (error: any) {
       toast.error(error.message || "Failed to update password")
@@ -174,7 +189,6 @@ export default function SettingsPage() {
       title: "User & authentication",
       items: [
         { id: 'account', label: 'Account Settings', icon: User },
-        { id: 'security', label: 'Security', icon: Shield },
       ]
     },
     {
@@ -314,26 +328,23 @@ export default function SettingsPage() {
                         {loading ? "Saving..." : "Save Changes"}
                       </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              )}
 
-              {/* Security */}
-              {activeSection === 'security' && (
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <Shield className="h-5 w-5 text-primary" />
-                      <CardTitle>Security</CardTitle>
-                    </div>
-                    <CardDescription>
-                      Manage your password and security settings
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
+                    <Separator className="my-6" />
+
+                    {/* Password Change Section */}
                     <div className="space-y-4">
                       <h3 className="text-sm font-semibold">Change Password</h3>
                       <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="old-password">Current Password</Label>
+                          <Input 
+                            id="old-password" 
+                            type="password" 
+                            placeholder="Enter current password"
+                            value={oldPassword}
+                            onChange={(e) => setOldPassword(e.target.value)}
+                          />
+                        </div>
                         <div className="space-y-2">
                           <Label htmlFor="new-password">New Password</Label>
                           <Input 
@@ -350,47 +361,16 @@ export default function SettingsPage() {
                       </div>
                       <Button 
                         onClick={handleUpdatePassword}
-                        disabled={loading || !newPassword}
+                        disabled={loading || !oldPassword || !newPassword}
                       >
                         {loading ? "Updating..." : "Update Password"}
                       </Button>
                     </div>
-
-                    <Separator />
-
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-semibold">Two-Factor Authentication</h3>
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <p className="text-sm">Add an extra layer of security to your account</p>
-                          <p className="text-xs text-muted-foreground">Use an authenticator app to generate codes</p>
-                        </div>
-                        <Switch />
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-semibold">Session Management</h3>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-0.5">
-                            <p className="text-sm font-medium">Active Sessions</p>
-                            <p className="text-xs text-muted-foreground">You have 2 active sessions</p>
-                          </div>
-                          <Button variant="outline" size="sm">View All</Button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-end gap-3 pt-4">
-                      <Button variant="outline">Cancel</Button>
-                      <Button>Save Security Settings</Button>
-                    </div>
                   </CardContent>
                 </Card>
               )}
+
+
 
               {/* Billing & Subscription */}
               {activeSection === 'billing' && (
