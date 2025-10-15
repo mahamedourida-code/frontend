@@ -1,5 +1,8 @@
 "use client"
 
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -24,7 +27,133 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target } from "lucide-react";
 
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger);
+
 export default function Home() {
+  const headerRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
+  const heroContentRef = useRef<HTMLDivElement>(null);
+  const heroImageRef = useRef<HTMLDivElement>(null);
+  const comparisonRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    // Header animation
+    if (headerRef.current) {
+      gsap.fromTo(headerRef.current,
+        { y: -100, opacity: 0 },
+        { 
+          y: 0, 
+          opacity: 1, 
+          duration: 1,
+          ease: "power3.out",
+          delay: 0.2
+        }
+      );
+    }
+
+    // Hero content animation
+    if (heroContentRef.current) {
+      const elements = heroContentRef.current.children;
+      gsap.fromTo(elements,
+        { 
+          y: 50, 
+          opacity: 0,
+          scale: 0.95
+        },
+        { 
+          y: 0, 
+          opacity: 1,
+          scale: 1,
+          duration: 1.2,
+          stagger: 0.15,
+          ease: "power3.out",
+          delay: 0.5
+        }
+      );
+    }
+
+    // Hero image animation with parallax
+    if (heroImageRef.current) {
+      gsap.fromTo(heroImageRef.current,
+        { 
+          x: 100, 
+          opacity: 0,
+          scale: 0.9,
+          rotateY: -15
+        },
+        { 
+          x: 0, 
+          opacity: 1,
+          scale: 1,
+          rotateY: 0,
+          duration: 1.5,
+          ease: "power3.out",
+          delay: 0.8
+        }
+      );
+
+      // Floating animation
+      gsap.to(heroImageRef.current, {
+        y: -10,
+        duration: 3,
+        ease: "power1.inOut",
+        yoyo: true,
+        repeat: -1,
+        delay: 2
+      });
+    }
+
+    // Scroll-triggered animations for sections
+    const sections = gsap.utils.toArray('section:not(:first-child)');
+    sections.forEach((section: any) => {
+      gsap.fromTo(section,
+        { 
+          y: 60,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none reverse"
+          }
+        }
+      );
+    });
+
+    // Comparison section special animation
+    if (comparisonRef.current) {
+      const elements = comparisonRef.current.querySelectorAll('.space-y-4');
+      if (elements.length > 0) {
+        ScrollTrigger.create({
+          trigger: comparisonRef.current,
+          start: "top 70%",
+          onEnter: () => {
+            gsap.fromTo(elements, 
+              { scale: 0.9, opacity: 0 },
+              {
+                scale: 1,
+                opacity: 1,
+                duration: 1,
+                stagger: 0.3,
+                ease: "back.out(1.2)"
+              }
+            );
+          }
+        });
+      }
+    }
+
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, []);
 
   // Smooth scroll function
   const scrollToSection = (sectionId: string) => {
@@ -40,7 +169,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background relative">
       {/* Navigation Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md">
+      <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -174,24 +303,27 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <section className="min-h-screen flex items-start justify-start pt-20 pb-12 relative overflow-hidden">
+        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden">
+          {/* Background gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 pointer-events-none" />
+          
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               {/* Left Content */}
-              <div className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-3">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">AI-Powered OCR Technology</span>
+              <div ref={heroContentRef} className="max-w-2xl">
+                <div className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 mb-8 shadow-lg shadow-primary/10">
+                  <Sparkles className="w-5 h-5 text-primary animate-pulse" />
+                  <span className="text-base font-semibold text-primary">AI-Powered OCR Technology</span>
                 </div>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-bold text-foreground leading-tight tracking-tight">
-                  <span className="text-primary">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-foreground leading-[1.1] tracking-tight">
+                  <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
                     Convert screenshots to Excel instantly
                   </span>
                 </h1>
-                <p className="mt-3 text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed">
-                  Process <span className="font-semibold text-foreground">up to 100 screenshots</span> in one click with AI-powered OCR technology.
+                <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-xl leading-relaxed">
+                  Process <span className="font-bold text-primary">up to 100 screenshots</span> in one click with our cutting-edge AI-powered OCR technology.
                 </p>
-                <div className="mt-6 flex flex-col sm:flex-row gap-4">
+                <div className="mt-10 flex flex-col sm:flex-row gap-4">
                   <Button
                     size="lg"
                     className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6 h-auto rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
@@ -204,8 +336,12 @@ export default function Home() {
               </div>
 
               {/* Right Visual - Interactive Comparison Slider */}
-              <div className="relative">
-                <div className="h-[400px] rounded-lg overflow-hidden shadow-2xl">
+              <div ref={heroImageRef} className="relative perspective-1000">
+                {/* Floating decorative elements */}
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl animate-pulse delay-700" />
+                
+                <div className="h-[500px] rounded-2xl overflow-hidden shadow-2xl border border-primary/20 bg-background/95 backdrop-blur">
                   <ComparisonSlider
                     leftLabel="Before"
                     rightLabel="After"
@@ -231,19 +367,24 @@ export default function Home() {
         </section>
 
         {/* Interactive Comparison Section */}
-        <section className="py-24 relative z-10 overflow-hidden">
+        <section ref={comparisonRef} className="py-32 relative z-10 overflow-hidden bg-gradient-to-b from-background via-primary/5 to-background">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-12">
-                <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Interactive Demo</Badge>
-                <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">Interactive Demo</span>
+                </div>
+                <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
                   See the Transformation in Action
                 </h2>
-                
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  Drag the slider to witness the power of our AI-powered OCR technology
+                </p>
               </div>
 
-              {/* Comparison Sliders - Stacked Vertically */}
-              <div className="space-y-16">
+              {/* Comparison Sliders - Stacked Vertically with enhanced spacing */}
+              <div className="space-y-24">
                 {/* Handwritten Table Comparison */}
                 <div className="space-y-4">
                   <h3 className="text-xl font-semibold text-center">Handwritten Table → Excel</h3>

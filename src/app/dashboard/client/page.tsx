@@ -33,7 +33,10 @@ import {
   CheckCircle2,
   Save,
   DownloadCloud,
-  CheckSquare
+  CheckSquare,
+  Share2,
+  Link,
+  Copy
 } from "lucide-react"
 
 export default function ProcessImagesPage() {
@@ -55,7 +58,8 @@ export default function ProcessImagesPage() {
     connectWebSocket,
     reset,
     isSaving,
-    isSaved
+    isSaved,
+    jobId
   } = useOCR()
 
   useEffect(() => {
@@ -165,6 +169,53 @@ export default function ProcessImagesPage() {
   const handleReset = () => {
     setUploadedFiles([])
     reset()
+  }
+
+  const handleShareFile = async (file: any) => {
+    const shareUrl = `${window.location.origin}/shared/${file.file_id}`
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: file.filename || 'Exceletto Export',
+          text: 'Check out my processed Excel file',
+          url: shareUrl
+        })
+      } catch (err) {
+        // User cancelled or error
+        if (err instanceof Error && err.name !== 'AbortError') {
+          // Fallback to copy link
+          await navigator.clipboard.writeText(shareUrl)
+          toast.success('Share link copied to clipboard')
+        }
+      }
+    } else {
+      // Fallback: copy to clipboard
+      await navigator.clipboard.writeText(shareUrl)
+      toast.success('Share link copied to clipboard')
+    }
+  }
+
+  const handleShareAll = async () => {
+    const shareUrl = `${window.location.origin}/shared/batch/${jobId}`
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Exceletto Batch Export',
+          text: `${resultFiles?.length} processed files ready`,
+          url: shareUrl
+        })
+      } catch (err) {
+        if (err instanceof Error && err.name !== 'AbortError') {
+          await navigator.clipboard.writeText(shareUrl)
+          toast.success('Share link copied to clipboard')
+        }
+      }
+    } else {
+      await navigator.clipboard.writeText(shareUrl)
+      toast.success('Share link copied to clipboard')
+    }
   }
 
   if (authLoading || !user) {
@@ -431,21 +482,32 @@ export default function ProcessImagesPage() {
                       {resultFiles.length} of {progress?.total_images || uploadedFiles.length} ready
                     </Badge>
                     {resultFiles.length > 1 && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={async () => {
-                          toast.info(`Downloading ${resultFiles.length} files...`)
-                          for (const file of resultFiles) {
-                            await downloadFile(file.file_id)
-                            await new Promise(resolve => setTimeout(resolve, 500))
-                          }
-                        }}
-                        className="gap-2"
-                      >
-                        <DownloadCloud className="h-4 w-4" />
-                        Download All
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleShareAll}
+                          className="gap-2"
+                        >
+                          <Share2 className="h-4 w-4" />
+                          Share All
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={async () => {
+                            toast.info(`Downloading ${resultFiles.length} files...`)
+                            for (const file of resultFiles) {
+                              await downloadFile(file.file_id)
+                              await new Promise(resolve => setTimeout(resolve, 500))
+                            }
+                          }}
+                          className="gap-2"
+                        >
+                          <DownloadCloud className="h-4 w-4" />
+                          Download All
+                        </Button>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -474,14 +536,25 @@ export default function ProcessImagesPage() {
                               </div>
                             </div>
                           </div>
-                          <Button
-                            size="sm"
-                            onClick={() => downloadFile(file.file_id)}
-                            className="gap-2"
-                          >
-                            <Download className="h-4 w-4" />
-                            Download
-                          </Button>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleShareFile(file)}
+                              className="gap-1.5"
+                            >
+                              <Share2 className="h-4 w-4" />
+                              <span className="sr-only">Share</span>
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => downloadFile(file.file_id)}
+                              className="gap-2"
+                            >
+                              <Download className="h-4 w-4" />
+                              Download
+                            </Button>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
