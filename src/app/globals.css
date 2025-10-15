@@ -3,6 +3,73 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Custom animation utilities */
+@layer utilities {
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+  .animation-delay-700 {
+    animation-delay: 700ms;
+  }
+  
+  @keyframes float-up-down {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+  
+  @keyframes glow-pulse {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.4), 0 0 40px rgba(34, 197, 94, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(34, 197, 94, 0.6), 0 0 60px rgba(34, 197, 94, 0.3);
+    }
+  }
+  
+  @keyframes sparkle-rotate {
+    from {
+      transform: rotate(0deg) scale(0);
+    }
+    50% {
+      transform: rotate(180deg) scale(1);
+    }
+    to {
+      transform: rotate(360deg) scale(0);
+    }
+  }
+  
+  .animate-float {
+    animation: float-up-down 3s ease-in-out infinite;
+  }
+  
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+  
+  .animate-sparkle {
+    animation: sparkle-rotate 3s linear infinite;
+  }
+  
+  /* 3D perspective for transforms */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .transform-3d {
+    transform-style: preserve-3d;
+  }
+}
+
 :root {
   /* Light Mode - Improved differentiation with subtle grays and Excel greens */
   --background: oklch(0.97 0 0);           /* Slightly darker background */

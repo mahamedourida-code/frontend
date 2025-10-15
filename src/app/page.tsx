@@ -25,20 +25,10 @@ import { AppLogo } from "@/components/AppIcon";
 import { ComparisonSlider } from "@/components/ComparisonSlider";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target } from "lucide-react";
+import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target, Wand2, Sparkle } from "lucide-react";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
-
-// Declare global UnicornStudio type
-declare global {
-  interface Window {
-    UnicornStudio: {
-      isInitialized: boolean;
-      init?: () => void;
-    };
-  }
-}
 
 export default function Home() {
   const headerRef = useRef<HTMLDivElement>(null);
@@ -48,20 +38,6 @@ export default function Home() {
   const comparisonRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    // Load Unicorn Studio script
-    if (!window.UnicornStudio) {
-      window.UnicornStudio = { isInitialized: false };
-      const script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.33/dist/unicornStudio.umd.js";
-      script.onload = function() {
-        if (!window.UnicornStudio.isInitialized) {
-          (window as any).UnicornStudio.init();
-          window.UnicornStudio.isInitialized = true;
-        }
-      };
-      (document.head || document.body).appendChild(script);
-    }
-
     // Header animation
     if (headerRef.current) {
       gsap.fromTo(headerRef.current,
@@ -97,8 +73,9 @@ export default function Home() {
       );
     }
 
-    // Hero image animation with parallax
+    // Hero image animation with enhanced effects
     if (heroImageRef.current) {
+      // Main container animation
       gsap.fromTo(heroImageRef.current,
         { 
           x: 100, 
@@ -125,6 +102,74 @@ export default function Home() {
         yoyo: true,
         repeat: -1,
         delay: 2
+      });
+
+      // Animate floating badges
+      const badges = heroImageRef.current.querySelectorAll('.absolute [class*="Badge"]');
+      badges.forEach((badge: Element, index: number) => {
+        gsap.fromTo(badge,
+          { scale: 0, rotate: -180 },
+          { 
+            scale: 1, 
+            rotate: 0,
+            duration: 0.8,
+            delay: 1.2 + index * 0.1,
+            ease: "back.out(2)"
+          }
+        );
+      });
+
+      // Animate arrow indicator with pulsing glow
+      const arrowIndicator = heroImageRef.current.querySelector('.absolute.top-1\\/2.left-1\\/2');
+      if (arrowIndicator) {
+        gsap.fromTo(arrowIndicator,
+          { scale: 0, opacity: 0 },
+          { 
+            scale: 1, 
+            opacity: 1,
+            duration: 1,
+            delay: 1.5,
+            ease: "elastic.out(1, 0.5)"
+          }
+        );
+        
+        // Continuous pulsing
+        gsap.to(arrowIndicator, {
+          scale: 1.1,
+          duration: 1,
+          ease: "power2.inOut",
+          yoyo: true,
+          repeat: -1,
+          delay: 2.5
+        });
+      }
+
+      // Animate success indicators with stagger
+      const indicators = heroImageRef.current.querySelectorAll('.absolute.-right-6, .absolute.-left-6');
+      gsap.fromTo(indicators,
+        { scale: 0, rotate: 360 },
+        { 
+          scale: 1,
+          rotate: 0,
+          duration: 0.8,
+          stagger: 0.2,
+          delay: 1.3,
+          ease: "back.out(3)"
+        }
+      );
+
+      // Animate gradient backgrounds
+      const gradients = heroImageRef.current.querySelectorAll('.absolute.inset-0, .absolute.-top-10, .absolute.-bottom-10');
+      gradients.forEach((gradient: Element) => {
+        gsap.to(gradient, {
+          scale: 1.2,
+          opacity: 0.6,
+          duration: 4,
+          ease: "power1.inOut",
+          yoyo: true,
+          repeat: -1,
+          delay: Math.random() * 2
+        });
       });
     }
 
@@ -359,34 +404,130 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Right Visual - Unicorn Studio Effect */}
+              {/* Right Visual - Enhanced Comparison Slider */}
               <div ref={heroImageRef} className="relative perspective-1000">
-                {/* Floating decorative elements */}
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl animate-pulse delay-700" />
+                {/* Animated background gradients */}
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-primary/10 rounded-3xl blur-3xl animate-pulse" />
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-2xl animate-pulse" />
+                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-green-500/10 rounded-full blur-2xl animate-pulse delay-700" />
                 
-                <div className="relative h-[540px] w-[540px] mx-auto rounded-2xl overflow-hidden shadow-2xl border border-primary/20">
-                  {/* Background image - before processing */}
-                  <div 
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                    style={{
-                      backgroundImage: 'url(/b.jpeg)',
-                    }}
-                  />
+                {/* Main comparison container */}
+                <div className="relative">
+                  {/* Floating badges */}
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+                    <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white border-0 animate-bounce shadow-lg">
+                      <Sparkles className="w-3 h-3 mr-1" />
+                      AI Powered
+                    </Badge>
+                    <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 animate-bounce animation-delay-200 shadow-lg">
+                      <Wand2 className="w-3 h-3 mr-1" />
+                      Magic OCR
+                    </Badge>
+                  </div>
                   
-                  {/* Unicorn Studio container - after processing effect */}
-                  <div 
-                    data-us-project="2e7qQhdeoA1qQmcUaLCL" 
-                    className="relative w-full h-full"
-                    style={{
-                      transform: 'scale(0.5)',
-                      transformOrigin: 'center center'
-                    }}
-                  />
+                  {/* Floating particles */}
+                  <div className="absolute -top-4 right-10 z-10">
+                    <Sparkle className="w-4 h-4 text-yellow-500 animate-ping" />
+                  </div>
+                  <div className="absolute top-10 -left-4 z-10">
+                    <Sparkle className="w-5 h-5 text-blue-500 animate-ping animation-delay-500" />
+                  </div>
+                  <div className="absolute bottom-10 -right-8 z-10">
+                    <Sparkle className="w-3 h-3 text-green-500 animate-ping animation-delay-300" />
+                  </div>
                   
-                  {/* Overlay labels */}
-                  <div className="absolute top-4 left-4 z-10 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                    <span className="text-xs font-semibold text-white">Before → After</span>
+                  {/* Arrow indicator */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-white rounded-full blur-xl opacity-80 animate-pulse" />
+                      <div className="relative bg-gradient-to-r from-primary to-green-500 text-white rounded-full p-4 shadow-2xl">
+                        <ArrowRight className="w-8 h-8 animate-pulse" />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Success indicators */}
+                  <div className="absolute -right-6 top-1/4 z-20 animate-pulse">
+                    <div className="bg-green-500 text-white rounded-full p-2 shadow-lg">
+                      <CheckCircle className="w-6 h-6" />
+                    </div>
+                  </div>
+                  
+                  <div className="absolute -left-6 bottom-1/4 z-20 animate-pulse delay-300">
+                    <div className="bg-blue-500 text-white rounded-full p-2 shadow-lg">
+                      <Zap className="w-6 h-6" />
+                    </div>
+                  </div>
+                  
+                  {/* Comparison slider with enhanced styling */}
+                  <div className="relative h-[500px] rounded-2xl overflow-hidden shadow-2xl border-2 border-primary/30 bg-gradient-to-br from-background via-background/95 to-background transform-3d animate-glow-pulse">
+                    {/* Decorative corner badges */}
+                    <div className="absolute top-2 left-2 z-10">
+                      <Badge className="bg-red-500/90 text-white text-xs border-0">
+                        <Camera className="w-3 h-3 mr-1" />
+                        Original
+                      </Badge>
+                    </div>
+                    <div className="absolute top-2 right-2 z-10">
+                      <Badge className="bg-green-500/90 text-white text-xs border-0">
+                        <FileSpreadsheet className="w-3 h-3 mr-1" />
+                        Excel
+                      </Badge>
+                    </div>
+                    
+                    <ComparisonSlider
+                      leftLabel="Before"
+                      rightLabel="After" 
+                      leftContent={
+                        <div className="relative w-full h-full bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/20 dark:to-orange-950/20">
+                          <img 
+                            src="/bb.png" 
+                            alt="Paper form before processing"
+                            className="w-full h-full object-contain transform hover:scale-105 transition-transform duration-300"
+                          />
+                          {/* Overlay effect for before */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-red-500/10 via-transparent to-transparent pointer-events-none" />
+                          <div className="absolute bottom-4 left-4">
+                            <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1">
+                              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                              <span className="text-xs text-white font-medium">Handwritten Input</span>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                      rightContent={
+                        <div className="relative w-full h-full bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
+                          <img 
+                            src="/b.jpeg" 
+                            alt="Excel output after processing"
+                            className="w-full h-full object-contain transform hover:scale-105 transition-transform duration-300"
+                          />
+                          {/* Overlay effect for after */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-green-500/10 via-transparent to-transparent pointer-events-none" />
+                          <div className="absolute bottom-4 right-4">
+                            <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1">
+                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                              <span className="text-xs text-white font-medium">Excel Output</span>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    />
+                  </div>
+                  
+                  {/* Bottom caption */}
+                  <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 z-20">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                        <span>Handwritten</span>
+                      </div>
+                      <ArrowRight className="w-4 h-4" />
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                        <span>Digital Excel</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
