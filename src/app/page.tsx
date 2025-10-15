@@ -349,14 +349,14 @@ export default function Home() {
                       <img 
                         src="/after.png" 
                         alt="Handwritten table before processing"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                     }
                     rightContent={
                       <img 
                         src="/before.jpeg" 
                         alt="Converted Excel spreadsheet"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                     }
                   />
@@ -388,7 +388,7 @@ export default function Home() {
                 {/* Handwritten Table Comparison */}
                 <div className="space-y-4">
                   <h3 className="text-xl font-semibold text-center">Handwritten Table → Excel</h3>
-                  <div className="h-[500px]">
+                  <div className="h-[500px]  max-w-[800px] mx-auto">
                     <ComparisonSlider
                       leftLabel="before"
                       rightLabel="after"
@@ -413,7 +413,7 @@ export default function Home() {
                 {/* Form Data Comparison */}
                 <div className="space-y-4">
                   <h3 className="text-xl font-semibold text-center">Paper Form → Structured Data</h3>
-                  <div className="h-[500px] ">
+                  <div className="h-[500px]  max-w-[800px] mx-auto">
                     <ComparisonSlider
                       leftLabel="before"
                       rightLabel="after"
