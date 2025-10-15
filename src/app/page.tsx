@@ -94,7 +94,7 @@ export default function Home() {
         }
       );
 
-      // Floating animation
+      // Floating animation for the whole card
       gsap.to(heroImageRef.current, {
         y: -10,
         duration: 3,
@@ -102,74 +102,6 @@ export default function Home() {
         yoyo: true,
         repeat: -1,
         delay: 2
-      });
-
-      // Animate floating badges
-      const badges = heroImageRef.current.querySelectorAll('.absolute [class*="Badge"]');
-      badges.forEach((badge: Element, index: number) => {
-        gsap.fromTo(badge,
-          { scale: 0, rotate: -180 },
-          { 
-            scale: 1, 
-            rotate: 0,
-            duration: 0.8,
-            delay: 1.2 + index * 0.1,
-            ease: "back.out(2)"
-          }
-        );
-      });
-
-      // Animate arrow indicator with pulsing glow
-      const arrowIndicator = heroImageRef.current.querySelector('.absolute.top-1\\/2.left-1\\/2');
-      if (arrowIndicator) {
-        gsap.fromTo(arrowIndicator,
-          { scale: 0, opacity: 0 },
-          { 
-            scale: 1, 
-            opacity: 1,
-            duration: 1,
-            delay: 1.5,
-            ease: "elastic.out(1, 0.5)"
-          }
-        );
-        
-        // Continuous pulsing
-        gsap.to(arrowIndicator, {
-          scale: 1.1,
-          duration: 1,
-          ease: "power2.inOut",
-          yoyo: true,
-          repeat: -1,
-          delay: 2.5
-        });
-      }
-
-      // Animate success indicators with stagger
-      const indicators = heroImageRef.current.querySelectorAll('.absolute.-right-6, .absolute.-left-6');
-      gsap.fromTo(indicators,
-        { scale: 0, rotate: 360 },
-        { 
-          scale: 1,
-          rotate: 0,
-          duration: 0.8,
-          stagger: 0.2,
-          delay: 1.3,
-          ease: "back.out(3)"
-        }
-      );
-
-      // Animate gradient backgrounds
-      const gradients = heroImageRef.current.querySelectorAll('.absolute.inset-0, .absolute.-top-10, .absolute.-bottom-10');
-      gradients.forEach((gradient: Element) => {
-        gsap.to(gradient, {
-          scale: 1.2,
-          opacity: 0.6,
-          duration: 4,
-          ease: "power1.inOut",
-          yoyo: true,
-          repeat: -1,
-          delay: Math.random() * 2
-        });
       });
     }
 
@@ -413,68 +345,9 @@ export default function Home() {
                 
                 {/* Main comparison container */}
                 <div className="relative">
-                  {/* Floating badges */}
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
-                    <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white border-0 animate-bounce shadow-lg">
-                      <Sparkles className="w-3 h-3 mr-1" />
-                      AI Powered
-                    </Badge>
-                    <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 animate-bounce animation-delay-200 shadow-lg">
-                      <Wand2 className="w-3 h-3 mr-1" />
-                      Magic OCR
-                    </Badge>
-                  </div>
                   
-                  {/* Floating particles */}
-                  <div className="absolute -top-4 right-10 z-10">
-                    <Sparkle className="w-4 h-4 text-yellow-500 animate-ping" />
-                  </div>
-                  <div className="absolute top-10 -left-4 z-10">
-                    <Sparkle className="w-5 h-5 text-blue-500 animate-ping animation-delay-500" />
-                  </div>
-                  <div className="absolute bottom-10 -right-8 z-10">
-                    <Sparkle className="w-3 h-3 text-green-500 animate-ping animation-delay-300" />
-                  </div>
-                  
-                  {/* Arrow indicator */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-white rounded-full blur-xl opacity-80 animate-pulse" />
-                      <div className="relative bg-gradient-to-r from-primary to-green-500 text-white rounded-full p-4 shadow-2xl">
-                        <ArrowRight className="w-8 h-8 animate-pulse" />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Success indicators */}
-                  <div className="absolute -right-6 top-1/4 z-20 animate-pulse">
-                    <div className="bg-green-500 text-white rounded-full p-2 shadow-lg">
-                      <CheckCircle className="w-6 h-6" />
-                    </div>
-                  </div>
-                  
-                  <div className="absolute -left-6 bottom-1/4 z-20 animate-pulse delay-300">
-                    <div className="bg-blue-500 text-white rounded-full p-2 shadow-lg">
-                      <Zap className="w-6 h-6" />
-                    </div>
-                  </div>
-                  
-                  {/* Comparison slider with enhanced styling */}
-                  <div className="relative h-[500px] rounded-2xl overflow-hidden shadow-2xl border-2 border-primary/30 bg-gradient-to-br from-background via-background/95 to-background transform-3d animate-glow-pulse">
-                    {/* Decorative corner badges */}
-                    <div className="absolute top-2 left-2 z-10">
-                      <Badge className="bg-red-500/90 text-white text-xs border-0">
-                        <Camera className="w-3 h-3 mr-1" />
-                        Original
-                      </Badge>
-                    </div>
-                    <div className="absolute top-2 right-2 z-10">
-                      <Badge className="bg-green-500/90 text-white text-xs border-0">
-                        <FileSpreadsheet className="w-3 h-3 mr-1" />
-                        Excel
-                      </Badge>
-                    </div>
-                    
+                  {/* Comparison slider with page-turning effect */}
+                  <div className="relative h-[500px] rounded-2xl overflow-hidden shadow-2xl border-2 border-primary/30 bg-gradient-to-br from-background via-background/95 to-background">
                     <ComparisonSlider
                       leftLabel="Before"
                       rightLabel="After" 
@@ -483,16 +356,10 @@ export default function Home() {
                           <img 
                             src="/bb.png" 
                             alt="Paper form before processing"
-                            className="w-full h-full object-contain transform hover:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-contain"
                           />
-                          {/* Overlay effect for before */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-red-500/10 via-transparent to-transparent pointer-events-none" />
-                          <div className="absolute bottom-4 left-4">
-                            <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1">
-                              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                              <span className="text-xs text-white font-medium">Handwritten Input</span>
-                            </div>
-                          </div>
+                          {/* Page shadow effect for left side */}
+                          <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-black/20 to-transparent pointer-events-none" />
                         </div>
                       }
                       rightContent={
@@ -500,105 +367,11 @@ export default function Home() {
                           <img 
                             src="/b.jpeg" 
                             alt="Excel output after processing"
-                            className="w-full h-full object-contain transform hover:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-contain"
                           />
-                          {/* Overlay effect for after */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-green-500/10 via-transparent to-transparent pointer-events-none" />
-                          <div className="absolute bottom-4 right-4">
-                            <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1">
-                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                              <span className="text-xs text-white font-medium">Excel Output</span>
-                            </div>
-                          </div>
+                          {/* Page shadow effect for right side */}
+                          <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-black/20 to-transparent pointer-events-none" />
                         </div>
-                      }
-                    />
-                  </div>
-                  
-                  {/* Bottom caption */}
-                  <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 z-20">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                        <span>Handwritten</span>
-                      </div>
-                      <ArrowRight className="w-4 h-4" />
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                        <span>Digital Excel</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Interactive Comparison Section */}
-        <section ref={comparisonRef} className="py-32 relative z-10 overflow-hidden bg-gradient-to-b from-background via-primary/5 to-background">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">Interactive Demo</span>
-                </div>
-                <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
-                  See the Transformation in Action
-                </h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Drag the slider to witness the power of our AI-powered OCR technology
-                </p>
-              </div>
-
-              {/* Comparison Sliders - Stacked Vertically with enhanced spacing */}
-              <div className="space-y-24">
-                {/* Handwritten Table Comparison */}
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-center">Handwritten Table → Excel</h3>
-                  <div className="h-[500px]  max-w-[800px] mx-auto">
-                    <ComparisonSlider
-                      leftLabel="before"
-                      rightLabel="after"
-                      leftContent={
-                        <img 
-                          src="/ee.png" 
-                          alt="Handwritten table before processing"
-                          className="w-full h-full object-contain"
-                        />
-                      }
-                      rightContent={
-                        <img 
-                          src="/e.jpg" 
-                          alt="Excel spreadsheet output"
-                          className="w-full h-full object-contain"
-                        />
-                      }
-                    />
-                  </div>
-                </div>
-
-                {/* Form Data Comparison */}
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-center">Paper Form → Structured Data</h3>
-                  <div className="h-[500px]  max-w-[800px] mx-auto">
-                    <ComparisonSlider
-                      leftLabel="before"
-                      rightLabel="after"
-                      leftContent={
-                        <img 
-                          src="/bb.png" 
-                          alt="Paper form before processing"
-                          className="w-full h-full object-contain"
-                        />
-                      }
-                      rightContent={
-                        <img 
-                          src="/b.jpeg" 
-                          alt="Structured data output"
-                          className="w-full h-full object-contain"
-                        />
                       }
                     />
                   </div>
@@ -717,6 +490,79 @@ export default function Home() {
             </div>
           </div>
         </ScrollAnimatedSection>
+
+        {/* Interactive Comparison Section */}
+        <section ref={comparisonRef} className="py-32 relative z-10 overflow-hidden bg-gradient-to-b from-background via-primary/5 to-background">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">Interactive Demo</span>
+                </div>
+                <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
+                  See the Transformation in Action
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  Drag the slider to witness the power of our AI-powered OCR technology
+                </p>
+              </div>
+
+              {/* Comparison Sliders - Stacked Vertically with enhanced spacing */}
+              <div className="space-y-24">
+                {/* Handwritten Table Comparison */}
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold text-center">Handwritten Table → Excel</h3>
+                  <div className="h-[500px]  max-w-[800px] mx-auto">
+                    <ComparisonSlider
+                      leftLabel="before"
+                      rightLabel="after"
+                      leftContent={
+                        <img 
+                          src="/ee.png" 
+                          alt="Handwritten table before processing"
+                          className="w-full h-full object-contain"
+                        />
+                      }
+                      rightContent={
+                        <img 
+                          src="/e.jpg" 
+                          alt="Excel spreadsheet output"
+                          className="w-full h-full object-contain"
+                        />
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* Form Data Comparison */}
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold text-center">Paper Form → Structured Data</h3>
+                  <div className="h-[500px]  max-w-[800px] mx-auto">
+                    <ComparisonSlider
+                      leftLabel="before"
+                      rightLabel="after"
+                      leftContent={
+                        <img 
+                          src="/bb.png" 
+                          alt="Paper form before processing"
+                          className="w-full h-full object-contain"
+                        />
+                      }
+                      rightContent={
+                        <img 
+                          src="/b.jpeg" 
+                          alt="Structured data output"
+                          className="w-full h-full object-contain"
+                        />
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* How It Works Section */}
         <ScrollAnimatedSection id="how-it-works" className="py-24 relative z-10 overflow-hidden">

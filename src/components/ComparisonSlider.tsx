@@ -93,11 +93,14 @@ export function ComparisonSlider({
         </div>
       </div>
 
-      {/* Right side (After) - clipped */}
+      {/* Right side (After) - with page turning effect */}
       <div
         className="absolute inset-0 w-full h-full"
         style={{
           clipPath: `inset(0 ${100 - sliderPosition}% 0 0)`,
+          transform: `perspective(1500px) rotateY(${(50 - sliderPosition) * 0.3}deg)`,
+          transformOrigin: 'left center',
+          transition: isDragging ? 'none' : 'transform 0.3s ease-out',
         }}
       >
         <div className="relative w-full h-full">
@@ -112,17 +115,32 @@ export function ComparisonSlider({
         </div>
       </div>
 
-      {/* Slider line and handle */}
+      {/* Page spine shadow effect */}
       <div
-        className="absolute top-0 bottom-0 w-[2px] bg-primary cursor-ew-resize z-30 transition-opacity"
-        style={{ left: `${sliderPosition}%` }}
+        className="absolute top-0 bottom-0 w-[20px] pointer-events-none z-25"
+        style={{ 
+          left: `calc(${sliderPosition}% - 10px)`,
+          background: `linear-gradient(90deg, transparent, rgba(0,0,0,0.2) 50%, transparent)`,
+          opacity: isDragging ? 1 : 0.5,
+          transition: 'opacity 0.3s'
+        }}
+      />
+
+      {/* Slider line and handle with book spine look */}
+      <div
+        className="absolute top-0 bottom-0 w-[4px] cursor-ew-resize z-30"
+        style={{ 
+          left: `${sliderPosition}%`,
+          background: 'linear-gradient(90deg, #8b7355, #6b5c47, #8b7355)',
+          boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+        }}
         onMouseDown={() => setIsDragging(true)}
         onTouchStart={() => setIsDragging(true)}
       >
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-card border-2 border-primary rounded-full shadow-lg flex items-center justify-center">
-          <div className="flex gap-0.5">
-            <div className="w-0.5 h-4 bg-primary rounded-full" />
-            <div className="w-0.5 h-4 bg-primary rounded-full" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-gradient-to-br from-amber-100 to-amber-200 border-2 border-amber-600 rounded-full shadow-xl flex items-center justify-center">
+          <div className="flex gap-1">
+            <div className="w-0.5 h-5 bg-amber-600 rounded-full" />
+            <div className="w-0.5 h-5 bg-amber-600 rounded-full" />
           </div>
         </div>
       </div>
