@@ -336,44 +336,109 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Right Visual - Enhanced Comparison Slider */}
-              <div ref={heroImageRef} className="relative perspective-1000">
-                {/* Animated background gradients */}
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-primary/10 rounded-3xl blur-3xl animate-pulse" />
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-2xl animate-pulse" />
-                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-green-500/10 rounded-full blur-2xl animate-pulse delay-700" />
+              {/* Right Visual - Ultra Minimal Professional Comparison */}
+              <div ref={heroImageRef} className="relative group">
+                {/* Elegant shadow glow */}
+                <div className="absolute -inset-4 bg-gradient-to-r from-slate-900/20 via-black/40 to-slate-900/20 rounded-2xl blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700 ease-out" />
+                
+                {/* Animated corner frames */}
+                <div className="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  {/* Top left */}
+                  <div className="absolute top-0 left-0 w-16 h-16">
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-white/60 to-transparent" />
+                    <div className="absolute top-0 left-0 h-full w-[1px] bg-gradient-to-b from-white/60 to-transparent" />
+                  </div>
+                  {/* Top right */}
+                  <div className="absolute top-0 right-0 w-16 h-16">
+                    <div className="absolute top-0 right-0 w-full h-[1px] bg-gradient-to-l from-white/60 to-transparent" />
+                    <div className="absolute top-0 right-0 h-full w-[1px] bg-gradient-to-b from-white/60 to-transparent" />
+                  </div>
+                  {/* Bottom left */}
+                  <div className="absolute bottom-0 left-0 w-16 h-16">
+                    <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-white/60 to-transparent" />
+                    <div className="absolute bottom-0 left-0 h-full w-[1px] bg-gradient-to-t from-white/60 to-transparent" />
+                  </div>
+                  {/* Bottom right */}
+                  <div className="absolute bottom-0 right-0 w-16 h-16">
+                    <div className="absolute bottom-0 right-0 w-full h-[1px] bg-gradient-to-l from-white/60 to-transparent" />
+                    <div className="absolute bottom-0 right-0 h-full w-[1px] bg-gradient-to-t from-white/60 to-transparent" />
+                  </div>
+                </div>
                 
                 {/* Main comparison container */}
                 <div className="relative">
-                  
-                  {/* Comparison slider with page-turning effect */}
-                  <div className="relative h-[500px] rounded-2xl overflow-hidden shadow-2xl border-2 border-primary/30 bg-gradient-to-br from-background via-background/95 to-background">
+                  <div className="relative h-[400px] w-[600px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                    {/* Matrix rain effect (subtle) */}
+                    <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
+                      <div className="absolute inset-0 bg-[linear-gradient(0deg,transparent_24%,rgba(0,255,0,0.05)_25%,rgba(0,255,0,0.05)_26%,transparent_27%,transparent_74%,rgba(0,255,0,0.05)_75%,rgba(0,255,0,0.05)_76%,transparent_77%,transparent)] bg-[length:50px_50px] animate-matrix" />
+                    </div>
+                    
+                    {/* Grid pattern overlay */}
+                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+                      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:50px_50px]" />
+                    </div>
+                    
                     <ComparisonSlider
-                      leftLabel="Before"
-                      rightLabel="After" 
+                      leftLabel=""
+                      rightLabel="" 
                       leftContent={
-                        <div className="relative w-full h-full bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/20 dark:to-orange-950/20">
+                        <div className="relative w-full h-full group/before">
                           <img 
                             src="/bb.png" 
                             alt="Paper form before processing"
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-cover"
                           />
-                          {/* Page shadow effect for left side */}
-                          <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-black/20 to-transparent pointer-events-none" />
+                          {/* Dark overlay that lifts on hover */}
+                          <div className="absolute inset-0 bg-black/20 group-hover/before:bg-black/0 transition-all duration-500 pointer-events-none" />
+                          {/* Scan lines effect */}
+                          <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(255,255,255,0.02)_50%)] bg-[size:4px_4px] pointer-events-none" />
+                          {/* Label */}
+                          <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div className="px-3 py-1.5 bg-black/60 backdrop-blur-md rounded-md border border-white/10">
+                              <p className="text-[10px] uppercase tracking-widest text-white/60 font-medium">Original</p>
+                            </div>
+                          </div>
                         </div>
                       }
                       rightContent={
-                        <div className="relative w-full h-full bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
+                        <div className="relative w-full h-full group/after">
                           <img 
                             src="/b.jpeg" 
                             alt="Excel output after processing"
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-cover"
                           />
-                          {/* Page shadow effect for right side */}
-                          <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-black/20 to-transparent pointer-events-none" />
+                          {/* Success overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-tr from-green-500/5 to-transparent pointer-events-none" />
+                          {/* Digital enhancement effect */}
+                          <div className="absolute inset-0 mix-blend-screen opacity-5 bg-gradient-to-br from-cyan-400 to-green-400 pointer-events-none" />
+                          {/* Label */}
+                          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div className="px-3 py-1.5 bg-black/60 backdrop-blur-md rounded-md border border-white/10">
+                              <p className="text-[10px] uppercase tracking-widest text-white/60 font-medium">Processed</p>
+                            </div>
+                          </div>
                         </div>
                       }
                     />
+                    
+                    {/* Status bar */}
+                    <div className="absolute bottom-0 left-0 right-0 h-8 bg-black/40 backdrop-blur-sm border-t border-white/5">
+                      <div className="flex items-center justify-between h-full px-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex gap-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse animation-delay-200" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse animation-delay-500" />
+                          </div>
+                          <span className="text-[9px] uppercase tracking-wider text-white/40 font-mono">AI Processing</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[9px] text-white/30 font-mono">OCR Engine v2.0</span>
+                          <div className="w-px h-3 bg-white/20" />
+                          <span className="text-[9px] text-green-400/60 font-mono">READY</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
