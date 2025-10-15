@@ -190,7 +190,7 @@ export default function DashboardPage() {
     { icon: Activity, label: "Overview", href: "/dashboard", active: true },
     { icon: Upload, label: "Process Images", href: "/dashboard/client" },
     { icon: History, label: "Saved Files", href: "/history" },
-    { icon: Settings, label: "Settings", href: "#", disabled: true },
+    { icon: Settings, label: "Settings", href: "/dashboard/settings" },
     { icon: CreditCard, label: "Billing", href: "#", disabled: true },
     { icon: HelpCircle, label: "Help", href: "#", disabled: true },
   ]

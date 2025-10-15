@@ -42,6 +42,7 @@ export default function ProcessImagesPage() {
   const [isDragging, setIsDragging] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [selectedView, setSelectedView] = useState<"grid" | "list">("grid")
+  const [credits, setCredits] = useState({ used: 0, total: 80 })
 
   const {
     isProcessing,
@@ -62,6 +63,33 @@ export default function ProcessImagesPage() {
       router.push('/sign-in')
     }
   }, [user, authLoading, router])
+
+  // Fetch user's credit status
+  useEffect(() => {
+    const fetchCredits = async () => {
+      if (!user) return
+      
+      try {
+        const { createClient } = await import('@/utils/supabase/client')
+        const supabase = createClient()
+        
+        const { data: jobs } = await supabase
+          .from('jobs')
+          .select('processing_metadata')
+          .eq('user_id', user.id)
+          .gte('created_at', new Date(new Date().setDate(1)).toISOString())
+        
+        const creditsUsed = jobs?.reduce((sum: number, job: any) => 
+          sum + (job.processing_metadata?.total_images || 1), 0) || 0
+        
+        setCredits({ used: Math.min(creditsUsed, 80), total: 80 })
+      } catch (error) {
+        console.error('Error fetching credits:', error)
+      }
+    }
+    
+    fetchCredits()
+  }, [user])
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -108,11 +136,27 @@ export default function ProcessImagesPage() {
   const handleProcessImages = useCallback(async () => {
     if (uploadedFiles.length === 0) return
 
+    // Check if user has enough credits
+    const creditsNeeded = uploadedFiles.length
+    const creditsAvailable = credits.total - credits.used
+    
+    if (creditsAvailable <= 0) {
+      toast.error('You have run out of credits. Please upgrade your plan to continue.')
+      return
+    }
+    
+    if (creditsNeeded > creditsAvailable) {
+      toast.error(`You only have ${creditsAvailable} credits remaining. Remove ${creditsNeeded - creditsAvailable} images or upgrade your plan.`)
+      return
+    }
+
     const response = await uploadBatch(uploadedFiles)
     if (response && response.session_id) {
       connectWebSocket(response.session_id)
+      // Update credits after successful upload
+      setCredits(prev => ({ ...prev, used: prev.used + creditsNeeded }))
     }
-  }, [uploadedFiles, uploadBatch, connectWebSocket])
+  }, [uploadedFiles, uploadBatch, connectWebSocket, credits])
 
   const handleRemoveFile = (index: number) => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index))
@@ -329,11 +373,25 @@ export default function ProcessImagesPage() {
 
                 {/* Process Button */}
                 {uploadedFiles.length > 0 && (
-                  <div className="mt-4 flex justify-end">
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">Credits:</span>
+                      <Badge 
+                        variant={credits.total - credits.used <= 10 ? "destructive" : "secondary"}
+                        className="gap-1"
+                      >
+                        {credits.total - credits.used} / {credits.total} remaining
+                      </Badge>
+                      {uploadedFiles.length > credits.total - credits.used && (
+                        <span className="text-xs text-destructive">
+                          Not enough credits!
+                        </span>
+                      )}
+                    </div>
                     <Button
                       size="lg"
                       onClick={handleProcessImages}
-                      disabled={isProcessing}
+                      disabled={isProcessing || (credits.total - credits.used < uploadedFiles.length)}
                       className="gap-2"
                     >
                       {isProcessing ? (
