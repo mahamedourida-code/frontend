@@ -1,7 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { createClient } from "@/utils/supabase/client"
+import { useAuth } from "@/hooks/useAuth"
+import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -47,21 +50,33 @@ import {
 } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
-type SettingsSection = 'account' | 'security' | 'billing' | 'preferences' | 'notifications' | 'integrations' | 'api' | 'storage'
+type SettingsSection = 'account' | 'security' | 'billing' | 'preferences' | 'integrations' | 'api' | 'storage'
 
 export default function SettingsPage() {
   const router = useRouter()
+  const { user } = useAuth()
+  const { theme: currentTheme, setTheme } = useTheme()
+  const supabase = createClient()
+  
   const [activeSection, setActiveSection] = useState<SettingsSection>('account')
+  const [loading, setLoading] = useState(false)
+  
+  // Account state
+  const [fullName, setFullName] = useState("")
+  const [email, setEmail] = useState("")
+  
+  // Security state
+  const [currentPassword, setCurrentPassword] = useState("")
+  const [newPassword, setNewPassword] = useState("")
+  
+  // API state
   const [showApiKey, setShowApiKey] = useState(false)
   const [apiKey, setApiKey] = useState("sk-proj-exceletto-1234567890abcdef")
   const [webhookUrl, setWebhookUrl] = useState("")
   
   // Preferences state
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system')
   const [language, setLanguage] = useState('en')
   const [timezone, setTimezone] = useState('UTC')
-  const [emailNotifications, setEmailNotifications] = useState(true)
-  const [slackNotifications, setSlackNotifications] = useState(false)
   
   // Integrations state
   const [driveConnected, setDriveConnected] = useState(false)
@@ -73,6 +88,76 @@ export default function SettingsPage() {
   const [retentionDays, setRetentionDays] = useState("30")
   const [autoDownload, setAutoDownload] = useState(false)
   const [emailResults, setEmailResults] = useState(false)
+
+  // Load user data
+  useEffect(() => {
+    if (user) {
+      setEmail(user.email || "")
+      setFullName(user.user_metadata?.full_name || user.user_metadata?.name || "")
+    }
+  }, [user])
+
+  // Update user profile
+  const handleUpdateProfile = async () => {
+    setLoading(true)
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: { full_name: fullName }
+      })
+      
+      if (error) throw error
+      
+      toast.success("Profile updated successfully")
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update profile")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Update password
+  const handleUpdatePassword = async () => {
+    if (!newPassword) {
+      toast.error("Please enter a new password")
+      return
+    }
+    
+    setLoading(true)
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      })
+      
+      if (error) throw error
+      
+      toast.success("Password updated successfully")
+      setCurrentPassword("")
+      setNewPassword("")
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update password")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Save preferences
+  const handleSavePreferences = async () => {
+    setLoading(true)
+    try {
+      // Save language preference to user metadata
+      const { error } = await supabase.auth.updateUser({
+        data: { language, timezone }
+      })
+      
+      if (error) throw error
+      
+      toast.success("Preferences saved successfully")
+    } catch (error: any) {
+      toast.error(error.message || "Failed to save preferences")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleCopyApiKey = () => {
     navigator.clipboard.writeText(apiKey)
@@ -102,7 +187,6 @@ export default function SettingsPage() {
       title: "Customization",
       items: [
         { id: 'preferences', label: 'Preferences', icon: Settings2 },
-        { id: 'notifications', label: 'Notifications', icon: Bell },
       ]
     },
     {
@@ -185,30 +269,50 @@ export default function SettingsPage() {
                 <Card>
                   <CardHeader>
                     <div className="flex items-center gap-2">
-                      <Shield className="h-5 w-5 text-primary" />
+                      <User className="h-5 w-5 text-primary" />
                       <CardTitle>Account Settings</CardTitle>
                     </div>
                     <CardDescription>
-                      Manage your personal information and security preferences
+                      Manage your personal information
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="fullname">Full Name</Label>
-                        <Input id="fullname" placeholder="John Doe" defaultValue="John Doe" />
+                        <Input 
+                          id="fullname" 
+                          placeholder="Enter your full name" 
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="email">Email Address</Label>
-                        <Input id="email" type="email" placeholder="john@example.com" defaultValue="john@example.com" />
+                        <Input 
+                          id="email" 
+                          type="email" 
+                          value={email}
+                          disabled
+                          className="bg-muted"
+                        />
+                        <p className="text-xs text-muted-foreground">Email cannot be changed</p>
                       </div>
                     </div>
 
-
-
                     <div className="flex justify-end gap-3 pt-4">
-                      <Button variant="outline">Cancel</Button>
-                      <Button>Save Changes</Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setFullName(user?.user_metadata?.full_name || "")}
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        onClick={handleUpdateProfile}
+                        disabled={loading}
+                      >
+                        {loading ? "Saving..." : "Save Changes"}
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -228,18 +332,28 @@ export default function SettingsPage() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="space-y-4">
-                      <h3 className="text-sm font-semibold">Password</h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="current-password">Current Password</Label>
-                          <Input id="current-password" type="password" placeholder="••••••••" />
-                        </div>
+                      <h3 className="text-sm font-semibold">Change Password</h3>
+                      <div className="space-y-4">
                         <div className="space-y-2">
                           <Label htmlFor="new-password">New Password</Label>
-                          <Input id="new-password" type="password" placeholder="••••••••" />
+                          <Input 
+                            id="new-password" 
+                            type="password" 
+                            placeholder="Enter new password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Minimum 6 characters
+                          </p>
                         </div>
                       </div>
-                      <Button variant="outline">Update Password</Button>
+                      <Button 
+                        onClick={handleUpdatePassword}
+                        disabled={loading || !newPassword}
+                      >
+                        {loading ? "Updating..." : "Update Password"}
+                      </Button>
                     </div>
 
                     <Separator />
@@ -380,7 +494,7 @@ export default function SettingsPage() {
                       <CardTitle>Preferences</CardTitle>
                     </div>
                     <CardDescription>
-                      Customize your experience with language, theme, and notification settings
+                      Customize your experience with language and theme settings
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
@@ -399,11 +513,7 @@ export default function SettingsPage() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="en">English</SelectItem>
-                              <SelectItem value="es">Español</SelectItem>
                               <SelectItem value="fr">Français</SelectItem>
-                              <SelectItem value="de">Deutsch</SelectItem>
-                              <SelectItem value="ja">日本語</SelectItem>
-                              <SelectItem value="zh">中文</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -438,7 +548,7 @@ export default function SettingsPage() {
                           onClick={() => setTheme('light')}
                           className={cn(
                             "relative rounded-lg border-2 p-3 text-sm transition-colors",
-                            theme === 'light' ? "border-primary" : "border-border"
+                            currentTheme === 'light' ? "border-primary" : "border-border"
                           )}
                         >
                           <Sun className="h-5 w-5 mx-auto mb-2" />
@@ -448,7 +558,7 @@ export default function SettingsPage() {
                           onClick={() => setTheme('dark')}
                           className={cn(
                             "relative rounded-lg border-2 p-3 text-sm transition-colors",
-                            theme === 'dark' ? "border-primary" : "border-border"
+                            currentTheme === 'dark' ? "border-primary" : "border-border"
                           )}
                         >
                           <Moon className="h-5 w-5 mx-auto mb-2" />
@@ -458,7 +568,7 @@ export default function SettingsPage() {
                           onClick={() => setTheme('system')}
                           className={cn(
                             "relative rounded-lg border-2 p-3 text-sm transition-colors",
-                            theme === 'system' ? "border-primary" : "border-border"
+                            currentTheme === 'system' ? "border-primary" : "border-border"
                           )}
                         >
                           <Laptop className="h-5 w-5 mx-auto mb-2" />
@@ -470,81 +580,27 @@ export default function SettingsPage() {
 
 
                     <div className="flex justify-end gap-3 pt-4">
-                      <Button variant="outline">Cancel</Button>
-                      <Button>Save Preferences</Button>
+                      <Button 
+                        variant="outline"
+                        onClick={() => {
+                          setLanguage(user?.user_metadata?.language || 'en')
+                          setTimezone(user?.user_metadata?.timezone || 'UTC')
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        onClick={handleSavePreferences}
+                        disabled={loading}
+                      >
+                        {loading ? "Saving..." : "Save Preferences"}
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
               )}
 
-              {/* Notifications */}
-              {activeSection === 'notifications' && (
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <Bell className="h-5 w-5 text-primary" />
-                      <CardTitle>Notifications</CardTitle>
-                    </div>
-                    <CardDescription>
-                      Configure how and when you receive notifications
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-semibold">Email Notifications</h3>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-0.5">
-                            <Label className="text-sm font-medium">Processing Complete</Label>
-                            <p className="text-xs text-muted-foreground">Get notified when your images are processed</p>
-                          </div>
-                          <Switch checked={emailNotifications} onCheckedChange={setEmailNotifications} />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-0.5">
-                            <Label className="text-sm font-medium">Weekly Reports</Label>
-                            <p className="text-xs text-muted-foreground">Receive weekly usage summaries</p>
-                          </div>
-                          <Switch />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-0.5">
-                            <Label className="text-sm font-medium">Credit Alerts</Label>
-                            <p className="text-xs text-muted-foreground">Alert when credits are running low</p>
-                          </div>
-                          <Switch defaultChecked />
-                        </div>
-                      </div>
-                    </div>
 
-                    <Separator />
-
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-semibold">Slack Integration</h3>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-0.5">
-                            <Label className="text-sm font-medium">Slack Notifications</Label>
-                            <p className="text-xs text-muted-foreground">Get alerts in your Slack workspace</p>
-                          </div>
-                          <Switch checked={slackNotifications} onCheckedChange={setSlackNotifications} />
-                        </div>
-                        {slackNotifications && (
-                          <div className="space-y-2">
-                            <Label htmlFor="slack-webhook">Slack Webhook URL</Label>
-                            <Input id="slack-webhook" placeholder="https://hooks.slack.com/services/..." />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex justify-end gap-3 pt-4">
-                      <Button variant="outline">Cancel</Button>
-                      <Button>Save Notification Settings</Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
 
               {/* Integrations */}
               {activeSection === 'integrations' && (

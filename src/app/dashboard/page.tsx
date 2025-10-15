@@ -229,7 +229,9 @@ export default function DashboardPage() {
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{user.email}</p>
+                <p className="text-sm font-medium truncate">
+                  {user.user_metadata?.full_name || user.user_metadata?.name || user.email}
+                </p>
                 <p className="text-xs text-muted-foreground">Free Plan</p>
               </div>
             </div>
