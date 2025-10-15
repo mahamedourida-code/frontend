@@ -305,8 +305,6 @@ export default function Home() {
       {/* Hero Section */}
       <main className="relative z-10">
         <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden">
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 pointer-events-none" />
           
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -338,8 +336,8 @@ export default function Home() {
 
               {/* Right Visual - Ultra Minimal Professional Comparison */}
               <div ref={heroImageRef} className="relative group">
-                {/* Elegant shadow glow */}
-                <div className="absolute -inset-4 bg-gradient-to-r from-slate-900/20 via-black/40 to-slate-900/20 rounded-2xl blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700 ease-out" />
+                {/* Intense shadow glow */}
+                <div className="absolute -inset-8 bg-gradient-to-r from-black/60 via-black/80 to-black/60 rounded-2xl blur-3xl opacity-50 group-hover:opacity-100 transition-all duration-700 ease-out" />
                 
                 {/* Animated corner frames */}
                 <div className="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -523,12 +521,13 @@ export default function Home() {
             <div
               className="flex gap-8 items-center"
               style={{
-                animation: 'scroll-left 240s linear infinite',
-                width: 'max-content'
+                animation: 'scroll-left 30s linear infinite',
+                width: 'max-content',
+                willChange: 'transform'
               }}
             >
-              {/* Create multiple sets for seamless loop */}
-              {Array.from({ length: 3 }, (_, setIndex) =>
+              {/* Create multiple sets for seamless infinite loop */}
+              {Array.from({ length: 6 }, (_, setIndex) =>
                 [1, 2, 3, 4, 5, 6, 7, 8, 9].map((imgNum) => (
                   <Card
                     key={`${setIndex}-${imgNum}`}
@@ -557,9 +556,9 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Interactive Comparison Section */}
-        <section ref={comparisonRef} className="py-32 relative z-10 overflow-hidden bg-gradient-to-b from-background via-primary/5 to-background">
+        <section ref={comparisonRef} className="py-32 relative z-10 overflow-hidden">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
+            <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
                   <Sparkles className="w-4 h-4 text-primary" />
@@ -573,55 +572,115 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Comparison Sliders - Stacked Vertically with enhanced spacing */}
-              <div className="space-y-24">
+              {/* Comparison Sliders - Side by Side */}
+              <div className="flex gap-8 justify-center flex-wrap">
                 {/* Handwritten Table Comparison */}
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-center">Handwritten Table → Excel</h3>
-                  <div className="h-[500px]  max-w-[800px] mx-auto">
-                    <ComparisonSlider
-                      leftLabel="before"
-                      rightLabel="after"
-                      leftContent={
-                        <img 
-                          src="/ee.png" 
-                          alt="Handwritten table before processing"
-                          className="w-full h-full object-contain"
-                        />
-                      }
-                      rightContent={
-                        <img 
-                          src="/e.jpg" 
-                          alt="Excel spreadsheet output"
-                          className="w-full h-full object-contain"
-                        />
-                      }
-                    />
+                <div className="relative group">
+                  {/* Intense shadow glow */}
+                  <div className="absolute -inset-8 bg-gradient-to-r from-black/60 via-black/80 to-black/60 rounded-2xl blur-3xl opacity-50 group-hover:opacity-100 transition-all duration-700 ease-out" />
+                  
+                  <div className="relative">
+                    <h3 className="text-lg font-semibold text-center mb-4">Handwritten Table → Excel</h3>
+                    <div className="relative h-[400px] w-[500px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                      {/* Matrix rain effect (subtle) */}
+                      <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
+                        <div className="absolute inset-0 bg-[linear-gradient(0deg,transparent_24%,rgba(0,255,0,0.05)_25%,rgba(0,255,0,0.05)_26%,transparent_27%,transparent_74%,rgba(0,255,0,0.05)_75%,rgba(0,255,0,0.05)_76%,transparent_77%,transparent)] bg-[length:50px_50px] animate-matrix" />
+                      </div>
+                      
+                      <ComparisonSlider
+                        leftLabel=""
+                        rightLabel=""
+                        leftContent={
+                          <div className="relative w-full h-full">
+                            <img 
+                              src="/ee.png" 
+                              alt="Handwritten table before processing"
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-all duration-500 pointer-events-none" />
+                          </div>
+                        }
+                        rightContent={
+                          <div className="relative w-full h-full">
+                            <img 
+                              src="/e.jpg" 
+                              alt="Excel spreadsheet output"
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-tr from-green-500/5 to-transparent pointer-events-none" />
+                          </div>
+                        }
+                      />
+                      
+                      {/* Status bar */}
+                      <div className="absolute bottom-0 left-0 right-0 h-8 bg-black/40 backdrop-blur-sm border-t border-white/5">
+                        <div className="flex items-center justify-between h-full px-4">
+                          <div className="flex items-center gap-3">
+                            <div className="flex gap-1">
+                              <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                              <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse animation-delay-200" />
+                              <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse animation-delay-500" />
+                            </div>
+                            <span className="text-[9px] uppercase tracking-wider text-white/40 font-mono">Table Processing</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 {/* Form Data Comparison */}
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-center">Paper Form → Structured Data</h3>
-                  <div className="h-[500px]  max-w-[800px] mx-auto">
-                    <ComparisonSlider
-                      leftLabel="before"
-                      rightLabel="after"
-                      leftContent={
-                        <img 
-                          src="/bb.png" 
-                          alt="Paper form before processing"
-                          className="w-full h-full object-contain"
-                        />
-                      }
-                      rightContent={
-                        <img 
-                          src="/b.jpeg" 
-                          alt="Structured data output"
-                          className="w-full h-full object-contain"
-                        />
-                      }
-                    />
+                <div className="relative group">
+                  {/* Intense shadow glow */}
+                  <div className="absolute -inset-8 bg-gradient-to-r from-black/60 via-black/80 to-black/60 rounded-2xl blur-3xl opacity-50 group-hover:opacity-100 transition-all duration-700 ease-out" />
+                  
+                  <div className="relative">
+                    <h3 className="text-lg font-semibold text-center mb-4">Paper Form → Structured Data</h3>
+                    <div className="relative h-[400px] w-[500px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                      {/* Matrix rain effect (subtle) */}
+                      <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
+                        <div className="absolute inset-0 bg-[linear-gradient(0deg,transparent_24%,rgba(0,255,0,0.05)_25%,rgba(0,255,0,0.05)_26%,transparent_27%,transparent_74%,rgba(0,255,0,0.05)_75%,rgba(0,255,0,0.05)_76%,transparent_77%,transparent)] bg-[length:50px_50px] animate-matrix" />
+                      </div>
+                      
+                      <ComparisonSlider
+                        leftLabel=""
+                        rightLabel=""
+                        leftContent={
+                          <div className="relative w-full h-full">
+                            <img 
+                              src="/bb.png" 
+                              alt="Paper form before processing"
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-all duration-500 pointer-events-none" />
+                          </div>
+                        }
+                        rightContent={
+                          <div className="relative w-full h-full">
+                            <img 
+                              src="/b.jpeg" 
+                              alt="Structured data output"
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-tr from-green-500/5 to-transparent pointer-events-none" />
+                          </div>
+                        }
+                      />
+                      
+                      {/* Status bar */}
+                      <div className="absolute bottom-0 left-0 right-0 h-8 bg-black/40 backdrop-blur-sm border-t border-white/5">
+                        <div className="flex items-center justify-between h-full px-4">
+                          <div className="flex items-center gap-3">
+                            <div className="flex gap-1">
+                              <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                              <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse animation-delay-200" />
+                              <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse animation-delay-500" />
+                            </div>
+                            <span className="text-[9px] uppercase tracking-wider text-white/40 font-mono">Form Processing</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
