@@ -336,8 +336,8 @@ export default function Home() {
 
               {/* Right Visual - Ultra Minimal Professional Comparison */}
               <div ref={heroImageRef} className="relative group">
-                {/* Intense shadow glow */}
-                <div className="absolute -inset-8 bg-gradient-to-r from-black/60 via-black/80 to-black/60 rounded-2xl blur-3xl opacity-50 group-hover:opacity-100 transition-all duration-700 ease-out" />
+                {/* Subtle shadow glow */}
+                <div className="absolute -inset-4 bg-gradient-to-r from-black/10 via-black/20 to-black/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
                 
                 {/* Animated corner frames */}
                 <div className="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -491,13 +491,13 @@ export default function Home() {
             <div
               className="flex gap-8 items-center"
               style={{
-                animation: 'scroll-left 30s linear infinite',
+                animation: 'scroll-left 60s linear infinite',
                 width: 'max-content',
                 willChange: 'transform'
               }}
             >
-              {/* Create multiple sets for seamless infinite loop */}
-              {Array.from({ length: 6 }, (_, setIndex) =>
+              {/* Create multiple sets for truly seamless infinite loop */}
+              {Array.from({ length: 10 }, (_, setIndex) =>
                 [1, 2, 3, 4, 5, 6, 7, 8, 9].map((imgNum) => (
                   <Card
                     key={`${setIndex}-${imgNum}`}
@@ -546,8 +546,8 @@ export default function Home() {
               <div className="flex gap-8 justify-center flex-wrap">
                 {/* Handwritten Table Comparison */}
                 <div className="relative group">
-                  {/* Intense shadow glow */}
-                  <div className="absolute -inset-8 bg-gradient-to-r from-black/60 via-black/80 to-black/60 rounded-2xl blur-3xl opacity-50 group-hover:opacity-100 transition-all duration-700 ease-out" />
+                  {/* Subtle shadow glow */}
+                  <div className="absolute -inset-4 bg-gradient-to-r from-black/10 via-black/20 to-black/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
                   
                   <div className="relative">
                     <h3 className="text-lg font-semibold text-center mb-4">Handwritten Table → Excel</h3>
@@ -594,8 +594,8 @@ export default function Home() {
 
                 {/* Form Data Comparison */}
                 <div className="relative group">
-                  {/* Intense shadow glow */}
-                  <div className="absolute -inset-8 bg-gradient-to-r from-black/60 via-black/80 to-black/60 rounded-2xl blur-3xl opacity-50 group-hover:opacity-100 transition-all duration-700 ease-out" />
+                  {/* Subtle shadow glow */}
+                  <div className="absolute -inset-4 bg-gradient-to-r from-black/10 via-black/20 to-black/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
                   
                   <div className="relative">
                     <h3 className="text-lg font-semibold text-center mb-4">Paper Form → Structured Data</h3>
