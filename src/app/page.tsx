@@ -374,7 +374,7 @@ export default function Home() {
                           <img 
                             src="/bb.png" 
                             alt="Paper form before processing"
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-cover"
                           />
                         </div>
                       }
@@ -383,7 +383,7 @@ export default function Home() {
                           <img 
                             src="/b.jpeg" 
                             alt="Excel output after processing"
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-cover"
                           />
                         </div>
                       }
@@ -551,7 +551,7 @@ export default function Home() {
                   
                   <div className="relative">
                     <h3 className="text-lg font-semibold text-center mb-4">Handwritten Table → Excel</h3>
-                    <div className="relative h-[500px] w-[600px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                    <div className="relative h-[600px] w-[600px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""
@@ -560,7 +560,7 @@ export default function Home() {
                             <img 
                               src="/ee.png" 
                               alt="Handwritten table before processing"
-                              className="w-full h-full object-contain"
+                              className="w-full h-full object-cover"
                             />
                           </div>
                         }
@@ -569,7 +569,7 @@ export default function Home() {
                             <img 
                               src="/e.jpg" 
                               alt="Excel spreadsheet output"
-                              className="w-full h-full object-contain"
+                              className="w-full h-full object-cover"
                             />
                           </div>
                         }
@@ -599,7 +599,7 @@ export default function Home() {
                   
                   <div className="relative">
                     <h3 className="text-lg font-semibold text-center mb-4"></h3>
-                    <div className="relative h-[500px] w-[600px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                    <div className="relative h-[600px] w-[600px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""
@@ -608,7 +608,7 @@ export default function Home() {
                             <img 
                               src="/bb.png" 
                               alt="Paper form before processing"
-                              className="w-full h-full object-contain"
+                              className="w-full h-full object-cover"
                             />
                           </div>
                         }
@@ -617,7 +617,7 @@ export default function Home() {
                             <img 
                               src="/b.jpeg" 
                               alt="Structured data output"
-                              className="w-full h-full object-contain"
+                              className="w-full h-full object-cover"
                             />
                           </div>
                         }
