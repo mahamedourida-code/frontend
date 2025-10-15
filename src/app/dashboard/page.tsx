@@ -218,7 +218,7 @@ export default function DashboardPage() {
           <div className="p-6 border-b">
             <div className="flex items-center gap-2 mb-6">
               <AppIcon size={32} />
-              <span className="text-xl font-bold">Exceletto</span>
+              <span className="text-xl font-bold text-black dark:text-white">Exceletto</span>
             </div>
             {/* User Profile */}
             <div className="flex items-center gap-3">
