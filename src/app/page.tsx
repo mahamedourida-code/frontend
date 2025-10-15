@@ -551,7 +551,7 @@ export default function Home() {
                   
                   <div className="relative">
                     <h3 className="text-lg font-semibold text-center mb-4">Handwritten Table → Excel</h3>
-                    <div className="relative h-[600px] w-[600px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                    <div className="relative h-[600px] w-[800px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""
@@ -599,7 +599,7 @@ export default function Home() {
                   
                   <div className="relative">
                     <h3 className="text-lg font-semibold text-center mb-4"></h3>
-                    <div className="relative h-[600px] w-[600px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                    <div className="relative h-[600px] w-[800px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""
