@@ -366,55 +366,25 @@ export default function Home() {
                 {/* Main comparison container */}
                 <div className="relative">
                   <div className="relative h-[400px] w-[600px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
-                    {/* Matrix rain effect (subtle) */}
-                    <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
-                      <div className="absolute inset-0 bg-[linear-gradient(0deg,transparent_24%,rgba(0,255,0,0.05)_25%,rgba(0,255,0,0.05)_26%,transparent_27%,transparent_74%,rgba(0,255,0,0.05)_75%,rgba(0,255,0,0.05)_76%,transparent_77%,transparent)] bg-[length:50px_50px] animate-matrix" />
-                    </div>
-                    
-                    {/* Grid pattern overlay */}
-                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-                      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:50px_50px]" />
-                    </div>
-                    
                     <ComparisonSlider
                       leftLabel=""
                       rightLabel="" 
                       leftContent={
-                        <div className="relative w-full h-full group/before">
+                        <div className="relative w-full h-full">
                           <img 
                             src="/bb.png" 
                             alt="Paper form before processing"
                             className="w-full h-full object-cover"
                           />
-                          {/* Dark overlay that lifts on hover */}
-                          <div className="absolute inset-0 bg-black/20 group-hover/before:bg-black/0 transition-all duration-500 pointer-events-none" />
-                          {/* Scan lines effect */}
-                          <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(255,255,255,0.02)_50%)] bg-[size:4px_4px] pointer-events-none" />
-                          {/* Label */}
-                          <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <div className="px-3 py-1.5 bg-black/60 backdrop-blur-md rounded-md border border-white/10">
-                              <p className="text-[10px] uppercase tracking-widest text-white/60 font-medium">Original</p>
-                            </div>
-                          </div>
                         </div>
                       }
                       rightContent={
-                        <div className="relative w-full h-full group/after">
+                        <div className="relative w-full h-full">
                           <img 
                             src="/b.jpeg" 
                             alt="Excel output after processing"
                             className="w-full h-full object-cover"
                           />
-                          {/* Success overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-tr from-green-500/5 to-transparent pointer-events-none" />
-                          {/* Digital enhancement effect */}
-                          <div className="absolute inset-0 mix-blend-screen opacity-5 bg-gradient-to-br from-cyan-400 to-green-400 pointer-events-none" />
-                          {/* Label */}
-                          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <div className="px-3 py-1.5 bg-black/60 backdrop-blur-md rounded-md border border-white/10">
-                              <p className="text-[10px] uppercase tracking-widest text-white/60 font-medium">Processed</p>
-                            </div>
-                          </div>
                         </div>
                       }
                     />
@@ -582,11 +552,6 @@ export default function Home() {
                   <div className="relative">
                     <h3 className="text-lg font-semibold text-center mb-4">Handwritten Table → Excel</h3>
                     <div className="relative h-[400px] w-[500px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
-                      {/* Matrix rain effect (subtle) */}
-                      <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
-                        <div className="absolute inset-0 bg-[linear-gradient(0deg,transparent_24%,rgba(0,255,0,0.05)_25%,rgba(0,255,0,0.05)_26%,transparent_27%,transparent_74%,rgba(0,255,0,0.05)_75%,rgba(0,255,0,0.05)_76%,transparent_77%,transparent)] bg-[length:50px_50px] animate-matrix" />
-                      </div>
-                      
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""
@@ -597,7 +562,6 @@ export default function Home() {
                               alt="Handwritten table before processing"
                               className="w-full h-full object-cover"
                             />
-                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-all duration-500 pointer-events-none" />
                           </div>
                         }
                         rightContent={
@@ -607,7 +571,6 @@ export default function Home() {
                               alt="Excel spreadsheet output"
                               className="w-full h-full object-cover"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-tr from-green-500/5 to-transparent pointer-events-none" />
                           </div>
                         }
                       />
@@ -637,11 +600,6 @@ export default function Home() {
                   <div className="relative">
                     <h3 className="text-lg font-semibold text-center mb-4">Paper Form → Structured Data</h3>
                     <div className="relative h-[400px] w-[500px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
-                      {/* Matrix rain effect (subtle) */}
-                      <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
-                        <div className="absolute inset-0 bg-[linear-gradient(0deg,transparent_24%,rgba(0,255,0,0.05)_25%,rgba(0,255,0,0.05)_26%,transparent_27%,transparent_74%,rgba(0,255,0,0.05)_75%,rgba(0,255,0,0.05)_76%,transparent_77%,transparent)] bg-[length:50px_50px] animate-matrix" />
-                      </div>
-                      
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""
@@ -652,7 +610,6 @@ export default function Home() {
                               alt="Paper form before processing"
                               className="w-full h-full object-cover"
                             />
-                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-all duration-500 pointer-events-none" />
                           </div>
                         }
                         rightContent={
@@ -662,7 +619,6 @@ export default function Home() {
                               alt="Structured data output"
                               className="w-full h-full object-cover"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-tr from-green-500/5 to-transparent pointer-events-none" />
                           </div>
                         }
                       />
