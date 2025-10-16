@@ -76,7 +76,6 @@ export default function SettingsPage() {
   
   // Preferences state
   const [language, setLanguage] = useState('en')
-  const [timezone, setTimezone] = useState('UTC')
   
   // Integrations state
   const [driveConnected, setDriveConnected] = useState(false)
@@ -155,24 +154,7 @@ export default function SettingsPage() {
     }
   }
 
-  // Save preferences
-  const handleSavePreferences = async () => {
-    setLoading(true)
-    try {
-      // Save language preference to user metadata
-      const { error } = await supabase.auth.updateUser({
-        data: { language, timezone }
-      })
-      
-      if (error) throw error
-      
-      toast.success("Preferences saved successfully")
-    } catch (error: any) {
-      toast.error(error.message || "Failed to save preferences")
-    } finally {
-      setLoading(false)
-    }
-  }
+
 
   const handleCopyApiKey = () => {
     navigator.clipboard.writeText(apiKey)
@@ -484,34 +466,17 @@ export default function SettingsPage() {
                         <Languages className="h-4 w-4" />
                         Language & Locale
                       </h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="language">Language</Label>
-                          <Select value={language} onValueChange={setLanguage}>
-                            <SelectTrigger id="language">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="en">English</SelectItem>
-                              <SelectItem value="fr">Français</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="timezone">Timezone</Label>
-                          <Select value={timezone} onValueChange={setTimezone}>
-                            <SelectTrigger id="timezone">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="UTC">UTC</SelectItem>
-                              <SelectItem value="EST">Eastern Time</SelectItem>
-                              <SelectItem value="PST">Pacific Time</SelectItem>
-                              <SelectItem value="CET">Central European Time</SelectItem>
-                              <SelectItem value="JST">Japan Standard Time</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="language">Language</Label>
+                        <Select value={language} onValueChange={setLanguage}>
+                          <SelectTrigger id="language">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="en">English</SelectItem>
+                            <SelectItem value="fr">Français</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
 
@@ -559,23 +524,7 @@ export default function SettingsPage() {
 
 
 
-                    <div className="flex justify-end gap-3 pt-4">
-                      <Button 
-                        variant="outline"
-                        onClick={() => {
-                          setLanguage(user?.user_metadata?.language || 'en')
-                          setTimezone(user?.user_metadata?.timezone || 'UTC')
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                      <Button 
-                        onClick={handleSavePreferences}
-                        disabled={loading}
-                      >
-                        {loading ? "Saving..." : "Save Preferences"}
-                      </Button>
-                    </div>
+
                   </CardContent>
                 </Card>
               )}
@@ -595,8 +544,20 @@ export default function SettingsPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {/* Cloud Storage */}
-                    <div className="space-y-4">
+                    {/* Notice */}
+                    <div className="rounded-lg bg-muted/50 p-4 text-center">
+                      <Badge variant="secondary" className="mb-3">
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        Coming Soon
+                      </Badge>
+                      <p className="text-sm text-muted-foreground mb-1">Cloud Storage Integrations</p>
+                      <p className="text-xs text-muted-foreground">
+                        Google Drive, Dropbox, and OneDrive integrations will be available in future updates.
+                      </p>
+                    </div>
+
+                    {/* Cloud Storage - In Production */}
+                    <div className="space-y-4 opacity-50 pointer-events-none">
                       <h3 className="text-sm font-semibold flex items-center gap-2">
                         <CloudUpload className="h-4 w-4" />
                         Cloud Storage
@@ -609,17 +570,15 @@ export default function SettingsPage() {
                             </div>
                             <div>
                               <p className="font-medium">Google Drive</p>
-                              <p className="text-xs text-muted-foreground">
-                                {driveConnected ? "Connected" : "Not connected"}
-                              </p>
+                              <p className="text-xs text-muted-foreground">In production</p>
                             </div>
                           </div>
                           <Button
-                            variant={driveConnected ? "outline" : "default"}
+                            variant="outline"
                             size="sm"
-                            onClick={() => setDriveConnected(!driveConnected)}
+                            disabled
                           >
-                            {driveConnected ? "Disconnect" : "Connect"}
+                            Connect
                           </Button>
                         </div>
                         <div className="flex items-center justify-between p-4 rounded-lg border">
@@ -629,17 +588,15 @@ export default function SettingsPage() {
                             </div>
                             <div>
                               <p className="font-medium">Dropbox</p>
-                              <p className="text-xs text-muted-foreground">
-                                {dropboxConnected ? "Connected" : "Not connected"}
-                              </p>
+                              <p className="text-xs text-muted-foreground">In production</p>
                             </div>
                           </div>
                           <Button
-                            variant={dropboxConnected ? "outline" : "default"}
+                            variant="outline"
                             size="sm"
-                            onClick={() => setDropboxConnected(!dropboxConnected)}
+                            disabled
                           >
-                            {dropboxConnected ? "Disconnect" : "Connect"}
+                            Connect
                           </Button>
                         </div>
                         <div className="flex items-center justify-between p-4 rounded-lg border">
@@ -649,17 +606,15 @@ export default function SettingsPage() {
                             </div>
                             <div>
                               <p className="font-medium">OneDrive</p>
-                              <p className="text-xs text-muted-foreground">
-                                {onedriveConnected ? "Connected" : "Not connected"}
-                              </p>
+                              <p className="text-xs text-muted-foreground">In production</p>
                             </div>
                           </div>
                           <Button
-                            variant={onedriveConnected ? "outline" : "default"}
+                            variant="outline"
                             size="sm"
-                            onClick={() => setOnedriveConnected(!onedriveConnected)}
+                            disabled
                           >
-                            {onedriveConnected ? "Disconnect" : "Connect"}
+                            Connect
                           </Button>
                         </div>
                       </div>
