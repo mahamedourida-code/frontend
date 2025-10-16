@@ -36,8 +36,27 @@ import {
   CheckSquare,
   Share2,
   Link,
-  Copy
+  Copy,
+  Facebook,
+  MessageCircle,
+  Mail
 } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  FacebookShareButton,
+  WhatsappShareButton,
+  EmailShareButton,
+  FacebookIcon,
+  WhatsappIcon,
+  EmailIcon
+} from "react-share"
 
 export default function ProcessImagesPage() {
   const { user, loading: authLoading } = useAuth()
@@ -46,6 +65,9 @@ export default function ProcessImagesPage() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [selectedView, setSelectedView] = useState<"grid" | "list">("grid")
   const [credits, setCredits] = useState({ used: 0, total: 80 })
+  const [shareDialogOpen, setShareDialogOpen] = useState(false)
+  const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null)
+  const [copySuccess, setCopySuccess] = useState(false)
 
   const {
     isProcessing,
@@ -172,50 +194,27 @@ export default function ProcessImagesPage() {
   }
 
   const handleShareFile = async (file: any) => {
-    const shareUrl = `${window.location.origin}/shared/${file.file_id}`
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: file.filename || 'Exceletto Export',
-          text: 'Check out my processed Excel file',
-          url: shareUrl
-        })
-      } catch (err) {
-        // User cancelled or error
-        if (err instanceof Error && err.name !== 'AbortError') {
-          // Fallback to copy link
-          await navigator.clipboard.writeText(shareUrl)
-          toast.success('Share link copied to clipboard')
-        }
-      }
-    } else {
-      // Fallback: copy to clipboard
-      await navigator.clipboard.writeText(shareUrl)
-      toast.success('Share link copied to clipboard')
-    }
+    setSelectedFileToShare(file)
+    setShareDialogOpen(true)
+    setCopySuccess(false)
+  }
+  
+  const handleCopyLink = async () => {
+    const shareUrl = `${window.location.origin}/shared/${selectedFileToShare?.file_id}`
+    await navigator.clipboard.writeText(shareUrl)
+    setCopySuccess(true)
+    toast.success('Link copied to clipboard')
+    setTimeout(() => setCopySuccess(false), 2000)
   }
 
   const handleShareAll = async () => {
-    const shareUrl = `${window.location.origin}/shared/batch/${jobId}`
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Exceletto Batch Export',
-          text: `${resultFiles?.length} processed files ready`,
-          url: shareUrl
-        })
-      } catch (err) {
-        if (err instanceof Error && err.name !== 'AbortError') {
-          await navigator.clipboard.writeText(shareUrl)
-          toast.success('Share link copied to clipboard')
-        }
-      }
-    } else {
-      await navigator.clipboard.writeText(shareUrl)
-      toast.success('Share link copied to clipboard')
-    }
+    setSelectedFileToShare({
+      file_id: `batch/${jobId}`,
+      filename: `${resultFiles?.length} Excel files`,
+      isBatch: true
+    })
+    setShareDialogOpen(true)
+    setCopySuccess(false)
   }
 
   if (authLoading || !user) {
@@ -652,6 +651,92 @@ export default function ProcessImagesPage() {
           </div>
         </div>
       </main>
+      
+      {/* Share Dialog */}
+      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Share Excel File</DialogTitle>
+            <DialogDescription>
+              Share "{selectedFileToShare?.filename || 'Excel file'}" via social media or copy the link
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Social Media Share Buttons */}
+            <div className="flex justify-center gap-3 pt-2">
+              <FacebookShareButton
+                url={`${window.location.origin}/shared/${selectedFileToShare?.file_id}`}
+                title={`Check out my processed Excel file: ${selectedFileToShare?.filename || 'Exceletto Export'}`}
+              >
+                <div className="flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+                  <div className="w-12 h-12 rounded-full bg-[#1877F2] flex items-center justify-center">
+                    <Facebook className="h-6 w-6 text-white" />
+                  </div>
+                  <span className="text-xs text-muted-foreground">Facebook</span>
+                </div>
+              </FacebookShareButton>
+              
+              <WhatsappShareButton
+                url={`${window.location.origin}/shared/${selectedFileToShare?.file_id}`}
+                title={`Check out my processed Excel file: ${selectedFileToShare?.filename || 'Exceletto Export'}`}
+              >
+                <div className="flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+                  <div className="w-12 h-12 rounded-full bg-[#25D366] flex items-center justify-center">
+                    <MessageCircle className="h-6 w-6 text-white" />
+                  </div>
+                  <span className="text-xs text-muted-foreground">WhatsApp</span>
+                </div>
+              </WhatsappShareButton>
+              
+              <EmailShareButton
+                url={`${window.location.origin}/shared/${selectedFileToShare?.file_id}`}
+                subject={`Processed Excel file: ${selectedFileToShare?.filename || 'Exceletto Export'}`}
+                body="I've processed this file with Exceletto. Check it out:"
+              >
+                <div className="flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+                  <div className="w-12 h-12 rounded-full bg-[#EA4335] flex items-center justify-center">
+                    <Mail className="h-6 w-6 text-white" />
+                  </div>
+                  <span className="text-xs text-muted-foreground">Email</span>
+                </div>
+              </EmailShareButton>
+            </div>
+            
+            <Separator />
+            
+            {/* Copy Link Section */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Or share with link</p>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 rounded-lg border bg-muted/50 px-3 py-2 text-sm">
+                  <p className="truncate">
+                    {`${window.location.origin}/shared/${selectedFileToShare?.file_id || ''}`}
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant={copySuccess ? "default" : "outline"}
+                  onClick={handleCopyLink}
+                  className="gap-2"
+                >
+                  {copySuccess ? (
+                    <>
+                      <CheckCircle className="h-4 w-4" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4" />
+                      Copy
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
