@@ -50,12 +50,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import {
-  FacebookMessengerShareButton,
   WhatsappShareButton,
-  EmailShareButton,
-  FacebookMessengerIcon,
-  WhatsappIcon,
-  EmailIcon
 } from "react-share"
 import { Input } from "@/components/ui/input"
 
@@ -69,6 +64,15 @@ export default function ProcessImagesPage() {
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null)
   const [copySuccess, setCopySuccess] = useState(false)
+  
+  // Log environment configuration on mount
+  useEffect(() => {
+    console.log('[ProcessImagesPage] Environment Configuration:', {
+      API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev',
+      WS_URL: process.env.NEXT_PUBLIC_WS_URL,
+      FB_APP_ID: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID
+    })
+  }, [])
 
   const {
     isProcessing,
@@ -195,23 +199,93 @@ export default function ProcessImagesPage() {
   }
 
   const handleShareFile = async (file: any) => {
+    console.log('[Share] Opening share dialog for file:', file)
+    
+    // Ensure we have a valid file_id
+    if (!file || !file.file_id) {
+      console.error('[Share] Invalid file object:', file)
+      toast.error('Unable to share: File information is missing')
+      return
+    }
+    
     setSelectedFileToShare(file)
     setShareDialogOpen(true)
     setCopySuccess(false)
   }
   
   const handleCopyLink = async () => {
-    const shareUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'}/api/v1/download/${selectedFileToShare?.file_id}`
-    await navigator.clipboard.writeText(shareUrl)
-    setCopySuccess(true)
-    toast.success('Download link copied to clipboard')
-    setTimeout(() => setCopySuccess(false), 2000)
+    if (!selectedFileToShare?.file_id) {
+      console.error('[Copy] No file selected or file_id missing')
+      toast.error('Unable to copy link: File information is missing')
+      return
+    }
+    
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
+    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
+    
+    console.log('[Copy] Copying download link:', shareUrl)
+    
+    try {
+      await navigator.clipboard.writeText(shareUrl)
+      setCopySuccess(true)
+      toast.success('Download link copied to clipboard')
+      setTimeout(() => setCopySuccess(false), 2000)
+    } catch (error) {
+      console.error('[Copy] Failed to copy link:', error)
+      toast.error('Failed to copy link to clipboard')
+    }
+  }
+  
+  // Custom share handlers
+  const handleTelegramShare = () => {
+    if (!selectedFileToShare?.file_id) return
+    
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
+    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
+    const text = `Check out my processed Excel file: ${selectedFileToShare.filename || 'Exceletto Export'}`
+    
+    const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`
+    window.open(telegramUrl, '_blank')
+  }
+  
+  const handleEmailShare = () => {
+    if (!selectedFileToShare?.file_id) return
+    
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
+    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
+    const subject = `Processed Excel file: ${selectedFileToShare.filename || 'Exceletto Export'}`
+    const body = `I've processed this file with Exceletto. Download it here: ${shareUrl}`
+    
+    const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    window.location.href = mailtoUrl
+  }
+  
+  const handleLinkedInShare = () => {
+    if (!selectedFileToShare?.file_id) return
+    
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
+    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
+    
+    // LinkedIn sharing URL
+    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`
+    window.open(linkedInUrl, '_blank')
   }
 
   const handleShareAll = async () => {
+    console.log('[ShareAll] Sharing batch with jobId:', jobId, 'files:', resultFiles)
+    
+    if (!jobId || !resultFiles || resultFiles.length === 0) {
+      console.error('[ShareAll] Invalid batch data:', { jobId, resultFiles })
+      toast.error('Unable to share batch: No files available')
+      return
+    }
+    
+    // For batch downloads, we'll use the first file's ID or the job ID
+    const batchFileId = resultFiles[0]?.file_id || jobId
+    
     setSelectedFileToShare({
-      file_id: `batch/${jobId}`,
-      filename: `${resultFiles?.length} Excel files`,
+      file_id: batchFileId,
+      filename: `Batch of ${resultFiles.length} Excel files`,
       isBatch: true
     })
     setShareDialogOpen(true)
@@ -496,10 +570,33 @@ export default function ProcessImagesPage() {
                           size="sm"
                           variant="outline"
                           onClick={async () => {
+                            console.log('[DownloadAll] Starting batch download:', resultFiles)
                             toast.info(`Downloading ${resultFiles.length} files...`)
+                            
+                            let downloadCount = 0
                             for (const file of resultFiles) {
-                              await downloadFile(file.file_id)
-                              await new Promise(resolve => setTimeout(resolve, 500))
+                              if (!file.file_id) {
+                                console.error('[DownloadAll] Skipping file without ID:', file)
+                                continue
+                              }
+                              
+                              try {
+                                console.log(`[DownloadAll] Downloading ${downloadCount + 1}/${resultFiles.length}:`, file.file_id)
+                                await downloadFile(file.file_id)
+                                downloadCount++
+                                await new Promise(resolve => setTimeout(resolve, 500))
+                              } catch (error) {
+                                console.error('[DownloadAll] Failed to download file:', file.file_id, error)
+                                toast.error(`Failed to download ${file.filename || 'file'}`)
+                              }
+                            }
+                            
+                            if (downloadCount === resultFiles.length) {
+                              toast.success(`Successfully downloaded ${downloadCount} files`)
+                            } else if (downloadCount > 0) {
+                              toast.warning(`Downloaded ${downloadCount} of ${resultFiles.length} files`)
+                            } else {
+                              toast.error('Failed to download any files')
                             }
                           }}
                           className="gap-2"
@@ -548,7 +645,14 @@ export default function ProcessImagesPage() {
                             </Button>
                             <Button
                               size="sm"
-                              onClick={() => downloadFile(file.file_id)}
+                              onClick={() => {
+                                console.log('[Download] Downloading file:', file)
+                                if (!file.file_id) {
+                                  toast.error('Unable to download: File ID is missing')
+                                  return
+                                }
+                                downloadFile(file.file_id)
+                              }}
                               className="gap-2"
                             >
                               <Download className="h-4 w-4" />
@@ -654,7 +758,16 @@ export default function ProcessImagesPage() {
       </main>
       
       {/* Share Dialog */}
-      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+      <Dialog open={shareDialogOpen} onOpenChange={(open) => {
+        console.log('[ShareDialog] Dialog state changed:', open)
+        if (open && selectedFileToShare) {
+          const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
+          const downloadUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
+          console.log('[ShareDialog] File to share:', selectedFileToShare)
+          console.log('[ShareDialog] Download URL:', downloadUrl)
+        }
+        setShareDialogOpen(open)
+      }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold">Share File</DialogTitle>
@@ -667,19 +780,8 @@ export default function ProcessImagesPage() {
           
           <div className="space-y-4">
             {/* Social Media Share Buttons */}
-            <div className="flex justify-center gap-4">
-              <FacebookMessengerShareButton
-                url={`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'}/api/v1/download/${selectedFileToShare?.file_id}`}
-                appId="YOUR_FACEBOOK_APP_ID"
-              >
-                <div className="group flex flex-col items-center gap-1.5 cursor-pointer">
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#0078FF] to-[#00C6FF] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
-                    <MessageCircle className="h-5 w-5 text-white" />
-                  </div>
-                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Messenger</span>
-                </div>
-              </FacebookMessengerShareButton>
-              
+            <div className="flex justify-center gap-3">
+              {/* WhatsApp Share */}
               <WhatsappShareButton
                 url={`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'}/api/v1/download/${selectedFileToShare?.file_id}`}
                 title={`Processed Excel file: ${selectedFileToShare?.filename || 'Exceletto Export'}`}
@@ -694,18 +796,42 @@ export default function ProcessImagesPage() {
                 </div>
               </WhatsappShareButton>
               
-              <EmailShareButton
-                url={`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'}/api/v1/download/${selectedFileToShare?.file_id}`}
-                subject={`Processed Excel file: ${selectedFileToShare?.filename || 'Exceletto Export'}`}
-                body="I've processed this file with Exceletto. Download it here:"
+              {/* Telegram Share */}
+              <button
+                onClick={handleTelegramShare}
+                className="group flex flex-col items-center gap-1.5 cursor-pointer"
               >
-                <div className="group flex flex-col items-center gap-1.5 cursor-pointer">
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#EA4335] to-[#D33B2C] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
-                    <Mail className="h-5 w-5 text-white" />
-                  </div>
-                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Email</span>
+                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#0088CC] to-[#0077B5] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
+                  <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.56c-.21 2.27-1.13 7.75-1.6 10.27-.2 1.07-.59 1.43-.96 1.47-.82.08-1.44-.54-2.24-1.06-1.24-.82-1.94-1.33-3.15-2.13-1.39-.92-.49-1.42.3-2.24.21-.21 3.82-3.5 3.89-3.8.01-.04.01-.19-.07-.27s-.21-.05-.3-.03c-.13.02-2.16 1.37-6.09 4.03-.58.4-1.1.59-1.57.58-.52-.01-1.51-.29-2.25-.53-.91-.3-1.63-.46-1.57-.97.03-.27.4-.55 1.12-.85 4.38-1.91 7.3-3.17 8.76-3.78 4.18-1.73 5.05-2.03 5.61-2.04.12 0 .41.03.59.18.15.12.19.29.21.43.02.14.05.45.03.7z"/>
+                  </svg>
                 </div>
-              </EmailShareButton>
+                <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Telegram</span>
+              </button>
+              
+              {/* LinkedIn Share */}
+              <button
+                onClick={handleLinkedInShare}
+                className="group flex flex-col items-center gap-1.5 cursor-pointer"
+              >
+                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#0077B5] to-[#005885] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
+                  <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+                  </svg>
+                </div>
+                <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">LinkedIn</span>
+              </button>
+              
+              {/* Email Share */}
+              <button
+                onClick={handleEmailShare}
+                className="group flex flex-col items-center gap-1.5 cursor-pointer"
+              >
+                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#EA4335] to-[#D33B2C] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
+                  <Mail className="h-5 w-5 text-white" />
+                </div>
+                <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Email</span>
+              </button>
             </div>
             
             <div className="relative">

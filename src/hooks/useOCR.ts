@@ -141,15 +141,27 @@ export function useOCR(): UseOCRReturn {
 
   // Download file
   const downloadFile = useCallback(async (fileId: string): Promise<void> => {
+    console.log('[useOCR] Downloading file:', fileId, 'with session:', sessionId)
+    
+    if (!fileId) {
+      console.error('[useOCR] No file ID provided for download')
+      toast.error('Unable to download: File ID is missing')
+      return
+    }
+    
     try {
+      console.log('[useOCR] Calling API to download file:', fileId)
+      
       // Pass session_id to download endpoint
       const blob = await ocrApi.downloadFile(fileId, sessionId || undefined)
+      
+      console.log('[useOCR] Download successful, blob size:', blob.size)
 
       // Create download link
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `ocr-result-${fileId}.xlsx`
+      link.download = `excel-result-${fileId}.xlsx`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -157,7 +169,8 @@ export function useOCR(): UseOCRReturn {
 
       toast.success('File downloaded successfully')
     } catch (err: any) {
-      const errorMessage = err.detail || 'Failed to download file'
+      console.error('[useOCR] Download failed:', err)
+      const errorMessage = err.detail || err.message || 'Failed to download file'
       setError(errorMessage)
       toast.error(errorMessage)
     }
@@ -209,14 +222,23 @@ export function useOCR(): UseOCRReturn {
 
         // PROGRESSIVE RESULTS: Individual file ready for download
         if (messageType === 'file_ready') {
-          console.log('File ready:', data.file_info)
+          console.log('[WebSocket] File ready:', data.file_info)
+          
+          // Validate file_info structure
+          if (!data.file_info || !data.file_info.file_id) {
+            console.error('[WebSocket] Invalid file_info structure:', data.file_info)
+            return
+          }
+          
           // Add file to downloads list immediately as it becomes available
           setFiles(prev => {
             const existing = prev || []
             // Avoid duplicates by checking file_id
             if (existing.some(f => f.file_id === data.file_info.file_id)) {
+              console.log('[WebSocket] Duplicate file_id, skipping:', data.file_info.file_id)
               return existing
             }
+            console.log('[WebSocket] Adding new file to list:', data.file_info)
             return [...existing, data.file_info]
           })
 
@@ -240,6 +262,8 @@ export function useOCR(): UseOCRReturn {
 
         // Job completed
         if (messageType === 'job_completed' || data.status === 'completed') {
+          console.log('[WebSocket] Job completed:', data)
+          
           setStatus('completed')
           setProgress({
             total_images: data.total_images || 0,
@@ -254,7 +278,11 @@ export function useOCR(): UseOCRReturn {
               download_url: url,
               filename: `result-${idx + 1}.xlsx`
             }))
+            
+            console.log('[WebSocket] Setting completed files:', fileList)
             setFiles(fileList)
+          } else {
+            console.warn('[WebSocket] Job completed but no files data received')
           }
 
           // Only show completion toast once
