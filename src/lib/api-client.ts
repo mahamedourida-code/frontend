@@ -436,6 +436,7 @@ export const ocrApi = {
     created_at: string
     expires_at?: string
     access_count: number
+    is_active?: boolean
   }> => {
     const response = await apiClient.get(`/api/v1/sessions/${sessionId}`)
     return response.data
