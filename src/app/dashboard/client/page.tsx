@@ -49,9 +49,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import {
-  WhatsappShareButton,
-} from "react-share"
+// Removed react-share imports as we're using custom implementations for direct messaging
 import { Input } from "@/components/ui/input"
 
 export default function ProcessImagesPage() {
@@ -237,38 +235,98 @@ export default function ProcessImagesPage() {
   }
   
   // Custom share handlers
-  const handleTelegramShare = () => {
-    if (!selectedFileToShare?.file_id) return
+  // Share handlers for direct messaging (not social media posts)
+  const handleMessengerShare = () => {
+    if (!selectedFileToShare?.file_id) {
+      console.error('[Share] No file selected for Messenger share')
+      return
+    }
+    
+    console.log('[Share] Messenger share initiated for file:', selectedFileToShare)
     
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
     const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
-    const text = `Check out my processed Excel file: ${selectedFileToShare.filename || 'Exceletto Export'}`
     
-    const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`
-    window.open(telegramUrl, '_blank')
+    console.log('[Share] Messenger share URL:', shareUrl)
+    
+    // Facebook Messenger Send Dialog
+    // Using a generic app_id that works for link sharing (Facebook's own share app)
+    // For full integration, user should create their own Facebook App
+    const appId = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || '140586622674265'
+    const messengerUrl = `https://www.facebook.com/dialog/send?link=${encodeURIComponent(shareUrl)}&app_id=${appId}&redirect_uri=${encodeURIComponent(window.location.href)}`
+    
+    console.log('[Share] Opening Messenger dialog:', messengerUrl)
+    
+    const popup = window.open(messengerUrl, 'messenger-share', 'width=580,height=400')
+    
+    if (!popup || popup.closed || typeof popup.closed == 'undefined') {
+      console.warn('[Share] Popup blocked, trying direct navigation')
+      toast.error('Popup blocked. Please allow popups for this site.')
+    }
   }
   
   const handleEmailShare = () => {
-    if (!selectedFileToShare?.file_id) return
+    if (!selectedFileToShare?.file_id) {
+      console.error('[Share] No file selected for email share')
+      return
+    }
+    
+    console.log('[Share] Email share initiated for file:', selectedFileToShare)
     
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
     const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
-    const subject = `Processed Excel file: ${selectedFileToShare.filename || 'Exceletto Export'}`
-    const body = `I've processed this file with Exceletto. Download it here: ${shareUrl}`
+    const subject = `Excel file: ${selectedFileToShare.filename || 'Processed with Exceletto'}`
+    const body = `Hi,\n\nI've processed this file with Exceletto. You can download it here:\n${shareUrl}\n\nBest regards`
     
+    console.log('[Share] Email share URL:', shareUrl)
+    
+    // Using mailto protocol for maximum compatibility
     const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-    window.location.href = mailtoUrl
+    
+    console.log('[Share] Opening mailto:', mailtoUrl)
+    
+    // Create a temporary anchor element and click it (most compatible method)
+    const link = document.createElement('a')
+    link.href = mailtoUrl
+    link.style.display = 'none'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    
+    console.log('[Share] Email client should now be opening')
   }
   
-  const handleLinkedInShare = () => {
-    if (!selectedFileToShare?.file_id) return
+  const handleLinkedInMessage = () => {
+    if (!selectedFileToShare?.file_id) {
+      console.error('[Share] No file selected for LinkedIn share')
+      return
+    }
+    
+    console.log('[Share] LinkedIn message initiated for file:', selectedFileToShare)
     
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
     const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
     
-    // LinkedIn sharing URL
-    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`
-    window.open(linkedInUrl, '_blank')
+    console.log('[Share] LinkedIn share URL:', shareUrl)
+    
+    // Copy link to clipboard and open LinkedIn messaging
+    // Note: LinkedIn doesn't support direct message links via URL
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => {
+        console.log('[Share] Link copied to clipboard successfully')
+        toast.success('Link copied! Paste it in a LinkedIn message', {
+          duration: 5000,
+          description: 'Opening LinkedIn messages...'
+        })
+        // Open LinkedIn messages page in new tab
+        window.open('https://www.linkedin.com/messaging/', '_blank')
+      })
+      .catch((err) => {
+        console.error('[Share] Failed to copy link:', err)
+        toast.error('Failed to copy link. Please copy manually:', {
+          description: shareUrl
+        })
+      })
   }
 
   const handleShareAll = async () => {
@@ -779,59 +837,50 @@ export default function ProcessImagesPage() {
           </DialogHeader>
           
           <div className="space-y-4">
-            {/* Social Media Share Buttons */}
-            <div className="flex justify-center gap-3">
-              {/* WhatsApp Share */}
-              <WhatsappShareButton
-                url={`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'}/api/v1/download/${selectedFileToShare?.file_id}`}
-                title={`Processed Excel file: ${selectedFileToShare?.filename || 'Exceletto Export'}`}
-              >
-                <div className="group flex flex-col items-center gap-1.5 cursor-pointer">
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#25D366] to-[#128C7E] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
-                    <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+            {/* Direct Message Share Options - Send to friends, not posting on social media */}
+            <div className="space-y-3">
+              <p className="text-xs text-center text-muted-foreground">Send directly to friends via:</p>
+              <div className="flex justify-center gap-4">
+                {/* Facebook Messenger */}
+                <button
+                  onClick={handleMessengerShare}
+                  className="group flex flex-col items-center gap-1.5 cursor-pointer"
+                >
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0084FF] to-[#0063CE] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
+                    <MessageCircle className="h-6 w-6 text-white" />
+                  </div>
+                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Messenger</span>
+                </button>
+                
+                {/* LinkedIn Message */}
+                <button
+                  onClick={handleLinkedInMessage}
+                  className="group flex flex-col items-center gap-1.5 cursor-pointer"
+                >
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0077B5] to-[#005885] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
+                    <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
                     </svg>
                   </div>
-                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">WhatsApp</span>
-                </div>
-              </WhatsappShareButton>
-              
-              {/* Telegram Share */}
-              <button
-                onClick={handleTelegramShare}
-                className="group flex flex-col items-center gap-1.5 cursor-pointer"
-              >
-                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#0088CC] to-[#0077B5] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
-                  <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.56c-.21 2.27-1.13 7.75-1.6 10.27-.2 1.07-.59 1.43-.96 1.47-.82.08-1.44-.54-2.24-1.06-1.24-.82-1.94-1.33-3.15-2.13-1.39-.92-.49-1.42.3-2.24.21-.21 3.82-3.5 3.89-3.8.01-.04.01-.19-.07-.27s-.21-.05-.3-.03c-.13.02-2.16 1.37-6.09 4.03-.58.4-1.1.59-1.57.58-.52-.01-1.51-.29-2.25-.53-.91-.3-1.63-.46-1.57-.97.03-.27.4-.55 1.12-.85 4.38-1.91 7.3-3.17 8.76-3.78 4.18-1.73 5.05-2.03 5.61-2.04.12 0 .41.03.59.18.15.12.19.29.21.43.02.14.05.45.03.7z"/>
-                  </svg>
-                </div>
-                <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Telegram</span>
-              </button>
-              
-              {/* LinkedIn Share */}
-              <button
-                onClick={handleLinkedInShare}
-                className="group flex flex-col items-center gap-1.5 cursor-pointer"
-              >
-                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#0077B5] to-[#005885] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
-                  <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
-                  </svg>
-                </div>
-                <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">LinkedIn</span>
-              </button>
-              
-              {/* Email Share */}
-              <button
-                onClick={handleEmailShare}
-                className="group flex flex-col items-center gap-1.5 cursor-pointer"
-              >
-                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#EA4335] to-[#D33B2C] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
-                  <Mail className="h-5 w-5 text-white" />
-                </div>
-                <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Email</span>
-              </button>
+                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">LinkedIn</span>
+                </button>
+                
+                {/* Email */}
+                <button
+                  onClick={handleEmailShare}
+                  className="group flex flex-col items-center gap-1.5 cursor-pointer"
+                >
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#EA4335] to-[#D33B2C] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
+                    <Mail className="h-6 w-6 text-white" />
+                  </div>
+                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Email</span>
+                </button>
+              </div>
+              {selectedFileToShare && (
+                <p className="text-[10px] text-center text-muted-foreground/70">
+                  {selectedFileToShare.filename || 'Excel file'} ready to share
+                </p>
+              )}
             </div>
             
             <div className="relative">
