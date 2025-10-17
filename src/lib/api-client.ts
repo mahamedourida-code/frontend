@@ -400,6 +400,55 @@ export const ocrApi = {
     const response = await apiClient.delete(`/api/v1/jobs/saved-history/all`)
     return response.data
   },
+
+  /**
+   * Create a share session for batch files
+   * @param data - Session creation parameters
+   */
+  createShareSession: async (data: {
+    file_ids: string[]
+    title?: string
+    description?: string
+    expires_in_days?: number
+  }): Promise<{
+    session_id: string
+    share_url: string
+    expires_at?: string
+  }> => {
+    const response = await apiClient.post('/api/v1/sessions/create', data)
+    return response.data
+  },
+
+  /**
+   * Get share session details
+   * @param sessionId - Session ID
+   */
+  getSessionDetails: async (sessionId: string): Promise<{
+    session_id: string
+    title?: string
+    description?: string
+    files: Array<{
+      file_id: string
+      filename: string
+      size_bytes?: number
+      created_at?: string
+    }>
+    created_at: string
+    expires_at?: string
+    access_count: number
+  }> => {
+    const response = await apiClient.get(`/api/v1/sessions/${sessionId}`)
+    return response.data
+  },
+
+  /**
+   * Deactivate a share session
+   * @param sessionId - Session ID to deactivate
+   */
+  deactivateShareSession: async (sessionId: string): Promise<{ message: string }> => {
+    const response = await apiClient.delete(`/api/v1/sessions/${sessionId}`)
+    return response.data
+  },
 }
 
 // WebSocket connection for real-time updates

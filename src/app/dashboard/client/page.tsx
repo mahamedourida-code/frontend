@@ -14,6 +14,7 @@ import { useOCR } from "@/hooks/useOCR"
 import { useAuth } from "@/hooks/useAuth"
 import { toast } from "sonner"
 import { AppIcon } from "@/components/AppIcon"
+import { ocrApi } from "@/lib/api-client"
 import {
   Upload,
   FileSpreadsheet,
@@ -61,6 +62,7 @@ export default function ProcessImagesPage() {
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null)
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([])
+  const [shareSession, setShareSession] = useState<any>(null)
   const [copySuccess, setCopySuccess] = useState(false)
   
   // Log environment configuration on mount
@@ -223,8 +225,13 @@ export default function ProcessImagesPage() {
     
     let shareContent = ''
     
-    // Check if this is a batch share
-    if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
+    // Check if this is a session-based batch share
+    if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
+      console.log('[Copy] Copying session share URL:', shareSession.share_url)
+      shareContent = shareSession.share_url
+    } 
+    // Legacy batch share (fallback)
+    else if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
       console.log('[Copy] Copying batch download links for', selectedFilesForBatch.length, 'files')
       
       // Generate links for all files
@@ -234,8 +241,9 @@ export default function ProcessImagesPage() {
       }).join('\n')
       
       shareContent = `Download links for ${selectedFilesForBatch.length} Excel files:\n\n${links}`
-    } else {
-      // Single file share
+    } 
+    // Single file share
+    else {
       const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
       shareContent = shareUrl
     }
@@ -271,12 +279,21 @@ export default function ProcessImagesPage() {
     
     // For batch sharing, create a message with all links
     let shareUrl = ''
-    if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
+    
+    // Check if session-based share
+    if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
+      shareUrl = shareSession.share_url.replace(/\s/g, '')
+      console.log('[Share] Session share via Messenger:', shareUrl)
+    } 
+    // Legacy batch share
+    else if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
       // For Messenger, we can only share one link at a time, so create a landing page URL
       // For now, we'll share the first file and indicate there are more
       shareUrl = `${baseUrl}/api/v1/download/${selectedFilesForBatch[0].file_id}`.replace(/\s/g, '')
       console.log('[Share] Batch share via Messenger - sharing first file with note about multiple files')
-    } else {
+    } 
+    // Single file share
+    else {
       shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
     }
     
@@ -324,8 +341,22 @@ export default function ProcessImagesPage() {
     let subject = ''
     let body = ''
     
-    // Handle batch sharing
-    if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
+    // Check if session-based share
+    if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
+      subject = `${selectedFilesForBatch.length} Excel files processed with Exceletto`
+      
+      const sessionUrl = shareSession.share_url.replace(/\s/g, '')
+      
+      body = `Hi,
+
+I've processed ${selectedFilesForBatch.length} files with Exceletto. You can download all files from this link:
+
+${sessionUrl}
+
+Best regards`
+    }
+    // Legacy batch sharing
+    else if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
       subject = `${selectedFilesForBatch.length} Excel files processed with Exceletto`
       
       const fileLinks = selectedFilesForBatch.map((file, index) => {
@@ -385,16 +416,22 @@ Best regards`
     
     let shareContent = ''
     
-    // Handle batch sharing
-    if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
+    // Check if session-based share
+    if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
+      shareContent = shareSession.share_url.replace(/\s/g, '')
+      console.log('[Share] Session share for LinkedIn:', shareContent)
+    }
+    // Legacy batch sharing
+    else if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
       const fileLinks = selectedFilesForBatch.map((file, index) => {
         const fileUrl = `${baseUrl}/api/v1/download/${file.file_id}`.replace(/\s/g, '')
         return `File ${index + 1} (${file.filename || 'result.xlsx'}): ${fileUrl}`
       }).join('\n')
       
       shareContent = `Download links for ${selectedFilesForBatch.length} Excel files:\n\n${fileLinks}`
-    } else {
-      // Single file
+    } 
+    // Single file
+    else {
       const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
       shareContent = shareUrl
     }
@@ -447,7 +484,7 @@ Best regards`
       return
     }
     
-    // Create a special batch share object with all file IDs
+    // Get all valid file IDs
     const allFileIds = resultFiles.map(f => f.file_id).filter(Boolean)
     
     if (allFileIds.length === 0) {
@@ -456,18 +493,40 @@ Best regards`
       return
     }
     
-    // Store all files for batch sharing
-    setSelectedFilesForBatch(resultFiles)
-    
-    // Use a special identifier for batch sharing
-    setSelectedFileToShare({
-      file_id: '__BATCH__',
-      filename: `Batch of ${resultFiles.length} Excel files`,
-      isBatch: true,
-      fileIds: allFileIds
-    })
-    setShareDialogOpen(true)
-    setCopySuccess(false)
+    try {
+      // Create a share session for all files
+      console.log('[ShareAll] Creating share session for', allFileIds.length, 'files')
+      
+      const sessionResponse = await ocrApi.createShareSession({
+        file_ids: allFileIds,
+        title: `Batch of ${resultFiles.length} Excel files`,
+        description: `Processed on ${new Date().toLocaleDateString()}`,
+        expires_in_days: 7
+      })
+      
+      console.log('[ShareAll] Session created:', sessionResponse)
+      
+      // Store session info
+      setShareSession(sessionResponse)
+      setSelectedFilesForBatch(resultFiles)
+      
+      // Open share dialog with session info
+      setSelectedFileToShare({
+        file_id: '__SESSION__',
+        filename: `Batch of ${resultFiles.length} Excel files`,
+        isBatch: true,
+        sessionId: sessionResponse.session_id
+      })
+      
+      setShareDialogOpen(true)
+      setCopySuccess(false)
+      
+      toast.success('Share link created successfully!')
+      
+    } catch (error) {
+      console.error('[ShareAll] Failed to create share session:', error)
+      toast.error('Failed to create share link. Please try again.')
+    }
   }
 
   if (authLoading || !user) {
@@ -940,7 +999,9 @@ Best regards`
         console.log('[ShareDialog] Dialog state changed:', open)
         if (open && selectedFileToShare) {
           const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
-          if (selectedFileToShare.file_id === '__BATCH__') {
+          if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
+            console.log('[ShareDialog] Session share:', shareSession)
+          } else if (selectedFileToShare.file_id === '__BATCH__') {
             console.log('[ShareDialog] Batch share for', selectedFilesForBatch.length, 'files')
           } else {
             const downloadUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
@@ -952,6 +1013,7 @@ Best regards`
         // Clean up when closing
         if (!open) {
           setSelectedFilesForBatch([])
+          setShareSession(null)
           setCopySuccess(false)
         }
         
@@ -963,9 +1025,16 @@ Best regards`
               {selectedFileToShare?.isBatch ? 'Share All Files' : 'Share File'}
             </DialogTitle>
             <DialogDescription className="text-sm">
-              {selectedFileToShare?.isBatch 
+              {selectedFileToShare?.file_id === '__SESSION__' && shareSession
+                ? `Share ${selectedFilesForBatch.length} Excel files with a single link` 
+                : selectedFileToShare?.isBatch 
                 ? `Share ${selectedFilesForBatch.length} Excel files - Each file has its own download link` 
                 : selectedFileToShare?.filename || 'Excel file'}
+              {shareSession && shareSession.expires_at && (
+                <span className="block mt-1 text-xs text-muted-foreground">
+                  Link expires on {new Date(shareSession.expires_at).toLocaleDateString()}
+                </span>
+              )}
             </DialogDescription>
           </DialogHeader>
           
