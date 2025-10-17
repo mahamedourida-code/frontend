@@ -60,6 +60,7 @@ export default function ProcessImagesPage() {
   const [credits, setCredits] = useState({ used: 0, total: 80 })
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null)
+  const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([])
   const [copySuccess, setCopySuccess] = useState(false)
   
   // Log environment configuration on mount
@@ -219,14 +220,35 @@ export default function ProcessImagesPage() {
     
     // Clean the base URL to ensure no whitespace
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
-    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
     
-    console.log('[Copy] Copying download link:', shareUrl)
+    let shareContent = ''
+    
+    // Check if this is a batch share
+    if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
+      console.log('[Copy] Copying batch download links for', selectedFilesForBatch.length, 'files')
+      
+      // Generate links for all files
+      const links = selectedFilesForBatch.map((file, index) => {
+        const fileUrl = `${baseUrl}/api/v1/download/${file.file_id}`.replace(/\s/g, '')
+        return `File ${index + 1} (${file.filename || 'result.xlsx'}): ${fileUrl}`
+      }).join('\n')
+      
+      shareContent = `Download links for ${selectedFilesForBatch.length} Excel files:\n\n${links}`
+    } else {
+      // Single file share
+      const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
+      shareContent = shareUrl
+    }
+    
+    console.log('[Copy] Copying content:', shareContent)
     
     try {
-      await navigator.clipboard.writeText(shareUrl)
+      await navigator.clipboard.writeText(shareContent)
       setCopySuccess(true)
-      toast.success('Download link copied to clipboard')
+      const message = selectedFileToShare.file_id === '__BATCH__' 
+        ? `Links for ${selectedFilesForBatch.length} files copied!`
+        : 'Download link copied to clipboard'
+      toast.success(message)
       setTimeout(() => setCopySuccess(false), 2000)
     } catch (error) {
       console.error('[Copy] Failed to copy link:', error)
@@ -246,8 +268,17 @@ export default function ProcessImagesPage() {
     
     // Clean the base URL to remove any newlines or whitespace
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
-    // Ensure no newlines in the final URL
-    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
+    
+    // For batch sharing, create a message with all links
+    let shareUrl = ''
+    if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
+      // For Messenger, we can only share one link at a time, so create a landing page URL
+      // For now, we'll share the first file and indicate there are more
+      shareUrl = `${baseUrl}/api/v1/download/${selectedFilesForBatch[0].file_id}`.replace(/\s/g, '')
+      console.log('[Share] Batch share via Messenger - sharing first file with note about multiple files')
+    } else {
+      shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
+    }
     
     console.log('[Share] Clean Messenger share URL:', shareUrl)
     
@@ -270,6 +301,13 @@ export default function ProcessImagesPage() {
       // Fallback: open in new tab
       window.open(messengerUrl, '_blank')
     }
+    
+    // Show note for batch sharing
+    if (selectedFileToShare.file_id === '__BATCH__') {
+      toast.info(`Note: Sharing first of ${selectedFilesForBatch.length} files. Copy all links for complete batch.`, {
+        duration: 5000
+      })
+    }
   }
   
   const handleEmailShare = () => {
@@ -282,17 +320,40 @@ export default function ProcessImagesPage() {
     
     // Clean the base URL to ensure no whitespace
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
-    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
-    const subject = `Excel file: ${selectedFileToShare.filename || 'Processed with Exceletto'}`
-    const body = `Hi,
+    
+    let subject = ''
+    let body = ''
+    
+    // Handle batch sharing
+    if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
+      subject = `${selectedFilesForBatch.length} Excel files processed with Exceletto`
+      
+      const fileLinks = selectedFilesForBatch.map((file, index) => {
+        const fileUrl = `${baseUrl}/api/v1/download/${file.file_id}`.replace(/\s/g, '')
+        return `File ${index + 1} (${file.filename || 'result.xlsx'}): ${fileUrl}`
+      }).join('\n')
+      
+      body = `Hi,
+
+I've processed ${selectedFilesForBatch.length} files with Exceletto. You can download them here:
+
+${fileLinks}
+
+Best regards`
+    } else {
+      // Single file
+      const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
+      subject = `Excel file: ${selectedFileToShare.filename || 'Processed with Exceletto'}`
+      body = `Hi,
 
 I've processed this file with Exceletto. You can download it here:
 
 ${shareUrl}
 
 Best regards`
+    }
     
-    console.log('[Share] Email share URL:', shareUrl)
+    console.log('[Share] Email share subject:', subject)
     
     // Gmail compose URL with parameters
     // This opens Gmail in a new tab with the compose window pre-filled
@@ -321,20 +382,39 @@ Best regards`
     
     // Clean the base URL to ensure no whitespace
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
-    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
     
-    console.log('[Share] LinkedIn share URL:', shareUrl)
+    let shareContent = ''
+    
+    // Handle batch sharing
+    if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
+      const fileLinks = selectedFilesForBatch.map((file, index) => {
+        const fileUrl = `${baseUrl}/api/v1/download/${file.file_id}`.replace(/\s/g, '')
+        return `File ${index + 1} (${file.filename || 'result.xlsx'}): ${fileUrl}`
+      }).join('\n')
+      
+      shareContent = `Download links for ${selectedFilesForBatch.length} Excel files:\n\n${fileLinks}`
+    } else {
+      // Single file
+      const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
+      shareContent = shareUrl
+    }
+    
+    console.log('[Share] LinkedIn share content:', shareContent)
     
     // LinkedIn doesn't support direct message URLs with pre-filled content
     // Best approach: Copy link and show instructions
-    navigator.clipboard.writeText(shareUrl)
+    navigator.clipboard.writeText(shareContent)
       .then(() => {
         console.log('[Share] Link copied to clipboard successfully')
         
         // Show detailed instructions
-        toast.success('Link copied to clipboard!', {
+        const isBatch = selectedFileToShare.file_id === '__BATCH__'
+        const message = isBatch 
+          ? `${selectedFilesForBatch.length} file links copied to clipboard!`
+          : 'Link copied to clipboard!'
+        toast.success(message, {
           duration: 8000,
-          description: 'Opening LinkedIn... Click "New message" → Choose recipient → Paste the link (Ctrl+V or Cmd+V)'
+          description: 'Opening LinkedIn... Click "New message" → Choose recipient → Paste the links (Ctrl+V or Cmd+V)'
         })
         
         // Open LinkedIn messaging compose page
@@ -345,7 +425,7 @@ Best regards`
         console.error('[Share] Failed to copy link:', err)
         // Fallback: show the link for manual copying
         const fallbackInput = document.createElement('input')
-        fallbackInput.value = shareUrl
+        fallbackInput.value = shareContent
         document.body.appendChild(fallbackInput)
         fallbackInput.select()
         document.execCommand('copy')
@@ -367,13 +447,24 @@ Best regards`
       return
     }
     
-    // For batch downloads, we'll use the first file's ID or the job ID
-    const batchFileId = resultFiles[0]?.file_id || jobId
+    // Create a special batch share object with all file IDs
+    const allFileIds = resultFiles.map(f => f.file_id).filter(Boolean)
     
+    if (allFileIds.length === 0) {
+      console.error('[ShareAll] No valid file IDs found')
+      toast.error('Unable to share: No valid files found')
+      return
+    }
+    
+    // Store all files for batch sharing
+    setSelectedFilesForBatch(resultFiles)
+    
+    // Use a special identifier for batch sharing
     setSelectedFileToShare({
-      file_id: batchFileId,
+      file_id: '__BATCH__',
       filename: `Batch of ${resultFiles.length} Excel files`,
-      isBatch: true
+      isBatch: true,
+      fileIds: allFileIds
     })
     setShareDialogOpen(true)
     setCopySuccess(false)
@@ -849,18 +940,31 @@ Best regards`
         console.log('[ShareDialog] Dialog state changed:', open)
         if (open && selectedFileToShare) {
           const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
-          const downloadUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
-          console.log('[ShareDialog] File to share:', selectedFileToShare)
-          console.log('[ShareDialog] Download URL:', downloadUrl)
+          if (selectedFileToShare.file_id === '__BATCH__') {
+            console.log('[ShareDialog] Batch share for', selectedFilesForBatch.length, 'files')
+          } else {
+            const downloadUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
+            console.log('[ShareDialog] File to share:', selectedFileToShare)
+            console.log('[ShareDialog] Download URL:', downloadUrl)
+          }
         }
+        
+        // Clean up when closing
+        if (!open) {
+          setSelectedFilesForBatch([])
+          setCopySuccess(false)
+        }
+        
         setShareDialogOpen(open)
       }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-base font-semibold">Share File</DialogTitle>
+            <DialogTitle className="text-base font-semibold">
+              {selectedFileToShare?.isBatch ? 'Share All Files' : 'Share File'}
+            </DialogTitle>
             <DialogDescription className="text-sm">
               {selectedFileToShare?.isBatch 
-                ? `Share ${selectedFileToShare?.filename}` 
+                ? `Share ${selectedFilesForBatch.length} Excel files - Each file has its own download link` 
                 : selectedFileToShare?.filename || 'Excel file'}
             </DialogDescription>
           </DialogHeader>
@@ -942,8 +1046,14 @@ Best regards`
                   readOnly
                   value={(() => {
                     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
+                    
+                    // Handle batch share display
+                    if (selectedFileToShare?.file_id === '__BATCH__' && selectedFilesForBatch?.length > 0) {
+                      return `Multiple files (${selectedFilesForBatch.length} links) - Click copy to get all`
+                    }
+                    
                     const fileId = selectedFileToShare?.file_id || ''
-                    return fileId ? `${baseUrl}/api/v1/download/${fileId}`.replace(/\s/g, '') : ''
+                    return fileId && fileId !== '__BATCH__' ? `${baseUrl}/api/v1/download/${fileId}`.replace(/\s/g, '') : ''
                   })()}
                   className="text-xs h-9 bg-muted/50 border-muted-foreground/20"
                 />
