@@ -38,8 +38,7 @@ import {
   Link,
   Copy,
   Facebook,
-  MessageCircle,
-  Mail
+  MessageCircle
 } from "lucide-react"
 import {
   Dialog,
@@ -285,24 +284,31 @@ export default function ProcessImagesPage() {
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
     const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
     const subject = `Excel file: ${selectedFileToShare.filename || 'Processed with Exceletto'}`
-    const body = `Hi,\n\nI've processed this file with Exceletto. You can download it here:\n${shareUrl}\n\nBest regards`
+    const body = `Hi,
+
+I've processed this file with Exceletto. You can download it here:
+
+${shareUrl}
+
+Best regards`
     
     console.log('[Share] Email share URL:', shareUrl)
     
-    // Using mailto protocol for maximum compatibility
-    const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    // Gmail compose URL with parameters
+    // This opens Gmail in a new tab with the compose window pre-filled
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     
-    console.log('[Share] Opening mailto:', mailtoUrl)
+    console.log('[Share] Opening Gmail compose:', gmailUrl)
     
-    // Create a temporary anchor element and click it (most compatible method)
-    const link = document.createElement('a')
-    link.href = mailtoUrl
-    link.style.display = 'none'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    // Open Gmail compose in new tab
+    const gmailWindow = window.open(gmailUrl, '_blank')
     
-    console.log('[Share] Email client should now be opening')
+    if (!gmailWindow) {
+      console.warn('[Share] Gmail popup blocked, trying mailto fallback')
+      // Fallback to mailto if popup is blocked
+      const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+      window.location.href = mailtoUrl
+    }
   }
   
   const handleLinkedInMessage = () => {
@@ -319,23 +325,36 @@ export default function ProcessImagesPage() {
     
     console.log('[Share] LinkedIn share URL:', shareUrl)
     
-    // Copy link to clipboard and open LinkedIn messaging
-    // Note: LinkedIn doesn't support direct message links via URL
+    // LinkedIn doesn't support direct message URLs with pre-filled content
+    // Best approach: Copy link and show instructions
     navigator.clipboard.writeText(shareUrl)
       .then(() => {
         console.log('[Share] Link copied to clipboard successfully')
-        toast.success('Link copied! Paste it in a LinkedIn message', {
-          duration: 5000,
-          description: 'Opening LinkedIn messages...'
+        
+        // Show detailed instructions
+        toast.success('Link copied to clipboard!', {
+          duration: 8000,
+          description: 'Opening LinkedIn... Click "New message" → Choose recipient → Paste the link (Ctrl+V or Cmd+V)'
         })
-        // Open LinkedIn messages page in new tab
-        window.open('https://www.linkedin.com/messaging/', '_blank')
+        
+        // Open LinkedIn messaging compose page
+        // This URL opens the messaging page with compose view
+        window.open('https://www.linkedin.com/messaging/compose/', '_blank')
       })
       .catch((err) => {
         console.error('[Share] Failed to copy link:', err)
-        toast.error('Failed to copy link. Please copy manually:', {
-          description: shareUrl
+        // Fallback: show the link for manual copying
+        const fallbackInput = document.createElement('input')
+        fallbackInput.value = shareUrl
+        document.body.appendChild(fallbackInput)
+        fallbackInput.select()
+        document.execCommand('copy')
+        document.body.removeChild(fallbackInput)
+        
+        toast.success('Link copied! Opening LinkedIn...', {
+          duration: 6000
         })
+        window.open('https://www.linkedin.com/messaging/compose/', '_blank')
       })
   }
 
@@ -849,12 +868,13 @@ export default function ProcessImagesPage() {
           <div className="space-y-4">
             {/* Direct Message Share Options - Send to friends, not posting on social media */}
             <div className="space-y-3">
-              <p className="text-xs text-center text-muted-foreground">Send directly to friends via:</p>
+              <p className="text-xs text-center text-muted-foreground">Send download link to friends:</p>
               <div className="flex justify-center gap-4">
                 {/* Facebook Messenger */}
                 <button
                   onClick={handleMessengerShare}
                   className="group flex flex-col items-center gap-1.5 cursor-pointer"
+                  title="Send via Facebook Messenger"
                 >
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0084FF] to-[#0063CE] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
                     <MessageCircle className="h-6 w-6 text-white" />
@@ -866,6 +886,7 @@ export default function ProcessImagesPage() {
                 <button
                   onClick={handleLinkedInMessage}
                   className="group flex flex-col items-center gap-1.5 cursor-pointer"
+                  title="Copy link and compose LinkedIn message"
                 >
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0077B5] to-[#005885] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
                     <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -875,21 +896,29 @@ export default function ProcessImagesPage() {
                   <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">LinkedIn</span>
                 </button>
                 
-                {/* Email */}
+                {/* Gmail */}
                 <button
                   onClick={handleEmailShare}
                   className="group flex flex-col items-center gap-1.5 cursor-pointer"
+                  title="Compose email in Gmail"
                 >
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#EA4335] to-[#D33B2C] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
-                    <Mail className="h-6 w-6 text-white" />
+                    <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
+                    </svg>
                   </div>
-                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Email</span>
+                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Gmail</span>
                 </button>
               </div>
               {selectedFileToShare && (
-                <p className="text-[10px] text-center text-muted-foreground/70">
-                  {selectedFileToShare.filename || 'Excel file'} ready to share
-                </p>
+                <div className="text-center space-y-1">
+                  <p className="text-[10px] text-muted-foreground/70">
+                    {selectedFileToShare.filename || 'Excel file'} ready to share
+                  </p>
+                  <p className="text-[9px] text-muted-foreground/50">
+                    LinkedIn: Link will be copied to paste • Gmail: Opens compose window
+                  </p>
+                </div>
               )}
             </div>
             
