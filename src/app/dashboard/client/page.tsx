@@ -218,8 +218,9 @@ export default function ProcessImagesPage() {
       return
     }
     
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
-    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
+    // Clean the base URL to ensure no whitespace
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
+    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
     
     console.log('[Copy] Copying download link:', shareUrl)
     
@@ -244,24 +245,31 @@ export default function ProcessImagesPage() {
     
     console.log('[Share] Messenger share initiated for file:', selectedFileToShare)
     
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
-    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
+    // Clean the base URL to remove any newlines or whitespace
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
+    // Ensure no newlines in the final URL
+    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
     
-    console.log('[Share] Messenger share URL:', shareUrl)
+    console.log('[Share] Clean Messenger share URL:', shareUrl)
     
-    // Facebook Messenger Send Dialog
-    // Using a generic app_id that works for link sharing (Facebook's own share app)
-    // For full integration, user should create their own Facebook App
-    const appId = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || '140586622674265'
-    const messengerUrl = `https://www.facebook.com/dialog/send?link=${encodeURIComponent(shareUrl)}&app_id=${appId}&redirect_uri=${encodeURIComponent(window.location.href)}`
+    // Get app ID from environment or use default
+    const appId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || '140586622674265').replace(/"/g, '').trim()
     
-    console.log('[Share] Opening Messenger dialog:', messengerUrl)
+    // Facebook Messenger Send Dialog for desktop/web
+    // Note: This opens the send dialog, not the share dialog
+    const currentUrl = window.location.origin
+    const messengerUrl = `https://www.facebook.com/dialog/send?app_id=${appId}&link=${encodeURIComponent(shareUrl)}&redirect_uri=${encodeURIComponent(currentUrl)}`
     
-    const popup = window.open(messengerUrl, 'messenger-share', 'width=580,height=400')
+    console.log('[Share] Opening Messenger dialog with app_id:', appId)
+    console.log('[Share] Full Messenger URL:', messengerUrl)
+    
+    // Try to open in popup first
+    const popup = window.open(messengerUrl, 'messenger-share-dialog', 'width=600,height=500')
     
     if (!popup || popup.closed || typeof popup.closed == 'undefined') {
-      console.warn('[Share] Popup blocked, trying direct navigation')
-      toast.error('Popup blocked. Please allow popups for this site.')
+      console.warn('[Share] Popup blocked, opening in new tab')
+      // Fallback: open in new tab
+      window.open(messengerUrl, '_blank')
     }
   }
   
@@ -273,8 +281,9 @@ export default function ProcessImagesPage() {
     
     console.log('[Share] Email share initiated for file:', selectedFileToShare)
     
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
-    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
+    // Clean the base URL to ensure no whitespace
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
+    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
     const subject = `Excel file: ${selectedFileToShare.filename || 'Processed with Exceletto'}`
     const body = `Hi,\n\nI've processed this file with Exceletto. You can download it here:\n${shareUrl}\n\nBest regards`
     
@@ -304,8 +313,9 @@ export default function ProcessImagesPage() {
     
     console.log('[Share] LinkedIn message initiated for file:', selectedFileToShare)
     
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
-    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
+    // Clean the base URL to ensure no whitespace
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
+    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
     
     console.log('[Share] LinkedIn share URL:', shareUrl)
     
@@ -901,7 +911,11 @@ export default function ProcessImagesPage() {
               <div className="flex items-center gap-2">
                 <Input
                   readOnly
-                  value={`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'}/api/v1/download/${selectedFileToShare?.file_id || ''}`}
+                  value={(() => {
+                    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
+                    const fileId = selectedFileToShare?.file_id || ''
+                    return fileId ? `${baseUrl}/api/v1/download/${fileId}`.replace(/\s/g, '') : ''
+                  })()}
                   className="text-xs h-9 bg-muted/50 border-muted-foreground/20"
                 />
                 <Button
