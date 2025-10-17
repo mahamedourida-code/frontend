@@ -523,9 +523,15 @@ Best regards`
       
       toast.success('Share link created successfully!')
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('[ShareAll] Failed to create share session:', error)
-      toast.error('Failed to create share link. Please try again.')
+      console.error('[ShareAll] Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      })
+      const errorMessage = error.response?.data?.detail || error.message || 'Failed to create share link'
+      toast.error(`Error: ${errorMessage}`)
     }
   }
 
