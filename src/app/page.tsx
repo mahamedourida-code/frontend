@@ -25,7 +25,8 @@ import { AppLogo } from "@/components/AppIcon";
 import { ComparisonSlider } from "@/components/ComparisonSlider";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target, Wand2, Sparkle } from "lucide-react";
+import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target, Wand2, Sparkle, Trophy } from "lucide-react";
+import { ActiveUsersCounter } from "@/components/ActiveUsersCounter";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -173,9 +174,12 @@ export default function Home() {
       <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex-shrink-0">
+            {/* Logo and Active Users */}
+            <div className="flex items-center gap-4">
               <AppLogo />
+              <div className="hidden sm:block border-l pl-4 ml-2">
+                <ActiveUsersCounter />
+              </div>
             </div>
 
             {/* Desktop Navigation Items - Hidden on Mobile */}
@@ -294,17 +298,17 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
               {/* Left Content */}
               <div ref={heroContentRef} className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 rounded-full bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 mb-4 sm:mb-6 lg:mb-8 shadow-lg shadow-primary/10">
-                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary animate-pulse" />
-                  <span className="text-xs sm:text-sm lg:text-base font-semibold text-primary">AI-Powered OCR Technology</span>
+                <div className="inline-flex items-center gap-2 px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 rounded-full bg-gradient-to-r from-purple-600/20 to-purple-500/10 border border-purple-500/30 mb-4 sm:mb-6 lg:mb-8 shadow-lg shadow-purple-500/10">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 animate-pulse" />
+                  <span className="text-xs sm:text-sm lg:text-base font-semibold text-purple-600">Exceletto-7B Handwritten Specialist</span>
                 </div>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-foreground leading-[1.1] tracking-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-normal text-foreground leading-[1.1] tracking-tight">
                   <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
-                    Convert screenshots to Excel instantly
+                    Convert handwritten tables to Excel instantly
                   </span>
                 </h1>
                 <p className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                  Process <span className="font-bold text-primary">up to 100 screenshots</span> in one click with our cutting-edge AI-powered OCR technology.
+                  <span className="font-semibold text-primary">Industry-leading accuracy on handwritten documents</span>. Process up to 100 images in one click with our specialized 7B parameter model fine-tuned for handwritten text recognition.
                 </p>
                 <div className="mt-6 sm:mt-8 md:mt-10">
                   <Button
@@ -348,26 +352,30 @@ export default function Home() {
                 </div>
                 
                 {/* Main comparison container */}
-                <div className="relative w-full max-w-[600px]">
-                  <div className="relative h-[250px] sm:h-[300px] lg:h-[400px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                <div className="relative w-full max-w-[700px]">
+                  <Badge variant="secondary" className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-purple-600/90 text-white border-purple-500">
+                    <Trophy className="h-3 w-3 mr-1" />
+                    Best for Handwritten
+                  </Badge>
+                  <div className="relative h-[300px] sm:h-[350px] lg:h-[450px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
                     <ComparisonSlider
                       leftLabel=""
                       rightLabel="" 
                       leftContent={
                         <div className="relative w-full h-full">
                           <img 
-                            src="/bb.png" 
-                            alt="Paper form before processing"
-                            className="w-full h-full object-cover"
+                            src="/ee.png" 
+                            alt="Handwritten table before processing"
+                            className="w-full h-full object-contain bg-white"
                           />
                         </div>
                       }
                       rightContent={
                         <div className="relative w-full h-full">
                           <img 
-                            src="/b.jpeg" 
+                            src="/e.jpg" 
                             alt="Excel output after processing"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain bg-white"
                           />
                         </div>
                       }
@@ -382,7 +390,7 @@ export default function Home() {
                             <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse animation-delay-200" />
                             <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse animation-delay-500" />
                           </div>
-                          <span className="text-[9px] uppercase tracking-wider text-white/40 font-mono">AI Processing</span>
+                          <span className="text-[9px] uppercase tracking-wider text-white/40 font-mono">Handwritten Processing</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-[9px] text-white/30 font-mono">OCR Engine v2.0</span>
@@ -402,9 +410,9 @@ export default function Home() {
         <ScrollAnimatedSection id="features" className="py-24 relative z-10">
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16" data-animate="headline">
-              <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Features</Badge>
+              <Badge variant="outline" className="mb-4 border-purple-500/50 text-purple-600">Specialized Features</Badge>
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-                Solutions
+                Handwritten Data Excellence
               </h2>
               
             </div>
@@ -417,7 +425,7 @@ export default function Home() {
                   </div>
                   <CardTitle className="text-lg">Handwritten Tables</CardTitle>
                   <CardDescription>
-                    Transform handwritten tables into precise Excel spreadsheets with AI-powered recognition
+                    <span className="font-semibold text-purple-600">98.4% accuracy</span> on handwritten tables - industry-leading performance with our specialized model
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -514,9 +522,9 @@ export default function Home() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">Interactive Demo</span>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-600/10 border border-purple-500/20 mb-6">
+                  <Sparkles className="w-4 h-4 text-purple-600" />
+                  <span className="text-sm font-medium text-purple-600">Interactive Demo - Handwritten Excellence</span>
                 </div>
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 sm:mb-6">
                   See the Transformation in Action
@@ -537,14 +545,14 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Comparison Sliders - Side by Side */}
-              <div className="flex gap-8 justify-center flex-wrap">
-                {/* Handwritten Table Comparison */}
+              {/* Comparison Sliders */}
+              <div className="space-y-12">
+                {/* Handwritten Table Comparison - Featured */}
                 <div className="relative group">
                   {/* Subtle shadow glow */}
-                  <div className="absolute -inset-4 bg-gradient-to-r from-black/10 via-black/20 to-black/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
+                  <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/10 via-purple-600/20 to-purple-500/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
                   
-                  <div className="relative w-full max-w-[800px] mx-auto">
+                  <div className="relative w-full max-w-6xl mx-auto">
                     <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4">Handwritten Table → Excel</h3>
                     <div className="relative h-[350px] sm:h-[450px] lg:h-[600px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
                       <ComparisonSlider
@@ -555,7 +563,7 @@ export default function Home() {
                             <img 
                               src="/ee.png" 
                               alt="Handwritten table before processing"
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-contain bg-white"
                             />
                           </div>
                         }
@@ -564,7 +572,7 @@ export default function Home() {
                             <img 
                               src="/e.jpg" 
                               alt="Excel spreadsheet output"
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-contain bg-white"
                             />
                           </div>
                         }
@@ -592,7 +600,7 @@ export default function Home() {
                   {/* Subtle shadow glow */}
                   <div className="absolute -inset-4 bg-gradient-to-r from-black/10 via-black/20 to-black/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
                   
-                  <div className="relative w-full max-w-[800px] mx-auto">
+                  <div className="relative w-full max-w-6xl mx-auto">
                     <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4"></h3>
                     <div className="relative h-[350px] sm:h-[450px] lg:h-[600px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
                       <ComparisonSlider
@@ -603,7 +611,7 @@ export default function Home() {
                             <img 
                               src="/bb.png" 
                               alt="Paper form before processing"
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-contain bg-white"
                             />
                           </div>
                         }
@@ -612,7 +620,7 @@ export default function Home() {
                             <img 
                               src="/b.jpeg" 
                               alt="Structured data output"
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-contain bg-white"
                             />
                           </div>
                         }
