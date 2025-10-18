@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { MobileNavigation } from "@/components/MobileNavigation";
+import { MobileNav } from "@/components/MobileNav";
 import { CheckCircle, Zap, Users, Building, Star, MessageCircle, Mail, Phone, Shield, Sparkles, Trophy } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -23,8 +23,10 @@ export default function PricingPage() {
               Exceletto
             </Link>
             
-            {/* Mobile Navigation */}
-            <MobileNavigation />
+            {/* Theme Toggle (Mobile uses bottom nav) */}
+            <div className="lg:hidden">
+              {/* Empty - using bottom nav */}
+            </div>
             
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-4">
@@ -249,6 +251,9 @@ export default function PricingPage() {
           </div>
         </section>
       </main>
+      
+      {/* Mobile Navigation */}
+      <MobileNav />
     </div>
   );
 }

@@ -40,7 +40,8 @@ import {
   LogOut,
   HelpCircle,
   FileSpreadsheet,
-  Building2
+  Building2,
+  LayoutDashboard
 } from "lucide-react"
 
 interface MobileNavProps {
@@ -75,58 +76,16 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
   }
 
   const mainNavItems = [
-    {
-      label: "Home",
-      href: "/",
-      icon: Home,
-      show: !isAuthenticated
-    },
-    {
-      label: "Solutions",
-      icon: FileSpreadsheet,
-      show: !isAuthenticated,
-      children: [
-        {
-          label: "Handwritten Tables",
-          href: "/solutions/handwritten-tables",
-          icon: PenTool,
-          description: "AI-powered recognition"
-        },
-        {
-          label: "Paper Forms",
-          href: "/solutions/paper-forms",
-          icon: FileInput,
-          description: "Digitize paperwork"
-        },
-        {
-          label: "Financial Documents",
-          href: "/solutions/financial-documents",
-          icon: TrendingUp,
-          description: "Process invoices & receipts"
-        },
-        {
-          label: "Enterprise",
-          href: "/solutions/enterprise",
-          icon: Building2,
-          description: "Custom integrations"
-        }
-      ]
-    },
-    {
-      label: "Pricing",
-      href: "/pricing",
-      icon: DollarSign,
-      show: !isAuthenticated
-    },
+    // Authenticated User Menu
     {
       label: "Dashboard",
       href: "/dashboard",
-      icon: Activity,
+      icon: LayoutDashboard,
       show: isAuthenticated,
       badge: user?.credits ? `${user.credits} credits` : null
     },
     {
-      label: "Process Images",
+      label: "Upload Images",
       href: "/dashboard/client",
       icon: Upload,
       show: isAuthenticated
@@ -142,6 +101,38 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
       href: "/dashboard/settings",
       icon: Settings,
       show: isAuthenticated
+    },
+    // Non-Authenticated User Menu
+    {
+      label: "Home",
+      href: "/",
+      icon: Home,
+      show: !isAuthenticated
+    },
+    {
+      label: "Pricing",
+      href: "/pricing",
+      icon: DollarSign,
+      show: !isAuthenticated
+    },
+    {
+      label: "Solutions",
+      icon: FileSpreadsheet,
+      show: !isAuthenticated,
+      children: [
+        {
+          label: "Handwritten Tables",
+          href: "/solutions/handwritten-tables",
+          icon: PenTool,
+          description: "Convert handwritten tables"
+        },
+        {
+          label: "Paper Forms",
+          href: "/solutions/paper-forms",
+          icon: FileInput,
+          description: "Digitize paper forms"
+        }
+      ]
     }
   ]
 
@@ -172,15 +163,24 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
             <span className="text-[10px] font-medium">Upload</span>
           </Button>
 
-          {/* Pricing Button */}
+          {/* Dashboard/Pricing Button - Conditional based on auth */}
           <Button
-            variant={pathname === "/pricing" ? "default" : "ghost"}
+            variant={(isAuthenticated && pathname.startsWith("/dashboard")) || pathname === "/pricing" ? "default" : "ghost"}
             size="sm"
-            onClick={() => router.push("/pricing")}
+            onClick={() => router.push(isAuthenticated ? "/dashboard" : "/pricing")}
             className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
           >
-            <DollarSign className={cn("h-5 w-5", pathname === "/pricing" ? "text-primary-foreground" : "")} />
-            <span className="text-[10px] font-medium">Pricing</span>
+            {isAuthenticated ? (
+              <>
+                <LayoutDashboard className={cn("h-5 w-5", pathname.startsWith("/dashboard") ? "text-primary-foreground" : "")} />
+                <span className="text-[10px] font-medium">Dashboard</span>
+              </>
+            ) : (
+              <>
+                <DollarSign className={cn("h-5 w-5", pathname === "/pricing" ? "text-primary-foreground" : "")} />
+                <span className="text-[10px] font-medium">Pricing</span>
+              </>
+            )}
           </Button>
 
           {/* Theme Toggle - Icon only */}
