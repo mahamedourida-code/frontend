@@ -519,7 +519,7 @@ export default function DashboardPage() {
         user={{
           email: user?.email,
           name: user?.user_metadata?.full_name,
-          credits: stats?.credits || 0
+          credits: (stats.totalCredits - stats.creditsUsed) || 0
         }}
       />
     </TooltipProvider>

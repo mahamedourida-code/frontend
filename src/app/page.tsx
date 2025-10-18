@@ -301,17 +301,17 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 sm:pt-0">
           
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
               {/* Left Content */}
               <div ref={heroContentRef} className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 mb-8 shadow-lg shadow-primary/10">
-                  <Sparkles className="w-5 h-5 text-primary animate-pulse" />
-                  <span className="text-base font-semibold text-primary">AI-Powered OCR Technology</span>
+                <div className="inline-flex items-center gap-2 px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 rounded-full bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 mb-4 sm:mb-6 lg:mb-8 shadow-lg shadow-primary/10">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary animate-pulse" />
+                  <span className="text-xs sm:text-sm lg:text-base font-semibold text-primary">AI-Powered OCR Technology</span>
                 </div>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-foreground leading-[1.1] tracking-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-foreground leading-[1.1] tracking-tight">
                   <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
                     Convert screenshots to Excel instantly
                   </span>
