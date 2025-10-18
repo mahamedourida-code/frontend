@@ -163,24 +163,15 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
             <span className="text-[10px] font-medium">Upload</span>
           </Button>
 
-          {/* Dashboard/Pricing Button - Conditional based on auth */}
+          {/* Dashboard Button - Always shows Dashboard icon */}
           <Button
-            variant={(isAuthenticated && pathname.startsWith("/dashboard")) || pathname === "/pricing" ? "default" : "ghost"}
+            variant={pathname.startsWith("/dashboard") ? "default" : "ghost"}
             size="sm"
-            onClick={() => router.push(isAuthenticated ? "/dashboard" : "/pricing")}
+            onClick={() => router.push(isAuthenticated ? "/dashboard" : "/sign-in")}
             className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
           >
-            {isAuthenticated ? (
-              <>
-                <LayoutDashboard className={cn("h-5 w-5", pathname.startsWith("/dashboard") ? "text-primary-foreground" : "")} />
-                <span className="text-[10px] font-medium">Dashboard</span>
-              </>
-            ) : (
-              <>
-                <DollarSign className={cn("h-5 w-5", pathname === "/pricing" ? "text-primary-foreground" : "")} />
-                <span className="text-[10px] font-medium">Pricing</span>
-              </>
-            )}
+            <LayoutDashboard className={cn("h-5 w-5", pathname.startsWith("/dashboard") ? "text-primary-foreground" : "")} />
+            <span className="text-[10px] font-medium">Dashboard</span>
           </Button>
 
           {/* Theme Toggle - Icon only */}

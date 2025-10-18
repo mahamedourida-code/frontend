@@ -278,22 +278,9 @@ export default function Home() {
               </NavigationMenu>
             </div>
 
-            {/* CTA Buttons - Desktop */}
+            {/* Theme Toggle Only - Desktop */}
             <div className="hidden lg:flex items-center gap-3">
               <ThemeToggle />
-              <Button
-                variant="ghost"
-                className="hidden sm:inline-flex"
-                onClick={() => window.location.href = '/sign-in'}
-              >
-                Log In
-              </Button>
-              <Button
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
-                onClick={() => window.location.href = '/sign-in'}
-              >
-                Get Started
-              </Button>
             </div>
           </div>
         </div>
@@ -316,13 +303,13 @@ export default function Home() {
                     Convert screenshots to Excel instantly
                   </span>
                 </h1>
-                <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-xl leading-relaxed">
+                <p className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
                   Process <span className="font-bold text-primary">up to 100 screenshots</span> in one click with our cutting-edge AI-powered OCR technology.
                 </p>
-                <div className="mt-10 flex flex-col sm:flex-row gap-4">
+                <div className="mt-6 sm:mt-8 md:mt-10">
                   <Button
                     size="lg"
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6 h-auto rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
                     onClick={() => window.location.href = '/sign-in'}
                   >
                     <Upload className="w-5 h-5 mr-2" />
@@ -531,12 +518,23 @@ export default function Home() {
                   <Sparkles className="w-4 h-4 text-primary" />
                   <span className="text-sm font-medium text-primary">Interactive Demo</span>
                 </div>
-                <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 sm:mb-6">
                   See the Transformation in Action
                 </h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
                   Drag the slider to witness the power of our AI-powered OCR technology
                 </p>
+                {/* CTA Button for Mobile */}
+                <div className="lg:hidden mt-4">
+                  <Button
+                    size="lg"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-5 h-auto rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+                    onClick={() => window.location.href = '/sign-in'}
+                  >
+                    <Upload className="w-5 h-5 mr-2" />
+                    Try for free
+                  </Button>
+                </div>
               </div>
 
               {/* Comparison Sliders - Side by Side */}
@@ -1110,23 +1108,15 @@ export default function Home() {
                 Join thousands of professionals who have already revolutionized their data extraction process with Exceletto.
               </p>
               
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              {/* Single Primary CTA */}
+              <div className="flex justify-center">
                 <Button
                   size="lg"
-                  className="text-lg px-8 py-6 h-auto bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 transition-all duration-200 shadow-lg shadow-primary/20"
-                  onClick={() => window.location.href = '/sign-up'}
-                >
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Start Free Trial
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="text-lg px-8 py-6 h-auto hover:scale-105 transition-all duration-200 border-primary/50 hover:border-primary"
+                  className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 transition-all duration-200 shadow-lg shadow-primary/20"
                   onClick={() => window.location.href = '/sign-in'}
                 >
-                  Sign In to Dashboard
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Try for free
                 </Button>
               </div>
               
