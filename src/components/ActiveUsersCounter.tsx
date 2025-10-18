@@ -5,19 +5,19 @@ import { Users } from "lucide-react"
 
 export function ActiveUsersCounter() {
   const [activeUsers, setActiveUsers] = useState<number>(127)
+  const [isVisible, setIsVisible] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Function to get random interval between 3 seconds and 3 minutes
+    // Function to get random interval - more frequent updates (10-40 seconds)
     const getRandomInterval = () => {
-      // Random between 3000ms (3 sec) and 180000ms (3 min)
-      return Math.floor(Math.random() * (180000 - 3000 + 1)) + 3000
+      return Math.floor(Math.random() * (40000 - 10000 + 1)) + 10000
     }
 
     const updateActiveUsers = () => {
       // Random number around 127 (between 115-140)
       const baseCount = 127
-      const variation = Math.floor(Math.random() * 26) - 13 // -13 to +13
+      const variation = Math.floor(Math.random() * 26) - 13
       const newCount = Math.max(115, Math.min(140, baseCount + variation))
       setActiveUsers(newCount)
       
@@ -30,11 +30,17 @@ export function ActiveUsersCounter() {
       setTimeout(updateActiveUsers, nextInterval)
     }
 
-    // Initial update
+    // Start updating users count
     updateActiveUsers()
     
-    // Cleanup function (though we're using setTimeout instead of setInterval)
-    return () => {}
+    // Blinking indicator - appears/disappears like live indicator
+    const blinkInterval = setInterval(() => {
+      setIsVisible(prev => !prev)
+    }, 800) // Blink every 800ms
+    
+    return () => {
+      clearInterval(blinkInterval)
+    }
   }, [isLoading])
 
   if (isLoading) {
@@ -45,9 +51,13 @@ export function ActiveUsersCounter() {
     <div className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors">
       <div className="relative">
         <Users className="h-4 w-4" />
-        <span className="absolute -top-0.5 -right-0.5 h-2 w-2 bg-green-500 rounded-full shadow-[0_0_4px_rgba(34,197,94,0.8)]" />
+        <span 
+          className={`absolute -top-0.5 -right-0.5 h-2 w-2 bg-green-500 rounded-full transition-opacity duration-200 ${
+            isVisible ? 'opacity-100 shadow-[0_0_8px_rgba(34,197,94,1)]' : 'opacity-0'
+          }`}
+        />
       </div>
-      <span className="font-medium">
+      <span className="font-medium transition-all duration-300">
         {activeUsers} active
       </span>
     </div>

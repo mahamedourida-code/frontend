@@ -290,7 +290,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 sm:pt-0">
+        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-24 lg:pt-20">
           
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
@@ -360,7 +360,7 @@ export default function Home() {
                           <img 
                             src="/ee.png" 
                             alt="Handwritten table before processing"
-                            className="w-full h-full object-contain bg-white"
+                            className="w-full h-full object-cover"
                           />
                         </div>
                       }
@@ -369,7 +369,7 @@ export default function Home() {
                           <img 
                             src="/e.jpg" 
                             alt="Excel output after processing"
-                            className="w-full h-full object-contain bg-white"
+                            className="w-full h-full object-cover"
                           />
                         </div>
                       }
@@ -557,7 +557,7 @@ export default function Home() {
                             <img 
                               src="/ee.png" 
                               alt="Handwritten table before processing"
-                              className="w-full h-full object-contain bg-white"
+                              className="w-full h-full object-cover"
                             />
                           </div>
                         }
@@ -566,7 +566,7 @@ export default function Home() {
                             <img 
                               src="/e.jpg" 
                               alt="Excel spreadsheet output"
-                              className="w-full h-full object-contain bg-white"
+                              className="w-full h-full object-cover"
                             />
                           </div>
                         }
@@ -605,7 +605,7 @@ export default function Home() {
                             <img 
                               src="/bb.png" 
                               alt="Paper form before processing"
-                              className="w-full h-full object-contain bg-white"
+                              className="w-full h-full object-cover"
                             />
                           </div>
                         }
@@ -614,7 +614,7 @@ export default function Home() {
                             <img 
                               src="/b.jpeg" 
                               alt="Structured data output"
-                              className="w-full h-full object-contain bg-white"
+                              className="w-full h-full object-cover"
                             />
                           </div>
                         }
