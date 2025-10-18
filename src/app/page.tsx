@@ -174,12 +174,9 @@ export default function Home() {
       <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo and Active Users */}
-            <div className="flex items-center gap-4">
+            {/* Logo */}
+            <div className="flex-shrink-0">
               <AppLogo />
-              <div className="hidden sm:block border-l pl-4 ml-2">
-                <ActiveUsersCounter />
-              </div>
             </div>
 
             {/* Desktop Navigation Items - Hidden on Mobile */}
@@ -282,8 +279,9 @@ export default function Home() {
               </NavigationMenu>
             </div>
 
-            {/* Theme Toggle Only - Desktop */}
+            {/* Theme Toggle and Active Users - Desktop */}
             <div className="hidden lg:flex items-center gap-3">
+              <ActiveUsersCounter />
               <ThemeToggle />
             </div>
           </div>
@@ -298,9 +296,9 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
               {/* Left Content */}
               <div ref={heroContentRef} className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 rounded-full bg-gradient-to-r from-purple-600/20 to-purple-500/10 border border-purple-500/30 mb-4 sm:mb-6 lg:mb-8 shadow-lg shadow-purple-500/10">
-                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 animate-pulse" />
-                  <span className="text-xs sm:text-sm lg:text-base font-semibold text-purple-600">Exceletto-7B Handwritten Specialist</span>
+                <div className="inline-flex items-center gap-2 px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 rounded-full bg-gradient-to-r from-black/20 to-black/10 border border-black/30 mb-4 sm:mb-6 lg:mb-8 shadow-lg shadow-black/10">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-black dark:text-white animate-pulse" />
+                  <span className="text-xs sm:text-sm lg:text-base font-semibold text-black dark:text-white">Exceletto-7B Handwritten Specialist</span>
                 </div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-normal text-foreground leading-[1.1] tracking-tight">
                   <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
@@ -352,12 +350,8 @@ export default function Home() {
                 </div>
                 
                 {/* Main comparison container */}
-                <div className="relative w-full max-w-[700px]">
-                  <Badge variant="secondary" className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-purple-600/90 text-white border-purple-500">
-                    <Trophy className="h-3 w-3 mr-1" />
-                    Best for Handwritten
-                  </Badge>
-                  <div className="relative h-[300px] sm:h-[350px] lg:h-[450px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                <div className="relative w-full max-w-[600px]">
+                  <div className="relative h-[250px] sm:h-[300px] lg:h-[400px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
                     <ComparisonSlider
                       leftLabel=""
                       rightLabel="" 
