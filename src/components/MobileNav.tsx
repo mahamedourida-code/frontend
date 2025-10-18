@@ -86,7 +86,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
     },
     {
       label: "Upload Images",
-      href: "/dashboard/client",
+      href: "/dashboard/upload-type",
       icon: Upload,
       show: isAuthenticated
     },
@@ -152,11 +152,11 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
             <span className="text-[10px] font-medium">Home</span>
           </Button>
 
-          {/* Upload/Dashboard Button */}
+          {/* Upload Button - Goes to type selection */}
           <Button
             variant={pathname.startsWith("/dashboard") ? "default" : "ghost"}
             size="sm"
-            onClick={() => router.push(isAuthenticated ? "/dashboard/client" : "/sign-in")}
+            onClick={() => router.push(isAuthenticated ? "/dashboard/upload-type" : "/sign-in")}
             className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
           >
             <Upload className={cn("h-5 w-5", pathname.startsWith("/dashboard") ? "text-primary-foreground" : "")} />

@@ -58,10 +58,15 @@ import {
 } from "@/components/ui/tooltip"
 // Removed react-share imports as we're using custom implementations for direct messaging
 import { Input } from "@/components/ui/input"
+import { useSearchParams } from "next/navigation"
+import { PenTool, Monitor } from "lucide-react"
 
 export default function ProcessImagesPage() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const documentType = searchParams.get('type') || 'auto'
+  
   const [isDragging, setIsDragging] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [selectedView, setSelectedView] = useState<"grid" | "list">("grid")
@@ -71,6 +76,13 @@ export default function ProcessImagesPage() {
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([])
   const [shareSession, setShareSession] = useState<any>(null)
   const [copySuccess, setCopySuccess] = useState(false)
+  
+  // Document type display info
+  const documentTypeInfo = {
+    handwritten: { label: "Handwritten Tables", icon: PenTool, color: "bg-blue-500" },
+    printed: { label: "Printed Tables", icon: Monitor, color: "bg-purple-500" },
+    auto: { label: "Auto-Detect", icon: Sparkles, color: "bg-emerald-500" }
+  }[documentType as string] || { label: "Auto-Detect", icon: Sparkles, color: "bg-emerald-500" }
   
   // Log environment configuration on mount
   useEffect(() => {
@@ -605,24 +617,62 @@ Best regards`
             <div className="flex items-center gap-3">
               <AppIcon size={36} />
               <div>
-                <h1 className="text-lg font-semibold">Process Images</h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-lg font-semibold">Process Images</h1>
+                  <Badge variant="outline" className="gap-1.5">
+                    <documentTypeInfo.icon className="h-3 w-3" />
+                    {documentTypeInfo.label}
+                  </Badge>
+                </div>
                 <p className="text-xs text-muted-foreground">Convert table images to Excel</p>
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => router.push('/dashboard')}
-              className="gap-2"
-            >
-              <BarChart3 className="h-4 w-4" />
-              Dashboard
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.push('/dashboard/upload-type')}
+                className="gap-2"
+              >
+                Change Type
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push('/dashboard')}
+                className="gap-2"
+              >
+                <BarChart3 className="h-4 w-4" />
+                Dashboard
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="container max-w-5xl mx-auto px-4 py-8">
+      {/* Mobile Header */}
+      <div className="lg:hidden border-b bg-background sticky top-0 z-40">
+        <div className="container max-w-5xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-base font-semibold">Process Images</h1>
+              <Badge variant="outline" className="gap-1.5 mt-1">
+                <documentTypeInfo.icon className="h-3 w-3" />
+                <span className="text-xs">{documentTypeInfo.label}</span>
+              </Badge>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push('/dashboard/upload-type')}
+            >
+              Change
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <main className="container max-w-5xl mx-auto px-4 py-8 pb-24">
         {/* Status Bar */}
         {isProcessing && !isComplete && (
           <Alert className="mb-6 border-primary/50 bg-primary/5">

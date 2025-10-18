@@ -189,7 +189,7 @@ export default function DashboardPage() {
 
   const sidebarItems = [
     { icon: Activity, label: "Overview", href: "/dashboard", active: true },
-    { icon: Upload, label: "Process Images", href: "/dashboard/client" },
+    { icon: Upload, label: "Process Images", href: "/dashboard/upload-type" },
     { icon: History, label: "Saved Files", href: "/history" },
     { icon: Settings, label: "Settings", href: "/dashboard/settings" },
     { icon: CreditCard, label: "Billing", href: "#", disabled: true },
@@ -467,7 +467,7 @@ export default function DashboardPage() {
               <CardContent className="space-y-3">
                 <Button
                   className="w-full justify-start h-auto py-4"
-                  onClick={() => router.push('/dashboard/client')}
+                  onClick={() => router.push('/dashboard/upload-type')}
                 >
                   <Upload className="h-5 w-5 mr-3" />
                   <div className="text-left">
