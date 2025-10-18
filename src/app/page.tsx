@@ -361,8 +361,8 @@ export default function Home() {
                 </div>
                 
                 {/* Main comparison container */}
-                <div className="relative">
-                  <div className="relative h-[400px] w-[600px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                <div className="relative w-full max-w-[600px]">
+                  <div className="relative h-[250px] sm:h-[300px] lg:h-[400px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
                     <ComparisonSlider
                       leftLabel=""
                       rightLabel="" 
@@ -546,9 +546,9 @@ export default function Home() {
                   {/* Subtle shadow glow */}
                   <div className="absolute -inset-4 bg-gradient-to-r from-black/10 via-black/20 to-black/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
                   
-                  <div className="relative">
-                    <h3 className="text-lg font-semibold text-center mb-4">Handwritten Table → Excel</h3>
-                    <div className="relative h-[600px] w-[800px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                  <div className="relative w-full max-w-[800px] mx-auto">
+                    <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4">Handwritten Table → Excel</h3>
+                    <div className="relative h-[350px] sm:h-[450px] lg:h-[600px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""
@@ -594,9 +594,9 @@ export default function Home() {
                   {/* Subtle shadow glow */}
                   <div className="absolute -inset-4 bg-gradient-to-r from-black/10 via-black/20 to-black/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
                   
-                  <div className="relative">
-                    <h3 className="text-lg font-semibold text-center mb-4"></h3>
-                    <div className="relative h-[600px] w-[800px] rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                  <div className="relative w-full max-w-[800px] mx-auto">
+                    <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4"></h3>
+                    <div className="relative h-[350px] sm:h-[450px] lg:h-[600px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""

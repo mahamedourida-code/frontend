@@ -648,18 +648,18 @@ Best regards`
                     isDragging 
                       ? "border-primary bg-primary/5 scale-[0.99]" 
                       : "border-border hover:border-primary/50",
-                    uploadedFiles.length > 0 ? "p-4" : "p-12"
+                    uploadedFiles.length > 0 ? "p-3 sm:p-4" : "p-6 sm:p-8 lg:p-12"
                   )}
                 >
                   {uploadedFiles.length === 0 ? (
                     <div className="text-center">
-                      <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                        <Upload className="h-6 w-6 text-primary" />
+                      <div className="mx-auto h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 sm:mb-4">
+                        <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                       </div>
-                      <h3 className="text-base font-medium mb-1">
+                      <h3 className="text-sm sm:text-base font-medium mb-1">
                         {isDragging ? "Drop your images here" : "Upload table images"}
                       </h3>
-                      <p className="text-sm text-muted-foreground mb-4">
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
                         Drag & drop or click to browse • Max 100 images
                       </p>
                       <label htmlFor="file-upload">

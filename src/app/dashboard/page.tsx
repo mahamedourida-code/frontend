@@ -279,23 +279,23 @@ export default function DashboardPage() {
       <div className="flex-1 overflow-auto">
         <div className="container max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
           {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-6">
+          <div className="mb-4 sm:mb-6 lg:mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
               <div>
-                <h1 className="text-2xl font-semibold mb-1">Dashboard</h1>
+                <h1 className="text-xl sm:text-2xl font-semibold mb-1">Dashboard</h1>
                 <p className="text-sm text-muted-foreground">
                   {stats.dateRange.from.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {stats.dateRange.to.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </p>
               </div>
               
               {/* Date Filter Tabs */}
-              <div className="flex items-center gap-2">
-                <Tabs value={dateFilter} onValueChange={(value) => setDateFilter(value as DateFilter)}>
-                  <TabsList>
-                    <TabsTrigger value="1day">Last Day</TabsTrigger>
-                    <TabsTrigger value="3days">Last 3 Days</TabsTrigger>
-                    <TabsTrigger value="7days">Last 7 Days</TabsTrigger>
-                    <TabsTrigger value="30days">Last Month</TabsTrigger>
+              <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto">
+                <Tabs value={dateFilter} onValueChange={(value) => setDateFilter(value as DateFilter)} className="w-full sm:w-auto">
+                  <TabsList className="grid grid-cols-4 w-full sm:inline-flex">
+                    <TabsTrigger value="1day" className="text-xs sm:text-sm px-2 sm:px-3">1D</TabsTrigger>
+                    <TabsTrigger value="3days" className="text-xs sm:text-sm px-2 sm:px-3">3D</TabsTrigger>
+                    <TabsTrigger value="7days" className="text-xs sm:text-sm px-2 sm:px-3">7D</TabsTrigger>
+                    <TabsTrigger value="30days" className="text-xs sm:text-sm px-2 sm:px-3">30D</TabsTrigger>
                   </TabsList>
                 </Tabs>
                 <Tooltip>
@@ -340,7 +340,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Key Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-3 md:gap-6 mb-4 sm:mb-6 lg:mb-8">
             {/* Tables Extracted */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
