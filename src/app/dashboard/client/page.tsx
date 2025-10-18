@@ -482,6 +482,50 @@ Best regards`
       })
   }
 
+  const handleXShare = () => {
+    if (!selectedFileToShare?.file_id) {
+      console.error('[Share] No file selected for X (Twitter) share')
+      return
+    }
+    
+    console.log('[Share] X (Twitter) share initiated for file:', selectedFileToShare)
+    
+    // Clean the base URL to ensure no whitespace
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
+    
+    let tweetText = ''
+    let shareUrl = ''
+    
+    // Check if session-based share
+    if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
+      shareUrl = shareSession.share_url.replace(/\s/g, '')
+      tweetText = `Check out these ${selectedFilesForBatch.length} Excel files I processed with Exceletto! 📊✨`
+      console.log('[Share] Session share via X:', shareUrl)
+    }
+    // Legacy batch sharing
+    else if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
+      // For batch, use the first file URL as example
+      shareUrl = `${baseUrl}/api/v1/download/${selectedFilesForBatch[0].file_id}`.replace(/\s/g, '')
+      tweetText = `Check out these ${selectedFilesForBatch.length} Excel files I processed with Exceletto! 📊✨`
+    }
+    // Single file
+    else {
+      shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
+      tweetText = `Check out this Excel file I processed with Exceletto! 📊✨`
+    }
+    
+    // X (Twitter) Web Intent URL
+    const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(shareUrl)}`
+    
+    console.log('[Share] Opening X share dialog:', xUrl)
+    
+    window.open(xUrl, '_blank', 'width=550,height=420')
+    
+    toast.success('X share window opened!', {
+      description: 'Customize your tweet and share with your followers'
+    })
+  }
+
   const handleShareAll = async () => {
     console.log('[ShareAll] Sharing batch with jobId:', jobId, 'files:', resultFiles)
     
@@ -1063,18 +1107,20 @@ Best regards`
           <div className="space-y-4">
             {/* Direct Message Share Options - Send to friends, not posting on social media */}
             <div className="space-y-3">
-              <p className="text-xs text-center text-muted-foreground">Send download link to friends:</p>
+              <p className="text-xs text-center text-muted-foreground">Share your download link:</p>
               <div className="flex justify-center gap-4">
-                {/* Facebook Messenger */}
+                {/* Gmail */}
                 <button
-                  onClick={handleMessengerShare}
+                  onClick={handleEmailShare}
                   className="group flex flex-col items-center gap-1.5 cursor-pointer"
-                  title="Send via Facebook Messenger"
+                  title="Compose email in Gmail"
                 >
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0084FF] to-[#0063CE] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
-                    <MessageCircle className="h-6 w-6 text-white" />
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#EA4335] to-[#D33B2C] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
+                    <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
+                    </svg>
                   </div>
-                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Messenger</span>
+                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Gmail</span>
                 </button>
                 
                 {/* LinkedIn Message */}
@@ -1091,18 +1137,30 @@ Best regards`
                   <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">LinkedIn</span>
                 </button>
                 
-                {/* Gmail */}
+                {/* X (Twitter) */}
                 <button
-                  onClick={handleEmailShare}
+                  onClick={handleXShare}
                   className="group flex flex-col items-center gap-1.5 cursor-pointer"
-                  title="Compose email in Gmail"
+                  title="Share on X (Twitter)"
                 >
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#EA4335] to-[#D33B2C] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-black to-[#1DA1F2] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
                     <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                     </svg>
                   </div>
-                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Gmail</span>
+                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">X</span>
+                </button>
+                
+                {/* Facebook Messenger */}
+                <button
+                  onClick={handleMessengerShare}
+                  className="group flex flex-col items-center gap-1.5 cursor-pointer"
+                  title="Send via Facebook Messenger"
+                >
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0084FF] to-[#0063CE] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
+                    <MessageCircle className="h-6 w-6 text-white" />
+                  </div>
+                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Messenger</span>
                 </button>
               </div>
               {selectedFileToShare && (
@@ -1111,7 +1169,7 @@ Best regards`
                     {selectedFileToShare.filename || 'Excel file'} ready to share
                   </p>
                   <p className="text-[9px] text-muted-foreground/50">
-                    LinkedIn: Link will be copied to paste • Gmail: Opens compose window
+                    Gmail: Compose email • LinkedIn: Copy & paste • X: Tweet • Messenger: Direct message
                   </p>
                 </div>
               )}
