@@ -15,6 +15,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { toast } from "sonner"
 import { AppIcon } from "@/components/AppIcon"
 import { ocrApi } from "@/lib/api-client"
+import { MobileNav } from "@/components/MobileNav"
 import {
   Upload,
   FileSpreadsheet,
@@ -554,7 +555,7 @@ Best regards`
   return (
     <div className="min-h-screen bg-background">
       {/* Minimal Header */}
-      <header className="border-b">
+      <header className="border-b lg:block hidden">
         <div className="container max-w-5xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -632,9 +633,9 @@ Best regards`
         )}
 
         {/* Main Content Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
           {/* Upload Section */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 order-2 lg:order-1">
             {!isComplete ? (
               <>
                 {/* Drop Zone */}
@@ -926,8 +927,8 @@ Best regards`
             )}
           </div>
 
-          {/* Info Sidebar */}
-          <div className="lg:col-span-1 space-y-4">
+          {/* Info Sidebar - Shows first on mobile */}
+          <div className="lg:col-span-1 space-y-4 order-1 lg:order-2">
             {/* Quick Stats */}
             <Card>
               <CardContent className="p-4">
@@ -1173,6 +1174,15 @@ Best regards`
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Mobile Navigation */}
+      <MobileNav 
+        isAuthenticated={true}
+        user={{
+          email: user?.email,
+          name: user?.user_metadata?.full_name
+        }}
+      />
     </div>
   )
 }

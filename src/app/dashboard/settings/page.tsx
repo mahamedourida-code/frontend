@@ -18,6 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { AppIcon } from "@/components/AppIcon"
+import { MobileNav } from "@/components/MobileNav"
 import {
   User,
   CreditCard,
@@ -203,8 +204,8 @@ export default function SettingsPage() {
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-background">
-        {/* Header */}
-        <header className="border-b bg-card/50 backdrop-blur">
+        {/* Header - Hidden on mobile */}
+        <header className="hidden lg:block border-b bg-card/50 backdrop-blur">
           <div className="container max-w-7xl mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -225,10 +226,36 @@ export default function SettingsPage() {
           </div>
         </header>
 
-        <div className="container max-w-7xl mx-auto px-4 py-6">
-          <div className="flex gap-8">
-            {/* Vertical Navigation */}
-            <nav className="w-72 space-y-6">
+        <div className="container max-w-7xl mx-auto px-4 py-4 sm:py-6">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+            {/* Mobile Section Selector */}
+            <div className="lg:hidden">
+              <Select value={activeSection} onValueChange={(value) => setActiveSection(value as SettingsSection)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a section" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sidebarSections.map((section) => (
+                    <div key={section.title}>
+                      <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                        {section.title}
+                      </div>
+                      {section.items.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          <div className="flex items-center gap-2">
+                            <item.icon className="h-4 w-4" />
+                            <span>{item.label}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </div>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Vertical Navigation - Hidden on mobile */}
+            <nav className="hidden lg:block w-72 space-y-6">
               {sidebarSections.map((section, sectionIndex) => (
                 <div key={sectionIndex} className="space-y-1">
                   <h3 className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
@@ -882,6 +909,15 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+      
+      {/* Mobile Navigation */}
+      <MobileNav 
+        isAuthenticated={true}
+        user={{
+          email: user?.email,
+          name: user?.user_metadata?.full_name
+        }}
+      />
     </TooltipProvider>
   )
 }

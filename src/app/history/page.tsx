@@ -32,6 +32,7 @@ import { ocrApi } from "@/lib/api-client"
 import { toast } from "sonner"
 import { useAuth } from "@/hooks/useAuth"
 import { AppIcon } from "@/components/AppIcon"
+import { MobileNav } from "@/components/MobileNav"
 
 interface HistoryJob {
   job_id: string
@@ -45,6 +46,7 @@ interface HistoryJob {
 
 function HistoryContent() {
   const router = useRouter()
+  const { user } = useAuth()
   const { jobs, isLoading, error, refresh } = useHistory()
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -564,6 +566,15 @@ function HistoryContent() {
           </div>
         )}
       </main>
+      
+      {/* Mobile Navigation */}
+      <MobileNav 
+        isAuthenticated={true}
+        user={{
+          email: user?.email,
+          name: user?.user_metadata?.full_name
+        }}
+      />
     </div>
   )
 }

@@ -1,0 +1,63 @@
+/* Mobile Navigation Styles */
+
+/* Add padding to body for fixed bottom navigation on mobile */
+@media (max-width: 1023px) {
+  body {
+    padding-bottom: 3.5rem; /* Height of mobile bottom nav */
+  }
+  
+  /* Prevent content from going under the mobile nav */
+  .min-h-screen {
+    min-height: calc(100vh - 3.5rem);
+  }
+}
+
+/* Smooth transitions for mobile navigation */
+.mobile-nav-transition {
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/* Mobile-friendly touch targets */
+@media (max-width: 768px) {
+  /* Ensure all interactive elements meet minimum touch target size */
+  button, 
+  a, 
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Smaller buttons can have padding to meet touch targets */
+  .mobile-touch-target {
+    position: relative;
+  }
+  
+  .mobile-touch-target::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    bottom: -8px;
+    left: -8px;
+  }
+}
+
+/* Improved mobile spacing */
+@media (max-width: 640px) {
+  /* Reduce horizontal padding on small screens */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Adjust card padding for mobile */
+  .card {
+    padding: 1rem;
+  }
+  
+  /* Stack form elements on mobile */
+  .form-group {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

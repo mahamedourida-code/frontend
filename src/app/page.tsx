@@ -18,7 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { MobileNavigation } from "@/components/MobileNavigation";
+import { MobileNav } from "@/components/MobileNav";
 import ScrollAnimatedSection from "@/components/ScrollAnimatedSection";
 import { cn } from "@/lib/utils";
 import { AppLogo } from "@/components/AppIcon";
@@ -178,10 +178,7 @@ export default function Home() {
               <AppLogo />
             </div>
 
-            {/* Mobile Navigation */}
-            <MobileNavigation onSectionClick={scrollToSection} />
-
-            {/* Primary Navigation - Desktop */}
+            {/* Desktop Navigation Items - Hidden on Mobile */}
             <div className="hidden lg:flex items-center justify-center flex-1">
               <NavigationMenu>
                 <NavigationMenuList className="gap-1">
@@ -1212,6 +1209,9 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      
+      {/* Mobile Navigation */}
+      <MobileNav onSectionClick={scrollToSection} />
     </div>
   );
 }

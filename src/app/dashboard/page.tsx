@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator"
 import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { AppIcon } from "@/components/AppIcon"
+import { MobileNav } from "@/components/MobileNav"
 import {
   FileSpreadsheet,
   Upload,
@@ -211,8 +212,8 @@ export default function DashboardPage() {
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-background flex">
-        {/* Sidebar */}
-        <div className="w-64 border-r bg-card/50 backdrop-blur">
+        {/* Sidebar - Hidden on Mobile */}
+        <div className="hidden lg:block w-64 border-r bg-card/50 backdrop-blur">
         <div className="flex flex-col h-full">
           {/* App Logo */}
           <div className="p-6 border-b">
@@ -276,7 +277,7 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
-        <div className="container max-w-6xl mx-auto p-8">
+        <div className="container max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
@@ -511,6 +512,16 @@ export default function DashboardPage() {
         </div>
       </div>
       </div>
+      
+      {/* Mobile Navigation */}
+      <MobileNav 
+        isAuthenticated={true} 
+        user={{
+          email: user?.email,
+          name: user?.user_metadata?.full_name,
+          credits: stats?.credits || 0
+        }}
+      />
     </TooltipProvider>
   )
 }

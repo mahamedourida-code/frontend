@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Nunito, Caveat } from "next/font/google";
 import "./globals.css";
+import "../styles/mobile-nav.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 
