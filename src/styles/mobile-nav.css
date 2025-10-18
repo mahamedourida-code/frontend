@@ -3,18 +3,27 @@
 /* Add padding to body for fixed bottom navigation on mobile */
 @media (max-width: 1023px) {
   body {
-    padding-bottom: 3.5rem; /* Height of mobile bottom nav */
+    padding-bottom: 4rem; /* Height of enhanced mobile bottom nav (64px) */
   }
   
   /* Prevent content from going under the mobile nav */
   .min-h-screen {
-    min-height: calc(100vh - 3.5rem);
+    min-height: calc(100vh - 4rem);
   }
   
   /* Reduce container padding on mobile */
   .container {
     padding-left: 1rem !important;
     padding-right: 1rem !important;
+  }
+  
+  /* Enhanced bottom navigation styling */
+  .mobile-nav-btn {
+    transition: all 0.2s ease;
+  }
+  
+  .mobile-nav-btn:active {
+    transform: scale(0.95);
   }
 }
 

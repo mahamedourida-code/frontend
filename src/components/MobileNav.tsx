@@ -147,34 +147,58 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
 
   return (
     <>
-      {/* Mobile Navigation Trigger - Fixed at bottom on mobile */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t">
-        <div className="flex items-center justify-between px-4 h-14">
-          {/* Quick Actions */}
-          <div className="flex items-center gap-2">
-            {pathname !== "/" && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => router.push("/")}
-                className="h-10 px-3"
-              >
-                <Home className="h-5 w-5" />
-              </Button>
-            )}
+      {/* Enhanced Mobile Navigation - Fixed bottom bar with icon-based navigation */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/98 backdrop-blur-lg border-t shadow-lg">
+        <div className="flex items-center justify-around px-2 h-16">
+          {/* Home Button */}
+          <Button
+            variant={pathname === "/" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => router.push("/")}
+            className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
+          >
+            <Home className={cn("h-5 w-5", pathname === "/" ? "text-primary-foreground" : "")} />
+            <span className="text-[10px] font-medium">Home</span>
+          </Button>
+
+          {/* Upload/Dashboard Button */}
+          <Button
+            variant={pathname.startsWith("/dashboard") ? "default" : "ghost"}
+            size="sm"
+            onClick={() => router.push(isAuthenticated ? "/dashboard/client" : "/sign-in")}
+            className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
+          >
+            <Upload className={cn("h-5 w-5", pathname.startsWith("/dashboard") ? "text-primary-foreground" : "")} />
+            <span className="text-[10px] font-medium">Upload</span>
+          </Button>
+
+          {/* Pricing Button */}
+          <Button
+            variant={pathname === "/pricing" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => router.push("/pricing")}
+            className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
+          >
+            <DollarSign className={cn("h-5 w-5", pathname === "/pricing" ? "text-primary-foreground" : "")} />
+            <span className="text-[10px] font-medium">Pricing</span>
+          </Button>
+
+          {/* Theme Toggle - Icon only */}
+          <div className="flex-col h-14 flex items-center justify-center gap-1 flex-1 max-w-[72px]">
             <ThemeToggle />
+            <span className="text-[10px] font-medium text-muted-foreground">Theme</span>
           </div>
 
           {/* Menu Button */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button 
-                variant="default" 
+                variant="ghost"
                 size="sm" 
-                className="h-10 px-4 gap-2"
+                className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
               >
                 <Menu className="h-5 w-5" />
-                <span className="text-sm md:text-base font-medium">Menu</span>
+                <span className="text-[10px] font-medium">Menu</span>
               </Button>
             </SheetTrigger>
             
