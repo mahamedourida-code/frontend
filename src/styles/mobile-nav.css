@@ -48,7 +48,7 @@
   }
 }
 
-/* Improved mobile spacing */
+/* Improved mobile spacing and responsive design */
 @media (max-width: 640px) {
   /* Reduce horizontal padding on small screens */
   .container {
@@ -66,13 +66,19 @@
     width: 100%;
   }
   
+  /* Max readable width for content */
+  [class*="sheet-content"],
+  [class*="dialog-content"] {
+    max-width: 420px;
+  }
+  
   /* Stack form elements on mobile */
   .form-group {
     flex-direction: column !important;
     gap: 0.5rem !important;
   }
   
-  /* Smaller text on mobile */
+  /* Responsive font scaling with clamp */
   h1 {
     font-size: clamp(1.5rem, 5vw, 2rem) !important;
   }
@@ -86,18 +92,32 @@
   }
   
   /* Compact buttons on mobile */
-  button {
+  button:not([class*="h-"]) {
     padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
     font-size: 0.875rem !important;
   }
   
-  /* Reduce gap between stacked elements */
-  [class*="space-y-"] {
-    row-gap: 0.5rem !important;
+  /* Consistent icon sizes - 20-24px range */
+  svg:not([class*="h-"]) {
+    height: 1.25rem;
+    width: 1.25rem;
   }
   
-  [class*="gap-"] {
+  /* Compact spacing - space-y-1 and gap-2 */
+  [class*="space-y-"]:not([class*="space-y-0"]) {
+    row-gap: 0.25rem !important;
+  }
+  
+  [class*="gap-"]:not([class*="gap-0"]):not([class*="gap-px"]) {
     gap: 0.5rem !important;
+  }
+  
+  /* Ensure touch targets are at least 44x44px */
+  button,
+  a[role="button"],
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
   }
 }

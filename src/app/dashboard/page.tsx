@@ -346,20 +346,20 @@ export default function DashboardPage() {
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1 cursor-help">
+                    <CardTitle className="text-sm md:text-base font-medium text-muted-foreground flex items-center gap-1 cursor-help">
                       Tables Extracted
-                      <HelpCircle className="h-3 w-3" />
+                      <HelpCircle className="h-4 w-4" />
                     </CardTitle>
                   </TooltipTrigger>
                   <TooltipContent side="bottom" className="max-w-[250px]">
                     <p>Number of tables successfully extracted from images in the selected time period</p>
                   </TooltipContent>
                 </Tooltip>
-                <Table className="h-5 w-5 text-muted-foreground" />
+                <Table className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{stats.tablesExtracted}</div>
-                <p className="text-xs text-muted-foreground mt-1">
+                <div className="text-2xl sm:text-3xl font-bold">{stats.tablesExtracted}</div>
+                <p className="text-xs md:text-sm text-muted-foreground mt-1">
                   In selected period
                 </p>
               </CardContent>
@@ -370,20 +370,20 @@ export default function DashboardPage() {
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1 cursor-help">
+                    <CardTitle className="text-sm md:text-base font-medium text-muted-foreground flex items-center gap-1 cursor-help">
                       Images Processed
-                      <HelpCircle className="h-3 w-3" />
+                      <HelpCircle className="h-4 w-4" />
                     </CardTitle>
                   </TooltipTrigger>
                   <TooltipContent side="bottom" className="max-w-[250px]">
                     <p>Total number of images uploaded and processed during the selected period</p>
                   </TooltipContent>
                 </Tooltip>
-                <Image className="h-5 w-5 text-muted-foreground" />
+                <Image className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{stats.imagesProcessed}</div>
-                <p className="text-xs text-muted-foreground mt-1">
+                <div className="text-2xl sm:text-3xl font-bold">{stats.imagesProcessed}</div>
+                <p className="text-xs md:text-sm text-muted-foreground mt-1">
                   Total documents
                 </p>
               </CardContent>
@@ -394,20 +394,20 @@ export default function DashboardPage() {
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1 cursor-help">
+                    <CardTitle className="text-sm md:text-base font-medium text-muted-foreground flex items-center gap-1 cursor-help">
                       Monthly Credits
-                      <HelpCircle className="h-3 w-3" />
+                      <HelpCircle className="h-4 w-4" />
                     </CardTitle>
                   </TooltipTrigger>
                   <TooltipContent side="bottom" className="max-w-[250px]">
                     <p>Your monthly credit allocation. Each image costs 1 credit. Credits reset on the 1st of each month.</p>
                   </TooltipContent>
                 </Tooltip>
-                <CreditIcon className="h-5 w-5 text-muted-foreground" />
+                <CreditIcon className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold">
+                  <span className="text-2xl sm:text-3xl font-bold">
                     {stats.totalCredits - stats.creditsUsed}
                   </span>
                   <span className="text-muted-foreground">/ {stats.totalCredits}</span>

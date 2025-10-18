@@ -157,9 +157,9 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
                 variant="ghost"
                 size="sm"
                 onClick={() => router.push("/")}
-                className="h-9 px-2"
+                className="h-10 px-3"
               >
-                <Home className="h-4 w-4" />
+                <Home className="h-5 w-5" />
               </Button>
             )}
             <ThemeToggle />
@@ -171,27 +171,27 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
               <Button 
                 variant="default" 
                 size="sm" 
-                className="h-9 px-4 gap-2"
+                className="h-10 px-4 gap-2"
               >
-                <Menu className="h-4 w-4" />
-                <span className="text-sm font-medium">Menu</span>
+                <Menu className="h-5 w-5" />
+                <span className="text-sm md:text-base font-medium">Menu</span>
               </Button>
             </SheetTrigger>
             
             <SheetContent 
               side="right" 
-              className="w-[85vw] sm:w-[380px] p-0 h-full flex flex-col"
+              className="w-[85vw] sm:w-[380px] max-w-[420px] p-0 h-full flex flex-col"
             >
               {/* Header */}
               <SheetHeader className="px-4 py-3 border-b">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <AppIcon size={28} />
-                    <SheetTitle className="text-lg font-bold">Exceletto</SheetTitle>
+                    <AppIcon size={32} />
+                    <SheetTitle className="text-base md:text-lg font-bold">Exceletto</SheetTitle>
                   </div>
                   <SheetClose asChild>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <X className="h-4 w-4" />
+                    <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
+                      <X className="h-5 w-5" />
                     </Button>
                   </SheetClose>
                 </div>
@@ -202,8 +202,8 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
                 <div className="px-4 py-3 bg-muted/30 border-b">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
-                        <span className="text-sm font-semibold text-primary">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="text-sm md:text-base font-semibold text-primary">
                           {user.email?.[0]?.toUpperCase() || "U"}
                         </span>
                       </div>
@@ -227,7 +227,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
 
               {/* Navigation Items */}
               <div className="flex-1 overflow-y-auto py-2">
-                <nav className="space-y-1 px-2">
+                <nav className="space-y-1 px-3">
                   {mainNavItems
                     .filter(item => item.show !== false)
                     .map((item, index) => {
@@ -242,22 +242,22 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
                               <Button
                                 variant="ghost"
                                 className={cn(
-                                  "w-full justify-start h-10 px-3 gap-2",
+                                  "w-full justify-start h-10 px-3 gap-3",
                                   "hover:bg-accent hover:text-accent-foreground",
                                   "transition-colors"
                                 )}
                               >
-                                {item.icon && <item.icon className="h-4 w-4" />}
-                                <span className="flex-1 text-left text-sm">{item.label}</span>
+                                {item.icon && <item.icon className="h-5 w-5" />}
+                                <span className="flex-1 text-left text-sm md:text-base">{item.label}</span>
                                 <ChevronRight 
                                   className={cn(
-                                    "h-3.5 w-3.5 transition-transform",
+                                    "h-4 w-4 transition-transform",
                                     solutionsOpen && "rotate-90"
                                   )} 
                                 />
                               </Button>
                             </CollapsibleTrigger>
-                            <CollapsibleContent className="pl-4 pr-2 space-y-0.5">
+                            <CollapsibleContent className="pl-4 pr-2 space-y-1">
                               {item.children.map((child, childIndex) => (
                                 <Button
                                   key={childIndex}
@@ -272,7 +272,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
                                 >
                                   <div className="flex items-start gap-2 w-full">
                                     {child.icon && (
-                                      <child.icon className="h-3.5 w-3.5 mt-0.5 text-muted-foreground" />
+                                      <child.icon className="h-4 w-4 mt-0.5 text-muted-foreground" />
                                     )}
                                     <div className="flex-1 text-left">
                                       <p className="text-sm font-medium leading-none">
@@ -304,8 +304,8 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
                             pathname === item.href && "bg-accent"
                           )}
                         >
-                          {item.icon && <item.icon className="h-4 w-4" />}
-                          <span className="flex-1 text-left text-sm">{item.label}</span>
+                          {item.icon && <item.icon className="h-5 w-5" />}
+                          <span className="flex-1 text-left text-sm md:text-base">{item.label}</span>
                           {item.badge && (
                             <Badge variant="secondary" className="text-xs">
                               {item.badge}
@@ -319,7 +319,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
                 {/* Quick Links Section */}
                 {!isAuthenticated && (
                   <>
-                    <Separator className="my-3" />
+                    <Separator className="my-2" />
                     <div className="px-4">
                       <p className="text-xs font-medium text-muted-foreground mb-2">
                         Quick Links
@@ -329,19 +329,19 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
                           variant="ghost"
                           size="sm"
                           onClick={() => handleSectionClick("differentiators")}
-                          className="w-full justify-start h-9 px-2 gap-2"
+                          className="w-full justify-start h-9 px-2 gap-3"
                         >
-                          <Target className="h-3.5 w-3.5" />
-                          <span className="text-sm">What Makes Us Different</span>
+                          <Target className="h-5 w-5" />
+                          <span className="text-sm md:text-base">What Makes Us Different</span>
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleSectionClick("how-it-works")}
-                          className="w-full justify-start h-9 px-2 gap-2"
+                          className="w-full justify-start h-9 px-2 gap-3"
                         >
-                          <HelpCircle className="h-3.5 w-3.5" />
-                          <span className="text-sm">How It Works</span>
+                          <HelpCircle className="h-5 w-5" />
+                          <span className="text-sm md:text-base">How It Works</span>
                         </Button>
                       </div>
                     </div>
@@ -350,47 +350,47 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
               </div>
 
               {/* Footer Actions */}
-              <div className="mt-auto border-t p-4 space-y-2 bg-muted/30">
+              <div className="mt-auto border-t p-3 space-y-2 bg-muted/30">
                 {isAuthenticated ? (
                   <>
                     <Button
                       variant="outline"
-                      className="w-full h-10 gap-2"
+                      className="w-full h-10 gap-3"
                       onClick={() => {
                         handleNavigation("/dashboard/client")
                       }}
                     >
-                      <Upload className="h-4 w-4" />
-                      Process New Images
+                      <Upload className="h-5 w-5" />
+                      <span className="text-sm md:text-base">Process New Images</span>
                     </Button>
                     <Button
                       variant="ghost"
-                      className="w-full h-10 gap-2 text-destructive hover:text-destructive"
+                      className="w-full h-10 gap-3 text-destructive hover:text-destructive"
                       onClick={() => {
                         // Handle logout
                         handleNavigation("/signout")
                       }}
                     >
-                      <LogOut className="h-4 w-4" />
-                      Sign Out
+                      <LogOut className="h-5 w-5" />
+                      <span className="text-sm md:text-base">Sign Out</span>
                     </Button>
                   </>
                 ) : (
                   <>
                     <Button
                       variant="outline"
-                      className="w-full h-10 gap-2"
+                      className="w-full h-10 gap-3"
                       onClick={() => handleNavigation("/sign-in")}
                     >
-                      <LogIn className="h-4 w-4" />
-                      Sign In
+                      <LogIn className="h-5 w-5" />
+                      <span className="text-sm md:text-base">Sign In</span>
                     </Button>
                     <Button
-                      className="w-full h-10 gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                      className="w-full h-10 gap-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
                       onClick={() => handleNavigation("/sign-up")}
                     >
-                      <UserPlus className="h-4 w-4" />
-                      Get Started Free
+                      <UserPlus className="h-5 w-5" />
+                      <span className="text-sm md:text-base font-medium">Get Started Free</span>
                     </Button>
                   </>
                 )}
