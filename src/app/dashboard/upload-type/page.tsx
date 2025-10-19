@@ -119,7 +119,7 @@ export default function UploadTypePage() {
 
           {/* Help text */}
           <p className="text-center mt-8 text-sm text-gray-500 dark:text-gray-400">
-            Select an option to continue. The AI will optimize processing based on your choice.
+            Select an option to continue. Exceletto will optimize processing based on your choice.
           </p>
         </div>
       </main>

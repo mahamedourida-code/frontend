@@ -372,7 +372,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
                       variant="outline"
                       className="w-full h-10 gap-3"
                       onClick={() => {
-                        handleNavigation("/dashboard/client")
+                        handleNavigation("/dashboard/upload-type")
                       }}
                     >
                       <Upload className="h-5 w-5" />

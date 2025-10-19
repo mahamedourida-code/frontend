@@ -302,6 +302,7 @@ export default function EditExcelPage() {
   const handleCellMouseDown = (row: number, col: number, event: React.MouseEvent) => {
     if (event.button === 2) return // Right click
     
+    event.preventDefault() // Prevent text selection
     setIsSelecting(true)
     setSelection({
       startRow: row,
@@ -311,15 +312,16 @@ export default function EditExcelPage() {
     })
     setSelectionType('cell')
     setContextMenu(null)
+    setEditingCell(null) // Clear any editing state
   }
 
   const handleCellMouseEnter = (row: number, col: number) => {
     if (isSelecting && selection) {
-      setSelection({
-        ...selection,
+      setSelection(prev => ({
+        ...prev!,
         endRow: row,
         endCol: col
-      })
+      }))
       setSelectionType('range')
     }
   }
@@ -327,6 +329,16 @@ export default function EditExcelPage() {
   const handleCellMouseUp = () => {
     setIsSelecting(false)
   }
+  
+  // Add global mouse up handler to stop selection when mouse is released outside table
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      setIsSelecting(false)
+    }
+    
+    window.addEventListener('mouseup', handleGlobalMouseUp)
+    return () => window.removeEventListener('mouseup', handleGlobalMouseUp)
+  }, [])
 
   const handleColumnHeaderClick = (col: number, event: React.MouseEvent) => {
     event.preventDefault()
@@ -389,11 +401,12 @@ export default function EditExcelPage() {
     toast.success('Copied to clipboard')
   }
 
-  // Paste copied data
+  // Paste copied data (Excel-like behavior)
   const pasteSelection = () => {
     if (!copiedData || !selection) return
     
     const newData = [...data]
+    // Always paste starting from the top-left of the selection
     const startRow = Math.min(selection.startRow, selection.endRow)
     const startCol = Math.min(selection.startCol, selection.endCol)
     
@@ -402,7 +415,12 @@ export default function EditExcelPage() {
         const targetRow = startRow + rIndex
         const targetCol = startCol + cIndex
         
-        if (targetRow < VIRTUAL_ROWS) {
+        // Ensure we have enough rows
+        while (newData.length <= targetRow) {
+          newData.push(new Array(headers.length).fill(''))
+        }
+        
+        if (targetRow < VIRTUAL_ROWS && targetCol < headers.length) {
           if (!newData[targetRow]) newData[targetRow] = []
           newData[targetRow][targetCol] = cell
         }
@@ -847,11 +865,15 @@ export default function EditExcelPage() {
                       <td 
                         key={originalIndex}
                         className={cn(
-                          "border border-gray-300 dark:border-gray-700 px-3 py-2 cursor-cell bg-white dark:bg-gray-950",
-                          selected && "bg-blue-100 dark:bg-blue-950",
-                          !selected && "hover:bg-blue-50 dark:hover:bg-blue-950/20"
+                          "border border-gray-300 dark:border-gray-700 px-3 py-2 cursor-cell transition-colors select-none",
+                          selected 
+                            ? "bg-blue-200 dark:bg-blue-900 border-blue-400" 
+                            : "bg-white dark:bg-gray-950 hover:bg-blue-50 dark:hover:bg-blue-950/20"
                         )}
-                        onMouseDown={(e) => handleCellMouseDown(rowIndex, actualColIndex, e)}
+                        onMouseDown={(e) => {
+                          e.preventDefault()
+                          handleCellMouseDown(rowIndex, actualColIndex, e)
+                        }}
                         onMouseEnter={() => handleCellMouseEnter(rowIndex, actualColIndex)}
                         onDoubleClick={() => setEditingCell({ row: rowIndex, col: actualColIndex })}
                       >
@@ -877,36 +899,68 @@ export default function EditExcelPage() {
                     )
                   })}
                   {/* Add empty cells for virtual grid */}
-                  {Array.from({ length: Math.max(0, VIRTUAL_COLS - headers.length) }).map((_, i) => (
-                    <td 
-                      key={`empty-${i}`}
-                      className="border border-gray-300 dark:border-gray-700 px-3 py-2 bg-gray-50/50 dark:bg-gray-950/50"
-                      onMouseDown={(e) => handleCellMouseDown(rowIndex, headers.length + i, e)}
-                      onMouseEnter={() => handleCellMouseEnter(rowIndex, headers.length + i)}
-                    >
-                      <span className="block min-h-[1.5rem] text-sm"></span>
-                    </td>
-                  ))}
+                  {Array.from({ length: Math.max(0, VIRTUAL_COLS - headers.length) }).map((_, i) => {
+                    const colIndex = headers.length + i
+                    const selected = isSelected(rowIndex, colIndex)
+                    return (
+                      <td 
+                        key={`empty-${i}`}
+                        className={cn(
+                          "border border-gray-300 dark:border-gray-700 px-3 py-2 cursor-cell transition-colors select-none",
+                          selected
+                            ? "bg-blue-200 dark:bg-blue-900 border-blue-400"
+                            : "bg-gray-50/50 dark:bg-gray-950/50 hover:bg-blue-50 dark:hover:bg-blue-950/20"
+                        )}
+                        onMouseDown={(e) => {
+                          e.preventDefault()
+                          handleCellMouseDown(rowIndex, colIndex, e)
+                        }}
+                        onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
+                      >
+                        <span className="block min-h-[1.5rem] text-sm"></span>
+                      </td>
+                    )
+                  })}
                 </tr>
               ))}
               {/* Add virtual empty rows */}
-              {Array.from({ length: Math.max(0, Math.min(100, VIRTUAL_ROWS - data.length)) }).map((_, rowI) => (
-                <tr key={`empty-row-${rowI}`} className="group">
-                  <td className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-center text-xs text-gray-400 bg-gray-50 dark:bg-gray-900 font-medium">
-                    {data.length + rowI + 1}
-                  </td>
-                  {Array.from({ length: VIRTUAL_COLS }).map((_, colI) => (
+              {Array.from({ length: Math.max(0, Math.min(100, VIRTUAL_ROWS - data.length)) }).map((_, rowI) => {
+                const rowIndex = data.length + rowI
+                return (
+                  <tr key={`empty-row-${rowI}`} className="group">
                     <td 
-                      key={`empty-${rowI}-${colI}`}
-                      className="border border-gray-300 dark:border-gray-700 px-3 py-2 bg-gray-50/50 dark:bg-gray-950/50"
-                      onMouseDown={(e) => handleCellMouseDown(data.length + rowI, colI, e)}
-                      onMouseEnter={() => handleCellMouseEnter(data.length + rowI, colI)}
+                      className={cn(
+                        "border border-gray-300 dark:border-gray-700 px-3 py-2 text-center text-xs text-gray-400 bg-gray-50 dark:bg-gray-900 font-medium cursor-pointer",
+                        selectionType === 'row' && isSelected(rowIndex, 0) && "bg-blue-100 dark:bg-blue-950"
+                      )}
+                      onClick={(e) => handleRowHeaderClick(rowIndex, e)}
                     >
-                      <span className="block min-h-[1.5rem] text-sm"></span>
+                      {rowIndex + 1}
                     </td>
-                  ))}
-                </tr>
-              ))}
+                    {Array.from({ length: VIRTUAL_COLS }).map((_, colI) => {
+                      const selected = isSelected(rowIndex, colI)
+                      return (
+                        <td 
+                          key={`empty-${rowI}-${colI}`}
+                          className={cn(
+                            "border border-gray-300 dark:border-gray-700 px-3 py-2 cursor-cell transition-colors select-none",
+                            selected
+                              ? "bg-blue-200 dark:bg-blue-900 border-blue-400"
+                              : "bg-gray-50/50 dark:bg-gray-950/50 hover:bg-blue-50 dark:hover:bg-blue-950/20"
+                          )}
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            handleCellMouseDown(rowIndex, colI, e)
+                          }}
+                          onMouseEnter={() => handleCellMouseEnter(rowIndex, colI)}
+                        >
+                          <span className="block min-h-[1.5rem] text-sm"></span>
+                        </td>
+                      )
+                    })}
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </DndContext>

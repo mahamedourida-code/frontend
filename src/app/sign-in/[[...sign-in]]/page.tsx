@@ -57,7 +57,7 @@ export default function SignInPage() {
       await signInWithPassword(data.email, data.password)
       toast.success('Signed in successfully!')
       setLoading(false) // Important: Clear loading state on success
-      router.push('/dashboard/client')
+      router.push('/dashboard/upload-type')
       router.refresh()
     } catch (err: any) {
       const errorMessage = err.message || 'Invalid email or password'
@@ -101,7 +101,7 @@ export default function SignInPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard/client`,
+        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard/upload-type`,
       },
     })
     // Note: No need to clear loading state on success as the page will redirect externally
@@ -122,7 +122,7 @@ export default function SignInPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard/client`,
+        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard/upload-type`,
       },
     })
     // Note: No need to clear loading state on success as the page will redirect externally

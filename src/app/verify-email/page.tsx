@@ -113,7 +113,7 @@ function VerifyEmailContent() {
         // Redirect immediately after brief delay to show success message
         setTimeout(() => {
           console.log('[VerifyEmail] Redirecting to dashboard...')
-          router.push('/dashboard/client')
+          router.push('/dashboard/upload-type')
           router.refresh()
         }, 1000)
       } else {
