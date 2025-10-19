@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
-import { createPortal } from 'react-dom'
+import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -24,7 +24,8 @@ import {
   FileImage,
   ChevronLeft,
   ChevronRight,
-  MoreVertical
+  MoreVertical,
+  ArrowLeft
 } from 'lucide-react'
 import * as XLSX from 'xlsx'
 import { Input } from '@/components/ui/input'
@@ -56,15 +57,8 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { cn } from '@/lib/utils'
-
-interface EditableExcelPreviewProps {
-  isOpen: boolean
-  onClose: () => void
-  fileId: string
-  fileName: string
-  onSave: (data: any[][]) => void
-  originalImageUrl?: string
-}
+import { MobileNav } from '@/components/MobileNav'
+import { useAuth } from '@/hooks/useAuth'
 
 interface HistoryEntry {
   data: any[][]
@@ -181,18 +175,19 @@ function SortableHeader({
   )
 }
 
-export function EditableExcelPreview({
-  isOpen,
-  onClose,
-  fileId,
-  fileName,
-  onSave,
-  originalImageUrl
-}: EditableExcelPreviewProps) {
+export default function EditExcelPage() {
+  const router = useRouter()
+  const params = useParams()
+  const searchParams = useSearchParams()
+  const { user } = useAuth()
+  
+  const fileId = params.fileId as string
+  const fileName = searchParams.get('fileName') || 'Excel File'
+  
   const [data, setData] = useState<any[][]>([])
   const [headers, setHeaders] = useState<string[]>([])
   const [columnOrder, setColumnOrder] = useState<number[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [editingCell, setEditingCell] = useState<{ row: number; col: number } | null>(null)
   const [editingHeader, setEditingHeader] = useState<number | null>(null)
   const [history, setHistory] = useState<HistoryEntry[]>([])
@@ -208,12 +203,12 @@ export function EditableExcelPreview({
     })
   )
 
-  // Load Excel data when dialog opens
+  // Load Excel data when page loads
   useEffect(() => {
-    if (isOpen && fileId) {
+    if (fileId) {
       loadExcelData()
     }
-  }, [isOpen, fileId])
+  }, [fileId])
 
   const loadExcelData = async () => {
     setLoading(true)
@@ -241,14 +236,10 @@ export function EditableExcelPreview({
         // Add to history
         addToHistory(extractedData, extractedHeaders, initialOrder, 'Initial load')
       }
-
-      // Load original image if URL provided
-      if (originalImageUrl) {
-        setOriginalImage(originalImageUrl)
-      }
     } catch (error) {
       console.error('Error loading Excel data:', error)
       toast.error('Failed to load Excel data')
+      router.back()
     } finally {
       setLoading(false)
     }
@@ -456,315 +447,266 @@ export function EditableExcelPreview({
     URL.revokeObjectURL(url)
     
     toast.success('File downloaded with edits')
-    onSave(fullData)
-    onClose()
+    router.back()
   }
 
   if (loading) {
-    return null
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading Excel data...</p>
+        </div>
+      </div>
+    )
   }
 
-  if (!isOpen) {
-    return null
-  }
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Excel-like Header Bar */}
+      <div className="flex items-center justify-between h-14 px-4 border-b bg-background">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.back()}
+            className="h-8 w-8"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <Grid3x3 className="h-5 w-5 text-primary" />
+          <span className="font-semibold text-lg">{fileName}</span>
+          <Badge variant="secondary" className="ml-2">
+            {data.length} rows × {headers.length} columns
+          </Badge>
+        </div>
+      </div>
 
-  // Use portal to render at document body level
-  return typeof window !== 'undefined' ? createPortal(
-    <>
-      {/* Overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 z-[9998] bg-black/80 backdrop-blur-sm"
-          onClick={onClose}
-        />
-      )}
-      
-      {/* Main Dialog */}
-      {isOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center pointer-events-none">
-          <div className="relative w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] max-w-[1800px] max-h-[900px] bg-background rounded-lg shadow-2xl flex flex-col overflow-hidden pointer-events-auto">
-        {/* Excel-like Header Bar */}
-        <div className="flex items-center justify-between h-14 px-4 border-b bg-background">
-          <div className="flex items-center gap-3">
-            <Grid3x3 className="h-5 w-5 text-primary" />
-            <span className="font-semibold text-lg">{fileName}</span>
-            <Badge variant="secondary" className="ml-2">
-              {data.length} rows × {headers.length} columns
-            </Badge>
-          </div>
-          <div className="flex items-center gap-2">
+      {/* Excel-like Ribbon Toolbar */}
+      <div className="border-b bg-muted/20">
+        {/* Tab Headers */}
+        <div className="flex items-center h-9 px-4 border-b gap-4 text-sm">
+          <span className="px-3 py-1 border-b-2 border-primary font-medium">Home</span>
+          <span className="px-3 py-1 text-muted-foreground hover:text-foreground cursor-pointer">Insert</span>
+          <span className="px-3 py-1 text-muted-foreground hover:text-foreground cursor-pointer">Data</span>
+          <span className="px-3 py-1 text-muted-foreground hover:text-foreground cursor-pointer">View</span>
+        </div>
+        
+        {/* Ribbon Content */}
+        <div className="flex items-center px-4 py-2 gap-6 flex-wrap">
+          {/* Clipboard Section */}
+          <div className="flex items-center gap-1">
             <Button
+              size="sm"
               variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="h-8 w-8"
+              onClick={undo}
+              disabled={historyIndex <= 0}
+              className="h-9 px-3"
             >
-              <X className="h-4 w-4" />
+              <Undo2 className="h-4 w-4 mr-1" />
+              <span className="text-xs">Undo</span>
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={redo}
+              disabled={historyIndex >= history.length - 1}
+              className="h-9 px-3"
+            >
+              <Redo2 className="h-4 w-4 mr-1" />
+              <span className="text-xs">Redo</span>
+            </Button>
+          </div>
+
+          <div className="h-8 w-px bg-border" />
+
+          {/* Insert Section */}
+          <div className="flex items-center gap-1">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={addRow}
+              className="h-9 px-3"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              <span className="text-xs">Insert Row</span>
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={addColumn}
+              className="h-9 px-3"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              <span className="text-xs">Insert Column</span>
+            </Button>
+          </div>
+
+          <div className="h-8 w-px bg-border" />
+
+          {/* Data Cleanup Section */}
+          <div className="flex items-center gap-1">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={trimAllCells}
+              className="h-9 px-3"
+            >
+              <Scissors className="h-4 w-4 mr-1" />
+              <span className="text-xs">Trim Cells</span>
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={removeEmptyRows}
+              className="h-9 px-3"
+            >
+              <Trash2 className="h-4 w-4 mr-1" />
+              <span className="text-xs">Remove Empty</span>
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={fixCurrency}
+              className="h-9 px-3"
+            >
+              <DollarSign className="h-4 w-4 mr-1" />
+              <span className="text-xs">Fix Currency</span>
             </Button>
           </div>
         </div>
+      </div>
 
-        {/* Excel-like Ribbon Toolbar */}
-        <div className="border-b bg-muted/20">
-          {/* Tab Headers */}
-          <div className="flex items-center h-9 px-4 border-b gap-4 text-sm">
-            <span className="px-3 py-1 border-b-2 border-primary font-medium">Home</span>
-            <span className="px-3 py-1 text-muted-foreground hover:text-foreground cursor-pointer">Insert</span>
-            <span className="px-3 py-1 text-muted-foreground hover:text-foreground cursor-pointer">Data</span>
-            <span className="px-3 py-1 text-muted-foreground hover:text-foreground cursor-pointer">View</span>
+      {/* Main Content Area - Table */}
+      <div className="flex-1 overflow-auto bg-white dark:bg-gray-950">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <table className="w-full border-collapse text-sm">
+            <thead className="sticky top-0 bg-gray-100 dark:bg-gray-900 z-20 shadow-sm">
+              <tr>
+                <th className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-center w-16 bg-gray-50 dark:bg-gray-900 font-medium text-xs text-gray-600 dark:text-gray-400">#</th>
+                <SortableContext
+                  items={columnOrder}
+                  strategy={horizontalListSortingStrategy}
+                >
+                  {columnOrder.map((originalIndex) => (
+                    <SortableHeader
+                      key={originalIndex}
+                      id={originalIndex}
+                      header={headers[originalIndex]}
+                      colIndex={originalIndex}
+                      onEdit={handleHeaderEdit}
+                      onDelete={deleteColumn}
+                      onFormat={formatColumn}
+                      isEditing={editingHeader === originalIndex}
+                    />
+                  ))}
+                </SortableContext>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((row, rowIndex) => (
+                <tr key={rowIndex} className="group hover:bg-blue-50 dark:hover:bg-blue-950/20">
+                  <td className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-center text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 font-medium">
+                    <div className="flex items-center justify-center gap-1">
+                      <span>{rowIndex + 1}</span>
+                      <button
+                        className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:bg-destructive/10 rounded"
+                        onClick={() => deleteRow(rowIndex)}
+                      >
+                        <Trash2 className="h-3 w-3 text-destructive" />
+                      </button>
+                    </div>
+                  </td>
+                  {columnOrder.map((originalIndex) => {
+                    const actualColIndex = originalIndex
+                    const cell = row[actualColIndex]
+                    return (
+                      <td 
+                        key={originalIndex}
+                        className="border border-gray-300 dark:border-gray-700 px-3 py-2 cursor-cell hover:bg-blue-100 dark:hover:bg-blue-950/30 bg-white dark:bg-gray-950"
+                        onClick={() => setEditingCell({ row: rowIndex, col: actualColIndex })}
+                      >
+                        {editingCell?.row === rowIndex && editingCell?.col === actualColIndex ? (
+                          <Input
+                            ref={inputRef}
+                            defaultValue={cell || ''}
+                            className="h-7 border-2 border-blue-500 text-sm px-2"
+                            onBlur={(e) => handleCellEdit(rowIndex, actualColIndex, e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                handleCellEdit(rowIndex, actualColIndex, e.currentTarget.value)
+                              } else if (e.key === 'Escape') {
+                                setEditingCell(null)
+                              }
+                            }}
+                            autoFocus
+                          />
+                        ) : (
+                          <span className="block min-h-[1.5rem] text-sm">{cell || ''}</span>
+                        )}
+                      </td>
+                    )
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </DndContext>
+      </div>
+
+      {/* Excel-like Footer with Status Bar */}
+      <div className="border-t bg-gray-50 dark:bg-gray-900">
+        <div className="flex items-center justify-between px-4 py-2">
+          {/* Status Information */}
+          <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
+            <span className="flex items-center gap-1">
+              <Grid3x3 className="h-3 w-3" />
+              {data.length} rows
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="font-medium">·</span>
+              {headers.length} columns
+            </span>
+            {historyIndex > 0 && (
+              <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
+                <span className="font-medium">·</span>
+                {historyIndex} changes
+              </span>
+            )}
           </div>
           
-          {/* Ribbon Content */}
-          <div className="flex items-center px-4 py-2 gap-6">
-            {/* Clipboard Section */}
-            <div className="flex items-center gap-1">
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={undo}
-                disabled={historyIndex <= 0}
-                className="h-9 px-3"
-              >
-                <Undo2 className="h-4 w-4 mr-1" />
-                <span className="text-xs">Undo</span>
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={redo}
-                disabled={historyIndex >= history.length - 1}
-                className="h-9 px-3"
-              >
-                <Redo2 className="h-4 w-4 mr-1" />
-                <span className="text-xs">Redo</span>
-              </Button>
-            </div>
-
-            <div className="h-8 w-px bg-border" />
-
-            {/* Insert Section */}
-            <div className="flex items-center gap-1">
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={addRow}
-                className="h-9 px-3"
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                <span className="text-xs">Insert Row</span>
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={addColumn}
-                className="h-9 px-3"
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                <span className="text-xs">Insert Column</span>
-              </Button>
-            </div>
-
-            <div className="h-8 w-px bg-border" />
-
-            {/* Data Cleanup Section */}
-            <div className="flex items-center gap-1">
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={trimAllCells}
-                className="h-9 px-3"
-              >
-                <Scissors className="h-4 w-4 mr-1" />
-                <span className="text-xs">Trim Cells</span>
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={removeEmptyRows}
-                className="h-9 px-3"
-              >
-                <Trash2 className="h-4 w-4 mr-1" />
-                <span className="text-xs">Remove Empty</span>
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={fixCurrency}
-                className="h-9 px-3"
-              >
-                <DollarSign className="h-4 w-4 mr-1" />
-                <span className="text-xs">Fix Currency</span>
-              </Button>
-            </div>
-
-            <div className="h-8 w-px bg-border" />
-
-            {/* View Section */}
-            <div className="flex items-center gap-1">
-              <Button
-                size="sm"
-                variant={showSplitView ? "secondary" : "ghost"}
-                onClick={() => setShowSplitView(!showSplitView)}
-                className="h-9 px-3"
-              >
-                <FileImage className="h-4 w-4 mr-1" />
-                <span className="text-xs">{showSplitView ? 'Hide' : 'Show'} Original</span>
-              </Button>
-            </div>
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => router.back()}
+              className="h-9 px-4"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleSave} 
+              className="h-9 px-4 bg-green-600 hover:bg-green-700 text-white gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Save & Download
+            </Button>
           </div>
         </div>
+      </div>
 
-        {/* Main Content Area */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Split View - Original Image */}
-          {showSplitView && originalImage && (
-            <div className="w-1/3 border-r flex flex-col">
-              <div className="px-4 py-2 border-b bg-muted/30">
-                <h3 className="text-sm font-medium flex items-center gap-2">
-                  <FileImage className="h-4 w-4" />
-                  Original Image
-                </h3>
-              </div>
-              <div className="flex-1 overflow-auto p-4 bg-muted/10">
-                <img 
-                  src={originalImage} 
-                  alt="Original" 
-                  className="w-full h-auto rounded-lg shadow-lg"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Table Area */}
-          <div className={cn(
-            "flex-1 overflow-auto bg-white dark:bg-gray-950",
-            showSplitView && "w-2/3"
-          )}>
-            <div className="h-full">
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <table className="w-full border-collapse text-sm">
-                  <thead className="sticky top-0 bg-gray-100 dark:bg-gray-900 z-20 shadow-sm">
-                    <tr>
-                      <th className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-center w-16 bg-gray-50 dark:bg-gray-900 font-medium text-xs text-gray-600 dark:text-gray-400">#</th>
-                      <SortableContext
-                        items={columnOrder}
-                        strategy={horizontalListSortingStrategy}
-                      >
-                        {columnOrder.map((originalIndex) => (
-                          <SortableHeader
-                            key={originalIndex}
-                            id={originalIndex}
-                            header={headers[originalIndex]}
-                            colIndex={originalIndex}
-                            onEdit={handleHeaderEdit}
-                            onDelete={deleteColumn}
-                            onFormat={formatColumn}
-                            isEditing={editingHeader === originalIndex}
-                          />
-                        ))}
-                      </SortableContext>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.map((row, rowIndex) => (
-                      <tr key={rowIndex} className="group hover:bg-blue-50 dark:hover:bg-blue-950/20">
-                        <td className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-center text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 font-medium">
-                          <div className="flex items-center justify-center gap-1">
-                            <span>{rowIndex + 1}</span>
-                            <button
-                              className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:bg-destructive/10 rounded"
-                              onClick={() => deleteRow(rowIndex)}
-                            >
-                              <Trash2 className="h-3 w-3 text-destructive" />
-                            </button>
-                          </div>
-                        </td>
-                        {columnOrder.map((originalIndex) => {
-                          const actualColIndex = originalIndex
-                          const cell = row[actualColIndex]
-                          return (
-                            <td 
-                              key={originalIndex}
-                              className="border border-gray-300 dark:border-gray-700 px-3 py-2 cursor-cell hover:bg-blue-100 dark:hover:bg-blue-950/30 bg-white dark:bg-gray-950"
-                              onClick={() => setEditingCell({ row: rowIndex, col: actualColIndex })}
-                            >
-                              {editingCell?.row === rowIndex && editingCell?.col === actualColIndex ? (
-                                <Input
-                                  ref={inputRef}
-                                  defaultValue={cell || ''}
-                                  className="h-7 border-2 border-blue-500 text-sm px-2"
-                                  onBlur={(e) => handleCellEdit(rowIndex, actualColIndex, e.target.value)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                      handleCellEdit(rowIndex, actualColIndex, e.currentTarget.value)
-                                    } else if (e.key === 'Escape') {
-                                      setEditingCell(null)
-                                    }
-                                  }}
-                                  autoFocus
-                                />
-                              ) : (
-                                <span className="block min-h-[1.5rem] text-sm">{cell || ''}</span>
-                              )}
-                            </td>
-                          )
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </DndContext>
-            </div>
-          </div>
-        </div>
-
-        {/* Excel-like Footer with Status Bar */}
-        <div className="border-t bg-gray-50 dark:bg-gray-900">
-          <div className="flex items-center justify-between px-4 py-2">
-            {/* Status Information */}
-            <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
-              <span className="flex items-center gap-1">
-                <Grid3x3 className="h-3 w-3" />
-                {data.length} rows
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="font-medium">·</span>
-                {headers.length} columns
-              </span>
-              {historyIndex > 0 && (
-                <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
-                  <span className="font-medium">·</span>
-                  {historyIndex} changes
-                </span>
-              )}
-            </div>
-            
-            {/* Action Buttons */}
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                onClick={onClose}
-                className="h-9 px-4"
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleSave} 
-                className="h-9 px-4 bg-green-600 hover:bg-green-700 text-white gap-2"
-              >
-                <Download className="h-4 w-4" />
-                Save & Download
-              </Button>
-            </div>
-          </div>
-        </div>
-          </div>
-        </div>
-      )}
-    </>
+      {/* Mobile Navigation */}
+      <MobileNav 
+        isAuthenticated={true}
+        user={{
+          email: user?.email,
+          name: user?.user_metadata?.full_name
+        }}
+      />
+    </div>
   )
 }

@@ -60,7 +60,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { useSearchParams } from "next/navigation"
 import { PenTool, Monitor, Edit3 } from "lucide-react"
-import { EditableExcelPreview } from "@/components/EditableExcelPreview"
 
 export default function ProcessImagesPage() {
   const { user, loading: authLoading } = useAuth()
@@ -77,8 +76,6 @@ export default function ProcessImagesPage() {
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([])
   const [shareSession, setShareSession] = useState<any>(null)
   const [copySuccess, setCopySuccess] = useState(false)
-  const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [selectedFileToEdit, setSelectedFileToEdit] = useState<any>(null)
   
   // Document type display info
   const documentTypeInfo = {
@@ -1002,8 +999,7 @@ Best regards`
                               size="sm"
                               variant="ghost"
                               onClick={() => {
-                                setSelectedFileToEdit(file)
-                                setEditDialogOpen(true)
+                                router.push(`/dashboard/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'Result.xlsx')}`)
                               }}
                               className="gap-1.5"
                             >
@@ -1297,24 +1293,6 @@ Best regards`
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Edit Dialog */}
-      {selectedFileToEdit && (
-        <EditableExcelPreview
-          isOpen={editDialogOpen}
-          onClose={() => {
-            setEditDialogOpen(false)
-            setSelectedFileToEdit(null)
-          }}
-          fileId={selectedFileToEdit.file_id}
-          fileName={selectedFileToEdit.filename || 'Result.xlsx'}
-          originalImageUrl={uploadedFiles.length > 0 ? URL.createObjectURL(uploadedFiles[0]) : undefined}
-          onSave={(editedData) => {
-            console.log('File edited and saved:', editedData)
-            toast.success('File edited successfully')
-          }}
-        />
-      )}
       
       {/* Mobile Navigation */}
       <MobileNav 
