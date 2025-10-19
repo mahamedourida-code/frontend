@@ -765,6 +765,7 @@ export function EditableExcelPreview({
           </div>
         </div>
       )}
-    </>
-  )
+    </>,
+    document.body
+  ) : null
 }

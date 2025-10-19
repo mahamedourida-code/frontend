@@ -1,18 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { MobileNav } from "@/components/MobileNav"
-import { PenTool, Monitor, Sparkles, ArrowRight, CheckCircle } from "lucide-react"
+import { FileText, TableProperties, Sparkles, LayoutDashboard, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { wakeUpBackendSilently } from "@/lib/backend-health"
+import { useAuth } from "@/hooks/useAuth"
 
 export default function UploadTypePage() {
   const router = useRouter()
-  const [selectedType, setSelectedType] = useState<string | null>(null)
+  const { user } = useAuth()
 
   useEffect(() => {
     // Silently wake up backend when page loads - no blocking
@@ -22,180 +21,105 @@ export default function UploadTypePage() {
   const tableTypes = [
     {
       id: "handwritten",
-      title: "Handwritten Tables",
-      description: "Transform handwritten notes, forms, and tables into digital spreadsheets",
-      icon: PenTool,
-      iconColor: "text-blue-500",
-      bgColor: "bg-blue-50 dark:bg-blue-950/20",
-      borderColor: "border-blue-200 dark:border-blue-800",
-      hoverBg: "hover:bg-blue-100 dark:hover:bg-blue-900/30",
-      examples: ["Handwritten notes", "Paper forms", "Manual ledgers"]
+      title: "Handwritten",
+      subtitle: "Notes & forms",
+      icon: FileText
     },
     {
-      id: "printed",
-      title: "Printed Tables",
-      description: "Process computer-generated tables, screenshots, and digital documents",
-      icon: Monitor,
-      iconColor: "text-purple-500",
-      bgColor: "bg-purple-50 dark:bg-purple-950/20",
-      borderColor: "border-purple-200 dark:border-purple-800",
-      hoverBg: "hover:bg-purple-100 dark:hover:bg-purple-900/30",
-      examples: ["Screenshots", "PDF tables", "Digital reports"]
+      id: "printed", 
+      title: "Digital",
+      subtitle: "Screenshots & PDFs",
+      icon: TableProperties
     },
     {
       id: "auto",
       title: "Auto-Detect",
-      description: "Let our AI automatically identify and process your table type",
+      subtitle: "Let AI decide",
       icon: Sparkles,
-      iconColor: "text-emerald-500",
-      bgColor: "bg-emerald-50 dark:bg-emerald-950/20",
-      borderColor: "border-emerald-200 dark:border-emerald-800",
-      hoverBg: "hover:bg-emerald-100 dark:hover:bg-emerald-900/30",
-      examples: ["Mixed documents", "Unsure?", "Best accuracy"],
-      badge: "Recommended"
+      recommended: true
     }
   ]
 
   const handleTypeSelect = (typeId: string) => {
-    setSelectedType(typeId)
-  }
-
-  const handleContinue = () => {
-    if (selectedType) {
-      router.push(`/dashboard/client?type=${selectedType}`)
-    }
+    // Directly navigate when user selects an option
+    router.push(`/dashboard/client?type=${typeId}`)
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40">
-        <div className="container flex h-14 max-w-screen-2xl items-center px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2">
+      <header className="border-b bg-white dark:bg-gray-900">
+        <div className="container flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-4">
             <Button
               variant="ghost"
-              size="sm"
-              onClick={() => router.push("/dashboard")}
+              size="icon"
+              onClick={() => router.back()}
+              className="h-9 w-9"
             >
-              ← Back
+              <ArrowLeft className="h-4 w-4" />
             </Button>
+            <div>
+              <h1 className="text-lg font-semibold">Select Document Type</h1>
+              <p className="text-sm text-muted-foreground">Choose how to process your images</p>
+            </div>
           </div>
+          <Button
+            onClick={() => router.push("/dashboard")}
+            variant="outline"
+            className="gap-2"
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            Dashboard
+          </Button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pb-24">
-        {/* Page Header */}
-        <div className="text-center mb-8 sm:mb-12">
-          <Badge variant="outline" className="mb-3 border-primary/50 text-primary">
-            Step 1 of 2
-          </Badge>
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">
-            Select Your Document Type
-          </h1>
-          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Choose the type of table you're uploading for optimized processing accuracy
-          </p>
-        </div>
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
 
-        {/* Type Selection Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
-          {tableTypes.map((type) => {
-            const Icon = type.icon
-            const isSelected = selectedType === type.id
-
-            return (
-              <Card
-                key={type.id}
-                className={cn(
-                  "relative cursor-pointer transition-all duration-200 hover:shadow-lg",
-                  isSelected
-                    ? "ring-2 ring-primary shadow-lg"
-                    : "hover:border-primary/50",
-                  type.borderColor
-                )}
-                onClick={() => handleTypeSelect(type.id)}
-              >
-                {/* Selected Badge */}
-                {isSelected && (
-                  <div className="absolute -top-2 -right-2 z-10">
-                    <div className="bg-primary text-primary-foreground rounded-full p-1">
-                      <CheckCircle className="h-5 w-5" />
+        <div className="w-full max-w-4xl">
+          {/* Option Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+            {tableTypes.map((type) => {
+              const Icon = type.icon
+              
+              return (
+                <button
+                  key={type.id}
+                  onClick={() => handleTypeSelect(type.id)}
+                  className={cn(
+                    "group relative flex flex-col items-center justify-center p-8 sm:p-10",
+                    "bg-white dark:bg-gray-900 rounded-xl border-2 border-gray-200 dark:border-gray-800",
+                    "hover:border-gray-900 dark:hover:border-gray-100 transition-all duration-200",
+                    "hover:shadow-xl hover:scale-105"
+                  )}
+                >
+                  {type.recommended && (
+                    <div className="absolute top-3 right-3">
+                      <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                        RECOMMENDED
+                      </span>
                     </div>
-                  </div>
-                )}
+                  )}
+                  
+                  <Icon className="h-12 w-12 mb-4 text-gray-900 dark:text-gray-100 group-hover:scale-110 transition-transform" />
+                  
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                    {type.title}
+                  </h3>
+                  
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {type.subtitle}
+                  </p>
+                </button>
+              )
+            })}
+          </div>
 
-                {/* Recommended Badge */}
-                {type.badge && (
-                  <div className="absolute top-3 right-3">
-                    <Badge variant="default" className="text-xs">
-                      {type.badge}
-                    </Badge>
-                  </div>
-                )}
-
-                <CardHeader className="pb-4">
-                  <div
-                    className={cn(
-                      "w-12 h-12 rounded-lg flex items-center justify-center mb-3",
-                      type.bgColor
-                    )}
-                  >
-                    <Icon className={cn("h-6 w-6", type.iconColor)} />
-                  </div>
-                  <CardTitle className="text-xl">{type.title}</CardTitle>
-                  <CardDescription className="text-sm">
-                    {type.description}
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent>
-                  <div className="space-y-2">
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                      Best for:
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {type.examples.map((example, idx) => (
-                        <Badge
-                          key={idx}
-                          variant="secondary"
-                          className="text-xs"
-                        >
-                          {example}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          })}
-        </div>
-
-        {/* Continue Button */}
-        <div className="flex justify-center">
-          <Button
-            size="lg"
-            disabled={!selectedType}
-            onClick={handleContinue}
-            className="min-w-[200px] text-base px-6 py-5 h-auto"
-          >
-            Continue to Upload
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </div>
-
-        {/* Help Text */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-muted-foreground">
-            Not sure which to choose?{" "}
-            <button
-              className="text-primary hover:underline font-medium"
-              onClick={() => handleTypeSelect("auto")}
-            >
-              Use Auto-Detect
-            </button>{" "}
-            for best results
+          {/* Help text */}
+          <p className="text-center mt-8 text-sm text-gray-500 dark:text-gray-400">
+            Select an option to continue. The AI will optimize processing based on your choice.
           </p>
         </div>
       </main>
