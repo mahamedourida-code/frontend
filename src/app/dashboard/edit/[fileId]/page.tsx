@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, MouseEvent as ReactMouseEvent } from 'react'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -25,7 +25,9 @@ import {
   ChevronLeft,
   ChevronRight,
   MoreVertical,
-  ArrowLeft
+  ArrowLeft,
+  Copy,
+  ClipboardPaste
 } from 'lucide-react'
 import * as XLSX from 'xlsx'
 import { Input } from '@/components/ui/input'
@@ -75,7 +77,8 @@ function SortableHeader({
   onEdit, 
   onDelete,
   onFormat,
-  isEditing 
+  isEditing,
+  onClick
 }: any) {
   const {
     attributes,
@@ -97,9 +100,10 @@ function SortableHeader({
       ref={setNodeRef} 
       style={style}
       className={cn(
-        "border border-gray-300 dark:border-gray-700 px-4 py-2 min-w-[140px] relative group bg-gray-50 dark:bg-gray-900",
+        "border border-gray-300 dark:border-gray-700 px-4 py-2 min-w-[140px] relative group bg-gray-50 dark:bg-gray-900 cursor-pointer select-none",
         isDragging && "z-50 shadow-lg"
       )}
+      onClick={onClick}
     >
       <div className="flex items-center justify-between gap-2">
         <div
@@ -175,6 +179,16 @@ function SortableHeader({
   )
 }
 
+// Types for selection
+type CellSelection = {
+  startRow: number
+  startCol: number
+  endRow: number
+  endCol: number
+}
+
+type SelectionType = 'cell' | 'row' | 'column' | 'range'
+
 export default function EditExcelPage() {
   const router = useRouter()
   const params = useParams()
@@ -195,6 +209,17 @@ export default function EditExcelPage() {
   const [showSplitView, setShowSplitView] = useState(false)
   const [originalImage, setOriginalImage] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  
+  // Selection states
+  const [selection, setSelection] = useState<CellSelection | null>(null)
+  const [selectionType, setSelectionType] = useState<SelectionType>('cell')
+  const [isSelecting, setIsSelecting] = useState(false)
+  const [copiedData, setCopiedData] = useState<any[][] | null>(null)
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
+  
+  // Virtual grid dimensions (for zoom out effect)
+  const VIRTUAL_ROWS = 1000
+  const VIRTUAL_COLS = 100
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -272,6 +297,177 @@ export default function EditExcelPage() {
       setHistoryIndex(historyIndex + 1)
     }
   }
+
+  // Selection handlers
+  const handleCellMouseDown = (row: number, col: number, event: React.MouseEvent) => {
+    if (event.button === 2) return // Right click
+    
+    setIsSelecting(true)
+    setSelection({
+      startRow: row,
+      startCol: col,
+      endRow: row,
+      endCol: col
+    })
+    setSelectionType('cell')
+    setContextMenu(null)
+  }
+
+  const handleCellMouseEnter = (row: number, col: number) => {
+    if (isSelecting && selection) {
+      setSelection({
+        ...selection,
+        endRow: row,
+        endCol: col
+      })
+      setSelectionType('range')
+    }
+  }
+
+  const handleCellMouseUp = () => {
+    setIsSelecting(false)
+  }
+
+  const handleColumnHeaderClick = (col: number, event: React.MouseEvent) => {
+    event.preventDefault()
+    setSelection({
+      startRow: 0,
+      startCol: col,
+      endRow: Math.max(data.length - 1, 0),
+      endCol: col
+    })
+    setSelectionType('column')
+    setContextMenu(null)
+  }
+
+  const handleRowHeaderClick = (row: number, event: React.MouseEvent) => {
+    event.preventDefault()
+    setSelection({
+      startRow: row,
+      startCol: 0,
+      endRow: row,
+      endCol: headers.length - 1
+    })
+    setSelectionType('row')
+    setContextMenu(null)
+  }
+
+  const isSelected = (row: number, col: number) => {
+    if (!selection) return false
+    
+    const minRow = Math.min(selection.startRow, selection.endRow)
+    const maxRow = Math.max(selection.startRow, selection.endRow)
+    const minCol = Math.min(selection.startCol, selection.endCol)
+    const maxCol = Math.max(selection.startCol, selection.endCol)
+    
+    return row >= minRow && row <= maxRow && col >= minCol && col <= maxCol
+  }
+
+  // Copy selected cells
+  const copySelection = () => {
+    if (!selection) return
+    
+    const minRow = Math.min(selection.startRow, selection.endRow)
+    const maxRow = Math.max(selection.startRow, selection.endRow)
+    const minCol = Math.min(selection.startCol, selection.endCol)
+    const maxCol = Math.max(selection.startCol, selection.endCol)
+    
+    const copied = []
+    for (let r = minRow; r <= maxRow; r++) {
+      const row = []
+      for (let c = minCol; c <= maxCol; c++) {
+        row.push(data[r]?.[c] || '')
+      }
+      copied.push(row)
+    }
+    
+    setCopiedData(copied)
+    
+    // Also copy to clipboard
+    const text = copied.map(row => row.join('\t')).join('\n')
+    navigator.clipboard.writeText(text)
+    toast.success('Copied to clipboard')
+  }
+
+  // Paste copied data
+  const pasteSelection = () => {
+    if (!copiedData || !selection) return
+    
+    const newData = [...data]
+    const startRow = Math.min(selection.startRow, selection.endRow)
+    const startCol = Math.min(selection.startCol, selection.endCol)
+    
+    copiedData.forEach((row, rIndex) => {
+      row.forEach((cell, cIndex) => {
+        const targetRow = startRow + rIndex
+        const targetCol = startCol + cIndex
+        
+        if (targetRow < VIRTUAL_ROWS) {
+          if (!newData[targetRow]) newData[targetRow] = []
+          newData[targetRow][targetCol] = cell
+        }
+      })
+    })
+    
+    setData(newData)
+    addToHistory(newData, headers, columnOrder, 'Paste')
+    toast.success('Pasted')
+  }
+
+  // Delete selected cells
+  const deleteSelection = () => {
+    if (!selection) return
+    
+    const minRow = Math.min(selection.startRow, selection.endRow)
+    const maxRow = Math.max(selection.startRow, selection.endRow)
+    const minCol = Math.min(selection.startCol, selection.endCol)
+    const maxCol = Math.max(selection.startCol, selection.endCol)
+    
+    const newData = [...data]
+    for (let r = minRow; r <= maxRow; r++) {
+      for (let c = minCol; c <= maxCol; c++) {
+        if (newData[r]) {
+          newData[r][c] = ''
+        }
+      }
+    }
+    
+    setData(newData)
+    addToHistory(newData, headers, columnOrder, 'Delete selection')
+    toast.success('Deleted')
+  }
+
+  // Context menu handlers
+  const handleContextMenu = (event: React.MouseEvent) => {
+    event.preventDefault()
+    setContextMenu({ x: event.clientX, y: event.clientY })
+  }
+
+  const closeContextMenu = () => {
+    setContextMenu(null)
+  }
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+        copySelection()
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+        pasteSelection()
+      } else if (e.key === 'Delete') {
+        deleteSelection()
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        e.preventDefault()
+        undo()
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+        e.preventDefault()
+        redo()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selection, copiedData, historyIndex, data])
 
   // Handle column drag and drop
   const handleDragEnd = (event: DragEndEvent) => {
@@ -578,16 +774,18 @@ export default function EditExcelPage() {
       </div>
 
       {/* Main Content Area - Table */}
-      <div className="flex-1 overflow-auto bg-white dark:bg-gray-950">
+      <div className="flex-1 overflow-auto bg-white dark:bg-gray-950" onMouseUp={handleCellMouseUp}>
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
-          <table className="w-full border-collapse text-sm">
+          <table className="w-full border-collapse text-sm" onContextMenu={handleContextMenu}>
             <thead className="sticky top-0 bg-gray-100 dark:bg-gray-900 z-20 shadow-sm">
               <tr>
-                <th className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-center w-16 bg-gray-50 dark:bg-gray-900 font-medium text-xs text-gray-600 dark:text-gray-400">#</th>
+                <th className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-center w-16 bg-gray-50 dark:bg-gray-900 font-medium text-xs text-gray-600 dark:text-gray-400">
+                  #
+                </th>
                 <SortableContext
                   items={columnOrder}
                   strategy={horizontalListSortingStrategy}
@@ -602,20 +800,40 @@ export default function EditExcelPage() {
                       onDelete={deleteColumn}
                       onFormat={formatColumn}
                       isEditing={editingHeader === originalIndex}
+                      onClick={(e: React.MouseEvent) => handleColumnHeaderClick(originalIndex, e)}
                     />
                   ))}
                 </SortableContext>
+                {/* Add empty columns for virtual grid */}
+                {Array.from({ length: Math.max(0, VIRTUAL_COLS - headers.length) }).map((_, i) => (
+                  <th 
+                    key={`empty-${i}`}
+                    className="border border-gray-300 dark:border-gray-700 px-4 py-2 min-w-[140px] bg-gray-50 dark:bg-gray-900 text-gray-400"
+                  >
+                    {String.fromCharCode(65 + headers.length + i)}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
+              {/* Render actual data rows */}
               {data.map((row, rowIndex) => (
-                <tr key={rowIndex} className="group hover:bg-blue-50 dark:hover:bg-blue-950/20">
-                  <td className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-center text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 font-medium">
+                <tr key={rowIndex} className="group">
+                  <td 
+                    className={cn(
+                      "border border-gray-300 dark:border-gray-700 px-3 py-2 text-center text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 font-medium cursor-pointer",
+                      selectionType === 'row' && isSelected(rowIndex, 0) && "bg-blue-100 dark:bg-blue-950"
+                    )}
+                    onClick={(e) => handleRowHeaderClick(rowIndex, e)}
+                  >
                     <div className="flex items-center justify-center gap-1">
                       <span>{rowIndex + 1}</span>
                       <button
                         className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:bg-destructive/10 rounded"
-                        onClick={() => deleteRow(rowIndex)}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          deleteRow(rowIndex)
+                        }}
                       >
                         <Trash2 className="h-3 w-3 text-destructive" />
                       </button>
@@ -624,11 +842,18 @@ export default function EditExcelPage() {
                   {columnOrder.map((originalIndex) => {
                     const actualColIndex = originalIndex
                     const cell = row[actualColIndex]
+                    const selected = isSelected(rowIndex, actualColIndex)
                     return (
                       <td 
                         key={originalIndex}
-                        className="border border-gray-300 dark:border-gray-700 px-3 py-2 cursor-cell hover:bg-blue-100 dark:hover:bg-blue-950/30 bg-white dark:bg-gray-950"
-                        onClick={() => setEditingCell({ row: rowIndex, col: actualColIndex })}
+                        className={cn(
+                          "border border-gray-300 dark:border-gray-700 px-3 py-2 cursor-cell bg-white dark:bg-gray-950",
+                          selected && "bg-blue-100 dark:bg-blue-950",
+                          !selected && "hover:bg-blue-50 dark:hover:bg-blue-950/20"
+                        )}
+                        onMouseDown={(e) => handleCellMouseDown(rowIndex, actualColIndex, e)}
+                        onMouseEnter={() => handleCellMouseEnter(rowIndex, actualColIndex)}
+                        onDoubleClick={() => setEditingCell({ row: rowIndex, col: actualColIndex })}
                       >
                         {editingCell?.row === rowIndex && editingCell?.col === actualColIndex ? (
                           <Input
@@ -651,11 +876,81 @@ export default function EditExcelPage() {
                       </td>
                     )
                   })}
+                  {/* Add empty cells for virtual grid */}
+                  {Array.from({ length: Math.max(0, VIRTUAL_COLS - headers.length) }).map((_, i) => (
+                    <td 
+                      key={`empty-${i}`}
+                      className="border border-gray-300 dark:border-gray-700 px-3 py-2 bg-gray-50/50 dark:bg-gray-950/50"
+                      onMouseDown={(e) => handleCellMouseDown(rowIndex, headers.length + i, e)}
+                      onMouseEnter={() => handleCellMouseEnter(rowIndex, headers.length + i)}
+                    >
+                      <span className="block min-h-[1.5rem] text-sm"></span>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+              {/* Add virtual empty rows */}
+              {Array.from({ length: Math.max(0, Math.min(100, VIRTUAL_ROWS - data.length)) }).map((_, rowI) => (
+                <tr key={`empty-row-${rowI}`} className="group">
+                  <td className="border border-gray-300 dark:border-gray-700 px-3 py-2 text-center text-xs text-gray-400 bg-gray-50 dark:bg-gray-900 font-medium">
+                    {data.length + rowI + 1}
+                  </td>
+                  {Array.from({ length: VIRTUAL_COLS }).map((_, colI) => (
+                    <td 
+                      key={`empty-${rowI}-${colI}`}
+                      className="border border-gray-300 dark:border-gray-700 px-3 py-2 bg-gray-50/50 dark:bg-gray-950/50"
+                      onMouseDown={(e) => handleCellMouseDown(data.length + rowI, colI, e)}
+                      onMouseEnter={() => handleCellMouseEnter(data.length + rowI, colI)}
+                    >
+                      <span className="block min-h-[1.5rem] text-sm"></span>
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>
           </table>
         </DndContext>
+
+        {/* Context Menu */}
+        {contextMenu && (
+          <div
+            className="fixed z-50 bg-white dark:bg-gray-900 border rounded-md shadow-lg py-1"
+            style={{ left: contextMenu.x, top: contextMenu.y }}
+            onMouseLeave={closeContextMenu}
+          >
+            <button
+              className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 w-full text-left text-sm"
+              onClick={() => {
+                copySelection()
+                closeContextMenu()
+              }}
+            >
+              <Copy className="h-3 w-3" />
+              Copy
+            </button>
+            <button
+              className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 w-full text-left text-sm"
+              onClick={() => {
+                pasteSelection()
+                closeContextMenu()
+              }}
+            >
+              <ClipboardPaste className="h-3 w-3" />
+              Paste
+            </button>
+            <div className="border-t my-1" />
+            <button
+              className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 w-full text-left text-sm text-red-600 dark:text-red-400"
+              onClick={() => {
+                deleteSelection()
+                closeContextMenu()
+              }}
+            >
+              <Trash2 className="h-3 w-3" />
+              Delete
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Excel-like Footer with Status Bar */}
