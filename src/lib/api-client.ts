@@ -1,6 +1,5 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios'
 import { createClient } from '@/utils/supabase/client'
-import { createMobileFriendlyFetch } from '@/lib/backend-health'
 
 // Create Supabase client instance
 const supabase = createClient()
@@ -586,32 +585,6 @@ export class OCRWebSocket {
       this.ws.send(JSON.stringify(data))
     } else {
       console.error('WebSocket is not connected')
-    }
-  }
-}
-
-// Health check endpoint for pre-warming
-export async function healthCheck(): Promise<boolean> {
-  try {
-    const response = await apiClient.get('/health', {
-      timeout: isMobile ? 10000 : 5000, // Shorter timeout for health check
-    })
-    return response.status === 200
-  } catch (error) {
-    console.error('[API Client] Health check failed:', error)
-    return false
-  }
-}
-
-// Pre-warm the backend on app initialization
-export async function preWarmBackend(): Promise<void> {
-  if (isMobile) {
-    console.log('[API Client] Pre-warming backend for mobile...')
-    try {
-      await healthCheck()
-      console.log('[API Client] Backend pre-warmed successfully')
-    } catch (error) {
-      console.error('[API Client] Pre-warm failed:', error)
     }
   }
 }
