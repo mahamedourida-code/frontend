@@ -1,8 +1,12 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios'
 import { createClient } from '@/utils/supabase/client'
+import { createMobileFriendlyFetch } from '@/lib/backend-health'
 
 // Create Supabase client instance
 const supabase = createClient()
+
+// Check if we're on mobile
+const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
 /**
  * Get the current user's JWT access token from Supabase session
@@ -63,13 +67,16 @@ async function signOut() {
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
 const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://backend-lively-hill-7043.fly.dev'
 
-// Create axios instance
+// Create axios instance with mobile-optimized settings
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 30000, // 30 seconds
+  timeout: isMobile ? 60000 : 30000, // 60 seconds for mobile, 30 for desktop
   headers: {
     'Content-Type': 'application/json',
   },
+  // Add retry configuration
+  maxRedirects: 5,
+  validateStatus: (status) => status < 500, // Don't throw for client errors
 })
 
 // Request interceptor to add JWT token
@@ -105,13 +112,18 @@ apiClient.interceptors.request.use(
   }
 )
 
-// Response interceptor for error handling
+// Add retry configuration for mobile
+let retryCount = 0
+const MAX_RETRIES = isMobile ? 3 : 1
+
+// Response interceptor for error handling with mobile retry logic
 apiClient.interceptors.response.use(
   (response) => {
     console.log('[API Client Interceptor] Response received:', response.status, response.statusText)
+    retryCount = 0 // Reset retry count on success
     return response
   },
-  (error: AxiosError<any>) => {
+  async (error: AxiosError<any>) => {
     console.error('[API Client Interceptor] Response error:', error)
     // Handle common errors
     if (error.response) {
@@ -161,10 +173,35 @@ apiClient.interceptors.response.use(
 
       return Promise.reject(apiError)
     } else if (error.request) {
-      // Request made but no response received
+      // Request made but no response received - likely network error or cold start
       console.error('[API Client Interceptor] No response received:', error.request)
+      
+      // Mobile retry logic for network/timeout errors
+      if (isMobile && retryCount < MAX_RETRIES && error.config) {
+        retryCount++
+        console.log(`[API Client Interceptor] Mobile retry attempt ${retryCount}/${MAX_RETRIES}`)
+        
+        // Exponential backoff: 1s, 2s, 4s
+        const delay = Math.pow(2, retryCount - 1) * 1000
+        await new Promise(resolve => setTimeout(resolve, delay))
+        
+        // Increase timeout for retry
+        error.config.timeout = (error.config.timeout || 30000) * 1.5
+        
+        try {
+          const response = await apiClient.request(error.config)
+          retryCount = 0 // Reset on success
+          return response
+        } catch (retryError) {
+          console.error('[API Client Interceptor] Retry failed:', retryError)
+          // Continue to next retry or fail
+        }
+      }
+      
       const apiError = {
-        detail: 'No response from server. Please check your connection.',
+        detail: isMobile 
+          ? 'Connection failed. The server might be starting up. Please try again in a moment.'
+          : 'No response from server. Please check your connection.',
         status_code: 0,
       }
       return Promise.reject(apiError)
@@ -549,6 +586,32 @@ export class OCRWebSocket {
       this.ws.send(JSON.stringify(data))
     } else {
       console.error('WebSocket is not connected')
+    }
+  }
+}
+
+// Health check endpoint for pre-warming
+export async function healthCheck(): Promise<boolean> {
+  try {
+    const response = await apiClient.get('/health', {
+      timeout: isMobile ? 10000 : 5000, // Shorter timeout for health check
+    })
+    return response.status === 200
+  } catch (error) {
+    console.error('[API Client] Health check failed:', error)
+    return false
+  }
+}
+
+// Pre-warm the backend on app initialization
+export async function preWarmBackend(): Promise<void> {
+  if (isMobile) {
+    console.log('[API Client] Pre-warming backend for mobile...')
+    try {
+      await healthCheck()
+      console.log('[API Client] Backend pre-warmed successfully')
+    } catch (error) {
+      console.error('[API Client] Pre-warm failed:', error)
     }
   }
 }

@@ -1,17 +1,52 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { MobileNav } from "@/components/MobileNav"
-import { PenTool, Monitor, Sparkles, ArrowRight, CheckCircle } from "lucide-react"
+import { PenTool, Monitor, Sparkles, ArrowRight, CheckCircle, Loader2, Zap, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { wakeUpBackend, backendKeepAlive } from "@/lib/backend-health"
 
 export default function UploadTypePage() {
   const router = useRouter()
   const [selectedType, setSelectedType] = useState<string | null>(null)
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'ready' | 'waking' | 'error'>('checking')
+
+  useEffect(() => {
+    // Wake up backend as soon as page loads
+    const initBackend = async () => {
+      const result = await wakeUpBackend()
+      
+      if (result.status === 'healthy') {
+        setBackendStatus('ready')
+        // Start keep-alive pings to prevent cold starts
+        backendKeepAlive.start()
+      } else if (result.status === 'waking') {
+        setBackendStatus('waking')
+        // Try again after a delay
+        setTimeout(async () => {
+          const retryResult = await wakeUpBackend()
+          setBackendStatus(retryResult.status === 'healthy' ? 'ready' : 'error')
+          if (retryResult.status === 'healthy') {
+            backendKeepAlive.start()
+          }
+        }, 2000)
+      } else {
+        setBackendStatus('error')
+      }
+    }
+
+    initBackend()
+
+    // Cleanup keep-alive when leaving page
+    return () => {
+      backendKeepAlive.stop()
+    }
+  }, [])
 
   const tableTypes = [
     {
@@ -92,6 +127,41 @@ export default function UploadTypePage() {
           </p>
         </div>
 
+        {/* Backend Status Indicator */}
+        {backendStatus !== 'ready' && (
+          <Alert className={cn(
+            "mb-6 max-w-2xl mx-auto",
+            backendStatus === 'checking' && "border-blue-200 bg-blue-50/50 dark:bg-blue-950/20",
+            backendStatus === 'waking' && "border-yellow-200 bg-yellow-50/50 dark:bg-yellow-950/20",
+            backendStatus === 'error' && "border-red-200 bg-red-50/50 dark:bg-red-950/20"
+          )}>
+            {backendStatus === 'checking' && (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <AlertDescription className="ml-2">
+                  Preparing processing server...
+                </AlertDescription>
+              </>
+            )}
+            {backendStatus === 'waking' && (
+              <>
+                <Zap className="h-4 w-4 text-yellow-600" />
+                <AlertDescription className="ml-2">
+                  Waking up processing server (this happens after inactivity)...
+                </AlertDescription>
+              </>
+            )}
+            {backendStatus === 'error' && (
+              <>
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <AlertDescription className="ml-2">
+                  Server is taking longer than expected. Please refresh the page or try again.
+                </AlertDescription>
+              </>
+            )}
+          </Alert>
+        )}
+
         {/* Type Selection Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
           {tableTypes.map((type) => {
@@ -170,12 +240,21 @@ export default function UploadTypePage() {
         <div className="flex justify-center">
           <Button
             size="lg"
-            disabled={!selectedType}
+            disabled={!selectedType || backendStatus === 'error'}
             onClick={handleContinue}
             className="min-w-[200px] text-base px-6 py-5 h-auto"
           >
-            Continue to Upload
-            <ArrowRight className="ml-2 h-5 w-5" />
+            {backendStatus === 'checking' || backendStatus === 'waking' ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                Preparing Server...
+              </>
+            ) : (
+              <>
+                Continue to Upload
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </>
+            )}
           </Button>
         </div>
 
