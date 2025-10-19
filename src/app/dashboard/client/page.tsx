@@ -59,7 +59,8 @@ import {
 // Removed react-share imports as we're using custom implementations for direct messaging
 import { Input } from "@/components/ui/input"
 import { useSearchParams } from "next/navigation"
-import { PenTool, Monitor } from "lucide-react"
+import { PenTool, Monitor, Edit3 } from "lucide-react"
+import { EditableExcelPreview } from "@/components/EditableExcelPreview"
 
 export default function ProcessImagesPage() {
   const { user, loading: authLoading } = useAuth()
@@ -76,6 +77,8 @@ export default function ProcessImagesPage() {
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([])
   const [shareSession, setShareSession] = useState<any>(null)
   const [copySuccess, setCopySuccess] = useState(false)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [selectedFileToEdit, setSelectedFileToEdit] = useState<any>(null)
   
   // Document type display info
   const documentTypeInfo = {
@@ -997,6 +1000,18 @@ Best regards`
                             </Button>
                             <Button
                               size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                setSelectedFileToEdit(file)
+                                setEditDialogOpen(true)
+                              }}
+                              className="gap-1.5"
+                            >
+                              <Edit3 className="h-4 w-4" />
+                              <span className="sr-only">Edit</span>
+                            </Button>
+                            <Button
+                              size="sm"
                               onClick={() => {
                                 console.log('[Download] Downloading file:', file)
                                 if (!file.file_id) {
@@ -1282,6 +1297,23 @@ Best regards`
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Edit Dialog */}
+      {selectedFileToEdit && (
+        <EditableExcelPreview
+          isOpen={editDialogOpen}
+          onClose={() => {
+            setEditDialogOpen(false)
+            setSelectedFileToEdit(null)
+          }}
+          fileId={selectedFileToEdit.file_id}
+          fileName={selectedFileToEdit.filename || 'Result.xlsx'}
+          onSave={(editedData) => {
+            console.log('File edited and saved:', editedData)
+            toast.success('File edited successfully')
+          }}
+        />
+      )}
       
       {/* Mobile Navigation */}
       <MobileNav 
