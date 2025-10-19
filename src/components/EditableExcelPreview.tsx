@@ -26,7 +26,7 @@ import {
   Type,
   DollarSign,
   Scissors,
-  Broom,
+  Sparkles,
   FileImage,
   ChevronLeft,
   ChevronRight,
@@ -541,7 +541,7 @@ export function EditableExcelPreview({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button size="sm" variant="outline">
-                  <Broom className="h-4 w-4 mr-1" />
+                  <Sparkles className="h-4 w-4 mr-1" />
                   Bulk Actions
                 </Button>
               </DropdownMenuTrigger>
