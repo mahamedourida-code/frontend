@@ -1308,6 +1308,7 @@ Best regards`
           }}
           fileId={selectedFileToEdit.file_id}
           fileName={selectedFileToEdit.filename || 'Result.xlsx'}
+          originalImageUrl={uploadedFiles.length > 0 ? URL.createObjectURL(uploadedFiles[0]) : undefined}
           onSave={(editedData) => {
             console.log('File edited and saved:', editedData)
             toast.success('File edited successfully')
