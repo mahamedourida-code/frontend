@@ -19,13 +19,8 @@ import {
   HelpCircle,
   LogOut,
   Activity,
-  Clock,
-  ArrowRight,
-  TrendingUp,
-  Image,
   AlertCircle,
-  Calendar,
-  Zap,
+  ArrowRight,
   ChartLine
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -368,20 +363,17 @@ export default function DashboardPage() {
 
           {/* Out of Credits Alert */}
           {isOutOfCredits && (
-            <Card className="border-red-500/20 bg-red-500/5 mb-6">
+            <Card className="border-red-500 bg-red-50 dark:bg-red-950/20 mb-6">
               <CardContent className="flex items-center gap-4 p-6">
                 <div className="flex-shrink-0">
-                  <AlertCircle className="h-8 w-8 text-red-500" />
+                  <AlertCircle className="h-8 w-8 text-red-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-red-500">Out of Credits</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    You've used all {stats.totalCredits} of your monthly image processing credits.
+                  <h3 className="font-semibold text-red-600 text-lg">Out of Credits</h3>
+                  <p className="text-sm text-red-600/80 mt-1">
+                    You've used all {stats.totalCredits} of your monthly image processing credits. Contact support to continue processing.
                   </p>
                 </div>
-                <Button variant="outline" className="border-red-500/20 hover:bg-red-500/10">
-                  Contact Support
-                </Button>
               </CardContent>
             </Card>
           )}
@@ -390,57 +382,29 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <Card>
               <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Today's Images</p>
-                    <p className="text-2xl font-bold mt-1">{stats.todayProcessed}</p>
-                  </div>
-                  <div className="h-12 w-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                    <Image className="h-6 w-6 text-blue-500" />
-                  </div>
-                </div>
+                <p className="text-sm text-muted-foreground">Today's Images</p>
+                <p className="text-3xl font-bold mt-2">{stats.todayProcessed}</p>
               </CardContent>
             </Card>
 
             <Card>
               <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Period Total</p>
-                    <p className="text-2xl font-bold mt-1">{stats.totalProcessed}</p>
-                  </div>
-                  <div className="h-12 w-12 rounded-lg bg-green-500/10 flex items-center justify-center">
-                    <FileSpreadsheet className="h-6 w-6 text-green-500" />
-                  </div>
-                </div>
+                <p className="text-sm text-muted-foreground">Period Total</p>
+                <p className="text-3xl font-bold mt-2">{stats.totalProcessed}</p>
               </CardContent>
             </Card>
 
             <Card>
               <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Avg. Time</p>
-                    <p className="text-2xl font-bold mt-1">{stats.averageTime.toFixed(1)}s</p>
-                  </div>
-                  <div className="h-12 w-12 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                    <Clock className="h-6 w-6 text-purple-500" />
-                  </div>
-                </div>
+                <p className="text-sm text-muted-foreground">Avg. Time</p>
+                <p className="text-3xl font-bold mt-2">{stats.averageTime.toFixed(1)}s</p>
               </CardContent>
             </Card>
 
             <Card>
               <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Credits Left</p>
-                    <p className="text-2xl font-bold mt-1">{Math.max(0, stats.totalCredits - stats.creditsUsed)}</p>
-                  </div>
-                  <div className="h-12 w-12 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                    <Zap className="h-6 w-6 text-orange-500" />
-                  </div>
-                </div>
+                <p className="text-sm text-muted-foreground">Credits Left</p>
+                <p className="text-3xl font-bold mt-2">{Math.max(0, stats.totalCredits - stats.creditsUsed)}</p>
               </CardContent>
             </Card>
           </div>
@@ -469,92 +433,58 @@ export default function DashboardPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={350}>
-                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" opacity={0.3} />
-                  <XAxis 
-                    dataKey={timeRange === "1d" ? "formattedTime" : "formattedDate"}
-                    stroke="#888888"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis
-                    stroke="#888888"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                    domain={[0, 'dataMax + 2']}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                      border: '1px solid #e0e0e0',
-                      borderRadius: '8px'
-                    }}
-                    labelStyle={{ color: '#666' }}
-                    formatter={(value: any) => [`${value} images`, 'Processed']}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="count"
-                    stroke="#8b5cf6"
-                    strokeWidth={2}
-                    fillOpacity={1}
-                    fill="url(#colorUv)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          {/* Recent Activity */}
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Get started with your most common tasks</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <button
-                  onClick={() => router.push('/dashboard/upload-type')}
-                  className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <Upload className="h-5 w-5 text-primary" />
-                    <span className="font-medium">Upload Images</span>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                </button>
-                
-                <button
-                  onClick={() => router.push('/dashboard/history')}
-                  className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <History className="h-5 w-5 text-primary" />
-                    <span className="font-medium">View History</span>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                </button>
-                
-                <button
-                  onClick={() => window.open('mailto:support@exceletto.com', '_blank')}
-                  className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <HelpCircle className="h-5 w-5 text-primary" />
-                    <span className="font-medium">Get Help</span>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                </button>
-              </div>
+              {chartData.length > 0 && chartData.some(d => d.count > 0) ? (
+                <ResponsiveContainer width="100%" height={350}>
+                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" opacity={0.3} />
+                    <XAxis 
+                      dataKey={timeRange === "1d" ? "formattedTime" : "formattedDate"}
+                      stroke="#888888"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <YAxis
+                      stroke="#888888"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                      domain={[0, 'dataMax + 2']}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        border: '1px solid #e0e0e0',
+                        borderRadius: '8px'
+                      }}
+                      labelStyle={{ color: '#666' }}
+                      formatter={(value: any) => [`${value} images`, 'Processed']}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="count"
+                      stroke="#8b5cf6"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#colorUv)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-[350px] text-center">
+                  <ChartLine className="h-12 w-12 text-muted-foreground/30 mb-4" />
+                  <p className="text-lg font-medium text-muted-foreground">No Activity</p>
+                  <p className="text-sm text-muted-foreground/60 mt-1">
+                    No images processed in this time period
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
