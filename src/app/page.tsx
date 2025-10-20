@@ -302,11 +302,11 @@ export default function Home() {
                 </div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-normal text-foreground leading-[1.1] tracking-tight">
                   <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
-                    Convert handwritten tables to Excel instantly
+                    Convert Screenshots to Excel instantly
                   </span>
                 </h1>
                 <p className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                  <span className="font-semibold text-primary">Industry-leading accuracy on handwritten documents</span>. Process up to 100 images in one click with our specialized 7B parameter model fine-tuned for handwritten text recognition.
+                  Extract up to 100 table images in one click with our specialized 7B parameter model fine-tuned for handwritten text recognition.
                 </p>
                 <div className="mt-6 sm:mt-8 md:mt-10">
                   <Button
@@ -360,7 +360,7 @@ export default function Home() {
                           <img 
                             src="/ee.png" 
                             alt="Handwritten table before processing"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                           />
                         </div>
                       }
@@ -369,7 +369,7 @@ export default function Home() {
                           <img 
                             src="/e.jpg" 
                             alt="Excel output after processing"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                           />
                         </div>
                       }
@@ -404,9 +404,9 @@ export default function Home() {
         <ScrollAnimatedSection id="features" className="py-24 relative z-10">
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16" data-animate="headline">
-              <Badge variant="outline" className="mb-4 border-purple-500/50 text-purple-600">Specialized Features</Badge>
+              
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-                Handwritten Data Excellence
+                Specialized Solutions
               </h2>
               
             </div>
@@ -467,7 +467,7 @@ export default function Home() {
         {/* Companies Section - Trusted By */}
         <ScrollAnimatedSection id="trusted" className="py-20 relative z-10 overflow-hidden">
           <div className="relative z-10 text-center mb-12" data-animate="headline">
-            <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Trusted Organizations</Badge>
+            
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
               Chosen by experts at top organizations
             </h2>
@@ -516,10 +516,7 @@ export default function Home() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-600/10 border border-purple-500/20 mb-6">
-                  <Sparkles className="w-4 h-4 text-purple-600" />
-                  <span className="text-sm font-medium text-purple-600">Interactive Demo - Handwritten Excellence</span>
-                </div>
+                
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 sm:mb-6">
                   See the Transformation in Action
                 </h2>
