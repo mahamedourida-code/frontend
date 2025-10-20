@@ -106,7 +106,21 @@ export default function DashboardPage() {
     } else if (user) {
       fetchDashboardData()
       
-      // Set up real-time subscriptions
+      // Primary: Aggressive polling for real-time updates (like most SaaS)
+      // Poll every 3 seconds when page is active, every 10 seconds when inactive
+      const fastInterval = setInterval(() => {
+        if (!document.hidden) {
+          fetchDashboardData()
+        }
+      }, 3000) // 3 seconds for active tab
+      
+      const slowInterval = setInterval(() => {
+        if (document.hidden) {
+          fetchDashboardData()
+        }
+      }, 10000) // 10 seconds for background tab
+      
+      // Secondary: Real-time subscriptions as enhancement (not primary)
       const supabase = createClient()
       const subscription = supabase
         .channel('dashboard-updates')
@@ -118,7 +132,7 @@ export default function DashboardPage() {
             filter: `user_id=eq.${user.id}`
           }, 
           () => {
-            // Refresh dashboard when any job changes
+            // Refresh immediately on changes
             fetchDashboardData()
           }
         )
@@ -130,22 +144,17 @@ export default function DashboardPage() {
             filter: `user_id=eq.${user.id}`
           },
           () => {
-            // Refresh when credits change
+            // Refresh immediately on credit changes
             fetchDashboardData()
           }
         )
         .subscribe()
       
-      // Also refresh periodically (every 30 seconds) as a fallback
-      const interval = setInterval(() => {
-        if (!document.hidden) {
-          fetchDashboardData()
-        }
-      }, 30000)
-      
+      // Cleanup
       return () => {
+        clearInterval(fastInterval)
+        clearInterval(slowInterval)
         subscription.unsubscribe()
-        clearInterval(interval)
       }
     }
   }, [user, authLoading, router, timeRange])
