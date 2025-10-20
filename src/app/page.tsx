@@ -364,7 +364,7 @@ export default function Home() {
                           <img 
                             src="/rtt.png" 
                             alt="Handwritten table before processing"
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-cover"
                           />
                         </div>
                       }
@@ -373,7 +373,7 @@ export default function Home() {
                           <img 
                             src="/rt.jpg" 
                             alt="Excel output after processing"
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-cover"
                           />
                         </div>
                       }
