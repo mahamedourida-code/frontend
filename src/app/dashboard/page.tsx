@@ -105,6 +105,48 @@ export default function DashboardPage() {
       router.push('/sign-in')
     } else if (user) {
       fetchDashboardData()
+      
+      // Set up real-time subscriptions
+      const supabase = createClient()
+      const subscription = supabase
+        .channel('dashboard-updates')
+        .on('postgres_changes', 
+          { 
+            event: '*', 
+            schema: 'public', 
+            table: 'processing_jobs',
+            filter: `user_id=eq.${user.id}`
+          }, 
+          () => {
+            // Refresh dashboard when any job changes
+            fetchDashboardData()
+          }
+        )
+        .on('postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'user_credits',
+            filter: `user_id=eq.${user.id}`
+          },
+          () => {
+            // Refresh when credits change
+            fetchDashboardData()
+          }
+        )
+        .subscribe()
+      
+      // Also refresh periodically (every 30 seconds) as a fallback
+      const interval = setInterval(() => {
+        if (!document.hidden) {
+          fetchDashboardData()
+        }
+      }, 30000)
+      
+      return () => {
+        subscription.unsubscribe()
+        clearInterval(interval)
+      }
     }
   }, [user, authLoading, router, timeRange])
 
@@ -138,7 +180,7 @@ export default function DashboardPage() {
 
       // Fetch user's jobs
       const { data: jobs, error } = await supabase
-        .from('jobs')
+        .from('processing_jobs')
         .select('*')
         .eq('user_id', user.id)
         .gte('created_at', fromDate.toISOString())
@@ -183,7 +225,7 @@ export default function DashboardPage() {
 
       // Fetch total credits used (all time)
       const { data: allJobs } = await supabase
-        .from('jobs')
+        .from('processing_jobs')
         .select('processing_metadata')
         .eq('user_id', user.id)
       
