@@ -362,7 +362,7 @@ export default function Home() {
                       leftContent={
                         <div className="relative w-full h-full">
                           <img 
-                            src="/ee.png" 
+                            src="/rtt.png" 
                             alt="Handwritten table before processing"
                             className="w-full h-full object-contain"
                           />
@@ -371,7 +371,7 @@ export default function Home() {
                       rightContent={
                         <div className="relative w-full h-full">
                           <img 
-                            src="/e.jpg" 
+                            src="/rt.jpg" 
                             alt="Excel output after processing"
                             className="w-full h-full object-contain"
                           />
