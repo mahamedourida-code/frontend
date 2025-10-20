@@ -355,7 +355,7 @@ export default function Home() {
                 
                 {/* Main comparison container - Enhanced and Wider */}
                 <div className="relative w-full max-w-[1200px] mx-auto transform perspective-1000">
-                  <div className="relative h-[400px] sm:h-[500px] lg:h-[650px] xl:h-[700px] w-full rounded-2xl overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 shadow-[0_30px_90px_-20px_rgba(0,0,0,0.8)] transform-gpu">
+                  <div className="relative h-[400px] sm:h-[500px] lg:h-[650px] xl:h-[600px] w-full rounded-2xl overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 shadow-[0_30px_90px_-20px_rgba(0,0,0,0.8)] transform-gpu">
                     {/* Premium glass effect overlay */}
                     <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/5 via-transparent to-purple-600/5 pointer-events-none" />
                     
@@ -368,7 +368,7 @@ export default function Home() {
                           <img 
                             src="/ee.png" 
                             alt="Handwritten table before processing"
-                            className="w-full h-full object-contain bg-white/95"
+                            className="w-full h-full object-cover bg-white/95"
                           />
                           {/* Label overlay */}
                           <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg">
@@ -384,7 +384,7 @@ export default function Home() {
                           <img 
                             src="/e.jpg" 
                             alt="Excel output after processing"
-                            className="w-full h-full object-contain bg-white/95"
+                            className="w-full h-full object-cover bg-white/95"
                           />
                           {/* Label overlay */}
                           <div className="absolute top-4 right-4 bg-green-600/90 backdrop-blur-md px-3 py-1.5 rounded-lg">
