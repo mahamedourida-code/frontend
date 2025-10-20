@@ -350,7 +350,7 @@ export default function Home() {
                 </div>
                 
                 {/* Main comparison container */}
-                <div className="relative w-full max-w-[700px]">
+                <div className="relative w-full max-w-[900px]">
                   <div className="relative h-[350px] sm:h-[450px] lg:h-[550px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
                     <ComparisonSlider
                       leftLabel=""
