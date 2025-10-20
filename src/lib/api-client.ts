@@ -393,6 +393,14 @@ export const ocrApi = {
   },
 
   /**
+   * Get user's credit information
+   */
+  getUserCredits: async (): Promise<{ total_credits: number; used_credits: number; available_credits: number }> => {
+    const response = await apiClient.get(`/api/v1/jobs/credits`)
+    return response.data
+  },
+
+  /**
    * Get job history for authenticated user
    */
   getHistory: async (limit: number = 50, offset: number = 0): Promise<any> => {

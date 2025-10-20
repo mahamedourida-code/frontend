@@ -71,12 +71,13 @@ export default function ProcessImagesPage() {
   const [isDragging, setIsDragging] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [selectedView, setSelectedView] = useState<"grid" | "list">("grid")
-  const [credits, setCredits] = useState({ used: 0, total: 80 })
+  const [credits, setCredits] = useState({ used: 0, total: 80, available: 80 })
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null)
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([])
   const [shareSession, setShareSession] = useState<any>(null)
   const [copySuccess, setCopySuccess] = useState(false)
+  const [creditLoading, setCreditLoading] = useState(true)
   
   // Document type display info
   const documentTypeInfo = {
@@ -85,14 +86,36 @@ export default function ProcessImagesPage() {
     auto: { label: "Auto-Detect", icon: Sparkles, color: "bg-emerald-500" }
   }[documentType as string] || { label: "Auto-Detect", icon: Sparkles, color: "bg-emerald-500" }
   
-  // Log environment configuration on mount
+  // Log environment configuration on mount and fetch credits
   useEffect(() => {
     console.log('[ProcessImagesPage] Environment Configuration:', {
       API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev',
       WS_URL: process.env.NEXT_PUBLIC_WS_URL,
       FB_APP_ID: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID
     })
-  }, [])
+    
+    // Fetch user credits if authenticated
+    if (user) {
+      fetchUserCredits()
+    }
+  }, [user])
+
+  const fetchUserCredits = async () => {
+    try {
+      const response = await ocrApi.getUserCredits()
+      if (response) {
+        setCredits({
+          used: response.used_credits || 0,
+          total: response.total_credits || 80,
+          available: response.available_credits || 80
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching credits:', error)
+    } finally {
+      setCreditLoading(false)
+    }
+  }
 
   const {
     isProcessing,
@@ -122,30 +145,15 @@ export default function ProcessImagesPage() {
 
   // Fetch user's credit status
   useEffect(() => {
-    const fetchCredits = async () => {
-      if (!user) return
-      
-      try {
-        const { createClient } = await import('@/utils/supabase/client')
-        const supabase = createClient()
-        
-        const { data: jobs } = await supabase
-          .from('jobs')
-          .select('processing_metadata')
-          .eq('user_id', user.id)
-          .gte('created_at', new Date(new Date().setDate(1)).toISOString())
-        
-        const creditsUsed = jobs?.reduce((sum: number, job: any) => 
-          sum + (job.processing_metadata?.total_images || 1), 0) || 0
-        
-        setCredits({ used: Math.min(creditsUsed, 80), total: 80 })
-      } catch (error) {
-        console.error('Error fetching credits:', error)
-      }
+    if (user) {
+      fetchUserCredits()
     }
     
-    fetchCredits()
-  }, [user])
+    // Refetch credits when processing is complete
+    if (status === 'completed') {
+      setTimeout(fetchUserCredits, 1000) // Small delay to ensure backend has updated
+    }
+  }, [user, status])
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -194,15 +202,15 @@ export default function ProcessImagesPage() {
 
     // Check if user has enough credits
     const creditsNeeded = uploadedFiles.length
-    const creditsAvailable = credits.total - credits.used
+    const creditsAvailable = credits.available
     
     if (creditsAvailable <= 0) {
-      toast.error('You have run out of credits. Please upgrade your plan to continue.')
+      toast.error('You have run out of credits. Your credits will reset next month.')
       return
     }
     
     if (creditsNeeded > creditsAvailable) {
-      toast.error(`You only have ${creditsAvailable} credits remaining. Remove ${creditsNeeded - creditsAvailable} images or upgrade your plan.`)
+      toast.error(`You only have ${creditsAvailable} credits remaining. Remove ${creditsNeeded - creditsAvailable} images to proceed.`)
       return
     }
 
@@ -210,7 +218,13 @@ export default function ProcessImagesPage() {
     if (response && response.session_id) {
       connectWebSocket(response.session_id)
       // Update credits after successful upload
-      setCredits(prev => ({ ...prev, used: prev.used + creditsNeeded }))
+      setCredits(prev => ({ 
+        ...prev, 
+        used: prev.used + creditsNeeded,
+        available: Math.max(0, prev.available - creditsNeeded)
+      }))
+      // Refetch credits to get the real values
+      fetchUserCredits()
     }
   }, [uploadedFiles, uploadBatch, connectWebSocket, credits])
 
@@ -852,12 +866,12 @@ Best regards`
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-muted-foreground">Credits:</span>
                       <Badge 
-                        variant={credits.total - credits.used <= 10 ? "destructive" : "secondary"}
+                        variant={credits.available <= 10 ? "destructive" : "secondary"}
                         className="gap-1"
                       >
-                        {credits.total - credits.used} / {credits.total} remaining
+                        {credits.available} / {credits.total} remaining
                       </Badge>
-                      {uploadedFiles.length > credits.total - credits.used && (
+                      {uploadedFiles.length > credits.available && (
                         <span className="text-xs text-destructive">
                           Not enough credits!
                         </span>
@@ -866,7 +880,7 @@ Best regards`
                     <Button
                       size="lg"
                       onClick={handleProcessImages}
-                      disabled={isProcessing || (credits.total - credits.used < uploadedFiles.length)}
+                      disabled={isProcessing || (credits.available < uploadedFiles.length)}
                       className="gap-2"
                     >
                       {isProcessing ? (

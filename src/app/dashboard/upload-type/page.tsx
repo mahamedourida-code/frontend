@@ -3,13 +3,50 @@
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { MobileNav } from "@/components/MobileNav"
-import { FileText, TableProperties, Sparkles, LayoutDashboard, ArrowLeft } from "lucide-react"
+import { FileText, TableProperties, Sparkles, LayoutDashboard, ArrowLeft, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/useAuth"
+import { useState, useEffect } from "react"
+import { createClient } from "@/lib/supabase/client"
+import { Card, CardContent } from "@/components/ui/card"
 
 export default function UploadTypePage() {
   const router = useRouter()
   const { user } = useAuth()
+  const [availableCredits, setAvailableCredits] = useState<number>(80)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (user) {
+      fetchUserCredits()
+    }
+  }, [user])
+
+  const fetchUserCredits = async () => {
+    try {
+      const supabase = createClient()
+      const session = (await supabase.auth.getSession()).data.session
+      
+      if (session?.access_token) {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/credits`, {
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`
+          }
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          setAvailableCredits(data.available_credits || 0)
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching credits:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const isOutOfCredits = availableCredits <= 0
 
   const tableTypes = [
     {
@@ -70,8 +107,33 @@ export default function UploadTypePage() {
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-
         <div className="w-full max-w-4xl">
+          {/* Out of Credits Alert */}
+          {isOutOfCredits && (
+            <Card className="border-red-500 bg-red-50 dark:bg-red-950/20 mb-6">
+              <CardContent className="flex items-center gap-4 p-6">
+                <div className="flex-shrink-0">
+                  <AlertCircle className="h-8 w-8 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-red-600 text-lg">Out of Credits</h3>
+                  <p className="text-sm text-red-600/80 mt-1">
+                    You've used all your monthly image processing credits. Your credits will reset next month.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Credits Available Display */}
+          {!isOutOfCredits && !loading && (
+            <div className="text-center mb-6">
+              <p className="text-sm text-muted-foreground">
+                You have <span className="font-semibold text-foreground">{availableCredits}</span> credits available
+              </p>
+            </div>
+          )}
+
           {/* Option Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
             {tableTypes.map((type) => {
@@ -80,12 +142,17 @@ export default function UploadTypePage() {
               return (
                 <button
                   key={type.id}
-                  onClick={() => handleTypeSelect(type.id)}
+                  onClick={() => !isOutOfCredits && handleTypeSelect(type.id)}
+                  disabled={isOutOfCredits}
                   className={cn(
                     "group relative flex flex-col items-center justify-center p-8 sm:p-10",
                     "bg-white dark:bg-gray-900 rounded-xl border-2 border-gray-200 dark:border-gray-800",
-                    "hover:border-gray-900 dark:hover:border-gray-100 transition-all duration-200",
-                    "hover:shadow-xl hover:scale-105"
+                    "transition-all duration-200",
+                    isOutOfCredits ? (
+                      "opacity-50 cursor-not-allowed"
+                    ) : (
+                      "hover:border-gray-900 dark:hover:border-gray-100 hover:shadow-xl hover:scale-105"
+                    )
                   )}
                 >
                   {type.recommended && (

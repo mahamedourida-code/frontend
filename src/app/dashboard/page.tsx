@@ -66,6 +66,7 @@ interface DashboardStats {
   todayProcessed: number
   creditsUsed: number
   totalCredits: number
+  availableCredits: number
   averageTime: number
   successRate: number
 }
@@ -80,10 +81,14 @@ export default function DashboardPage() {
     todayProcessed: 0,
     creditsUsed: 0,
     totalCredits: 80,
+    availableCredits: 80,
     averageTime: 0,
     successRate: 0
   })
   const [loading, setLoading] = useState(true)
+  
+  // Calculate if user is out of credits
+  const isOutOfCredits = stats.availableCredits <= 0
 
   // Sidebar navigation items
   const sidebarItems = [
@@ -186,11 +191,33 @@ export default function DashboardPage() {
       const totalCreditsUsed = typedAllJobs.reduce((sum, job) => 
         sum + (job.processing_metadata?.total_images || 1), 0)
 
+      // Fetch real credits from backend
+      let userCredits = {
+        total_credits: 80,
+        used_credits: totalCreditsUsed,
+        available_credits: 80 - totalCreditsUsed
+      }
+
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/credits`, {
+          headers: {
+            'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+          }
+        })
+        
+        if (response.ok) {
+          userCredits = await response.json()
+        }
+      } catch (error) {
+        console.error('Error fetching user credits:', error)
+      }
+
       setStats({
         totalProcessed: totalImages,
         todayProcessed: todayImages,
-        creditsUsed: Math.min(totalCreditsUsed, 80),
-        totalCredits: 80,
+        creditsUsed: userCredits.used_credits,
+        totalCredits: userCredits.total_credits,
+        availableCredits: userCredits.available_credits || (userCredits.total_credits - userCredits.used_credits),
         averageTime: avgTime,
         successRate
       })
@@ -404,7 +431,7 @@ export default function DashboardPage() {
             <Card>
               <CardContent className="p-6">
                 <p className="text-sm text-muted-foreground">Credits Left</p>
-                <p className="text-3xl font-bold mt-2">{Math.max(0, stats.totalCredits - stats.creditsUsed)}</p>
+                <p className="text-3xl font-bold mt-2">{Math.max(0, stats.availableCredits)}</p>
               </CardContent>
             </Card>
           </div>
