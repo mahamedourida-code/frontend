@@ -44,6 +44,21 @@ import { format, subDays, subHours, startOfDay, endOfDay, eachDayOfInterval, eac
 
 type TimeRange = "1d" | "7d" | "30d" | "3m"
 
+interface ProcessingMetadata {
+  total_images?: number
+  processing_time?: number
+  [key: string]: any
+}
+
+interface Job {
+  id: string
+  user_id: string
+  status: string
+  created_at: string
+  processing_metadata?: ProcessingMetadata
+  [key: string]: any
+}
+
 interface ProcessingData {
   timestamp: Date
   count: number
@@ -131,37 +146,39 @@ export default function DashboardPage() {
 
       if (error) throw error
 
+      const typedJobs = (jobs || []) as Job[]
+
       // Process data for chart
-      const processedData = generateChartData(jobs || [], timeRange)
+      const processedData = generateChartData(typedJobs, timeRange)
       setChartData(processedData)
 
       // Calculate stats
-      const totalJobs = jobs?.length || 0
-      const totalImages = jobs?.reduce((sum, job) => 
-        sum + (job.processing_metadata?.total_images || 1), 0) || 0
+      const totalJobs = typedJobs.length
+      const totalImages = typedJobs.reduce((sum, job) => 
+        sum + (job.processing_metadata?.total_images || 1), 0)
       
       // Get today's jobs
       const todayStart = startOfDay(now)
-      const todayJobs = jobs?.filter(job => 
+      const todayJobs = typedJobs.filter(job => 
         new Date(job.created_at) >= todayStart
-      ) || []
+      )
       const todayImages = todayJobs.reduce((sum, job) => 
         sum + (job.processing_metadata?.total_images || 1), 0)
       
       // Calculate average processing time
-      const processingTimes = jobs?.map(job => {
+      const processingTimes = typedJobs.map(job => {
         if (job.processing_metadata?.processing_time) {
           return job.processing_metadata.processing_time
         }
         return 0
-      }).filter(time => time > 0) || []
+      }).filter(time => time > 0)
       
       const avgTime = processingTimes.length > 0
         ? processingTimes.reduce((a, b) => a + b, 0) / processingTimes.length
         : 0
 
       // Calculate success rate
-      const successfulJobs = jobs?.filter(job => job.status === 'completed').length || 0
+      const successfulJobs = typedJobs.filter(job => job.status === 'completed').length
       const successRate = totalJobs > 0 ? (successfulJobs / totalJobs) * 100 : 0
 
       // Fetch total credits used (all time)
@@ -170,8 +187,9 @@ export default function DashboardPage() {
         .select('processing_metadata')
         .eq('user_id', user.id)
       
-      const totalCreditsUsed = allJobs?.reduce((sum, job) => 
-        sum + (job.processing_metadata?.total_images || 1), 0) || 0
+      const typedAllJobs = (allJobs || []) as Job[]
+      const totalCreditsUsed = typedAllJobs.reduce((sum, job) => 
+        sum + (job.processing_metadata?.total_images || 1), 0)
 
       setStats({
         totalProcessed: totalImages,
@@ -188,7 +206,7 @@ export default function DashboardPage() {
     }
   }
 
-  const generateChartData = (jobs: any[], range: TimeRange): ProcessingData[] => {
+  const generateChartData = (jobs: Job[], range: TimeRange): ProcessingData[] => {
     const now = new Date()
     let data: ProcessingData[] = []
     
