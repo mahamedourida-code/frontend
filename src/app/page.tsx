@@ -81,23 +81,27 @@ export default function Home() {
         { 
           x: 100, 
           opacity: 0,
-          scale: 0.9,
-          rotateY: -15
+          scale: 0.85,
+          rotateY: -15,
+          rotateX: 5
         },
         { 
           x: 0, 
           opacity: 1,
           scale: 1,
           rotateY: 0,
-          duration: 1.5,
-          ease: "power3.out",
+          rotateX: 0,
+          duration: 1.8,
+          ease: "power4.out",
           delay: 0.8
         }
       );
 
-      // Floating animation for the whole card
+      // Enhanced floating animation with subtle 3D effect
       gsap.to(heroImageRef.current, {
-        y: -10,
+        y: -15,
+        rotateY: 2,
+        rotateX: -1,
         duration: 3,
         ease: "power1.inOut",
         yoyo: true,
@@ -349,9 +353,13 @@ export default function Home() {
                   </div>
                 </div>
                 
-                {/* Main comparison container */}
-                <div className="relative w-full max-w-[900px]">
-                  <div className="relative h-[350px] sm:h-[450px] lg:h-[550px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                {/* Main comparison container - Enhanced and Wider */}
+                <div className="relative w-full max-w-[1200px] mx-auto transform perspective-1000">
+                  <div className="relative h-[400px] sm:h-[500px] lg:h-[650px] xl:h-[700px] w-full rounded-2xl overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 shadow-[0_30px_90px_-20px_rgba(0,0,0,0.8)] transform-gpu">
+                    {/* Premium glass effect overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/5 via-transparent to-purple-600/5 pointer-events-none" />
+                    
+                    {/* Enhanced comparison slider */}
                     <ComparisonSlider
                       leftLabel=""
                       rightLabel="" 
@@ -360,8 +368,15 @@ export default function Home() {
                           <img 
                             src="/ee.png" 
                             alt="Handwritten table before processing"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain bg-white/95"
                           />
+                          {/* Label overlay */}
+                          <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg">
+                            <span className="text-white text-sm font-medium flex items-center gap-2">
+                              <PenTool className="h-3.5 w-3.5" />
+                              Original
+                            </span>
+                          </div>
                         </div>
                       }
                       rightContent={
@@ -369,27 +384,44 @@ export default function Home() {
                           <img 
                             src="/e.jpg" 
                             alt="Excel output after processing"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain bg-white/95"
                           />
+                          {/* Label overlay */}
+                          <div className="absolute top-4 right-4 bg-green-600/90 backdrop-blur-md px-3 py-1.5 rounded-lg">
+                            <span className="text-white text-sm font-medium flex items-center gap-2">
+                              <FileSpreadsheet className="h-3.5 w-3.5" />
+                              Excel Output
+                            </span>
+                          </div>
                         </div>
                       }
                     />
                     
-                    {/* Status bar */}
-                    <div className="absolute bottom-0 left-0 right-0 h-8 bg-black/40 backdrop-blur-sm border-t border-white/5">
-                      <div className="flex items-center justify-between h-full px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex gap-1">
-                            <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                            <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse animation-delay-200" />
-                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse animation-delay-500" />
+                    {/* Enhanced Status bar */}
+                    <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-r from-black/60 via-black/50 to-black/60 backdrop-blur-md border-t border-white/10">
+                      <div className="flex items-center justify-between h-full px-6">
+                        <div className="flex items-center gap-4">
+                          <div className="flex gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-lg shadow-green-400/50" />
+                            <div className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse animation-delay-200 shadow-lg shadow-yellow-400/50" />
+                            <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse animation-delay-500 shadow-lg shadow-blue-400/50" />
                           </div>
-                          <span className="text-[9px] uppercase tracking-wider text-white/40 font-mono">Handwritten Processing</span>
+                          <span className="text-xs uppercase tracking-wider text-white/60 font-mono flex items-center gap-2">
+                            <Sparkles className="h-3 w-3 text-blue-400" />
+                            AI Processing Engine
+                          </span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[9px] text-white/30 font-mono">OCR Engine v2.0</span>
-                          <div className="w-px h-3 bg-white/20" />
-                          <span className="text-[9px] text-green-400/60 font-mono">READY</span>
+                        <div className="flex items-center gap-3">
+                          <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-400/30 text-[10px] px-2 py-0.5">
+                            98.4% Accuracy
+                          </Badge>
+                          <div className="w-px h-4 bg-white/20" />
+                          <span className="text-xs text-white/40 font-mono">OCR v2.0</span>
+                          <div className="w-px h-4 bg-white/20" />
+                          <span className="text-xs text-green-400/80 font-mono flex items-center gap-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                            LIVE
+                          </span>
                         </div>
                       </div>
                     </div>

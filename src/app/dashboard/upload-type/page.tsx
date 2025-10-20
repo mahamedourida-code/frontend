@@ -1,22 +1,15 @@
 "use client"
 
-import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { MobileNav } from "@/components/MobileNav"
 import { FileText, TableProperties, Sparkles, LayoutDashboard, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { wakeUpBackendSilently } from "@/lib/backend-health"
 import { useAuth } from "@/hooks/useAuth"
 
 export default function UploadTypePage() {
   const router = useRouter()
   const { user } = useAuth()
-
-  useEffect(() => {
-    // Silently wake up backend when page loads - no blocking
-    wakeUpBackendSilently()
-  }, [])
 
   const tableTypes = [
     {

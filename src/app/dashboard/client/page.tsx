@@ -60,6 +60,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { useSearchParams } from "next/navigation"
 import { PenTool, Monitor, Edit3 } from "lucide-react"
+import { wakeUpBackendSilently } from "@/lib/backend-health"
 
 export default function ProcessImagesPage() {
   const { user, loading: authLoading } = useAuth()
@@ -107,6 +108,11 @@ export default function ProcessImagesPage() {
     isSaved,
     jobId
   } = useOCR()
+
+  // Silently wake up backend when page loads
+  useEffect(() => {
+    wakeUpBackendSilently()
+  }, [])
 
   useEffect(() => {
     if (!authLoading && !user) {

@@ -422,4 +422,51 @@ body {
     font-family: 'Caveat', cursive, system-ui;
     font-weight: 500;
   }
+  
+  /* Enhanced animation utilities for comparison card */
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+  
+  .animation-delay-700 {
+    animation-delay: 700ms;
+  }
+  
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .transform-gpu {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+  
+  /* Premium glow effects */
+  .glow-blue {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+  }
+  
+  .glow-green {
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.5);
+  }
+  
+  /* Smooth pulse animation */
+  @keyframes smooth-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+  }
+  
+  .animate-smooth-pulse {
+    animation: smooth-pulse 2s ease-in-out infinite;
+  }
 }
