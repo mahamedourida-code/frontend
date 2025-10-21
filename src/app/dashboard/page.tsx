@@ -91,9 +91,7 @@ export default function DashboardPage() {
   const sidebarItems = [
     { label: "Overview", icon: Activity, href: "/dashboard", active: true },
     { label: "Process Images", icon: Upload, href: "/dashboard/upload-type", active: false },
-    { label: "History", icon: History, href: "/dashboard/history", active: false },
-    { label: "Settings", icon: Settings, href: "/dashboard/settings", active: false, disabled: true },
-    { label: "Help", icon: HelpCircle, href: "/dashboard/help", active: false, disabled: true }
+    { label: "Settings", icon: Settings, href: "/dashboard/settings", active: false }
   ]
 
   useEffect(() => {
