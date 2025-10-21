@@ -123,15 +123,28 @@ export default function DashboardPage() {
         )
         .on('postgres_changes',
           {
-            event: '*',
+            event: 'UPDATE',
             schema: 'public',
             table: 'user_credits',
             filter: `user_id=eq.${user.id}`
           },
-          (payload) => {
+          async (payload) => {
             console.log('Credit change detected:', payload)
-            // Refresh data when credits change
-            fetchDashboardData()
+            // Directly update credits from the realtime payload
+            if (payload.new) {
+              const newCredits = payload.new as any
+              setStats(prev => ({
+                ...prev,
+                creditsUsed: newCredits.used_credits || 0,
+                totalCredits: newCredits.total_credits || 80,
+                availableCredits: (newCredits.total_credits || 80) - (newCredits.used_credits || 0)
+              }))
+              console.log('Credits updated:', {
+                used: newCredits.used_credits,
+                total: newCredits.total_credits,
+                available: (newCredits.total_credits || 80) - (newCredits.used_credits || 0)
+              })
+            }
           }
         )
         .subscribe((status) => {
