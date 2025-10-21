@@ -214,17 +214,35 @@ export default function ProcessImagesPage() {
       return
     }
 
-    const response = await uploadBatch(uploadedFiles)
-    if (response && response.session_id) {
-      connectWebSocket(response.session_id)
-      // Update credits after successful upload
-      setCredits(prev => ({ 
-        ...prev, 
-        used: prev.used + creditsNeeded,
-        available: Math.max(0, prev.available - creditsNeeded)
-      }))
-      // Refetch credits to get the real values
-      fetchUserCredits()
+    try {
+      const response = await uploadBatch(uploadedFiles)
+      if (response && response.session_id) {
+        connectWebSocket(response.session_id)
+        // Update credits optimistically after successful upload
+        setCredits(prev => ({ 
+          ...prev, 
+          used: prev.used + creditsNeeded,
+          available: Math.max(0, prev.available - creditsNeeded)
+        }))
+        // Refetch credits to get the real values
+        fetchUserCredits()
+        
+        toast.success(`Processing ${creditsNeeded} image${creditsNeeded > 1 ? 's' : ''}. ${creditsAvailable - creditsNeeded} credits remaining.`)
+      }
+    } catch (error: any) {
+      // Handle specific error cases
+      if (error?.status_code === 402) {
+        // Payment required - out of credits
+        toast.error('Insufficient credits. Your available credits may have changed. Refreshing...')
+        fetchUserCredits() // Refresh credits
+      } else if (error?.status_code === 500) {
+        // Server error
+        toast.error('Server error. Please try again or contact support.')
+      } else {
+        // Generic error
+        toast.error(error?.detail || 'Failed to process images. Please try again.')
+      }
+      console.error('[ProcessImages] Error:', error)
     }
   }, [uploadedFiles, uploadBatch, connectWebSocket, credits])
 
