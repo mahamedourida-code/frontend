@@ -1,14 +1,18 @@
 {
+  "permissions": {
+    "allow": [
+      "mcp__supabase__execute_sql",
+      "mcp__brave-search__brave_web_search",
+      "mcp__github__get_file_contents",
+      "mcp__Ref__ref_search_documentation",
+      "mcp__Ref__ref_read_url"
+    ]
+  },
   "enabledMcpjsonServers": [
     "context7",
     "brave-search",
     "supabase",
     "ref",
     "vercel"
-  ],
-  "permissions": {
-    "allow": [
-      "mcp__supabase__execute_sql"
-    ]
-  }
+  ]
 }
