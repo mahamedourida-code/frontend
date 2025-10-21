@@ -5,5 +5,10 @@
     "supabase",
     "ref",
     "vercel"
-  ]
+  ],
+  "permissions": {
+    "allow": [
+      "mcp__supabase__execute_sql"
+    ]
+  }
 }

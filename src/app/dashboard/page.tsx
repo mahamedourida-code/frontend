@@ -115,35 +115,14 @@ export default function DashboardPage() {
             table: 'processing_jobs',
             filter: `user_id=eq.${user.id}`
           },
-          (payload) => {
+          async (payload) => {
             console.log('Job change detected:', payload)
             // Refresh data when jobs are created, updated, or deleted
             fetchDashboardData()
-          }
-        )
-        .on('postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'user_credits',
-            filter: `user_id=eq.${user.id}`
-          },
-          async (payload) => {
-            console.log('Credit change detected:', payload)
-            // Directly update credits from the realtime payload
-            if (payload.new) {
-              const newCredits = payload.new as any
-              setStats(prev => ({
-                ...prev,
-                creditsUsed: newCredits.used_credits || 0,
-                totalCredits: newCredits.total_credits || 80,
-                availableCredits: (newCredits.total_credits || 80) - (newCredits.used_credits || 0)
-              }))
-              console.log('Credits updated:', {
-                used: newCredits.used_credits,
-                total: newCredits.total_credits,
-                available: (newCredits.total_credits || 80) - (newCredits.used_credits || 0)
-              })
+
+            // Also refresh when job completes (since that's when credits are deducted)
+            if (payload.new && (payload.new as any).status === 'completed') {
+              console.log('Job completed, refreshing credits...')
             }
           }
         )
@@ -151,9 +130,35 @@ export default function DashboardPage() {
           console.log('Realtime subscription status:', status)
         })
 
+      // Add polling safety net for credits (every 10 seconds)
+      const creditInterval = setInterval(async () => {
+        if (!document.hidden) {
+          try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/credits`, {
+              headers: {
+                'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+              }
+            })
+
+            if (response.ok) {
+              const userCredits = await response.json()
+              setStats(prev => ({
+                ...prev,
+                creditsUsed: userCredits.used_credits,
+                totalCredits: userCredits.total_credits,
+                availableCredits: userCredits.available_credits || (userCredits.total_credits - userCredits.used_credits)
+              }))
+            }
+          } catch (error) {
+            console.error('Error polling credits:', error)
+          }
+        }
+      }, 10000)
+
       // Cleanup on unmount
       return () => {
         subscription.unsubscribe()
+        clearInterval(creditInterval)
       }
     }
   }, [user, authLoading, router, timeRange])
