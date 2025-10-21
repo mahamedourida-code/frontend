@@ -92,7 +92,6 @@ export default function DashboardPage() {
     { label: "Overview", icon: Activity, href: "/dashboard", active: true },
     { label: "Process Images", icon: Upload, href: "/dashboard/upload-type", active: false },
     { label: "History", icon: History, href: "/dashboard/history", active: false },
-    { label: "Billing", icon: CreditCard, href: "/dashboard/billing", active: false, disabled: true },
     { label: "Settings", icon: Settings, href: "/dashboard/settings", active: false, disabled: true },
     { label: "Help", icon: HelpCircle, href: "/dashboard/help", active: false, disabled: true }
   ]
@@ -483,10 +482,10 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card key={`credits-${stats.availableCredits}`}>
               <CardContent className="p-6">
                 <p className="text-sm text-muted-foreground">Credits Left</p>
-                <p className="text-3xl font-bold mt-2">{stats.availableCredits}</p>
+                <p className="text-3xl font-bold mt-2">{stats.totalCredits - stats.creditsUsed}</p>
                 <p className="text-xs text-muted-foreground mt-1">1 credit = 1 image</p>
               </CardContent>
             </Card>
