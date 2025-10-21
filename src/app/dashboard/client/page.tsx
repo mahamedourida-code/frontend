@@ -86,23 +86,19 @@ export default function ProcessImagesPage() {
     auto: { label: "Auto-Detect", icon: Sparkles, color: "bg-emerald-500" }
   }[documentType as string] || { label: "Auto-Detect", icon: Sparkles, color: "bg-emerald-500" }
   
-  // Log environment configuration on mount and fetch credits
+  // Log environment configuration on mount
   useEffect(() => {
     console.log('[ProcessImagesPage] Environment Configuration:', {
       API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev',
       WS_URL: process.env.NEXT_PUBLIC_WS_URL,
       FB_APP_ID: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID
     })
-    
-    // Fetch user credits if authenticated
-    if (user) {
-      fetchUserCredits()
-    }
-  }, [user])
+  }, [])
 
   const fetchUserCredits = async () => {
     try {
       const response = await ocrApi.getUserCredits()
+      console.log('[ProcessImagesPage] Fetched credits from API:', response)
       if (response) {
         setCredits({
           used: response.used_credits || 0,
@@ -143,17 +139,26 @@ export default function ProcessImagesPage() {
     }
   }, [user, authLoading, router])
 
-  // Fetch user's credit status
+  // Fetch user's credit status on mount
   useEffect(() => {
     if (user) {
+      console.log('[ProcessImagesPage] Initial credit fetch for user')
       fetchUserCredits()
     }
-    
-    // Refetch credits when processing is complete
+  }, [user])
+
+  // Refetch credits when processing is complete
+  useEffect(() => {
     if (status === 'completed') {
-      setTimeout(fetchUserCredits, 1000) // Small delay to ensure backend has updated
+      console.log('[ProcessImagesPage] Processing completed, fetching updated credits')
+      // Delay to ensure backend has processed and updated credits
+      const timer = setTimeout(() => {
+        fetchUserCredits()
+      }, 2000)
+
+      return () => clearTimeout(timer)
     }
-  }, [user, status])
+  }, [status])
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -219,14 +224,21 @@ export default function ProcessImagesPage() {
       if (response && response.session_id) {
         connectWebSocket(response.session_id)
         // Update credits optimistically after successful upload
-        setCredits(prev => ({ 
-          ...prev, 
+        console.log('[ProcessImages] Optimistically updating credits:', {
+          before: credits,
+          creditsNeeded,
+          after: {
+            used: credits.used + creditsNeeded,
+            available: Math.max(0, credits.available - creditsNeeded)
+          }
+        })
+        setCredits(prev => ({
+          ...prev,
           used: prev.used + creditsNeeded,
           available: Math.max(0, prev.available - creditsNeeded)
         }))
-        // Refetch credits to get the real values
-        fetchUserCredits()
-        
+        // Credits will be refetched when status becomes 'completed' via useEffect
+
         toast.success(`Processing ${creditsNeeded} image${creditsNeeded > 1 ? 's' : ''}. ${creditsAvailable - creditsNeeded} credits remaining.`)
       }
     } catch (error: any) {
