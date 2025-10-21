@@ -141,12 +141,18 @@ export default function DashboardPage() {
 
             if (response.ok) {
               const userCredits = await response.json()
+              console.log('[Dashboard] Credit polling update:', userCredits)
               setStats(prev => ({
                 ...prev,
                 creditsUsed: userCredits.used_credits,
                 totalCredits: userCredits.total_credits,
                 availableCredits: userCredits.available_credits || (userCredits.total_credits - userCredits.used_credits)
               }))
+              console.log('[Dashboard] Stats updated with credits:', {
+                used: userCredits.used_credits,
+                total: userCredits.total_credits,
+                available: userCredits.available_credits || (userCredits.total_credits - userCredits.used_credits)
+              })
             }
           } catch (error) {
             console.error('Error polling credits:', error)
@@ -266,7 +272,7 @@ export default function DashboardPage() {
         console.error('Error fetching user credits:', error)
       }
 
-      setStats({
+      const newStats = {
         totalProcessed: totalImages,
         todayProcessed: todayImages,
         creditsUsed: userCredits.used_credits,
@@ -274,7 +280,13 @@ export default function DashboardPage() {
         availableCredits: userCredits.available_credits || (userCredits.total_credits - userCredits.used_credits),
         averageTime: avgTime,
         successRate
+      }
+      console.log('[Dashboard] Setting stats with credits:', {
+        used: userCredits.used_credits,
+        total: userCredits.total_credits,
+        available: newStats.availableCredits
       })
+      setStats(newStats)
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
     } finally {
@@ -460,18 +472,11 @@ export default function DashboardPage() {
           )}
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             <Card>
               <CardContent className="p-6">
                 <p className="text-sm text-muted-foreground">Today's Images</p>
                 <p className="text-3xl font-bold mt-2">{stats.todayProcessed}</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <p className="text-sm text-muted-foreground">Period Total</p>
-                <p className="text-3xl font-bold mt-2">{stats.totalProcessed}</p>
               </CardContent>
             </Card>
 
@@ -482,10 +487,10 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card key={`credits-${stats.availableCredits}`}>
+            <Card>
               <CardContent className="p-6">
                 <p className="text-sm text-muted-foreground">Credits Left</p>
-                <p className="text-3xl font-bold mt-2">{stats.totalCredits - stats.creditsUsed}</p>
+                <p className="text-3xl font-bold mt-2">{stats.availableCredits}</p>
                 <p className="text-xs text-muted-foreground mt-1">1 credit = 1 image</p>
               </CardContent>
             </Card>
