@@ -468,7 +468,8 @@ export default function DashboardPage() {
             <Card>
               <CardContent className="p-6">
                 <p className="text-sm text-muted-foreground">Credits Left</p>
-                <p className="text-3xl font-bold mt-2">{Math.max(0, stats.availableCredits)}</p>
+                <p className="text-3xl font-bold mt-2">{stats.availableCredits}</p>
+                <p className="text-xs text-muted-foreground mt-1">1 credit = 1 image</p>
               </CardContent>
             </Card>
           </div>
@@ -499,15 +500,9 @@ export default function DashboardPage() {
             <CardContent>
               {chartData.length > 0 && chartData.some(d => d.count > 0) ? (
                 <ResponsiveContainer width="100%" height={350}>
-                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
+                  <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" opacity={0.3} />
-                    <XAxis 
+                    <XAxis
                       dataKey={timeRange === "1d" ? "formattedTime" : "formattedDate"}
                       stroke="#888888"
                       fontSize={12}
@@ -520,6 +515,7 @@ export default function DashboardPage() {
                       tickLine={false}
                       axisLine={false}
                       domain={[0, 'dataMax + 2']}
+                      allowDecimals={false}
                     />
                     <Tooltip
                       contentStyle={{
@@ -530,15 +526,15 @@ export default function DashboardPage() {
                       labelStyle={{ color: '#666' }}
                       formatter={(value: any) => [`${value} images`, 'Processed']}
                     />
-                    <Area
-                      type="monotone"
+                    <Line
+                      type="linear"
                       dataKey="count"
                       stroke="#8b5cf6"
-                      strokeWidth={2}
-                      fillOpacity={1}
-                      fill="url(#colorUv)"
+                      strokeWidth={3}
+                      dot={{ fill: '#8b5cf6', r: 4 }}
+                      activeDot={{ r: 6 }}
                     />
-                  </AreaChart>
+                  </LineChart>
                 </ResponsiveContainer>
               ) : (
                 <div className="flex flex-col items-center justify-center h-[350px] text-center">
