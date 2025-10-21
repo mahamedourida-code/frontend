@@ -101,35 +101,23 @@ export default function DashboardPage() {
     if (!authLoading && !user) {
       router.push('/sign-in')
     } else if (user) {
+      // Initial data fetch
       fetchDashboardData()
-      
-      // Primary: Aggressive polling for real-time updates (like most SaaS)
-      // Poll every 3 seconds when page is active, every 10 seconds when inactive
-      const fastInterval = setInterval(() => {
-        if (!document.hidden) {
-          fetchDashboardData()
-        }
-      }, 3000) // 3 seconds for active tab
-      
-      const slowInterval = setInterval(() => {
-        if (document.hidden) {
-          fetchDashboardData()
-        }
-      }, 10000) // 10 seconds for background tab
-      
-      // Secondary: Real-time subscriptions as enhancement (not primary)
+
+      // Set up Supabase Realtime subscriptions for instant updates
       const supabase = createClient()
       const subscription = supabase
         .channel('dashboard-updates')
-        .on('postgres_changes', 
-          { 
-            event: '*', 
-            schema: 'public', 
+        .on('postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
             table: 'processing_jobs',
             filter: `user_id=eq.${user.id}`
-          }, 
-          () => {
-            // Refresh immediately on changes
+          },
+          (payload) => {
+            console.log('Job change detected:', payload)
+            // Refresh data when jobs are created, updated, or deleted
             fetchDashboardData()
           }
         )
@@ -140,17 +128,18 @@ export default function DashboardPage() {
             table: 'user_credits',
             filter: `user_id=eq.${user.id}`
           },
-          () => {
-            // Refresh immediately on credit changes
+          (payload) => {
+            console.log('Credit change detected:', payload)
+            // Refresh data when credits change
             fetchDashboardData()
           }
         )
-        .subscribe()
-      
-      // Cleanup
+        .subscribe((status) => {
+          console.log('Realtime subscription status:', status)
+        })
+
+      // Cleanup on unmount
       return () => {
-        clearInterval(fastInterval)
-        clearInterval(slowInterval)
         subscription.unsubscribe()
       }
     }
