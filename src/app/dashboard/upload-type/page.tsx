@@ -7,7 +7,7 @@ import { FileText, TableProperties, Sparkles, LayoutDashboard, ArrowLeft, AlertC
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/useAuth"
 import { useState, useEffect } from "react"
-import { createClient } from "@/lib/supabase/client"
+import { createClient } from "@/utils/supabase/client"
 import { Card, CardContent } from "@/components/ui/card"
 
 export default function UploadTypePage() {
