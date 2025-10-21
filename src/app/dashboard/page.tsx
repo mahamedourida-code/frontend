@@ -86,9 +86,6 @@ export default function DashboardPage() {
     successRate: 0
   })
   const [loading, setLoading] = useState(true)
-  
-  // Calculate if user is out of credits
-  const isOutOfCredits = stats.availableCredits <= 0
 
   // Sidebar navigation items
   const sidebarItems = [
