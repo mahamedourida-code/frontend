@@ -192,6 +192,9 @@ export default function SignInPage() {
                     {signInErrors.password.message}
                   </p>
                 )}
+                <p className="text-xs text-muted-foreground">
+                  Min 8 chars, with uppercase, number, and special character
+                </p>
               </div>
             )}
 

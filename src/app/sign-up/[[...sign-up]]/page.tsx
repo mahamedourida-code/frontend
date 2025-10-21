@@ -235,8 +235,26 @@ export default function SignUpPage() {
                 </p>
               )}
               <p className="text-xs text-muted-foreground">
-                Must be at least 8 characters with uppercase, lowercase, number, and special character
+                Must be at least 8 characters with uppercase, lowercase, number, and special character (e.g., *, @, #)
               </p>
+            </div>
+
+            {/* Confirm Password Field */}
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                type="password"
+                id="confirmPassword"
+                placeholder="Re-enter your password"
+                {...register('confirmPassword')}
+                disabled={loading}
+              />
+              {errors.confirmPassword && (
+                <p className="text-sm text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.confirmPassword.message}
+                </p>
+              )}
             </div>
 
             <p className="text-xs text-muted-foreground bg-muted p-3 rounded-md">

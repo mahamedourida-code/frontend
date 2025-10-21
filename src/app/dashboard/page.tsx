@@ -129,17 +129,9 @@ export default function DashboardPage() {
           console.log('Realtime subscription status:', status)
         })
 
-      // Polling to refresh dashboard data (including credits)
-      const refreshInterval = setInterval(() => {
-        if (!document.hidden) {
-          fetchDashboardData()
-        }
-      }, 10000) // Refresh every 10 seconds when tab is active
-
       // Cleanup on unmount
       return () => {
         subscription.unsubscribe()
-        clearInterval(refreshInterval)
       }
     }
   }, [user, authLoading, router, timeRange])
