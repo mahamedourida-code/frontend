@@ -24,23 +24,25 @@ export default function UploadTypePage() {
 
   const fetchUserCredits = async () => {
     try {
+      // Calculate credits from all processed images (just like dashboard)
       const supabase = createClient()
-      const session = (await supabase.auth.getSession()).data.session
+      const { data: allJobs } = await supabase
+        .from('processing_jobs')
+        .select('processing_metadata')
+        .eq('user_id', user?.id || '')
       
-      if (session?.access_token) {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/credits`, {
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`
-          }
-        })
-        
-        if (response.ok) {
-          const data = await response.json()
-          setAvailableCredits(data.available_credits || 0)
-        }
-      }
+      const typedAllJobs = (allJobs || []) as any[]
+      const totalImagesProcessed = typedAllJobs.reduce((sum, job) => 
+        sum + (job.processing_metadata?.total_images || 1), 0)
+
+      // Simple credit calculation - 80 total, minus what's been used
+      const TOTAL_CREDITS = 80
+      const creditsAvailable = Math.max(0, TOTAL_CREDITS - totalImagesProcessed)
+      
+      setAvailableCredits(creditsAvailable)
     } catch (error) {
       console.error('Error fetching credits:', error)
+      setAvailableCredits(80) // Default to full credits on error
     } finally {
       setLoading(false)
     }

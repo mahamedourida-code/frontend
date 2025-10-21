@@ -16,6 +16,7 @@ import { toast } from "sonner"
 import { AppIcon } from "@/components/AppIcon"
 import { ocrApi } from "@/lib/api-client"
 import { MobileNav } from "@/components/MobileNav"
+import { createClient } from "@/utils/supabase/client"
 import {
   Upload,
   FileSpreadsheet,
@@ -97,17 +98,41 @@ export default function ProcessImagesPage() {
 
   const fetchUserCredits = async () => {
     try {
-      const response = await ocrApi.getUserCredits()
-      console.log('[ProcessImagesPage] Fetched credits from API:', response)
-      if (response) {
-        setCredits({
-          used: response.used_credits || 0,
-          total: response.total_credits || 80,
-          available: response.available_credits || 80
-        })
-      }
+      // Calculate credits from all processed images (just like dashboard)
+      const supabase = createClient()
+      const { data: allJobs } = await supabase
+        .from('processing_jobs')
+        .select('processing_metadata')
+        .eq('user_id', user?.id || '')
+      
+      const typedAllJobs = (allJobs || []) as any[]
+      const totalImagesProcessed = typedAllJobs.reduce((sum, job) => 
+        sum + (job.processing_metadata?.total_images || 1), 0)
+
+      // Simple credit calculation - 80 total, minus what's been used
+      const TOTAL_CREDITS = 80
+      const creditsUsed = Math.min(totalImagesProcessed, TOTAL_CREDITS)
+      const creditsAvailable = Math.max(0, TOTAL_CREDITS - totalImagesProcessed)
+      
+      console.log('[ProcessImagesPage] Credits calculated:', {
+        totalImagesProcessed,
+        creditsUsed,
+        creditsAvailable
+      })
+      
+      setCredits({
+        used: creditsUsed,
+        total: TOTAL_CREDITS,
+        available: creditsAvailable
+      })
     } catch (error) {
       console.error('Error fetching credits:', error)
+      // Set default values on error
+      setCredits({
+        used: 0,
+        total: 80,
+        available: 80
+      })
     } finally {
       setCreditLoading(false)
     }

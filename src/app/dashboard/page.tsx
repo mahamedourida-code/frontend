@@ -102,33 +102,6 @@ export default function DashboardPage() {
     } else if (user) {
       // Initial data fetch
       fetchDashboardData()
-      
-      // Fetch credits immediately 
-      const fetchCreditsInitial = async () => {
-        try {
-          const supabase = createClient()
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/credits`, {
-            headers: {
-              'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
-            }
-          })
-
-          if (response.ok) {
-            const userCredits = await response.json()
-            console.log('[Dashboard] Initial credit fetch:', userCredits)
-            setStats(prev => ({
-              ...prev,
-              creditsUsed: userCredits.used_credits || 0,
-              totalCredits: userCredits.total_credits || 80,
-              availableCredits: userCredits.available_credits || (userCredits.total_credits - userCredits.used_credits) || 80
-            }))
-          }
-        } catch (error) {
-          console.error('Error fetching initial credits:', error)
-        }
-      }
-      
-      fetchCreditsInitial()
 
       // Set up Supabase Realtime subscriptions for instant updates
       const supabase = createClient()
@@ -146,37 +119,9 @@ export default function DashboardPage() {
             // Refresh data when jobs are created, updated, or deleted
             fetchDashboardData()
 
-            // Also refresh when job completes (since that's when credits are deducted)
+            // Refresh when job completes to update all stats including credits
             if (payload.new && (payload.new as any).status === 'completed') {
-              console.log('Job completed, refreshing credits...')
-              // Force refresh credits
-              fetchCreditsOnly()
-            }
-          }
-        )
-        .on('postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'user_credits',
-            filter: `user_id=eq.${user.id}`
-          },
-          async (payload) => {
-            console.log('[Credits] User credits changed:', payload)
-            // Immediately update credits when database changes
-            if (payload.new) {
-              const newCredits = payload.new as any
-              setStats(prev => ({
-                ...prev,
-                creditsUsed: newCredits.used_credits,
-                totalCredits: newCredits.total_credits,
-                availableCredits: newCredits.total_credits - newCredits.used_credits
-              }))
-              console.log('[Credits] Updated stats from realtime:', {
-                used: newCredits.used_credits,
-                total: newCredits.total_credits,
-                available: newCredits.total_credits - newCredits.used_credits
-              })
+              console.log('Job completed, refreshing dashboard...')
             }
           }
         )
@@ -184,46 +129,17 @@ export default function DashboardPage() {
           console.log('Realtime subscription status:', status)
         })
 
-      // Add a dedicated function to fetch credits only
-      const fetchCreditsOnly = async () => {
-        try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/credits`, {
-            headers: {
-              'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
-            }
-          })
-
-          if (response.ok) {
-            const userCredits = await response.json()
-            console.log('[Dashboard] Credit fetch result:', userCredits)
-            setStats(prev => ({
-              ...prev,
-              creditsUsed: userCredits.used_credits || 0,
-              totalCredits: userCredits.total_credits || 80,
-              availableCredits: userCredits.available_credits || (userCredits.total_credits - userCredits.used_credits) || 80
-            }))
-            console.log('[Dashboard] Stats updated with credits:', {
-              used: userCredits.used_credits,
-              total: userCredits.total_credits,
-              available: userCredits.available_credits || (userCredits.total_credits - userCredits.used_credits)
-            })
-          }
-        } catch (error) {
-          console.error('Error fetching credits:', error)
-        }
-      }
-
-      // Add polling safety net for credits (every 5 seconds when active)
-      const creditInterval = setInterval(async () => {
+      // Polling to refresh dashboard data (including credits)
+      const refreshInterval = setInterval(() => {
         if (!document.hidden) {
-          await fetchCreditsOnly()
+          fetchDashboardData()
         }
-      }, 5000)
+      }, 10000) // Refresh every 10 seconds when tab is active
 
       // Cleanup on unmount
       return () => {
         subscription.unsubscribe()
-        clearInterval(creditInterval)
+        clearInterval(refreshInterval)
       }
     }
   }, [user, authLoading, router, timeRange])
@@ -301,50 +217,34 @@ export default function DashboardPage() {
       const successfulJobs = typedJobs.filter(job => job.status === 'completed').length
       const successRate = totalJobs > 0 ? (successfulJobs / totalJobs) * 100 : 0
 
-      // Fetch total credits used (all time)
+      // Calculate total images processed (all time) - this is our "credits used"
       const { data: allJobs } = await supabase
         .from('processing_jobs')
         .select('processing_metadata')
         .eq('user_id', user.id)
       
       const typedAllJobs = (allJobs || []) as Job[]
-      const totalCreditsUsed = typedAllJobs.reduce((sum, job) => 
+      const totalImagesProcessed = typedAllJobs.reduce((sum, job) => 
         sum + (job.processing_metadata?.total_images || 1), 0)
 
-      // Fetch real credits from backend
-      let userCredits = {
-        total_credits: 80,
-        used_credits: totalCreditsUsed,
-        available_credits: 80 - totalCreditsUsed
-      }
-
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/credits`, {
-          headers: {
-            'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
-          }
-        })
-        
-        if (response.ok) {
-          userCredits = await response.json()
-        }
-      } catch (error) {
-        console.error('Error fetching user credits:', error)
-      }
+      // Simple credit calculation - 80 total, minus what's been used
+      const TOTAL_CREDITS = 80
+      const creditsUsed = Math.min(totalImagesProcessed, TOTAL_CREDITS) // Cap at 80
+      const creditsAvailable = Math.max(0, TOTAL_CREDITS - totalImagesProcessed) // Don't go negative
 
       const newStats = {
         totalProcessed: totalImages,
         todayProcessed: todayImages,
-        creditsUsed: userCredits.used_credits,
-        totalCredits: userCredits.total_credits,
-        availableCredits: userCredits.available_credits || (userCredits.total_credits - userCredits.used_credits),
+        creditsUsed: creditsUsed,
+        totalCredits: TOTAL_CREDITS,
+        availableCredits: creditsAvailable,
         averageTime: avgTime,
         successRate
       }
-      console.log('[Dashboard] Setting stats with credits:', {
-        used: userCredits.used_credits,
-        total: userCredits.total_credits,
-        available: newStats.availableCredits
+      console.log('[Dashboard] Stats calculated:', {
+        totalImagesProcessed,
+        creditsUsed,
+        creditsAvailable
       })
       setStats(newStats)
     } catch (error) {
