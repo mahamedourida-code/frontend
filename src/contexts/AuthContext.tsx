@@ -4,7 +4,9 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { User, Session } from '@supabase/supabase-js'
 import { createClient } from '@/utils/supabase/client'
-import { Profile } from '@/types/database'
+import { Database } from '@/types/database.generated'
+
+type Profile = Database['public']['Tables']['profiles']['Row']
 
 interface AuthContextType {
   user: User | null
