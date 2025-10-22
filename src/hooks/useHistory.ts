@@ -39,67 +39,41 @@ export function useHistory(): UseHistoryReturn {
     setError(null)
 
     try {
-      // Skip backend for now - go directly to Supabase to debug
-      // TODO: Re-enable backend after debugging
-      /*
-      try {
-        console.log('[useHistory] Fetching from backend API...')
-        const response = await ocrApi.getSavedHistory(50, 0)
-        console.log('[useHistory] Backend response:', response)
-        setJobs(response.jobs || [])
-        setHasMore(response.has_more || false)
-        setTotal(response.total || 0)
-        return
-      } catch (backendErr: any) {
-        console.error('[useHistory] Backend fetch failed:', backendErr)
-        console.log('[useHistory] Trying Supabase directly...')
-
-        // If it's an auth error, don't try Supabase
-        if (backendErr.status_code === 401) {
-          throw backendErr
-        }
-      }
-      */
-      console.log('[useHistory] Going directly to Supabase for debugging...')
-
-      // Fallback: Fetch directly from Supabase
+      // Import and create Supabase client
       const { createClient } = await import('@/utils/supabase/client')
       const supabase = createClient()
 
-      // Get current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
-      console.log('[useHistory] Auth getUser result:', { user, userError })
+      // Get session first to ensure we have proper auth
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      console.log('[useHistory] Session check:', { hasSession: !!session, sessionError })
       
-      if (userError) {
-        console.error('[useHistory] Auth error:', userError)
-        throw userError
+      if (sessionError) {
+        console.error('[useHistory] Session error:', sessionError)
+        throw sessionError
       }
       
-      if (!user) {
-        console.error('[useHistory] No user found in session')
-        throw new Error('Not authenticated')
+      if (!session || !session.user) {
+        console.error('[useHistory] No active session')
+        setJobs([])
+        setTotal(0)
+        setHasMore(false)
+        return
       }
 
-      // Fetch from job_history table
-      console.log('[useHistory] Fetching from Supabase for user:', user.id, 'email:', user.email)
+      const user = session.user
+      console.log('[useHistory] User from session:', { id: user.id, email: user.email })
+
+      // Now fetch from job_history table with the authenticated client
+      console.log('[useHistory] Fetching job_history for user:', user.id)
       
-      // First, let's check if we can query the table at all
-      const { data: testQuery, error: testError } = await supabase
-        .from('job_history')
-        .select('count', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-      
-      console.log('[useHistory] Test query result:', { count: testQuery, testError })
-      
-      // Now fetch the actual data
       const { data: historyJobs, error: fetchError, count } = await supabase
         .from('job_history')
         .select('*', { count: 'exact' })
         .eq('user_id', user.id)
         .order('saved_at', { ascending: false })
-        .range(0, 49)
+        .limit(50)
       
-      console.log('[useHistory] Supabase response:', { 
+      console.log('[useHistory] Query executed. Response:', { 
         historyJobs, 
         fetchError, 
         count,
@@ -107,6 +81,7 @@ export function useHistory(): UseHistoryReturn {
       })
 
       if (fetchError) {
+        console.error('[useHistory] Error fetching job history:', fetchError)
         // If table doesn't exist, return empty array (not an error)
         if (fetchError.code === '42P01') {
           console.log('[useHistory] job_history table does not exist yet')
@@ -115,17 +90,18 @@ export function useHistory(): UseHistoryReturn {
           setTotal(0)
           return
         }
-        throw fetchError
+        // Don't throw for other errors, just set empty state
+        setJobs([])
+        setHasMore(false)
+        setTotal(0)
+        return
       }
 
-      // Map the data to match expected format
-      const formattedJobs = (historyJobs || []).map(job => ({
-        ...job,
-        job_id: job.original_job_id || job.job_id,
-        metadata: job.processing_metadata || job.metadata
-      }))
-      console.log('[useHistory] Formatted jobs:', formattedJobs)
-      setJobs(formattedJobs)
+      // Successfully fetched data
+      console.log('[useHistory] Successfully fetched', historyJobs?.length || 0, 'jobs')
+      
+      // Set the jobs directly - the history page will handle the field mapping
+      setJobs(historyJobs || [])
       setHasMore((count || 0) > 50)
       setTotal(count || 0)
     } catch (err: any) {

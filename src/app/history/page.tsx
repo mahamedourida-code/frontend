@@ -223,16 +223,17 @@ function HistoryContent() {
       },
     },
     {
-      accessorKey: "metadata",
+      accessorKey: "processing_metadata",
       header: "Images",
       cell: ({ row }) => {
-        const metadata = row.getValue("metadata") as any
+        // Try processing_metadata first, then fall back to metadata
+        const metadata = (row.original as any).processing_metadata || (row.original as any).metadata
         const count = metadata?.total_images || 0
         return <span className="text-sm text-muted-foreground">{count}</span>
       },
     },
     {
-      accessorKey: "created_at",
+      accessorKey: "saved_at",
       header: ({ column }) => {
         return (
           <Button
@@ -247,7 +248,8 @@ function HistoryContent() {
         )
       },
       cell: ({ row }) => {
-        const date = row.getValue("created_at") as string
+        // Use saved_at if available, otherwise fall back to created_at
+        const date = (row.original as any).saved_at || (row.original as any).created_at
         return (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="h-3 w-3" />
@@ -276,7 +278,14 @@ function HistoryContent() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleDelete(job.job_id)}
+                  onClick={() => {
+                    const jobId = job.original_job_id || job.job_id || job.id
+                    if (jobId) {
+                      handleDelete(jobId)
+                    } else {
+                      toast.error('No job ID available')
+                    }
+                  }}
                   className="h-8 px-3 text-destructive hover:bg-destructive hover:text-destructive-foreground"
                 >
                   <Trash2 className="h-3 w-3" />
@@ -319,7 +328,10 @@ function HistoryContent() {
 
     const completedJobs = selectedRows
       .map((row) => row.original)
-      .filter((job) => job.status === 'completed' && (job.result_url || job.metadata?.storage_files))
+      .filter((job) => {
+        const metadata = job.processing_metadata || job.metadata
+        return job.status === 'completed' && (job.result_url || metadata?.storage_files)
+      })
 
     if (completedJobs.length === 0) {
       toast.error('No completed files available for download')
@@ -386,7 +398,12 @@ function HistoryContent() {
     // Delete files sequentially
     for (const job of selectedJobs) {
       try {
-        const response = await ocrApi.deleteFromHistory(job.job_id)
+        const jobId = job.original_job_id || job.job_id || job.id
+        if (!jobId) {
+          errorCount++
+          continue
+        }
+        const response = await ocrApi.deleteFromHistory(jobId)
         if (response.success) {
           successCount++
         } else {
