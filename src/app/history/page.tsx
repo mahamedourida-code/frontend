@@ -361,6 +361,52 @@ function HistoryContent() {
     }
   }
 
+  const handleBulkDelete = async () => {
+    const selectedRows = table.getFilteredSelectedRowModel().rows
+    if (selectedRows.length === 0) {
+      toast.error('No files selected')
+      return
+    }
+
+    if (!confirm(`Are you sure you want to delete ${selectedRows.length} selected file(s)? This action cannot be undone.`)) {
+      return
+    }
+
+    const selectedJobs = selectedRows.map((row) => row.original)
+    let successCount = 0
+    let errorCount = 0
+
+    toast.info(`Deleting ${selectedJobs.length} file(s)...`)
+
+    // Delete files sequentially
+    for (const job of selectedJobs) {
+      try {
+        const response = await ocrApi.deleteFromHistory(job.job_id)
+        if (response.success) {
+          successCount++
+        } else {
+          errorCount++
+        }
+      } catch (err) {
+        errorCount++
+      }
+    }
+
+    // Clear selection after deletion
+    table.resetRowSelection()
+
+    // Show results
+    if (successCount > 0) {
+      toast.success(`Deleted ${successCount} file(s)${errorCount > 0 ? ` (${errorCount} failed)` : ''}`)
+    }
+    if (errorCount > 0 && successCount === 0) {
+      toast.error(`Failed to delete ${errorCount} file(s)`)
+    }
+
+    // Refresh the list
+    refresh()
+  }
+
   const handleDeleteAll = async () => {
     if (!confirm('Are you sure you want to delete all saved files? This action cannot be undone.')) {
       return
@@ -431,7 +477,7 @@ function HistoryContent() {
               }
               className="max-w-sm h-9 text-sm"
             />
-            {/* Selected files download button */}
+            {/* Selected files actions */}
             {table.getFilteredSelectedRowModel().rows.length > 0 && (
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">
@@ -445,6 +491,15 @@ function HistoryContent() {
                 >
                   <DownloadCloud className="h-3 w-3 mr-2" />
                   Download Selected
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleBulkDelete}
+                  className="h-8 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                >
+                  <Trash2 className="h-3 w-3 mr-2" />
+                  Delete Selected
                 </Button>
               </div>
             )}
