@@ -66,9 +66,10 @@ export function useHistory(): UseHistoryReturn {
       const user = session.user
       console.log('[useHistory] User from session:', { id: user.id, email: user.email })
 
-      // Now fetch from job_history table with the authenticated client
+      // Now fetch from job_history table - RLS disabled temporarily so no user filter needed
       console.log('[useHistory] Fetching job_history for user:', user.id)
       
+      // Since RLS is disabled, we need to manually filter by user_id
       const { data: historyJobs, error: fetchError, count } = await supabase
         .from('job_history')
         .select('*', { count: 'exact' })
