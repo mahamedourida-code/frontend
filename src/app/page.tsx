@@ -304,10 +304,10 @@ export default function Home() {
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-[6fr_7fr] gap-8 sm:gap-12 lg:gap-12 items-center">
               {/* Left Content */}
-              <div ref={heroContentRef} className="max-w-xl">
-                <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-black/20 to-black/10 border border-black/30 mb-4 sm:mb-5 shadow-lg shadow-black/10">
-                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-black dark:text-white animate-pulse" />
-                  <span className="text-xs sm:text-sm font-semibold text-black dark:text-white">Exceletto-7B Handwritten Specialist</span>
+              <div ref={heroContentRef} className="max-w-xl -mt-8">
+                <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 dark:from-blue-400/20 dark:to-purple-400/20 border border-blue-500/40 dark:border-blue-400/40 mb-4 sm:mb-5 shadow-lg shadow-blue-500/10 backdrop-blur-sm">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400 animate-pulse" />
+                  <span className="text-xs sm:text-sm font-semibold text-blue-700 dark:text-blue-300">Exceletto-7B Handwritten Specialist</span>
                 </div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-[1.1] tracking-tight">
                   <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
@@ -441,72 +441,57 @@ export default function Home() {
         </section>
 
         {/* Why Choose Us Section */}
-        <ScrollAnimatedSection id="features" className="py-24 relative z-10">
+        <ScrollAnimatedSection id="features" className="py-16 relative z-10">
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16" data-animate="headline">
-              
+            <div className="text-center mb-12" data-animate="headline">
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
                 Specialized Solutions
               </h2>
-              
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-              <Card data-animate="stagger" className="bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
-                <CardHeader>
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                    <PenTool className="w-6 h-6 text-primary" />
+            <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
+              <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105">
+                <CardHeader className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+                    <PenTool className="w-8 h-8 text-primary" />
                   </div>
-                  <CardTitle className="text-lg">Handwritten Tables</CardTitle>
-                  <CardDescription>
-                    <span className="font-semibold text-purple-600">98.4% accuracy</span> on handwritten tables - industry-leading performance with our specialized model
+                  <CardTitle className="text-xl mb-2">Handwritten Tables</CardTitle>
+                  <CardDescription className="text-base">
+                    <span className="font-semibold text-purple-600 dark:text-purple-400">98.4% accuracy</span> on handwritten tables - industry-leading performance with our specialized model
                   </CardDescription>
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
-                <CardHeader>
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                    <FileInput className="w-6 h-6 text-primary" />
+              <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105">
+                <CardHeader className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+                    <FileInput className="w-8 h-8 text-primary" />
                   </div>
-                  <CardTitle className="text-lg">Paper Forms Automation</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-xl mb-2">Paper Forms Automation</CardTitle>
+                  <CardDescription className="text-base">
                     Digitize secretary paperwork and manual forms to CSV with intelligent field recognition
                   </CardDescription>
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
-                <CardHeader>
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                    <DollarSign className="w-6 h-6 text-primary" />
+              <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105">
+                <CardHeader className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+                    <DollarSign className="w-8 h-8 text-primary" />
                   </div>
-                  <CardTitle className="text-lg">Financial Documents</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-xl mb-2">Financial Documents</CardTitle>
+                  <CardDescription className="text-base">
                     Process invoices, receipts, and expense reports to XLSX with accurate financial data extraction
                   </CardDescription>
                 </CardHeader>
               </Card>
-
-              <Card data-animate="stagger" className="bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
-                <CardHeader>
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                    <Database className="w-6 h-6 text-primary" />
-                  </div>
-                  <CardTitle className="text-lg">Data Entry Automation</CardTitle>
-                  <CardDescription>
-                    Eliminate manual typing with automated Excel conversion and smart data validation
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-              
             </div>
           </div>
         </ScrollAnimatedSection>
 
         {/* Companies Section - Trusted By */}
-        <ScrollAnimatedSection id="trusted" className="py-20 relative z-10 overflow-hidden">
-          <div className="relative z-10 text-center mb-12" data-animate="headline">
+        <ScrollAnimatedSection id="trusted" className="py-12 relative z-10 overflow-hidden">
+          <div className="relative z-10 text-center mb-8" data-animate="headline">
             
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
               Chosen by experts at top organizations
@@ -679,7 +664,7 @@ export default function Home() {
         </section>
 
         {/* How It Works Section */}
-        <ScrollAnimatedSection id="how-it-works" className="py-24 relative z-10 overflow-hidden">
+        <ScrollAnimatedSection id="how-it-works" className="py-16 relative z-10 overflow-hidden">
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16" data-animate="headline">
               <Badge variant="outline" className="mb-4 border-primary/50 text-primary">How It Works</Badge>
@@ -724,7 +709,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* AI Engine Section */}
-        <ScrollAnimatedSection id="ai-engine" className="py-24 relative z-10">
+        <ScrollAnimatedSection id="ai-engine" className="py-16 relative z-10">
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-16" data-animate="headline">
@@ -977,7 +962,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Benchmark Section */}
-        <ScrollAnimatedSection id="benchmarks" className="py-24 relative z-10">
+        <ScrollAnimatedSection id="benchmarks" className="py-16 relative z-10">
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
