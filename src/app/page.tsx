@@ -327,6 +327,27 @@ export default function Home() {
                     Try for free
                   </Button>
                 </div>
+
+                {/* User Count Section */}
+                <div className="mt-6 sm:mt-8 flex items-center gap-3">
+                  <div className="flex -space-x-2">
+                    {[0, 1, 2, 3, 4, 5].map((i) => (
+                      <img
+                        key={i}
+                        src={`/avatars/${i}.webp`}
+                        alt={`User ${i + 1}`}
+                        className="w-10 h-10 rounded-full border-2 border-background object-cover"
+                      />
+                    ))}
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1">
+                      <Users className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-semibold text-foreground">Join 1,260+ users</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Converting tables daily</p>
+                  </div>
+                </div>
               </div>
 
               {/* Right Visual - Ultra Minimal Professional Comparison */}
@@ -358,9 +379,9 @@ export default function Home() {
                   </div>
                 </div>
                 
-                {/* Main comparison container - Wider */}
-                <div className="relative w-full max-w-[1100px]">
-                  <div className="relative h-[350px] sm:h-[450px] lg:h-[550px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                {/* Main comparison container - Reduced size */}
+                <div className="relative w-full max-w-[880px]">
+                  <div className="relative h-[280px] sm:h-[360px] lg:h-[440px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
                     <ComparisonSlider
                       leftLabel=""
                       rightLabel="" 

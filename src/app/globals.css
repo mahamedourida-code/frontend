@@ -182,7 +182,7 @@
 
 :root {
   /* Light Mode - Clean and modern */
-  --background: oklch(0.99 0 0);           /* Clean, almost white background */
+  --background: oklch(1.0 0 0);           /* Pure white background - FILE: src/app/globals.css LINE: 185 - Change this to adjust background */
   --foreground: oklch(0.2046 0 0);
   --card: oklch(1.0 0 0);               /* Pure white cards */
   --card-foreground: oklch(0.2046 0 0);
