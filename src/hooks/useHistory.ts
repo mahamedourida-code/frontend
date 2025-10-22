@@ -63,7 +63,7 @@ export function useHistory(): UseHistoryReturn {
         console.log('[useHistory] Debug - All jobs query result:', { allJobs, allError })
         
         if (allJobs && allJobs.length > 0) {
-          console.log('[useHistory] Found jobs despite no session! First job user_id:', allJobs[0].user_id)
+          console.log('[useHistory] Found jobs despite no session! First job user_id:', (allJobs[0] as any).user_id)
         }
         
         setJobs([])
