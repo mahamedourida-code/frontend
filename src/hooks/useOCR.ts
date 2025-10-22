@@ -178,27 +178,92 @@ export function useOCR(): UseOCRReturn {
 
   // Save to history
   const saveToHistory = useCallback(async (): Promise<void> => {
-    if (!jobId) {
+    if (!jobId || !files || files.length === 0) {
       toast.error('No job to save')
       return
     }
 
     setIsSaving(true)
     try {
-      const response = await ocrApi.saveToHistory(jobId)
-      if (response.success) {
-        setIsSaved(true)
-        toast.success('Job saved to history!')
-      } else {
-        toast.error('Failed to save to history')
+      // First, try the backend endpoint
+      try {
+        const response = await ocrApi.saveToHistory(jobId)
+        if (response.success) {
+          setIsSaved(true)
+          toast.success('Job saved to history!')
+          return
+        }
+      } catch (backendErr) {
+        console.log('[useOCR] Backend save failed, using direct Supabase save')
       }
+
+      // Fallback: Save directly to Supabase
+      const { createClient } = await import('@/utils/supabase/client')
+      const supabase = createClient()
+
+      // Get user
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        toast.error('Please sign in to save jobs')
+        return
+      }
+
+      // Get the processing job to copy its data
+      const { data: processingJob, error: fetchError } = await supabase
+        .from('processing_jobs')
+        .select('*')
+        .eq('job_id', jobId)
+        .single()
+
+      if (fetchError || !processingJob) {
+        console.error('[useOCR] Failed to fetch processing job:', fetchError)
+        toast.error('Failed to find job data')
+        return
+      }
+
+      // Save to job_history table (create if not exists)
+      const { error: saveError } = await supabase
+        .from('job_history')
+        .insert({
+          job_id: jobId,
+          user_id: user.id,
+          filename: files[0]?.filename || `batch_${new Date().toISOString().split('T')[0]}.xlsx`,
+          status: 'completed',
+          result_url: files[0]?.file_id ? `/api/v1/download/${files[0].file_id}` : null,
+          created_at: processingJob.created_at || new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          metadata: {
+            ...processingJob.processing_metadata,
+            total_images: files.length,
+            files: files.map(f => ({
+              file_id: f.file_id,
+              filename: f.filename
+            }))
+          }
+        })
+
+      if (saveError) {
+        // If table doesn't exist, show helpful error
+        if (saveError.code === '42P01') {
+          toast.error('History table not set up. Please contact support.')
+          console.error('[useOCR] job_history table does not exist')
+        } else {
+          console.error('[useOCR] Supabase save error:', saveError)
+          toast.error('Failed to save to history')
+        }
+        return
+      }
+
+      setIsSaved(true)
+      toast.success('Job saved to history!')
     } catch (err: any) {
-      const errorMessage = err.detail || 'Failed to save to history'
+      const errorMessage = err.detail || err.message || 'Failed to save to history'
+      console.error('[useOCR] Save error:', err)
       toast.error(errorMessage)
     } finally {
       setIsSaving(false)
     }
-  }, [jobId])
+  }, [jobId, files])
 
   // Connect to WebSocket for real-time updates
   const connectWebSocket = useCallback((sessionId: string) => {

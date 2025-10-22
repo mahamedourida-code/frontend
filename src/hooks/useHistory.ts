@@ -35,17 +35,61 @@ export function useHistory(): UseHistoryReturn {
     setError(null)
 
     try {
-      // Use getSavedHistory instead of getHistory to fetch only saved jobs
-      const response = await ocrApi.getSavedHistory(50, 0)
-      setJobs(response.jobs || [])
-      setHasMore(response.has_more || false)
-      setTotal(response.total || 0)
+      // Try backend first
+      try {
+        const response = await ocrApi.getSavedHistory(50, 0)
+        setJobs(response.jobs || [])
+        setHasMore(response.has_more || false)
+        setTotal(response.total || 0)
+        return
+      } catch (backendErr: any) {
+        console.log('[useHistory] Backend fetch failed, trying Supabase directly')
+
+        // If it's an auth error, don't try Supabase
+        if (backendErr.status_code === 401) {
+          throw backendErr
+        }
+      }
+
+      // Fallback: Fetch directly from Supabase
+      const { createClient } = await import('@/utils/supabase/client')
+      const supabase = createClient()
+
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        throw new Error('Not authenticated')
+      }
+
+      // Fetch from job_history table
+      const { data: historyJobs, error: fetchError, count } = await supabase
+        .from('job_history')
+        .select('*', { count: 'exact' })
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .range(0, 49)
+
+      if (fetchError) {
+        // If table doesn't exist, return empty array (not an error)
+        if (fetchError.code === '42P01') {
+          console.log('[useHistory] job_history table does not exist yet')
+          setJobs([])
+          setHasMore(false)
+          setTotal(0)
+          return
+        }
+        throw fetchError
+      }
+
+      setJobs(historyJobs || [])
+      setHasMore((count || 0) > 50)
+      setTotal(count || 0)
     } catch (err: any) {
-      const errorMessage = err.detail || 'Failed to load history'
+      const errorMessage = err.detail || err.message || 'Failed to load history'
       setError(errorMessage)
 
       // Only show error toast if it's not an auth error (let the page handle auth errors)
-      if (err.status_code !== 401) {
+      if (err.status_code !== 401 && !err.message?.includes('authenticated')) {
         toast.error(errorMessage)
       }
     } finally {
