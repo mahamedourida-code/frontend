@@ -39,21 +39,28 @@ export function useHistory(): UseHistoryReturn {
     setError(null)
 
     try {
-      // Try backend first
+      // Skip backend for now - go directly to Supabase to debug
+      // TODO: Re-enable backend after debugging
+      /*
       try {
+        console.log('[useHistory] Fetching from backend API...')
         const response = await ocrApi.getSavedHistory(50, 0)
+        console.log('[useHistory] Backend response:', response)
         setJobs(response.jobs || [])
         setHasMore(response.has_more || false)
         setTotal(response.total || 0)
         return
       } catch (backendErr: any) {
-        console.log('[useHistory] Backend fetch failed, trying Supabase directly')
+        console.error('[useHistory] Backend fetch failed:', backendErr)
+        console.log('[useHistory] Trying Supabase directly...')
 
         // If it's an auth error, don't try Supabase
         if (backendErr.status_code === 401) {
           throw backendErr
         }
       }
+      */
+      console.log('[useHistory] Going directly to Supabase for debugging...')
 
       // Fallback: Fetch directly from Supabase
       const { createClient } = await import('@/utils/supabase/client')
@@ -66,12 +73,15 @@ export function useHistory(): UseHistoryReturn {
       }
 
       // Fetch from job_history table
+      console.log('[useHistory] Fetching from Supabase for user:', user.id)
       const { data: historyJobs, error: fetchError, count } = await supabase
         .from('job_history')
         .select('*', { count: 'exact' })
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
+        .order('saved_at', { ascending: false })
         .range(0, 49)
+      
+      console.log('[useHistory] Supabase response:', { historyJobs, fetchError, count })
 
       if (fetchError) {
         // If table doesn't exist, return empty array (not an error)
@@ -85,7 +95,14 @@ export function useHistory(): UseHistoryReturn {
         throw fetchError
       }
 
-      setJobs(historyJobs || [])
+      // Map the data to match expected format
+      const formattedJobs = (historyJobs || []).map(job => ({
+        ...job,
+        job_id: job.original_job_id || job.job_id,
+        metadata: job.processing_metadata || job.metadata
+      }))
+      console.log('[useHistory] Formatted jobs:', formattedJobs)
+      setJobs(formattedJobs)
       setHasMore((count || 0) > 50)
       setTotal(count || 0)
     } catch (err: any) {
