@@ -177,7 +177,7 @@ export default function Home() {
       {/* Navigation Bar */}
       <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 pt-4">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-[35px] shadow-[0_24px_24px_rgba(23,15,42,0.04)] p-4 flex items-center justify-between">
+          <div className="bg-gradient-to-r from-black/20 to-black/10 dark:from-white/20 dark:to-white/10 rounded-[35px] border border-black/30 dark:border-white/30 shadow-lg shadow-black/10 dark:shadow-white/10 backdrop-blur-md p-4 flex items-center justify-between">
             {/* Logo */}
             <div className="flex-shrink-0">
               <AppLogo />
@@ -287,7 +287,7 @@ export default function Home() {
             <div className="hidden lg:flex items-center gap-3">
               <Button
                 variant="outline"
-                className="bg-white text-[#231d3a] border-[1.6px] border-[#7a6beb] rounded-full px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors"
+                className="bg-white/90 dark:bg-white/20 text-foreground border-[1.6px] border-foreground/30 rounded-full px-4 py-2 text-sm font-medium hover:bg-white dark:hover:bg-white/30 transition-colors backdrop-blur-sm"
                 onClick={() => window.location.href = '/sign-in'}
               >
                 Sign in
