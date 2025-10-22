@@ -91,6 +91,7 @@ export default function DashboardPage() {
   const sidebarItems = [
     { label: "Overview", icon: Activity, href: "/dashboard", active: true },
     { label: "Process Images", icon: Upload, href: "/dashboard/upload-type", active: false },
+    { label: "History", icon: History, href: "/history", active: false },
     { label: "Settings", icon: Settings, href: "/dashboard/settings", active: false }
   ]
 
@@ -352,14 +353,11 @@ export default function DashboardPage() {
               {sidebarItems.map((item) => (
                 <button
                   key={item.label}
-                  onClick={() => !item.disabled && router.push(item.href)}
-                  disabled={item.disabled}
+                  onClick={() => router.push(item.href)}
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors",
                     item.active
                       ? "bg-primary/10 text-primary font-medium"
-                      : item.disabled
-                      ? "text-muted-foreground/50 cursor-not-allowed"
                       : "text-muted-foreground hover:text-foreground hover:bg-accent"
                   )}
                 >
