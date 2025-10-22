@@ -67,13 +67,31 @@ export function useHistory(): UseHistoryReturn {
       const supabase = createClient()
 
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      console.log('[useHistory] Auth getUser result:', { user, userError })
+      
+      if (userError) {
+        console.error('[useHistory] Auth error:', userError)
+        throw userError
+      }
+      
       if (!user) {
+        console.error('[useHistory] No user found in session')
         throw new Error('Not authenticated')
       }
 
       // Fetch from job_history table
-      console.log('[useHistory] Fetching from Supabase for user:', user.id)
+      console.log('[useHistory] Fetching from Supabase for user:', user.id, 'email:', user.email)
+      
+      // First, let's check if we can query the table at all
+      const { data: testQuery, error: testError } = await supabase
+        .from('job_history')
+        .select('count', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+      
+      console.log('[useHistory] Test query result:', { count: testQuery, testError })
+      
+      // Now fetch the actual data
       const { data: historyJobs, error: fetchError, count } = await supabase
         .from('job_history')
         .select('*', { count: 'exact' })
@@ -81,7 +99,12 @@ export function useHistory(): UseHistoryReturn {
         .order('saved_at', { ascending: false })
         .range(0, 49)
       
-      console.log('[useHistory] Supabase response:', { historyJobs, fetchError, count })
+      console.log('[useHistory] Supabase response:', { 
+        historyJobs, 
+        fetchError, 
+        count,
+        jobsLength: historyJobs?.length 
+      })
 
       if (fetchError) {
         // If table doesn't exist, return empty array (not an error)
