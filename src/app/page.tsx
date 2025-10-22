@@ -380,8 +380,8 @@ export default function Home() {
                 </div>
                 
                 {/* Main comparison container - Reduced size */}
-                <div className="relative w-full max-w-[880px]">
-                  <div className="relative h-[280px] sm:h-[360px] lg:h-[500px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                <div className="relative w-full max-w-[800px]">
+                  <div className="relative h-[280px] sm:h-[360px] lg:h-[540px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
                     <ComparisonSlider
                       leftLabel=""
                       rightLabel="" 

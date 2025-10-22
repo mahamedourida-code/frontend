@@ -181,38 +181,38 @@
 }
 
 :root {
-  /* Light Mode - Clean and modern */
-  --background: 1.0 0 0;           /* Pure white background - FILE: src/app/globals.css LINE: 185 - Change this to adjust background (format: lightness chroma hue) */
-  --foreground: 0.2046 0 0;
-  --card: 1.0 0 0;               /* Pure white cards */
-  --card-foreground: 0.2046 0 0;
-  --popover: 0.9911 0 0;
-  --popover-foreground: 0.4386 0 0;
+  /* Light Mode - Improved differentiation with subtle grays and Excel greens */
+  --background: oklch(0.97 0 0);           /* Slightly darker background */
+  --foreground: oklch(0.2046 0 0);
+  --card: oklch(0.9911 0 0);               /* White cards to stand out */
+  --card-foreground: oklch(0.2046 0 0);
+  --popover: oklch(0.9911 0 0);
+  --popover-foreground: oklch(0.4386 0 0);
   --primary: #1a742e;         /* Excel dark green */
-  --primary-foreground: 0.98 0 0;
-  --secondary: 0.70 0.10 140;       /* Excel light green */
-  --secondary-foreground: 0.15 0 0;
-  --muted: 0.92 0 0;                /* Lighter gray for muted sections */
-  --muted-foreground: 0.45 0 0;
-  --accent: 0.88 0 0;               /* Distinct accent background */
-  --accent-foreground: 0.25 0 0;
-  --destructive: 0.5523 0.1927 32.7272;
-  --destructive-foreground: 0.9934 0.0032 17.2118;
-  --border: 0.87 0 0;               /* More visible borders */
-  --input: 0.9911 0 0;              /* White inputs */
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.70 0.10 140);       /* Excel light green */
+  --secondary-foreground: oklch(0.15 0 0);
+  --muted: oklch(0.92 0 0);                /* Lighter gray for muted sections */
+  --muted-foreground: oklch(0.45 0 0);
+  --accent: oklch(0.88 0 0);               /* Distinct accent background */
+  --accent-foreground: oklch(0.25 0 0);
+  --destructive: oklch(0.5523 0.1927 32.7272);
+  --destructive-foreground: oklch(0.9934 0.0032 17.2118);
+  --border: oklch(0.87 0 0);               /* More visible borders */
+  --input: oklch(0.9911 0 0);              /* White inputs */
   --ring: #1a742e;            /* Excel green focus ring */
   --chart-1: #1a742e;         /* Excel dark green */
-  --chart-2: 0.6231 0.1880 259.8145;
-  --chart-3: 0.6056 0.2189 292.7172;
+  --chart-2: oklch(0.6231 0.1880 259.8145);
+  --chart-3: oklch(0.6056 0.2189 292.7172);
   --chart-4: #1a742e;         /* Excel light green */
-  --chart-5: 0.6959 0.1491 162.4796;
-  --sidebar: 0.94 0 0;              /* Slightly darker sidebar */
-  --sidebar-foreground: 0.35 0 0;
+  --chart-5: oklch(0.6959 0.1491 162.4796);
+  --sidebar: oklch(0.94 0 0);              /* Slightly darker sidebar */
+  --sidebar-foreground: oklch(0.35 0 0);
   --sidebar-primary: #1a742e; /* Excel dark green */
-  --sidebar-primary-foreground: 0.98 0 0;
-  --sidebar-accent: 0.88 0 0;
-  --sidebar-accent-foreground: 0.25 0 0;
-  --sidebar-border: 0.87 0 0;
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.88 0 0);
+  --sidebar-accent-foreground: oklch(0.25 0 0);
+  --sidebar-border: oklch(0.87 0 0);
   --sidebar-ring: #1a742e;
   --font-sans: var(--font-nunito), system-ui, -apple-system, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
@@ -237,38 +237,38 @@
 }
 
 .dark {
-  /* Dark Mode - Softer and more comfortable */
-  --background: 0.20 0 0;           /* Softer dark background */
-  --foreground: 0.92 0 0;
-  --card: 0.24 0 0;                 /* Lighter card surface */
-  --card-foreground: 0.92 0 0;
-  --popover: 0.28 0 0;
-  --popover-foreground: 0.88 0 0;
+  /* Dark Mode - Supabase-inspired with green accents */
+  --background: oklch(0.15 0 0);           /* Darker background */
+  --foreground: oklch(0.92 0 0);
+  --card: oklch(0.18 0 0);                 /* Slightly elevated card surface */
+  --card-foreground: oklch(0.92 0 0);
+  --popover: oklch(0.25 0 0);
+  --popover-foreground: oklch(0.88 0 0);
   --primary: #1a742e;         /* Vibrant green like Supabase */
-  --primary-foreground: 0.98 0 0;
+  --primary-foreground: oklch(0.08 0 0);
   --secondary: #1a742e;       /* Light green accent */
-  --secondary-foreground: 0.98 0 0;
-  --muted: 0.26 0 0;                /* Subtle muted sections */
-  --muted-foreground: 0.65 0 0;
-  --accent: 0.28 0 0;               /* Subtle accent */
-  --accent-foreground: 0.92 0 0;
-  --destructive: 0.4123 0.1852 29.7877;
-  --destructive-foreground: 0.9368 0.0045 34.3092;
-  --border: 0.32 0 0;               /* Softer borders */
-  --input: 0.26 0 0;                /* Input fields */
+  --secondary-foreground: oklch(0.08 0 0);
+  --muted: oklch(0.22 0 0);                /* Subtle muted sections */
+  --muted-foreground: oklch(0.60 0 0);
+  --accent: oklch(0.25 0 0);               /* Subtle accent */
+  --accent-foreground: oklch(0.92 0 0);
+  --destructive: oklch(0.3123 0.0852 29.7877);
+  --destructive-foreground: oklch(0.9368 0.0045 34.3092);
+  --border: oklch(0.28 0 0);               /* Subtle borders */
+  --input: oklch(0.22 0 0);                /* Input fields */
   --ring: #1a742e;           /* Green focus ring */
   --chart-1: #1a742e;         /* Vibrant green */
-  --chart-2: 0.7137 0.1434 254.6240;
-  --chart-3: 0.7090 0.1592 293.5412;
-  --chart-4: 0.75 0.14 138;         /* Light green */
-  --chart-5: 0.7845 0.1325 181.9120;
-  --sidebar: 0.18 0 0;              /* Softer sidebar */
-  --sidebar-foreground: 0.75 0 0;
+  --chart-2: oklch(0.7137 0.1434 254.6240);
+  --chart-3: oklch(0.7090 0.1592 293.5412);
+  --chart-4: oklch(0.75 0.14 138);         /* Light green */
+  --chart-5: oklch(0.7845 0.1325 181.9120);
+  --sidebar: oklch(0.12 0 0);              /* Darker sidebar */
+  --sidebar-foreground: oklch(0.70 0 0);
   --sidebar-primary: #1a742e; /* Green */
-  --sidebar-primary-foreground: 0.98 0 0;
-  --sidebar-accent: 0.28 0 0;
-  --sidebar-accent-foreground: 0.92 0 0;
-  --sidebar-border: 0.32 0 0;
+  --sidebar-primary-foreground: oklch(0.08 0 0);
+  --sidebar-accent: oklch(0.25 0 0);
+  --sidebar-accent-foreground: oklch(0.92 0 0);
+  --sidebar-border: oklch(0.28 0 0);
   --sidebar-ring: #1a742e;
   --font-sans: var(--font-nunito), system-ui, -apple-system, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
