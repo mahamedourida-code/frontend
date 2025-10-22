@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${nunito.variable} ${caveat.variable} antialiased font-sans`}
+        className={`${nunito.variable} ${caveat.variable} antialiased font-sans bg-background text-foreground`}
         style={{ fontFamily: 'var(--font-nunito)' }}
       >
         <ThemeProvider defaultTheme="light" storageKey="exceletto-theme">
