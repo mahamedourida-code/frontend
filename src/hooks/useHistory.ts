@@ -42,6 +42,9 @@ export function useHistory(): UseHistoryReturn {
       // Import and create Supabase client
       const { createClient } = await import('@/utils/supabase/client')
       const supabase = createClient()
+      
+      // Small delay to ensure client is ready
+      await new Promise(resolve => setTimeout(resolve, 100))
 
       // Get session first to ensure we have proper auth
       const { data: { session }, error: sessionError } = await supabase.auth.getSession()
@@ -99,6 +102,7 @@ export function useHistory(): UseHistoryReturn {
 
       // Successfully fetched data
       console.log('[useHistory] Successfully fetched', historyJobs?.length || 0, 'jobs')
+      console.log('[useHistory] First job sample:', historyJobs?.[0])
       
       // Set the jobs directly - the history page will handle the field mapping
       setJobs(historyJobs || [])
