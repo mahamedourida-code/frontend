@@ -351,7 +351,7 @@ export default function Home() {
               </div>
 
               {/* Right Visual - Ultra Minimal Professional Comparison */}
-              <div ref={heroImageRef} className="relative group scale-90 lg:scale-85 mt-4">
+              <div ref={heroImageRef} className="relative group scale-80 lg:scale-90 mt-4">
                 {/* Subtle shadow glow */}
                 <div className="absolute -inset-4 bg-gradient-to-r from-black/10 via-black/20 to-black/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
                 
