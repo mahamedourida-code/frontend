@@ -35,13 +35,17 @@ import { AppIcon } from "@/components/AppIcon"
 import { MobileNav } from "@/components/MobileNav"
 
 interface HistoryJob {
-  job_id: string
+  id?: string // The UUID primary key
+  original_job_id?: string // The original job ID from processing
+  job_id?: string // For backward compatibility
   filename: string
   status: string
   result_url: string | null
   created_at: string
   updated_at: string
-  metadata: any
+  saved_at?: string
+  processing_metadata?: any // Changed from metadata to processing_metadata
+  metadata?: any // For backward compatibility
 }
 
 function HistoryContent() {
@@ -59,7 +63,8 @@ function HistoryContent() {
       console.log('Downloading job:', job); // Debug log
       
       // Check if we have storage files in metadata (new format with Supabase Storage)
-      const storageFiles = job.metadata?.storage_files;
+      const metadata = job.processing_metadata || job.metadata; // Check both for compatibility
+      const storageFiles = metadata?.storage_files;
       if (storageFiles && storageFiles.length > 0) {
         const storageFile = storageFiles[0];
         console.log('Using storage file:', storageFile); // Debug log
@@ -107,10 +112,10 @@ function HistoryContent() {
 
           blob = await ocrApi.downloadFile(fileId)
         }
-      } else if (job.metadata?.storage_path) {
+      } else if (metadata?.storage_path) {
         // Fallback: try using storage_path directly from metadata
-        console.log('Using metadata storage_path:', job.metadata.storage_path); // Debug log
-        blob = await ocrApi.downloadFromStorage(job.metadata.storage_path);
+        console.log('Using metadata storage_path:', metadata.storage_path); // Debug log
+        blob = await ocrApi.downloadFromStorage(metadata.storage_path);
       } else {
         console.error('No download URL available. Job data:', job);
         toast.error('No download URL available')
@@ -121,7 +126,7 @@ function HistoryContent() {
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = job.filename || `job_${job.job_id}.xlsx`
+      link.download = job.filename || `job_${job.original_job_id || job.job_id}.xlsx`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)

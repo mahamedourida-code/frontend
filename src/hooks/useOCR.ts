@@ -225,14 +225,13 @@ export function useOCR(): UseOCRReturn {
       const { error: saveError } = await supabase
         .from('job_history')
         .insert({
-          job_id: jobId,
+          original_job_id: jobId, // Changed from job_id to original_job_id
           user_id: user.id,
           filename: files[0]?.filename || `batch_${new Date().toISOString().split('T')[0]}.xlsx`,
           status: 'completed',
-          result_url: files[0]?.file_id ? `/api/v1/download/${files[0].file_id}` : null,
-          created_at: processingJob.created_at || new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          metadata: {
+          result_url: processingJob.processing_metadata?.storage_files?.[0]?.url || 
+                     files[0]?.file_id ? `/api/v1/download/${files[0].file_id}` : null,
+          processing_metadata: {
             ...processingJob.processing_metadata,
             total_images: files.length,
             files: files.map(f => ({
