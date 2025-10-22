@@ -302,7 +302,7 @@ export default function Home() {
         <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-24 lg:pt-20">
           
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-[6fr_5fr] gap-8 sm:gap-12 lg:gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-[6fr_6fr] gap-8 sm:gap-12 lg:gap-12 items-center">
               {/* Left Content */}
               <div ref={heroContentRef} className="max-w-xl">
                 <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-black/20 to-black/10 border border-black/30 mb-4 sm:mb-5 shadow-lg shadow-black/10">
