@@ -31,6 +31,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 type SettingsSection = 'account' | 'preferences'
+type Theme = 'dark' | 'light' | 'system'
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -140,7 +141,7 @@ export default function SettingsPage() {
     // In a real implementation, you would integrate with i18n library here
   }
 
-  const handleThemeChange = (newTheme: string) => {
+  const handleThemeChange = (newTheme: Theme) => {
     setTheme(newTheme)
     toast.success(`Theme changed to ${newTheme}`)
   }
