@@ -302,7 +302,7 @@ export default function Home() {
         <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-24 lg:pt-20">
           
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-8 sm:gap-12 lg:gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-[6fr_5fr] gap-8 sm:gap-12 lg:gap-12 items-center">
               {/* Left Content */}
               <div ref={heroContentRef} className="max-w-xl">
                 <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-black/20 to-black/10 border border-black/30 mb-4 sm:mb-5 shadow-lg shadow-black/10">
@@ -351,7 +351,7 @@ export default function Home() {
               </div>
 
               {/* Right Visual - Ultra Minimal Professional Comparison */}
-              <div ref={heroImageRef} className="relative group">
+              <div ref={heroImageRef} className="relative group scale-90 lg:scale-85 mt-4">
                 {/* Subtle shadow glow */}
                 <div className="absolute -inset-4 bg-gradient-to-r from-black/10 via-black/20 to-black/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
                 
@@ -381,7 +381,7 @@ export default function Home() {
                 
                 {/* Main comparison container - Reduced size */}
                 <div className="relative w-full max-w-[800px]">
-                  <div className="relative h-[280px] sm:h-[360px] lg:h-[540px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                  <div className="relative h-[280px] sm:h-[360px] lg:h-[560px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
                     <ComparisonSlider
                       leftLabel=""
                       rightLabel="" 
