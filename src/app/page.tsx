@@ -452,9 +452,7 @@ export default function Home() {
             <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
               <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105">
                 <CardHeader className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-                    <PenTool className="w-8 h-8 text-primary" />
-                  </div>
+                  <PenTool className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Handwritten Tables</CardTitle>
                   <CardDescription className="text-base">
                     <span className="font-semibold text-purple-600 dark:text-purple-400">98.4% accuracy</span> on handwritten tables - industry-leading performance with our specialized model
@@ -464,9 +462,7 @@ export default function Home() {
 
               <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105">
                 <CardHeader className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-                    <FileInput className="w-8 h-8 text-primary" />
-                  </div>
+                  <FileText className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Paper Forms Automation</CardTitle>
                   <CardDescription className="text-base">
                     Digitize secretary paperwork and manual forms to CSV with intelligent field recognition
@@ -476,9 +472,7 @@ export default function Home() {
 
               <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105">
                 <CardHeader className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-                    <DollarSign className="w-8 h-8 text-primary" />
-                  </div>
+                  <FileSpreadsheet className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Financial Documents</CardTitle>
                   <CardDescription className="text-base">
                     Process invoices, receipts, and expense reports to XLSX with accurate financial data extraction
