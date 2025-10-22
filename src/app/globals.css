@@ -182,7 +182,7 @@
 
 :root {
   /* Light Mode - Improved differentiation with subtle grays and Excel greens */
-  --background: oklch(0.97 0 0);           /* Slightly darker background */
+  --background: 232 229 245;           /* Light lavender background inspired by DataFetcher */
   --foreground: oklch(0.2046 0 0);
   --card: oklch(0.9911 0 0);               /* White cards to stand out */
   --card-foreground: oklch(0.2046 0 0);

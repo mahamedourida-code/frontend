@@ -175,9 +175,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background relative">
       {/* Navigation Bar */}
-      <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md">
+      <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 pt-4">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="bg-white rounded-[35px] shadow-[0_24px_24px_rgba(23,15,42,0.04)] p-4 flex items-center justify-between">
             {/* Logo */}
             <div className="flex-shrink-0">
               <AppLogo />
@@ -283,10 +283,15 @@ export default function Home() {
               </NavigationMenu>
             </div>
 
-            {/* Theme Toggle and Active Users - Desktop */}
+            {/* Sign In Button - Desktop */}
             <div className="hidden lg:flex items-center gap-3">
-              <ActiveUsersCounter />
-              <ThemeToggle />
+              <Button
+                variant="outline"
+                className="bg-white text-[#231d3a] border-[1.6px] border-[#7a6beb] rounded-full px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors"
+                onClick={() => window.location.href = '/sign-in'}
+              >
+                Sign in
+              </Button>
             </div>
           </div>
         </div>

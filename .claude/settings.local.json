@@ -13,6 +13,7 @@
     "brave-search",
     "supabase",
     "ref",
-    "vercel"
+    "vercel",
+    "playwright"
   ]
 }
