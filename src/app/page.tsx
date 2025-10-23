@@ -177,7 +177,7 @@ export default function Home() {
       {/* Navigation Bar */}
       <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 pt-3 lg:pt-4">
         <div className="container mx-auto px-1 sm:px-3 lg:px-4">
-          <div className="bg-primary/20 dark:bg-primary/15 rounded-[35px] border-2 border-primary/50 shadow-lg shadow-primary/10 backdrop-blur-md p-3 lg:p-4 flex items-center justify-between">
+          <div className="bg-white dark:bg-white rounded-[35px] border-2 border-primary shadow-lg shadow-primary/10 backdrop-blur-md p-3 lg:p-4 flex items-center justify-between">
             {/* Logo */}
             <div className="flex-shrink-0">
               <AppLogo />
@@ -576,7 +576,7 @@ export default function Home() {
                   
                   <div className="relative w-full max-w-6xl mx-auto">
                     <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4">Handwritten Table → Excel</h3>
-                    <div className="relative h-[350px] sm:h-[450px] lg:h-[600px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                    <div className="relative h-[350px] sm:h-[450px] lg:h-[600px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(34,197,94,0.3)]">
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""
@@ -624,7 +624,7 @@ export default function Home() {
                   
                   <div className="relative w-full max-w-6xl mx-auto">
                     <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4"></h3>
-                    <div className="relative h-[350px] sm:h-[450px] lg:h-[600px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                    <div className="relative h-[350px] sm:h-[450px] lg:h-[600px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(34,197,94,0.3)]">
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""
