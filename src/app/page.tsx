@@ -672,37 +672,68 @@ export default function Home() {
         {/* How It Works Section */}
         <ScrollAnimatedSection id="how-it-works" className="py-16 relative z-10 overflow-hidden">
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16" data-animate="headline">
+            <div className="text-center mb-12" data-animate="headline">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                  Three Simple Steps
+                  Simple & Efficient Workflow
                 </h2>
               </div>
-             
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              <div className="text-center" data-animate="stagger">
-                <Upload className="w-12 h-12 text-primary mx-auto mb-6 hover:scale-110 transition-all stroke-[1.5]" />
-                <h3 className="text-xl font-semibold text-foreground mb-4">Upload Screenshot</h3>
-                <p className="text-muted-foreground">
-                  Simply drag and drop your screenshot or image containing tabular data into Exceletto
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+              <div className="flex flex-col items-center" data-animate="stagger">
+                <div className="mb-4 rounded-xl overflow-hidden bg-white dark:bg-white border-2 border-primary/20 shadow-md p-4">
+                  <img
+                    src="/images/photo-session.png"
+                    alt="Capture your data"
+                    className="w-32 h-32 object-contain mx-auto"
+                  />
+                </div>
+                <h3 className="text-sm font-semibold text-foreground mb-2">Capture</h3>
+                <p className="text-xs text-muted-foreground text-center">
+                  Take a photo or screenshot
                 </p>
               </div>
 
-              <div className="text-center" data-animate="stagger">
-                <Sparkles className="w-12 h-12 text-primary mx-auto mb-6 hover:scale-110 transition-all stroke-[1.5]" />
-                <h3 className="text-xl font-semibold text-foreground mb-4">AI Processing</h3>
-                <p className="text-muted-foreground">
-                  Our advanced OCR technology analyzes and extracts the data with high accuracy.
+              <div className="flex flex-col items-center" data-animate="stagger">
+                <div className="mb-4 rounded-xl overflow-hidden bg-white dark:bg-white border-2 border-primary/20 shadow-md p-4">
+                  <img
+                    src="/images/data-input.png"
+                    alt="Upload to platform"
+                    className="w-32 h-32 object-contain mx-auto"
+                  />
+                </div>
+                <h3 className="text-sm font-semibold text-foreground mb-2">Upload</h3>
+                <p className="text-xs text-muted-foreground text-center">
+                  Drag and drop your files
                 </p>
               </div>
 
-              <div className="text-center" data-animate="stagger">
-                <FileSpreadsheet className="w-12 h-12 text-primary mx-auto mb-6 hover:scale-110 transition-all stroke-[1.5]" />
-                <h3 className="text-xl font-semibold text-foreground mb-4">Download Excel/CSV</h3>
-                <p className="text-muted-foreground">
-                  Get your perfectly formatted XLSX or CSV files ready for immediate use in Excel, Google Sheets, or any spreadsheet software.
+              <div className="flex flex-col items-center" data-animate="stagger">
+                <div className="mb-4 rounded-xl overflow-hidden bg-white dark:bg-white border-2 border-primary/20 shadow-md p-4">
+                  <img
+                    src="/images/data-processing.png"
+                    alt="AI processing"
+                    className="w-32 h-32 object-contain mx-auto"
+                  />
+                </div>
+                <h3 className="text-sm font-semibold text-foreground mb-2">Process</h3>
+                <p className="text-xs text-muted-foreground text-center">
+                  AI extracts your data
+                </p>
+              </div>
+
+              <div className="flex flex-col items-center" data-animate="stagger">
+                <div className="mb-4 rounded-xl overflow-hidden bg-white dark:bg-white border-2 border-primary/20 shadow-md p-4">
+                  <img
+                    src="/images/spreadsheets.png"
+                    alt="Download spreadsheet"
+                    className="w-32 h-32 object-contain mx-auto"
+                  />
+                </div>
+                <h3 className="text-sm font-semibold text-foreground mb-2">Download</h3>
+                <p className="text-xs text-muted-foreground text-center">
+                  Get your Excel file
                 </p>
               </div>
             </div>
