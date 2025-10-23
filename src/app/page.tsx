@@ -459,6 +459,15 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Image - Capture */}
+            <div className="flex justify-center mb-12" data-animate="stagger">
+              <img
+                src="/images/photo-session.png"
+                alt="Capture your documents"
+                className="w-48 h-auto rounded-xl shadow-lg"
+              />
+            </div>
+
             <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
               <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105">
                 <CardHeader className="text-center">
@@ -551,6 +560,16 @@ export default function Home() {
                     See the Transformation in Action
                   </h2>
                 </div>
+
+                {/* Image - Upload */}
+                <div className="flex justify-center mb-8" data-animate="stagger">
+                  <img
+                    src="/images/data-input.png"
+                    alt="Upload your documents"
+                    className="w-48 h-auto rounded-xl shadow-lg"
+                  />
+                </div>
+
                 <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
                   Drag the slider to witness the power of our AI-powered OCR technology
                 </p>
@@ -669,76 +688,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* How It Works Section */}
-        <ScrollAnimatedSection id="how-it-works" className="py-16 relative z-10 overflow-hidden">
-          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16" data-animate="headline">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
-                <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                  Simple & Efficient Workflow
-                </h2>
-              </div>
-            </div>
-
-            <div className="max-w-3xl mx-auto space-y-8">
-              {/* Step 1 - Left */}
-              <div className="flex items-center gap-6" data-animate="stagger">
-                <div className="w-64 flex-shrink-0">
-                  <img
-                    src="/images/photo-session.png"
-                    alt="Capture"
-                    className="w-full h-auto rounded-xl shadow-lg"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-foreground">Capture</h3>
-                </div>
-              </div>
-
-              {/* Step 2 - Right */}
-              <div className="flex items-center gap-6 flex-row-reverse" data-animate="stagger">
-                <div className="w-64 flex-shrink-0">
-                  <img
-                    src="/images/data-input.png"
-                    alt="Upload"
-                    className="w-full h-auto rounded-xl shadow-lg"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-foreground">Upload</h3>
-                </div>
-              </div>
-
-              {/* Step 3 - Left */}
-              <div className="flex items-center gap-6" data-animate="stagger">
-                <div className="w-64 flex-shrink-0">
-                  <img
-                    src="/images/data-processing.png"
-                    alt="Process"
-                    className="w-full h-auto rounded-xl shadow-lg"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-foreground">Process</h3>
-                </div>
-              </div>
-
-              {/* Step 4 - Right */}
-              <div className="flex items-center gap-6 flex-row-reverse" data-animate="stagger">
-                <div className="w-64 flex-shrink-0">
-                  <img
-                    src="/images/spreadsheets.png"
-                    alt="Download"
-                    className="w-full h-auto rounded-xl shadow-lg"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-foreground">Download</h3>
-                </div>
-              </div>
-            </div>
-          </div>
-        </ScrollAnimatedSection>
 
         {/* AI Engine Section */}
         <ScrollAnimatedSection id="ai-engine" className="py-16 relative z-10">
@@ -750,6 +699,16 @@ export default function Home() {
                     How Exceletto's Engine Is Built
                   </h2>
                 </div>
+
+                {/* Image - Processing */}
+                <div className="flex justify-center mb-8" data-animate="stagger">
+                  <img
+                    src="/images/data-processing.png"
+                    alt="AI processing your data"
+                    className="w-48 h-auto rounded-xl shadow-lg"
+                  />
+                </div>
+
                 <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
                   A transparent look at our instruction fine-tuning methodology, system prompts, and the engineering decisions that power industry-leading OCR accuracy.
                 </p>
@@ -996,6 +955,16 @@ export default function Home() {
                     Industry-Leading OCR Accuracy
                   </h2>
                 </div>
+
+                {/* Image - Spreadsheets/Download */}
+                <div className="flex justify-center mb-8" data-animate="stagger">
+                  <img
+                    src="/images/spreadsheets.png"
+                    alt="Download your spreadsheets"
+                    className="w-48 h-auto rounded-xl shadow-lg"
+                  />
+                </div>
+
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                   Benchmarked against major cloud providers on real-world handwritten documents and complex table structures.
                 </p>
