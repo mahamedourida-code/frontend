@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
+import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { AppIcon } from "@/components/AppIcon"
@@ -26,7 +27,10 @@ import {
   Languages,
   KeyRound,
   Check,
-  ShieldCheck
+  ShieldCheck,
+  FileSpreadsheet,
+  DownloadCloud,
+  Save
 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
@@ -55,6 +59,20 @@ export default function SettingsPage() {
   // Preferences state
   const [language, setLanguage] = useState('en')
   const [mounted, setMounted] = useState(false)
+  const [autoDownload, setAutoDownload] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('autoDownload')
+      return saved === 'true'
+    }
+    return false
+  })
+  const [autoSave, setAutoSave] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('autoSave')
+      return saved === 'true'
+    }
+    return false
+  })
 
   // Prevent hydration mismatch for theme
   useEffect(() => {
@@ -408,6 +426,58 @@ export default function SettingsPage() {
             {/* Preferences */}
             {activeSection === 'preferences' && (
               <div className="space-y-6">
+                {/* Processing Settings */}
+                <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+                  <CardHeader className="p-3 lg:p-4">
+                    <div className="flex items-center gap-2">
+                      <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                        <Settings className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <CardTitle>Processing Settings</CardTitle>
+                        <CardDescription>Configure automatic actions</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4 p-3 lg:p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="auto-download">Auto Download</Label>
+                        <p className="text-xs text-muted-foreground">
+                          Automatically download files when processing completes
+                        </p>
+                      </div>
+                      <Switch
+                        id="auto-download"
+                        checked={autoDownload}
+                        onCheckedChange={(checked) => {
+                          setAutoDownload(checked)
+                          localStorage.setItem('autoDownload', checked.toString())
+                          toast.success(checked ? 'Auto-download enabled' : 'Auto-download disabled')
+                        }}
+                      />
+                    </div>
+                    <Separator />
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="auto-save">Auto Save to History</Label>
+                        <p className="text-xs text-muted-foreground">
+                          Automatically save processed files to your history
+                        </p>
+                      </div>
+                      <Switch
+                        id="auto-save"
+                        checked={autoSave}
+                        onCheckedChange={(checked) => {
+                          setAutoSave(checked)
+                          localStorage.setItem('autoSave', checked.toString())
+                          toast.success(checked ? 'Auto-save enabled' : 'Auto-save disabled')
+                        }}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
                 {/* Appearance */}
                 <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
                   <CardHeader className="p-3 lg:p-4">

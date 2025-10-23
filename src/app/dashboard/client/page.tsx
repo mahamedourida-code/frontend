@@ -28,6 +28,7 @@ import {
   Loader2,
   CheckCircle,
   AlertCircle,
+  AlertTriangle,
   X,
   Grid3x3,
   FileImage,
@@ -95,6 +96,9 @@ export default function ProcessImagesPage() {
     }
     return false
   })
+  const [showAutoDownloadConfirm, setShowAutoDownloadConfirm] = useState(false)
+  const [processingTime, setProcessingTime] = useState(0)
+  const processingTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   // Track if auto-actions have been executed for current job to prevent duplicates
   const autoActionsExecutedRef = useRef<string | null>(null)
@@ -297,6 +301,59 @@ export default function ProcessImagesPage() {
       isExecutingAutoActionsRef.current = false
     }
   }, [uploadedFiles.length, isProcessing])
+
+  // Processing timer
+  useEffect(() => {
+    if (isProcessing) {
+      // Reset and start timer
+      setProcessingTime(0)
+      processingTimerRef.current = setInterval(() => {
+        setProcessingTime(prev => prev + 1)
+      }, 1000)
+    } else {
+      // Stop timer
+      if (processingTimerRef.current) {
+        clearInterval(processingTimerRef.current)
+        processingTimerRef.current = null
+      }
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (processingTimerRef.current) {
+        clearInterval(processingTimerRef.current)
+      }
+    }
+  }, [isProcessing])
+
+  // Listen for localStorage changes from settings page
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'autoDownload' && e.newValue !== null) {
+        setAutoDownload(e.newValue === 'true')
+      }
+      if (e.key === 'autoSave' && e.newValue !== null) {
+        setAutoSave(e.newValue === 'true')
+      }
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    
+    // Also check on focus in case storage event doesn't fire
+    const handleFocus = () => {
+      const savedDownload = localStorage.getItem('autoDownload')
+      const savedSave = localStorage.getItem('autoSave')
+      if (savedDownload !== null) setAutoDownload(savedDownload === 'true')
+      if (savedSave !== null) setAutoSave(savedSave === 'true')
+    }
+    
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [])
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -860,13 +917,19 @@ Best regards`
           <Alert className="mb-6 border-primary/50 bg-primary/5">
             <Loader2 className="h-4 w-4 animate-spin" />
             <AlertDescription className="flex items-center justify-between">
-              <div>
-                <span className="font-medium">Processing your images...</span>
-                {progress && (
-                  <span className="ml-3 text-sm text-muted-foreground">
-                    {progress.processed_images} of {progress.total_images} completed
-                  </span>
-                )}
+              <div className="flex items-center gap-3">
+                <div>
+                  <span className="font-medium">Processing your images...</span>
+                  {progress && (
+                    <span className="ml-3 text-sm text-muted-foreground">
+                      {progress.processed_images} of {progress.total_images} completed
+                    </span>
+                  )}
+                </div>
+                <Badge variant="secondary" className="gap-1.5">
+                  <Clock className="h-3 w-3" />
+                  <span>{processingTime}s</span>
+                </Badge>
               </div>
               {progress && (
                 <span className="text-sm font-medium">{progress.percentage}%</span>
@@ -882,9 +945,17 @@ Best regards`
           <Alert className="mb-6 border-green-500/50 bg-green-500/5">
             <CheckCircle className="h-4 w-4 text-green-600" />
             <AlertDescription className="flex items-center justify-between">
-              <span className="font-medium text-green-600">
-                Processing complete! Your files are ready.
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="font-medium text-green-600">
+                  Processing complete! Your files are ready.
+                </span>
+                {processingTime > 0 && (
+                  <Badge variant="outline" className="gap-1.5 text-green-600 border-green-600">
+                    <CheckCircle2 className="h-3 w-3" />
+                    <span>Completed in {processingTime}s</span>
+                  </Badge>
+                )}
+              </div>
               <div className="flex gap-2">
                 {!isSaved && (
                   <Button
@@ -1226,7 +1297,15 @@ Best regards`
                 <h3 className="text-xs font-semibold mb-3 text-foreground">Auto Actions</h3>
                 <div className="space-y-2">
                   <button
-                    onClick={() => setAutoDownload(!autoDownload)}
+                    onClick={() => {
+                      if (!autoDownload) {
+                        // Show confirmation when enabling
+                        setShowAutoDownloadConfirm(true)
+                      } else {
+                        // Disable directly without confirmation
+                        setAutoDownload(false)
+                      }
+                    }}
                     className={cn(
                       "w-full flex items-center justify-between p-2.5 rounded-lg transition-all",
                       "border-2 hover:border-primary/50",
@@ -1247,7 +1326,13 @@ Best regards`
                     <Switch
                       id="auto-download"
                       checked={autoDownload}
-                      onCheckedChange={setAutoDownload}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setShowAutoDownloadConfirm(true)
+                        } else {
+                          setAutoDownload(false)
+                        }
+                      }}
                       onClick={(e) => e.stopPropagation()}
                       className="data-[state=checked]:bg-primary"
                     />
@@ -1507,9 +1592,46 @@ Best regards`
           </div>
         </DialogContent>
       </Dialog>
-      
+
+      {/* Auto-Download Confirmation Dialog */}
+      <Dialog open={showAutoDownloadConfirm} onOpenChange={setShowAutoDownloadConfirm}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 rounded-full bg-amber-500/10">
+                <AlertTriangle className="h-5 w-5 text-amber-500" />
+              </div>
+              <DialogTitle>Enable Auto-Download?</DialogTitle>
+            </div>
+            <DialogDescription className="text-sm text-muted-foreground">
+              When enabled, all processed files will be automatically downloaded to your device as soon as they're ready.
+              <br /><br />
+              This means files will download immediately without asking for permission each time.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowAutoDownloadConfirm(false)}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                setAutoDownload(true)
+                setShowAutoDownloadConfirm(false)
+              }}
+              className="flex-1 bg-primary hover:bg-primary/90"
+            >
+              Enable Auto-Download
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Mobile Navigation */}
-      <MobileNav 
+      <MobileNav
         isAuthenticated={true}
         user={{
           email: user?.email,
