@@ -34,11 +34,11 @@ import { useAuth } from "@/hooks/useAuth"
 import { AppIcon } from "@/components/AppIcon"
 import { MobileNav } from "@/components/MobileNav"
 
-import { Database } from '@/types/database.generated'
+import { Database, Json } from '@/types/database.generated'
 
 type HistoryJob = Database['public']['Tables']['job_history']['Row'] & {
   job_id?: string // For backward compatibility
-  metadata?: any // For backward compatibility  
+  metadata?: Json // For backward compatibility  
 }
 
 function HistoryContent() {
@@ -56,8 +56,8 @@ function HistoryContent() {
       console.log('Downloading job:', job); // Debug log
       
       // Check if we have storage files in metadata (new format with Supabase Storage)
-      const metadata = job.processing_metadata || job.metadata; // Check both for compatibility
-      const storageFiles = metadata?.storage_files;
+      const metadata = job.processing_metadata || (job as any).metadata; // Check both for compatibility
+      const storageFiles = (metadata as any)?.storage_files;
       if (storageFiles && storageFiles.length > 0) {
         const storageFile = storageFiles[0];
         console.log('Using storage file:', storageFile); // Debug log
@@ -105,10 +105,10 @@ function HistoryContent() {
 
           blob = await ocrApi.downloadFile(fileId)
         }
-      } else if (metadata?.storage_path) {
+      } else if ((metadata as any)?.storage_path) {
         // Fallback: try using storage_path directly from metadata
-        console.log('Using metadata storage_path:', metadata.storage_path); // Debug log
-        blob = await ocrApi.downloadFromStorage(metadata.storage_path);
+        console.log('Using metadata storage_path:', (metadata as any).storage_path); // Debug log
+        blob = await ocrApi.downloadFromStorage((metadata as any).storage_path);
       } else {
         console.error('No download URL available. Job data:', job);
         toast.error('No download URL available')
@@ -221,7 +221,7 @@ function HistoryContent() {
       cell: ({ row }) => {
         // Try processing_metadata first, then fall back to metadata
         const metadata = (row.original as any).processing_metadata || (row.original as any).metadata
-        const count = metadata?.total_images || 0
+        const count = (metadata as any)?.total_images || 0
         return <span className="text-sm text-muted-foreground">{count}</span>
       },
     },
@@ -322,8 +322,8 @@ function HistoryContent() {
     const completedJobs = selectedRows
       .map((row) => row.original)
       .filter((job) => {
-        const metadata = job.processing_metadata || job.metadata
-        return job.status === 'completed' && (job.result_url || metadata?.storage_files)
+        const metadata = job.processing_metadata || (job as any).metadata
+        return job.status === 'completed' && (job.result_url || (metadata as any)?.storage_files)
       })
 
     if (completedJobs.length === 0) {
