@@ -98,6 +98,7 @@ export default function ProcessImagesPage() {
 
   // Track if auto-actions have been executed for current job to prevent duplicates
   const autoActionsExecutedRef = useRef<string | null>(null)
+  const isExecutingAutoActionsRef = useRef(false)
   
   // Document type display info
   const documentTypeInfo = {
@@ -227,37 +228,50 @@ export default function ProcessImagesPage() {
         return
       }
 
+      // Check if auto-actions are currently executing
+      if (isExecutingAutoActionsRef.current) {
+        console.log('[AutoActions] Already executing, skipping...')
+        return
+      }
+
+      // Mark this job as processed IMMEDIATELY to prevent duplicate triggers
+      autoActionsExecutedRef.current = jobId
+      isExecutingAutoActionsRef.current = true
+
       const handleAutoActions = async () => {
         console.log('[AutoActions] Executing for job:', jobId)
 
-        // Auto-download all files
-        if (autoDownload) {
-          console.log('[AutoDownload] Downloading all files automatically')
-          toast.info(`Auto-downloading ${resultFiles.length} file(s)...`)
+        try {
+          // Auto-download all files
+          if (autoDownload) {
+            console.log('[AutoDownload] Starting download for', resultFiles.length, 'file(s)')
+            toast.info(`Auto-downloading ${resultFiles.length} file(s)...`)
 
-          for (const file of resultFiles) {
-            if (file.file_id) {
-              try {
-                await downloadFile(file.file_id)
-                await new Promise(resolve => setTimeout(resolve, 500))
-              } catch (error) {
-                console.error('[AutoDownload] Failed to download:', file.file_id, error)
+            for (const file of resultFiles) {
+              if (file.file_id) {
+                try {
+                  console.log('[AutoDownload] Downloading file:', file.file_id)
+                  await downloadFile(file.file_id)
+                  await new Promise(resolve => setTimeout(resolve, 500))
+                } catch (error) {
+                  console.error('[AutoDownload] Failed to download:', file.file_id, error)
+                }
               }
             }
+
+            toast.success(`Auto-downloaded ${resultFiles.length} file(s)`)
           }
 
-          toast.success(`Auto-downloaded ${resultFiles.length} file(s)`)
+          // Auto-save to history
+          if (autoSave && !isSaved) {
+            console.log('[AutoSave] Saving to history automatically')
+            await saveToHistory()
+            toast.success('Auto-saved to history')
+          }
+        } finally {
+          // Reset execution flag after completion
+          isExecutingAutoActionsRef.current = false
         }
-
-        // Auto-save to history
-        if (autoSave && !isSaved) {
-          console.log('[AutoSave] Saving to history automatically')
-          await saveToHistory()
-          toast.success('Auto-saved to history')
-        }
-
-        // Mark this job as processed
-        autoActionsExecutedRef.current = jobId
       }
 
       handleAutoActions()
@@ -267,7 +281,9 @@ export default function ProcessImagesPage() {
   // Reset auto-actions tracker when user starts a new batch
   useEffect(() => {
     if (uploadedFiles.length > 0 && !isProcessing) {
+      console.log('[AutoActions] Resetting tracker for new batch')
       autoActionsExecutedRef.current = null
+      isExecutingAutoActionsRef.current = false
     }
   }, [uploadedFiles.length, isProcessing])
 
@@ -376,6 +392,10 @@ export default function ProcessImagesPage() {
   const handleReset = () => {
     setUploadedFiles([])
     reset()
+    // Reset auto-actions trackers
+    autoActionsExecutedRef.current = null
+    isExecutingAutoActionsRef.current = false
+    console.log('[AutoActions] Trackers reset on New Batch')
   }
 
   const handleShareFile = async (file: any) => {
