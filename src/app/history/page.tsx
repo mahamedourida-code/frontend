@@ -14,11 +14,15 @@ import {
   useReactTable,
   RowSelectionState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Download, ArrowLeft, RefreshCw, FileSpreadsheet, Calendar, DownloadCloud, Trash2, AlertTriangle } from "lucide-react"
+import { ArrowUpDown, Download, ArrowLeft, RefreshCw, FileSpreadsheet, Calendar, DownloadCloud, Trash2, AlertTriangle, CalendarIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Calendar as CalendarComponent } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
+import { format, subDays, isAfter, startOfDay } from "date-fns"
 import {
   Table,
   TableBody,
@@ -45,6 +49,33 @@ function HistoryContent() {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
+  const [date, setDate] = React.useState<Date | undefined>(undefined)
+  const [dateFilter, setDateFilter] = React.useState<"today" | "week" | "month" | "custom" | null>(null)
+
+  // Filter jobs by date
+  const filteredJobs = React.useMemo(() => {
+    if (!dateFilter && !date) return jobs
+
+    return jobs.filter(job => {
+      const jobDate = new Date(job.saved_at || job.created_at || '')
+      const today = startOfDay(new Date())
+      
+      if (dateFilter === "today") {
+        return startOfDay(jobDate).getTime() === today.getTime()
+      } else if (dateFilter === "week") {
+        const weekAgo = subDays(today, 7)
+        return isAfter(jobDate, weekAgo) || startOfDay(jobDate).getTime() === weekAgo.getTime()
+      } else if (dateFilter === "month") {
+        const monthAgo = subDays(today, 30)
+        return isAfter(jobDate, monthAgo) || startOfDay(jobDate).getTime() === monthAgo.getTime()
+      } else if (date) {
+        // Custom date selected
+        return startOfDay(jobDate).getTime() === startOfDay(date).getTime()
+      }
+      
+      return true
+    })
+  }, [jobs, dateFilter, date])
 
   const handleDownload = async (job: HistoryJob) => {
     try {
@@ -168,36 +199,6 @@ function HistoryContent() {
       },
     },
     {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => {
-        const status = row.getValue("status") as string
-        const variants: Record<string, any> = {
-          completed: "default",
-          failed: "destructive",
-          processing: "secondary",
-          pending: "outline"
-        }
-        return (
-          <Badge variant={variants[status] || "outline"} className="text-xs">
-            {status}
-          </Badge>
-        )
-      },
-    },
-    {
-      accessorKey: "processing_metadata",
-      header: "Images",
-      cell: ({ row }) => {
-        // Use processing_metadata for image count
-        const metadata = row.original.processing_metadata
-        const count = typeof metadata === 'object' && metadata !== null && 'total_images' in metadata 
-          ? (metadata as any).total_images 
-          : 0
-        return <span className="text-sm text-muted-foreground">{count}</span>
-      },
-    },
-    {
       accessorKey: "saved_at",
       header: ({ column }) => {
         return (
@@ -268,7 +269,7 @@ function HistoryContent() {
   ]
 
   const table = useReactTable({
-    data: jobs,
+    data: filteredJobs,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -310,7 +311,7 @@ function HistoryContent() {
   }
 
   const handleDownloadAll = async () => {
-    const completedJobs = jobs.filter(
+    const completedJobs = filteredJobs.filter(
       (job) => job.status === 'completed' && job.result_url
     )
 
@@ -454,14 +455,81 @@ function HistoryContent() {
         {/* Table Controls */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
-            <Input
-              placeholder="Filter by filename..."
-              value={(table.getColumn("filename")?.getFilterValue() as string) ?? ""}
-              onChange={(event) =>
-                table.getColumn("filename")?.setFilterValue(event.target.value)
-              }
-              className="max-w-sm h-9 text-sm"
-            />
+            {/* Date Filter */}
+            <div className="flex items-center gap-2">
+              <Button
+                variant={dateFilter === "today" ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setDateFilter("today")
+                  setDate(undefined)
+                }}
+                className="h-9"
+              >
+                Today
+              </Button>
+              <Button
+                variant={dateFilter === "week" ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setDateFilter("week")
+                  setDate(undefined)
+                }}
+                className="h-9"
+              >
+                Last 7 Days
+              </Button>
+              <Button
+                variant={dateFilter === "month" ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setDateFilter("month")
+                  setDate(undefined)
+                }}
+                className="h-9"
+              >
+                Last 30 Days
+              </Button>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={date ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "h-9 w-[180px] justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarComponent
+                    mode="single"
+                    selected={date}
+                    onSelect={(newDate) => {
+                      setDate(newDate)
+                      setDateFilter(null)
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              {(dateFilter || date) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setDateFilter(null)
+                    setDate(undefined)
+                  }}
+                  className="h-9 px-2"
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
             {/* Selected files actions */}
             {table.getFilteredSelectedRowModel().rows.length > 0 && (
               <div className="flex items-center gap-2">
@@ -491,7 +559,7 @@ function HistoryContent() {
           </div>
           <div className="flex items-center gap-2">
             {/* Download all button */}
-            {jobs.filter(job => job.status === 'completed' && job.result_url).length > 0 && (
+            {filteredJobs.filter(job => job.status === 'completed' && job.result_url).length > 0 && (
               <>
                 <Button
                   variant="outline"
@@ -500,7 +568,7 @@ function HistoryContent() {
                   className="h-8"
                 >
                   <DownloadCloud className="h-3 w-3 mr-2" />
-                  Download All ({jobs.filter(job => job.status === 'completed').length})
+                  Download All ({filteredJobs.filter(job => job.status === 'completed').length})
                 </Button>
                 <Button
                   variant="outline"
@@ -514,7 +582,7 @@ function HistoryContent() {
               </>
             )}
             <p className="text-sm text-muted-foreground">
-              {jobs.length} {jobs.length === 1 ? 'job' : 'jobs'}
+              {filteredJobs.length} {filteredJobs.length === 1 ? 'job' : 'jobs'}
             </p>
           </div>
         </div>
@@ -583,7 +651,7 @@ function HistoryContent() {
         </div>
 
         {/* Pagination */}
-        {jobs.length > 0 && (
+        {filteredJobs.length > 0 && (
           <div className="flex items-center justify-end space-x-2 py-4">
             <Button
               variant="outline"
