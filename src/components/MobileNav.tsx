@@ -89,12 +89,13 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
       icon: Settings,
       show: isAuthenticated
     },
-    {
-      label: "Pricing",
-      href: "/pricing",
-      icon: DollarSign,
-      show: isAuthenticated
-    },
+    // Pricing - Hidden
+    // {
+    //   label: "Pricing",
+    //   href: "/pricing",
+    //   icon: DollarSign,
+    //   show: isAuthenticated
+    // },
     // Non-Authenticated User Menu
     {
       label: "Home",
@@ -102,12 +103,13 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
       icon: Home,
       show: !isAuthenticated
     },
-    {
-      label: "Pricing",
-      href: "/pricing",
-      icon: DollarSign,
-      show: !isAuthenticated
-    },
+    // Pricing - Hidden
+    // {
+    //   label: "Pricing",
+    //   href: "/pricing",
+    //   icon: DollarSign,
+    //   show: !isAuthenticated
+    // },
     {
       label: "Solutions",
       icon: FileSpreadsheet,
@@ -192,16 +194,9 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
             >
               {/* Header */}
               <SheetHeader className="px-4 py-3 border-b">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <AppIcon size={32} />
-                    <SheetTitle className="text-base md:text-lg font-bold">Exceletto</SheetTitle>
-                  </div>
-                  <SheetClose asChild>
-                    <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
-                      <X className="h-5 w-5" />
-                    </Button>
-                  </SheetClose>
+                <div className="flex items-center gap-2">
+                  <AppIcon size={32} />
+                  <SheetTitle className="text-base md:text-lg font-bold">Exceletto</SheetTitle>
                 </div>
               </SheetHeader>
 
@@ -367,23 +362,14 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
                     <span className="text-sm md:text-base">Sign Out</span>
                   </Button>
                 ) : (
-                  <>
-                    <Button
-                      variant="outline"
-                      className="w-full h-10 gap-3"
-                      onClick={() => handleNavigation("/sign-in")}
-                    >
-                      <LogIn className="h-5 w-5" />
-                      <span className="text-sm md:text-base">Sign In</span>
-                    </Button>
-                    <Button
-                      className="w-full h-10 gap-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                      onClick={() => handleNavigation("/sign-up")}
-                    >
-                      <UserPlus className="h-5 w-5" />
-                      <span className="text-sm md:text-base font-medium">Get Started Free</span>
-                    </Button>
-                  </>
+                  <Button
+                    variant="outline"
+                    className="w-full h-10 gap-3"
+                    onClick={() => handleNavigation("/sign-in")}
+                  >
+                    <LogIn className="h-5 w-5" />
+                    <span className="text-sm md:text-base">Sign In</span>
+                  </Button>
                 )}
               </div>
             </SheetContent>

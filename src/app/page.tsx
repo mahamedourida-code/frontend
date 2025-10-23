@@ -175,9 +175,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background relative" style={{ backgroundColor: '#ffffff' }}>
       {/* Navigation Bar */}
-      <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 pt-4">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-black/20 to-black/10 dark:from-white/20 dark:to-white/10 rounded-[35px] border border-black/30 dark:border-white/30 shadow-lg shadow-black/10 dark:shadow-white/10 backdrop-blur-md p-4 flex items-center justify-between">
+      <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 pt-3 lg:pt-4">
+        <div className="container mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="bg-primary/90 dark:bg-primary/80 rounded-[35px] border border-primary shadow-lg shadow-primary/20 backdrop-blur-md p-3 lg:p-4 flex items-center justify-between">
             {/* Logo */}
             <div className="flex-shrink-0">
               <AppLogo />
@@ -260,15 +260,15 @@ export default function Home() {
                     </NavigationMenuContent>
                   </NavigationMenuItem>
 
-                  {/* Pricing Link */}
-                  <NavigationMenuItem>
+                  {/* Pricing Link - Hidden */}
+                  {/* <NavigationMenuItem>
                     <NavigationMenuLink
                       href="/pricing"
                       className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-accent/50 transition-colors")}
                     >
                       Pricing
                     </NavigationMenuLink>
-                  </NavigationMenuItem>
+                  </NavigationMenuItem> */}
 
                   {/* Performance Benchmarks */}
                   <NavigationMenuItem>
@@ -304,17 +304,17 @@ export default function Home() {
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-[6fr_7fr] gap-8 sm:gap-12 lg:gap-12 items-center">
               {/* Left Content */}
-              <div ref={heroContentRef} className="max-w-xl -mt-8">
-                <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 dark:from-blue-400/20 dark:to-purple-400/20 border border-blue-500/40 dark:border-blue-400/40 mb-4 sm:mb-5 shadow-lg shadow-blue-500/10 backdrop-blur-sm">
-                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400 animate-pulse" />
-                  <span className="text-xs sm:text-sm font-semibold text-blue-700 dark:text-blue-300">Exceletto-7B Handwritten Specialist</span>
+              <div ref={heroContentRef} className="max-w-xl -mt-4 lg:-mt-8">
+                <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-3 sm:mb-5 shadow-lg shadow-primary/10">
+                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-primary animate-pulse" />
+                  <span className="text-xs sm:text-sm font-semibold text-foreground">Exceletto-7B Handwritten Specialist</span>
                 </div>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-[1.1] tracking-tight">
+                <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-foreground leading-[1.1] tracking-tight">
                   <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
                     Convert Screenshots to Excel instantly
                   </span>
                 </h1>
-                <p className="mt-4 sm:mt-5 text-base sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
+                <p className="mt-3 sm:mt-5 text-sm sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
                   Extract up to 100 table images in one click with our specialized 7B parameter model fine-tuned for handwritten text recognition.
                 </p>
                 <div className="mt-6 sm:mt-8 md:mt-10">
