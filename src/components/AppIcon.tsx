@@ -45,7 +45,7 @@ export function AppLogo({ className = '' }: { className?: string }) {
         className="rounded-full"
         priority
       />
-      <span className="text-xl font-bold text-white">
+      <span className="text-xl font-bold text-black dark:text-white">
         Exceletto
       </span>
     </div>
