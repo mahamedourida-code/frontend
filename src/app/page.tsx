@@ -672,7 +672,7 @@ export default function Home() {
         {/* How It Works Section */}
         <ScrollAnimatedSection id="how-it-works" className="py-16 relative z-10 overflow-hidden">
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12" data-animate="headline">
+            <div className="text-center mb-16" data-animate="headline">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   Simple & Efficient Workflow
@@ -680,61 +680,61 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-              <div className="flex flex-col items-center" data-animate="stagger">
-                <div className="mb-4 rounded-xl overflow-hidden bg-white dark:bg-white border-2 border-primary/20 shadow-md p-4">
+            <div className="max-w-4xl mx-auto space-y-12">
+              {/* Step 1 - Left */}
+              <div className="flex items-center gap-8" data-animate="stagger">
+                <div className="flex-1">
                   <img
                     src="/images/photo-session.png"
-                    alt="Capture your data"
-                    className="w-32 h-32 object-contain mx-auto"
+                    alt="Capture"
+                    className="w-full h-auto rounded-xl shadow-lg"
                   />
                 </div>
-                <h3 className="text-sm font-semibold text-foreground mb-2">Capture</h3>
-                <p className="text-xs text-muted-foreground text-center">
-                  Take a photo or screenshot
-                </p>
+                <div className="flex-shrink-0">
+                  <h3 className="text-2xl font-bold text-foreground">Capture</h3>
+                </div>
               </div>
 
-              <div className="flex flex-col items-center" data-animate="stagger">
-                <div className="mb-4 rounded-xl overflow-hidden bg-white dark:bg-white border-2 border-primary/20 shadow-md p-4">
+              {/* Step 2 - Right */}
+              <div className="flex items-center gap-8 flex-row-reverse" data-animate="stagger">
+                <div className="flex-1">
                   <img
                     src="/images/data-input.png"
-                    alt="Upload to platform"
-                    className="w-32 h-32 object-contain mx-auto"
+                    alt="Upload"
+                    className="w-full h-auto rounded-xl shadow-lg"
                   />
                 </div>
-                <h3 className="text-sm font-semibold text-foreground mb-2">Upload</h3>
-                <p className="text-xs text-muted-foreground text-center">
-                  Drag and drop your files
-                </p>
+                <div className="flex-shrink-0">
+                  <h3 className="text-2xl font-bold text-foreground">Upload</h3>
+                </div>
               </div>
 
-              <div className="flex flex-col items-center" data-animate="stagger">
-                <div className="mb-4 rounded-xl overflow-hidden bg-white dark:bg-white border-2 border-primary/20 shadow-md p-4">
+              {/* Step 3 - Left */}
+              <div className="flex items-center gap-8" data-animate="stagger">
+                <div className="flex-1">
                   <img
                     src="/images/data-processing.png"
-                    alt="AI processing"
-                    className="w-32 h-32 object-contain mx-auto"
+                    alt="Process"
+                    className="w-full h-auto rounded-xl shadow-lg"
                   />
                 </div>
-                <h3 className="text-sm font-semibold text-foreground mb-2">Process</h3>
-                <p className="text-xs text-muted-foreground text-center">
-                  AI extracts your data
-                </p>
+                <div className="flex-shrink-0">
+                  <h3 className="text-2xl font-bold text-foreground">Process</h3>
+                </div>
               </div>
 
-              <div className="flex flex-col items-center" data-animate="stagger">
-                <div className="mb-4 rounded-xl overflow-hidden bg-white dark:bg-white border-2 border-primary/20 shadow-md p-4">
+              {/* Step 4 - Right */}
+              <div className="flex items-center gap-8 flex-row-reverse" data-animate="stagger">
+                <div className="flex-1">
                   <img
                     src="/images/spreadsheets.png"
-                    alt="Download spreadsheet"
-                    className="w-32 h-32 object-contain mx-auto"
+                    alt="Download"
+                    className="w-full h-auto rounded-xl shadow-lg"
                   />
                 </div>
-                <h3 className="text-sm font-semibold text-foreground mb-2">Download</h3>
-                <p className="text-xs text-muted-foreground text-center">
-                  Get your Excel file
-                </p>
+                <div className="flex-shrink-0">
+                  <h3 className="text-2xl font-bold text-foreground">Download</h3>
+                </div>
               </div>
             </div>
           </div>
