@@ -670,9 +670,7 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               <div className="text-center" data-animate="stagger">
-                <div className="w-16 h-16 bg-primary/10 border-2 border-primary rounded-full flex items-center justify-center mx-auto mb-6 hover:bg-primary hover:scale-110 transition-all group">
-                  <span className="text-2xl font-bold text-primary group-hover:text-primary-foreground transition-colors">1</span>
-                </div>
+                <Upload className="w-12 h-12 text-primary mx-auto mb-6 hover:scale-110 transition-all stroke-[1.5]" />
                 <h3 className="text-xl font-semibold text-foreground mb-4">Upload Screenshot</h3>
                 <p className="text-muted-foreground">
                   Simply drag and drop your screenshot or image containing tabular data into Exceletto
@@ -680,9 +678,7 @@ export default function Home() {
               </div>
 
               <div className="text-center" data-animate="stagger">
-                <div className="w-16 h-16 bg-primary/10 border-2 border-primary rounded-full flex items-center justify-center mx-auto mb-6 hover:bg-primary hover:scale-110 transition-all group">
-                  <span className="text-2xl font-bold text-primary group-hover:text-primary-foreground transition-colors">2</span>
-                </div>
+                <Sparkles className="w-12 h-12 text-primary mx-auto mb-6 hover:scale-110 transition-all stroke-[1.5]" />
                 <h3 className="text-xl font-semibold text-foreground mb-4">AI Processing</h3>
                 <p className="text-muted-foreground">
                   Our advanced OCR technology analyzes and extracts the data with high accuracy.
@@ -690,9 +686,7 @@ export default function Home() {
               </div>
 
               <div className="text-center" data-animate="stagger">
-                <div className="w-16 h-16 bg-primary/10 border-2 border-primary rounded-full flex items-center justify-center mx-auto mb-6 hover:bg-primary hover:scale-110 transition-all group">
-                  <span className="text-2xl font-bold text-primary group-hover:text-primary-foreground transition-colors">3</span>
-                </div>
+                <FileSpreadsheet className="w-12 h-12 text-primary mx-auto mb-6 hover:scale-110 transition-all stroke-[1.5]" />
                 <h3 className="text-xl font-semibold text-foreground mb-4">Download Excel/CSV</h3>
                 <p className="text-muted-foreground">
                   Get your perfectly formatted XLSX or CSV files ready for immediate use in Excel, Google Sheets, or any spreadsheet software.
@@ -722,9 +716,7 @@ export default function Home() {
                 <Card className="border border-border/50 shadow-lg" data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <Layers className="w-5 h-5 text-primary" />
-                      </div>
+                      <Layers className="w-6 h-6 text-primary" />
                       <CardTitle className="text-2xl">Instruction Fine-Tuning on Llama 3</CardTitle>
                     </div>
                   </CardHeader>
@@ -782,9 +774,7 @@ export default function Home() {
                 <Card className="border border-border/50 shadow-lg" data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <Shield className="w-5 h-5 text-primary" />
-                      </div>
+                      <Shield className="w-6 h-6 text-primary" />
                       <CardTitle className="text-2xl">System Prompts for Output Quality</CardTitle>
                     </div>
                   </CardHeader>
@@ -836,9 +826,7 @@ export default function Home() {
                 <Card className="border border-border/50 shadow-lg" data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <Target className="w-5 h-5 text-primary" />
-                      </div>
+                      <Target className="w-6 h-6 text-primary" />
                       <CardTitle className="text-2xl">Content Moderation with Self-Reflection</CardTitle>
                     </div>
                   </CardHeader>
@@ -905,9 +893,7 @@ export default function Home() {
                 <Card className="border border-border/50 shadow-lg" data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <Zap className="w-5 h-5 text-primary" />
-                      </div>
+                      <Zap className="w-6 h-6 text-primary" />
                       <CardTitle className="text-2xl">Efficient Knowledge Compression</CardTitle>
                     </div>
                   </CardHeader>
