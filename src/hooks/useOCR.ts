@@ -221,6 +221,10 @@ export function useOCR(): UseOCRReturn {
         return
       }
 
+      // Type the metadata properly
+      const metadata = processingJob.processing_metadata as Record<string, any> | null
+      const storageFiles = metadata?.storage_files as Array<{ url?: string }> | undefined
+
       // Save to job_history table (create if not exists)
       const { error: saveError } = await supabase
         .from('job_history')
@@ -229,10 +233,10 @@ export function useOCR(): UseOCRReturn {
           user_id: user.id,
           filename: files[0]?.filename || `batch_${new Date().toISOString().split('T')[0]}.xlsx`,
           status: 'completed',
-          result_url: processingJob.processing_metadata?.storage_files?.[0]?.url || 
-                     files[0]?.file_id ? `/api/v1/download/${files[0].file_id}` : null,
+          result_url: storageFiles?.[0]?.url ||
+                     (files[0]?.file_id ? `/api/v1/download/${files[0].file_id}` : null),
           processing_metadata: {
-            ...processingJob.processing_metadata,
+            ...(metadata || {}),
             total_images: files.length,
             files: files.map(f => ({
               file_id: f.file_id,
