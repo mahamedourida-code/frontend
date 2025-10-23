@@ -9,6 +9,8 @@ import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { useOCR } from "@/hooks/useOCR"
 import { useAuth } from "@/hooks/useAuth"
@@ -79,6 +81,20 @@ export default function ProcessImagesPage() {
   const [shareSession, setShareSession] = useState<any>(null)
   const [copySuccess, setCopySuccess] = useState(false)
   const [creditLoading, setCreditLoading] = useState(true)
+  const [autoDownload, setAutoDownload] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('autoDownload')
+      return saved === 'true'
+    }
+    return false
+  })
+  const [autoSave, setAutoSave] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('autoSave')
+      return saved === 'true'
+    }
+    return false
+  })
   
   // Document type display info
   const documentTypeInfo = {
@@ -158,6 +174,20 @@ export default function ProcessImagesPage() {
     wakeUpBackendSilently()
   }, [])
 
+  // Persist auto-download setting to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('autoDownload', autoDownload.toString())
+    }
+  }, [autoDownload])
+
+  // Persist auto-save setting to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('autoSave', autoSave.toString())
+    }
+  }, [autoSave])
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/sign-in')
@@ -184,6 +214,41 @@ export default function ProcessImagesPage() {
       return () => clearTimeout(timer)
     }
   }, [status])
+
+  // Auto-download and auto-save when files are ready
+  useEffect(() => {
+    if (status === 'completed' && resultFiles && resultFiles.length > 0) {
+      const handleAutoActions = async () => {
+        // Auto-download all files
+        if (autoDownload) {
+          console.log('[AutoDownload] Downloading all files automatically')
+          toast.info(`Auto-downloading ${resultFiles.length} file(s)...`)
+
+          for (const file of resultFiles) {
+            if (file.file_id) {
+              try {
+                await downloadFile(file.file_id)
+                await new Promise(resolve => setTimeout(resolve, 500))
+              } catch (error) {
+                console.error('[AutoDownload] Failed to download:', file.file_id, error)
+              }
+            }
+          }
+
+          toast.success(`Auto-downloaded ${resultFiles.length} file(s)`)
+        }
+
+        // Auto-save to history
+        if (autoSave && !isSaved) {
+          console.log('[AutoSave] Saving to history automatically')
+          await saveToHistory()
+          toast.success('Auto-saved to history')
+        }
+      }
+
+      handleAutoActions()
+    }
+  }, [status, resultFiles, autoDownload, autoSave, isSaved])
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -1099,6 +1164,48 @@ Best regards`
 
           {/* Info Sidebar - Shows first on mobile */}
           <div className="lg:col-span-1 space-y-4 order-1 lg:order-2">
+            {/* Auto Settings */}
+            <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+              <CardContent className="p-3">
+                <h3 className="text-xs font-semibold mb-3 text-foreground">Auto Actions</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <Label htmlFor="auto-download" className="text-xs font-medium text-foreground cursor-pointer">
+                        Auto Download
+                      </Label>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">
+                        Download files when ready
+                      </p>
+                    </div>
+                    <Switch
+                      id="auto-download"
+                      checked={autoDownload}
+                      onCheckedChange={setAutoDownload}
+                      className="data-[state=checked]:bg-primary"
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <Label htmlFor="auto-save" className="text-xs font-medium text-foreground cursor-pointer">
+                        Auto Save
+                      </Label>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">
+                        Save to history automatically
+                      </p>
+                    </div>
+                    <Switch
+                      id="auto-save"
+                      checked={autoSave}
+                      onCheckedChange={setAutoSave}
+                      className="data-[state=checked]:bg-primary"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Quick Stats */}
             <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
               <CardContent className="p-3">
