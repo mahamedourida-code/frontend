@@ -427,8 +427,8 @@ export default function DashboardPage() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6 lg:mb-8">
-            <Card>
-              <CardContent className="p-4 lg:p-6">
+            <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+              <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs lg:text-sm text-muted-foreground">Today's Images</p>
@@ -441,8 +441,8 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="p-4 lg:p-6">
+            <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+              <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs lg:text-sm text-muted-foreground">Avg. Time</p>
@@ -455,8 +455,8 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="p-4 lg:p-6">
+            <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+              <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs lg:text-sm text-muted-foreground">Credits Left</p>
@@ -472,8 +472,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Chart Section */}
-          <Card>
-            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 lg:p-6">
+          <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 lg:p-4">
               <div>
                 <CardTitle className="text-base lg:text-lg flex items-center gap-2">
                   <TrendingUp className="h-4 w-4 lg:h-5 lg:w-5" />
@@ -497,7 +497,7 @@ export default function DashboardPage() {
                 ))}
               </div>
             </CardHeader>
-            <CardContent className="p-4 lg:p-6">
+            <CardContent className="p-3 lg:p-4">
               {chartData.length > 0 && chartData.some(d => d.count > 0) ? (
                 <ResponsiveContainer width="100%" height={280}>
                   <LineChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>

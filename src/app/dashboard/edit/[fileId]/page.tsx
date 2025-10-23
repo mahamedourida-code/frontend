@@ -1037,9 +1037,9 @@ export default function EditExcelPage() {
             >
               Cancel
             </Button>
-            <Button 
-              onClick={handleSave} 
-              className="h-9 px-4 bg-green-600 hover:bg-green-700 text-white gap-2"
+            <Button
+              onClick={handleSave}
+              className="h-9 px-4 bg-primary hover:bg-primary/90 text-white gap-2"
             >
               <Download className="h-4 w-4" />
               Save & Download

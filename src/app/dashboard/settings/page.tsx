@@ -213,8 +213,8 @@ export default function SettingsPage() {
 
           {/* Sidebar Navigation */}
           <nav className="hidden lg:block w-64 shrink-0">
-            <Card>
-              <CardContent className="p-4">
+            <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+              <CardContent className="p-3 lg:p-4">
                 <div className="space-y-1">
                   {sidebarSections.map((section) => (
                     <div key={section.title} className="space-y-1">
@@ -249,8 +249,8 @@ export default function SettingsPage() {
             {activeSection === 'account' && (
               <div className="space-y-4 lg:space-y-6">
                 {/* Profile Information */}
-                <Card>
-                  <CardHeader className="p-4 lg:p-6">
+                <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+                  <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 lg:h-10 lg:w-10 rounded-lg bg-primary/10 flex items-center justify-center">
                         <User className="h-4 w-4 lg:h-5 lg:w-5 text-primary" />
@@ -261,7 +261,7 @@ export default function SettingsPage() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-3 lg:space-y-4 p-4 lg:p-6">
+                  <CardContent className="space-y-3 lg:space-y-4 p-3 lg:p-4">
                     <div className="space-y-1.5 lg:space-y-2">
                       <Label htmlFor="fullname" className="text-xs lg:text-sm">Full Name</Label>
                       <Input
@@ -306,8 +306,8 @@ export default function SettingsPage() {
                 </Card>
 
                 {/* Security Settings */}
-                <Card>
-                  <CardHeader className="p-4 lg:p-6">
+                <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+                  <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 lg:h-10 lg:w-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
                         <ShieldCheck className="h-4 w-4 lg:h-5 lg:w-5 text-orange-600" />
@@ -318,7 +318,7 @@ export default function SettingsPage() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-3 lg:space-y-4 p-4 lg:p-6">
+                  <CardContent className="space-y-3 lg:space-y-4 p-3 lg:p-4">
                     {!showPasswordChange ? (
                       <div className="flex items-center justify-between p-3 lg:p-4 rounded-lg border bg-muted/50">
                         <div className="flex items-center gap-2 lg:gap-3">
@@ -409,8 +409,8 @@ export default function SettingsPage() {
             {activeSection === 'preferences' && (
               <div className="space-y-6">
                 {/* Appearance */}
-                <Card>
-                  <CardHeader>
+                <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+                  <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
                       <div className="h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
                         <Moon className="h-5 w-5 text-purple-600" />
@@ -421,7 +421,7 @@ export default function SettingsPage() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 p-3 lg:p-4">
                     <div className="space-y-3">
                       <Label>Theme</Label>
                       {mounted && (
@@ -481,8 +481,8 @@ export default function SettingsPage() {
                 </Card>
 
                 {/* Language & Region */}
-                <Card>
-                  <CardHeader>
+                <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+                  <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
                       <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
                         <Languages className="h-5 w-5 text-blue-600" />
@@ -493,7 +493,7 @@ export default function SettingsPage() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 p-3 lg:p-4">
                     <div className="space-y-2">
                       <Label htmlFor="language">Display Language</Label>
                       <Select value={language} onValueChange={handleLanguageChange}>
