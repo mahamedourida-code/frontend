@@ -878,9 +878,9 @@ Best regards`
                 {!isSaved && (
                   <Button
                     size="sm"
-                    variant="outline"
                     onClick={saveToHistory}
                     disabled={isSaving}
+                    className="bg-white dark:bg-white border-2 border-primary text-foreground hover:bg-primary/10"
                   >
                     {isSaving ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -889,8 +889,12 @@ Best regards`
                     )}
                   </Button>
                 )}
-                <Button size="sm" variant="outline" onClick={handleReset}>
-                  New Batch
+                <Button
+                  size="sm"
+                  onClick={handleReset}
+                  className="bg-primary hover:bg-primary/90 text-white border-0"
+                >
+                  Start Fresh
                 </Button>
               </div>
             </AlertDescription>
