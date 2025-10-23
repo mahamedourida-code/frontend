@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -95,6 +95,9 @@ export default function ProcessImagesPage() {
     }
     return false
   })
+
+  // Track if auto-actions have been executed for current job to prevent duplicates
+  const autoActionsExecutedRef = useRef<string | null>(null)
   
   // Document type display info
   const documentTypeInfo = {
@@ -217,8 +220,16 @@ export default function ProcessImagesPage() {
 
   // Auto-download and auto-save when files are ready
   useEffect(() => {
-    if (status === 'completed' && resultFiles && resultFiles.length > 0) {
+    if (status === 'completed' && resultFiles && resultFiles.length > 0 && jobId) {
+      // Check if we've already executed auto-actions for this job
+      if (autoActionsExecutedRef.current === jobId) {
+        console.log('[AutoActions] Already executed for job:', jobId)
+        return
+      }
+
       const handleAutoActions = async () => {
+        console.log('[AutoActions] Executing for job:', jobId)
+
         // Auto-download all files
         if (autoDownload) {
           console.log('[AutoDownload] Downloading all files automatically')
@@ -244,11 +255,21 @@ export default function ProcessImagesPage() {
           await saveToHistory()
           toast.success('Auto-saved to history')
         }
+
+        // Mark this job as processed
+        autoActionsExecutedRef.current = jobId
       }
 
       handleAutoActions()
     }
-  }, [status, resultFiles, autoDownload, autoSave, isSaved])
+  }, [status, resultFiles, autoDownload, autoSave, isSaved, jobId])
+
+  // Reset auto-actions tracker when user starts a new batch
+  useEffect(() => {
+    if (uploadedFiles.length > 0 && !isProcessing) {
+      autoActionsExecutedRef.current = null
+    }
+  }, [uploadedFiles.length, isProcessing])
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -1168,40 +1189,62 @@ Best regards`
             <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
               <CardContent className="p-3">
                 <h3 className="text-xs font-semibold mb-3 text-foreground">Auto Actions</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setAutoDownload(!autoDownload)}
+                    className={cn(
+                      "w-full flex items-center justify-between p-2.5 rounded-lg transition-all",
+                      "border-2 hover:border-primary/50",
+                      autoDownload
+                        ? "bg-primary/10 border-primary"
+                        : "bg-muted/30 border-muted-foreground/20"
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <DownloadCloud className={cn(
+                        "h-4 w-4",
+                        autoDownload ? "text-primary" : "text-muted-foreground"
+                      )} />
                       <Label htmlFor="auto-download" className="text-xs font-medium text-foreground cursor-pointer">
                         Auto Download
                       </Label>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">
-                        Download files when ready
-                      </p>
                     </div>
                     <Switch
                       id="auto-download"
                       checked={autoDownload}
                       onCheckedChange={setAutoDownload}
+                      onClick={(e) => e.stopPropagation()}
                       className="data-[state=checked]:bg-primary"
                     />
-                  </div>
-                  <Separator />
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
+                  </button>
+
+                  <button
+                    onClick={() => setAutoSave(!autoSave)}
+                    className={cn(
+                      "w-full flex items-center justify-between p-2.5 rounded-lg transition-all",
+                      "border-2 hover:border-primary/50",
+                      autoSave
+                        ? "bg-primary/10 border-primary"
+                        : "bg-muted/30 border-muted-foreground/20"
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Save className={cn(
+                        "h-4 w-4",
+                        autoSave ? "text-primary" : "text-muted-foreground"
+                      )} />
                       <Label htmlFor="auto-save" className="text-xs font-medium text-foreground cursor-pointer">
                         Auto Save
                       </Label>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">
-                        Save to history automatically
-                      </p>
                     </div>
                     <Switch
                       id="auto-save"
                       checked={autoSave}
                       onCheckedChange={setAutoSave}
+                      onClick={(e) => e.stopPropagation()}
                       className="data-[state=checked]:bg-primary"
                     />
-                  </div>
+                  </button>
                 </div>
               </CardContent>
             </Card>
