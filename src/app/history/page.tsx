@@ -34,12 +34,9 @@ import { useAuth } from "@/hooks/useAuth"
 import { AppIcon } from "@/components/AppIcon"
 import { MobileNav } from "@/components/MobileNav"
 
-import { Database, Json } from '@/types/database.generated'
+import { Database } from '@/types/database.generated'
 
-type HistoryJob = Database['public']['Tables']['job_history']['Row'] & {
-  job_id?: string // For backward compatibility
-  metadata?: Json // For backward compatibility  
-}
+type HistoryJob = Database['public']['Tables']['job_history']['Row']
 
 function HistoryContent() {
   const router = useRouter()
@@ -92,7 +89,7 @@ function HistoryContent() {
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = job.filename || `job_${job.original_job_id || job.job_id || job.id}.xlsx`
+      link.download = job.filename || `job_${job.original_job_id || job.id}.xlsx`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -247,7 +244,7 @@ function HistoryContent() {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    const jobId = job.original_job_id || job.job_id || job.id
+                    const jobId = job.original_job_id
                     if (jobId) {
                       handleDelete(jobId)
                     } else {
@@ -363,7 +360,8 @@ function HistoryContent() {
     // Delete files sequentially
     for (const job of selectedJobs) {
       try {
-        const jobId = job.original_job_id || job.job_id || job.id
+        // Use original_job_id which is the actual job ID from processing
+        const jobId = job.original_job_id
         if (!jobId) {
           errorCount++
           continue
