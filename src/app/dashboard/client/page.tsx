@@ -221,6 +221,11 @@ export default function ProcessImagesPage() {
 
   // Auto-download and auto-save when files are ready
   useEffect(() => {
+    // Only run if auto-download or auto-save are enabled
+    if (!autoDownload && !autoSave) {
+      return
+    }
+
     if (status === 'completed' && resultFiles && resultFiles.length > 0 && jobId) {
       // Check if we've already executed auto-actions for this job
       if (autoActionsExecutedRef.current === jobId) {
@@ -239,7 +244,7 @@ export default function ProcessImagesPage() {
       isExecutingAutoActionsRef.current = true
 
       const handleAutoActions = async () => {
-        console.log('[AutoActions] Executing for job:', jobId)
+        console.log('[AutoActions] Executing for job:', jobId, 'autoDownload:', autoDownload, 'autoSave:', autoSave)
 
         try {
           // Auto-download all files
@@ -247,19 +252,25 @@ export default function ProcessImagesPage() {
             console.log('[AutoDownload] Starting download for', resultFiles.length, 'file(s)')
             toast.info(`Auto-downloading ${resultFiles.length} file(s)...`)
 
+            // Create a Set of downloaded file IDs to prevent duplicates
+            const downloadedIds = new Set<string>()
+
             for (const file of resultFiles) {
-              if (file.file_id) {
+              if (file.file_id && !downloadedIds.has(file.file_id)) {
                 try {
                   console.log('[AutoDownload] Downloading file:', file.file_id)
                   await downloadFile(file.file_id)
+                  downloadedIds.add(file.file_id)
                   await new Promise(resolve => setTimeout(resolve, 500))
                 } catch (error) {
                   console.error('[AutoDownload] Failed to download:', file.file_id, error)
                 }
+              } else if (downloadedIds.has(file.file_id)) {
+                console.log('[AutoDownload] Skipping duplicate file_id:', file.file_id)
               }
             }
 
-            toast.success(`Auto-downloaded ${resultFiles.length} file(s)`)
+            toast.success(`Auto-downloaded ${downloadedIds.size} file(s)`)
           }
 
           // Auto-save to history
@@ -276,7 +287,7 @@ export default function ProcessImagesPage() {
 
       handleAutoActions()
     }
-  }, [status, resultFiles, autoDownload, autoSave, isSaved, jobId])
+  }, [status, jobId])
 
   // Reset auto-actions tracker when user starts a new batch
   useEffect(() => {

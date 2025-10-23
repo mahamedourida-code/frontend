@@ -680,60 +680,60 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="max-w-4xl mx-auto space-y-12">
+            <div className="max-w-3xl mx-auto space-y-8">
               {/* Step 1 - Left */}
-              <div className="flex items-center gap-8" data-animate="stagger">
-                <div className="flex-1">
+              <div className="flex items-center gap-6" data-animate="stagger">
+                <div className="w-64 flex-shrink-0">
                   <img
                     src="/images/photo-session.png"
                     alt="Capture"
                     className="w-full h-auto rounded-xl shadow-lg"
                   />
                 </div>
-                <div className="flex-shrink-0">
-                  <h3 className="text-2xl font-bold text-foreground">Capture</h3>
+                <div>
+                  <h3 className="text-xl font-bold text-foreground">Capture</h3>
                 </div>
               </div>
 
               {/* Step 2 - Right */}
-              <div className="flex items-center gap-8 flex-row-reverse" data-animate="stagger">
-                <div className="flex-1">
+              <div className="flex items-center gap-6 flex-row-reverse" data-animate="stagger">
+                <div className="w-64 flex-shrink-0">
                   <img
                     src="/images/data-input.png"
                     alt="Upload"
                     className="w-full h-auto rounded-xl shadow-lg"
                   />
                 </div>
-                <div className="flex-shrink-0">
-                  <h3 className="text-2xl font-bold text-foreground">Upload</h3>
+                <div>
+                  <h3 className="text-xl font-bold text-foreground">Upload</h3>
                 </div>
               </div>
 
               {/* Step 3 - Left */}
-              <div className="flex items-center gap-8" data-animate="stagger">
-                <div className="flex-1">
+              <div className="flex items-center gap-6" data-animate="stagger">
+                <div className="w-64 flex-shrink-0">
                   <img
                     src="/images/data-processing.png"
                     alt="Process"
                     className="w-full h-auto rounded-xl shadow-lg"
                   />
                 </div>
-                <div className="flex-shrink-0">
-                  <h3 className="text-2xl font-bold text-foreground">Process</h3>
+                <div>
+                  <h3 className="text-xl font-bold text-foreground">Process</h3>
                 </div>
               </div>
 
               {/* Step 4 - Right */}
-              <div className="flex items-center gap-8 flex-row-reverse" data-animate="stagger">
-                <div className="flex-1">
+              <div className="flex items-center gap-6 flex-row-reverse" data-animate="stagger">
+                <div className="w-64 flex-shrink-0">
                   <img
                     src="/images/spreadsheets.png"
                     alt="Download"
                     className="w-full h-auto rounded-xl shadow-lg"
                   />
                 </div>
-                <div className="flex-shrink-0">
-                  <h3 className="text-2xl font-bold text-foreground">Download</h3>
+                <div>
+                  <h3 className="text-xl font-bold text-foreground">Download</h3>
                 </div>
               </div>
             </div>
