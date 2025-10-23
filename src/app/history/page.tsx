@@ -34,18 +34,11 @@ import { useAuth } from "@/hooks/useAuth"
 import { AppIcon } from "@/components/AppIcon"
 import { MobileNav } from "@/components/MobileNav"
 
-interface HistoryJob {
-  id?: string // The UUID primary key
-  original_job_id?: string // The original job ID from processing
+import { Database } from '@/types/database.generated'
+
+type HistoryJob = Database['public']['Tables']['job_history']['Row'] & {
   job_id?: string // For backward compatibility
-  filename: string
-  status: string
-  result_url: string | null
-  created_at: string
-  updated_at: string
-  saved_at?: string
-  processing_metadata?: any // Changed from metadata to processing_metadata
-  metadata?: any // For backward compatibility
+  metadata?: any // For backward compatibility  
 }
 
 function HistoryContent() {
@@ -126,7 +119,7 @@ function HistoryContent() {
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = job.filename || `job_${job.original_job_id || job.job_id}.xlsx`
+      link.download = job.filename || `job_${job.original_job_id || job.job_id || job.id}.xlsx`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -195,11 +188,11 @@ function HistoryContent() {
         )
       },
       cell: ({ row }) => {
-        const filename = row.getValue("filename") as string
+        const filename = row.getValue("filename") as string | null
         return (
           <div className="flex items-center gap-2">
             <FileSpreadsheet className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium text-sm">{filename}</span>
+            <span className="font-medium text-sm">{filename || 'Untitled'}</span>
           </div>
         )
       },

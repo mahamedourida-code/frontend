@@ -4,19 +4,9 @@ import { useState, useEffect, useCallback } from 'react'
 import { ocrApi } from '@/lib/api-client'
 import { toast } from 'sonner'
 
-interface HistoryJob {
-  id?: string // The UUID primary key
-  original_job_id?: string // The original job ID from processing
-  job_id?: string // For backward compatibility
-  filename: string
-  status: string
-  result_url: string | null
-  created_at: string
-  updated_at: string
-  saved_at?: string
-  processing_metadata?: any // Changed from metadata to processing_metadata
-  metadata?: any // For backward compatibility
-}
+import { Database } from '@/types/database.generated'
+
+type HistoryJob = Database['public']['Tables']['job_history']['Row']
 
 interface UseHistoryReturn {
   jobs: HistoryJob[]
