@@ -687,19 +687,13 @@ Best regards`
     <div className="min-h-screen bg-background">
       {/* Minimal Header */}
       <header className="border-b lg:block hidden">
-        <div className="container max-w-5xl mx-auto px-4 py-4">
+        <div className="container max-w-5xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <AppIcon size={36} />
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-lg font-semibold">Process Images</h1>
-                  <Badge variant="outline" className="gap-1.5">
-                    <documentTypeInfo.icon className="h-3 w-3" />
-                    {documentTypeInfo.label}
-                  </Badge>
-                </div>
-                <p className="text-xs text-muted-foreground">Convert table images to Excel</p>
+            <div className="flex items-center gap-2">
+              <AppIcon size={32} />
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary shadow-sm">
+                <documentTypeInfo.icon className="h-4 w-4 text-primary" />
+                <h1 className="text-sm font-semibold text-foreground">{documentTypeInfo.label}</h1>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -707,7 +701,6 @@ Best regards`
                 variant="ghost"
                 size="sm"
                 onClick={() => router.push('/dashboard/upload-type')}
-                className="gap-2"
               >
                 Change Type
               </Button>
@@ -715,9 +708,9 @@ Best regards`
                 variant="outline"
                 size="sm"
                 onClick={() => router.push('/dashboard')}
-                className="gap-2"
+                className="gap-1.5"
               >
-                <BarChart3 className="h-4 w-4" />
+                <BarChart3 className="h-3.5 w-3.5" />
                 Dashboard
               </Button>
             </div>
@@ -727,14 +720,11 @@ Best regards`
 
       {/* Mobile Header */}
       <div className="lg:hidden border-b bg-background sticky top-0 z-40">
-        <div className="container max-w-5xl mx-auto px-4 py-3">
+        <div className="container max-w-5xl mx-auto px-4 py-2.5">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-base font-semibold">Process Images</h1>
-              <Badge variant="outline" className="gap-1.5 mt-1">
-                <documentTypeInfo.icon className="h-3 w-3" />
-                <span className="text-xs">{documentTypeInfo.label}</span>
-              </Badge>
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white dark:bg-white border-2 border-primary shadow-sm">
+              <documentTypeInfo.icon className="h-3.5 w-3.5 text-primary" />
+              <span className="text-xs font-semibold text-foreground">{documentTypeInfo.label}</span>
             </div>
             <Button
               variant="ghost"
@@ -1110,31 +1100,31 @@ Best regards`
           {/* Info Sidebar - Shows first on mobile */}
           <div className="lg:col-span-1 space-y-4 order-1 lg:order-2">
             {/* Quick Stats */}
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="text-sm font-medium mb-3">Quick Info</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-sm">
+            <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+              <CardContent className="p-3">
+                <h3 className="text-xs font-semibold mb-2 text-foreground">Quick Info</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">Status</span>
                     <Badge variant={
-                      isComplete ? "default" : 
-                      isProcessing ? "secondary" : 
+                      isComplete ? "default" :
+                      isProcessing ? "secondary" :
                       "outline"
-                    }>
-                      {isComplete ? "Complete" : 
-                       isProcessing ? "Processing" : 
+                    } className="text-xs px-2 py-0">
+                      {isComplete ? "Complete" :
+                       isProcessing ? "Processing" :
                        "Ready"}
                     </Badge>
                   </div>
                   <Separator />
-                  <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">Images</span>
                     <span className="font-medium">{uploadedFiles.length}</span>
                   </div>
                   {isProcessing && progress && (
                     <>
                       <Separator />
-                      <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center justify-between text-xs">
                         <span className="text-muted-foreground">Progress</span>
                         <span className="font-medium">{progress.percentage}%</span>
                       </div>
@@ -1144,50 +1134,14 @@ Best regards`
               </CardContent>
             </Card>
 
-            {/* Features */}
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="text-sm font-medium mb-3">Features</h3>
-                <div className="space-y-2">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5" />
-                    <div>
-                      <p className="text-sm">Batch Processing</p>
-                      <p className="text-xs text-muted-foreground">
-                        Process up to 100 images at once
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5" />
-                    <div>
-                      <p className="text-sm">Excel Export</p>
-                      <p className="text-xs text-muted-foreground">
-                        Download results as XLSX files
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5" />
-                    <div>
-                      <p className="text-sm">Fast Processing</p>
-                      <p className="text-xs text-muted-foreground">
-                        Powered by advanced OCR AI
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
             {/* Help */}
-            <Card>
-              <CardContent className="p-4">
+            <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+              <CardContent className="p-3">
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5" />
-                  <div className="text-sm text-muted-foreground">
-                    <p className="mb-1">Supported formats:</p>
-                    <p className="text-xs">PNG, JPG, JPEG, WebP</p>
+                  <AlertCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
+                  <div className="text-xs text-foreground">
+                    <p className="mb-1 font-medium">Supported formats:</p>
+                    <p className="text-[11px] text-muted-foreground">PNG, JPG, JPEG, WebP</p>
                   </div>
                 </div>
               </CardContent>

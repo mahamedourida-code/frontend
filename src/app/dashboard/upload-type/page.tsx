@@ -81,47 +81,46 @@ export default function UploadTypePage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Header */}
       <header className="border-b bg-white dark:bg-gray-900">
-        <div className="container flex h-14 lg:h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 lg:gap-4">
+        <div className="container flex h-12 lg:h-14 max-w-5xl items-center justify-between px-3 sm:px-4 lg:px-6">
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => router.back()}
-              className="h-8 w-8 lg:h-9 lg:w-9"
+              className="h-7 w-7 lg:h-8 lg:w-8"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-3.5 w-3.5" />
             </Button>
-            <div>
-              <h1 className="text-base lg:text-lg font-semibold">Select Document Type</h1>
-              <p className="text-xs lg:text-sm text-muted-foreground hidden sm:block">Choose how to process your images</p>
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white dark:bg-white border-2 border-primary shadow-sm">
+              <h1 className="text-xs lg:text-sm font-semibold text-foreground">Select Type</h1>
             </div>
           </div>
           <Button
             onClick={() => router.push("/dashboard")}
             variant="outline"
             size="sm"
-            className="gap-2 h-8 lg:h-9"
+            className="gap-1.5 h-7 lg:h-8"
           >
-            <LayoutDashboard className="h-4 w-4" />
-            <span className="hidden sm:inline">Dashboard</span>
+            <LayoutDashboard className="h-3 w-3 lg:h-3.5 lg:w-3.5" />
+            <span className="hidden sm:inline text-xs">Dashboard</span>
           </Button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-        <div className="w-full max-w-4xl">
+      <main className="flex-1 flex items-center justify-center p-3 sm:p-4 lg:p-6">
+        <div className="w-full max-w-3xl">
           {/* Out of Credits Alert */}
           {isOutOfCredits && (
-            <Card className="border-red-500 bg-red-50 dark:bg-red-950/20 mb-4">
-              <CardContent className="flex items-center gap-3 p-4">
+            <Card className="border-2 border-red-500 bg-red-50 dark:bg-red-950/20 mb-3">
+              <CardContent className="flex items-center gap-2 p-3">
                 <div className="flex-shrink-0">
-                  <AlertCircle className="h-6 w-6 lg:h-8 lg:w-8 text-red-600" />
+                  <AlertCircle className="h-5 w-5 lg:h-6 lg:w-6 text-red-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-red-600 text-sm lg:text-lg">Out of Credits</h3>
-                  <p className="text-xs lg:text-sm text-red-600/80 mt-0.5">
-                    You've used all your monthly image processing credits. Your credits will reset next month.
+                  <h3 className="font-semibold text-red-600 text-xs lg:text-sm">Out of Credits</h3>
+                  <p className="text-[11px] lg:text-xs text-red-600/80 mt-0.5">
+                    You've used all your monthly credits. Credits reset next month.
                   </p>
                 </div>
               </CardContent>
@@ -130,15 +129,15 @@ export default function UploadTypePage() {
 
           {/* Credits Available Display */}
           {!isOutOfCredits && !loading && (
-            <div className="text-center mb-4">
-              <p className="text-xs lg:text-sm text-muted-foreground">
+            <div className="text-center mb-3">
+              <p className="text-[11px] lg:text-xs text-muted-foreground">
                 You have <span className="font-semibold text-foreground">{availableCredits}</span> credits available
               </p>
             </div>
           )}
 
           {/* Option Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4">
             {tableTypes.map((type) => {
               const Icon = type.icon
 
@@ -148,31 +147,31 @@ export default function UploadTypePage() {
                   onClick={() => !isOutOfCredits && handleTypeSelect(type.id)}
                   disabled={isOutOfCredits}
                   className={cn(
-                    "group relative flex flex-col items-center justify-center p-6 lg:p-10",
-                    "bg-white dark:bg-gray-900 rounded-xl border-2 border-gray-200 dark:border-gray-800",
+                    "group relative flex flex-col items-center justify-center p-4 lg:p-6",
+                    "bg-white dark:bg-white rounded-xl border-2 border-primary shadow-lg shadow-primary/10",
                     "transition-all duration-200",
                     isOutOfCredits ? (
                       "opacity-50 cursor-not-allowed"
                     ) : (
-                      "hover:border-gray-900 dark:hover:border-gray-100 hover:shadow-xl hover:scale-105"
+                      "hover:shadow-xl hover:shadow-primary/20 hover:scale-105"
                     )
                   )}
                 >
                   {type.recommended && (
-                    <div className="absolute top-2 right-2 lg:top-3 lg:right-3">
-                      <span className="text-[10px] lg:text-xs font-medium text-gray-500 dark:text-gray-400">
+                    <div className="absolute top-1.5 right-1.5 lg:top-2 lg:right-2">
+                      <span className="text-[9px] lg:text-[10px] font-semibold text-primary uppercase tracking-wide">
                         RECOMMENDED
                       </span>
                     </div>
                   )}
 
-                  <Icon className="h-10 w-10 lg:h-12 lg:w-12 mb-3 lg:mb-4 text-gray-900 dark:text-gray-100 group-hover:scale-110 transition-transform" />
+                  <Icon className="h-8 w-8 lg:h-10 lg:w-10 mb-2 lg:mb-3 text-primary group-hover:scale-110 transition-transform" />
 
-                  <h3 className="text-base lg:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-0.5 lg:mb-1">
+                  <h3 className="text-sm lg:text-base font-semibold text-foreground mb-0.5">
                     {type.title}
                   </h3>
 
-                  <p className="text-xs lg:text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-[11px] lg:text-xs text-muted-foreground">
                     {type.subtitle}
                   </p>
                 </button>
@@ -181,8 +180,8 @@ export default function UploadTypePage() {
           </div>
 
           {/* Help text */}
-          <p className="text-center mt-4 lg:mt-8 text-xs lg:text-sm text-gray-500 dark:text-gray-400">
-            Select an option to continue. Exceletto will optimize processing based on your choice.
+          <p className="text-center mt-3 lg:mt-5 text-[11px] lg:text-xs text-muted-foreground">
+            Select an option to continue. Exceletto will optimize based on your choice.
           </p>
         </div>
       </main>
