@@ -176,8 +176,8 @@ export default function Home() {
     <div className="min-h-screen bg-background relative" style={{ backgroundColor: '#ffffff' }}>
       {/* Navigation Bar */}
       <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 pt-3 lg:pt-4">
-        <div className="container mx-auto px-3 sm:px-6 lg:px-8">
-          <div className="bg-primary/90 dark:bg-primary/80 rounded-[35px] border border-primary shadow-lg shadow-primary/20 backdrop-blur-md p-3 lg:p-4 flex items-center justify-between">
+        <div className="container mx-auto px-2 sm:px-4 lg:px-6">
+          <div className="bg-primary/20 dark:bg-primary/15 rounded-[35px] border-2 border-primary/50 shadow-lg shadow-primary/10 backdrop-blur-md p-3 lg:p-4 flex items-center justify-between">
             {/* Logo */}
             <div className="flex-shrink-0">
               <AppLogo />
@@ -189,7 +189,7 @@ export default function Home() {
                 <NavigationMenuList className="gap-1">
                   {/* Solutions Dropdown */}
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger className="bg-transparent hover:bg-accent/50 transition-colors">
+                    <NavigationMenuTrigger className="bg-transparent hover:bg-accent/50 transition-colors text-white">
                       Solutions
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
@@ -270,13 +270,23 @@ export default function Home() {
                     </NavigationMenuLink>
                   </NavigationMenuItem> */}
 
-                  {/* Performance Benchmarks */}
+                  {/* How It's Built */}
                   <NavigationMenuItem>
                     <button
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-accent/50 transition-colors")}
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-accent/50 transition-colors text-white")}
+                      onClick={() => scrollToSection('ai-engine')}
+                    >
+                      How It's Built
+                    </button>
+                  </NavigationMenuItem>
+
+                  {/* Benchmarks */}
+                  <NavigationMenuItem>
+                    <button
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-accent/50 transition-colors text-white")}
                       onClick={() => scrollToSection('benchmarks')}
                     >
-                      Performance
+                      Benchmarks
                     </button>
                   </NavigationMenuItem>
                 </NavigationMenuList>
@@ -300,8 +310,8 @@ export default function Home() {
       {/* Hero Section */}
       <main className="relative z-10">
         <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-24 lg:pt-20">
-          
-          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+
+          <div className="relative z-10 container mx-auto px-2 sm:px-4 lg:px-6">
             <div className="grid grid-cols-1 lg:grid-cols-[6fr_7fr] gap-8 sm:gap-12 lg:gap-12 items-center">
               {/* Left Content */}
               <div ref={heroContentRef} className="max-w-xl -mt-4 lg:-mt-8">
@@ -442,11 +452,13 @@ export default function Home() {
 
         {/* Why Choose Us Section */}
         <ScrollAnimatedSection id="features" className="py-16 relative z-10">
-          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative z-10 container mx-auto px-2 sm:px-4 lg:px-6">
             <div className="text-center mb-12" data-animate="headline">
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-                Specialized Solutions
-              </h2>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+                  Specialized Solutions
+                </h2>
+              </div>
             </div>
 
             <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
@@ -486,10 +498,11 @@ export default function Home() {
         {/* Companies Section - Trusted By */}
         <ScrollAnimatedSection id="trusted" className="py-12 relative z-10 overflow-hidden">
           <div className="relative z-10 text-center mb-8" data-animate="headline">
-            
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-              Chosen by experts at top organizations
-            </h2>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+              <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+                Chosen by experts at top organizations
+              </h2>
+            </div>
           </div>
 
           <div className="relative z-10 overflow-hidden" data-animate="stagger">
@@ -532,13 +545,14 @@ export default function Home() {
 
         {/* Interactive Comparison Section */}
         <section ref={comparisonRef} className="py-32 relative z-10 overflow-hidden">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="container mx-auto px-2 sm:px-4 lg:px-6">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
-                
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 sm:mb-6">
-                  See the Transformation in Action
-                </h2>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
+                    See the Transformation in Action
+                  </h2>
+                </div>
                 <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
                   Drag the slider to witness the power of our AI-powered OCR technology
                 </p>
@@ -659,12 +673,13 @@ export default function Home() {
 
         {/* How It Works Section */}
         <ScrollAnimatedSection id="how-it-works" className="py-16 relative z-10 overflow-hidden">
-          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative z-10 container mx-auto px-2 sm:px-4 lg:px-6">
             <div className="text-center mb-16" data-animate="headline">
-              <Badge variant="outline" className="mb-4 border-primary/50 text-primary">How It Works</Badge>
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-                Three Simple Steps
-              </h2>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+                  Three Simple Steps
+                </h2>
+              </div>
              
             </div>
 
@@ -698,13 +713,14 @@ export default function Home() {
 
         {/* AI Engine Section */}
         <ScrollAnimatedSection id="ai-engine" className="py-16 relative z-10">
-          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative z-10 container mx-auto px-2 sm:px-4 lg:px-6">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-16" data-animate="headline">
-                <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Technical Deep Dive</Badge>
-                <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-                  How Exceletto's Engine Is Built
-                </h2>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+                    How Exceletto's Engine Is Built
+                  </h2>
+                </div>
                 <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
                   A transparent look at our instruction fine-tuning methodology, system prompts, and the engineering decisions that power industry-leading OCR accuracy.
                 </p>
@@ -943,13 +959,14 @@ export default function Home() {
 
         {/* Benchmark Section */}
         <ScrollAnimatedSection id="benchmarks" className="py-16 relative z-10">
-          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative z-10 container mx-auto px-2 sm:px-4 lg:px-6">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
-                <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Performance Benchmarks</Badge>
-                <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-                  Industry-Leading OCR Accuracy
-                </h2>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+                    Industry-Leading OCR Accuracy
+                  </h2>
+                </div>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                   Benchmarked against major cloud providers on real-world handwritten documents and complex table structures.
                 </p>
@@ -1098,16 +1115,15 @@ export default function Home() {
 
         {/* Final CTA Section */}
         <section className="py-24 relative z-10 overflow-hidden">
-          
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+
+          <div className="container mx-auto px-2 sm:px-4 lg:px-6 text-center relative z-10">
             {/* CTA Content */}
             <div className="max-w-3xl mx-auto">
-              <Badge variant="outline" className="mb-4 border-primary/50 text-primary">
-                Get Started Today
-              </Badge>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-foreground bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
-                Ready to Transform Your Workflow?
-              </h2>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
+                  Ready to Transform Your Workflow?
+                </h2>
+              </div>
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
                 Join thousands of professionals who have already revolutionized their data extraction process with Exceletto.
               </p>
@@ -1148,7 +1164,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="backdrop-blur-md relative z-10">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="text-2xl font-bold text-foreground mb-4">Exceletto</div>
