@@ -176,7 +176,7 @@ export default function Home() {
     <div className="min-h-screen bg-background relative" style={{ backgroundColor: '#ffffff' }}>
       {/* Navigation Bar */}
       <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 pt-3 lg:pt-4">
-        <div className="container mx-auto px-12 sm:px-24 lg:px-48 xl:px-64">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white dark:bg-white rounded-[35px] border-2 border-primary shadow-lg shadow-primary/10 backdrop-blur-md p-3 lg:p-4 flex items-center justify-between">
             {/* Logo */}
             <div className="flex-shrink-0">
@@ -311,7 +311,7 @@ export default function Home() {
       <main className="relative z-10">
         <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-24 lg:pt-20">
 
-          <div className="relative z-10 container mx-auto px-12 sm:px-24 lg:px-48 xl:px-64">
+          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-[6fr_7fr] gap-8 sm:gap-12 lg:gap-12 items-center">
               {/* Left Content */}
               <div ref={heroContentRef} className="max-w-xl -mt-4 lg:-mt-8">
@@ -450,7 +450,7 @@ export default function Home() {
 
         {/* Why Choose Us Section */}
         <ScrollAnimatedSection id="features" className="py-16 relative z-10">
-          <div className="relative z-10 container mx-auto px-12 sm:px-24 lg:px-48 xl:px-64">
+          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
@@ -543,7 +543,7 @@ export default function Home() {
 
         {/* Interactive Comparison Section */}
         <section ref={comparisonRef} className="py-32 relative z-10 overflow-hidden">
-          <div className="container mx-auto px-12 sm:px-24 lg:px-48 xl:px-64">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
@@ -671,7 +671,7 @@ export default function Home() {
 
         {/* How It Works Section */}
         <ScrollAnimatedSection id="how-it-works" className="py-16 relative z-10 overflow-hidden">
-          <div className="relative z-10 container mx-auto px-12 sm:px-24 lg:px-48 xl:px-64">
+          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16" data-animate="headline">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
@@ -711,7 +711,7 @@ export default function Home() {
 
         {/* AI Engine Section */}
         <ScrollAnimatedSection id="ai-engine" className="py-16 relative z-10">
-          <div className="relative z-10 container mx-auto px-12 sm:px-24 lg:px-48 xl:px-64">
+          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-16" data-animate="headline">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
@@ -957,7 +957,7 @@ export default function Home() {
 
         {/* Benchmark Section */}
         <ScrollAnimatedSection id="benchmarks" className="py-16 relative z-10">
-          <div className="relative z-10 container mx-auto px-12 sm:px-24 lg:px-48 xl:px-64">
+          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
