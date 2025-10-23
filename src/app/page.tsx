@@ -295,7 +295,6 @@ export default function Home() {
 
             {/* Sign In Button - Desktop */}
             <div className="hidden lg:flex items-center gap-3">
-              <ThemeToggle />
               <Button
                 variant="outline"
                 className="bg-white/90 dark:bg-white/20 text-foreground border-[1.6px] border-foreground/30 rounded-full px-4 py-2 text-sm font-medium hover:bg-white dark:hover:bg-white/30 transition-colors backdrop-blur-sm"
@@ -453,8 +452,8 @@ export default function Home() {
         <ScrollAnimatedSection id="features" className="py-16 relative z-10">
           <div className="relative z-10 container mx-auto px-1 sm:px-3 lg:px-4">
             <div className="text-center mb-12" data-animate="headline">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
-                <h2 className="text-xl sm:text-2xl font-bold text-foreground">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   Specialized Solutions
                 </h2>
               </div>
@@ -497,8 +496,8 @@ export default function Home() {
         {/* Companies Section - Trusted By */}
         <ScrollAnimatedSection id="trusted" className="py-12 relative z-10 overflow-hidden">
           <div className="relative z-10 text-center mb-8" data-animate="headline">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
-              <h2 className="text-xl sm:text-2xl font-bold text-foreground">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+              <h2 className="text-lg sm:text-xl font-bold text-foreground">
                 Chosen by experts at top organizations
               </h2>
             </div>
@@ -547,8 +546,8 @@ export default function Home() {
           <div className="container mx-auto px-1 sm:px-3 lg:px-4">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
-                  <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                  <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
                     See the Transformation in Action
                   </h2>
                 </div>
@@ -573,7 +572,7 @@ export default function Home() {
                 {/* Handwritten Table Comparison - Featured */}
                 <div className="relative group">
                   {/* Subtle shadow glow */}
-                  <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/10 via-purple-600/20 to-purple-500/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
+                  <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 via-primary/20 to-primary/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
                   
                   <div className="relative w-full max-w-6xl mx-auto">
                     <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4">Handwritten Table → Excel</h3>
@@ -621,7 +620,7 @@ export default function Home() {
                 {/* Form Data Comparison */}
                 <div className="relative group">
                   {/* Subtle shadow glow */}
-                  <div className="absolute -inset-4 bg-gradient-to-r from-black/10 via-black/20 to-black/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
+                  <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 via-primary/20 to-primary/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
                   
                   <div className="relative w-full max-w-6xl mx-auto">
                     <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4"></h3>
@@ -674,8 +673,8 @@ export default function Home() {
         <ScrollAnimatedSection id="how-it-works" className="py-16 relative z-10 overflow-hidden">
           <div className="relative z-10 container mx-auto px-1 sm:px-3 lg:px-4">
             <div className="text-center mb-16" data-animate="headline">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
-                <h2 className="text-xl sm:text-2xl font-bold text-foreground">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   Three Simple Steps
                 </h2>
               </div>
@@ -715,8 +714,8 @@ export default function Home() {
           <div className="relative z-10 container mx-auto px-1 sm:px-3 lg:px-4">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-16" data-animate="headline">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
-                  <h2 className="text-xl sm:text-2xl font-bold text-foreground">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                  <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     How Exceletto's Engine Is Built
                   </h2>
                 </div>
@@ -961,8 +960,8 @@ export default function Home() {
           <div className="relative z-10 container mx-auto px-1 sm:px-3 lg:px-4">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
-                  <h2 className="text-xl sm:text-2xl font-bold text-foreground">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                  <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     Industry-Leading OCR Accuracy
                   </h2>
                 </div>
@@ -1118,8 +1117,8 @@ export default function Home() {
           <div className="container mx-auto px-1 sm:px-3 lg:px-4 text-center relative z-10">
             {/* CTA Content */}
             <div className="max-w-3xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
                   Ready to Transform Your Workflow?
                 </h2>
               </div>
