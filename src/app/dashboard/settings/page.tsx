@@ -160,22 +160,25 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur sticky top-0 z-10">
-        <div className="container max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-3">
+        <div className="container max-w-7xl mx-auto px-3 lg:px-4 py-3 lg:py-4">
+          <div className="flex items-center gap-2 lg:gap-3">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => router.push('/dashboard')}
-              className="shrink-0"
+              className="shrink-0 h-8 w-8 lg:h-10 lg:w-10"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-4 w-4 lg:h-5 lg:w-5" />
             </Button>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 lg:gap-3">
               <div className="hidden sm:block">
-                <AppIcon size={32} />
+                <AppIcon size={28} className="lg:w-8 lg:h-8" />
               </div>
               <div>
-                <h1 className="text-lg font-semibold">Settings</h1>
+                <h1 className="text-base lg:text-lg font-semibold flex items-center gap-2">
+                  <Settings2 className="h-4 w-4 lg:hidden" />
+                  Settings
+                </h1>
                 <p className="text-xs text-muted-foreground hidden sm:block">Manage your account and preferences</p>
               </div>
             </div>
@@ -183,12 +186,12 @@ export default function SettingsPage() {
         </div>
       </header>
 
-      <div className="container max-w-7xl mx-auto px-4 py-6 lg:py-8">
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+      <div className="container max-w-7xl mx-auto px-3 lg:px-4 py-4 lg:py-8">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
           {/* Mobile Section Selector */}
           <div className="lg:hidden">
             <Select value={activeSection} onValueChange={(value) => setActiveSection(value as SettingsSection)}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full h-10">
                 <SelectValue placeholder="Select a section" />
               </SelectTrigger>
               <SelectContent>
@@ -244,52 +247,57 @@ export default function SettingsPage() {
           <div className="flex-1 max-w-3xl">
             {/* Account Settings */}
             {activeSection === 'account' && (
-              <div className="space-y-6">
+              <div className="space-y-4 lg:space-y-6">
                 {/* Profile Information */}
                 <Card>
-                  <CardHeader>
+                  <CardHeader className="p-4 lg:p-6">
                     <div className="flex items-center gap-2">
-                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <User className="h-5 w-5 text-primary" />
+                      <div className="h-8 w-8 lg:h-10 lg:w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <User className="h-4 w-4 lg:h-5 lg:w-5 text-primary" />
                       </div>
                       <div>
-                        <CardTitle>Profile Information</CardTitle>
-                        <CardDescription>Update your personal details</CardDescription>
+                        <CardTitle className="text-base lg:text-lg">Profile Information</CardTitle>
+                        <CardDescription className="text-xs lg:text-sm">Update your personal details</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="fullname">Full Name</Label>
+                  <CardContent className="space-y-3 lg:space-y-4 p-4 lg:p-6">
+                    <div className="space-y-1.5 lg:space-y-2">
+                      <Label htmlFor="fullname" className="text-xs lg:text-sm">Full Name</Label>
                       <Input
                         id="fullname"
                         placeholder="Enter your full name"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
+                        className="h-9 lg:h-10"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email Address</Label>
+                    <div className="space-y-1.5 lg:space-y-2">
+                      <Label htmlFor="email" className="text-xs lg:text-sm">Email Address</Label>
                       <Input
                         id="email"
                         type="email"
                         value={email}
                         disabled
-                        className="bg-muted"
+                        className="bg-muted h-9 lg:h-10"
                       />
-                      <p className="text-xs text-muted-foreground">Email cannot be changed</p>
+                      <p className="text-[10px] lg:text-xs text-muted-foreground">Email cannot be changed</p>
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-4 border-t">
+                    <div className="flex justify-end gap-2 lg:gap-3 pt-3 lg:pt-4 border-t">
                       <Button
                         variant="outline"
+                        size="sm"
                         onClick={() => setFullName(user?.user_metadata?.full_name || "")}
+                        className="h-8 lg:h-9"
                       >
                         Cancel
                       </Button>
                       <Button
+                        size="sm"
                         onClick={handleUpdateProfile}
                         disabled={loading}
+                        className="h-8 lg:h-9"
                       >
                         {loading ? "Saving..." : "Save Changes"}
                       </Button>
@@ -299,32 +307,34 @@ export default function SettingsPage() {
 
                 {/* Security Settings */}
                 <Card>
-                  <CardHeader>
+                  <CardHeader className="p-4 lg:p-6">
                     <div className="flex items-center gap-2">
-                      <div className="h-10 w-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                        <ShieldCheck className="h-5 w-5 text-orange-600" />
+                      <div className="h-8 w-8 lg:h-10 lg:w-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                        <ShieldCheck className="h-4 w-4 lg:h-5 lg:w-5 text-orange-600" />
                       </div>
                       <div>
-                        <CardTitle>Security</CardTitle>
-                        <CardDescription>Manage your password and security settings</CardDescription>
+                        <CardTitle className="text-base lg:text-lg">Security</CardTitle>
+                        <CardDescription className="text-xs lg:text-sm">Manage your password and security settings</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-3 lg:space-y-4 p-4 lg:p-6">
                     {!showPasswordChange ? (
-                      <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/50">
-                        <div className="flex items-center gap-3">
-                          <KeyRound className="h-5 w-5 text-muted-foreground" />
+                      <div className="flex items-center justify-between p-3 lg:p-4 rounded-lg border bg-muted/50">
+                        <div className="flex items-center gap-2 lg:gap-3">
+                          <KeyRound className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />
                           <div>
-                            <p className="text-sm font-medium">Password</p>
-                            <p className="text-xs text-muted-foreground">••••••••••••</p>
+                            <p className="text-xs lg:text-sm font-medium">Password</p>
+                            <p className="text-[10px] lg:text-xs text-muted-foreground">••••••••••••</p>
                           </div>
                         </div>
                         <Button
                           variant="outline"
+                          size="sm"
                           onClick={() => setShowPasswordChange(true)}
+                          className="h-8 lg:h-9 text-xs"
                         >
-                          Change Password
+                          Change
                         </Button>
                       </div>
                     ) : (

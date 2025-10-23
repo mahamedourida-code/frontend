@@ -14,7 +14,7 @@ import {
   useReactTable,
   RowSelectionState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Download, ArrowLeft, RefreshCw, FileSpreadsheet, Calendar, DownloadCloud, Trash2, AlertTriangle, CalendarIcon } from "lucide-react"
+import { ArrowUpDown, Download, ArrowLeft, RefreshCw, FileSpreadsheet, Calendar, DownloadCloud, Trash2, AlertTriangle, CalendarIcon, History } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -413,50 +413,52 @@ function HistoryContent() {
     <div className="min-h-screen bg-background">
       {/* Compact Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-3">
+        <div className="container mx-auto px-3 lg:px-4 py-2 lg:py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <AppIcon size={28} />
-              <div className="border-l h-6" />
+            <div className="flex items-center gap-2 lg:gap-4">
+              <div className="hidden sm:flex items-center gap-2 lg:gap-4">
+                <AppIcon size={24} className="lg:w-7 lg:h-7" />
+                <div className="border-l h-6" />
+              </div>
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={() => router.push('/dashboard')}
-                className="h-8"
+                className="h-8 w-8 lg:h-9 lg:w-9"
               >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
+                <ArrowLeft className="h-4 w-4" />
               </Button>
-              <div className="border-l h-6" />
-              <h1 className="text-lg font-semibold">Saved Files</h1>
+              <h1 className="text-base lg:text-lg font-semibold flex items-center gap-2">
+                <History className="h-4 w-4 lg:hidden" />
+                Saved Files
+              </h1>
             </div>
             <Button
-              variant="outline"
-              size="sm"
+              variant="ghost"
+              size="icon"
               onClick={refresh}
               disabled={isLoading}
-              className="h-8"
+              className="h-8 w-8 lg:h-9 lg:w-9"
             >
-              <RefreshCw className={`h-3 w-3 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-              Refresh
+              <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-3 lg:px-4 py-4 lg:py-6">
         {/* Error State */}
         {error && (
-          <div className="mb-4 p-3 rounded-md border border-destructive/50 bg-destructive/10">
-            <p className="text-sm text-destructive">{error}</p>
+          <div className="mb-3 lg:mb-4 p-2 lg:p-3 rounded-md border border-destructive/50 bg-destructive/10">
+            <p className="text-xs lg:text-sm text-destructive">{error}</p>
           </div>
         )}
 
         {/* Table Controls */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 mb-3 lg:mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 lg:gap-4 w-full lg:w-auto">
             {/* Date Filter */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 lg:gap-2 overflow-x-auto w-full sm:w-auto">
               <Button
                 variant={dateFilter === "today" ? "default" : "outline"}
                 size="sm"
@@ -464,7 +466,7 @@ function HistoryContent() {
                   setDateFilter("today")
                   setDate(undefined)
                 }}
-                className="h-9"
+                className="h-8 text-xs flex-shrink-0"
               >
                 Today
               </Button>
@@ -475,9 +477,9 @@ function HistoryContent() {
                   setDateFilter("week")
                   setDate(undefined)
                 }}
-                className="h-9"
+                className="h-8 text-xs flex-shrink-0"
               >
-                Last 7 Days
+                7D
               </Button>
               <Button
                 variant={dateFilter === "month" ? "default" : "outline"}
@@ -486,9 +488,9 @@ function HistoryContent() {
                   setDateFilter("month")
                   setDate(undefined)
                 }}
-                className="h-9"
+                className="h-8 text-xs flex-shrink-0"
               >
-                Last 30 Days
+                30D
               </Button>
               <Popover>
                 <PopoverTrigger asChild>
@@ -496,12 +498,13 @@ function HistoryContent() {
                     variant={date ? "default" : "outline"}
                     size="sm"
                     className={cn(
-                      "h-9 w-[180px] justify-start text-left font-normal",
+                      "h-8 w-[120px] lg:w-[180px] justify-start text-left font-normal text-xs flex-shrink-0",
                       !date && "text-muted-foreground"
                     )}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : "Pick a date"}
+                    <CalendarIcon className="mr-1 lg:mr-2 h-3 w-3 lg:h-4 lg:w-4" />
+                    <span className="hidden sm:inline">{date ? format(date, "PPP") : "Pick a date"}</span>
+                    <span className="sm:hidden">{date ? format(date, "MMM d") : "Date"}</span>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -524,7 +527,7 @@ function HistoryContent() {
                     setDateFilter(null)
                     setDate(undefined)
                   }}
-                  className="h-9 px-2"
+                  className="h-8 px-2 text-xs flex-shrink-0"
                 >
                   Clear
                 </Button>
@@ -532,32 +535,32 @@ function HistoryContent() {
             </div>
             {/* Selected files actions */}
             {table.getFilteredSelectedRowModel().rows.length > 0 && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">
+              <div className="flex items-center gap-1 lg:gap-2">
+                <span className="text-xs lg:text-sm text-muted-foreground">
                   {table.getFilteredSelectedRowModel().rows.length} selected
                 </span>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleBulkDownload}
-                  className="h-8"
+                  className="h-8 text-xs"
                 >
-                  <DownloadCloud className="h-3 w-3 mr-2" />
-                  Download Selected
+                  <DownloadCloud className="h-3 w-3 lg:mr-1" />
+                  <span className="hidden lg:inline">Download</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleBulkDelete}
-                  className="h-8 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                  className="h-8 text-xs text-destructive hover:bg-destructive hover:text-destructive-foreground"
                 >
-                  <Trash2 className="h-3 w-3 mr-2" />
-                  Delete Selected
+                  <Trash2 className="h-3 w-3 lg:mr-1" />
+                  <span className="hidden lg:inline">Delete</span>
                 </Button>
               </div>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 lg:gap-2 w-full lg:w-auto justify-between lg:justify-end">
             {/* Download all button */}
             {filteredJobs.filter(job => job.status === 'completed' && job.result_url).length > 0 && (
               <>
@@ -565,23 +568,25 @@ function HistoryContent() {
                   variant="outline"
                   size="sm"
                   onClick={handleDownloadAll}
-                  className="h-8"
+                  className="h-8 text-xs"
                 >
-                  <DownloadCloud className="h-3 w-3 mr-2" />
-                  Download All ({filteredJobs.filter(job => job.status === 'completed').length})
+                  <DownloadCloud className="h-3 w-3 lg:mr-1" />
+                  <span className="hidden sm:inline">All ({filteredJobs.filter(job => job.status === 'completed').length})</span>
+                  <span className="sm:hidden">All</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleDeleteAll}
-                  className="h-8 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                  className="h-8 text-xs text-destructive hover:bg-destructive hover:text-destructive-foreground"
                 >
-                  <Trash2 className="h-3 w-3 mr-2" />
-                  Delete All
+                  <Trash2 className="h-3 w-3 lg:mr-1" />
+                  <span className="hidden sm:inline">Delete All</span>
+                  <span className="sm:hidden">Clear</span>
                 </Button>
               </>
             )}
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs lg:text-sm text-muted-foreground">
               {filteredJobs.length} {filteredJobs.length === 1 ? 'job' : 'jobs'}
             </p>
           </div>

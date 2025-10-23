@@ -21,7 +21,12 @@ import {
   Activity,
   AlertCircle,
   ArrowRight,
-  ChartLine
+  ChartLine,
+  Image,
+  Clock,
+  Coins,
+  Calendar,
+  TrendingUp
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -385,19 +390,20 @@ export default function DashboardPage() {
       <div className="flex-1 overflow-auto">
         <div className="container max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
           {/* Header with Process Images Button */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 lg:mb-8">
             <div>
-              <h1 className="text-3xl font-bold">Dashboard</h1>
-              <p className="text-muted-foreground mt-1">Monitor your document processing activity</p>
+              <h1 className="text-2xl lg:text-3xl font-bold">Dashboard</h1>
+              <p className="text-sm text-muted-foreground mt-0.5 hidden sm:block">Monitor your document processing activity</p>
             </div>
-            <Button 
+            <Button
               size="lg"
               onClick={() => router.push('/dashboard/upload-type')}
-              className="gap-2 shadow-lg hover:shadow-xl transition-all"
+              className="gap-2 shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
               disabled={isOutOfCredits}
             >
               <Upload className="h-5 w-5" />
-              Process Images
+              <span className="hidden sm:inline">Process Images</span>
+              <span className="sm:hidden">Upload</span>
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
@@ -420,68 +426,92 @@ export default function DashboardPage() {
           )}
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6 lg:mb-8">
             <Card>
-              <CardContent className="p-6">
-                <p className="text-sm text-muted-foreground">Today's Images</p>
-                <p className="text-3xl font-bold mt-2">{stats.todayProcessed}</p>
+              <CardContent className="p-4 lg:p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs lg:text-sm text-muted-foreground">Today's Images</p>
+                    <p className="text-2xl lg:text-3xl font-bold mt-1">{stats.todayProcessed}</p>
+                  </div>
+                  <div className="flex-shrink-0">
+                    <Image className="h-8 w-8 lg:h-10 lg:w-10 text-primary/60" />
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardContent className="p-6">
-                <p className="text-sm text-muted-foreground">Avg. Time</p>
-                <p className="text-3xl font-bold mt-2">{stats.averageTime.toFixed(1)}s</p>
+              <CardContent className="p-4 lg:p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs lg:text-sm text-muted-foreground">Avg. Time</p>
+                    <p className="text-2xl lg:text-3xl font-bold mt-1">{stats.averageTime.toFixed(1)}s</p>
+                  </div>
+                  <div className="flex-shrink-0">
+                    <Clock className="h-8 w-8 lg:h-10 lg:w-10 text-primary/60" />
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardContent className="p-6">
-                <p className="text-sm text-muted-foreground">Credits Left</p>
-                <p className="text-3xl font-bold mt-2">{stats.availableCredits}</p>
-                <p className="text-xs text-muted-foreground mt-1">1 credit = 1 image</p>
+              <CardContent className="p-4 lg:p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs lg:text-sm text-muted-foreground">Credits Left</p>
+                    <p className="text-2xl lg:text-3xl font-bold mt-1">{stats.availableCredits}</p>
+                    <p className="text-[10px] lg:text-xs text-muted-foreground mt-0.5">1 credit = 1 image</p>
+                  </div>
+                  <div className="flex-shrink-0">
+                    <Coins className="h-8 w-8 lg:h-10 lg:w-10 text-primary/60" />
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Chart Section */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 lg:p-6">
               <div>
-                <CardTitle>Processing Activity</CardTitle>
-                <CardDescription>Number of images processed over time</CardDescription>
+                <CardTitle className="text-base lg:text-lg flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 lg:h-5 lg:w-5" />
+                  Processing Activity
+                </CardTitle>
+                <CardDescription className="text-xs lg:text-sm mt-1">Number of images processed over time</CardDescription>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 lg:gap-2 w-full sm:w-auto">
                 {(["1d", "7d", "30d", "3m"] as TimeRange[]).map((range) => (
                   <Button
                     key={range}
                     variant={timeRange === range ? "default" : "outline"}
                     size="sm"
                     onClick={() => setTimeRange(range)}
-                    className="min-w-[3rem]"
+                    className="flex-1 sm:flex-none min-w-0 h-8 px-2 lg:px-3 text-xs"
                   >
                     {range === "1d" ? "24h" :
-                     range === "7d" ? "7 Days" :
-                     range === "30d" ? "30 Days" : "3 Months"}
+                     range === "7d" ? "7D" :
+                     range === "30d" ? "30D" : "3M"}
                   </Button>
                 ))}
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 lg:p-6">
               {chartData.length > 0 && chartData.some(d => d.count > 0) ? (
-                <ResponsiveContainer width="100%" height={350}>
-                  <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <ResponsiveContainer width="100%" height={280}>
+                  <LineChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" opacity={0.3} />
                     <XAxis
                       dataKey={timeRange === "1d" ? "formattedTime" : "formattedDate"}
                       stroke="#888888"
-                      fontSize={12}
+                      fontSize={10}
                       tickLine={false}
                       axisLine={false}
                     />
                     <YAxis
                       stroke="#888888"
-                      fontSize={12}
+                      fontSize={10}
                       tickLine={false}
                       axisLine={false}
                       domain={[0, 'dataMax + 2']}
@@ -491,7 +521,8 @@ export default function DashboardPage() {
                       contentStyle={{
                         backgroundColor: 'rgba(255, 255, 255, 0.95)',
                         border: '1px solid #e0e0e0',
-                        borderRadius: '8px'
+                        borderRadius: '8px',
+                        fontSize: '12px'
                       }}
                       labelStyle={{ color: '#666' }}
                       formatter={(value: any) => [`${value} images`, 'Processed']}
@@ -500,17 +531,17 @@ export default function DashboardPage() {
                       type="linear"
                       dataKey="count"
                       stroke="#8b5cf6"
-                      strokeWidth={3}
-                      dot={{ fill: '#8b5cf6', r: 4 }}
-                      activeDot={{ r: 6 }}
+                      strokeWidth={2}
+                      dot={{ fill: '#8b5cf6', r: 3 }}
+                      activeDot={{ r: 5 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="flex flex-col items-center justify-center h-[350px] text-center">
-                  <ChartLine className="h-12 w-12 text-muted-foreground/30 mb-4" />
-                  <p className="text-lg font-medium text-muted-foreground">No Activity</p>
-                  <p className="text-sm text-muted-foreground/60 mt-1">
+                <div className="flex flex-col items-center justify-center h-[280px] text-center">
+                  <ChartLine className="h-10 w-10 lg:h-12 lg:w-12 text-muted-foreground/30 mb-3" />
+                  <p className="text-base lg:text-lg font-medium text-muted-foreground">No Activity</p>
+                  <p className="text-xs lg:text-sm text-muted-foreground/60 mt-1">
                     No images processed in this time period
                   </p>
                 </div>
@@ -521,7 +552,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Mobile Navigation */}
-      <MobileNav />
+      <MobileNav isAuthenticated={true} user={user} />
     </div>
   )
 }

@@ -76,20 +76,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
   }
 
   const mainNavItems = [
-    // Authenticated User Menu
-    {
-      label: "Dashboard",
-      href: "/dashboard",
-      icon: LayoutDashboard,
-      show: isAuthenticated,
-      badge: user?.credits ? `${user.credits} credits` : null
-    },
-    {
-      label: "Upload Images",
-      href: "/dashboard/upload-type",
-      icon: Upload,
-      show: isAuthenticated
-    },
+    // Authenticated User Menu - Only show items NOT in bottom nav
     {
       label: "History",
       href: "/history",
@@ -100,6 +87,12 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
       label: "Settings",
       href: "/dashboard/settings",
       icon: Settings,
+      show: isAuthenticated
+    },
+    {
+      label: "Pricing",
+      href: "/pricing",
+      icon: DollarSign,
       show: isAuthenticated
     },
     // Non-Authenticated User Menu
@@ -154,23 +147,23 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
 
           {/* Upload Button - Goes to type selection */}
           <Button
-            variant={pathname.startsWith("/dashboard") ? "default" : "ghost"}
+            variant={pathname === "/dashboard/upload-type" || pathname === "/dashboard/client" ? "default" : "ghost"}
             size="sm"
             onClick={() => router.push(isAuthenticated ? "/dashboard/upload-type" : "/sign-in")}
             className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
           >
-            <Upload className={cn("h-5 w-5", pathname.startsWith("/dashboard") ? "text-primary-foreground" : "")} />
+            <Upload className={cn("h-5 w-5", (pathname === "/dashboard/upload-type" || pathname === "/dashboard/client") ? "text-primary-foreground" : "")} />
             <span className="text-[10px] font-medium">Upload</span>
           </Button>
 
           {/* Dashboard Button - Always shows Dashboard icon */}
           <Button
-            variant={pathname.startsWith("/dashboard") ? "default" : "ghost"}
+            variant={pathname === "/dashboard" ? "default" : "ghost"}
             size="sm"
             onClick={() => router.push(isAuthenticated ? "/dashboard" : "/sign-in")}
             className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
           >
-            <LayoutDashboard className={cn("h-5 w-5", pathname.startsWith("/dashboard") ? "text-primary-foreground" : "")} />
+            <LayoutDashboard className={cn("h-5 w-5", pathname === "/dashboard" ? "text-primary-foreground" : "")} />
             <span className="text-[10px] font-medium">Dashboard</span>
           </Button>
 
@@ -321,11 +314,6 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
                         >
                           {item.icon && <item.icon className="h-5 w-5" />}
                           <span className="flex-1 text-left text-sm md:text-base">{item.label}</span>
-                          {item.badge && (
-                            <Badge variant="secondary" className="text-xs">
-                              {item.badge}
-                            </Badge>
-                          )}
                         </Button>
                       )
                     })}
@@ -367,29 +355,17 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
               {/* Footer Actions */}
               <div className="mt-auto border-t p-3 space-y-2 bg-muted/30">
                 {isAuthenticated ? (
-                  <>
-                    <Button
-                      variant="outline"
-                      className="w-full h-10 gap-3"
-                      onClick={() => {
-                        handleNavigation("/dashboard/upload-type")
-                      }}
-                    >
-                      <Upload className="h-5 w-5" />
-                      <span className="text-sm md:text-base">Process New Images</span>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full h-10 gap-3 text-destructive hover:text-destructive"
-                      onClick={() => {
-                        // Handle logout
-                        handleNavigation("/signout")
-                      }}
-                    >
-                      <LogOut className="h-5 w-5" />
-                      <span className="text-sm md:text-base">Sign Out</span>
-                    </Button>
-                  </>
+                  <Button
+                    variant="ghost"
+                    className="w-full h-10 gap-3 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    onClick={() => {
+                      // Handle logout
+                      handleNavigation("/signout")
+                    }}
+                  >
+                    <LogOut className="h-5 w-5" />
+                    <span className="text-sm md:text-base">Sign Out</span>
+                  </Button>
                 ) : (
                   <>
                     <Button
