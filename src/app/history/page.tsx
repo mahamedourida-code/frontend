@@ -192,9 +192,11 @@ function HistoryContent() {
       accessorKey: "processing_metadata",
       header: "Images",
       cell: ({ row }) => {
-        // Try processing_metadata first, then fall back to metadata
-        const metadata = (row.original as any).processing_metadata || (row.original as any).metadata
-        const count = (metadata as any)?.total_images || 0
+        // Use processing_metadata for image count
+        const metadata = row.original.processing_metadata
+        const count = typeof metadata === 'object' && metadata !== null && 'total_images' in metadata 
+          ? (metadata as any).total_images 
+          : 0
         return <span className="text-sm text-muted-foreground">{count}</span>
       },
     },
@@ -312,7 +314,7 @@ function HistoryContent() {
 
   const handleDownloadAll = async () => {
     const completedJobs = jobs.filter(
-      (job) => job.status === 'completed' && (job.result_url || job.metadata?.storage_files)
+      (job) => job.status === 'completed' && job.result_url
     )
 
     if (completedJobs.length === 0) {
@@ -491,7 +493,7 @@ function HistoryContent() {
           </div>
           <div className="flex items-center gap-2">
             {/* Download all button */}
-            {jobs.filter(job => job.status === 'completed' && (job.result_url || job.metadata?.storage_files)).length > 0 && (
+            {jobs.filter(job => job.status === 'completed' && job.result_url).length > 0 && (
               <>
                 <Button
                   variant="outline"
