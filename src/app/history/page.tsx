@@ -55,31 +55,8 @@ function HistoryContent() {
       
       console.log('Downloading job:', job); // Debug log
       
-      // Check if we have storage files in metadata (new format with Supabase Storage)
-      const metadata = job.processing_metadata || (job as any).metadata; // Check both for compatibility
-      const storageFiles = (metadata as any)?.storage_files;
-      if (storageFiles && storageFiles.length > 0) {
-        const storageFile = storageFiles[0];
-        console.log('Using storage file:', storageFile); // Debug log
-        
-        // Check if it's a signed URL (private bucket) or we need to use storage path
-        if (storageFile.url && storageFile.url_type === 'signed_url') {
-          // For signed URLs, download directly from the URL
-          console.log('Fetching signed URL:', storageFile.url); // Debug log
-          const response = await fetch(storageFile.url);
-          if (!response.ok) {
-            console.error('Signed URL fetch failed:', response.status, response.statusText);
-            throw new Error('Download failed');
-          }
-          blob = await response.blob();
-        } else if (storageFile.storage_path) {
-          // For public buckets or when we have storage path, use the API endpoint
-          console.log('Using storage path:', storageFile.storage_path); // Debug log
-          blob = await ocrApi.downloadFromStorage(storageFile.storage_path);
-        } else {
-          throw new Error('No valid download path in storage file');
-        }
-      } else if (job.result_url) {
+      // Simply use result_url if available (it's a signed URL)
+      if (job.result_url) {
         // Try direct download if result_url is a signed URL
         console.log('Using result_url:', job.result_url); // Debug log
         
@@ -105,10 +82,6 @@ function HistoryContent() {
 
           blob = await ocrApi.downloadFile(fileId)
         }
-      } else if ((metadata as any)?.storage_path) {
-        // Fallback: try using storage_path directly from metadata
-        console.log('Using metadata storage_path:', (metadata as any).storage_path); // Debug log
-        blob = await ocrApi.downloadFromStorage((metadata as any).storage_path);
       } else {
         console.error('No download URL available. Job data:', job);
         toast.error('No download URL available')
@@ -257,7 +230,7 @@ function HistoryContent() {
         const job = row.original
         return (
           <div className="flex items-center justify-end gap-2">
-            {job.status === 'completed' && (job.result_url || job.metadata?.storage_files) ? (
+            {job.status === 'completed' && job.result_url ? (
               <>
                 <Button
                   variant="outline"
@@ -321,10 +294,7 @@ function HistoryContent() {
 
     const completedJobs = selectedRows
       .map((row) => row.original)
-      .filter((job) => {
-        const metadata = job.processing_metadata || (job as any).metadata
-        return job.status === 'completed' && (job.result_url || (metadata as any)?.storage_files)
-      })
+      .filter((job) => job.status === 'completed' && job.result_url)
 
     if (completedJobs.length === 0) {
       toast.error('No completed files available for download')
