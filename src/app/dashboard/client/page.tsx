@@ -101,7 +101,6 @@ export default function ProcessImagesPage() {
   })
   const [showAutoDownloadConfirm, setShowAutoDownloadConfirm] = useState(false)
   const [exportingToSheets, setExportingToSheets] = useState(false)
-  const [exportingToDrive, setExportingToDrive] = useState(false)
   const [processingTime, setProcessingTime] = useState(0)
   const processingTimerRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -926,85 +925,6 @@ Best regards`
     }
   }
 
-  const handleExportToGoogleDrive = async () => {
-    if (!resultFiles || resultFiles.length === 0) {
-      toast.error('No files to export')
-      return
-    }
-
-    if (!jobId) {
-      toast.error('No job ID found for export')
-      return
-    }
-
-    setExportingToDrive(true)
-    try {
-      const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
-
-      if (!session) {
-        toast.error('Please sign in to export to Google Drive')
-        setExportingToDrive(false)
-        return
-      }
-
-      toast.info('Uploading to Google Drive...', {
-        description: 'Your Excel file is being uploaded'
-      })
-
-      // Call the new Google Drive export API
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'}/api/v1/google/export-drive`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({
-          job_id: jobId,
-          filename: `Export_${new Date().toISOString().split('T')[0]}`
-        })
-      })
-
-      const data = await response.json()
-
-      if (data.success && data.spreadsheet_url) {
-        // Open the file in Google Drive
-        window.open(data.spreadsheet_url, '_blank')
-
-        
-        toast.success('Upload successful!', {
-          description: data.message,
-          duration: 5000
-        })
-      } else {
-        // Show error message
-        toast.error('Upload failed', {
-          description: data.message || 'Unable to upload to Google Drive'
-        })
-        
-        // If not configured, show fallback instructions
-        if (data.message?.includes('not configured')) {
-          toast.info('Manual Upload Available', {
-            description: 'You can download the Excel file and manually upload it to Google Drive',
-            duration: 7000
-          })
-          
-          // Download the file locally as fallback
-          if (jobId) {
-            await downloadFile(jobId)
-          }
-        }
-      }
-
-    } catch (error: any) {
-      console.error('[ExportToDrive] Error:', error)
-      toast.error('Failed to export to Google Drive', {
-        description: error.message || 'Network error occurred'
-      })
-    } finally {
-      setExportingToDrive(false)
-    }
-  }
 
   if (authLoading || !user) {
     return (
@@ -1030,14 +950,12 @@ Best regards`
               </div>
             </div>
             <div className="absolute left-1/2 -translate-x-1/2">
-              <Card className="bg-white dark:bg-white border-2 border-primary shadow-md">
-                <CardContent className="px-6 py-3">
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-primary">{credits.available}</p>
-                    <p className="text-xs text-muted-foreground">Credits Left</p>
-                  </div>
-                </CardContent>
-              </Card>
+              <Badge
+                variant={credits.available <= 10 ? "destructive" : "secondary"}
+                className="gap-1.5 px-3 py-1.5 h-9"
+              >
+                {credits.available} / {credits.total} credits
+              </Badge>
             </div>
             <div className="flex items-center gap-3">
               <Button
@@ -1083,37 +1001,37 @@ Best regards`
       <main className="container max-w-5xl mx-auto px-4 py-8 pb-24">
         {/* Processing Timer Card */}
         {isProcessing && !isComplete && (
-          <Card className="mb-6 bg-white dark:bg-white border-2 border-primary shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-center gap-4">
+          <Card className="mb-6 bg-white dark:bg-white border-2 border-primary shadow-md max-w-md mx-auto">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-center gap-3">
                 <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                    <p className="text-lg font-semibold text-foreground">Processing</p>
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                    <p className="text-sm font-semibold text-foreground">Processing</p>
                   </div>
                   {progress && (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       {progress.processed_images} of {progress.total_images} images
                     </p>
                   )}
                 </div>
-                <Separator orientation="vertical" className="h-16" />
+                <Separator orientation="vertical" className="h-12" />
                 <div className="text-center">
-                  <p className="text-4xl font-bold text-primary">{processingTime}</p>
-                  <p className="text-sm text-muted-foreground">seconds</p>
+                  <p className="text-2xl font-bold text-primary">{processingTime}</p>
+                  <p className="text-xs text-muted-foreground">seconds</p>
                 </div>
                 {progress && (
                   <>
-                    <Separator orientation="vertical" className="h-16" />
+                    <Separator orientation="vertical" className="h-12" />
                     <div className="text-center">
-                      <p className="text-4xl font-bold text-primary">{progress.percentage}%</p>
-                      <p className="text-sm text-muted-foreground">complete</p>
+                      <p className="text-2xl font-bold text-primary">{progress.percentage}%</p>
+                      <p className="text-xs text-muted-foreground">complete</p>
                     </div>
                   </>
                 )}
               </div>
               {progress && (
-                <Progress value={progress.percentage} className="mt-4" />
+                <Progress value={progress.percentage} className="mt-3" />
               )}
             </CardContent>
           </Card>
@@ -1262,7 +1180,36 @@ Best regards`
             {(isProcessing || isComplete) && resultFiles && resultFiles.length > 0 && (
               <TooltipProvider>
               <div className="space-y-4">
-                <div className="flex items-center justify-end mb-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    {isComplete && (
+                      <>
+                        {!isSaved && (
+                          <Button
+                            size="lg"
+                            onClick={saveToHistory}
+                            disabled={isSaving}
+                            className="gap-2 bg-white border-2 border-primary text-foreground hover:bg-primary/10 h-12"
+                          >
+                            {isSaving ? (
+                              <Loader2 className="h-5 w-5 animate-spin" />
+                            ) : (
+                              <Save className="h-5 w-5" />
+                            )}
+                            Save to History
+                          </Button>
+                        )}
+                        <Button
+                          size="lg"
+                          onClick={handleReset}
+                          className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-primary h-12"
+                        >
+                          <ArrowRight className="h-5 w-5" />
+                          Start Fresh
+                        </Button>
+                      </>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2">
                     <Button
                       size="lg"
@@ -1320,22 +1267,9 @@ Best regards`
                       {exportingToSheets ? (
                         <Loader2 className="h-5 w-5 animate-spin" />
                       ) : (
-                        <Image src="/sheets.png" alt="Google Sheets" width={24} height={24} />
+                        <Image src="/sheets.png" alt="Google Sheets" width={32} height={32} />
                       )}
                       Export to Sheets
-                    </Button>
-                    <Button
-                      size="lg"
-                      onClick={handleExportToGoogleDrive}
-                      disabled={exportingToDrive}
-                      className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50 h-12"
-                    >
-                      {exportingToDrive ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        <Image src="/drive.png" alt="Google Drive" width={24} height={24} />
-                      )}
-                      Export to Drive
                     </Button>
                   </div>
                 </div>
