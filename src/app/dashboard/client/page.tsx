@@ -973,7 +973,14 @@ Best regards`
                 <h1 className="text-sm font-semibold text-foreground">{documentTypeInfo.label}</h1>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <Badge
+                variant={credits.available <= 10 ? "destructive" : "secondary"}
+                className="gap-1.5 px-3 py-1.5"
+              >
+                <Zap className="h-3.5 w-3.5" />
+                {credits.available} / {credits.total} credits
+              </Badge>
               <Button
                 variant="ghost"
                 size="sm"
@@ -1200,21 +1207,12 @@ Best regards`
 
                 {/* Process Button */}
                 {uploadedFiles.length > 0 && (
-                  <div className="mt-4 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">Credits:</span>
-                      <Badge 
-                        variant={credits.available <= 10 ? "destructive" : "secondary"}
-                        className="gap-1"
-                      >
-                        {credits.available} / {credits.total} remaining
-                      </Badge>
-                      {uploadedFiles.length > credits.available && (
-                        <span className="text-xs text-destructive">
-                          Not enough credits!
-                        </span>
-                      )}
-                    </div>
+                  <div className="mt-4 flex items-center justify-end">
+                    {uploadedFiles.length > credits.available && (
+                      <span className="text-sm text-destructive mr-3">
+                        Not enough credits! Need {uploadedFiles.length - credits.available} more
+                      </span>
+                    )}
                     <Button
                       size="lg"
                       onClick={handleProcessImages}
@@ -1243,98 +1241,81 @@ Best regards`
             {(isProcessing || isComplete) && resultFiles && resultFiles.length > 0 && (
               <TooltipProvider>
               <div className="space-y-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-lg font-semibold">Ready Files</h2>
-                    {isProcessing && (
-                      <Badge variant="secondary" className="gap-1 animate-pulse">
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                        Processing more...
-                      </Badge>
-                    )}
-                  </div>
+                <div className="flex items-center justify-end mb-4">
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="gap-1">
-                      <FileSpreadsheet className="h-3 w-3" />
-                      {resultFiles.length} of {progress?.total_images || uploadedFiles.length} ready
-                    </Badge>
-                    {resultFiles.length > 1 && (
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={handleShareAll}
-                          className="gap-2"
-                        >
-                          <Share2 className="h-4 w-4" />
-                          Share All
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={async () => {
-                            console.log('[DownloadAll] Starting batch download:', resultFiles)
-                            toast.info(`Downloading ${resultFiles.length} files...`)
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={resultFiles.length > 1 ? handleShareAll : () => handleShareFile(resultFiles[0])}
+                      className="gap-2 bg-white border-2 border-primary hover:bg-primary/10"
+                    >
+                      <Share2 className="h-4 w-4" />
+                      Share {resultFiles.length > 1 ? 'All' : ''}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={async () => {
+                        console.log('[DownloadAll] Starting batch download:', resultFiles)
+                        toast.info(`Downloading ${resultFiles.length} file(s)...`)
 
-                            let downloadCount = 0
-                            for (const file of resultFiles) {
-                              if (!file.file_id) {
-                                console.error('[DownloadAll] Skipping file without ID:', file)
-                                continue
-                              }
+                        let downloadCount = 0
+                        for (const file of resultFiles) {
+                          if (!file.file_id) {
+                            console.error('[DownloadAll] Skipping file without ID:', file)
+                            continue
+                          }
 
-                              try {
-                                console.log(`[DownloadAll] Downloading ${downloadCount + 1}/${resultFiles.length}:`, file.file_id)
-                                await downloadFile(file.file_id)
-                                downloadCount++
-                                await new Promise(resolve => setTimeout(resolve, 500))
-                              } catch (error) {
-                                console.error('[DownloadAll] Failed to download file:', file.file_id, error)
-                                toast.error(`Failed to download ${file.filename || 'file'}`)
-                              }
-                            }
+                          try {
+                            console.log(`[DownloadAll] Downloading ${downloadCount + 1}/${resultFiles.length}:`, file.file_id)
+                            await downloadFile(file.file_id)
+                            downloadCount++
+                            await new Promise(resolve => setTimeout(resolve, 500))
+                          } catch (error) {
+                            console.error('[DownloadAll] Failed to download file:', file.file_id, error)
+                            toast.error(`Failed to download ${file.filename || 'file'}`)
+                          }
+                        }
 
-                            if (downloadCount === resultFiles.length) {
-                              toast.success(`Successfully downloaded ${downloadCount} files`)
-                            } else if (downloadCount > 0) {
-                              toast.warning(`Downloaded ${downloadCount} of ${resultFiles.length} files`)
-                            } else {
-                              toast.error('Failed to download any files')
-                            }
-                          }}
-                          className="gap-2"
-                        >
-                          <DownloadCloud className="h-4 w-4" />
-                          Download All
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={handleExportToGoogleSheets}
-                          disabled={exportingToSheets}
-                          className="gap-2 bg-primary text-white hover:bg-primary/90 border-0"
-                        >
-                          {exportingToSheets ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Sheet className="h-4 w-4" />
-                          )}
-                          Sheets
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={handleExportToGoogleDrive}
-                          disabled={exportingToDrive}
-                          className="gap-2 bg-primary text-white hover:bg-primary/90 border-0"
-                        >
-                          {exportingToDrive ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <FolderUp className="h-4 w-4" />
-                          )}
-                          Drive
-                        </Button>
-                      </div>
-                    )}
+                        if (downloadCount === resultFiles.length) {
+                          toast.success(`Successfully downloaded ${downloadCount} file(s)`)
+                        } else if (downloadCount > 0) {
+                          toast.warning(`Downloaded ${downloadCount} of ${resultFiles.length} files`)
+                        } else {
+                          toast.error('Failed to download any files')
+                        }
+                      }}
+                      className="gap-2 bg-white border-2 border-primary hover:bg-primary/10"
+                    >
+                      <DownloadCloud className="h-4 w-4" />
+                      Download {resultFiles.length > 1 ? 'All' : ''}
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleExportToGoogleSheets}
+                      disabled={exportingToSheets}
+                      className="gap-2 bg-white border-2 border-primary hover:bg-primary/10"
+                    >
+                      {exportingToSheets ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Sheet className="h-4 w-4" />
+                      )}
+                      Sheets
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleExportToGoogleDrive}
+                      disabled={exportingToDrive}
+                      className="gap-2 bg-white border-2 border-primary hover:bg-primary/10"
+                    >
+                      {exportingToDrive ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <FolderUp className="h-4 w-4" />
+                      )}
+                      Drive
+                    </Button>
                   </div>
                 </div>
                 
@@ -1361,34 +1342,28 @@ Best regards`
                                   <p className="max-w-xs break-all">{file.filename || `Image ${index + 1} Result`}</p>
                                 </TooltipContent>
                               </Tooltip>
-                              <div className="flex items-center gap-2 mt-1">
-                                <CheckCircle className="h-3 w-3 text-green-600" />
-                                <p className="text-xs text-muted-foreground">
-                                  Ready to download
-                                </p>
-                              </div>
                             </div>
                           </div>
                           <div className="flex items-center gap-2 flex-shrink-0">
                             <Button
                               size="sm"
-                              variant="ghost"
+                              variant="outline"
                               onClick={() => handleShareFile(file)}
-                              className="gap-1.5"
+                              className="gap-1.5 bg-white border-2 border-border hover:bg-muted/50"
                             >
                               <Share2 className="h-4 w-4" />
-                              <span className="sr-only">Share</span>
+                              Share
                             </Button>
                             <Button
                               size="sm"
-                              variant="ghost"
+                              variant="outline"
                               onClick={() => {
                                 router.push(`/dashboard/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'Result.xlsx')}`)
                               }}
-                              className="gap-1.5"
+                              className="gap-1.5 bg-white border-2 border-border hover:bg-muted/50"
                             >
                               <Edit3 className="h-4 w-4" />
-                              <span className="sr-only">Edit</span>
+                              Edit
                             </Button>
                             <Button
                               size="sm"
@@ -1400,7 +1375,7 @@ Best regards`
                                 }
                                 downloadFile(file.file_id)
                               }}
-                              className="gap-2"
+                              className="gap-2 bg-primary hover:bg-primary/90 text-white"
                             >
                               <Download className="h-4 w-4" />
                               Download
