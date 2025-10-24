@@ -914,25 +914,25 @@ Best regards`
       <main className="container max-w-5xl mx-auto px-4 py-8 pb-24">
         {/* Status Bar */}
         {isProcessing && !isComplete && (
-          <Alert className="mb-6 border-primary/50 bg-primary/5">
-            <Loader2 className="h-4 w-4 animate-spin" />
+          <Alert className="mb-6 border-2 border-primary bg-primary">
+            <Loader2 className="h-4 w-4 animate-spin text-white" />
             <AlertDescription className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div>
-                  <span className="font-medium">Processing your images...</span>
+                  <span className="font-medium text-white">Processing your images...</span>
                   {progress && (
-                    <span className="ml-3 text-sm text-muted-foreground">
+                    <span className="ml-3 text-sm text-white/80">
                       {progress.processed_images} of {progress.total_images} completed
                     </span>
                   )}
                 </div>
-                <Badge variant="secondary" className="gap-1.5">
+                <Badge variant="secondary" className="gap-1.5 bg-white text-primary">
                   <Clock className="h-3 w-3" />
                   <span>{processingTime}s</span>
                 </Badge>
               </div>
               {progress && (
-                <span className="text-sm font-medium">{progress.percentage}%</span>
+                <span className="text-sm font-medium text-white">{progress.percentage}%</span>
               )}
             </AlertDescription>
             {progress && (
@@ -942,15 +942,15 @@ Best regards`
         )}
 
         {isComplete && (
-          <Alert className="mb-6 border-green-500/50 bg-green-500/5">
-            <CheckCircle className="h-4 w-4 text-green-600" />
+          <Alert className="mb-6 border-2 border-primary bg-primary">
+            <CheckCircle className="h-4 w-4 text-white" />
             <AlertDescription className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className="font-medium text-green-600">
+                <span className="font-medium text-white">
                   Processing complete! Your files are ready.
                 </span>
                 {processingTime > 0 && (
-                  <Badge variant="outline" className="gap-1.5 text-green-600 border-green-600">
+                  <Badge variant="outline" className="gap-1.5 text-white border-white bg-transparent">
                     <CheckCircle2 className="h-3 w-3" />
                     <span>Completed in {processingTime}s</span>
                   </Badge>
@@ -962,7 +962,7 @@ Best regards`
                     size="sm"
                     onClick={saveToHistory}
                     disabled={isSaving}
-                    className="bg-white dark:bg-white border-2 border-primary text-foreground hover:bg-primary/10"
+                    className="bg-white text-primary hover:bg-white/90 border-0"
                   >
                     {isSaving ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -974,7 +974,7 @@ Best regards`
                 <Button
                   size="sm"
                   onClick={handleReset}
-                  className="bg-primary hover:bg-primary/90 text-white border-0"
+                  className="bg-white text-primary hover:bg-white/90 border-0"
                 >
                   Start Fresh
                 </Button>
@@ -1004,9 +1004,7 @@ Best regards`
                 >
                   {uploadedFiles.length === 0 ? (
                     <div className="text-center">
-                      <div className="mx-auto h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 sm:mb-4">
-                        <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                      </div>
+                      <Upload className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-3 sm:mb-4" />
                       <h3 className="text-sm sm:text-base font-medium mb-1">
                         {isDragging ? "Drop your images here" : "Upload table images"}
                       </h3>
@@ -1475,51 +1473,43 @@ Best regards`
                   className="group flex flex-col items-center gap-1.5 cursor-pointer"
                   title="Compose email in Gmail"
                 >
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#EA4335] to-[#D33B2C] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
-                    <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
-                    </svg>
-                  </div>
+                  <svg className="h-10 w-10 text-[#EA4335] group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
+                  </svg>
                   <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Gmail</span>
                 </button>
-                
+
                 {/* LinkedIn Message */}
                 <button
                   onClick={handleLinkedInMessage}
                   className="group flex flex-col items-center gap-1.5 cursor-pointer"
                   title="Copy link and compose LinkedIn message"
                 >
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0077B5] to-[#005885] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
-                    <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
-                    </svg>
-                  </div>
+                  <svg className="h-10 w-10 text-[#0077B5] group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+                  </svg>
                   <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">LinkedIn</span>
                 </button>
-                
+
                 {/* X (Twitter) */}
                 <button
                   onClick={handleXShare}
                   className="group flex flex-col items-center gap-1.5 cursor-pointer"
                   title="Share on X (Twitter)"
                 >
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-black to-[#1DA1F2] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
-                    <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                    </svg>
-                  </div>
+                  <svg className="h-10 w-10 text-foreground group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
                   <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">X</span>
                 </button>
-                
+
                 {/* Facebook Messenger */}
                 <button
                   onClick={handleMessengerShare}
                   className="group flex flex-col items-center gap-1.5 cursor-pointer"
                   title="Send via Facebook Messenger"
                 >
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0084FF] to-[#0063CE] flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
-                    <MessageCircle className="h-6 w-6 text-white" />
-                  </div>
+                  <MessageCircle className="h-10 w-10 text-[#0084FF] group-hover:scale-110 transition-transform" />
                   <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Messenger</span>
                 </button>
               </div>
@@ -1598,9 +1588,7 @@ Best regards`
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 rounded-full bg-amber-500/10">
-                <AlertTriangle className="h-5 w-5 text-amber-500" />
-              </div>
+              <AlertTriangle className="h-6 w-6 text-amber-500" />
               <DialogTitle>Enable Auto-Download?</DialogTitle>
             </div>
             <DialogDescription className="text-sm text-muted-foreground">
