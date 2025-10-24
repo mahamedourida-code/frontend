@@ -19,10 +19,11 @@ import { AppIcon } from "@/components/AppIcon"
 import { ocrApi } from "@/lib/api-client"
 import { MobileNav } from "@/components/MobileNav"
 import { createClient } from "@/utils/supabase/client"
+import Image from "next/image"
 import {
   Upload,
   FileSpreadsheet,
-  Image,
+  Image as ImageIcon,
   Sparkles,
   Download,
   Loader2,
@@ -1029,13 +1030,14 @@ Best regards`
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Badge
-                variant={credits.available <= 10 ? "destructive" : "secondary"}
-                className="gap-1.5 px-3 py-1.5"
-              >
-                <Zap className="h-3.5 w-3.5" />
-                {credits.available} / {credits.total} credits
-              </Badge>
+              <Card className="bg-white dark:bg-white border-2 border-primary shadow-md">
+                <CardContent className="px-6 py-3">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-primary">{credits.available}</p>
+                    <p className="text-xs text-muted-foreground">Credits Left</p>
+                  </div>
+                </CardContent>
+              </Card>
               <Button
                 variant="ghost"
                 size="sm"
@@ -1106,47 +1108,6 @@ Best regards`
           </Alert>
         )}
 
-        {isComplete && (
-          <Alert className="mb-6 border-2 border-primary bg-primary">
-            <CheckCircle className="h-4 w-4 text-white" />
-            <AlertDescription className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="font-medium text-white">
-                  Processing complete! Your files are ready.
-                </span>
-                {processingTime > 0 && (
-                  <Badge variant="outline" className="gap-1.5 text-white border-white bg-transparent">
-                    <CheckCircle2 className="h-3 w-3" />
-                    <span>Completed in {processingTime}s</span>
-                  </Badge>
-                )}
-              </div>
-              <div className="flex gap-2">
-                {!isSaved && (
-                  <Button
-                    size="sm"
-                    onClick={saveToHistory}
-                    disabled={isSaving}
-                    className="bg-white text-primary hover:bg-white/90 border-0"
-                  >
-                    {isSaving ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <>Save to History</>
-                    )}
-                  </Button>
-                )}
-                <Button
-                  size="sm"
-                  onClick={handleReset}
-                  className="bg-white text-primary hover:bg-white/90 border-0"
-                >
-                  Start Fresh
-                </Button>
-              </div>
-            </AlertDescription>
-          </Alert>
-        )}
 
         {/* Main Content Area */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
@@ -1170,12 +1131,9 @@ Best regards`
                   {uploadedFiles.length === 0 ? (
                     <div className="text-center">
                       <Upload className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-3 sm:mb-4" />
-                      <h3 className="text-sm sm:text-base font-medium mb-1">
+                      <h3 className="text-sm sm:text-base font-medium mb-3 sm:mb-4">
                         {isDragging ? "Drop your images here" : "Upload table images"}
                       </h3>
-                      <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
-                        Drag & drop or click to browse • Max 100 images
-                      </p>
                       <label htmlFor="file-upload">
                         <Button asChild>
                           <span>
@@ -1199,12 +1157,9 @@ Best regards`
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <Badge variant="secondary" className="gap-1">
-                            <Image className="h-3 w-3" />
+                            <ImageIcon className="h-3 w-3" />
                             {uploadedFiles.length} {uploadedFiles.length === 1 ? 'image' : 'images'}
                           </Badge>
-                          <span className="text-sm text-muted-foreground">
-                            Ready to process
-                          </span>
                         </div>
                         <div className="flex gap-2">
                           <Button
@@ -1302,7 +1257,7 @@ Best regards`
                       size="sm"
                       variant="outline"
                       onClick={resultFiles.length > 1 ? handleShareAll : () => handleShareFile(resultFiles[0])}
-                      className="gap-2 bg-white border-2 border-primary hover:bg-primary/10"
+                      className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                     >
                       <Share2 className="h-4 w-4" />
                       Share {resultFiles.length > 1 ? 'All' : ''}
@@ -1340,7 +1295,7 @@ Best regards`
                           toast.error('Failed to download any files')
                         }
                       }}
-                      className="gap-2 bg-white border-2 border-primary hover:bg-primary/10"
+                      className="gap-2 bg-muted/30 border-2 border-foreground text-foreground hover:bg-muted/50"
                     >
                       <DownloadCloud className="h-4 w-4" />
                       Download {resultFiles.length > 1 ? 'All' : ''}
@@ -1349,27 +1304,27 @@ Best regards`
                       size="sm"
                       onClick={handleExportToGoogleSheets}
                       disabled={exportingToSheets}
-                      className="gap-2 bg-white border-2 border-border text-foreground hover:bg-muted/50"
+                      className="gap-2 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
                     >
                       {exportingToSheets ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <Sheet className="h-4 w-4" />
+                        <Image src="/sheets.png" alt="Google Sheets" width={16} height={16} />
                       )}
-                      Sheets
+                      Export to Sheets
                     </Button>
                     <Button
                       size="sm"
                       onClick={handleExportToGoogleDrive}
                       disabled={exportingToDrive}
-                      className="gap-2 bg-muted/30 border-2 border-border text-foreground hover:bg-muted/50"
+                      className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                     >
                       {exportingToDrive ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <FolderUp className="h-4 w-4" />
+                        <Image src="/drive.png" alt="Google Drive" width={16} height={16} />
                       )}
-                      Drive
+                      Export to Drive
                     </Button>
                   </div>
                 </div>
@@ -1383,8 +1338,8 @@ Best regards`
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                              <FileSpreadsheet className="h-5 w-5 text-green-600" />
+                            <div className="flex items-center justify-center flex-shrink-0">
+                              <FileSpreadsheet className="h-6 w-6 text-primary" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <Tooltip>
@@ -1404,7 +1359,7 @@ Best regards`
                               size="sm"
                               variant="outline"
                               onClick={() => handleShareFile(file)}
-                              className="gap-1.5 bg-white border-2 border-border hover:bg-muted/50"
+                              className="gap-1.5 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
                             >
                               <Share2 className="h-4 w-4" />
                               Share
@@ -1415,7 +1370,7 @@ Best regards`
                               onClick={() => {
                                 router.push(`/dashboard/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'Result.xlsx')}`)
                               }}
-                              className="gap-1.5 bg-white border-2 border-border hover:bg-muted/50"
+                              className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                             >
                               <Edit3 className="h-4 w-4" />
                               Edit
@@ -1430,7 +1385,7 @@ Best regards`
                                 }
                                 downloadFile(file.file_id)
                               }}
-                              className="gap-2 bg-primary hover:bg-primary/90 text-white"
+                              className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-primary"
                             >
                               <Download className="h-4 w-4" />
                               Download
@@ -1526,53 +1481,6 @@ Best regards`
               </CardContent>
             </Card>
 
-            {/* Quick Stats */}
-            <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
-              <CardContent className="p-3">
-                <h3 className="text-xs font-semibold mb-2 text-foreground">Quick Info</h3>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Status</span>
-                    <Badge variant={
-                      isComplete ? "default" :
-                      isProcessing ? "secondary" :
-                      "outline"
-                    } className="text-xs px-2 py-0">
-                      {isComplete ? "Complete" :
-                       isProcessing ? "Processing" :
-                       "Ready"}
-                    </Badge>
-                  </div>
-                  <Separator />
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Images</span>
-                    <span className="font-medium">{uploadedFiles.length}</span>
-                  </div>
-                  {isProcessing && progress && (
-                    <>
-                      <Separator />
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground">Progress</span>
-                        <span className="font-medium">{progress.percentage}%</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Help */}
-            <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
-              <CardContent className="p-3">
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="h-3.5 w-3.5 text-primary mt-0.5" />
-                  <div className="text-xs text-foreground">
-                    <p className="mb-1 font-medium">Supported formats:</p>
-                    <p className="text-[11px] text-muted-foreground">PNG, JPG, JPEG, WebP</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </main>
