@@ -1029,7 +1029,7 @@ Best regards`
                 <h1 className="text-sm font-semibold text-foreground">{documentTypeInfo.label}</h1>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="absolute left-1/2 -translate-x-1/2">
               <Card className="bg-white dark:bg-white border-2 border-primary shadow-md">
                 <CardContent className="px-6 py-3">
                   <div className="text-center">
@@ -1038,6 +1038,8 @@ Best regards`
                   </div>
                 </CardContent>
               </Card>
+            </div>
+            <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
                 size="sm"
@@ -1079,33 +1081,42 @@ Best regards`
       </div>
 
       <main className="container max-w-5xl mx-auto px-4 py-8 pb-24">
-        {/* Status Bar */}
+        {/* Processing Timer Card */}
         {isProcessing && !isComplete && (
-          <Alert className="mb-6 border-2 border-primary bg-primary">
-            <Loader2 className="h-4 w-4 animate-spin text-white" />
-            <AlertDescription className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div>
-                  <span className="font-medium text-white">Processing your images...</span>
+          <Card className="mb-6 bg-white dark:bg-white border-2 border-primary shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-center gap-4">
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                    <p className="text-lg font-semibold text-foreground">Processing</p>
+                  </div>
                   {progress && (
-                    <span className="ml-3 text-sm text-white/80">
-                      {progress.processed_images} of {progress.total_images} completed
-                    </span>
+                    <p className="text-sm text-muted-foreground">
+                      {progress.processed_images} of {progress.total_images} images
+                    </p>
                   )}
                 </div>
-                <Badge variant="secondary" className="gap-1.5 bg-white text-primary">
-                  <Clock className="h-3 w-3" />
-                  <span>{processingTime}s</span>
-                </Badge>
+                <Separator orientation="vertical" className="h-16" />
+                <div className="text-center">
+                  <p className="text-4xl font-bold text-primary">{processingTime}</p>
+                  <p className="text-sm text-muted-foreground">seconds</p>
+                </div>
+                {progress && (
+                  <>
+                    <Separator orientation="vertical" className="h-16" />
+                    <div className="text-center">
+                      <p className="text-4xl font-bold text-primary">{progress.percentage}%</p>
+                      <p className="text-sm text-muted-foreground">complete</p>
+                    </div>
+                  </>
+                )}
               </div>
               {progress && (
-                <span className="text-sm font-medium text-white">{progress.percentage}%</span>
+                <Progress value={progress.percentage} className="mt-4" />
               )}
-            </AlertDescription>
-            {progress && (
-              <Progress value={progress.percentage} className="mt-2" />
-            )}
-          </Alert>
+            </CardContent>
+          </Card>
         )}
 
 
@@ -1254,16 +1265,16 @@ Best regards`
                 <div className="flex items-center justify-end mb-4">
                   <div className="flex items-center gap-2">
                     <Button
-                      size="sm"
+                      size="lg"
                       variant="outline"
                       onClick={resultFiles.length > 1 ? handleShareAll : () => handleShareFile(resultFiles[0])}
-                      className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                      className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50 h-12"
                     >
-                      <Share2 className="h-4 w-4" />
-                      Share {resultFiles.length > 1 ? 'All' : ''}
+                      <Share2 className="h-5 w-5" />
+                      Share All
                     </Button>
                     <Button
-                      size="sm"
+                      size="lg"
                       variant="outline"
                       onClick={async () => {
                         console.log('[DownloadAll] Starting batch download:', resultFiles)
@@ -1295,34 +1306,34 @@ Best regards`
                           toast.error('Failed to download any files')
                         }
                       }}
-                      className="gap-2 bg-muted/30 border-2 border-foreground text-foreground hover:bg-muted/50"
+                      className="gap-2 bg-muted/30 border-2 border-foreground text-foreground hover:bg-muted/50 h-12"
                     >
-                      <DownloadCloud className="h-4 w-4" />
-                      Download {resultFiles.length > 1 ? 'All' : ''}
+                      <DownloadCloud className="h-5 w-5" />
+                      Download All
                     </Button>
                     <Button
-                      size="sm"
+                      size="lg"
                       onClick={handleExportToGoogleSheets}
                       disabled={exportingToSheets}
-                      className="gap-2 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
+                      className="gap-2 bg-white border-2 border-primary text-foreground hover:bg-primary/10 h-12"
                     >
                       {exportingToSheets ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="h-5 w-5 animate-spin" />
                       ) : (
-                        <Image src="/sheets.png" alt="Google Sheets" width={16} height={16} />
+                        <Image src="/sheets.png" alt="Google Sheets" width={24} height={24} />
                       )}
                       Export to Sheets
                     </Button>
                     <Button
-                      size="sm"
+                      size="lg"
                       onClick={handleExportToGoogleDrive}
                       disabled={exportingToDrive}
-                      className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                      className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50 h-12"
                     >
                       {exportingToDrive ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="h-5 w-5 animate-spin" />
                       ) : (
-                        <Image src="/drive.png" alt="Google Drive" width={16} height={16} />
+                        <Image src="/drive.png" alt="Google Drive" width={24} height={24} />
                       )}
                       Export to Drive
                     </Button>
