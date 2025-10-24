@@ -44,7 +44,9 @@ import {
   Link,
   Copy,
   Facebook,
-  MessageCircle
+  MessageCircle,
+  Sheet,
+  FolderUp
 } from "lucide-react"
 import {
   Dialog,
@@ -97,6 +99,8 @@ export default function ProcessImagesPage() {
     return false
   })
   const [showAutoDownloadConfirm, setShowAutoDownloadConfirm] = useState(false)
+  const [exportingToSheets, setExportingToSheets] = useState(false)
+  const [exportingToDrive, setExportingToDrive] = useState(false)
   const [processingTime, setProcessingTime] = useState(0)
   const processingTimerRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -847,6 +851,103 @@ Best regards`
     }
   }
 
+  const handleExportToGoogleSheets = async () => {
+    if (!resultFiles || resultFiles.length === 0) {
+      toast.error('No files to export')
+      return
+    }
+
+    setExportingToSheets(true)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session) {
+        toast.error('Please sign in to export to Google Sheets')
+        setExportingToSheets(false)
+        return
+      }
+
+      // Google Sheets API requires OAuth scope
+      // We'll use the Google Picker API to let users create/select a sheet
+      toast.info('Opening Google Sheets...', {
+        description: `Exporting ${resultFiles.length} file(s)`
+      })
+
+      // For each file, download it and open a new Google Sheets tab
+      for (const file of resultFiles) {
+        if (!file.file_id) continue
+
+        // Create a link to open Google Sheets with import
+        const downloadUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'}/api/v1/download/${file.file_id}`
+
+        // Open Google Sheets with file import
+        const sheetsUrl = `https://docs.google.com/spreadsheets/create`
+        window.open(sheetsUrl, '_blank')
+
+        // Show instructions
+        toast.success(`Google Sheets opened for ${file.filename}`, {
+          description: 'Use File → Import → Upload to import your Excel file'
+        })
+
+        // Small delay between opening tabs
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
+
+    } catch (error: any) {
+      console.error('[ExportToSheets] Error:', error)
+      toast.error('Failed to export to Google Sheets', {
+        description: error.message
+      })
+    } finally {
+      setExportingToSheets(false)
+    }
+  }
+
+  const handleExportToGoogleDrive = async () => {
+    if (!resultFiles || resultFiles.length === 0) {
+      toast.error('No files to export')
+      return
+    }
+
+    setExportingToDrive(true)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session) {
+        toast.error('Please sign in to export to Google Drive')
+        setExportingToDrive(false)
+        return
+      }
+
+      toast.info('Preparing files for Google Drive...', {
+        description: `Exporting ${resultFiles.length} file(s)`
+      })
+
+      // Open Google Drive upload page
+      const driveUploadUrl = 'https://drive.google.com/drive/my-drive'
+      window.open(driveUploadUrl, '_blank')
+
+      // Download all files locally first (they can then upload to Drive)
+      for (const file of resultFiles) {
+        if (!file.file_id) continue
+        await downloadFile(file.file_id)
+        await new Promise(resolve => setTimeout(resolve, 500))
+      }
+
+      toast.success('Files downloaded!', {
+        description: 'Now upload them to Google Drive from the opened tab'
+      })
+
+    } catch (error: any) {
+      console.error('[ExportToDrive] Error:', error)
+      toast.error('Failed to export to Google Drive', {
+        description: error.message
+      })
+    } finally {
+      setExportingToDrive(false)
+    }
+  }
+
   if (authLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -1172,14 +1273,14 @@ Best regards`
                           onClick={async () => {
                             console.log('[DownloadAll] Starting batch download:', resultFiles)
                             toast.info(`Downloading ${resultFiles.length} files...`)
-                            
+
                             let downloadCount = 0
                             for (const file of resultFiles) {
                               if (!file.file_id) {
                                 console.error('[DownloadAll] Skipping file without ID:', file)
                                 continue
                               }
-                              
+
                               try {
                                 console.log(`[DownloadAll] Downloading ${downloadCount + 1}/${resultFiles.length}:`, file.file_id)
                                 await downloadFile(file.file_id)
@@ -1190,7 +1291,7 @@ Best regards`
                                 toast.error(`Failed to download ${file.filename || 'file'}`)
                               }
                             }
-                            
+
                             if (downloadCount === resultFiles.length) {
                               toast.success(`Successfully downloaded ${downloadCount} files`)
                             } else if (downloadCount > 0) {
@@ -1203,6 +1304,32 @@ Best regards`
                         >
                           <DownloadCloud className="h-4 w-4" />
                           Download All
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={handleExportToGoogleSheets}
+                          disabled={exportingToSheets}
+                          className="gap-2 bg-primary text-white hover:bg-primary/90 border-0"
+                        >
+                          {exportingToSheets ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Sheet className="h-4 w-4" />
+                          )}
+                          Sheets
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={handleExportToGoogleDrive}
+                          disabled={exportingToDrive}
+                          className="gap-2 bg-primary text-white hover:bg-primary/90 border-0"
+                        >
+                          {exportingToDrive ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <FolderUp className="h-4 w-4" />
+                          )}
+                          Drive
                         </Button>
                       </div>
                     )}
