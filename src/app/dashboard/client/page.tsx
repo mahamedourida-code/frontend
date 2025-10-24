@@ -859,6 +859,7 @@ Best regards`
 
     setExportingToSheets(true)
     try {
+      const supabase = createClient()
       const { data: { session } } = await supabase.auth.getSession()
 
       if (!session) {
@@ -911,6 +912,7 @@ Best regards`
 
     setExportingToDrive(true)
     try {
+      const supabase = createClient()
       const { data: { session } } = await supabase.auth.getSession()
 
       if (!session) {
