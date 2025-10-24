@@ -857,6 +857,11 @@ Best regards`
       return
     }
 
+    if (!jobId) {
+      toast.error('No job ID found for export')
+      return
+    }
+
     setExportingToSheets(true)
     try {
       const supabase = createClient()
@@ -864,14 +869,6 @@ Best regards`
 
       if (!session) {
         toast.error('Please sign in to export to Google Sheets')
-        setExportingToSheets(false)
-        return
-      }
-
-      // Get the job ID from the first file (all files should have the same job_id)
-      const jobId = resultFiles[0].file_id
-      if (!jobId) {
-        toast.error('No job ID found for export')
         setExportingToSheets(false)
         return
       }
@@ -934,6 +931,11 @@ Best regards`
       return
     }
 
+    if (!jobId) {
+      toast.error('No job ID found for export')
+      return
+    }
+
     setExportingToDrive(true)
     try {
       const supabase = createClient()
@@ -941,14 +943,6 @@ Best regards`
 
       if (!session) {
         toast.error('Please sign in to export to Google Drive')
-        setExportingToDrive(false)
-        return
-      }
-
-      // Get the job ID from the first file
-      const jobId = resultFiles[0].file_id
-      if (!jobId) {
-        toast.error('No job ID found for export')
         setExportingToDrive(false)
         return
       }
@@ -995,7 +989,6 @@ Best regards`
           })
           
           // Download the file locally as fallback
-          const jobId = resultFiles[0].file_id
           if (jobId) {
             await downloadFile(jobId)
           }
