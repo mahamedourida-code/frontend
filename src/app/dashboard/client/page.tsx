@@ -868,36 +868,60 @@ Best regards`
         return
       }
 
-      // Google Sheets API requires OAuth scope
-      // We'll use the Google Picker API to let users create/select a sheet
-      toast.info('Opening Google Sheets...', {
-        description: `Exporting ${resultFiles.length} file(s)`
+      // Get the job ID from the first file (all files should have the same job_id)
+      const jobId = resultFiles[0].file_id
+      if (!jobId) {
+        toast.error('No job ID found for export')
+        setExportingToSheets(false)
+        return
+      }
+
+      toast.info('Exporting to Google Sheets...', {
+        description: 'Creating spreadsheet with all your processed data'
       })
 
-      // For each file, download it and open a new Google Sheets tab
-      for (const file of resultFiles) {
-        if (!file.file_id) continue
-
-        // Create a link to open Google Sheets with import
-        const downloadUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'}/api/v1/download/${file.file_id}`
-
-        // Open Google Sheets with file import
-        const sheetsUrl = `https://docs.google.com/spreadsheets/create`
-        window.open(sheetsUrl, '_blank')
-
-        // Show instructions
-        toast.success(`Google Sheets opened for ${file.filename}`, {
-          description: 'Use File → Import → Upload to import your Excel file'
+      // Call the new Google Sheets export API
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'}/api/v1/google/export-sheets`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          job_id: jobId,
+          filename: `Export_${new Date().toISOString().split('T')[0]}`
         })
+      })
 
-        // Small delay between opening tabs
-        await new Promise(resolve => setTimeout(resolve, 1000))
+      const data = await response.json()
+
+      if (data.success && data.spreadsheet_url) {
+        // Open the Google Sheets in a new tab
+        window.open(data.spreadsheet_url, '_blank')
+        
+        toast.success('Export successful!', {
+          description: data.message,
+          duration: 5000
+        })
+      } else {
+        // Show error message
+        toast.error('Export failed', {
+          description: data.message || 'Unable to export to Google Sheets'
+        })
+        
+        // If not configured, show instructions
+        if (data.message?.includes('not configured')) {
+          toast.info('Manual Export Available', {
+            description: 'You can download the Excel file and manually import it to Google Sheets',
+            duration: 7000
+          })
+        }
       }
 
     } catch (error: any) {
       console.error('[ExportToSheets] Error:', error)
       toast.error('Failed to export to Google Sheets', {
-        description: error.message
+        description: error.message || 'Network error occurred'
       })
     } finally {
       setExportingToSheets(false)
@@ -921,29 +945,67 @@ Best regards`
         return
       }
 
-      toast.info('Preparing files for Google Drive...', {
-        description: `Exporting ${resultFiles.length} file(s)`
-      })
-
-      // Open Google Drive upload page
-      const driveUploadUrl = 'https://drive.google.com/drive/my-drive'
-      window.open(driveUploadUrl, '_blank')
-
-      // Download all files locally first (they can then upload to Drive)
-      for (const file of resultFiles) {
-        if (!file.file_id) continue
-        await downloadFile(file.file_id)
-        await new Promise(resolve => setTimeout(resolve, 500))
+      // Get the job ID from the first file
+      const jobId = resultFiles[0].file_id
+      if (!jobId) {
+        toast.error('No job ID found for export')
+        setExportingToDrive(false)
+        return
       }
 
-      toast.success('Files downloaded!', {
-        description: 'Now upload them to Google Drive from the opened tab'
+      toast.info('Uploading to Google Drive...', {
+        description: 'Your Excel file is being uploaded'
       })
+
+      // Call the new Google Drive export API
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'}/api/v1/google/export-drive`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          job_id: jobId,
+          filename: `Export_${new Date().toISOString().split('T')[0]}`
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.spreadsheet_url) {
+        // Open the file in Google Drive
+        window.open(data.spreadsheet_url, '_blank')
+
+        
+        toast.success('Upload successful!', {
+          description: data.message,
+          duration: 5000
+        })
+      } else {
+        // Show error message
+        toast.error('Upload failed', {
+          description: data.message || 'Unable to upload to Google Drive'
+        })
+        
+        // If not configured, show fallback instructions
+        if (data.message?.includes('not configured')) {
+          toast.info('Manual Upload Available', {
+            description: 'You can download the Excel file and manually upload it to Google Drive',
+            duration: 7000
+          })
+          
+          // Download the file locally as fallback
+          const jobId = resultFiles[0].file_id
+          if (jobId) {
+            await downloadFile(jobId)
+          }
+        }
+      }
 
     } catch (error: any) {
       console.error('[ExportToDrive] Error:', error)
       toast.error('Failed to export to Google Drive', {
-        description: error.message
+        description: error.message || 'Network error occurred'
       })
     } finally {
       setExportingToDrive(false)
@@ -1294,7 +1356,7 @@ Best regards`
                       size="sm"
                       onClick={handleExportToGoogleSheets}
                       disabled={exportingToSheets}
-                      className="gap-2 bg-white border-2 border-primary hover:bg-primary/10"
+                      className="gap-2 bg-white border-2 border-border text-foreground hover:bg-muted/50"
                     >
                       {exportingToSheets ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -1307,7 +1369,7 @@ Best regards`
                       size="sm"
                       onClick={handleExportToGoogleDrive}
                       disabled={exportingToDrive}
-                      className="gap-2 bg-white border-2 border-primary hover:bg-primary/10"
+                      className="gap-2 bg-muted/30 border-2 border-border text-foreground hover:bg-muted/50"
                     >
                       {exportingToDrive ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
