@@ -950,22 +950,12 @@ Best regards`
               </div>
             </div>
             <div className="absolute left-1/2 -translate-x-1/2">
-              <div className={cn(
-                "px-4 py-2 rounded-lg border-2 shadow-sm",
-                credits.available <= 10
-                  ? "bg-red-50 border-red-500"
-                  : "bg-primary/10 border-primary"
-              )}>
-                <div className="text-center">
-                  <p className={cn(
-                    "text-lg font-bold",
-                    credits.available <= 10 ? "text-red-600" : "text-primary"
-                  )}>
-                    {credits.available}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground -mt-0.5">credits left</p>
-                </div>
-              </div>
+              <Badge
+                variant={credits.available <= 10 ? "destructive" : "secondary"}
+                className="gap-1 px-2 py-1 text-xs"
+              >
+                {credits.available} credits
+              </Badge>
             </div>
             <div className="flex items-center gap-3">
               <Button
@@ -1011,9 +1001,9 @@ Best regards`
       <main className="container max-w-5xl mx-auto px-4 py-8 pb-24">
         {/* Processing Timer Card */}
         {isProcessing && !isComplete && (
-          <Card className="mb-6 bg-white dark:bg-white border-2 border-primary shadow-md max-w-md mx-auto">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-center gap-3">
+          <Card className="mb-4 bg-white dark:bg-white border-2 border-primary shadow-md max-w-sm">
+            <CardContent className="p-3">
+              <div className="flex items-center gap-3">
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-2 mb-1">
                     <Loader2 className="h-4 w-4 animate-spin text-primary" />
@@ -1190,48 +1180,46 @@ Best regards`
             {(isProcessing || isComplete) && resultFiles && resultFiles.length > 0 && (
               <TooltipProvider>
               <div className="space-y-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    {isComplete && (
-                      <>
-                        {!isSaved && (
-                          <Button
-                            size="lg"
-                            onClick={saveToHistory}
-                            disabled={isSaving}
-                            className="gap-3 bg-white border-2 border-primary text-foreground hover:bg-primary/10 h-16 px-6"
-                          >
-                            {isSaving ? (
-                              <Loader2 className="h-6 w-6 animate-spin" />
-                            ) : (
-                              <Save className="h-6 w-6" />
-                            )}
-                            <span className="text-base font-medium">Save to History</span>
-                          </Button>
-                        )}
+                <div className="space-y-3">
+                  {isComplete && (
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        onClick={handleReset}
+                        className="gap-2 bg-primary hover:bg-primary/90 text-white"
+                      >
+                        <ArrowRight className="h-4 w-4" />
+                        Start Fresh
+                      </Button>
+                      {!isSaved && (
                         <Button
-                          size="lg"
-                          onClick={handleReset}
-                          className="gap-3 bg-primary hover:bg-primary/90 text-white border-2 border-primary h-16 px-6"
+                          size="sm"
+                          onClick={saveToHistory}
+                          disabled={isSaving}
+                          className="gap-2 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
                         >
-                          <ArrowRight className="h-6 w-6" />
-                          <span className="text-base font-medium">Start Fresh</span>
+                          {isSaving ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Save className="h-4 w-4" />
+                          )}
+                          Save to History
                         </Button>
-                      </>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3">
+                      )}
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
                     <Button
-                      size="lg"
+                      size="sm"
                       variant="outline"
                       onClick={resultFiles.length > 1 ? handleShareAll : () => handleShareFile(resultFiles[0])}
-                      className="gap-3 bg-white border-2 border-foreground text-foreground hover:bg-muted/50 h-16 px-6"
+                      className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                     >
-                      <Share2 className="h-6 w-6" />
-                      <span className="text-base font-medium">Share All</span>
+                      <Share2 className="h-4 w-4" />
+                      Share All
                     </Button>
                     <Button
-                      size="lg"
+                      size="sm"
                       variant="outline"
                       onClick={async () => {
                         console.log('[DownloadAll] Starting batch download:', resultFiles)
@@ -1263,23 +1251,10 @@ Best regards`
                           toast.error('Failed to download any files')
                         }
                       }}
-                      className="gap-3 bg-muted/30 border-2 border-foreground text-foreground hover:bg-muted/50 h-16 px-6"
+                      className="gap-2 bg-muted/30 border-2 border-foreground text-foreground hover:bg-muted/50"
                     >
-                      <DownloadCloud className="h-6 w-6" />
-                      <span className="text-base font-medium">Download All</span>
-                    </Button>
-                    <Button
-                      size="lg"
-                      onClick={handleExportToGoogleSheets}
-                      disabled={exportingToSheets}
-                      className="gap-3 bg-white border-2 border-primary text-foreground hover:bg-primary/10 h-16 px-6"
-                    >
-                      {exportingToSheets ? (
-                        <Loader2 className="h-6 w-6 animate-spin" />
-                      ) : (
-                        <Image src="/sheets.png" alt="Google Sheets" width={40} height={40} />
-                      )}
-                      <span className="text-base font-medium">Export to Sheets</span>
+                      <DownloadCloud className="h-4 w-4" />
+                      Download All
                     </Button>
                   </div>
                 </div>
@@ -1358,6 +1333,38 @@ Best regards`
 
           {/* Info Sidebar */}
           <div className="lg:col-span-1 space-y-4 order-3 lg:order-2">
+            {/* Export to Sheets Card */}
+            <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+              <CardContent className="p-6">
+                <div className="text-center space-y-4">
+                  <div className="flex justify-center">
+                    <Image src="/sheets.png" alt="Google Sheets" width={64} height={64} />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground mb-1">Export to Google Sheets</h3>
+                    <p className="text-xs text-muted-foreground">Export your processed files to Google Sheets</p>
+                  </div>
+                  <Button
+                    onClick={handleExportToGoogleSheets}
+                    disabled={exportingToSheets || !resultFiles || resultFiles.length === 0}
+                    className="w-full gap-2 bg-primary hover:bg-primary/90 text-white"
+                  >
+                    {exportingToSheets ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Exporting...
+                      </>
+                    ) : (
+                      <>
+                        <Sheet className="h-4 w-4" />
+                        Export Now
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Auto Settings */}
             <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
               <CardContent className="p-3">
