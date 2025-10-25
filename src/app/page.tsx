@@ -450,6 +450,14 @@ export default function Home() {
 
         {/* Why Choose Us Section */}
         <ScrollAnimatedSection id="features" className="py-16 relative z-10">
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0 opacity-10">
+            <img
+              src="/images/photo-session.png"
+              alt=""
+              className="w-full h-full object-contain"
+            />
+          </div>
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
@@ -457,15 +465,6 @@ export default function Home() {
                   Specialized Solutions
                 </h2>
               </div>
-            </div>
-
-            {/* Image - Capture */}
-            <div className="flex justify-center mb-12" data-animate="stagger">
-              <img
-                src="/images/photo-session.png"
-                alt="Capture your documents"
-                className="w-48 h-auto rounded-xl shadow-lg"
-              />
             </div>
 
             <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
@@ -552,22 +551,21 @@ export default function Home() {
 
         {/* Interactive Comparison Section */}
         <section ref={comparisonRef} className="py-32 relative z-10 overflow-hidden">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0 opacity-10">
+            <img
+              src="/images/data-input.png"
+              alt=""
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
                   <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
                     See the Transformation in Action
                   </h2>
-                </div>
-
-                {/* Image - Upload */}
-                <div className="flex justify-center mb-8" data-animate="stagger">
-                  <img
-                    src="/images/data-input.png"
-                    alt="Upload your documents"
-                    className="w-48 h-auto rounded-xl shadow-lg"
-                  />
                 </div>
 
                 <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
@@ -691,6 +689,14 @@ export default function Home() {
 
         {/* AI Engine Section */}
         <ScrollAnimatedSection id="ai-engine" className="py-16 relative z-10">
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0 opacity-10">
+            <img
+              src="/images/data-processing.png"
+              alt=""
+              className="w-full h-full object-contain"
+            />
+          </div>
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-16" data-animate="headline">
@@ -698,15 +704,6 @@ export default function Home() {
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     How Exceletto's Engine Is Built
                   </h2>
-                </div>
-
-                {/* Image - Processing */}
-                <div className="flex justify-center mb-8" data-animate="stagger">
-                  <img
-                    src="/images/data-processing.png"
-                    alt="AI processing your data"
-                    className="w-48 h-auto rounded-xl shadow-lg"
-                  />
                 </div>
 
                 <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -947,6 +944,14 @@ export default function Home() {
 
         {/* Benchmark Section */}
         <ScrollAnimatedSection id="benchmarks" className="py-16 relative z-10">
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0 opacity-10">
+            <img
+              src="/images/spreadsheets.png"
+              alt=""
+              className="w-full h-full object-contain"
+            />
+          </div>
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
@@ -954,15 +959,6 @@ export default function Home() {
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     Industry-Leading OCR Accuracy
                   </h2>
-                </div>
-
-                {/* Image - Spreadsheets/Download */}
-                <div className="flex justify-center mb-8" data-animate="stagger">
-                  <img
-                    src="/images/spreadsheets.png"
-                    alt="Download your spreadsheets"
-                    className="w-48 h-auto rounded-xl shadow-lg"
-                  />
                 </div>
 
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
