@@ -142,20 +142,33 @@ export function useOCR(): UseOCRReturn {
   // Download file
   const downloadFile = useCallback(async (fileId: string): Promise<void> => {
     console.log('[useOCR] Downloading file:', fileId, 'with session:', sessionId)
-    
+
     if (!fileId) {
       console.error('[useOCR] No file ID provided for download')
       toast.error('Unable to download: File ID is missing')
       return
     }
-    
+
     try {
       console.log('[useOCR] Calling API to download file:', fileId)
-      
+
       // Pass session_id to download endpoint
       const blob = await ocrApi.downloadFile(fileId, sessionId || undefined)
-      
-      console.log('[useOCR] Download successful, blob size:', blob.size)
+
+      console.log('[useOCR] Download successful, blob size:', blob.size, 'type:', blob.type)
+
+      // Validate that we received an actual XLSX file, not an HTML error page
+      if (blob.type === 'text/html' || blob.size < 100) {
+        console.error('[useOCR] Received invalid blob type:', blob.type)
+
+        // Try to read the blob as text to see the error
+        const text = await blob.text()
+        console.error('[useOCR] Blob content:', text.substring(0, 500))
+
+        toast.error('Download failed: Server returned an error instead of the file')
+        setError('Invalid file format received from server')
+        return
+      }
 
       // Create download link
       const url = window.URL.createObjectURL(blob)
