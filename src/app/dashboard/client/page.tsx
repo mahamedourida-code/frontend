@@ -46,7 +46,7 @@ import {
   Copy,
   Facebook,
   MessageCircle,
-  Sheet,
+
   FolderUp
 } from "lucide-react"
 import {
@@ -100,7 +100,7 @@ export default function ProcessImagesPage() {
     return false
   })
   const [showAutoDownloadConfirm, setShowAutoDownloadConfirm] = useState(false)
-  const [exportingToSheets, setExportingToSheets] = useState(false)
+
   const [processingTime, setProcessingTime] = useState(0)
   const processingTimerRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -851,80 +851,7 @@ Best regards`
     }
   }
 
-  const handleExportToGoogleSheets = async () => {
-    if (!resultFiles || resultFiles.length === 0) {
-      toast.error('No files to export')
-      return
-    }
-
-    if (!jobId) {
-      toast.error('No job ID found for export')
-      return
-    }
-
-    setExportingToSheets(true)
-    try {
-      const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
-
-      if (!session) {
-        toast.error('Please sign in to export to Google Sheets')
-        setExportingToSheets(false)
-        return
-      }
-
-      toast.info('Exporting to Google Sheets...', {
-        description: 'Creating spreadsheet with all your processed data'
-      })
-
-      // Call the new Google Sheets export API
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'}/api/v1/google/export-sheets`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({
-          job_id: jobId,
-          filename: `Export_${new Date().toISOString().split('T')[0]}`
-        })
-      })
-
-      const data = await response.json()
-
-      if (data.success && data.spreadsheet_url) {
-        // Open the Google Sheets in a new tab
-        window.open(data.spreadsheet_url, '_blank')
-        
-        toast.success('Export successful!', {
-          description: data.message,
-          duration: 5000
-        })
-      } else {
-        // Show error message
-        toast.error('Export failed', {
-          description: data.message || 'Unable to export to Google Sheets'
-        })
-        
-        // If not configured, show instructions
-        if (data.message?.includes('not configured')) {
-          toast.info('Manual Export Available', {
-            description: 'You can download the Excel file and manually import it to Google Sheets',
-            duration: 7000
-          })
-        }
-      }
-
-    } catch (error: any) {
-      console.error('[ExportToSheets] Error:', error)
-      toast.error('Failed to export to Google Sheets', {
-        description: error.message || 'Network error occurred'
-      })
-    } finally {
-      setExportingToSheets(false)
-    }
-  }
-
+  
 
   if (authLoading || !user) {
     return (
@@ -1333,37 +1260,7 @@ Best regards`
 
           {/* Info Sidebar */}
           <div className="lg:col-span-1 space-y-4 order-3 lg:order-2">
-            {/* Export to Sheets Card */}
-            <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
-              <CardContent className="p-6">
-                <div className="text-center space-y-4">
-                  <div className="flex justify-center">
-                    <Image src="/sheets.png" alt="Google Sheets" width={64} height={64} />
-                  </div>
-                  <div>
-                    <h3 className="text-base font-semibold text-foreground mb-1">Export to Google Sheets</h3>
-                    <p className="text-xs text-muted-foreground">Export your processed files to Google Sheets</p>
-                  </div>
-                  <Button
-                    onClick={handleExportToGoogleSheets}
-                    disabled={exportingToSheets || !resultFiles || resultFiles.length === 0}
-                    className="w-full gap-2 bg-primary hover:bg-primary/90 text-white"
-                  >
-                    {exportingToSheets ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Exporting...
-                      </>
-                    ) : (
-                      <>
-                        <Sheet className="h-4 w-4" />
-                        Export Now
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+
 
             {/* Auto Settings */}
             <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
