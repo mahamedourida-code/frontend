@@ -950,12 +950,22 @@ Best regards`
               </div>
             </div>
             <div className="absolute left-1/2 -translate-x-1/2">
-              <Badge
-                variant={credits.available <= 10 ? "destructive" : "secondary"}
-                className="gap-1.5 px-3 py-1.5 h-9"
-              >
-                {credits.available} / {credits.total} credits
-              </Badge>
+              <div className={cn(
+                "px-4 py-2 rounded-lg border-2 shadow-sm",
+                credits.available <= 10
+                  ? "bg-red-50 border-red-500"
+                  : "bg-primary/10 border-primary"
+              )}>
+                <div className="text-center">
+                  <p className={cn(
+                    "text-lg font-bold",
+                    credits.available <= 10 ? "text-red-600" : "text-primary"
+                  )}>
+                    {credits.available}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground -mt-0.5">credits left</p>
+                </div>
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <Button
@@ -1181,7 +1191,7 @@ Best regards`
               <TooltipProvider>
               <div className="space-y-4">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     {isComplete && (
                       <>
                         {!isSaved && (
@@ -1189,36 +1199,36 @@ Best regards`
                             size="lg"
                             onClick={saveToHistory}
                             disabled={isSaving}
-                            className="gap-2 bg-white border-2 border-primary text-foreground hover:bg-primary/10 h-12"
+                            className="gap-3 bg-white border-2 border-primary text-foreground hover:bg-primary/10 h-16 px-6"
                           >
                             {isSaving ? (
-                              <Loader2 className="h-5 w-5 animate-spin" />
+                              <Loader2 className="h-6 w-6 animate-spin" />
                             ) : (
-                              <Save className="h-5 w-5" />
+                              <Save className="h-6 w-6" />
                             )}
-                            Save to History
+                            <span className="text-base font-medium">Save to History</span>
                           </Button>
                         )}
                         <Button
                           size="lg"
                           onClick={handleReset}
-                          className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-primary h-12"
+                          className="gap-3 bg-primary hover:bg-primary/90 text-white border-2 border-primary h-16 px-6"
                         >
-                          <ArrowRight className="h-5 w-5" />
-                          Start Fresh
+                          <ArrowRight className="h-6 w-6" />
+                          <span className="text-base font-medium">Start Fresh</span>
                         </Button>
                       </>
                     )}
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     <Button
                       size="lg"
                       variant="outline"
                       onClick={resultFiles.length > 1 ? handleShareAll : () => handleShareFile(resultFiles[0])}
-                      className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50 h-12"
+                      className="gap-3 bg-white border-2 border-foreground text-foreground hover:bg-muted/50 h-16 px-6"
                     >
-                      <Share2 className="h-5 w-5" />
-                      Share All
+                      <Share2 className="h-6 w-6" />
+                      <span className="text-base font-medium">Share All</span>
                     </Button>
                     <Button
                       size="lg"
@@ -1253,23 +1263,23 @@ Best regards`
                           toast.error('Failed to download any files')
                         }
                       }}
-                      className="gap-2 bg-muted/30 border-2 border-foreground text-foreground hover:bg-muted/50 h-12"
+                      className="gap-3 bg-muted/30 border-2 border-foreground text-foreground hover:bg-muted/50 h-16 px-6"
                     >
-                      <DownloadCloud className="h-5 w-5" />
-                      Download All
+                      <DownloadCloud className="h-6 w-6" />
+                      <span className="text-base font-medium">Download All</span>
                     </Button>
                     <Button
                       size="lg"
                       onClick={handleExportToGoogleSheets}
                       disabled={exportingToSheets}
-                      className="gap-2 bg-white border-2 border-primary text-foreground hover:bg-primary/10 h-12"
+                      className="gap-3 bg-white border-2 border-primary text-foreground hover:bg-primary/10 h-16 px-6"
                     >
                       {exportingToSheets ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <Loader2 className="h-6 w-6 animate-spin" />
                       ) : (
-                        <Image src="/sheets.png" alt="Google Sheets" width={32} height={32} />
+                        <Image src="/sheets.png" alt="Google Sheets" width={40} height={40} />
                       )}
-                      Export to Sheets
+                      <span className="text-base font-medium">Export to Sheets</span>
                     </Button>
                   </div>
                 </div>
@@ -1346,8 +1356,8 @@ Best regards`
             )}
           </div>
 
-          {/* Info Sidebar - Shows first on mobile */}
-          <div className="lg:col-span-1 space-y-4 order-1 lg:order-2">
+          {/* Info Sidebar */}
+          <div className="lg:col-span-1 space-y-4 order-3 lg:order-2">
             {/* Auto Settings */}
             <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
               <CardContent className="p-3">
