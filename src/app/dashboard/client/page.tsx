@@ -47,7 +47,8 @@ import {
   Facebook,
   MessageCircle,
 
-  FolderUp
+  FolderUp,
+  Sheet
 } from "lucide-react"
 import {
   Dialog,
@@ -103,6 +104,9 @@ export default function ProcessImagesPage() {
 
   const [processingTime, setProcessingTime] = useState(0)
   const processingTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const [editingFileId, setEditingFileId] = useState<string | null>(null)
+  const [newFileName, setNewFileName] = useState<string>("")
+  const [renamedFiles, setRenamedFiles] = useState<{[key: string]: string}>({})
 
   // Track if auto-actions have been executed for current job to prevent duplicates
   const autoActionsExecutedRef = useRef<string | null>(null)
@@ -468,6 +472,69 @@ export default function ProcessImagesPage() {
     autoActionsExecutedRef.current = null
     isExecutingAutoActionsRef.current = false
     console.log('[AutoActions] Trackers reset on New Batch')
+  }
+
+  const handleExportToSheets = async (file: any) => {
+    try {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session) {
+        toast.error('Please sign in to export to Google Sheets')
+        return
+      }
+
+      toast.info('Exporting to Google Sheets...')
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'}/api/v1/sheets/export`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          file_id: file.file_id,
+          filename: renamedFiles[file.file_id] || file.filename || `Export_${new Date().toISOString().split('T')[0]}`
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.spreadsheet_url) {
+        window.open(data.spreadsheet_url, '_blank')
+        toast.success('Exported to Google Sheets successfully!')
+      } else {
+        toast.error(data.error || 'Failed to export to Google Sheets')
+      }
+    } catch (error: any) {
+      console.error('[ExportToSheets] Error:', error)
+      toast.error('Failed to export to Google Sheets')
+    }
+  }
+
+  const handleRenameFile = async (file: any) => {
+    if (!newFileName.trim()) {
+      setEditingFileId(null)
+      return
+    }
+
+    try {
+      // Add .xlsx extension if not present
+      const finalName = newFileName.trim().endsWith('.xlsx') ? newFileName.trim() : newFileName.trim() + '.xlsx'
+      
+      // Update renamed files mapping
+      setRenamedFiles(prev => ({
+        ...prev,
+        [file.file_id]: finalName
+      }))
+      
+      toast.success('File renamed successfully')
+      setEditingFileId(null)
+      setNewFileName('')
+    } catch (error) {
+      console.error('[RenameFile] Error:', error)
+      toast.error('Failed to rename file')
+    }
   }
 
   const handleShareFile = async (file: any) => {
@@ -1196,16 +1263,42 @@ Best regards`
                               <FileSpreadsheet className="h-6 w-6 text-primary" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <p className="font-medium text-sm truncate cursor-default">
-                                    {file.filename || `Image ${index + 1} Result`}
-                                  </p>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p className="max-w-xs break-all">{file.filename || `Image ${index + 1} Result`}</p>
-                                </TooltipContent>
-                              </Tooltip>
+                              {editingFileId === file.file_id ? (
+                                <input
+                                  type="text"
+                                  value={newFileName}
+                                  onChange={(e) => setNewFileName(e.target.value)}
+                                  onBlur={() => handleRenameFile(file)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      handleRenameFile(file)
+                                    } else if (e.key === 'Escape') {
+                                      setEditingFileId(null)
+                                      setNewFileName('')
+                                    }
+                                  }}
+                                  className="px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                                  autoFocus
+                                />
+                              ) : (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <p 
+                                      className="font-medium text-sm truncate cursor-pointer hover:text-primary transition-colors"
+                                      onDoubleClick={() => {
+                                        const currentName = renamedFiles[file.file_id] || file.filename || `Image ${index + 1} Result.xlsx`
+                                        setEditingFileId(file.file_id)
+                                        setNewFileName(currentName.replace('.xlsx', ''))
+                                      }}
+                                    >
+                                      {renamedFiles[file.file_id] || file.filename || `Image ${index + 1} Result`}
+                                    </p>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="max-w-xs break-all">Double-click to rename</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              )}
                             </div>
                           </div>
                           <div className="flex items-center gap-2 flex-shrink-0">
@@ -1222,12 +1315,22 @@ Best regards`
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                router.push(`/dashboard/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'Result.xlsx')}`)
+                                router.push(`/dashboard/edit/${file.file_id}?fileName=${encodeURIComponent(renamedFiles[file.file_id] || file.filename || 'Result.xlsx')}`)
                               }}
                               className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                             >
                               <Edit3 className="h-4 w-4" />
                               Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleExportToSheets(file)}
+                              className="gap-1.5 bg-white border-2 border-green-600 text-green-700 hover:bg-green-50"
+                              title="Export to Google Sheets"
+                            >
+                              <Sheet className="h-4 w-4" />
+                              Sheets
                             </Button>
                             <Button
                               size="sm"
