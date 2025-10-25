@@ -36,7 +36,6 @@ export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
   const heroContentRef = useRef<HTMLDivElement>(null);
   const heroImageRef = useRef<HTMLDivElement>(null);
-  const comparisonRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     // Header animation
@@ -110,51 +109,8 @@ export default function Home() {
       });
     }
 
-    // Scroll-triggered animations for sections
-    const sections = gsap.utils.toArray('section:not(:first-child)');
-    sections.forEach((section: any) => {
-      gsap.fromTo(section,
-        { 
-          y: 60,
-          opacity: 0,
-        },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 80%",
-            end: "bottom 20%",
-            toggleActions: "play none none reverse"
-          }
-        }
-      );
-    });
-
-    // Comparison section special animation
-    if (comparisonRef.current) {
-      const elements = comparisonRef.current.querySelectorAll('.space-y-4');
-      if (elements.length > 0) {
-        ScrollTrigger.create({
-          trigger: comparisonRef.current,
-          start: "top 70%",
-          onEnter: () => {
-            gsap.fromTo(elements, 
-              { scale: 0.9, opacity: 0 },
-              {
-                scale: 1,
-                opacity: 1,
-                duration: 1,
-                stagger: 0.3,
-                ease: "back.out(1.2)"
-              }
-            );
-          }
-        });
-      }
-    }
+    // Removed section animations per user request
+    // Removed comparison section animation per user request
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
@@ -550,7 +506,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Interactive Comparison Section */}
-        <section ref={comparisonRef} className="py-32 relative z-10 overflow-hidden">
+        <section className="py-32 relative z-10 overflow-hidden">
           {/* Background Image */}
           <div className="absolute inset-0 z-0 opacity-10">
             <img
