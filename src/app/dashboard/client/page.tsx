@@ -1107,35 +1107,32 @@ Best regards`
             {(isProcessing || isComplete) && resultFiles && resultFiles.length > 0 && (
               <TooltipProvider>
               <div className="space-y-4">
-                <div className="space-y-3">
-                  {isComplete && (
-                    <div className="flex items-center gap-2">
+                {/* All action buttons in one row */}
+                {isComplete && (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Button
+                      size="sm"
+                      onClick={handleReset}
+                      className="gap-2 bg-primary hover:bg-primary/90 text-white"
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                      Start Fresh
+                    </Button>
+                    {!isSaved && (
                       <Button
                         size="sm"
-                        onClick={handleReset}
-                        className="gap-2 bg-primary hover:bg-primary/90 text-white"
+                        onClick={saveToHistory}
+                        disabled={isSaving}
+                        className="gap-2 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
                       >
-                        <ArrowRight className="h-4 w-4" />
-                        Start Fresh
+                        {isSaving ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Save className="h-4 w-4" />
+                        )}
+                        Save to History
                       </Button>
-                      {!isSaved && (
-                        <Button
-                          size="sm"
-                          onClick={saveToHistory}
-                          disabled={isSaving}
-                          className="gap-2 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
-                        >
-                          {isSaving ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Save className="h-4 w-4" />
-                          )}
-                          Save to History
-                        </Button>
-                      )}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2">
+                    )}
                     <Button
                       size="sm"
                       variant="outline"
@@ -1184,73 +1181,154 @@ Best regards`
                       Download All
                     </Button>
                   </div>
-                </div>
+                )}
                 
                 <div className="space-y-2">
                   {resultFiles.map((file: any, index: number) => (
-                    <Card 
-                      key={file.file_id || index} 
-                      className="overflow-hidden animate-in slide-in-from-bottom-2 duration-300"
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div className="flex items-center justify-center flex-shrink-0">
-                              <FileSpreadsheet className="h-6 w-6 text-primary" />
+                    <div key={file.file_id || index} className="space-y-2">
+                      <Card
+                        className="overflow-hidden animate-in slide-in-from-bottom-2 duration-300"
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <div className="flex items-center justify-center flex-shrink-0">
+                                <FileSpreadsheet className="h-6 w-6 text-primary" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <p className="font-medium text-sm truncate cursor-default">
+                                      {file.filename || `Image ${index + 1} Result`}
+                                    </p>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="max-w-xs break-all">{file.filename || `Image ${index + 1} Result`}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <p className="font-medium text-sm truncate cursor-default">
-                                    {file.filename || `Image ${index + 1} Result`}
-                                  </p>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p className="max-w-xs break-all">{file.filename || `Image ${index + 1} Result`}</p>
-                                </TooltipContent>
-                              </Tooltip>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleShareFile(file)}
+                                className="gap-1.5 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
+                              >
+                                <Share2 className="h-4 w-4" />
+                                Share
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  router.push(`/dashboard/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'Result.xlsx')}`)
+                                }}
+                                className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                              >
+                                <Edit3 className="h-4 w-4" />
+                                Edit
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  console.log('[Download] Downloading file:', file)
+                                  if (!file.file_id) {
+                                    toast.error('Unable to download: File ID is missing')
+                                    return
+                                  }
+                                  downloadFile(file.file_id)
+                                }}
+                                className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-primary"
+                              >
+                                <Download className="h-4 w-4" />
+                                Download
+                              </Button>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleShareFile(file)}
-                              className="gap-1.5 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
-                            >
-                              <Share2 className="h-4 w-4" />
-                              Share
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                router.push(`/dashboard/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'Result.xlsx')}`)
-                              }}
-                              className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
-                            >
-                              <Edit3 className="h-4 w-4" />
-                              Edit
-                            </Button>
-                            <Button
-                              size="sm"
-                              onClick={() => {
-                                console.log('[Download] Downloading file:', file)
-                                if (!file.file_id) {
-                                  toast.error('Unable to download: File ID is missing')
-                                  return
-                                }
-                                downloadFile(file.file_id)
-                              }}
-                              className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-primary"
-                            >
-                              <Download className="h-4 w-4" />
-                              Download
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
+
+                      {/* Auto Actions card after first file */}
+                      {index === 0 && (
+                        <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+                          <CardContent className="p-3">
+                            <h3 className="text-xs font-semibold mb-3 text-foreground">Auto Actions</h3>
+                            <div className="space-y-2">
+                              <button
+                                onClick={() => {
+                                  if (!autoDownload) {
+                                    // Show confirmation when enabling
+                                    setShowAutoDownloadConfirm(true)
+                                  } else {
+                                    // Disable directly without confirmation
+                                    setAutoDownload(false)
+                                  }
+                                }}
+                                className={cn(
+                                  "w-full flex items-center justify-between p-2.5 rounded-lg transition-all",
+                                  "border-2 hover:border-primary/50",
+                                  autoDownload
+                                    ? "bg-primary/10 border-primary"
+                                    : "bg-muted/30 border-muted-foreground/20"
+                                )}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <DownloadCloud className={cn(
+                                    "h-4 w-4",
+                                    autoDownload ? "text-primary" : "text-muted-foreground"
+                                  )} />
+                                  <Label htmlFor="auto-download" className="text-xs font-medium text-foreground cursor-pointer">
+                                    Auto Download
+                                  </Label>
+                                </div>
+                                <Switch
+                                  id="auto-download"
+                                  checked={autoDownload}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      setShowAutoDownloadConfirm(true)
+                                    } else {
+                                      setAutoDownload(false)
+                                    }
+                                  }}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="data-[state=checked]:bg-primary"
+                                />
+                              </button>
+
+                              <button
+                                onClick={() => setAutoSave(!autoSave)}
+                                className={cn(
+                                  "w-full flex items-center justify-between p-2.5 rounded-lg transition-all",
+                                  "border-2 hover:border-primary/50",
+                                  autoSave
+                                    ? "bg-primary/10 border-primary"
+                                    : "bg-muted/30 border-muted-foreground/20"
+                                )}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Save className={cn(
+                                    "h-4 w-4",
+                                    autoSave ? "text-primary" : "text-muted-foreground"
+                                  )} />
+                                  <Label htmlFor="auto-save" className="text-xs font-medium text-foreground cursor-pointer">
+                                    Auto Save
+                                  </Label>
+                                </div>
+                                <Switch
+                                  id="auto-save"
+                                  checked={autoSave}
+                                  onCheckedChange={setAutoSave}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="data-[state=checked]:bg-primary"
+                                />
+                              </button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
@@ -1258,88 +1336,8 @@ Best regards`
             )}
           </div>
 
-          {/* Info Sidebar */}
+          {/* Info Sidebar - Empty for now, Auto Actions moved to main content */}
           <div className="lg:col-span-1 space-y-4 order-3 lg:order-2">
-
-
-            {/* Auto Settings */}
-            <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
-              <CardContent className="p-3">
-                <h3 className="text-xs font-semibold mb-3 text-foreground">Auto Actions</h3>
-                <div className="space-y-2">
-                  <button
-                    onClick={() => {
-                      if (!autoDownload) {
-                        // Show confirmation when enabling
-                        setShowAutoDownloadConfirm(true)
-                      } else {
-                        // Disable directly without confirmation
-                        setAutoDownload(false)
-                      }
-                    }}
-                    className={cn(
-                      "w-full flex items-center justify-between p-2.5 rounded-lg transition-all",
-                      "border-2 hover:border-primary/50",
-                      autoDownload
-                        ? "bg-primary/10 border-primary"
-                        : "bg-muted/30 border-muted-foreground/20"
-                    )}
-                  >
-                    <div className="flex items-center gap-2">
-                      <DownloadCloud className={cn(
-                        "h-4 w-4",
-                        autoDownload ? "text-primary" : "text-muted-foreground"
-                      )} />
-                      <Label htmlFor="auto-download" className="text-xs font-medium text-foreground cursor-pointer">
-                        Auto Download
-                      </Label>
-                    </div>
-                    <Switch
-                      id="auto-download"
-                      checked={autoDownload}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setShowAutoDownloadConfirm(true)
-                        } else {
-                          setAutoDownload(false)
-                        }
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      className="data-[state=checked]:bg-primary"
-                    />
-                  </button>
-
-                  <button
-                    onClick={() => setAutoSave(!autoSave)}
-                    className={cn(
-                      "w-full flex items-center justify-between p-2.5 rounded-lg transition-all",
-                      "border-2 hover:border-primary/50",
-                      autoSave
-                        ? "bg-primary/10 border-primary"
-                        : "bg-muted/30 border-muted-foreground/20"
-                    )}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Save className={cn(
-                        "h-4 w-4",
-                        autoSave ? "text-primary" : "text-muted-foreground"
-                      )} />
-                      <Label htmlFor="auto-save" className="text-xs font-medium text-foreground cursor-pointer">
-                        Auto Save
-                      </Label>
-                    </div>
-                    <Switch
-                      id="auto-save"
-                      checked={autoSave}
-                      onCheckedChange={setAutoSave}
-                      onClick={(e) => e.stopPropagation()}
-                      className="data-[state=checked]:bg-primary"
-                    />
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
-
           </div>
         </div>
       </main>
