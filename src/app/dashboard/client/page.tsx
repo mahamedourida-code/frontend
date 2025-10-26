@@ -74,7 +74,9 @@ export default function ProcessImagesPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const documentType = searchParams.get('type') || 'auto'
-  
+  const languageParam = searchParams.get('language') || 'en'
+
+  const [selectedLanguage, setSelectedLanguage] = useState(languageParam)
   const [isDragging, setIsDragging] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [selectedView, setSelectedView] = useState<"grid" | "list">("grid")
@@ -1317,7 +1319,14 @@ Best regards`
                 <h3 className="text-xs font-semibold mb-3 text-foreground">Language</h3>
                 <select
                   className="w-full p-2.5 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-xs font-medium hover:border-primary/50 transition-all focus:outline-none focus:border-primary"
-                  defaultValue="en"
+                  value={selectedLanguage}
+                  onChange={(e) => {
+                    const newLanguage = e.target.value
+                    setSelectedLanguage(newLanguage)
+                    const params = new URLSearchParams(searchParams.toString())
+                    params.set('language', newLanguage)
+                    router.push(`/dashboard/client?${params.toString()}`)
+                  }}
                 >
                   <option value="en">English</option>
                   <option value="de">Deutsch</option>

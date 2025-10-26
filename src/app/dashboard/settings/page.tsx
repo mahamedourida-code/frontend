@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/utils/supabase/client"
 import { useAuth } from "@/hooks/useAuth"
 import { useTheme } from "@/components/theme-provider"
@@ -39,9 +39,12 @@ type Theme = 'dark' | 'light' | 'system'
 
 export default function SettingsPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user } = useAuth()
   const { theme: currentTheme, setTheme } = useTheme()
   const supabase = createClient()
+
+  const languageParam = searchParams.get('language') || 'en'
 
   const [activeSection, setActiveSection] = useState<SettingsSection>('account')
   const [loading, setLoading] = useState(false)
@@ -57,7 +60,7 @@ export default function SettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState("")
 
   // Preferences state
-  const [language, setLanguage] = useState('en')
+  const [language, setLanguage] = useState(languageParam)
   const [mounted, setMounted] = useState(false)
   const [autoDownload, setAutoDownload] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -155,8 +158,21 @@ export default function SettingsPage() {
 
   const handleLanguageChange = (newLanguage: string) => {
     setLanguage(newLanguage)
-    toast.success(`Language changed to ${newLanguage === 'en' ? 'English' : 'Français'}`)
-    // In a real implementation, you would integrate with i18n library here
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('language', newLanguage)
+    router.push(`/dashboard/settings?${params.toString()}`)
+
+    const languageNames: {[key: string]: string} = {
+      en: 'English',
+      de: 'Deutsch',
+      fr: 'Français',
+      ar: 'العربية',
+      es: 'Español',
+      it: 'Italiano',
+      pt: 'Português',
+      zh: '中文'
+    }
+    toast.success(`Language changed to ${languageNames[newLanguage] || newLanguage}`)
   }
 
   const handleThemeChange = (newTheme: Theme) => {
@@ -577,10 +593,46 @@ export default function SettingsPage() {
                               <span>English</span>
                             </div>
                           </SelectItem>
+                          <SelectItem value="de">
+                            <div className="flex items-center gap-2">
+                              <Globe className="h-4 w-4" />
+                              <span>Deutsch</span>
+                            </div>
+                          </SelectItem>
                           <SelectItem value="fr">
                             <div className="flex items-center gap-2">
                               <Globe className="h-4 w-4" />
                               <span>Français</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="ar">
+                            <div className="flex items-center gap-2">
+                              <Globe className="h-4 w-4" />
+                              <span>العربية</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="es">
+                            <div className="flex items-center gap-2">
+                              <Globe className="h-4 w-4" />
+                              <span>Español</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="it">
+                            <div className="flex items-center gap-2">
+                              <Globe className="h-4 w-4" />
+                              <span>Italiano</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="pt">
+                            <div className="flex items-center gap-2">
+                              <Globe className="h-4 w-4" />
+                              <span>Português</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="zh">
+                            <div className="flex items-center gap-2">
+                              <Globe className="h-4 w-4" />
+                              <span>中文</span>
                             </div>
                           </SelectItem>
                         </SelectContent>
