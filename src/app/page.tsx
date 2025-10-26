@@ -272,7 +272,6 @@ export default function Home() {
               {/* Left Content */}
               <div ref={heroContentRef} className="max-w-xl -mt-4 lg:-mt-8">
                 <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-3 sm:mb-5 shadow-lg shadow-primary/10">
-                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-primary animate-pulse" />
                   <span className="text-xs sm:text-sm font-semibold text-foreground">Exceletto-7B Handwritten Specialist</span>
                 </div>
                 <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-black dark:text-white leading-[1.1] tracking-tight">
@@ -384,8 +383,8 @@ export default function Home() {
                           </span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-400/30 text-[10px] px-2 py-0.5">
-                            98.4% Accuracy
+                          <Badge variant="outline" className="bg-amber-700/20 text-amber-700 border-amber-700/30 text-[10px] px-2 py-0.5">
+                            99.5% Accuracy
                           </Badge>
                           <div className="w-px h-4 bg-white/20" />
                           <span className="text-xs text-white/70 font-mono">OCR v2.0</span>
@@ -421,7 +420,7 @@ export default function Home() {
                   <PenTool className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Handwritten Tables</CardTitle>
                   <CardDescription className="text-base">
-                    <span className="font-semibold text-purple-600 dark:text-purple-400">98.4% accuracy</span> on handwritten tables - industry-leading performance with our specialized model
+                    <span className="font-semibold text-amber-700">99.5% accuracy</span> on handwritten tables - industry-leading performance with our specialized model
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -649,11 +648,11 @@ export default function Home() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="prose prose-sm max-w-none">
-                      <p className="text-muted-foreground leading-relaxed">
+                      <p className="text-black font-semibold leading-relaxed">
                         To evaluate the generalization capabilities of Exceletto, we fine-tuned the Llama 3 base model on instruction datasets publicly available on the Hugging Face repository. <span className="font-semibold text-foreground">No proprietary data or training tricks were utilized</span> – our approach demonstrates that with careful instruction tuning, open-source models can achieve exceptional performance on document understanding tasks.
                       </p>
-                      
-                      <p className="text-muted-foreground leading-relaxed">
+
+                      <p className="text-black font-semibold leading-relaxed">
                         The resulting model, <span className="font-semibold text-primary">Exceletto OCR Engine</span>, is a simple yet powerful demonstration that base language models can be fine-tuned to excel at specialized tasks. Our fine-tuning process focused on:
                       </p>
                     </div>
@@ -663,28 +662,28 @@ export default function Home() {
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Document Structure Understanding</p>
-                          <p className="text-sm text-muted-foreground">Training on table layouts, form structures, and hierarchical document organization</p>
+                          <p className="text-sm text-black font-semibold">Training on table layouts, form structures, and hierarchical document organization</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-700/10 border-2 border-amber-700">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Handwriting Recognition</p>
-                          <p className="text-sm text-muted-foreground">Extensive exposure to varied handwriting styles and degraded document quality</p>
+                          <p className="text-sm text-black font-semibold">Extensive exposure to varied handwriting styles and degraded document quality</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-700/10 border-2 border-amber-700">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Context Preservation</p>
-                          <p className="text-sm text-muted-foreground">Maintaining relationships between cells, columns, and semantic meaning</p>
+                          <p className="text-sm text-black font-semibold">Maintaining relationships between cells, columns, and semantic meaning</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-700/10 border-2 border-amber-700">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Multi-Language Support</p>
-                          <p className="text-sm text-muted-foreground">Fine-tuned on 7+ languages including complex scripts like Arabic and Chinese</p>
+                          <p className="text-sm text-black font-semibold">Fine-tuned on 7+ languages including complex scripts like Arabic and Chinese</p>
                         </div>
                       </div>
                     </div>
@@ -707,7 +706,7 @@ export default function Home() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="prose prose-sm max-w-none">
-                      <p className="text-muted-foreground leading-relaxed">
+                      <p className="text-black font-semibold leading-relaxed">
                         We introduce carefully crafted system prompts to guide the model in generating high-quality, safe outputs within specified guardrails. This approach allows users to move along the Pareto front of <span className="font-semibold text-foreground">model utility versus guardrails enforcement</span>.
                       </p>
                     </div>
@@ -759,7 +758,7 @@ export default function Home() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="prose prose-sm max-w-none">
-                      <p className="text-muted-foreground leading-relaxed">
+                      <p className="text-black font-semibold leading-relaxed">
                         Exceletto can be used as a content moderator: the model itself is able to accurately classify user prompts or generated answers as either acceptable or falling into restricted categories through a self-reflection mechanism.
                       </p>
                     </div>
@@ -769,7 +768,7 @@ export default function Home() {
                         <Award className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-2">Self-Reflection Performance</p>
-                          <p className="text-sm text-muted-foreground mb-3">
+                          <p className="text-sm text-black font-semibold mb-3">
                             Evaluated on a manually curated and balanced dataset of adversarial and standard prompts:
                           </p>
                           <div className="grid grid-cols-2 gap-4">
@@ -802,7 +801,7 @@ export default function Home() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="prose prose-sm max-w-none">
-                      <p className="text-muted-foreground leading-relaxed">
+                      <p className="text-black font-semibold leading-relaxed">
                         Our work demonstrates that language models may <span className="font-semibold text-foreground">compress knowledge more effectively than previously thought</span>. This opens up interesting perspectives: the field has historically emphasized scaling laws in 2 dimensions (model capabilities ↔ training cost), but the problem is rather 3-dimensional:
                       </p>
                     </div>
@@ -811,22 +810,22 @@ export default function Home() {
                       <div className="text-center p-5 rounded-lg bg-muted/30 border-2 border-primary">
                         <TrendingUp className="w-8 h-8 text-primary mx-auto mb-3" />
                         <p className="font-semibold text-amber-700 mb-1">Model Capabilities</p>
-                        <p className="text-xs text-muted-foreground">Performance on target tasks</p>
+                        <p className="text-xs text-black font-semibold">Performance on target tasks</p>
                       </div>
                       <div className="text-center p-5 rounded-lg bg-muted/30 border-2 border-primary">
                         <DollarSign className="w-8 h-8 text-primary mx-auto mb-3" />
                         <p className="font-semibold text-amber-700 mb-1">Training Cost</p>
-                        <p className="text-xs text-muted-foreground">Computational resources required</p>
+                        <p className="text-xs text-black font-semibold">Computational resources required</p>
                       </div>
                       <div className="text-center p-5 rounded-lg bg-muted/30 border-2 border-primary">
                         <Zap className="w-8 h-8 text-primary mx-auto mb-3" />
                         <p className="font-semibold text-amber-700 mb-1">Inference Cost</p>
-                        <p className="text-xs text-muted-foreground">Runtime efficiency in production</p>
+                        <p className="text-xs text-black font-semibold">Runtime efficiency in production</p>
                       </div>
                     </div>
 
                     <div className="mt-6 p-5 bg-muted/50 rounded-lg border-2 border-primary">
-                      <p className="text-sm text-foreground leading-relaxed">
+                      <p className="text-sm text-black font-semibold leading-relaxed">
                         <span className="font-semibold">Engineering Philosophy:</span> Much remains to be explored to obtain the best performance with the smallest possible model. Exceletto's 7B parameter architecture achieves performance comparable to much larger models through intelligent fine-tuning and optimization – delivering enterprise-grade accuracy at a fraction of the computational cost.
                       </p>
                     </div>
@@ -952,7 +951,7 @@ export default function Home() {
                           </tr>
                           <tr className="border-b border-border/50">
                             <td className="p-3 text-muted-foreground">Word Recognition</td>
-                            <td className="p-3 text-right font-semibold text-primary">98.4%</td>
+                            <td className="p-3 text-right font-semibold text-amber-700">99.5%</td>
                             <td className="p-3 text-right text-muted-foreground">95.1%</td>
                           </tr>
                           <tr className="border-b border-border/50">
