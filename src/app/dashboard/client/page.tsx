@@ -69,6 +69,7 @@ import { Input } from "@/components/ui/input"
 import { useSearchParams } from "next/navigation"
 import { PenTool, Monitor, Edit3 } from "lucide-react"
 import { wakeUpBackendSilently } from "@/lib/backend-health"
+import { googleAuth } from "@/lib/google-auth"
 
 export default function ProcessImagesPage() {
   const { user, loading: authLoading } = useAuth()
@@ -484,9 +485,30 @@ export default function ProcessImagesPage() {
         return
       }
 
-      toast.info('Exporting to Google Sheets...')
+      // Initialize Google Auth if needed
+      await googleAuth.initialize()
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'}/api/v1/sheets/export`, {
+      // Show Google sign-in and get access token
+      toast.info('Please sign in with Google to export to your Sheets...')
+      
+      let googleAccessToken: string | null = null
+      try {
+        googleAccessToken = await googleAuth.getAccessToken()
+      } catch (error: any) {
+        console.error('[Google Auth] Failed:', error)
+        toast.error('Google sign-in cancelled or failed. Please try again.')
+        return
+      }
+
+      if (!googleAccessToken) {
+        toast.error('Failed to authenticate with Google')
+        return
+      }
+
+      toast.info('Exporting to your Google Sheets...')
+
+      // Use the OAuth endpoint to export to user's Drive
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'}/api/v1/google/oauth/export-sheets`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -494,7 +516,8 @@ export default function ProcessImagesPage() {
         },
         body: JSON.stringify({
           file_id: file.file_id,
-          filename: renamedFiles[file.file_id] || file.filename || `Export_${new Date().toISOString().split('T')[0]}`
+          filename: renamedFiles[file.file_id] || file.filename || `Export_${new Date().toISOString().split('T')[0]}`,
+          google_access_token: googleAccessToken
         })
       })
 
@@ -502,7 +525,7 @@ export default function ProcessImagesPage() {
 
       if (data.success && data.spreadsheet_url) {
         window.open(data.spreadsheet_url, '_blank')
-        toast.success('Exported to Google Sheets successfully!')
+        toast.success('Exported to your Google Sheets successfully!')
       } else {
         toast.error(data.error || 'Failed to export to Google Sheets')
       }
