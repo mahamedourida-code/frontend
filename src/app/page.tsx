@@ -659,28 +659,28 @@ export default function Home() {
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4 mt-6">
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-50 border-2 border-amber-700">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-700/10 border-2 border-amber-700">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Document Structure Understanding</p>
                           <p className="text-sm text-muted-foreground">Training on table layouts, form structures, and hierarchical document organization</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-50 border-2 border-amber-700">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-700/10 border-2 border-amber-700">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Handwriting Recognition</p>
                           <p className="text-sm text-muted-foreground">Extensive exposure to varied handwriting styles and degraded document quality</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-50 border-2 border-amber-700">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-700/10 border-2 border-amber-700">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Context Preservation</p>
                           <p className="text-sm text-muted-foreground">Maintaining relationships between cells, columns, and semantic meaning</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-50 border-2 border-amber-700">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-700/10 border-2 border-amber-700">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Multi-Language Support</p>
@@ -764,7 +764,7 @@ export default function Home() {
                       </p>
                     </div>
 
-                    <div className="mt-6 p-5 bg-amber-50 rounded-lg border-2 border-amber-700">
+                    <div className="mt-6 p-5 bg-amber-700/10 rounded-lg border-2 border-amber-700">
                       <div className="flex items-start gap-3">
                         <Award className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
@@ -774,11 +774,11 @@ export default function Home() {
                           </p>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="text-center p-3 bg-background rounded-lg border-2 border-primary">
-                              <p className="text-2xl font-bold text-primary">99.4%</p>
+                              <p className="text-2xl font-bold text-amber-700">99.4%</p>
                               <p className="text-xs text-muted-foreground mt-1">Precision</p>
                             </div>
                             <div className="text-center p-3 bg-background rounded-lg border-2 border-primary">
-                              <p className="text-2xl font-bold text-primary">95.6%</p>
+                              <p className="text-2xl font-bold text-amber-700">95.6%</p>
                               <p className="text-xs text-muted-foreground mt-1">Recall</p>
                             </div>
                           </div>
@@ -810,17 +810,17 @@ export default function Home() {
                     <div className="grid md:grid-cols-3 gap-4">
                       <div className="text-center p-5 rounded-lg bg-muted/30 border-2 border-primary">
                         <TrendingUp className="w-8 h-8 text-primary mx-auto mb-3" />
-                        <p className="font-semibold text-foreground mb-1">Model Capabilities</p>
+                        <p className="font-semibold text-amber-700 mb-1">Model Capabilities</p>
                         <p className="text-xs text-muted-foreground">Performance on target tasks</p>
                       </div>
                       <div className="text-center p-5 rounded-lg bg-muted/30 border-2 border-primary">
                         <DollarSign className="w-8 h-8 text-primary mx-auto mb-3" />
-                        <p className="font-semibold text-foreground mb-1">Training Cost</p>
+                        <p className="font-semibold text-amber-700 mb-1">Training Cost</p>
                         <p className="text-xs text-muted-foreground">Computational resources required</p>
                       </div>
                       <div className="text-center p-5 rounded-lg bg-muted/30 border-2 border-primary">
                         <Zap className="w-8 h-8 text-primary mx-auto mb-3" />
-                        <p className="font-semibold text-foreground mb-1">Inference Cost</p>
+                        <p className="font-semibold text-amber-700 mb-1">Inference Cost</p>
                         <p className="text-xs text-muted-foreground">Runtime efficiency in production</p>
                       </div>
                     </div>
@@ -911,7 +911,7 @@ export default function Home() {
         <ChartTooltip content={<ChartTooltipContent />} />
         <Bar
           dataKey="accuracy"
-          fill="hsl(var(--primary))"
+          fill="rgb(180 83 9)"
           radius={[8, 8, 0, 0]}
         />
       </BarChart>
@@ -985,15 +985,15 @@ export default function Home() {
               {/* Key Features */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-primary" data-animate="stagger">
-                  <div className="text-2xl font-bold text-primary mb-1">7+ Languages</div>
+                  <div className="text-2xl font-bold text-amber-700 mb-1">7+ Languages</div>
                   <p className="text-sm text-muted-foreground">Multi-language support including complex scripts</p>
                 </div>
                 <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-primary" data-animate="stagger">
-                  <div className="text-2xl font-bold text-primary mb-1">99.9% Uptime</div>
+                  <div className="text-2xl font-bold text-amber-700 mb-1">99.9% Uptime</div>
                   <p className="text-sm text-muted-foreground">Enterprise-grade reliability and availability</p>
                 </div>
                 <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-primary" data-animate="stagger">
-                  <div className="text-2xl font-bold text-primary mb-1">GDPR Compliant</div>
+                  <div className="text-2xl font-bold text-amber-700 mb-1">GDPR Compliant</div>
                   <p className="text-sm text-muted-foreground">Data privacy and security certified</p>
                 </div>
               </div>
