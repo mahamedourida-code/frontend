@@ -528,12 +528,9 @@ export default function Home() {
               <div className="space-y-12">
                 {/* Handwritten Table Comparison - Featured */}
                 <div className="relative group">
-                  {/* Subtle shadow glow */}
-                  <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 via-primary/20 to-primary/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
-                  
                   <div className="relative w-full max-w-6xl mx-auto">
                     <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4">Handwritten Table → Excel</h3>
-                    <div className="relative h-[350px] sm:h-[450px] lg:h-[600px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(34,197,94,0.3)]">
+                    <div className="relative h-[350px] sm:h-[450px] lg:h-[600px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-amber-700">
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""
@@ -576,12 +573,9 @@ export default function Home() {
 
                 {/* Form Data Comparison */}
                 <div className="relative group">
-                  {/* Subtle shadow glow */}
-                  <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 via-primary/20 to-primary/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
-                  
                   <div className="relative w-full max-w-6xl mx-auto">
                     <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4"></h3>
-                    <div className="relative h-[350px] sm:h-[450px] lg:h-[600px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(34,197,94,0.3)]">
+                    <div className="relative h-[350px] sm:h-[450px] lg:h-[600px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-amber-700">
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""
@@ -665,28 +659,28 @@ export default function Home() {
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4 mt-6">
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border-2 border-primary">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-50 border-2 border-amber-700">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Document Structure Understanding</p>
                           <p className="text-sm text-muted-foreground">Training on table layouts, form structures, and hierarchical document organization</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border-2 border-primary">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-50 border-2 border-amber-700">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Handwriting Recognition</p>
                           <p className="text-sm text-muted-foreground">Extensive exposure to varied handwriting styles and degraded document quality</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border-2 border-primary">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-50 border-2 border-amber-700">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Context Preservation</p>
                           <p className="text-sm text-muted-foreground">Maintaining relationships between cells, columns, and semantic meaning</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border-2 border-primary">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-50 border-2 border-amber-700">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Multi-Language Support</p>
@@ -770,31 +764,7 @@ export default function Home() {
                       </p>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20">
-                        <p className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                          Illegal Activities
-                        </p>
-                        <p className="text-xs text-muted-foreground">Terrorism, child abuse, fraud</p>
-                      </div>
-                      <div className="p-4 rounded-lg bg-orange-500/10 border border-orange-500/20">
-                        <p className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-orange-500"></span>
-                          Hateful Content
-                        </p>
-                        <p className="text-xs text-muted-foreground">Discrimination, self-harm, bullying</p>
-                      </div>
-                      <div className="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-                        <p className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
-                          Unqualified Advice
-                        </p>
-                        <p className="text-xs text-muted-foreground">Legal, medical, financial domains</p>
-                      </div>
-                    </div>
-
-                    <div className="mt-6 p-5 bg-primary/5 rounded-lg border-2 border-primary">
+                    <div className="mt-6 p-5 bg-amber-50 rounded-lg border-2 border-amber-700">
                       <div className="flex items-start gap-3">
                         <Award className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
