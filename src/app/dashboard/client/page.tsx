@@ -74,9 +74,32 @@ export default function ProcessImagesPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const documentType = searchParams.get('type') || 'auto'
-  const languageParam = searchParams.get('language') || 'en'
+  const languageParam = searchParams.get('language') || (typeof window !== 'undefined' ? localStorage.getItem('ocrLanguage') || 'en' : 'en')
 
   const [selectedLanguage, setSelectedLanguage] = useState(languageParam)
+
+  // Sync language with localStorage and listen for changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedLanguage = localStorage.getItem('ocrLanguage')
+      if (savedLanguage && savedLanguage !== selectedLanguage) {
+        setSelectedLanguage(savedLanguage)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'ocrLanguage' && e.newValue) {
+        setSelectedLanguage(e.newValue)
+        const params = new URLSearchParams(searchParams.toString())
+        params.set('language', e.newValue)
+        router.push(`/dashboard/client?${params.toString()}`)
+      }
+    }
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [searchParams, router])
   const [isDragging, setIsDragging] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [selectedView, setSelectedView] = useState<"grid" | "list">("grid")
@@ -1323,6 +1346,7 @@ Best regards`
                   onChange={(e) => {
                     const newLanguage = e.target.value
                     setSelectedLanguage(newLanguage)
+                    localStorage.setItem('ocrLanguage', newLanguage)
                     const params = new URLSearchParams(searchParams.toString())
                     params.set('language', newLanguage)
                     router.push(`/dashboard/client?${params.toString()}`)

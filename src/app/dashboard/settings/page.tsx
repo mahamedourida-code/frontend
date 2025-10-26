@@ -44,7 +44,7 @@ export default function SettingsPage() {
   const { theme: currentTheme, setTheme } = useTheme()
   const supabase = createClient()
 
-  const languageParam = searchParams.get('language') || 'en'
+  const languageParam = searchParams.get('language') || (typeof window !== 'undefined' ? localStorage.getItem('ocrLanguage') || 'en' : 'en')
 
   const [activeSection, setActiveSection] = useState<SettingsSection>('account')
   const [loading, setLoading] = useState(false)
@@ -81,6 +81,29 @@ export default function SettingsPage() {
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Sync language with localStorage and listen for changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedLanguage = localStorage.getItem('ocrLanguage')
+      if (savedLanguage && savedLanguage !== language) {
+        setLanguage(savedLanguage)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'ocrLanguage' && e.newValue) {
+        setLanguage(e.newValue)
+        const params = new URLSearchParams(searchParams.toString())
+        params.set('language', e.newValue)
+        router.push(`/dashboard/settings?${params.toString()}`)
+      }
+    }
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [searchParams, router])
 
   // Load user data
   useEffect(() => {
@@ -158,6 +181,7 @@ export default function SettingsPage() {
 
   const handleLanguageChange = (newLanguage: string) => {
     setLanguage(newLanguage)
+    localStorage.setItem('ocrLanguage', newLanguage)
     const params = new URLSearchParams(searchParams.toString())
     params.set('language', newLanguage)
     router.push(`/dashboard/settings?${params.toString()}`)
@@ -172,7 +196,7 @@ export default function SettingsPage() {
       pt: 'Português',
       zh: '中文'
     }
-    toast.success(`Language changed to ${languageNames[newLanguage] || newLanguage}`)
+    toast.success(`OCR detection language changed to ${languageNames[newLanguage] || newLanguage}`)
   }
 
   const handleThemeChange = (newTheme: Theme) => {
@@ -494,79 +518,7 @@ export default function SettingsPage() {
                   </CardContent>
                 </Card>
 
-                {/* Appearance */}
-                <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
-                  <CardHeader className="p-3 lg:p-4">
-                    <div className="flex items-center gap-2">
-                      <div className="h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                        <Moon className="h-5 w-5 text-purple-600" />
-                      </div>
-                      <div>
-                        <CardTitle>Appearance</CardTitle>
-                        <CardDescription>Customize how Exceletto looks</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4 p-3 lg:p-4">
-                    <div className="space-y-3">
-                      <Label>Theme</Label>
-                      {mounted && (
-                        <div className="grid grid-cols-3 gap-3">
-                          <button
-                            onClick={() => handleThemeChange('light')}
-                            className={cn(
-                              "relative rounded-lg border-2 p-4 text-center transition-all hover:border-primary/50",
-                              currentTheme === 'light' ? "border-primary bg-primary/5" : "border-border"
-                            )}
-                          >
-                            <Sun className="h-6 w-6 mx-auto mb-2 text-amber-500" />
-                            <p className="text-sm font-medium">Light</p>
-                            {currentTheme === 'light' && (
-                              <div className="absolute top-2 right-2 h-5 w-5 rounded-full bg-primary flex items-center justify-center">
-                                <Check className="h-3 w-3 text-primary-foreground" />
-                              </div>
-                            )}
-                          </button>
-                          <button
-                            onClick={() => handleThemeChange('dark')}
-                            className={cn(
-                              "relative rounded-lg border-2 p-4 text-center transition-all hover:border-primary/50",
-                              currentTheme === 'dark' ? "border-primary bg-primary/5" : "border-border"
-                            )}
-                          >
-                            <Moon className="h-6 w-6 mx-auto mb-2 text-blue-500" />
-                            <p className="text-sm font-medium">Dark</p>
-                            {currentTheme === 'dark' && (
-                              <div className="absolute top-2 right-2 h-5 w-5 rounded-full bg-primary flex items-center justify-center">
-                                <Check className="h-3 w-3 text-primary-foreground" />
-                              </div>
-                            )}
-                          </button>
-                          <button
-                            onClick={() => handleThemeChange('system')}
-                            className={cn(
-                              "relative rounded-lg border-2 p-4 text-center transition-all hover:border-primary/50",
-                              currentTheme === 'system' ? "border-primary bg-primary/5" : "border-border"
-                            )}
-                          >
-                            <Laptop className="h-6 w-6 mx-auto mb-2 text-purple-500" />
-                            <p className="text-sm font-medium">System</p>
-                            {currentTheme === 'system' && (
-                              <div className="absolute top-2 right-2 h-5 w-5 rounded-full bg-primary flex items-center justify-center">
-                                <Check className="h-3 w-3 text-primary-foreground" />
-                              </div>
-                            )}
-                          </button>
-                        </div>
-                      )}
-                      <p className="text-xs text-muted-foreground">
-                        Choose your preferred color theme
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Language & Region */}
+                {/* OCR Detection Language */}
                 <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
                   <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
@@ -574,14 +526,14 @@ export default function SettingsPage() {
                         <Languages className="h-5 w-5 text-blue-600" />
                       </div>
                       <div>
-                        <CardTitle>Language & Region</CardTitle>
-                        <CardDescription>Set your preferred language</CardDescription>
+                        <CardTitle>OCR Detection Language</CardTitle>
+                        <CardDescription>Set the language for text recognition</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4 p-3 lg:p-4">
                     <div className="space-y-2">
-                      <Label htmlFor="language">Display Language</Label>
+                      <Label htmlFor="language">OCR Language</Label>
                       <Select value={language} onValueChange={handleLanguageChange}>
                         <SelectTrigger id="language">
                           <SelectValue />
