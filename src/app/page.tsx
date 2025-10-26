@@ -131,9 +131,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background relative" style={{ backgroundColor: '#ffffff' }}>
       {/* Navigation Bar */}
-      <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 pt-3 lg:pt-4">
+      <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 pt-4 lg:pt-5">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white dark:bg-white rounded-[35px] border-2 border-primary shadow-lg shadow-primary/10 backdrop-blur-md p-3 lg:p-4 flex items-center justify-between">
+          <div className="bg-white dark:bg-white rounded-[35px] border-2 border-primary shadow-lg shadow-primary/10 backdrop-blur-md p-4 lg:p-5 flex items-center justify-between">
             {/* Logo */}
             <div className="flex-shrink-0">
               <AppLogo />
@@ -265,7 +265,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-24 lg:pt-20">
+        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-28 lg:pt-24">
 
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-6">
             <div className="grid grid-cols-1 lg:grid-cols-[6fr_7fr] gap-8 sm:gap-12 lg:gap-12 items-center">
