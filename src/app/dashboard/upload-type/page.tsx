@@ -54,19 +54,16 @@ export default function UploadTypePage() {
     {
       id: "handwritten",
       title: "Handwritten",
-      subtitle: "Notes & forms",
       icon: FileText
     },
     {
-      id: "printed", 
-      title: "Digital",
-      subtitle: "Screenshots & PDFs",
+      id: "printed",
+      title: "No Handwritten",
       icon: TableProperties
     },
     {
       id: "auto",
       title: "Auto-Detect",
-      subtitle: "Let AI decide",
       icon: Sparkles,
       recommended: true
     }
@@ -167,13 +164,9 @@ export default function UploadTypePage() {
 
                   <Icon className="h-8 w-8 lg:h-10 lg:w-10 mb-2 lg:mb-3 text-primary group-hover:scale-110 transition-transform" />
 
-                  <h3 className="text-sm lg:text-base font-semibold text-foreground mb-0.5">
+                  <h3 className="text-sm lg:text-base font-semibold text-foreground">
                     {type.title}
                   </h3>
-
-                  <p className="text-[11px] lg:text-xs text-muted-foreground">
-                    {type.subtitle}
-                  </p>
                 </button>
               )
             })}

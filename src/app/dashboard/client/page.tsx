@@ -1311,6 +1311,26 @@ Best regards`
 
           {/* Info Sidebar */}
           <div className="lg:col-span-1 space-y-4 order-3 lg:order-2">
+            {/* Language Selector */}
+            <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+              <CardContent className="p-3">
+                <h3 className="text-xs font-semibold mb-3 text-foreground">Language</h3>
+                <select
+                  className="w-full p-2.5 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-xs font-medium hover:border-primary/50 transition-all focus:outline-none focus:border-primary"
+                  defaultValue="en"
+                >
+                  <option value="en">English</option>
+                  <option value="de">Deutsch</option>
+                  <option value="fr">Français</option>
+                  <option value="ar">العربية</option>
+                  <option value="es">Español</option>
+                  <option value="it">Italiano</option>
+                  <option value="pt">Português</option>
+                  <option value="zh">中文</option>
+                </select>
+              </CardContent>
+            </Card>
+
             {/* Auto Settings */}
             <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
               <CardContent className="p-3">
