@@ -13,7 +13,7 @@ export function AppIcon({ className = '', size = 24 }: AppIconProps) {
       alt="Exceletto"
       width={size}
       height={size}
-      className={`rounded-full ${className}`}
+      className={className}
       priority
     />
   )
@@ -27,7 +27,7 @@ export function AppIconMinimal({ className = '', size = 24 }: AppIconProps) {
       alt="Exceletto"
       width={size}
       height={size}
-      className={`rounded-full ${className}`}
+      className={className}
       priority
     />
   )
@@ -42,7 +42,6 @@ export function AppLogo({ className = '' }: { className?: string }) {
         alt="Exceletto"
         width={32}
         height={32}
-        className="rounded-full"
         priority
       />
       <span className="text-xl font-bold text-black dark:text-white">
