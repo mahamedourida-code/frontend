@@ -13,7 +13,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { signInSchema, type SignInInput } from '@/lib/validations/auth'
 import { signInWithPassword, signInWithOTP } from '@/lib/auth-helpers'
 import { createClient } from '@/utils/supabase/client'
-import { AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle, Loader2, ChevronLeft } from 'lucide-react'
 import { toast } from 'sonner'
 import { ThemeToggle } from '@/components/theme-toggle'
 
@@ -138,6 +138,17 @@ export default function SignInPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-muted/80">
+      <div className="fixed top-4 left-4 z-50">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.back()}
+          className="gap-1"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Back
+        </Button>
+      </div>
       <div className="fixed top-4 right-4 z-50">
         <ThemeToggle />
       </div>

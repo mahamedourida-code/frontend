@@ -46,7 +46,7 @@ import {
   Copy,
   Facebook,
   MessageCircle,
-
+  ChevronLeft,
   FolderUp
 } from "lucide-react"
 import {
@@ -923,6 +923,15 @@ Best regards`
         <div className="container max-w-5xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.back()}
+                className="gap-1"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Back
+              </Button>
               <AppIcon size={32} />
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary shadow-sm">
                 <documentTypeInfo.icon className="h-4 w-4 text-primary" />

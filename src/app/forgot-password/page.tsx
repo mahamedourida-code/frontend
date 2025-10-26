@@ -9,13 +9,15 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { forgotPasswordSchema, type ForgotPasswordInput } from '@/lib/validations/auth'
 import { requestPasswordReset } from '@/lib/auth-helpers'
-import { AlertCircle, Loader2, Mail, CheckCircle2 } from 'lucide-react'
+import { AlertCircle, Loader2, Mail, CheckCircle2, ChevronLeft } from 'lucide-react'
 import { toast } from 'sonner'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 export default function ForgotPasswordPage() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -57,6 +59,17 @@ export default function ForgotPasswordPage() {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-muted/20">
+        <div className="fixed top-4 left-4 z-50">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.back()}
+            className="gap-1"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Back
+          </Button>
+        </div>
         <div className="fixed top-4 right-4 z-50">
           <ThemeToggle />
         </div>
@@ -119,6 +132,17 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="fixed top-4 left-4 z-50">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.back()}
+          className="gap-1"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Back
+        </Button>
+      </div>
       <div className="fixed top-4 right-4 z-50">
         <ThemeToggle />
       </div>

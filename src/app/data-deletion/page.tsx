@@ -1,13 +1,30 @@
+"use client"
+
 import { AppIcon } from "@/components/AppIcon"
 import Link from "next/link"
-import { Trash2, AlertCircle, Clock, CheckCircle2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+import { Trash2, AlertCircle, Clock, CheckCircle2, ChevronLeft } from "lucide-react"
 
 export default function DataDeletionPage() {
+  const router = useRouter()
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b">
         <div className="container max-w-4xl mx-auto px-4 py-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.back()}
+              className="gap-1"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Back
+            </Button>
+          </div>
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <AppIcon size={40} />
             <span className="text-xl font-bold">Exceletto</span>

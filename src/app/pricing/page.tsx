@@ -6,11 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { MobileNav } from "@/components/MobileNav";
-import { CheckCircle, Zap, Users, Building, Star, MessageCircle, Mail, Phone, Shield, Sparkles, Trophy } from "lucide-react";
+import { CheckCircle, Zap, Users, Building, Star, MessageCircle, Mail, Phone, Shield, Sparkles, Trophy, ChevronLeft } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export default function PricingPage() {
+  const router = useRouter()
   const [isAnnual, setIsAnnual] = useState(false);
 
   return (
@@ -19,9 +21,20 @@ export default function PricingPage() {
       <header className="border-b border-border bg-muted/80 backdrop-blur-md sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-foreground">
-              Exceletto
-            </Link>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.back()}
+                className="gap-1 lg:gap-2"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Back</span>
+              </Button>
+              <Link href="/" className="text-2xl font-bold text-foreground">
+                Exceletto
+              </Link>
+            </div>
             
             {/* Theme Toggle (Mobile uses bottom nav) */}
             <div className="lg:hidden">

@@ -4,28 +4,39 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MobileNavigation } from "@/components/MobileNavigation";
-import { Layers, FileText, Zap, Shield, Clock, Upload, FileSpreadsheet, CheckCircle, Sparkles, Camera, Receipt, FileCheck, Table } from "lucide-react";
+import { Layers, FileText, Zap, Shield, Clock, Upload, FileSpreadsheet, CheckCircle, Sparkles, Camera, Receipt, FileCheck, Table, ChevronLeft } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ProductsPage() {
+  const router = useRouter()
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border/50 bg-background/95 backdrop-blur-md sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-foreground">
-              Litt Up
-            </Link>
-            
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.back()}
+                className="gap-1 lg:gap-2"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Back</span>
+              </Button>
+              <Link href="/" className="text-2xl font-bold text-foreground">
+                Litt Up
+              </Link>
+            </div>
+
             {/* Mobile Navigation */}
             <MobileNavigation />
-            
+
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-4">
-              <Button variant="ghost" asChild>
-                <Link href="/">Back to Home</Link>
-              </Button>
               <Button asChild>
                 <Link href="/sign-up">Get Started</Link>
               </Button>

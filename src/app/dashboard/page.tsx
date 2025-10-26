@@ -26,7 +26,8 @@ import {
   Clock,
   Coins,
   Calendar,
-  TrendingUp
+  TrendingUp,
+  ChevronLeft
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -389,6 +390,16 @@ export default function DashboardPage() {
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
         <div className="container max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+          {/* Back Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.back()}
+            className="gap-1 mb-4"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Back
+          </Button>
           {/* Header with Process Images Button */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 lg:mb-8">
             <div>
