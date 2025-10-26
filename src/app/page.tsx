@@ -405,16 +405,8 @@ export default function Home() {
         </section>
 
         {/* Why Choose Us Section */}
-        <ScrollAnimatedSection id="features" className="py-16 relative z-10">
-          {/* Background Image */}
-          <div className="absolute inset-0 z-0 opacity-10">
-            <img
-              src="/images/photo-session.png"
-              alt=""
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+        <ScrollAnimatedSection id="features" className="py-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
@@ -424,7 +416,7 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
-              <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105">
+              <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
                   <PenTool className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Handwritten Tables</CardTitle>
@@ -434,7 +426,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105">
+              <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
                   <FileText className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Paper Forms Automation</CardTitle>
@@ -444,7 +436,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105">
+              <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
                   <FileSpreadsheet className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Financial Documents</CardTitle>
@@ -506,16 +498,8 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Interactive Comparison Section */}
-        <section className="py-32 relative z-10 overflow-hidden">
-          {/* Background Image */}
-          <div className="absolute inset-0 z-0 opacity-10">
-            <img
-              src="/images/data-input.png"
-              alt=""
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <section className="py-32 overflow-hidden">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
@@ -644,16 +628,8 @@ export default function Home() {
 
 
         {/* AI Engine Section */}
-        <ScrollAnimatedSection id="ai-engine" className="py-16 relative z-10">
-          {/* Background Image */}
-          <div className="absolute inset-0 z-0 opacity-10">
-            <img
-              src="/images/data-processing.png"
-              alt=""
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+        <ScrollAnimatedSection id="ai-engine" className="py-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-16" data-animate="headline">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
@@ -670,7 +646,7 @@ export default function Home() {
               {/* Main Content */}
               <div className="space-y-12">
                 {/* Instruction Fine-Tuning */}
-                <Card className="border border-border/50 shadow-lg" data-animate="stagger">
+                <Card className="border-2 border-primary shadow-lg" data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
                       <Layers className="w-6 h-6 text-primary" />
@@ -689,37 +665,37 @@ export default function Home() {
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4 mt-6">
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border-2 border-primary">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Document Structure Understanding</p>
                           <p className="text-sm text-muted-foreground">Training on table layouts, form structures, and hierarchical document organization</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border-2 border-primary">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Handwriting Recognition</p>
                           <p className="text-sm text-muted-foreground">Extensive exposure to varied handwriting styles and degraded document quality</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border-2 border-primary">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Context Preservation</p>
                           <p className="text-sm text-muted-foreground">Maintaining relationships between cells, columns, and semantic meaning</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border-2 border-primary">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Multi-Language Support</p>
-                          <p className="text-sm text-muted-foreground">Fine-tuned on 15+ languages including complex scripts like Arabic and Chinese</p>
+                          <p className="text-sm text-muted-foreground">Fine-tuned on 7+ languages including complex scripts like Arabic and Chinese</p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                    <div className="mt-6 p-4 bg-primary/5 rounded-lg border-2 border-primary">
                       <p className="text-sm text-muted-foreground">
                         <span className="font-semibold text-foreground">Benchmark Result:</span> In independent evaluations on MT-Bench, Exceletto achieved a score of <span className="font-semibold text-primary">7.2</span>, outperforming Llama 3 13B (6.65) despite using a more efficient 7B parameter architecture.
                       </p>
@@ -728,7 +704,7 @@ export default function Home() {
                 </Card>
 
                 {/* System Prompts & Guardrails */}
-                <Card className="border border-border/50 shadow-lg" data-animate="stagger">
+                <Card className="border-2 border-primary shadow-lg" data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
                       <Shield className="w-6 h-6 text-primary" />
@@ -742,13 +718,13 @@ export default function Home() {
                       </p>
                     </div>
 
-                    <div className="p-5 bg-muted/50 rounded-lg border border-border/50 font-mono text-sm">
+                    <div className="p-5 bg-muted/50 rounded-lg border-2 border-primary font-mono text-sm">
                       <p className="text-foreground leading-relaxed italic">
                         "Always assist with care, respect, and truth. Respond with utmost utility yet securely. Avoid harmful, unethical, prejudiced, or negative content. Ensure replies promote fairness and positivity."
                       </p>
                     </div>
 
-                    <div className="overflow-hidden rounded-lg border border-border/50 mt-6">
+                    <div className="overflow-hidden rounded-lg border-2 border-primary mt-6">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-border/50 bg-muted/30">
@@ -780,7 +756,7 @@ export default function Home() {
                 </Card>
 
                 {/* Content Moderation */}
-                <Card className="border border-border/50 shadow-lg" data-animate="stagger">
+                <Card className="border-2 border-primary shadow-lg" data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
                       <Target className="w-6 h-6 text-primary" />
@@ -818,7 +794,7 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="mt-6 p-5 bg-primary/5 rounded-lg border border-primary/20">
+                    <div className="mt-6 p-5 bg-primary/5 rounded-lg border-2 border-primary">
                       <div className="flex items-start gap-3">
                         <Award className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
@@ -827,11 +803,11 @@ export default function Home() {
                             Evaluated on a manually curated and balanced dataset of adversarial and standard prompts:
                           </p>
                           <div className="grid grid-cols-2 gap-4">
-                            <div className="text-center p-3 bg-background rounded-lg border border-border/50">
+                            <div className="text-center p-3 bg-background rounded-lg border-2 border-primary">
                               <p className="text-2xl font-bold text-primary">99.4%</p>
                               <p className="text-xs text-muted-foreground mt-1">Precision</p>
                             </div>
-                            <div className="text-center p-3 bg-background rounded-lg border border-border/50">
+                            <div className="text-center p-3 bg-background rounded-lg border-2 border-primary">
                               <p className="text-2xl font-bold text-primary">95.6%</p>
                               <p className="text-xs text-muted-foreground mt-1">Recall</p>
                             </div>
@@ -847,7 +823,7 @@ export default function Home() {
                 </Card>
 
                 {/* Knowledge Compression */}
-                <Card className="border border-border/50 shadow-lg" data-animate="stagger">
+                <Card className="border-2 border-primary shadow-lg" data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
                       <Zap className="w-6 h-6 text-primary" />
@@ -862,24 +838,24 @@ export default function Home() {
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-4">
-                      <div className="text-center p-5 rounded-lg bg-muted/30 border border-border/50">
+                      <div className="text-center p-5 rounded-lg bg-muted/30 border-2 border-primary">
                         <TrendingUp className="w-8 h-8 text-primary mx-auto mb-3" />
                         <p className="font-semibold text-foreground mb-1">Model Capabilities</p>
                         <p className="text-xs text-muted-foreground">Performance on target tasks</p>
                       </div>
-                      <div className="text-center p-5 rounded-lg bg-muted/30 border border-border/50">
+                      <div className="text-center p-5 rounded-lg bg-muted/30 border-2 border-primary">
                         <DollarSign className="w-8 h-8 text-primary mx-auto mb-3" />
                         <p className="font-semibold text-foreground mb-1">Training Cost</p>
                         <p className="text-xs text-muted-foreground">Computational resources required</p>
                       </div>
-                      <div className="text-center p-5 rounded-lg bg-muted/30 border border-border/50">
+                      <div className="text-center p-5 rounded-lg bg-muted/30 border-2 border-primary">
                         <Zap className="w-8 h-8 text-primary mx-auto mb-3" />
                         <p className="font-semibold text-foreground mb-1">Inference Cost</p>
                         <p className="text-xs text-muted-foreground">Runtime efficiency in production</p>
                       </div>
                     </div>
 
-                    <div className="mt-6 p-5 bg-muted/50 rounded-lg border border-border/50">
+                    <div className="mt-6 p-5 bg-muted/50 rounded-lg border-2 border-primary">
                       <p className="text-sm text-foreground leading-relaxed">
                         <span className="font-semibold">Engineering Philosophy:</span> Much remains to be explored to obtain the best performance with the smallest possible model. Exceletto's 7B parameter architecture achieves performance comparable to much larger models through intelligent fine-tuning and optimization – delivering enterprise-grade accuracy at a fraction of the computational cost.
                       </p>
@@ -899,16 +875,8 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Benchmark Section */}
-        <ScrollAnimatedSection id="benchmarks" className="py-16 relative z-10">
-          {/* Background Image */}
-          <div className="absolute inset-0 z-0 opacity-10">
-            <img
-              src="/images/spreadsheets.png"
-              alt=""
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+        <ScrollAnimatedSection id="benchmarks" className="py-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
@@ -924,7 +892,7 @@ export default function Home() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
                 {/* Accuracy Chart */}
-                <Card className="border border-border/50 shadow-lg" data-animate="stagger">
+                <Card className="border-2 border-primary shadow-lg" data-animate="stagger">
   <CardHeader className="pb-3">
     <CardTitle className="text-lg font-semibold">
       Handwritten Text Recognition Accuracy
@@ -991,13 +959,13 @@ export default function Home() {
 
 
                 {/* Performance Metrics Table */}
-                <Card className="border border-border/50 shadow-lg" data-animate="stagger">
+                <Card className="border-2 border-primary shadow-lg" data-animate="stagger">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg font-semibold">Comprehensive Performance Metrics</CardTitle>
                     <p className="text-sm text-muted-foreground">Average across all test scenarios</p>
                   </CardHeader>
                   <CardContent>
-                    <div className="overflow-hidden rounded-lg border border-border/50">
+                    <div className="overflow-hidden rounded-lg border-2 border-primary">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-border/50 bg-muted/30">
@@ -1046,15 +1014,15 @@ export default function Home() {
 
               {/* Key Features */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 rounded-lg bg-muted/30 border border-border/50" data-animate="stagger">
-                  <div className="text-2xl font-bold text-primary mb-1">15+ Languages</div>
+                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-primary" data-animate="stagger">
+                  <div className="text-2xl font-bold text-primary mb-1">7+ Languages</div>
                   <p className="text-sm text-muted-foreground">Multi-language support including complex scripts</p>
                 </div>
-                <div className="text-center p-4 rounded-lg bg-muted/30 border border-border/50" data-animate="stagger">
+                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-primary" data-animate="stagger">
                   <div className="text-2xl font-bold text-primary mb-1">99.9% Uptime</div>
                   <p className="text-sm text-muted-foreground">Enterprise-grade reliability and availability</p>
                 </div>
-                <div className="text-center p-4 rounded-lg bg-muted/30 border border-border/50" data-animate="stagger">
+                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-primary" data-animate="stagger">
                   <div className="text-2xl font-bold text-primary mb-1">GDPR Compliant</div>
                   <p className="text-sm text-muted-foreground">Data privacy and security certified</p>
                 </div>
