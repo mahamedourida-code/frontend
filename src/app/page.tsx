@@ -112,37 +112,52 @@ export default function Home() {
     // Removed section animations per user request
     // Removed comparison section animation per user request
 
-    // Comparison cards flash animation
-    const comparisonCards = document.querySelectorAll('[data-animate="comparison"]');
-    comparisonCards.forEach((card) => {
-      const flashEffect = card.querySelector('.flash-effect');
+    // Horizontal scroll transformation animation
+    const transformSection = document.querySelector('#transform-scroll');
+    if (transformSection) {
+      const container = transformSection.querySelector('.transform-container');
+      const cards = transformSection.querySelectorAll('.transform-card');
       
-      if (flashEffect) {
-        ScrollTrigger.create({
-          trigger: card,
-          start: 'top 80%',
-          onEnter: () => {
-            // Animate flash from left to right
-            gsap.fromTo(flashEffect,
-              {
-                left: '0%',
-                opacity: 0
-              },
-              {
-                left: '100%',
-                opacity: 1,
-                duration: 1.2,
-                ease: 'power2.out',
-                onComplete: () => {
-                  gsap.to(flashEffect, { opacity: 0, duration: 0.3 });
-                }
+      if (container && cards.length > 0) {
+        // Create horizontal scroll timeline
+        gsap.to(container, {
+          x: () => -(container.scrollWidth - window.innerWidth),
+          ease: 'none',
+          scrollTrigger: {
+            trigger: transformSection,
+            start: 'top top',
+            end: () => `+=${container.scrollWidth}`,
+            scrub: 1,
+            pin: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true
+          }
+        });
+
+        // Animate transformations within each card
+        cards.forEach((card) => {
+          const beforeImg = card.querySelector('.before-img');
+          const afterImg = card.querySelector('.after-img');
+          const arrow = card.querySelector('.arrow-effect');
+
+          if (beforeImg && afterImg && arrow) {
+            const tl = gsap.timeline({
+              scrollTrigger: {
+                trigger: card,
+                start: 'left 80%',
+                end: 'left 20%',
+                scrub: 1,
+                containerAnimation: null
               }
-            );
-          },
-          once: true
+            });
+
+            tl.to(beforeImg, { opacity: 0, duration: 0.3 })
+              .fromTo(arrow, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.4 }, '-=0.1')
+              .to(afterImg, { opacity: 1, duration: 0.3 }, '-=0.2');
+          }
         });
       }
-    });
+    }
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
