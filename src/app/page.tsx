@@ -226,13 +226,13 @@ export default function Home() {
                     </NavigationMenuLink>
                   </NavigationMenuItem> */}
 
-                  {/* How It's Built */}
+                  {/* How Exceletto's Built */}
                   <NavigationMenuItem>
                     <button
                       className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-accent/50 transition-colors text-black dark:text-white")}
                       onClick={() => scrollToSection('ai-engine')}
                     >
-                      How It's Built
+                      How Exceletto's Built
                     </button>
                   </NavigationMenuItem>
 
@@ -265,7 +265,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-28 lg:pt-24">
+        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-24 lg:pt-20">
 
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-6">
             <div className="grid grid-cols-1 lg:grid-cols-[6fr_7fr] gap-8 sm:gap-12 lg:gap-12 items-center">
