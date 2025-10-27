@@ -146,8 +146,7 @@ export default function Home() {
                 trigger: card,
                 start: 'left 80%',
                 end: 'left 20%',
-                scrub: 1,
-                containerAnimation: null
+                scrub: 1
               }
             });
 
