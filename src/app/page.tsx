@@ -510,27 +510,59 @@ export default function Home() {
               {/* Transformation Rows */}
               <div className="space-y-16">
                 {/* Row 1: Handwritten Tables */}
-                <div className="flex items-center justify-center gap-12">
-                  <div className="w-[500px] h-[400px] rounded-2xl overflow-hidden border-4 border-amber-600 shadow-2xl">
+                <div className="flex items-center justify-center gap-8">
+                  <div className="w-[600px] h-[500px] rounded-2xl overflow-hidden border border-green-500 shadow-2xl">
                     <img src="/ee.png" alt="Handwritten table" className="w-full h-full object-cover" />
                   </div>
                   
-                  <ArrowRight className="w-24 h-24 text-amber-600 flex-shrink-0" strokeWidth={3} />
+                  <div className="flex flex-col items-center gap-2 mx-4">
+                    <svg width="120" height="80" viewBox="0 0 120 80" className="flex-shrink-0">
+                      <defs>
+                        <marker id="arrowhead1" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                          <polygon points="0 0, 10 3, 0 6" fill="#22c55e" />
+                        </marker>
+                      </defs>
+                      <path 
+                        d="M 10 40 Q 60 10, 110 40" 
+                        stroke="#22c55e" 
+                        strokeWidth="1.5" 
+                        strokeDasharray="8,4"
+                        fill="none" 
+                        markerEnd="url(#arrowhead1)"
+                      />
+                    </svg>
+                  </div>
                   
-                  <div className="w-[500px] h-[400px] rounded-2xl overflow-hidden border-4 border-amber-600 shadow-2xl">
+                  <div className="w-[600px] h-[500px] rounded-2xl overflow-hidden border border-green-500 shadow-2xl">
                     <img src="/e.jpg" alt="Excel spreadsheet" className="w-full h-full object-cover" />
                   </div>
                 </div>
 
                 {/* Row 2: Paper Forms */}
-                <div className="flex items-center justify-center gap-12">
-                  <div className="w-[500px] h-[400px] rounded-2xl overflow-hidden border-4 border-amber-600 shadow-2xl">
+                <div className="flex items-center justify-center gap-8">
+                  <div className="w-[600px] h-[500px] rounded-2xl overflow-hidden border border-green-500 shadow-2xl">
                     <img src="/bb.png" alt="Paper form" className="w-full h-full object-cover" />
                   </div>
                   
-                  <ArrowRight className="w-24 h-24 text-amber-600 flex-shrink-0" strokeWidth={3} />
+                  <div className="flex flex-col items-center gap-2 mx-4">
+                    <svg width="120" height="80" viewBox="0 0 120 80" className="flex-shrink-0">
+                      <defs>
+                        <marker id="arrowhead2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                          <polygon points="0 0, 10 3, 0 6" fill="#22c55e" />
+                        </marker>
+                      </defs>
+                      <path 
+                        d="M 10 40 Q 60 70, 110 40" 
+                        stroke="#22c55e" 
+                        strokeWidth="1.5" 
+                        strokeDasharray="8,4"
+                        fill="none" 
+                        markerEnd="url(#arrowhead2)"
+                      />
+                    </svg>
+                  </div>
                   
-                  <div className="w-[500px] h-[400px] rounded-2xl overflow-hidden border-4 border-amber-600 shadow-2xl">
+                  <div className="w-[600px] h-[500px] rounded-2xl overflow-hidden border border-green-500 shadow-2xl">
                     <img src="/b.jpeg" alt="Digital data" className="w-full h-full object-cover" />
                   </div>
                 </div>
