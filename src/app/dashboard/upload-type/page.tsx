@@ -9,12 +9,18 @@ import { useAuth } from "@/hooks/useAuth"
 import { useState, useEffect } from "react"
 import { createClient } from "@/utils/supabase/client"
 import { Card, CardContent } from "@/components/ui/card"
+import { wakeUpBackendSilently } from "@/lib/backend-health"
 
 export default function UploadTypePage() {
   const router = useRouter()
   const { user } = useAuth()
   const [availableCredits, setAvailableCredits] = useState<number>(80)
   const [loading, setLoading] = useState(true)
+
+  // Silently wake up backend when page loads
+  useEffect(() => {
+    wakeUpBackendSilently()
+  }, [])
 
   useEffect(() => {
     if (user) {
