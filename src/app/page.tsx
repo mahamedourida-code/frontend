@@ -508,22 +508,22 @@ export default function Home() {
               </div>
 
               {/* Transformation Rows */}
-              <div className="space-y-32">
+              <div className="space-y-16">
                 {/* Row 1: Handwritten Tables */}
-                <div className="flex items-center justify-center gap-24">
-                  <div className="w-[800px] h-[650px] rounded-2xl overflow-hidden border border-green-500 shadow-2xl">
+                <div className="flex items-center justify-center gap-12">
+                  <div className="w-[900px] h-[500px] rounded-2xl overflow-hidden border border-green-500 shadow-2xl">
                     <img src="/ee.png" alt="Handwritten table" className="w-full h-full object-cover" />
                   </div>
                   
-                  <div className="flex flex-col items-center gap-2 mx-8">
-                    <svg width="200" height="120" viewBox="0 0 200 120" className="flex-shrink-0">
+                  <div className="flex flex-col items-center gap-2 mx-4">
+                    <svg width="150" height="100" viewBox="0 0 150 100" className="flex-shrink-0">
                       <defs>
                         <marker id="arrowhead1" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
                           <polygon points="0 0, 10 3, 0 6" fill="#22c55e" />
                         </marker>
                       </defs>
                       <path 
-                        d="M 10 60 Q 100 20, 190 60" 
+                        d="M 10 50 Q 75 15, 140 50" 
                         stroke="#22c55e" 
                         strokeWidth="1.5" 
                         strokeDasharray="8,4"
@@ -533,26 +533,26 @@ export default function Home() {
                     </svg>
                   </div>
                   
-                  <div className="w-[800px] h-[650px] rounded-2xl overflow-hidden border border-green-500 shadow-2xl">
+                  <div className="w-[900px] h-[500px] rounded-2xl overflow-hidden border border-green-500 shadow-2xl">
                     <img src="/e.jpg" alt="Excel spreadsheet" className="w-full h-full object-cover" />
                   </div>
                 </div>
 
                 {/* Row 2: Paper Forms */}
-                <div className="flex items-center justify-center gap-24">
-                  <div className="w-[800px] h-[650px] rounded-2xl overflow-hidden border border-green-500 shadow-2xl">
+                <div className="flex items-center justify-center gap-12">
+                  <div className="w-[900px] h-[500px] rounded-2xl overflow-hidden border border-green-500 shadow-2xl">
                     <img src="/bb.png" alt="Paper form" className="w-full h-full object-cover" />
                   </div>
                   
-                  <div className="flex flex-col items-center gap-2 mx-8">
-                    <svg width="200" height="120" viewBox="0 0 200 120" className="flex-shrink-0">
+                  <div className="flex flex-col items-center gap-2 mx-4">
+                    <svg width="150" height="100" viewBox="0 0 150 100" className="flex-shrink-0">
                       <defs>
                         <marker id="arrowhead2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
                           <polygon points="0 0, 10 3, 0 6" fill="#22c55e" />
                         </marker>
                       </defs>
                       <path 
-                        d="M 10 60 Q 100 100, 190 60" 
+                        d="M 10 50 Q 75 85, 140 50" 
                         stroke="#22c55e" 
                         strokeWidth="1.5" 
                         strokeDasharray="8,4"
@@ -562,7 +562,7 @@ export default function Home() {
                     </svg>
                   </div>
                   
-                  <div className="w-[800px] h-[650px] rounded-2xl overflow-hidden border border-green-500 shadow-2xl">
+                  <div className="w-[900px] h-[500px] rounded-2xl overflow-hidden border border-green-500 shadow-2xl">
                     <img src="/b.jpeg" alt="Digital data" className="w-full h-full object-cover" />
                   </div>
                 </div>
