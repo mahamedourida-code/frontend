@@ -66,7 +66,7 @@ export default function Home() {
           opacity: 1,
           scale: 1,
           duration: 1.2,
-          stagger: 0.15,
+          stagger: 0.5,
           ease: "power3.out",
           delay: 0.5
         }
@@ -340,8 +340,8 @@ export default function Home() {
                 </div>
                 
                 {/* Main comparison container - Reduced size */}
-                <div className="relative w-full max-w-[800px]">
-                  <div className="relative h-[280px] sm:h-[360px] lg:h-[560px] w-full rounded-xl overflow-hidden bg-white border-2 border-gray-200">
+                <div className="relative w-full max-w-[650px]">
+                  <div className="relative h-[240px] sm:h-[300px] lg:h-[450px] w-full rounded-xl overflow-hidden bg-white border-2 border-gray-200">
                     <ComparisonSlider
                       leftLabel=""
                       rightLabel="" 
@@ -525,7 +525,7 @@ export default function Home() {
                 {/* Handwritten Table Comparison - Featured */}
                 <div className="relative group">
                   <div className="relative w-full max-w-6xl mx-auto">
-                    <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4">Handwritten Table → Excel</h3>
+                    <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4"></h3>
                     <div className="relative h-[280px] sm:h-[350px] lg:h-[450px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-amber-700">
                       <ComparisonSlider
                         leftLabel=""
@@ -1009,7 +1009,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="backdrop-blur-md relative z-10">
         <div className="container mx-auto px-1 sm:px-3 lg:px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
             <div>
               <div className="text-2xl font-bold text-foreground mb-4">Exceletto</div>
               <p className="text-muted-foreground mb-4">
