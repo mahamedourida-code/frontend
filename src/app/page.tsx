@@ -112,51 +112,7 @@ export default function Home() {
     // Removed section animations per user request
     // Removed comparison section animation per user request
 
-    // Horizontal scroll transformation animation
-    const transformSection = document.querySelector('#transform-scroll');
-    if (transformSection) {
-      const container = transformSection.querySelector('.transform-container');
-      const cards = transformSection.querySelectorAll('.transform-card');
-      
-      if (container && cards.length > 0) {
-        // Create horizontal scroll timeline
-        gsap.to(container, {
-          x: () => -(container.scrollWidth - window.innerWidth),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: transformSection,
-            start: 'top top',
-            end: () => `+=${container.scrollWidth}`,
-            scrub: 1,
-            pin: true,
-            anticipatePin: 1,
-            invalidateOnRefresh: true
-          }
-        });
 
-        // Animate transformations within each card
-        cards.forEach((card) => {
-          const beforeImg = card.querySelector('.before-img');
-          const afterImg = card.querySelector('.after-img');
-          const arrow = card.querySelector('.arrow-effect');
-
-          if (beforeImg && afterImg && arrow) {
-            const tl = gsap.timeline({
-              scrollTrigger: {
-                trigger: card,
-                start: 'left 80%',
-                end: 'left 20%',
-                scrub: 1
-              }
-            });
-
-            tl.to(beforeImg, { opacity: 0, duration: 0.3 })
-              .fromTo(arrow, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.4 }, '-=0.1')
-              .to(afterImg, { opacity: 1, duration: 0.3 }, '-=0.2');
-          }
-        });
-      }
-    }
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
@@ -539,140 +495,43 @@ export default function Home() {
           </div>
         </ScrollAnimatedSection>
 
-        {/* Interactive Comparison Section */}
-        <section className="py-32 overflow-hidden">
+        {/* Transformation Section */}
+        <section className="py-32">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
                   <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
-                    See the Transformation in Action
+                    See the Transformation
                   </h2>
-                </div>
-
-                <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
-                  Drag the slider to witness the power of our AI-powered OCR technology
-                </p>
-                {/* CTA Button for Mobile */}
-                <div className="lg:hidden mt-4">
-                  <Button
-                    size="lg"
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-5 h-auto rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
-                    onClick={() => window.location.href = '/sign-in'}
-                  >
-                    <Upload className="w-5 h-5 mr-2" />
-                    Try for free
-                  </Button>
                 </div>
               </div>
 
-              {/* Comparison Sliders */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {/* Handwritten Table Comparison - Featured */}
-                <div className="relative group" data-animate="comparison">
-                  <div className="relative w-full max-w-6xl mx-auto">
-                    <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4"></h3>
-                    <div className="relative h-[280px] sm:h-[350px] lg:h-[450px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-amber-700">
-                      {/* Flash animation overlay */}
-                      <div className="absolute inset-0 z-10 pointer-events-none">
-                        <div className="flash-effect absolute top-0 left-0 h-full opacity-0" style={{
-                          width: '8px',
-                          background: 'linear-gradient(90deg, transparent, #fbbf24 30%, #fef08a 50%, #fbbf24 70%, transparent)',
-                          boxShadow: '0 0 30px 10px rgba(251, 191, 36, 0.9), 0 0 50px 20px rgba(251, 191, 36, 0.5)',
-                          filter: 'blur(1px)'
-                        }}></div>
-                      </div>
-                      <ComparisonSlider
-                        leftLabel=""
-                        rightLabel=""
-                        leftContent={
-                          <div className="relative w-full h-full">
-                            <img 
-                              src="/ee.png" 
-                              alt="Handwritten table before processing"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        }
-                        rightContent={
-                          <div className="relative w-full h-full">
-                            <img 
-                              src="/e.jpg" 
-                              alt="Excel spreadsheet output"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        }
-                      />
-                      
-                      {/* Status bar */}
-                      <div className="absolute bottom-0 left-0 right-0 h-8 bg-black/40 backdrop-blur-sm border-t border-white/5">
-                        <div className="flex items-center justify-between h-full px-4">
-                          <div className="flex items-center gap-3">
-                            <div className="flex gap-1">
-                              <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                              <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse animation-delay-200" />
-                              <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse animation-delay-500" />
-                            </div>
-                            <span className="text-[9px] uppercase tracking-wider text-white/40 font-mono">Table Processing</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+              {/* Transformation Rows */}
+              <div className="space-y-16">
+                {/* Row 1: Handwritten Tables */}
+                <div className="flex items-center justify-center gap-12">
+                  <div className="w-[500px] h-[400px] rounded-2xl overflow-hidden border-4 border-amber-600 shadow-2xl">
+                    <img src="/ee.png" alt="Handwritten table" className="w-full h-full object-cover" />
+                  </div>
+                  
+                  <ArrowRight className="w-24 h-24 text-amber-600 flex-shrink-0" strokeWidth={3} />
+                  
+                  <div className="w-[500px] h-[400px] rounded-2xl overflow-hidden border-4 border-amber-600 shadow-2xl">
+                    <img src="/e.jpg" alt="Excel spreadsheet" className="w-full h-full object-cover" />
                   </div>
                 </div>
 
-                {/* Form Data Comparison */}
-                <div className="relative group" data-animate="comparison">
-                  <div className="relative w-full max-w-6xl mx-auto">
-                    <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4"></h3>
-                    <div className="relative h-[280px] sm:h-[350px] lg:h-[450px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-amber-700">
-                      {/* Flash animation overlay */}
-                      <div className="absolute inset-0 z-10 pointer-events-none">
-                        <div className="flash-effect absolute top-0 left-0 h-full opacity-0" style={{
-                          width: '8px',
-                          background: 'linear-gradient(90deg, transparent, #fbbf24 30%, #fef08a 50%, #fbbf24 70%, transparent)',
-                          boxShadow: '0 0 30px 10px rgba(251, 191, 36, 0.9), 0 0 50px 20px rgba(251, 191, 36, 0.5)',
-                          filter: 'blur(1px)'
-                        }}></div>
-                      </div>
-                      <ComparisonSlider
-                        leftLabel=""
-                        rightLabel=""
-                        leftContent={
-                          <div className="relative w-full h-full">
-                            <img 
-                              src="/bb.png" 
-                              alt="Paper form before processing"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        }
-                        rightContent={
-                          <div className="relative w-full h-full">
-                            <img 
-                              src="/b.jpeg" 
-                              alt="Structured data output"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        }
-                      />
-                      
-                      {/* Status bar */}
-                      <div className="absolute bottom-0 left-0 right-0 h-8 bg-black/40 backdrop-blur-sm border-t border-white/5">
-                        <div className="flex items-center justify-between h-full px-4">
-                          <div className="flex items-center gap-3">
-                            <div className="flex gap-1">
-                              <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                              <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse animation-delay-200" />
-                              <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse animation-delay-500" />
-                            </div>
-                            <span className="text-[9px] uppercase tracking-wider text-white/40 font-mono">Form Processing</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                {/* Row 2: Paper Forms */}
+                <div className="flex items-center justify-center gap-12">
+                  <div className="w-[500px] h-[400px] rounded-2xl overflow-hidden border-4 border-amber-600 shadow-2xl">
+                    <img src="/bb.png" alt="Paper form" className="w-full h-full object-cover" />
+                  </div>
+                  
+                  <ArrowRight className="w-24 h-24 text-amber-600 flex-shrink-0" strokeWidth={3} />
+                  
+                  <div className="w-[500px] h-[400px] rounded-2xl overflow-hidden border-4 border-amber-600 shadow-2xl">
+                    <img src="/b.jpeg" alt="Digital data" className="w-full h-full object-cover" />
                   </div>
                 </div>
               </div>
