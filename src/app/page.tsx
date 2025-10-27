@@ -74,41 +74,7 @@ export default function Home() {
       );
     }
 
-    // Hero image animation with enhanced effects
-    if (heroImageRef.current) {
-      // Main container animation
-      gsap.fromTo(heroImageRef.current,
-        { 
-          x: 100, 
-          opacity: 0,
-          scale: 0.85,
-          rotateY: -15,
-          rotateX: 5
-        },
-        { 
-          x: 0, 
-          opacity: 1,
-          scale: 1,
-          rotateY: 0,
-          rotateX: 0,
-          duration: 1.8,
-          ease: "power4.out",
-          delay: 0.8
-        }
-      );
-
-      // Enhanced floating animation with subtle 3D effect
-      gsap.to(heroImageRef.current, {
-        y: -15,
-        rotateY: 2,
-        rotateX: -1,
-        duration: 3,
-        ease: "power1.inOut",
-        yoyo: true,
-        repeat: -1,
-        delay: 2
-      });
-    }
+    // Hero image animation removed per user request
 
     // Removed section animations per user request
     // Removed comparison section animation per user request
@@ -252,8 +218,15 @@ export default function Home() {
               </NavigationMenu>
             </div>
 
-            {/* Sign In Button - Desktop */}
+            {/* Sign In & Try for Free Buttons - Desktop */}
             <div className="hidden lg:flex items-center gap-3">
+              <Button
+                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-4 py-2 text-sm font-medium transition-colors shadow-lg hover:shadow-xl"
+                onClick={() => window.location.href = '/sign-in'}
+              >
+                <Upload className="w-4 h-4 mr-1.5" />
+                Try for free
+              </Button>
               <Button
                 variant="outline"
                 className="bg-white/90 dark:bg-white/20 text-foreground border-[1.6px] border-foreground/30 rounded-full px-4 py-2 text-sm font-medium hover:bg-white dark:hover:bg-white/30 transition-colors backdrop-blur-sm"
@@ -283,16 +256,6 @@ export default function Home() {
                 <p className="mt-3 sm:mt-5 text-sm sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
                   Extract up to 100 table images in one click with our specialized 7B parameter model fine-tuned for handwritten text recognition.
                 </p>
-                <div className="mt-6 sm:mt-8 md:mt-10">
-                  <Button
-                    size="lg"
-                    className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
-                    onClick={() => window.location.href = '/sign-in'}
-                  >
-                    <Upload className="w-5 h-5 mr-2" />
-                    Try for free
-                  </Button>
-                </div>
 
                 {/* User Count Section */}
                 <div className="mt-6 sm:mt-8 flex items-center gap-3">
