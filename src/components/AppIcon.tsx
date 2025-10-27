@@ -36,15 +36,15 @@ export function AppIconMinimal({ className = '', size = 24 }: AppIconProps) {
 // Logo version with app name
 export function AppLogo({ className = '' }: { className?: string }) {
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
+    <div className={`flex items-center gap-2 ${className}`}>
       <Image
         src="/crop.png"
         alt="Exceletto"
-        width={48}
-        height={48}
+        width={32}
+        height={32}
         priority
       />
-      <span className="text-2xl font-bold text-black dark:text-white">
+      <span className="text-xl font-bold text-black dark:text-white">
         Exceletto
       </span>
     </div>

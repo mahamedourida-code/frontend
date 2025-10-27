@@ -131,9 +131,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background relative" style={{ backgroundColor: '#ffffff' }}>
       {/* Navigation Bar */}
-      <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 pt-4 lg:pt-5">
+      <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 pt-3 lg:pt-4">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white dark:bg-white rounded-[35px] border-2 border-primary shadow-lg shadow-primary/10 backdrop-blur-md p-4 lg:p-5 flex items-center justify-between">
+          <div className="bg-white dark:bg-white rounded-[35px] border-2 border-primary shadow-lg shadow-primary/10 backdrop-blur-md p-2 lg:p-3 flex items-center justify-between">
             {/* Logo */}
             <div className="flex-shrink-0">
               <AppLogo />
@@ -315,9 +315,6 @@ export default function Home() {
 
               {/* Right Visual - Ultra Minimal Professional Comparison */}
               <div ref={heroImageRef} className="relative group scale-80 lg:scale-90 mt-4">
-                {/* Subtle shadow glow */}
-                <div className="absolute -inset-4 bg-gradient-to-r from-black/10 via-black/20 to-black/10 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-700 ease-out" />
-                
                 {/* Animated corner frames */}
                 <div className="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   {/* Top left */}
@@ -344,7 +341,7 @@ export default function Home() {
                 
                 {/* Main comparison container - Reduced size */}
                 <div className="relative w-full max-w-[800px]">
-                  <div className="relative h-[280px] sm:h-[360px] lg:h-[560px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.5)]">
+                  <div className="relative h-[280px] sm:h-[360px] lg:h-[560px] w-full rounded-xl overflow-hidden bg-white border-2 border-gray-200">
                     <ComparisonSlider
                       leftLabel=""
                       rightLabel="" 
@@ -524,12 +521,12 @@ export default function Home() {
               </div>
 
               {/* Comparison Sliders */}
-              <div className="space-y-12">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Handwritten Table Comparison - Featured */}
                 <div className="relative group">
                   <div className="relative w-full max-w-6xl mx-auto">
                     <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4">Handwritten Table → Excel</h3>
-                    <div className="relative h-[350px] sm:h-[450px] lg:h-[600px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-amber-700">
+                    <div className="relative h-[280px] sm:h-[350px] lg:h-[450px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-amber-700">
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""
@@ -574,7 +571,7 @@ export default function Home() {
                 <div className="relative group">
                   <div className="relative w-full max-w-6xl mx-auto">
                     <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4"></h3>
-                    <div className="relative h-[350px] sm:h-[450px] lg:h-[600px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-amber-700">
+                    <div className="relative h-[280px] sm:h-[350px] lg:h-[450px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-amber-700">
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""
@@ -1031,38 +1028,17 @@ export default function Home() {
             </div>
             
             <div>
-              <h4 className="font-semibold text-foreground mb-4">Support</h4>
+              <h4 className="font-semibold text-foreground mb-4">Contact</h4>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Contact Us</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Status</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Community</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Company</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#about" className="hover:text-foreground transition-colors">About</a></li>
-                <li><a href="#blog" className="hover:text-foreground transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Privacy</a></li>
+                <li><a href="mailto:excelettoo@gmail.com" className="hover:text-foreground hover:text-primary transition-colors">excelettoo@gmail.com</a></li>
               </ul>
             </div>
           </div>
           
-          <div className="flex flex-col sm:flex-row justify-between items-center mt-8">
+          <div className="flex flex-col sm:flex-row justify-center items-center mt-8">
             <p className="text-muted-foreground text-sm">
               © 2024 Exceletto. All rights reserved.
             </p>
-            <div className="flex gap-6 mt-4 sm:mt-0">
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                Terms of Service
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-                Privacy Policy
-              </a>
-            </div>
           </div>
         </div>
       </footer>
