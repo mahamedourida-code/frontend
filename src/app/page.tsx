@@ -244,7 +244,7 @@ export default function Home() {
         <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-24 lg:pt-20">
 
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-[6fr_7fr] gap-8 sm:gap-12 lg:gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-[3fr_9fr] gap-8 sm:gap-12 lg:gap-16 items-center">
               {/* Left Content */}
               <div ref={heroContentRef} className="max-w-xl -mt-4 lg:-mt-8">
                 <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-3 sm:mb-5 shadow-lg shadow-primary/10">
@@ -280,36 +280,36 @@ export default function Home() {
               </div>
 
               {/* Right Upload Area - Try Our Product */}
-              <div ref={heroImageRef} className="relative scale-90 lg:scale-100 mt-4">
-                <div className="relative w-full max-w-[650px] space-y-4">
+              <div ref={heroImageRef} className="relative mt-4">
+                <div className="relative w-full space-y-6">
                   {/* Upload Dropzone */}
                   <div
                     onClick={() => window.location.href = '/sign-in'}
-                    className="relative border-2 border-dashed rounded-lg transition-all duration-200 cursor-pointer border-primary/50 hover:border-primary hover:bg-primary/5 p-8 lg:p-12"
+                    className="relative border-2 border-dashed rounded-xl transition-all duration-200 cursor-pointer border-primary/50 hover:border-primary hover:bg-primary/5 p-16 lg:p-20"
                   >
                     <div className="text-center">
-                      <Upload className="h-12 w-12 text-primary mx-auto mb-4" />
-                      <h3 className="text-base font-medium mb-4">
+                      <Upload className="h-20 w-20 text-primary mx-auto mb-6" />
+                      <h3 className="text-2xl font-medium mb-6">
                         Upload table images
                       </h3>
-                      <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                        <FileSpreadsheet className="h-4 w-4 mr-2" />
+                      <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6">
+                        <FileSpreadsheet className="h-5 w-5 mr-2" />
                         Select Images
                       </Button>
-                      <p className="text-xs text-muted-foreground mt-4">
+                      <p className="text-sm text-muted-foreground mt-6">
                         Sign in to start converting your images
                       </p>
                     </div>
                   </div>
 
                   {/* Options Cards */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-6">
                     {/* Language Selector */}
                     <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
-                      <CardContent className="p-3">
-                        <h3 className="text-xs font-semibold mb-3 text-foreground">Language</h3>
+                      <CardContent className="p-5">
+                        <h3 className="text-sm font-semibold mb-4 text-foreground">Language</h3>
                         <select
-                          className="w-full p-2.5 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-xs font-medium hover:border-primary/50 transition-all focus:outline-none focus:border-primary cursor-pointer"
+                          className="w-full p-3.5 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-sm font-medium hover:border-primary/50 transition-all focus:outline-none focus:border-primary cursor-pointer"
                           defaultValue="en"
                           onClick={(e) => e.preventDefault()}
                         >
@@ -327,15 +327,15 @@ export default function Home() {
 
                     {/* Auto Download */}
                     <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
-                      <CardContent className="p-3">
-                        <h3 className="text-xs font-semibold mb-3 text-foreground">Auto Actions</h3>
+                      <CardContent className="p-5">
+                        <h3 className="text-sm font-semibold mb-4 text-foreground">Auto Actions</h3>
                         <button
-                          className="w-full flex items-center justify-between p-2.5 rounded-lg transition-all border-2 bg-muted/30 border-muted-foreground/20 hover:border-primary/50"
+                          className="w-full flex items-center justify-between p-3.5 rounded-lg transition-all border-2 bg-muted/30 border-muted-foreground/20 hover:border-primary/50"
                           onClick={(e) => e.preventDefault()}
                         >
                           <div className="flex items-center gap-2">
-                            <Download className="h-4 w-4 text-muted-foreground" />
-                            <Label className="text-xs font-medium text-foreground cursor-pointer">
+                            <Download className="h-5 w-5 text-muted-foreground" />
+                            <Label className="text-sm font-medium text-foreground cursor-pointer">
                               Auto Download
                             </Label>
                           </div>
