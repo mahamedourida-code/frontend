@@ -22,10 +22,11 @@ import { MobileNav } from "@/components/MobileNav";
 import ScrollAnimatedSection from "@/components/ScrollAnimatedSection";
 import { cn } from "@/lib/utils";
 import { AppLogo } from "@/components/AppIcon";
-import { ComparisonSlider } from "@/components/ComparisonSlider";
+
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target, Wand2, Sparkle, Trophy } from "lucide-react";
+import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target, Wand2, Sparkle, Trophy, Download } from "lucide-react";
+import { Label } from "@/components/ui/label";
 import { ActiveUsersCounter } from "@/components/ActiveUsersCounter";
 
 // Register GSAP plugins
@@ -315,86 +316,69 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Right Visual - Ultra Minimal Professional Comparison */}
-              <div ref={heroImageRef} className="relative group scale-80 lg:scale-90 mt-4">
-                {/* Animated corner frames */}
-                <div className="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  {/* Top left */}
-                  <div className="absolute top-0 left-0 w-16 h-16">
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-white/60 to-transparent" />
-                    <div className="absolute top-0 left-0 h-full w-[1px] bg-gradient-to-b from-white/60 to-transparent" />
-                  </div>
-                  {/* Top right */}
-                  <div className="absolute top-0 right-0 w-16 h-16">
-                    <div className="absolute top-0 right-0 w-full h-[1px] bg-gradient-to-l from-white/60 to-transparent" />
-                    <div className="absolute top-0 right-0 h-full w-[1px] bg-gradient-to-b from-white/60 to-transparent" />
-                  </div>
-                  {/* Bottom left */}
-                  <div className="absolute bottom-0 left-0 w-16 h-16">
-                    <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-white/60 to-transparent" />
-                    <div className="absolute bottom-0 left-0 h-full w-[1px] bg-gradient-to-t from-white/60 to-transparent" />
-                  </div>
-                  {/* Bottom right */}
-                  <div className="absolute bottom-0 right-0 w-16 h-16">
-                    <div className="absolute bottom-0 right-0 w-full h-[1px] bg-gradient-to-l from-white/60 to-transparent" />
-                    <div className="absolute bottom-0 right-0 h-full w-[1px] bg-gradient-to-t from-white/60 to-transparent" />
-                  </div>
-                </div>
-                
-                {/* Main comparison container - Reduced size */}
-                <div className="relative w-full max-w-[650px]">
-                  <div className="relative h-[240px] sm:h-[300px] lg:h-[450px] w-full rounded-xl overflow-hidden bg-white border-2 border-gray-200">
-                    <ComparisonSlider
-                      leftLabel=""
-                      rightLabel="" 
-                      leftContent={
-                        <div className="relative w-full h-full">
-                          <img 
-                            src="/rtt.png" 
-                            alt="Handwritten table before processing"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      }
-                      rightContent={
-                        <div className="relative w-full h-full">
-                          <img 
-                            src="/rt.jpg" 
-                            alt="Excel output after processing"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      }
-                    />
-                    
-                    {/* Status bar - Solid and Clear */}
-                    <div className="absolute bottom-0 left-0 right-0 h-10 bg-black/90 border-t border-white/10">
-                      <div className="flex items-center justify-between h-full px-6">
-                        <div className="flex items-center gap-4">
-                          <div className="flex gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-lg shadow-green-400/50" />
-                            <div className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse animation-delay-200 shadow-lg shadow-yellow-400/50" />
-                            <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse animation-delay-500 shadow-lg shadow-blue-400/50" />
-                          </div>
-                          <span className="text-xs uppercase tracking-wider text-white/90 font-mono flex items-center gap-2">
-                            <Sparkles className="h-3 w-3 text-blue-400" />
-                            AI Processing Engine
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <Badge variant="outline" className="bg-amber-700/20 text-amber-700 border-amber-700/30 text-[10px] px-2 py-0.5">
-                            99.5% Accuracy
-                          </Badge>
-                          <div className="w-px h-4 bg-white/20" />
-                          <span className="text-xs text-white/70 font-mono">OCR v2.0</span>
-                          <div className="w-px h-4 bg-white/20" />
-                          <span className="text-xs text-green-400 font-mono flex items-center gap-1">
-                            <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                            LIVE
-                          </span>
-                        </div>
-                      </div>
+              {/* Right Upload Area - Try Our Product */}
+              <div ref={heroImageRef} className="relative scale-90 lg:scale-100 mt-4">
+                <div className="relative w-full max-w-[650px] space-y-4">
+                  {/* Upload Dropzone */}
+                  <div
+                    onClick={() => window.location.href = '/sign-in'}
+                    className="relative border-2 border-dashed rounded-lg transition-all duration-200 cursor-pointer border-primary/50 hover:border-primary hover:bg-primary/5 p-8 lg:p-12"
+                  >
+                    <div className="text-center">
+                      <Upload className="h-12 w-12 text-primary mx-auto mb-4" />
+                      <h3 className="text-base font-medium mb-4">
+                        Upload table images
+                      </h3>
+                      <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                        <FileSpreadsheet className="h-4 w-4 mr-2" />
+                        Select Images
+                      </Button>
+                      <p className="text-xs text-muted-foreground mt-4">
+                        Sign in to start converting your images
+                      </p>
                     </div>
+                  </div>
+
+                  {/* Options Cards */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Language Selector */}
+                    <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+                      <CardContent className="p-3">
+                        <h3 className="text-xs font-semibold mb-3 text-foreground">Language</h3>
+                        <select
+                          className="w-full p-2.5 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-xs font-medium hover:border-primary/50 transition-all focus:outline-none focus:border-primary cursor-pointer"
+                          defaultValue="en"
+                          onClick={(e) => e.preventDefault()}
+                        >
+                          <option value="en">English</option>
+                          <option value="de">Deutsch</option>
+                          <option value="fr">Français</option>
+                          <option value="ar">العربية</option>
+                          <option value="es">Español</option>
+                          <option value="it">Italiano</option>
+                          <option value="pt">Português</option>
+                          <option value="zh">中文</option>
+                        </select>
+                      </CardContent>
+                    </Card>
+
+                    {/* Auto Download */}
+                    <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+                      <CardContent className="p-3">
+                        <h3 className="text-xs font-semibold mb-3 text-foreground">Auto Actions</h3>
+                        <button
+                          className="w-full flex items-center justify-between p-2.5 rounded-lg transition-all border-2 bg-muted/30 border-muted-foreground/20 hover:border-primary/50"
+                          onClick={(e) => e.preventDefault()}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Download className="h-4 w-4 text-muted-foreground" />
+                            <Label className="text-xs font-medium text-foreground cursor-pointer">
+                              Auto Download
+                            </Label>
+                          </div>
+                        </button>
+                      </CardContent>
+                    </Card>
                   </div>
                 </div>
               </div>
