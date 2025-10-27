@@ -512,7 +512,7 @@ export default function Home() {
                 {/* Row 1: Handwritten Tables */}
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-[1050px] h-[500px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
-                    <img src="/ee.png" alt="Handwritten table" className="w-full h-full object-cover" />
+                    <img src="/ee.png" alt="Handwritten table" className="w-full h-full object-contain" />
                   </div>
 
                   <div className="flex flex-col items-center gap-2">
@@ -533,14 +533,14 @@ export default function Home() {
                   </div>
 
                   <div className="w-[1050px] h-[500px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
-                    <img src="/e.jpg" alt="Excel spreadsheet" className="w-full h-full object-cover" />
+                    <img src="/e.jpg" alt="Excel spreadsheet" className="w-full h-full object-contain" />
                   </div>
                 </div>
 
                 {/* Row 2: Paper Forms */}
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-[1050px] h-[500px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
-                    <img src="/bb.png" alt="Paper form" className="w-full h-full object-cover" />
+                    <img src="/bb.png" alt="Paper form" className="w-full h-full object-contain" />
                   </div>
 
                   <div className="flex flex-col items-center gap-2">
@@ -561,7 +561,7 @@ export default function Home() {
                   </div>
 
                   <div className="w-[1050px] h-[500px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
-                    <img src="/b.jpeg" alt="Digital data" className="w-full h-full object-cover" />
+                    <img src="/b.jpeg" alt="Digital data" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </div>
