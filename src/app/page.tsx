@@ -112,6 +112,38 @@ export default function Home() {
     // Removed section animations per user request
     // Removed comparison section animation per user request
 
+    // Comparison cards flash animation
+    const comparisonCards = document.querySelectorAll('[data-animate="comparison"]');
+    comparisonCards.forEach((card) => {
+      const flashEffect = card.querySelector('.flash-effect');
+      
+      if (flashEffect) {
+        ScrollTrigger.create({
+          trigger: card,
+          start: 'top 80%',
+          onEnter: () => {
+            // Animate flash from left to right
+            gsap.fromTo(flashEffect,
+              {
+                left: '0%',
+                opacity: 0
+              },
+              {
+                left: '100%',
+                opacity: 1,
+                duration: 1.2,
+                ease: 'power2.out',
+                onComplete: () => {
+                  gsap.to(flashEffect, { opacity: 0, duration: 0.3 });
+                }
+              }
+            );
+          },
+          once: true
+        });
+      }
+    });
+
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
@@ -523,10 +555,19 @@ export default function Home() {
               {/* Comparison Sliders */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Handwritten Table Comparison - Featured */}
-                <div className="relative group">
+                <div className="relative group" data-animate="comparison">
                   <div className="relative w-full max-w-6xl mx-auto">
                     <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4"></h3>
                     <div className="relative h-[280px] sm:h-[350px] lg:h-[450px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-amber-700">
+                      {/* Flash animation overlay */}
+                      <div className="absolute inset-0 z-10 pointer-events-none">
+                        <div className="flash-effect absolute top-0 left-0 h-full opacity-0" style={{
+                          width: '8px',
+                          background: 'linear-gradient(90deg, transparent, #fbbf24 30%, #fef08a 50%, #fbbf24 70%, transparent)',
+                          boxShadow: '0 0 30px 10px rgba(251, 191, 36, 0.9), 0 0 50px 20px rgba(251, 191, 36, 0.5)',
+                          filter: 'blur(1px)'
+                        }}></div>
+                      </div>
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""
@@ -568,10 +609,19 @@ export default function Home() {
                 </div>
 
                 {/* Form Data Comparison */}
-                <div className="relative group">
+                <div className="relative group" data-animate="comparison">
                   <div className="relative w-full max-w-6xl mx-auto">
                     <h3 className="text-base sm:text-lg font-semibold text-center mb-3 sm:mb-4"></h3>
                     <div className="relative h-[280px] sm:h-[350px] lg:h-[450px] w-full rounded-xl overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-amber-700">
+                      {/* Flash animation overlay */}
+                      <div className="absolute inset-0 z-10 pointer-events-none">
+                        <div className="flash-effect absolute top-0 left-0 h-full opacity-0" style={{
+                          width: '8px',
+                          background: 'linear-gradient(90deg, transparent, #fbbf24 30%, #fef08a 50%, #fbbf24 70%, transparent)',
+                          boxShadow: '0 0 30px 10px rgba(251, 191, 36, 0.9), 0 0 50px 20px rgba(251, 191, 36, 0.5)',
+                          filter: 'blur(1px)'
+                        }}></div>
+                      </div>
                       <ComparisonSlider
                         leftLabel=""
                         rightLabel=""
@@ -1009,7 +1059,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="backdrop-blur-md relative z-10">
         <div className="container mx-auto px-1 sm:px-3 lg:px-4 py-12">
-          <div className="grid grid-cols-2 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <div className="text-2xl font-bold text-foreground mb-4">Exceletto</div>
               <p className="text-muted-foreground mb-4">
