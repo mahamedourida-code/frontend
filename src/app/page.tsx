@@ -791,46 +791,6 @@ export default function Home() {
                   </CardContent>
                 </Card>
 
-                {/* Knowledge Compression */}
-                <Card className="border-2 border-primary shadow-lg" data-animate="stagger">
-                  <CardHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                      <Zap className="w-6 h-6 text-primary" />
-                      <CardTitle className="text-2xl">Efficient Knowledge Compression</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="prose prose-sm max-w-none">
-                      <p className="text-black font-semibold leading-relaxed">
-                        Our work demonstrates that language models may <span className="font-semibold text-foreground">compress knowledge more effectively than previously thought</span>. This opens up interesting perspectives: the field has historically emphasized scaling laws in 2 dimensions (model capabilities ↔ training cost), but the problem is rather 3-dimensional:
-                      </p>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <div className="text-center p-5 rounded-lg bg-muted/30 border-2 border-primary">
-                        <TrendingUp className="w-8 h-8 text-primary mx-auto mb-3" />
-                        <p className="font-semibold text-amber-700 mb-1">Model Capabilities</p>
-                        <p className="text-xs text-black font-semibold">Performance on target tasks</p>
-                      </div>
-                      <div className="text-center p-5 rounded-lg bg-muted/30 border-2 border-primary">
-                        <DollarSign className="w-8 h-8 text-primary mx-auto mb-3" />
-                        <p className="font-semibold text-amber-700 mb-1">Training Cost</p>
-                        <p className="text-xs text-black font-semibold">Computational resources required</p>
-                      </div>
-                      <div className="text-center p-5 rounded-lg bg-muted/30 border-2 border-primary">
-                        <Zap className="w-8 h-8 text-primary mx-auto mb-3" />
-                        <p className="font-semibold text-amber-700 mb-1">Inference Cost</p>
-                        <p className="text-xs text-black font-semibold">Runtime efficiency in production</p>
-                      </div>
-                    </div>
-
-                    <div className="mt-6 p-5 bg-muted/50 rounded-lg border-2 border-primary">
-                      <p className="text-sm text-black font-semibold leading-relaxed">
-                        <span className="font-semibold">Engineering Philosophy:</span> Much remains to be explored to obtain the best performance with the smallest possible model. Exceletto's 7B parameter architecture achieves performance comparable to much larger models through intelligent fine-tuning and optimization – delivering enterprise-grade accuracy at a fraction of the computational cost.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
               </div>
 
               {/* Footer Note */}
