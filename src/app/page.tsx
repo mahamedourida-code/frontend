@@ -539,8 +539,8 @@ export default function Home() {
 
                 {/* Row 2: Paper Forms */}
                 <div className="flex items-center justify-center gap-2">
-                  <div className="w-[1050px] h-[500px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
-                    <img src="/bb.png" alt="Paper form" className="w-full h-full object-contain" />
+                  <div className="w-[1050px] h-[370px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
+                    <img src="/b.jpeg" alt="Paper form" className="w-full h-full object-contain" />
                   </div>
 
                   <div className="flex flex-col items-center gap-2">
@@ -560,8 +560,8 @@ export default function Home() {
                     </svg>
                   </div>
 
-                  <div className="w-[1050px] h-[400px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
-                    <img src="/b.jpeg" alt="Digital data" className="w-full h-full object-contain" />
+                  <div className="w-[1050px] h-[300x] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
+                    <img src="/bb.png" alt="Digital data" className="w-full h-full object-contain" />
                   </div>
                 </div>
               </div>
