@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "@/components/ui/button";
@@ -25,9 +25,14 @@ import { AppLogo } from "@/components/AppIcon";
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target, Wand2, Sparkle, Trophy, Download } from "lucide-react";
+import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target, Wand2, Sparkle, Trophy, Download, Loader2, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { ActiveUsersCounter } from "@/components/ActiveUsersCounter";
+import { wakeUpBackendSilently } from "@/lib/backend-health";
+import { getTrialInfo, incrementTrialUploadCount } from "@/lib/free-trial";
+import { ocrApi } from "@/lib/api-client";
+import { toast } from "sonner";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -37,6 +42,27 @@ export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
   const heroContentRef = useRef<HTMLDivElement>(null);
   const heroImageRef = useRef<HTMLDivElement>(null);
+
+  // Free trial state
+  const [trialInfo, setTrialInfo] = useState({ uuid: '', used: 0, remaining: 3, hasRemaining: true, limit: 3 });
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingComplete, setProcessingComplete] = useState(false);
+  const [resultFiles, setResultFiles] = useState<any[]>([]);
+  const [showLimitDialog, setShowLimitDialog] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Silently wake up backend when page loads
+  useEffect(() => {
+    wakeUpBackendSilently()
+  }, [])
+
+  // Initialize trial info on mount
+  useEffect(() => {
+    const info = getTrialInfo();
+    setTrialInfo(info);
+    console.log('[Landing] Trial info loaded:', info);
+  }, [])
 
   useEffect(() => {
     // Header animation
@@ -95,6 +121,133 @@ export default function Home() {
         block: 'start'
       });
     }
+  };
+
+  // File upload handlers
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = Array.from(e.dataTransfer.files).filter(file =>
+      file.type.startsWith('image/')
+    );
+
+    if (files.length > 0) {
+      setUploadedFiles(files.slice(0, 1)); // Only allow 1 file for free trial
+    }
+  }, []);
+
+  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const fileArray = Array.from(files).filter(file =>
+        file.type.startsWith('image/')
+      );
+      setUploadedFiles(fileArray.slice(0, 1)); // Only allow 1 file for free trial
+    }
+  }, []);
+
+  const handleProcessImage = useCallback(async () => {
+    if (uploadedFiles.length === 0) return;
+
+    // Check if user has free trials remaining
+    if (!trialInfo.hasRemaining) {
+      setShowLimitDialog(true);
+      return;
+    }
+
+    setIsProcessing(true);
+    setProcessingComplete(false);
+
+    try {
+      console.log('[Landing] Processing image:', uploadedFiles[0].name);
+
+      // Upload the file
+      const response = await ocrApi.uploadBatchMultipart(uploadedFiles, {
+        output_format: 'xlsx',
+        consolidation_strategy: 'separate'
+      });
+
+      console.log('[Landing] Upload successful:', response);
+
+      // Increment trial count
+      incrementTrialUploadCount();
+      const newInfo = getTrialInfo();
+      setTrialInfo(newInfo);
+
+      // Poll for completion (simplified version)
+      const checkStatus = async () => {
+        try {
+          const status = await ocrApi.getStatus(response.job_id);
+
+          if (status.status === 'completed' && status.results) {
+            setResultFiles(status.results.files);
+            setProcessingComplete(true);
+            setIsProcessing(false);
+            toast.success('Image processed successfully!');
+
+            // Show limit dialog if no more free trials
+            if (newInfo.remaining === 0) {
+              setTimeout(() => setShowLimitDialog(true), 2000);
+            }
+          } else if (status.status === 'failed') {
+            throw new Error('Processing failed');
+          } else {
+            // Poll again
+            setTimeout(checkStatus, 2000);
+          }
+        } catch (error) {
+          console.error('[Landing] Error checking status:', error);
+          setIsProcessing(false);
+          toast.error('Failed to process image. Please try again.');
+        }
+      };
+
+      // Start polling
+      setTimeout(checkStatus, 2000);
+
+    } catch (error: any) {
+      console.error('[Landing] Error processing image:', error);
+      setIsProcessing(false);
+      toast.error(error?.detail || 'Failed to process image. Please try again.');
+    }
+  }, [uploadedFiles, trialInfo]);
+
+  const handleDownloadFile = async (fileId: string) => {
+    try {
+      const blob = await ocrApi.downloadFile(fileId);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `result-${Date.now()}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success('File downloaded successfully!');
+    } catch (error) {
+      console.error('[Landing] Error downloading file:', error);
+      toast.error('Failed to download file');
+    }
+  };
+
+  const handleReset = () => {
+    setUploadedFiles([]);
+    setResultFiles([]);
+    setProcessingComplete(false);
   };
 
   return (
@@ -282,25 +435,149 @@ export default function Home() {
               {/* Right Upload Area - Try Our Product */}
               <div ref={heroImageRef} className="relative mt-4">
                 <div className="relative w-full space-y-6">
-                  {/* Upload Dropzone */}
-                  <div
-                    onClick={() => window.location.href = '/sign-in'}
-                    className="relative border-2 border-dashed rounded-xl transition-all duration-200 cursor-pointer border-primary/50 hover:border-primary hover:bg-primary/5 p-16 lg:p-20"
-                  >
-                    <div className="text-center">
-                      <Upload className="h-20 w-20 text-primary mx-auto mb-6" />
-                      <h3 className="text-2xl font-medium mb-6">
-                        Upload table images
-                      </h3>
-                      <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6">
-                        <FileSpreadsheet className="h-5 w-5 mr-2" />
-                        Select Images
-                      </Button>
-                      <p className="text-sm text-muted-foreground mt-6">
-                        Sign in to start converting your images
-                      </p>
+                  {/* Free Trials Indicator */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border-2 border-amber-700">
+                      <Sparkles className="h-4 w-4 text-amber-700" />
+                      <span className="text-sm font-semibold text-amber-900">
+                        {trialInfo.remaining} Free {trialInfo.remaining === 1 ? 'Upload' : 'Uploads'} Remaining
+                      </span>
                     </div>
                   </div>
+
+                  {/* Upload Dropzone */}
+                  {!processingComplete ? (
+                    <div
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                      className={`relative border-2 border-dashed rounded-xl transition-all duration-200 ${
+                        isDragging
+                          ? 'border-primary bg-primary/10 scale-[0.99]'
+                          : uploadedFiles.length > 0
+                            ? 'border-primary bg-primary/5'
+                            : 'border-primary/50 hover:border-primary hover:bg-primary/5'
+                      } p-16 lg:p-20`}
+                    >
+                      <div className="text-center">
+                        {uploadedFiles.length === 0 ? (
+                          <>
+                            <Upload className="h-20 w-20 text-primary mx-auto mb-6" />
+                            <h3 className="text-2xl font-medium mb-6">
+                              {isDragging ? 'Drop your image here' : 'Upload table image'}
+                            </h3>
+                            <label htmlFor="file-upload-landing">
+                              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6" asChild>
+                                <span>
+                                  <FileSpreadsheet className="h-5 w-5 mr-2" />
+                                  Select Image
+                                </span>
+                              </Button>
+                            </label>
+                            <input
+                              id="file-upload-landing"
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFileInput}
+                              className="hidden"
+                            />
+                            <p className="text-sm text-muted-foreground mt-6">
+                              No signup required • {trialInfo.remaining} free {trialInfo.remaining === 1 ? 'upload' : 'uploads'} left
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <img
+                              src={URL.createObjectURL(uploadedFiles[0])}
+                              alt="Preview"
+                              className="max-h-64 mx-auto rounded-lg mb-4"
+                            />
+                            <p className="text-sm text-muted-foreground mb-4">{uploadedFiles[0].name}</p>
+                            <div className="flex gap-3 justify-center">
+                              <Button
+                                variant="outline"
+                                onClick={() => setUploadedFiles([])}
+                                disabled={isProcessing}
+                              >
+                                Change Image
+                              </Button>
+                              <Button
+                                size="lg"
+                                onClick={handleProcessImage}
+                                disabled={isProcessing}
+                                className="bg-primary hover:bg-primary/90"
+                              >
+                                {isProcessing ? (
+                                  <>
+                                    <Clock className="h-5 w-5 mr-2 animate-spin" />
+                                    Processing...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Zap className="h-5 w-5 mr-2" />
+                                    Process Image
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="border-2 border-primary rounded-xl p-8 bg-white">
+                      <div className="text-center mb-6">
+                        <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
+                        <h3 className="text-2xl font-semibold mb-2">Processing Complete!</h3>
+                        <p className="text-muted-foreground">Your Excel file is ready to download</p>
+                      </div>
+
+                      {resultFiles.length > 0 && (
+                        <div className="space-y-3">
+                          {resultFiles.map((file: any, index: number) => (
+                            <div key={file.file_id || index} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+                              <div className="flex items-center gap-3">
+                                <FileSpreadsheet className="h-6 w-6 text-primary" />
+                                <span className="font-medium">{file.filename || 'result.xlsx'}</span>
+                              </div>
+                              <Button
+                                onClick={() => handleDownloadFile(file.file_id)}
+                                className="bg-primary hover:bg-primary/90"
+                              >
+                                <Download className="h-4 w-4 mr-2" />
+                                Download
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="mt-6 flex flex-col gap-3">
+                        {trialInfo.remaining > 0 ? (
+                          <Button
+                            variant="outline"
+                            onClick={handleReset}
+                            className="w-full"
+                          >
+                            <Upload className="h-4 w-4 mr-2" />
+                            Try Another Image ({trialInfo.remaining} left)
+                          </Button>
+                        ) : (
+                          <div className="text-center p-4 bg-amber-50 rounded-lg border-2 border-amber-700">
+                            <p className="text-sm font-semibold text-amber-900 mb-3">
+                              You've used all your free uploads!
+                            </p>
+                            <Button
+                              onClick={() => window.location.href = '/sign-in'}
+                              className="bg-primary hover:bg-primary/90"
+                            >
+                              Sign Up for Unlimited Uploads
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Options Cards */}
                   <div className="grid grid-cols-2 gap-6">
@@ -945,6 +1222,57 @@ export default function Home() {
       
       {/* Mobile Navigation */}
       <MobileNav onSectionClick={scrollToSection} />
+
+      {/* Free Trial Limit Dialog */}
+      <Dialog open={showLimitDialog} onOpenChange={setShowLimitDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">Free Trial Limit Reached</DialogTitle>
+            <DialogDescription className="text-base">
+              You've used all {trialInfo.limit} free uploads! Sign up to get unlimited conversions and access to premium features.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div className="bg-amber-50 border-2 border-amber-700 rounded-lg p-4">
+              <h4 className="font-semibold text-amber-900 mb-2">With a free account, you get:</h4>
+              <ul className="space-y-2 text-sm text-amber-900">
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4" />
+                  80 monthly uploads
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4" />
+                  Batch processing (up to 100 images at once)
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4" />
+                  Save conversion history
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4" />
+                  Priority processing speed
+                </li>
+              </ul>
+            </div>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowLimitDialog(false)}
+                className="flex-1"
+              >
+                Maybe Later
+              </Button>
+              <Button
+                onClick={() => window.location.href = '/sign-in'}
+                className="flex-1 bg-primary hover:bg-primary/90"
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                Sign Up Free
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
