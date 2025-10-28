@@ -1350,9 +1350,9 @@ export default function Home() {
       <Dialog open={showLimitDialog} onOpenChange={setShowLimitDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Free Trial Limit Reached</DialogTitle>
+            <DialogTitle className="text-xl font-bold">Sign In to Continue</DialogTitle>
             <DialogDescription className="text-base">
-              You've used all {trialInfo.limit} free uploads! Sign up to get unlimited conversions and access to premium features.
+              To keep using our service, please sign in or create a free account.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 mt-4">
@@ -1361,7 +1361,7 @@ export default function Home() {
               <ul className="space-y-2 text-sm text-amber-900">
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4" />
-                  80 monthly uploads
+                  80 free monthly uploads
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4" />
@@ -1390,7 +1390,7 @@ export default function Home() {
                 className="flex-1 bg-primary hover:bg-primary/90"
               >
                 <Sparkles className="h-4 w-4 mr-2" />
-                Sign Up Free
+                Sign In
               </Button>
             </div>
           </div>

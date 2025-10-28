@@ -147,14 +147,14 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
             <span className="text-[10px] font-medium">Home</span>
           </Button>
 
-          {/* Upload Button - Goes to type selection */}
+          {/* Upload Button - Goes directly to client */}
           <Button
-            variant={pathname === "/dashboard/upload-type" || pathname === "/dashboard/client" ? "default" : "ghost"}
+            variant={pathname === "/dashboard/client" ? "default" : "ghost"}
             size="sm"
-            onClick={() => router.push(isAuthenticated ? "/dashboard/upload-type" : "/sign-in")}
+            onClick={() => router.push(isAuthenticated ? "/dashboard/client" : "/sign-in")}
             className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
           >
-            <Upload className={cn("h-5 w-5", (pathname === "/dashboard/upload-type" || pathname === "/dashboard/client") ? "text-primary-foreground" : "")} />
+            <Upload className={cn("h-5 w-5", pathname === "/dashboard/client" ? "text-primary-foreground" : "")} />
             <span className="text-[10px] font-medium">Upload</span>
           </Button>
 

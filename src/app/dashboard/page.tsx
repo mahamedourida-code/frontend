@@ -96,7 +96,7 @@ export default function DashboardPage() {
   // Sidebar navigation items
   const sidebarItems = [
     { label: "Overview", icon: Activity, href: "/dashboard", active: true },
-    { label: "Process Images", icon: Upload, href: "/dashboard/upload-type", active: false },
+    { label: "Process Images", icon: Upload, href: "/dashboard/client", active: false }, // Changed to client
     { label: "History", icon: History, href: "/history", active: false },
     { label: "Settings", icon: Settings, href: "/dashboard/settings", active: false }
   ]
@@ -408,7 +408,7 @@ export default function DashboardPage() {
             </div>
             <Button
               size="lg"
-              onClick={() => router.push('/dashboard/upload-type')}
+              onClick={() => router.push('/dashboard/client')} // Changed to client
               className="gap-2 shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
               disabled={isOutOfCredits}
             >
