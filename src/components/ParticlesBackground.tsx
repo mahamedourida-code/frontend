@@ -34,10 +34,17 @@ export default function ParticlesBackground() {
             enable: false,
           },
           onHover: {
-            enable: false,
+            enable: true,
+            mode: "repulse",
           },
           resize: {
             enable: true,
+          },
+        },
+        modes: {
+          repulse: {
+            distance: 200,
+            duration: 0.4,
           },
         },
       },
@@ -64,10 +71,10 @@ export default function ParticlesBackground() {
             width: 800,
             height: 800,
           },
-          value: 3,
+          value: 2,
         },
         opacity: {
-          value: 0.15,
+          value: 0.3038784486205519,
           random: true,
           animation: {
             enable: false,
@@ -78,15 +85,19 @@ export default function ParticlesBackground() {
         },
         shape: {
           type: "polygon",
+          stroke: {
+            width: 0,
+            color: "#000",
+          },
           polygon: {
             sides: 6,
           },
         },
         size: {
-          value: 40,
+          value: 7.996801279488208,
           random: false,
           animation: {
-            enable: false,
+            enable: true,
             speed: 10,
             minimumValue: 40,
             sync: false,
