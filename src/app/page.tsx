@@ -898,8 +898,8 @@ export default function Home() {
               <div className="space-y-16">
                 {/* Row 1: Handwritten Tables */}
                 <div className="flex items-center justify-center gap-2">
-                  <div className="w-[1100px] h-[380px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl bg-white flex items-center justify-center">
-                    <img src="/rt.jpg" alt="Handwritten table" className="w-full h-full object-contain" />
+                  <div className="w-[1200px] h-[500px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
+                    <img src="/rt.jpg" alt="Handwritten table" className="w-full h-full object-cover" />
                   </div>
 
                   <div className="flex flex-col items-center gap-2">
@@ -919,15 +919,15 @@ export default function Home() {
                     </svg>
                   </div>
 
-                  <div className="w-[1100px] h-[520px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl bg-white flex items-center justify-center">
-                    <img src="/rtt.png" alt="Excel spreadsheet" className="w-full h-full object-contain" />
+                  <div className="w-[1200px] h-[600px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
+                    <img src="/rtt.png" alt="Excel spreadsheet" className="w-full h-full object-cover" />
                   </div>
                 </div>
 
                 {/* Row 2: Paper Forms */}
                 <div className="flex items-center justify-center gap-2">
-                  <div className="w-[1100px] h-[380px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl bg-white flex items-center justify-center">
-                    <img src="/b.jpeg" alt="Paper form" className="w-full h-full object-contain" />
+                  <div className="w-[1020px] h-[370px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
+                    <img src="/b.jpeg" alt="Paper form" className="w-full h-full object-cover" />
                   </div>
 
                   <div className="flex flex-col items-center gap-2">
@@ -947,8 +947,8 @@ export default function Home() {
                     </svg>
                   </div>
 
-                  <div className="w-[1100px] h-[520px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl bg-white flex items-center justify-center">
-                    <img src="/bb.png" alt="Digital data" className="w-full h-full object-contain" />
+                  <div className="w-[1020px] h-[370px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
+                    <img src="/bb.png" alt="Digital data" className="w-full h-full object-cover" />
                   </div>
                 </div>
               </div>
