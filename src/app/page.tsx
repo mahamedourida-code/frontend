@@ -899,7 +899,7 @@ export default function Home() {
                 {/* Row 1: Handwritten Tables */}
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-[950px] h-[500px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
-                    <img src="/rt.jpg" alt="Handwritten table" className="w-full h-full object-contain" />
+                    <img src="/rt.jpg" alt="Handwritten table" className="w-full h-full object-cover" />
                   </div>
 
                   <div className="flex flex-col items-center gap-2">
@@ -920,7 +920,7 @@ export default function Home() {
                   </div>
 
                   <div className="w-[1050px] h-[500px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
-                    <img src="/rtt.png" alt="Excel spreadsheet" className="w-full h-full object-contain" />
+                    <img src="/rtt.png" alt="Excel spreadsheet" className="w-full h-full object-cover" />
                   </div>
                 </div>
 
@@ -948,7 +948,7 @@ export default function Home() {
                   </div>
 
                   <div className="w-[1020px] h-[370px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
-                    <img src="/bb.png" alt="Digital data" className="w-full h-full object-contain" />
+                    <img src="/bb.png" alt="Digital data" className="w-full h-full object-cover" />
                   </div>
                 </div>
               </div>
