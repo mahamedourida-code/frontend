@@ -504,7 +504,7 @@ export default function Home() {
                               {isDragging ? 'Drop your images here' : 'Upload table images'}
                             </h3>
                             <label htmlFor="file-upload-landing">
-                              <Button size="default" className="bg-primary text-primary-foreground hover:bg-primary/90" asChild>
+                              <Button size="default" className="bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary" asChild>
                                 <span>
                                   <FileSpreadsheet className="h-4 w-4 mr-2" />
                                   Select Images
@@ -551,6 +551,7 @@ export default function Home() {
                                   variant="outline"
                                   size="sm"
                                   disabled={isProcessing}
+                                  className="border-2 border-primary"
                                   asChild
                                 >
                                   <span>Add More</span>
@@ -575,7 +576,7 @@ export default function Home() {
                               <Button
                                 onClick={handleProcessImage}
                                 disabled={isProcessing}
-                                className="bg-primary hover:bg-primary/90"
+                                className="bg-primary hover:bg-primary/90 border-2 border-primary"
                               >
                                 {isProcessing ? (
                                   <>
@@ -608,17 +609,19 @@ export default function Home() {
                               size="sm"
                               variant="outline"
                               onClick={handleDownloadAll}
+                              className="border-2 border-primary"
                             >
                               <Download className="h-4 w-4 mr-1" />
                               Download All
                             </Button>
                           )}
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
                             onClick={handleReset}
+                            className="border-2 border-primary"
                           >
-                            New Batch
+                            Convert Again
                           </Button>
                         </div>
                       </div>
@@ -626,7 +629,7 @@ export default function Home() {
                       {resultFiles.length > 0 && (
                         <div className="space-y-2">
                           {resultFiles.map((file: any, index: number) => (
-                            <div key={file.file_id || index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                            <div key={file.file_id || index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-primary/20">
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <button
                                   onClick={() => handleDownloadFile(file.file_id)}
@@ -641,20 +644,22 @@ export default function Home() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleShareFile(file)}
-                                  className="h-8"
+                                  className="h-8 border-2 border-primary gap-1"
                                 >
                                   <Share2 className="h-4 w-4" />
+                                  <span className="text-xs">Share</span>
                                 </Button>
                                 <Button
                                   size="sm"
                                   variant="outline"
                                   onClick={() => {
-                                    // Redirect to edit page (if you have it, otherwise remove this button)
+                                    // Redirect to edit page
                                     window.location.href = `/dashboard/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'result.xlsx')}`
                                   }}
-                                  className="h-8"
+                                  className="h-8 border-2 border-primary gap-1"
                                 >
                                   <Edit3 className="h-4 w-4" />
+                                  <span className="text-xs">Edit</span>
                                 </Button>
                               </div>
                             </div>
@@ -671,7 +676,8 @@ export default function Home() {
                     </div>
                   )}
 
-                  {/* Options Cards */}
+                  {/* Options Cards - Hide when processing or files ready */}
+                  {!isProcessing && resultFiles.length === 0 && (
                   <div className="grid grid-cols-2 gap-6">
                     {/* Language Selector */}
                     <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
@@ -712,6 +718,7 @@ export default function Home() {
                       </CardContent>
                     </Card>
                   </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1352,47 +1359,23 @@ export default function Home() {
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Sign In to Continue</DialogTitle>
             <DialogDescription className="text-base">
-              To keep using our service, please sign in or create a free account.
+              To keep using our service, please sign in or create a free account to get 80 free monthly uploads and more features.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 mt-4">
-            <div className="bg-amber-50 border-2 border-amber-700 rounded-lg p-4">
-              <h4 className="font-semibold text-amber-900 mb-2">With a free account, you get:</h4>
-              <ul className="space-y-2 text-sm text-amber-900">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4" />
-                  80 free monthly uploads
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4" />
-                  Batch processing (up to 100 images at once)
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4" />
-                  Save conversion history
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4" />
-                  Priority processing speed
-                </li>
-              </ul>
-            </div>
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setShowLimitDialog(false)}
-                className="flex-1"
-              >
-                Maybe Later
-              </Button>
-              <Button
-                onClick={() => window.location.href = '/sign-in'}
-                className="flex-1 bg-primary hover:bg-primary/90"
-              >
-                <Sparkles className="h-4 w-4 mr-2" />
-                Sign In
-              </Button>
-            </div>
+          <div className="flex gap-3 mt-6">
+            <Button
+              variant="outline"
+              onClick={() => setShowLimitDialog(false)}
+              className="flex-1 border-2 border-primary"
+            >
+              Maybe Later
+            </Button>
+            <Button
+              onClick={() => window.location.href = '/sign-in'}
+              className="flex-1 bg-primary hover:bg-primary/90 border-2 border-primary"
+            >
+              Sign In
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
