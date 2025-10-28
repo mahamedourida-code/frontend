@@ -708,14 +708,13 @@ export default function Home() {
                   {/* Convert Button + Options Card Row - Hide when processing or files ready */}
                   {!isProcessing && resultFiles.length === 0 && (
                   <div className="grid grid-cols-3 gap-3">
-                    {/* Convert Button - Left Side (Takes 2 columns) */}
                     <Button
-                      onClick={handleProcessImage}
-                      disabled={uploadedFiles.length === 0 || isProcessing}
-                      className={`col-span-2 py-8 text-xl font-semibold border-2 min-h-[120px] ${
-                        uploadedFiles.length === 0
-                          ? 'bg-gray-300 hover:bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'
-                          : 'bg-green-600 hover:bg-green-700 text-white border-green-700'
+                     onClick={handleProcessImage}
+                     disabled={uploadedFiles.length === 0 || isProcessing}
+                     className={`col-span-2 py-8 text-xl font-semibold border-2 min-h-[120px] transition-all duration-200 ${
+                      uploadedFiles.length === 0
+                           ? 'bg-gray-300 hover:bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'
+                           : 'bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 shadow-lg shadow-primary/20'
                       }`}
                     >
                       {isProcessing ? (
@@ -900,7 +899,7 @@ export default function Home() {
                 {/* Row 1: Handwritten Tables */}
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-[1050px] h-[500px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
-                    <img src="/ee.png" alt="Handwritten table" className="w-full h-full object-contain" />
+                    <img src="/rt.jpg" alt="Handwritten table" className="w-full h-full object-contain" />
                   </div>
 
                   <div className="flex flex-col items-center gap-2">
@@ -921,7 +920,7 @@ export default function Home() {
                   </div>
 
                   <div className="w-[1050px] h-[500px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
-                    <img src="/e.jpg" alt="Excel spreadsheet" className="w-full h-full object-contain" />
+                    <img src="/rtt.png" alt="Excel spreadsheet" className="w-full h-full object-contain" />
                   </div>
                 </div>
 
