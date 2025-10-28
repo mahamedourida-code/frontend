@@ -69,7 +69,7 @@ export default function ParticlesBackground() {
             default: "out",
           },
           random: false,
-          speed: 8,
+          speed: 2,
           straight: false,
         },
         number: {
@@ -78,10 +78,10 @@ export default function ParticlesBackground() {
             width: 800,
             height: 800,
           },
-          value: 5,
+          value: 3,
         },
         opacity: {
-          value: 0.3038784486205519,
+          value: 0.15,
           random: true,
           animation: {
             enable: false,
@@ -91,16 +91,18 @@ export default function ParticlesBackground() {
           },
         },
         shape: {
-          type: "polygon",
-          polygon: {
-            sides: 6,
+          type: "image",
+          image: {
+            src: "/data-table.png",
+            width: 100,
+            height: 100,
           },
         },
         size: {
-          value: 7.996801279488208,
+          value: 40,
           random: false,
           animation: {
-            enable: true,
+            enable: false,
             speed: 10,
             minimumValue: 40,
             sync: false,
