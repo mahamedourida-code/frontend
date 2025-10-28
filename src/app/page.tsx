@@ -898,7 +898,7 @@ export default function Home() {
               <div className="space-y-16">
                 {/* Row 1: Handwritten Tables */}
                 <div className="flex items-center justify-center gap-2">
-                  <div className="w-[1200px] h-[500px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
+                  <div className="w-[1050px] h-[600px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
                     <img src="/rt.jpg" alt="Handwritten table" className="w-full h-full object-cover" />
                   </div>
 
@@ -919,7 +919,7 @@ export default function Home() {
                     </svg>
                   </div>
 
-                  <div className="w-[1200px] h-[600px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
+                  <div className="w-[1250px] h-[500px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
                     <img src="/rtt.png" alt="Excel spreadsheet" className="w-full h-full object-cover" />
                   </div>
                 </div>
