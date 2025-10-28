@@ -55,6 +55,17 @@ export default function Home() {
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null);
 
+  // Auto download state
+  const [autoDownload, setAutoDownload] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('autoDownload')
+      return saved === 'true'
+    }
+    return false
+  });
+  const [showAutoDownloadConfirm, setShowAutoDownloadConfirm] = useState(false);
+  const isExecutingAutoActionsRef = useRef(false);
+
   // Silently wake up backend when page loads
   useEffect(() => {
     wakeUpBackendSilently()
@@ -66,6 +77,41 @@ export default function Home() {
     setTrialInfo(info);
     console.log('[Landing] Trial info loaded:', info);
   }, [])
+
+  // Persist auto download setting
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('autoDownload', autoDownload.toString())
+    }
+  }, [autoDownload])
+
+  // Auto-download when files ready
+  useEffect(() => {
+    if (!autoDownload) return;
+
+    if (processingComplete && resultFiles.length > 0 && !isExecutingAutoActionsRef.current) {
+      isExecutingAutoActionsRef.current = true
+
+      const handleAutoDownload = async () => {
+        toast.info(`Auto-downloading ${resultFiles.length} file(s)...`)
+        const downloadedIds = new Set<string>()
+
+        for (const file of resultFiles) {
+          if (file.file_id && !downloadedIds.has(file.file_id)) {
+            try {
+              await handleDownloadFile(file.file_id)
+              downloadedIds.add(file.file_id)
+              await new Promise(resolve => setTimeout(resolve, 500))
+            } catch (error) {
+              console.error('[AutoDownload] Failed to download:', error)
+            }
+          }
+        }
+        toast.success(`Auto-downloaded ${downloadedIds.size} file(s)`)
+      }
+      handleAutoDownload()
+    }
+  }, [processingComplete, resultFiles, autoDownload])
 
   useEffect(() => {
     // Header animation
@@ -257,6 +303,7 @@ export default function Home() {
     setUploadedFiles([]);
     setResultFiles([]);
     setProcessingComplete(false);
+    isExecutingAutoActionsRef.current = false;
   };
 
   const handleShareFile = (file: any) => {
@@ -496,13 +543,13 @@ export default function Home() {
                             : uploadedFiles.length > 0
                               ? 'border-primary bg-primary/5'
                               : 'border-primary/50 hover:border-primary hover:bg-primary/5'
-                        } p-6 lg:p-8`}
+                        } p-12 lg:p-16 min-h-[200px]`}
                       >
                         <div className="text-center">
                           {uploadedFiles.length === 0 ? (
                             <>
-                              <Upload className="h-10 w-10 text-primary mx-auto mb-2" />
-                              <h3 className="text-base font-medium mb-2">
+                              <Upload className="h-16 w-16 text-primary mx-auto mb-4" />
+                              <h3 className="text-xl font-medium mb-3">
                                 {isDragging ? 'Drop your images here' : 'Upload table images'}
                               </h3>
                               <input
@@ -513,7 +560,7 @@ export default function Home() {
                                 onChange={handleFileInput}
                                 className="hidden"
                               />
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-sm text-muted-foreground">
                                 Click or drag to select
                               </p>
                             </>
@@ -665,7 +712,7 @@ export default function Home() {
                     <Button
                       onClick={handleProcessImage}
                       disabled={uploadedFiles.length === 0 || isProcessing}
-                      className={`col-span-2 py-6 text-lg font-semibold border-2 ${
+                      className={`col-span-2 py-8 text-xl font-semibold border-2 min-h-[120px] ${
                         uploadedFiles.length === 0
                           ? 'bg-gray-300 hover:bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'
                           : 'bg-green-600 hover:bg-green-700 text-white border-green-700'
@@ -673,7 +720,7 @@ export default function Home() {
                     >
                       {isProcessing ? (
                         <>
-                          <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                          <Loader2 className="h-6 w-6 mr-2 animate-spin" />
                           Converting...
                         </>
                       ) : (
@@ -708,11 +755,24 @@ export default function Home() {
                           <div>
                             <h3 className="text-xs font-semibold mb-1 text-foreground">Auto</h3>
                             <button
-                              className="w-full flex items-center justify-between p-1.5 rounded-lg transition-all border-2 bg-muted/30 border-muted-foreground/20 hover:border-primary/50"
-                              onClick={(e) => e.preventDefault()}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                if (!autoDownload) {
+                                  setShowAutoDownloadConfirm(true)
+                                } else {
+                                  setAutoDownload(false)
+                                  toast.info('Auto-download disabled')
+                                }
+                              }}
+                              className={cn(
+                                "w-full flex items-center justify-between p-1.5 rounded-lg transition-all border-2",
+                                autoDownload
+                                  ? "bg-primary/10 border-primary"
+                                  : "bg-muted/30 border-muted-foreground/20 hover:border-primary/50"
+                              )}
                             >
                               <div className="flex items-center gap-1">
-                                <Download className="h-3 w-3 text-muted-foreground" />
+                                <Download className={cn("h-3 w-3", autoDownload ? "text-primary" : "text-muted-foreground")} />
                                 <Label className="text-xs font-medium text-foreground cursor-pointer">
                                   Download
                                 </Label>
@@ -1380,6 +1440,37 @@ export default function Home() {
               className="flex-1 bg-primary hover:bg-primary/90 border-2 border-primary"
             >
               Sign In
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Auto Download Confirmation Dialog */}
+      <Dialog open={showAutoDownloadConfirm} onOpenChange={setShowAutoDownloadConfirm}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Enable Auto-Download?</DialogTitle>
+            <DialogDescription>
+              All processed files will be automatically downloaded to your device as soon as they're ready.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowAutoDownloadConfirm(false)}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                setAutoDownload(true)
+                setShowAutoDownloadConfirm(false)
+                toast.success('Auto-download enabled')
+              }}
+              className="flex-1 bg-primary hover:bg-primary/90"
+            >
+              Enable Auto-Download
             </Button>
           </div>
         </DialogContent>
