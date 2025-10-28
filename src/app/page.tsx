@@ -838,7 +838,7 @@ export default function Home() {
         <ScrollAnimatedSection id="trusted" className="py-12 relative z-10 overflow-hidden">
           <div className="relative z-10 text-center mb-8" data-animate="headline">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
-              <h2 className="text-lg sm:text-xl font-bold text-foreground">
+              <h2 className="text-lg sm:text-base font-semibold text-foreground">
                 Chosen by experts at top organizations
               </h2>
             </div>
@@ -898,7 +898,7 @@ export default function Home() {
               <div className="space-y-16">
                 {/* Row 1: Handwritten Tables */}
                 <div className="flex items-center justify-center gap-2">
-                  <div className="w-[1050px] h-[600px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
+                  <div className="w-[1050px] h-[550px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
                     <img src="/rt.jpg" alt="Handwritten table" className="w-full h-full object-cover" />
                   </div>
 
