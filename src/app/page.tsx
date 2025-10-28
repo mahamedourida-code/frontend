@@ -947,7 +947,7 @@ export default function Home() {
                     </svg>
                   </div>
 
-                  <div className="w-[1050px] h-[330px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
+                  <div className="w-[1020px] h-[370px] rounded-2xl overflow-hidden border-2 border-[#1a742e] shadow-2xl">
                     <img src="/bb.png" alt="Digital data" className="w-full h-full object-contain" />
                   </div>
                 </div>
