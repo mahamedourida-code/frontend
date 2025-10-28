@@ -773,7 +773,7 @@ export default function Home() {
                               <div className="flex items-center gap-1">
                                 <Download className={cn("h-3 w-3", autoDownload ? "text-primary" : "text-muted-foreground")} />
                                 <Label className="text-xs font-medium text-foreground cursor-pointer">
-                                  Download
+                                  Auto Download
                                 </Label>
                               </div>
                             </button>
