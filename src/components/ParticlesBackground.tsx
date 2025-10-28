@@ -31,27 +31,13 @@ export default function ParticlesBackground() {
       interactivity: {
         events: {
           onClick: {
-            enable: true,
-            mode: "push",
+            enable: false,
           },
           onHover: {
             enable: false,
-            mode: "grab",
           },
           resize: {
             enable: true,
-          },
-        },
-        modes: {
-          push: {
-            quantity: 4,
-          },
-          grab: {
-            distance: 400,
-          },
-          repulse: {
-            distance: 200,
-            duration: 0.4,
           },
         },
       },
@@ -91,11 +77,9 @@ export default function ParticlesBackground() {
           },
         },
         shape: {
-          type: "image",
-          image: {
-            src: "/data-table.png",
-            width: 100,
-            height: 100,
+          type: "polygon",
+          polygon: {
+            sides: 6,
           },
         },
         size: {
