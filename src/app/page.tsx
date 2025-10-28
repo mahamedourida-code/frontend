@@ -25,7 +25,7 @@ import { AppLogo } from "@/components/AppIcon";
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target, Wand2, Sparkle, Trophy, Download, Loader2, X } from "lucide-react";
+import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target, Wand2, Sparkle, Trophy, Download, Loader2, X, Share2, Edit3, Copy } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { ActiveUsersCounter } from "@/components/ActiveUsersCounter";
 import { wakeUpBackendSilently } from "@/lib/backend-health";
@@ -33,6 +33,7 @@ import { getTrialInfo, incrementTrialUploadCount } from "@/lib/free-trial";
 import { ocrApi } from "@/lib/api-client";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -51,6 +52,8 @@ export default function Home() {
   const [resultFiles, setResultFiles] = useState<any[]>([]);
   const [showLimitDialog, setShowLimitDialog] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null);
 
   // Silently wake up backend when page loads
   useEffect(() => {
@@ -254,6 +257,44 @@ export default function Home() {
     setUploadedFiles([]);
     setResultFiles([]);
     setProcessingComplete(false);
+  };
+
+  const handleShareFile = (file: any) => {
+    setSelectedFileToShare(file);
+    setShareDialogOpen(true);
+  };
+
+  const handleCopyLink = async () => {
+    if (!selectedFileToShare?.file_id) return;
+
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim();
+    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success('Link copied to clipboard!');
+    } catch (error) {
+      toast.error('Failed to copy link');
+    }
+  };
+
+  const handleDownloadAll = async () => {
+    if (resultFiles.length === 0) return;
+
+    toast.info(`Downloading ${resultFiles.length} file(s)...`);
+
+    for (const file of resultFiles) {
+      if (file.file_id) {
+        try {
+          await handleDownloadFile(file.file_id);
+          await new Promise(resolve => setTimeout(resolve, 500));
+        } catch (error) {
+          console.error('[DownloadAll] Failed:', error);
+        }
+      }
+    }
+
+    toast.success(`Downloaded ${resultFiles.length} file(s)`);
   };
 
   return (
@@ -552,36 +593,79 @@ export default function Home() {
                         )}
                       </div>
                     </div>
-                  ) : (
+                  ) : null}
+
+                  {/* Progressive Results Display */}
+                  {(isProcessing || resultFiles.length > 0) && (
                     <div className="border-2 border-primary rounded-xl p-6 bg-white">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold">Ready to Download</h3>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={handleReset}
-                        >
-                          New Batch
-                        </Button>
+                        <h3 className="text-lg font-semibold">
+                          {processingComplete ? 'Ready to Download' : 'Processing...'}
+                        </h3>
+                        <div className="flex gap-2">
+                          {processingComplete && resultFiles.length > 1 && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={handleDownloadAll}
+                            >
+                              <Download className="h-4 w-4 mr-1" />
+                              Download All
+                            </Button>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleReset}
+                          >
+                            New Batch
+                          </Button>
+                        </div>
                       </div>
 
                       {resultFiles.length > 0 && (
                         <div className="space-y-2">
                           {resultFiles.map((file: any, index: number) => (
                             <div key={file.file_id || index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                              <div className="flex items-center gap-2">
-                                <FileSpreadsheet className="h-5 w-5 text-primary" />
-                                <span className="text-sm font-medium">{file.filename || 'result.xlsx'}</span>
+                              <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <button
+                                  onClick={() => handleDownloadFile(file.file_id)}
+                                  className="flex-shrink-0 hover:scale-110 transition-transform"
+                                >
+                                  <FileSpreadsheet className="h-5 w-5 text-primary" />
+                                </button>
+                                <span className="text-sm font-medium truncate">{file.filename || 'result.xlsx'}</span>
                               </div>
-                              <Button
-                                size="sm"
-                                onClick={() => handleDownloadFile(file.file_id)}
-                                className="bg-primary hover:bg-primary/90"
-                              >
-                                <Download className="h-4 w-4" />
-                              </Button>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleShareFile(file)}
+                                  className="h-8"
+                                >
+                                  <Share2 className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    // Redirect to edit page (if you have it, otherwise remove this button)
+                                    window.location.href = `/dashboard/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'result.xlsx')}`
+                                  }}
+                                  className="h-8"
+                                >
+                                  <Edit3 className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </div>
                           ))}
+                        </div>
+                      )}
+
+                      {isProcessing && !processingComplete && (
+                        <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Converting your images...</span>
                         </div>
                       )}
                     </div>
@@ -1230,6 +1314,37 @@ export default function Home() {
       
       {/* Mobile Navigation */}
       <MobileNav onSectionClick={scrollToSection} />
+
+      {/* Share Dialog */}
+      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Share File</DialogTitle>
+            <DialogDescription>
+              {selectedFileToShare?.filename || 'Excel file'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Input
+                readOnly
+                value={selectedFileToShare?.file_id ? `${(process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '') : ''}
+                className="text-xs"
+              />
+              <Button
+                size="sm"
+                onClick={handleCopyLink}
+              >
+                <Copy className="h-4 w-4 mr-1" />
+                Copy
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Anyone with this link can download the Excel file
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Free Trial Limit Dialog */}
       <Dialog open={showLimitDialog} onOpenChange={setShowLimitDialog}>
