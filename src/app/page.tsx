@@ -498,7 +498,7 @@ export default function Home() {
                   <span className="text-xs sm:text-sm font-semibold text-foreground">Exceletto-7B Handwritten Specialist</span>
                 </div>
                 <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-black dark:text-white leading-[1.1] tracking-tight">
-                  Convert <span className="text-primary font-bold">Images</span> to <span className="text-primary font-bold">Excel</span> instantly
+                  Convert <span className="text-primary font-bold">Handwritten Images</span> to <span className="text-primary font-bold">Excel</span> instantly
                 </h1>
                 <p className="mt-3 sm:mt-5 text-sm sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
                   Extract up to 100 table images in one click with our specialized 7B parameter model fine-tuned for handwritten text recognition.
