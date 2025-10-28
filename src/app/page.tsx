@@ -481,78 +481,75 @@ export default function Home() {
 
               {/* Right Upload Area - Try Our Product */}
               <div ref={heroImageRef} className="relative mt-4">
-                <div className="relative w-full space-y-4">
+                <div className="relative w-full space-y-3">
                   {/* Upload Dropzone - Smaller */}
                   {!processingComplete ? (
-                    <div
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                      onDrop={handleDrop}
-                      className={`relative border-2 border-dashed rounded-xl transition-all duration-200 ${
-                        isDragging
-                          ? 'border-primary bg-primary/10 scale-[0.99]'
-                          : uploadedFiles.length > 0
-                            ? 'border-primary bg-primary/5'
-                            : 'border-primary/50 hover:border-primary hover:bg-primary/5'
-                      } p-8 lg:p-10`}
-                    >
-                      <div className="text-center">
-                        {uploadedFiles.length === 0 ? (
-                          <>
-                            <Upload className="h-12 w-12 text-primary mx-auto mb-3" />
-                            <h3 className="text-lg font-medium mb-3">
-                              {isDragging ? 'Drop your images here' : 'Upload table images'}
-                            </h3>
-                            <label htmlFor="file-upload-landing">
-                              <Button size="default" className="bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary" asChild>
-                                <span>
-                                  <FileSpreadsheet className="h-4 w-4 mr-2" />
-                                  Select Images
-                                </span>
-                              </Button>
-                            </label>
-                            <input
-                              id="file-upload-landing"
-                              type="file"
-                              accept="image/*"
-                              multiple
-                              onChange={handleFileInput}
-                              className="hidden"
-                            />
-                            <p className="text-xs text-muted-foreground mt-3">
-                              No signup required
-                            </p>
-                          </>
-                        ) : (
-                          <>
-                            {/* Image Queue - Small thumbnails */}
-                            <div className="grid grid-cols-4 gap-2 mb-4 max-h-32 overflow-y-auto">
-                              {uploadedFiles.map((file, index) => (
-                                <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border bg-card">
-                                  <img
-                                    src={URL.createObjectURL(file)}
-                                    alt={file.name}
-                                    className="w-full h-full object-cover"
-                                  />
-                                  <button
-                                    onClick={() => setUploadedFiles(prev => prev.filter((_, i) => i !== index))}
-                                    disabled={isProcessing}
-                                    className="absolute top-1 right-1 h-5 w-5 rounded-full bg-background/80 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                            <p className="text-xs text-muted-foreground mb-3">{uploadedFiles.length} image{uploadedFiles.length > 1 ? 's' : ''} ready</p>
-                            <div className="flex gap-2 justify-center">
+                    <div className="space-y-3">
+                      <div
+                        onClick={() => document.getElementById('file-upload-landing')?.click()}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                        className={`relative border-2 border-dashed rounded-xl transition-all duration-200 cursor-pointer ${
+                          isDragging
+                            ? 'border-primary bg-primary/10 scale-[0.99]'
+                            : uploadedFiles.length > 0
+                              ? 'border-primary bg-primary/5'
+                              : 'border-primary/50 hover:border-primary hover:bg-primary/5'
+                        } p-6 lg:p-8`}
+                      >
+                        <div className="text-center">
+                          {uploadedFiles.length === 0 ? (
+                            <>
+                              <Upload className="h-10 w-10 text-primary mx-auto mb-2" />
+                              <h3 className="text-base font-medium mb-2">
+                                {isDragging ? 'Drop your images here' : 'Upload table images'}
+                              </h3>
+                              <input
+                                id="file-upload-landing"
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleFileInput}
+                                className="hidden"
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                Click or drag to select
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              {/* Image Queue - Small thumbnails */}
+                              <div className="grid grid-cols-4 gap-2 mb-3 max-h-24 overflow-y-auto">
+                                {uploadedFiles.map((file, index) => (
+                                  <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border bg-card">
+                                    <img
+                                      src={URL.createObjectURL(file)}
+                                      alt={file.name}
+                                      className="w-full h-full object-cover"
+                                    />
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+                                      }}
+                                      disabled={isProcessing}
+                                      className="absolute top-1 right-1 h-5 w-5 rounded-full bg-background/80 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                              <p className="text-xs text-muted-foreground mb-2">{uploadedFiles.length} image{uploadedFiles.length > 1 ? 's' : ''} ready</p>
                               <label htmlFor="file-upload-landing-more">
                                 <Button
                                   variant="outline"
                                   size="sm"
                                   disabled={isProcessing}
-                                  className="border-2 border-primary"
+                                  className="border-2 border-primary text-xs"
                                   asChild
+                                  onClick={(e) => e.stopPropagation()}
                                 >
                                   <span>Add More</span>
                                 </Button>
@@ -573,26 +570,32 @@ export default function Home() {
                                 }}
                                 className="hidden"
                               />
-                              <Button
-                                onClick={handleProcessImage}
-                                disabled={isProcessing}
-                                className="bg-primary hover:bg-primary/90 border-2 border-primary"
-                              >
-                                {isProcessing ? (
-                                  <>
-                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                    Converting...
-                                  </>
-                                ) : (
-                                  <>
-                                    Convert to XLSX
-                                  </>
-                                )}
-                              </Button>
-                            </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Convert Button - Large, Green, Below Dropzone */}
+                      <Button
+                        onClick={handleProcessImage}
+                        disabled={uploadedFiles.length === 0 || isProcessing}
+                        className={`w-full py-6 text-lg font-semibold border-2 ${
+                          uploadedFiles.length === 0
+                            ? 'bg-gray-300 hover:bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'
+                            : 'bg-green-600 hover:bg-green-700 text-white border-green-700'
+                        }`}
+                      >
+                        {isProcessing ? (
+                          <>
+                            <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                            Converting...
+                          </>
+                        ) : (
+                          <>
+                            Convert Image
                           </>
                         )}
-                      </div>
+                      </Button>
                     </div>
                   ) : null}
 
@@ -676,48 +679,46 @@ export default function Home() {
                     </div>
                   )}
 
-                  {/* Options Cards - Hide when processing or files ready */}
+                  {/* Options Card - Hide when processing or files ready */}
                   {!isProcessing && resultFiles.length === 0 && (
-                  <div className="grid grid-cols-2 gap-6">
-                    {/* Language Selector */}
-                    <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
-                      <CardContent className="p-5">
-                        <h3 className="text-sm font-semibold mb-4 text-foreground">Language</h3>
-                        <select
-                          className="w-full p-3.5 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-sm font-medium hover:border-primary/50 transition-all focus:outline-none focus:border-primary cursor-pointer"
-                          defaultValue="en"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <option value="en">English</option>
-                          <option value="de">Deutsch</option>
-                          <option value="fr">Français</option>
-                          <option value="ar">العربية</option>
-                          <option value="es">Español</option>
-                          <option value="it">Italiano</option>
-                          <option value="pt">Português</option>
-                          <option value="zh">中文</option>
-                        </select>
-                      </CardContent>
-                    </Card>
+                  <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+                    <CardContent className="p-4">
+                      <div className="space-y-3">
+                        <div>
+                          <h3 className="text-xs font-semibold mb-2 text-foreground">Language</h3>
+                          <select
+                            className="w-full p-2 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-xs font-medium hover:border-primary/50 transition-all focus:outline-none focus:border-primary cursor-pointer"
+                            defaultValue="en"
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            <option value="en">English</option>
+                            <option value="de">Deutsch</option>
+                            <option value="fr">Français</option>
+                            <option value="ar">العربية</option>
+                            <option value="es">Español</option>
+                            <option value="it">Italiano</option>
+                            <option value="pt">Português</option>
+                            <option value="zh">中文</option>
+                          </select>
+                        </div>
 
-                    {/* Auto Download */}
-                    <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
-                      <CardContent className="p-5">
-                        <h3 className="text-sm font-semibold mb-4 text-foreground">Auto Actions</h3>
-                        <button
-                          className="w-full flex items-center justify-between p-3.5 rounded-lg transition-all border-2 bg-muted/30 border-muted-foreground/20 hover:border-primary/50"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <div className="flex items-center gap-2">
-                            <Download className="h-5 w-5 text-muted-foreground" />
-                            <Label className="text-sm font-medium text-foreground cursor-pointer">
-                              Auto Download
-                            </Label>
-                          </div>
-                        </button>
-                      </CardContent>
-                    </Card>
-                  </div>
+                        <div>
+                          <h3 className="text-xs font-semibold mb-2 text-foreground">Auto Actions</h3>
+                          <button
+                            className="w-full flex items-center justify-between p-2 rounded-lg transition-all border-2 bg-muted/30 border-muted-foreground/20 hover:border-primary/50"
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            <div className="flex items-center gap-2">
+                              <Download className="h-4 w-4 text-muted-foreground" />
+                              <Label className="text-xs font-medium text-foreground cursor-pointer">
+                                Auto Download
+                              </Label>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                   )}
                 </div>
               </div>
