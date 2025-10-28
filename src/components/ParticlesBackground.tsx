@@ -57,7 +57,7 @@ export default function ParticlesBackground() {
           color: "#7e5714",
           distance: 351.86,
           enable: true,
-          opacity: 0.54,
+          opacity: 0.15,
           width: 1.12,
         },
         move: {
@@ -76,10 +76,10 @@ export default function ParticlesBackground() {
             width: 800,
             height: 800,
           },
-          value: 80,
+          value: 25,
         },
         opacity: {
-          value: 0.46,
+          value: 0.15,
         },
         shape: {
           type: "circle",
