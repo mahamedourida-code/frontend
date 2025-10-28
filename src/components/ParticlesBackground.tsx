@@ -35,13 +35,19 @@ export default function ParticlesBackground() {
             mode: "push",
           },
           onHover: {
+            enable: false,
+            mode: "grab",
+          },
+          resize: {
             enable: true,
-            mode: "repulse",
           },
         },
         modes: {
           push: {
             quantity: 4,
+          },
+          grab: {
+            distance: 400,
           },
           repulse: {
             distance: 200,
@@ -51,14 +57,10 @@ export default function ParticlesBackground() {
       },
       particles: {
         color: {
-          value: "#a44516",
+          value: "#b65c23",
         },
         links: {
-          color: "#7e5714",
-          distance: 351.86,
-          enable: true,
-          opacity: 0.15,
-          width: 1.12,
+          enable: false,
         },
         move: {
           direction: "none",
@@ -66,8 +68,8 @@ export default function ParticlesBackground() {
           outModes: {
             default: "out",
           },
-          random: true,
-          speed: 6,
+          random: false,
+          speed: 8,
           straight: false,
         },
         number: {
@@ -76,16 +78,33 @@ export default function ParticlesBackground() {
             width: 800,
             height: 800,
           },
-          value: 25,
+          value: 5,
         },
         opacity: {
-          value: 0.15,
+          value: 0.3038784486205519,
+          random: true,
+          animation: {
+            enable: false,
+            speed: 1,
+            minimumValue: 0.1,
+            sync: false,
+          },
         },
         shape: {
-          type: "circle",
+          type: "polygon",
+          polygon: {
+            sides: 6,
+          },
         },
         size: {
-          value: { min: 1, max: 4 },
+          value: 7.996801279488208,
+          random: false,
+          animation: {
+            enable: true,
+            speed: 10,
+            minimumValue: 40,
+            sync: false,
+          },
         },
       },
       detectRetina: true,
