@@ -575,27 +575,6 @@ export default function Home() {
                         </div>
                       </div>
 
-                      {/* Convert Button - Large, Green, Below Dropzone */}
-                      <Button
-                        onClick={handleProcessImage}
-                        disabled={uploadedFiles.length === 0 || isProcessing}
-                        className={`w-full py-6 text-lg font-semibold border-2 ${
-                          uploadedFiles.length === 0
-                            ? 'bg-gray-300 hover:bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'
-                            : 'bg-green-600 hover:bg-green-700 text-white border-green-700'
-                        }`}
-                      >
-                        {isProcessing ? (
-                          <>
-                            <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                            Converting...
-                          </>
-                        ) : (
-                          <>
-                            Convert Image
-                          </>
-                        )}
-                      </Button>
                     </div>
                   ) : null}
 
@@ -679,46 +658,71 @@ export default function Home() {
                     </div>
                   )}
 
-                  {/* Options Card - Hide when processing or files ready */}
+                  {/* Convert Button + Options Card Row - Hide when processing or files ready */}
                   {!isProcessing && resultFiles.length === 0 && (
-                  <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
-                    <CardContent className="p-4">
-                      <div className="space-y-3">
-                        <div>
-                          <h3 className="text-xs font-semibold mb-2 text-foreground">Language</h3>
-                          <select
-                            className="w-full p-2 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-xs font-medium hover:border-primary/50 transition-all focus:outline-none focus:border-primary cursor-pointer"
-                            defaultValue="en"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            <option value="en">English</option>
-                            <option value="de">Deutsch</option>
-                            <option value="fr">Français</option>
-                            <option value="ar">العربية</option>
-                            <option value="es">Español</option>
-                            <option value="it">Italiano</option>
-                            <option value="pt">Português</option>
-                            <option value="zh">中文</option>
-                          </select>
-                        </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    {/* Convert Button - Left Side (Takes 2 columns) */}
+                    <Button
+                      onClick={handleProcessImage}
+                      disabled={uploadedFiles.length === 0 || isProcessing}
+                      className={`col-span-2 py-6 text-lg font-semibold border-2 ${
+                        uploadedFiles.length === 0
+                          ? 'bg-gray-300 hover:bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'
+                          : 'bg-green-600 hover:bg-green-700 text-white border-green-700'
+                      }`}
+                    >
+                      {isProcessing ? (
+                        <>
+                          <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                          Converting...
+                        </>
+                      ) : (
+                        <>
+                          Convert Image
+                        </>
+                      )}
+                    </Button>
 
-                        <div>
-                          <h3 className="text-xs font-semibold mb-2 text-foreground">Auto Actions</h3>
-                          <button
-                            className="w-full flex items-center justify-between p-2 rounded-lg transition-all border-2 bg-muted/30 border-muted-foreground/20 hover:border-primary/50"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            <div className="flex items-center gap-2">
-                              <Download className="h-4 w-4 text-muted-foreground" />
-                              <Label className="text-xs font-medium text-foreground cursor-pointer">
-                                Auto Download
-                              </Label>
-                            </div>
-                          </button>
+                    {/* Options Card - Right Side (1 column) */}
+                    <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+                      <CardContent className="p-3">
+                        <div className="space-y-2">
+                          <div>
+                            <h3 className="text-xs font-semibold mb-1 text-foreground">Language</h3>
+                            <select
+                              className="w-full p-1.5 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-xs font-medium hover:border-primary/50 transition-all focus:outline-none focus:border-primary cursor-pointer"
+                              defaultValue="en"
+                              onClick={(e) => e.preventDefault()}
+                            >
+                              <option value="en">English</option>
+                              <option value="de">Deutsch</option>
+                              <option value="fr">Français</option>
+                              <option value="ar">العربية</option>
+                              <option value="es">Español</option>
+                              <option value="it">Italiano</option>
+                              <option value="pt">Português</option>
+                              <option value="zh">中文</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <h3 className="text-xs font-semibold mb-1 text-foreground">Auto</h3>
+                            <button
+                              className="w-full flex items-center justify-between p-1.5 rounded-lg transition-all border-2 bg-muted/30 border-muted-foreground/20 hover:border-primary/50"
+                              onClick={(e) => e.preventDefault()}
+                            >
+                              <div className="flex items-center gap-1">
+                                <Download className="h-3 w-3 text-muted-foreground" />
+                                <Label className="text-xs font-medium text-foreground cursor-pointer">
+                                  Download
+                                </Label>
+                              </div>
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+                  </div>
                   )}
                 </div>
               </div>
