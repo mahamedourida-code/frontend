@@ -814,7 +814,7 @@ export default function Home() {
               <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
                   <FileText className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
-                  <CardTitle className="text-xl mb-2">Paper Forms Automation</CardTitle>
+                  <CardTitle className="text-xl mb-2">Paper Forms tables</CardTitle>
                   <CardDescription className="text-base">
                     Digitize secretary paperwork and manual forms to CSV with intelligent field recognition
                   </CardDescription>
@@ -824,7 +824,7 @@ export default function Home() {
               <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
                   <FileSpreadsheet className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
-                  <CardTitle className="text-xl mb-2">Financial Documents</CardTitle>
+                  <CardTitle className="text-xl mb-2">Financial Documents tables</CardTitle>
                   <CardDescription className="text-base">
                     Process invoices, receipts, and expense reports to XLSX with accurate financial data extraction
                   </CardDescription>
