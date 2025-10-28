@@ -488,7 +488,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-24 lg:pt-20">
+        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 lg:pt-12">
 
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1400px]">
             <div className="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-8 sm:gap-12 lg:gap-10 items-center">
