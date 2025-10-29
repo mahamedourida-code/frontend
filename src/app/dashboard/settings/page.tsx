@@ -252,7 +252,7 @@ export default function SettingsPage() {
         </div>
       </header>
 
-      <div className="container max-w-7xl mx-auto px-3 lg:px-4 py-4 lg:py-8">
+      <div className="container max-w-7xl mx-auto px-3 lg:px-4 py-4 lg:py-8 relative z-10">
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
           {/* Mobile Section Selector */}
           <div className="lg:hidden">

@@ -15,7 +15,6 @@ import { signUpWithEmailVerification } from '@/lib/auth-helpers'
 import { createClient } from '@/utils/supabase/client'
 import { AlertCircle, CheckCircle2, Loader2, ChevronLeft } from 'lucide-react'
 import { toast } from 'sonner'
-import { ThemeToggle } from '@/components/theme-toggle'
 
 export default function SignUpPage() {
   const [loading, setLoading] = useState(false)
@@ -153,10 +152,7 @@ export default function SignUpPage() {
           Back
         </Button>
       </div>
-      <div className="fixed top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md relative z-10">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Create your account</CardTitle>
           <CardDescription>

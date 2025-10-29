@@ -15,7 +15,6 @@ import { signInWithPassword, signInWithOTP } from '@/lib/auth-helpers'
 import { createClient } from '@/utils/supabase/client'
 import { AlertCircle, Loader2, ChevronLeft } from 'lucide-react'
 import { toast } from 'sonner'
-import { ThemeToggle } from '@/components/theme-toggle'
 
 export default function SignInPage() {
   const [loading, setLoading] = useState(false)
@@ -157,10 +156,7 @@ export default function SignInPage() {
           Back
         </Button>
       </div>
-      <div className="fixed top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md relative z-10">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Welcome back</CardTitle>
           <CardDescription>
