@@ -35,6 +35,7 @@ import { ocrApi } from "@/lib/api-client";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { createClient } from "@/utils/supabase/client";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -66,6 +67,27 @@ export default function Home() {
   });
   const [showAutoDownloadConfirm, setShowAutoDownloadConfirm] = useState(false);
   const isExecutingAutoActionsRef = useRef(false);
+
+  // User authentication state
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const supabase = createClient();
+
+  // Check authentication status on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Silently wake up backend when page loads
   useEffect(() => {
@@ -468,20 +490,32 @@ export default function Home() {
 
             {/* Sign In & Try for Free Buttons - Desktop */}
             <div className="hidden lg:flex items-center gap-3">
-              <Button
-                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-4 py-2 text-sm font-medium transition-colors shadow-lg hover:shadow-xl"
-                onClick={() => window.location.href = '/sign-in'}
-              >
-                <Upload className="w-4 h-4 mr-1.5" />
-                Try for free
-              </Button>
-              <Button
-                variant="outline"
-                className="bg-white/90 dark:bg-white/20 text-foreground border-[1.6px] border-foreground/30 rounded-full px-4 py-2 text-sm font-medium hover:bg-white dark:hover:bg-white/30 transition-colors backdrop-blur-sm"
-                onClick={() => window.location.href = '/sign-in'}
-              >
-                Sign in
-              </Button>
+              {isAuthenticated ? (
+                <Button
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-4 py-2 text-sm font-medium transition-colors shadow-lg hover:shadow-xl"
+                  onClick={() => window.location.href = '/dashboard'}
+                >
+                  <Upload className="w-4 h-4 mr-1.5" />
+                  Go to Dashboard
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-4 py-2 text-sm font-medium transition-colors shadow-lg hover:shadow-xl"
+                    onClick={() => window.location.href = '/sign-in'}
+                  >
+                    <Upload className="w-4 h-4 mr-1.5" />
+                    Try for free
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="bg-white/90 dark:bg-white/20 text-foreground border-[1.6px] border-foreground/30 rounded-full px-4 py-2 text-sm font-medium hover:bg-white dark:hover:bg-white/30 transition-colors backdrop-blur-sm"
+                    onClick={() => window.location.href = '/sign-in'}
+                  >
+                    Sign in
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -1326,10 +1360,10 @@ export default function Home() {
                 <Button
                   size="lg"
                   className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 transition-all duration-200 shadow-lg shadow-primary/20"
-                  onClick={() => window.location.href = '/sign-in'}
+                  onClick={() => window.location.href = isAuthenticated ? '/dashboard' : '/sign-in'}
                 >
                   <Sparkles className="w-5 h-5 mr-2" />
-                  Try for free
+                  {isAuthenticated ? 'Go to Dashboard' : 'Try for free'}
                 </Button>
               </div>
               
