@@ -803,7 +803,7 @@ export default function Home() {
         <ScrollAnimatedSection id="features" className="py-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   Specialized Solutions
                 </h2>
@@ -811,7 +811,7 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
-              <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105">
+              <Card data-animate="stagger" className="flex-1 border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105" style={{backgroundColor: '#EEFFF2'}}>
                 <CardHeader className="text-center">
                   <PenTool className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Handwritten Tables</CardTitle>
@@ -821,7 +821,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105">
+              <Card data-animate="stagger" className="flex-1 border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105" style={{backgroundColor: '#EEFFF2'}}>
                 <CardHeader className="text-center">
                   <FileText className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Paper Forms tables</CardTitle>
@@ -831,7 +831,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 bg-gradient-to-br from-card via-card to-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105">
+              <Card data-animate="stagger" className="flex-1 border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105" style={{backgroundColor: '#EEFFF2'}}>
                 <CardHeader className="text-center">
                   <FileSpreadsheet className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Financial Documents tables</CardTitle>
@@ -847,7 +847,7 @@ export default function Home() {
         {/* Companies Section - Trusted By */}
         <ScrollAnimatedSection id="trusted" className="py-12 overflow-hidden">
           <div className="text-center mb-8" data-animate="headline">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
               <h2 className="text-lg sm:text-base font-semibold text-foreground">
                 Chosen by experts at top organizations
               </h2>
@@ -897,7 +897,7 @@ export default function Home() {
           <div className="container mx-auto px-4 max-w-none">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
                   <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
                     See the Transformation
                   </h2>
@@ -972,7 +972,7 @@ export default function Home() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-16" data-animate="headline">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     How Exceletto's Engine Is Built
                   </h2>
@@ -1155,7 +1155,7 @@ export default function Home() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     Industry-Leading OCR Accuracy
                   </h2>
@@ -1312,7 +1312,7 @@ export default function Home() {
           <div className="container mx-auto px-1 sm:px-3 lg:px-4 text-center">
             {/* CTA Content */}
             <div className="max-w-3xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
                   Ready to Transform Your Workflow?
                 </h2>

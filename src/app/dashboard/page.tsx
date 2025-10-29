@@ -491,7 +491,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Chart Section */}
-          <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+          <Card className="bg-transparent border-2 border-primary shadow-lg shadow-primary/10">
             <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 lg:p-4">
               <div>
                 <CardTitle className="text-base lg:text-lg flex items-center gap-2">
