@@ -490,92 +490,13 @@ export default function Home() {
       {/* Hero Section */}
       <main className="relative z-10">
         <section ref={heroRef} className="min-h-screen flex items-center justify-center relative pt-16 lg:pt-12" style={{ backgroundColor: "#ffffff" }}>
-          {/* Creative Geometric Pattern - 3D Grid Perspective */}
+          {/* Circuit Board Tech Background */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <svg
-              className="absolute right-0 top-1/2 -translate-y-1/2 w-[800px] h-[1000px] opacity-20"
-              viewBox="0 0 800 1000"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                {/* Gradient for depth effect */}
-                <linearGradient id="gridGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style={{ stopColor: '#E6FFEB', stopOpacity: 1 }} />
-                  <stop offset="50%" style={{ stopColor: '#C8F5D3', stopOpacity: 0.8 }} />
-                  <stop offset="100%" style={{ stopColor: '#A8E6C1', stopOpacity: 0.3 }} />
-                </linearGradient>
-
-                {/* Glow filter */}
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                  <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
-              </defs>
-
-              {/* 3D Grid with perspective - multiple layers for depth */}
-              <g transform="skewY(-10)" style={{ transformOrigin: 'center' }}>
-                {/* Back layer - lighter */}
-                {Array.from({ length: 8 }).map((_, i) => (
-                  Array.from({ length: 10 }).map((_, j) => (
-                    <rect
-                      key={`back-${i}-${j}`}
-                      x={i * 100 + 50}
-                      y={j * 100}
-                      width="80"
-                      height="80"
-                      rx="12"
-                      fill="none"
-                      stroke="url(#gridGradient)"
-                      strokeWidth="1.5"
-                      opacity={0.3 - (j * 0.02)}
-                    />
-                  ))
-                ))}
-
-                {/* Middle layer - medium opacity */}
-                {Array.from({ length: 8 }).map((_, i) => (
-                  Array.from({ length: 10 }).map((_, j) => (
-                    <rect
-                      key={`mid-${i}-${j}`}
-                      x={i * 100 + 75}
-                      y={j * 100 + 25}
-                      width="70"
-                      height="70"
-                      rx="10"
-                      fill="none"
-                      stroke="url(#gridGradient)"
-                      strokeWidth="2"
-                      opacity={0.5 - (j * 0.03)}
-                      filter="url(#glow)"
-                    />
-                  ))
-                ))}
-
-                {/* Front layer - highlighted squares with glow */}
-                {[
-                  { x: 2, y: 3 }, { x: 4, y: 2 }, { x: 3, y: 5 },
-                  { x: 5, y: 4 }, { x: 2, y: 7 }, { x: 6, y: 6 }
-                ].map((pos, idx) => (
-                  <rect
-                    key={`highlight-${idx}`}
-                    x={pos.x * 100 + 85}
-                    y={pos.y * 100 + 35}
-                    width="60"
-                    height="60"
-                    rx="8"
-                    fill="#E6FFEB"
-                    fillOpacity="0.4"
-                    stroke="#1a742e"
-                    strokeWidth="2.5"
-                    filter="url(#glow)"
-                    opacity={0.7}
-                  />
-                ))}
-              </g>
-            </svg>
+            <img
+              src="/circuit-bg.jpg"
+              alt="Circuit board background"
+              className="absolute inset-0 w-full h-full object-cover opacity-15"
+            />
           </div>
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1400px]">
