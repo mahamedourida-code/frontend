@@ -811,7 +811,7 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
-              <Card data-animate="stagger" className="flex-1 border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105" style={{backgroundColor: '#EEFFF2'}}>
+              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
                   <PenTool className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Handwritten Tables</CardTitle>
@@ -821,7 +821,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105" style={{backgroundColor: '#EEFFF2'}}>
+              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
                   <FileText className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Paper Forms tables</CardTitle>
@@ -831,7 +831,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105" style={{backgroundColor: '#EEFFF2'}}>
+              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
                   <FileSpreadsheet className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Financial Documents tables</CardTitle>
@@ -1096,7 +1096,7 @@ export default function Home() {
                 </Card>
 
                 {/* Content Moderation */}
-                <Card className="border-2 border-primary shadow-lg" data-animate="stagger">
+                <Card className="bg-transparent border-2 border-primary shadow-lg" data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
                       <Target className="w-6 h-6 text-primary" />
