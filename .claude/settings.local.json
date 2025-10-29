@@ -5,7 +5,10 @@
       "mcp__brave-search__brave_web_search",
       "mcp__github__get_file_contents",
       "mcp__Ref__ref_search_documentation",
-      "mcp__Ref__ref_read_url"
+      "mcp__Ref__ref_read_url",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)"
     ]
   },
   "enabledMcpjsonServers": [
