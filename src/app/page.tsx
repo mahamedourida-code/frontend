@@ -799,16 +799,8 @@ export default function Home() {
         </section>
 
         {/* Why Choose Us Section */}
-        <ScrollAnimatedSection id="features" className="py-16 relative" >
-          {/* Duplo26 Background - Second Section */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <img
-              src="/duplo26.jpg"
-              alt="Background pattern"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-          </div>
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <ScrollAnimatedSection id="features" className="py-16" >
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
@@ -900,8 +892,16 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Transformation Section */}
-        <section className="py-32" style={{ backgroundColor: "#E6FFEB" }}>
-          <div className="container mx-auto px-4 max-w-none">
+        <section className="py-32 relative" style={{ backgroundColor: "#ffffff" }}>
+          {/* Duplo27 Background */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <img
+              src="/duplo27.jpg"
+              alt="Background pattern"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+          <div className="container mx-auto px-4 max-w-none relative z-10">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
@@ -975,16 +975,8 @@ export default function Home() {
 
 
         {/* AI Engine Section */}
-        <ScrollAnimatedSection id="ai-engine" className="py-16 relative">
-          {/* Duplo27 Background - AI Engine Section */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <img
-              src="/duplo27.jpg"
-              alt="Background pattern"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-          </div>
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <ScrollAnimatedSection id="ai-engine" className="py-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-16" data-animate="headline">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
@@ -1166,7 +1158,16 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Benchmark Section */}
-        <ScrollAnimatedSection id="benchmarks" className="py-16" style={{ backgroundColor: "#E6FFEB" }}>
+        <ScrollAnimatedSection id="benchmarks" className="py-16 relative" style={{ backgroundColor: "#ffffff" }}>
+          {/* Duplo26 Background */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <img
+              src="/duplo26.jpg"
+              alt="Background pattern"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+          <div className="relative z-10">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
@@ -1320,11 +1321,19 @@ export default function Home() {
               </div>
             </div>
           </div>
+          </div>
         </ScrollAnimatedSection>
 
         {/* Final CTA Section */}
-        <section className="py-24 relative z-10 overflow-hidden">
-
+        <section className="py-24 relative overflow-hidden" style={{ backgroundColor: "#ffffff" }}>
+          {/* Duplo26 Background */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <img
+              src="/duplo26.jpg"
+              alt="Background pattern"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
           <div className="container mx-auto px-1 sm:px-3 lg:px-4 text-center relative z-10">
             {/* CTA Content */}
             <div className="max-w-3xl mx-auto">
