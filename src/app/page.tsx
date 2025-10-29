@@ -489,49 +489,54 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 lg:pt-12" style={{ backgroundColor: "#ECFFED" }}>
-          {/* Fallen Triangle Background - 3D Effect */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[800px] h-[800px] pointer-events-none opacity-40">
-            <svg viewBox="0 0 400 400" className="w-full h-full">
-              <defs>
-                {/* Gradient for 3D lighting effect */}
-                <linearGradient id="triangleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style={{ stopColor: '#2d9c4e', stopOpacity: 1 }} />
-                  <stop offset="50%" style={{ stopColor: '#1a742e', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: '#0f4a1d', stopOpacity: 1 }} />
-                </linearGradient>
-                {/* Shadow blur filter */}
-                <filter id="triangleShadow">
-                  <feGaussianBlur in="SourceAlpha" stdDeviation="8"/>
-                  <feOffset dx="15" dy="15" result="offsetblur"/>
-                  <feComponentTransfer>
-                    <feFuncA type="linear" slope="0.4"/>
-                  </feComponentTransfer>
-                  <feMerge>
-                    <feMergeNode/>
-                    <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
-              </defs>
+        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 lg:pt-12">
+          {/* 3D Triangle - Realistic Photo Effect */}
+          <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: "#ECFFED" }}>
+            <div className="absolute right-[-10%] top-1/2 -translate-y-1/2 w-[900px] h-[900px]">
+              <svg viewBox="0 0 500 500" className="w-full h-full" style={{ filter: 'drop-shadow(0 30px 60px rgba(0, 0, 0, 0.25))' }}>
+                <defs>
+                  {/* Realistic 3D lighting gradient - top-left light source */}
+                  <linearGradient id="realistic3D" x1="20%" y1="20%" x2="80%" y2="80%">
+                    <stop offset="0%" style={{ stopColor: '#5bc77a', stopOpacity: 1 }} />
+                    <stop offset="35%" style={{ stopColor: '#34a853', stopOpacity: 1 }} />
+                    <stop offset="70%" style={{ stopColor: '#1a742e', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: '#0d401a', stopOpacity: 1 }} />
+                  </linearGradient>
 
-              {/* Main 3D Triangle with gradient and shadow */}
-              <polygon
-                points="200,50 350,350 50,350"
-                fill="url(#triangleGradient)"
-                transform="rotate(30 200 200)"
-                filter="url(#triangleShadow)"
-                style={{ filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.3))' }}
-              />
+                  {/* Soft shadow on surface */}
+                  <radialGradient id="surfaceShadow">
+                    <stop offset="0%" style={{ stopColor: '#000000', stopOpacity: 0.3 }} />
+                    <stop offset="100%" style={{ stopColor: '#000000', stopOpacity: 0 }} />
+                  </radialGradient>
+                </defs>
 
-              {/* Reflection underneath */}
-              <polygon
-                points="200,50 350,350 50,350"
-                fill="#1a742e"
-                opacity="0.1"
-                transform="rotate(30 200 200) translate(0, 30) scale(1, -0.5)"
-                style={{ transformOrigin: 'center' }}
-              />
-            </svg>
+                {/* Ground shadow */}
+                <ellipse
+                  cx="280"
+                  cy="380"
+                  rx="180"
+                  ry="50"
+                  fill="url(#surfaceShadow)"
+                  opacity="0.4"
+                />
+
+                {/* Main 3D Triangle - rotated to appear "fallen" */}
+                <polygon
+                  points="250,80 450,400 50,400"
+                  fill="url(#realistic3D)"
+                  transform="rotate(25 250 280)"
+                />
+
+                {/* Edge highlight for 3D effect */}
+                <path
+                  d="M 250,80 L 450,400"
+                  stroke="#7dd897"
+                  strokeWidth="3"
+                  opacity="0.6"
+                  transform="rotate(25 250 280)"
+                />
+              </svg>
+            </div>
           </div>
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1400px]">
