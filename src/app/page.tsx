@@ -490,18 +490,31 @@ export default function Home() {
       {/* Hero Section */}
       <main className="relative z-10">
         <section ref={heroRef} className="min-h-screen flex items-center justify-center relative pt-16 lg:pt-12" style={{ backgroundColor: "#ffffff" }}>
-          {/* Data Table Image - Extends beyond hero */}
-          <div className="absolute inset-0 pointer-events-none" style={{ height: '150vh', overflow: 'visible' }}>
-            <div className="absolute right-[10%] top-[40%] -translate-y-1/2">
-              <img
-                src="/data-tabled1.png"
-                alt="Data table decoration"
-                className="w-[500px] h-[500px] object-contain opacity-30"
-                style={{
-                  filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.12))'
-                }}
-              />
-            </div>
+          {/* Modern Gradient Blob Background - SaaS Style */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {/* Top-right gradient blob */}
+            <div
+              className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full opacity-30 blur-3xl"
+              style={{
+                background: 'radial-gradient(circle, #E6FFEB 0%, #C8F5D3 30%, transparent 70%)'
+              }}
+            />
+
+            {/* Bottom-left gradient blob */}
+            <div
+              className="absolute top-1/2 -left-20 w-[500px] h-[500px] rounded-full opacity-25 blur-3xl"
+              style={{
+                background: 'radial-gradient(circle, #D4F7E0 0%, #B8F0CB 30%, transparent 70%)'
+              }}
+            />
+
+            {/* Center-right accent blob */}
+            <div
+              className="absolute top-1/3 right-[15%] w-[400px] h-[400px] rounded-full opacity-20 blur-2xl"
+              style={{
+                background: 'radial-gradient(circle, #F0FFF4 0%, #E6FFEB 40%, transparent 70%)'
+              }}
+            />
           </div>
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1400px]">
