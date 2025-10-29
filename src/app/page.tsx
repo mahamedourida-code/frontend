@@ -489,7 +489,25 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 lg:pt-12" style={{ backgroundColor: "#E6FFEB" }}>
+        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 lg:pt-12" style={{ backgroundColor: "#ECFFED" }}>
+          {/* Fallen Triangle Background */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[800px] h-[800px] pointer-events-none opacity-30">
+            {/* Triangle with shadow/reflection */}
+            <svg viewBox="0 0 400 400" className="w-full h-full" style={{ filter: 'drop-shadow(0 20px 40px rgba(26, 116, 46, 0.2))' }}>
+              <polygon
+                points="200,50 350,350 50,350"
+                fill="#1a742e"
+                transform="rotate(30 200 200)"
+              />
+              {/* Reflection/Shadow triangle */}
+              <polygon
+                points="200,50 350,350 50,350"
+                fill="#1a742e"
+                opacity="0.15"
+                transform="rotate(30 200 200) translate(20, 20)"
+              />
+            </svg>
+          </div>
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1400px]">
             <div className="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-8 sm:gap-12 lg:gap-10 items-center">
