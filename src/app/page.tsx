@@ -884,7 +884,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Transformation Section */}
-        <section className="py-32" style={{ backgroundColor: "#DDFFDE" }}>
+        <section className="py-32" style={{ backgroundColor: "#ECFFED" }}>
           <div className="container mx-auto px-4 max-w-none">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
