@@ -1305,7 +1305,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-          </div>
         </ScrollAnimatedSection>
 
         {/* Final CTA Section */}
@@ -1485,5 +1484,4 @@ export default function Home() {
         </DialogContent>
       </Dialog>
     </div>
-  );
-}
+  )}
