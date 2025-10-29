@@ -490,21 +490,46 @@ export default function Home() {
       {/* Hero Section */}
       <main className="relative z-10">
         <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 lg:pt-12" style={{ backgroundColor: "#ECFFED" }}>
-          {/* Fallen Triangle Background */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[800px] h-[800px] pointer-events-none opacity-30">
-            {/* Triangle with shadow/reflection */}
-            <svg viewBox="0 0 400 400" className="w-full h-full" style={{ filter: 'drop-shadow(0 20px 40px rgba(26, 116, 46, 0.2))' }}>
+          {/* Fallen Triangle Background - 3D Effect */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[800px] h-[800px] pointer-events-none opacity-40">
+            <svg viewBox="0 0 400 400" className="w-full h-full">
+              <defs>
+                {/* Gradient for 3D lighting effect */}
+                <linearGradient id="triangleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{ stopColor: '#2d9c4e', stopOpacity: 1 }} />
+                  <stop offset="50%" style={{ stopColor: '#1a742e', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: '#0f4a1d', stopOpacity: 1 }} />
+                </linearGradient>
+                {/* Shadow blur filter */}
+                <filter id="triangleShadow">
+                  <feGaussianBlur in="SourceAlpha" stdDeviation="8"/>
+                  <feOffset dx="15" dy="15" result="offsetblur"/>
+                  <feComponentTransfer>
+                    <feFuncA type="linear" slope="0.4"/>
+                  </feComponentTransfer>
+                  <feMerge>
+                    <feMergeNode/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+
+              {/* Main 3D Triangle with gradient and shadow */}
               <polygon
                 points="200,50 350,350 50,350"
-                fill="#1a742e"
+                fill="url(#triangleGradient)"
                 transform="rotate(30 200 200)"
+                filter="url(#triangleShadow)"
+                style={{ filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.3))' }}
               />
-              {/* Reflection/Shadow triangle */}
+
+              {/* Reflection underneath */}
               <polygon
                 points="200,50 350,350 50,350"
                 fill="#1a742e"
-                opacity="0.15"
-                transform="rotate(30 200 200) translate(20, 20)"
+                opacity="0.1"
+                transform="rotate(30 200 200) translate(0, 30) scale(1, -0.5)"
+                style={{ transformOrigin: 'center' }}
               />
             </svg>
           </div>
