@@ -488,11 +488,11 @@ export default function Home() {
       </nav>
 
       {/* Single Background for Entire Page */}
-      <div className="fixed inset-0 pointer-events-none z-0">
+      <div className="fixed top-0 left-0 w-full pointer-events-none z-0">
         <img
           src="/duplo30.jpg"
           alt="Background pattern"
-          className="w-full h-full object-cover"
+          className="w-full h-auto"
         />
       </div>
 
