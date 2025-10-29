@@ -489,18 +489,18 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 lg:pt-12">
+        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 lg:pt-12" style={{ backgroundColor: "#ffffff" }}>
           {/* 3D Triangle - Realistic Photo Effect */}
-          <div className="absolute inset-0 pointer-events-none" style={{ backgroundColor: "#ECFFED" }}>
+          <div className="absolute inset-0 pointer-events-none">
             <div className="absolute right-[-10%] top-1/2 -translate-y-1/2 w-[900px] h-[900px]">
               <svg viewBox="0 0 500 500" className="w-full h-full" style={{ filter: 'drop-shadow(0 30px 60px rgba(0, 0, 0, 0.25))' }}>
                 <defs>
-                  {/* Realistic 3D lighting gradient - top-left light source */}
+                  {/* Realistic 3D lighting gradient - top-left light source - #E6FFEB color */}
                   <linearGradient id="realistic3D" x1="20%" y1="20%" x2="80%" y2="80%">
-                    <stop offset="0%" style={{ stopColor: '#5bc77a', stopOpacity: 1 }} />
-                    <stop offset="35%" style={{ stopColor: '#34a853', stopOpacity: 1 }} />
-                    <stop offset="70%" style={{ stopColor: '#1a742e', stopOpacity: 1 }} />
-                    <stop offset="100%" style={{ stopColor: '#0d401a', stopOpacity: 1 }} />
+                    <stop offset="0%" style={{ stopColor: '#f5ffef', stopOpacity: 1 }} />
+                    <stop offset="35%" style={{ stopColor: '#e6ffeb', stopOpacity: 1 }} />
+                    <stop offset="70%" style={{ stopColor: '#d0f5d9', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: '#bce8c9', stopOpacity: 1 }} />
                   </linearGradient>
 
                   {/* Soft shadow on surface */}
@@ -530,9 +530,9 @@ export default function Home() {
                 {/* Edge highlight for 3D effect */}
                 <path
                   d="M 250,80 L 450,400"
-                  stroke="#7dd897"
+                  stroke="#f5ffef"
                   strokeWidth="3"
-                  opacity="0.6"
+                  opacity="0.7"
                   transform="rotate(25 250 280)"
                 />
               </svg>
