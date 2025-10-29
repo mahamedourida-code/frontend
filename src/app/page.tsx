@@ -496,10 +496,9 @@ export default function Home() {
               <img
                 src="/data-tabled1.png"
                 alt="Data table decoration"
-                className="w-[800px] h-[800px] object-contain opacity-30"
+                className="w-[500px] h-[500px] object-contain opacity-30"
                 style={{
-                  filter: 'drop-shadow(0 30px 60px rgba(0, 0, 0, 0.15))',
-                  transform: 'rotate(15deg)'
+                  filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.12))'
                 }}
               />
             </div>
