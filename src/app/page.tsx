@@ -490,52 +490,18 @@ export default function Home() {
       {/* Hero Section */}
       <main className="relative z-10">
         <section ref={heroRef} className="min-h-screen flex items-center justify-center relative pt-16 lg:pt-12" style={{ backgroundColor: "#ffffff" }}>
-          {/* 3D Pentagon - Realistic Photo Effect - Extends beyond hero */}
+          {/* Data Table Image - Extends beyond hero */}
           <div className="absolute inset-0 pointer-events-none" style={{ height: '150vh', overflow: 'visible' }}>
-            <div className="absolute right-[10%] top-[40%] -translate-y-1/2 w-[1100px] h-[1100px]">
-              <svg viewBox="0 0 500 500" className="w-full h-full" style={{ filter: 'drop-shadow(0 30px 60px rgba(0, 0, 0, 0.15))' }}>
-                <defs>
-                  {/* Realistic 3D lighting gradient - lighter, closer to white */}
-                  <linearGradient id="realistic3D" x1="20%" y1="20%" x2="80%" y2="80%">
-                    <stop offset="0%" style={{ stopColor: '#fefffd', stopOpacity: 1 }} />
-                    <stop offset="35%" style={{ stopColor: '#f9fffb', stopOpacity: 1 }} />
-                    <stop offset="70%" style={{ stopColor: '#f2fff5', stopOpacity: 1 }} />
-                    <stop offset="100%" style={{ stopColor: '#ebfff0', stopOpacity: 1 }} />
-                  </linearGradient>
-
-                  {/* Soft shadow on surface */}
-                  <radialGradient id="surfaceShadow">
-                    <stop offset="0%" style={{ stopColor: '#000000', stopOpacity: 0.3 }} />
-                    <stop offset="100%" style={{ stopColor: '#000000', stopOpacity: 0 }} />
-                  </radialGradient>
-                </defs>
-
-                {/* Ground shadow */}
-                <ellipse
-                  cx="250"
-                  cy="350"
-                  rx="200"
-                  ry="60"
-                  fill="url(#surfaceShadow)"
-                  opacity="0.4"
-                />
-
-                {/* Main 3D Pentagon (5 sides) - rotated to appear "fallen" */}
-                <polygon
-                  points="250,60 400,180 350,380 150,380 100,180"
-                  fill="url(#realistic3D)"
-                  transform="rotate(25 250 250)"
-                />
-
-                {/* Edge highlight for 3D effect */}
-                <path
-                  d="M 250,60 L 400,180"
-                  stroke="#fefffd"
-                  strokeWidth="3"
-                  opacity="0.8"
-                  transform="rotate(25 250 250)"
-                />
-              </svg>
+            <div className="absolute right-[10%] top-[40%] -translate-y-1/2">
+              <img
+                src="/data-tabled1.png"
+                alt="Data table decoration"
+                className="w-[800px] h-[800px] object-contain opacity-30"
+                style={{
+                  filter: 'drop-shadow(0 30px 60px rgba(0, 0, 0, 0.15))',
+                  transform: 'rotate(15deg)'
+                }}
+              />
             </div>
           </div>
           <ParticlesBackground />
