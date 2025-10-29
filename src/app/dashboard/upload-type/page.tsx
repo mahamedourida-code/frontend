@@ -81,9 +81,17 @@ export default function UploadTypePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 relative">
+      {/* Duplo29 Background */}
+      <div className="fixed top-0 left-0 w-full pointer-events-none z-0">
+        <img
+          src="/duplo29.jpg"
+          alt="Background pattern"
+          className="w-full h-auto"
+        />
+      </div>
       {/* Header */}
-      <header className="border-b bg-white dark:bg-gray-900">
+      <header className="border-b bg-white dark:bg-gray-900 relative z-10">
         <div className="container flex h-12 lg:h-14 max-w-5xl items-center justify-between px-3 sm:px-4 lg:px-6">
           <div className="flex items-center gap-2">
             <Button
@@ -111,7 +119,7 @@ export default function UploadTypePage() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center p-3 sm:p-4 lg:p-6">
+      <main className="flex-1 flex items-center justify-center p-3 sm:p-4 lg:p-6 relative z-10">
         <div className="w-full max-w-3xl">
           {/* Out of Credits Alert */}
           {isOutOfCredits && (

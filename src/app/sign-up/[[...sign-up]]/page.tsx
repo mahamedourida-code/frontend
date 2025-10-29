@@ -133,7 +133,15 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-muted/80">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-muted/80 relative">
+      {/* Duplo26 Background */}
+      <div className="fixed top-0 left-0 w-full pointer-events-none z-0">
+        <img
+          src="/duplo26.jpg"
+          alt="Background pattern"
+          className="w-full h-auto"
+        />
+      </div>
       <div className="fixed top-4 left-4 z-50">
         <Button
           variant="ghost"

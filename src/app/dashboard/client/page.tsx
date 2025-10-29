@@ -917,9 +917,17 @@ Best regards`
   const isComplete = status === 'completed' && resultFiles && resultFiles.length > 0
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Duplo29 Background */}
+      <div className="fixed top-0 left-0 w-full pointer-events-none z-0">
+        <img
+          src="/duplo29.jpg"
+          alt="Background pattern"
+          className="w-full h-auto"
+        />
+      </div>
       {/* Minimal Header */}
-      <header className="border-b lg:block hidden">
+      <header className="border-b lg:block hidden relative z-10">
         <div className="container max-w-5xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -991,7 +999,7 @@ Best regards`
         </div>
       </div>
 
-      <main className="container max-w-5xl mx-auto px-4 py-8 pb-24">
+      <main className="container max-w-5xl mx-auto px-4 py-8 pb-24 relative z-10">
         {/* Processing Timer Card */}
         {isProcessing && !isComplete && (
           <Card className="mb-4 bg-white dark:bg-white border-2 border-primary shadow-md max-w-sm">

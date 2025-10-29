@@ -326,9 +326,17 @@ export default function DashboardPage() {
   const isOutOfCredits = stats.creditsUsed >= stats.totalCredits
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex relative">
+      {/* Duplo29 Background */}
+      <div className="fixed top-0 left-0 w-full pointer-events-none z-0">
+        <img
+          src="/duplo29.jpg"
+          alt="Background pattern"
+          className="w-full h-auto"
+        />
+      </div>
       {/* Sidebar - Hidden on Mobile */}
-      <div className="hidden lg:block w-64 border-r bg-card/50 backdrop-blur">
+      <div className="hidden lg:block w-64 border-r bg-card/50 backdrop-blur relative z-10">
         <div className="flex flex-col h-full">
           {/* App Logo */}
           <div className="p-6 border-b">
@@ -388,7 +396,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto relative z-10">
         <div className="container max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
           {/* Back Button */}
           <Button

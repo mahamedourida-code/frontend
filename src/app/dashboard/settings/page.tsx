@@ -215,7 +215,15 @@ export default function SettingsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Duplo29 Background */}
+      <div className="fixed top-0 left-0 w-full pointer-events-none z-0">
+        <img
+          src="/duplo29.jpg"
+          alt="Background pattern"
+          className="w-full h-auto"
+        />
+      </div>
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur sticky top-0 z-10">
         <div className="container max-w-7xl mx-auto px-3 lg:px-4 py-3 lg:py-4">

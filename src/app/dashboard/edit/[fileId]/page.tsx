@@ -676,9 +676,17 @@ export default function EditExcelPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col relative">
+      {/* Duplo29 Background */}
+      <div className="fixed top-0 left-0 w-full pointer-events-none z-0">
+        <img
+          src="/duplo29.jpg"
+          alt="Background pattern"
+          className="w-full h-auto"
+        />
+      </div>
       {/* Excel-like Header Bar */}
-      <div className="flex items-center justify-between h-14 px-4 border-b bg-background">
+      <div className="flex items-center justify-between h-14 px-4 border-b bg-background relative z-10">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -792,7 +800,7 @@ export default function EditExcelPage() {
       </div>
 
       {/* Main Content Area - Table */}
-      <div className="flex-1 overflow-auto bg-white dark:bg-gray-950" onMouseUp={handleCellMouseUp}>
+      <div className="flex-1 overflow-auto bg-white dark:bg-gray-950 relative z-10" onMouseUp={handleCellMouseUp}>
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
