@@ -490,12 +490,12 @@ export default function Home() {
       {/* Hero Section */}
       <main className="relative z-10">
         <section ref={heroRef} className="min-h-screen flex items-center justify-center relative pt-16 lg:pt-12" style={{ backgroundColor: "#ffffff" }}>
-          {/* Circuit Board Tech Background */}
+          {/* Duplo26 Background - First Section */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
             <img
-              src="/circuit-bg.jpg"
-              alt="Circuit board background"
-              className="absolute inset-0 w-full h-full object-cover opacity-15"
+              src="/duplo26.jpg"
+              alt="Background pattern"
+              className="absolute inset-0 w-full h-full object-cover"
             />
           </div>
           <ParticlesBackground />
@@ -799,8 +799,16 @@ export default function Home() {
         </section>
 
         {/* Why Choose Us Section */}
-        <ScrollAnimatedSection id="features" className="py-16" >
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <ScrollAnimatedSection id="features" className="py-16 relative" >
+          {/* Duplo26 Background - Second Section */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <img
+              src="/duplo26.jpg"
+              alt="Background pattern"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-12" data-animate="headline">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
@@ -967,8 +975,16 @@ export default function Home() {
 
 
         {/* AI Engine Section */}
-        <ScrollAnimatedSection id="ai-engine" className="py-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <ScrollAnimatedSection id="ai-engine" className="py-16 relative">
+          {/* Duplo27 Background - AI Engine Section */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <img
+              src="/duplo27.jpg"
+              alt="Background pattern"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-16" data-animate="headline">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
