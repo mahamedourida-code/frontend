@@ -487,18 +487,21 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <main className="relative z-10">
-        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative pt-16 lg:pt-12" style={{ backgroundColor: "#ffffff" }}>
-          {/* Duplo26 Background - First Section */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <img
-              src="/duplo26.jpg"
-              alt="Background pattern"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-          </div>
-          <ParticlesBackground />
+      {/* Hero Section + Specialized Solutions - Single Background */}
+      <div className="relative">
+        {/* Duplo26 Background stretched across Hero + Specialized Solutions */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+          <img
+            src="/duplo26.jpg"
+            alt="Background pattern"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </div>
+
+        {/* Hero Section */}
+        <main className="relative z-10">
+          <section ref={heroRef} className="min-h-screen flex items-center justify-center relative pt-16 lg:pt-12">
+            <ParticlesBackground />
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1400px]">
             <div className="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-8 sm:gap-12 lg:gap-10 items-center">
               {/* Left Content */}
@@ -842,8 +845,9 @@ export default function Home() {
             </div>
           </div>
         </ScrollAnimatedSection>
+      </div>
 
-        {/* Companies Section - Trusted By */}
+      {/* Companies Section - Trusted By */}
         <ScrollAnimatedSection id="trusted" className="py-12 relative z-10 overflow-hidden">
           <div className="relative z-10 text-center mb-8" data-animate="headline">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
@@ -1157,17 +1161,20 @@ export default function Home() {
           </div>
         </ScrollAnimatedSection>
 
-        {/* Benchmark Section */}
-        <ScrollAnimatedSection id="benchmarks" className="py-16 relative" style={{ backgroundColor: "#ffffff" }}>
-          {/* Duplo26 Background */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Benchmark Section + Footer - Single Background */}
+        <div className="relative">
+          {/* Duplo26 Background stretched across Benchmarks + Footer */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
             <img
               src="/duplo26.jpg"
               alt="Background pattern"
               className="absolute inset-0 w-full h-full object-cover"
             />
           </div>
-          <div className="relative z-10">
+
+          {/* Benchmark Section */}
+          <ScrollAnimatedSection id="benchmarks" className="py-16 relative z-10">
+            <div className="relative z-10">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
@@ -1325,15 +1332,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Final CTA Section */}
-        <section className="py-24 relative overflow-hidden" style={{ backgroundColor: "#ffffff" }}>
-          {/* Duplo26 Background */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <img
-              src="/duplo26.jpg"
-              alt="Background pattern"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-          </div>
+        <section className="py-24 relative z-10">
           <div className="container mx-auto px-1 sm:px-3 lg:px-4 text-center relative z-10">
             {/* CTA Content */}
             <div className="max-w-3xl mx-auto">
@@ -1378,6 +1377,7 @@ export default function Home() {
             </div>
           </div>
         </section>
+      </div>
       </main>
 
       {/* Footer */}
