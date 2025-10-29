@@ -13,12 +13,14 @@ interface ScrollAnimatedSectionProps {
   children: ReactNode;
   className?: string;
   id?: string;
+  style?: React.CSSProperties;
 }
 
 export default function ScrollAnimatedSection({
   children,
   className = "",
-  id
+  id,
+  style
 }: ScrollAnimatedSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -81,7 +83,7 @@ export default function ScrollAnimatedSection({
   }, []);
 
   return (
-    <section ref={sectionRef} id={id} className={className}>
+    <section ref={sectionRef} id={id} className={className} style={style}>
       {children}
     </section>
   );
