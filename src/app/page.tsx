@@ -489,7 +489,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 lg:pt-12" style={{ backgroundColor: "#ECFFED" }}>
+        <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 lg:pt-12" style={{ backgroundColor: "#E6FFEB" }}>
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1400px]">
             <div className="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-8 sm:gap-12 lg:gap-10 items-center">
@@ -791,7 +791,7 @@ export default function Home() {
         </section>
 
         {/* Why Choose Us Section */}
-        <ScrollAnimatedSection id="features" className="py-16" style={{ backgroundColor: "#ECFFED" }}>
+        <ScrollAnimatedSection id="features" className="py-16" >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white border-2 border-primary mb-4 shadow-lg shadow-primary/10">
@@ -884,7 +884,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Transformation Section */}
-        <section className="py-32" style={{ backgroundColor: "#ECFFED" }}>
+        <section className="py-32" style={{ backgroundColor: "#E6FFEB" }}>
           <div className="container mx-auto px-4 max-w-none">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
@@ -1142,7 +1142,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Benchmark Section */}
-        <ScrollAnimatedSection id="benchmarks" className="py-16" style={{ backgroundColor: "#ECFFED" }}>
+        <ScrollAnimatedSection id="benchmarks" className="py-16" style={{ backgroundColor: "#E6FFEB" }}>
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
