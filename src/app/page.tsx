@@ -986,7 +986,7 @@ export default function Home() {
               {/* Main Content */}
               <div className="space-y-12">
                 {/* Instruction Fine-Tuning */}
-                <Card className="border-2 border-primary shadow-lg" data-animate="stagger">
+                <Card className="bg-transparent border-2 border-primary shadow-lg" data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
                       <Layers className="w-6 h-6 text-primary" />
@@ -1044,7 +1044,7 @@ export default function Home() {
                 </Card>
 
                 {/* System Prompts & Guardrails */}
-                <Card className="border-2 border-primary shadow-lg" data-animate="stagger">
+                <Card className="bg-transparent border-2 border-primary shadow-lg" data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
                       <Shield className="w-6 h-6 text-primary" />
@@ -1168,7 +1168,7 @@ export default function Home() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
                 {/* Accuracy Chart */}
-                <Card className="border-2 border-primary shadow-lg" data-animate="stagger">
+                <Card className="bg-transparent border-2 border-primary shadow-lg" data-animate="stagger">
   <CardHeader className="pb-3">
     <CardTitle className="text-lg font-semibold">
       Handwritten Text Recognition Accuracy
@@ -1235,7 +1235,7 @@ export default function Home() {
 
 
                 {/* Performance Metrics Table */}
-                <Card className="border-2 border-primary shadow-lg" data-animate="stagger">
+                <Card className="bg-transparent border-2 border-primary shadow-lg" data-animate="stagger">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg font-semibold">Comprehensive Performance Metrics</CardTitle>
                     <p className="text-sm text-muted-foreground">Average across all test scenarios</p>
