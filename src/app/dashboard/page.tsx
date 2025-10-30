@@ -130,6 +130,19 @@ export default function DashboardPage() {
             }
           }
         )
+        .on('postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'user_credits',
+            filter: `user_id=eq.${user.id}`
+          },
+          async (payload) => {
+            console.log('Credits change detected:', payload)
+            // Refresh dashboard data to get updated credits
+            fetchDashboardData()
+          }
+        )
         .subscribe((status) => {
           console.log('Realtime subscription status:', status)
         })
@@ -493,7 +506,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-2 border-primary shadow-lg shadow-primary/10" style={{ backgroundColor: '#ecf4f5' }}>
+            <Card className="border-2 border-primary shadow-lg shadow-primary/10 relative" style={{ backgroundColor: '#ecf4f5' }}>
               <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -501,7 +514,17 @@ export default function DashboardPage() {
                     <p className="text-2xl lg:text-3xl font-bold mt-1">{stats.availableCredits}</p>
                     <p className="text-[10px] lg:text-xs text-muted-foreground mt-0.5">1 credit = 1 image</p>
                   </div>
-                  <div className="flex-shrink-0">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={fetchDashboardData}
+                      disabled={loading}
+                      className="h-8 w-8 p-0"
+                      title="Refresh credits"
+                    >
+                      <Activity className={cn("h-4 w-4", loading && "animate-spin")} />
+                    </Button>
                     <Coins className="h-8 w-8 lg:h-10 lg:w-10 text-primary/60" />
                   </div>
                 </div>

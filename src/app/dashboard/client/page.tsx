@@ -47,7 +47,8 @@ import {
   Facebook,
   MessageCircle,
   ChevronLeft,
-  FolderUp
+  FolderUp,
+  Activity
 } from "lucide-react"
 import {
   Dialog,
@@ -270,18 +271,9 @@ export default function ProcessImagesPage() {
     }
   }, [user])
 
-  // Refetch credits when processing is complete
-  useEffect(() => {
-    if (status === 'completed') {
-      console.log('[ProcessImagesPage] Processing completed, fetching updated credits')
-      // Delay to ensure backend has processed and updated credits
-      const timer = setTimeout(() => {
-        fetchUserCredits()
-      }, 2000)
-
-      return () => clearTimeout(timer)
-    }
-  }, [status])
+  // Don't refetch credits after completion - they were already deducted at start
+  // Remove this useEffect that was causing the revert issue
+  // Credits are deducted when processing starts, not when it completes
 
   // Auto-download and auto-save when files are ready
   useEffect(() => {
@@ -989,13 +981,23 @@ Best regards`
                 <h1 className="text-sm font-semibold text-foreground">{documentTypeInfo.label}</h1>
               </div>
             </div>
-            <div className="absolute left-1/2 -translate-x-1/2">
+            <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
               <Badge
                 variant={credits.available <= 10 ? "destructive" : "secondary"}
                 className="gap-1 px-2 py-1 text-xs"
               >
                 {credits.available} credits
               </Badge>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => fetchUserCredits()}
+                disabled={creditLoading}
+                className="h-7 w-7 p-0"
+                title="Refresh credits"
+              >
+                <Activity className={cn("h-3 w-3", creditLoading && "animate-spin")} />
+              </Button>
             </div>
             <div className="flex items-center gap-3">
               {/* Temporarily disabled - upload-type page commented out
