@@ -1342,9 +1342,9 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Testimonials Section */}
-        <section className="py-16 overflow-hidden relative z-10">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
+        <section className="py-16 overflow-hidden relative z-10 bg-white dark:bg-background">
+          <div className="w-full">
+            <div className="text-center mb-12 px-4">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   Trusted by Professionals
@@ -1353,11 +1353,11 @@ export default function Home() {
             </div>
 
             {/* First Row - Animates to the left */}
-            <div className="relative mb-8 overflow-hidden">
+            <div className="relative mb-6 overflow-hidden">
               <div
-                className="flex gap-6 items-center"
+                className="flex gap-4 items-start"
                 style={{
-                  animation: 'scroll-left 40s linear infinite',
+                  animation: 'scroll-left 60s linear infinite',
                   width: 'max-content',
                   willChange: 'transform'
                 }}
@@ -1373,20 +1373,20 @@ export default function Home() {
                     {
                       name: "David Chen",
                       handle: "@davidchen",
-                      avatar: "/testimonials/andrew_brown.jpg",
+                      avatar: "/testimonials/alex_finn.jpg",
                       text: "Best OCR tool I've ever used. The handwritten table recognition is mind-blowing. We've processed thousands of documents with near-perfect accuracy."
                     },
                     {
                       name: "Emily Rodriguez",
                       handle: "@emilyrodriguez",
-                      avatar: "/testimonials/alex_finn.jpg",
-                      text: "Game changer for our data entry team. The batch processing feature saves us countless hours every week."
+                      avatar: "/testimonials/alvaro_cintas.jpg",
+                      text: "Game changer for our data entry team."
                     },
                     {
                       name: "Michael Thompson",
                       handle: "@mikethompson",
                       avatar: "/testimonials/tom_blomfield.jpg",
-                      text: "I was skeptical at first, but Exceletto exceeded all expectations. The table structure preservation is phenomenal."
+                      text: "I was skeptical at first, but Exceletto exceeded all expectations. The table structure preservation is phenomenal. We've saved thousands of hours in manual data entry."
                     },
                     {
                       name: "Jessica Park",
@@ -1395,25 +1395,33 @@ export default function Home() {
                       text: "Exceletto has become an essential tool in our workflow. The accuracy on complex forms is outstanding."
                     }
                   ].map((testimonial, idx) => (
-                    <Card
+                    <div
                       key={`${setIndex}-${idx}`}
-                      className="flex-shrink-0 bg-transparent border-2 border-primary hover:border-primary/80 transition-all duration-300 hover:shadow-lg w-[400px]"
+                      className="flex-shrink-0 bg-white dark:bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-5 w-[350px]"
                     >
-                      <CardContent className="p-6">
-                        <div className="flex items-start gap-4 mb-4">
-                          <img
-                            src={testimonial.avatar}
-                            alt={testimonial.name}
-                            className="w-12 h-12 rounded-full object-cover"
-                          />
-                          <div className="flex-1">
-                            <p className="font-semibold text-foreground">{testimonial.name}</p>
-                            <p className="text-sm text-muted-foreground">{testimonial.handle}</p>
-                          </div>
+                      {/* Review Text */}
+                      <p className="text-sm text-black dark:text-foreground leading-relaxed mb-4">{testimonial.text}</p>
+
+                      {/* Dashed Line Separator */}
+                      <div className="border-t border-dashed border-border my-4"></div>
+
+                      {/* Person Details */}
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={testimonial.avatar}
+                          alt={testimonial.name}
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm text-foreground">{testimonial.name}</p>
+                          <p className="text-xs text-muted-foreground">{testimonial.handle}</p>
                         </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed">{testimonial.text}</p>
-                      </CardContent>
-                    </Card>
+                        {/* X Logo */}
+                        <svg className="w-4 h-4 text-foreground opacity-60" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                      </div>
+                    </div>
                   ))
                 )}
               </div>
@@ -1422,9 +1430,9 @@ export default function Home() {
             {/* Second Row - Animates to the right */}
             <div className="relative overflow-hidden">
               <div
-                className="flex gap-6 items-center"
+                className="flex gap-4 items-start"
                 style={{
-                  animation: 'scroll-right 40s linear infinite',
+                  animation: 'scroll-right 60s linear infinite',
                   width: 'max-content',
                   willChange: 'transform'
                 }}
@@ -1435,7 +1443,7 @@ export default function Home() {
                       name: "Robert Williams",
                       handle: "@robertwilliams",
                       avatar: "/testimonials/bodega_man.jpg",
-                      text: "The reason I chose Exceletto is the consistent accuracy and speed. Processing handwritten documents has never been easier."
+                      text: "The reason I chose Exceletto is the consistent accuracy and speed. Processing handwritten documents has never been easier. This tool has revolutionized our data extraction workflow and saved us countless hours of manual work."
                     },
                     {
                       name: "Amanda Foster",
@@ -1447,40 +1455,48 @@ export default function Home() {
                       name: "Chris Anderson",
                       handle: "@chrisanderson",
                       avatar: "/testimonials/jon_myers.jpg",
-                      text: "The UX is incredibly intuitive. Just upload your images and get perfect Excel files in seconds. No complex setup needed."
+                      text: "The UX is incredibly intuitive. Just upload your images and get perfect Excel files in seconds."
                     },
                     {
                       name: "Rachel Martinez",
                       handle: "@rachelmartinez",
                       avatar: "/testimonials/tom_dorr.jpg",
-                      text: "I've been using Exceletto exclusively for the past month. The results speak for themselves. Outstanding tool."
+                      text: "I've been using Exceletto exclusively for the past month. The results speak for themselves. Outstanding tool that delivers on its promises every single time."
                     },
                     {
                       name: "James Wilson",
                       handle: "@jameswilson",
                       avatar: "/testimonials/alexander_wilczek.jpg",
-                      text: "Exceletto's OCR accuracy beats everything else I've tried. The multi-language support is a huge bonus."
+                      text: "Exceletto's OCR accuracy beats everything else I've tried."
                     }
                   ].map((testimonial, idx) => (
-                    <Card
+                    <div
                       key={`${setIndex}-${idx}`}
-                      className="flex-shrink-0 bg-transparent border-2 border-primary hover:border-primary/80 transition-all duration-300 hover:shadow-lg w-[400px]"
+                      className="flex-shrink-0 bg-white dark:bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-5 w-[350px]"
                     >
-                      <CardContent className="p-6">
-                        <div className="flex items-start gap-4 mb-4">
-                          <img
-                            src={testimonial.avatar}
-                            alt={testimonial.name}
-                            className="w-12 h-12 rounded-full object-cover"
-                          />
-                          <div className="flex-1">
-                            <p className="font-semibold text-foreground">{testimonial.name}</p>
-                            <p className="text-sm text-muted-foreground">{testimonial.handle}</p>
-                          </div>
+                      {/* Review Text */}
+                      <p className="text-sm text-black dark:text-foreground leading-relaxed mb-4">{testimonial.text}</p>
+
+                      {/* Dashed Line Separator */}
+                      <div className="border-t border-dashed border-border my-4"></div>
+
+                      {/* Person Details */}
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={testimonial.avatar}
+                          alt={testimonial.name}
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm text-foreground">{testimonial.name}</p>
+                          <p className="text-xs text-muted-foreground">{testimonial.handle}</p>
                         </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed">{testimonial.text}</p>
-                      </CardContent>
-                    </Card>
+                        {/* X Logo */}
+                        <svg className="w-4 h-4 text-foreground opacity-60" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                      </div>
+                    </div>
                   ))
                 )}
               </div>
