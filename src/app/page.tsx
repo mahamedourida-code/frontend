@@ -1200,7 +1200,7 @@ export default function Home() {
               <div
                 className="flex gap-6 items-start"
                 style={{
-                  animation: 'scroll-left 120s linear infinite',
+                  animation: 'scroll-left 90s linear infinite',
                   width: 'max-content',
                   willChange: 'transform'
                 }}
@@ -1277,7 +1277,7 @@ export default function Home() {
               <div
                 className="flex gap-6 items-start"
                 style={{
-                  animation: 'scroll-right 120s linear infinite',
+                  animation: 'scroll-right 90s linear infinite',
                   width: 'max-content',
                   willChange: 'transform'
                 }}
