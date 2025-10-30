@@ -774,7 +774,7 @@ export default function Home() {
                     </Button>
 
                     {/* Options Card - Right Side (1 column) */}
-                    <Card className="bg-white dark:bg-white border-2 border-primary shadow-lg shadow-primary/10">
+                    <Card className="bg-[#d3e3e3] dark:bg-[#d3e3e3] border-2 border-primary shadow-lg shadow-primary/10">
                       <CardContent className="p-3">
                         <div className="space-y-2">
                           <div>
