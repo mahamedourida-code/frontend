@@ -1583,7 +1583,7 @@ export default function Home() {
           
           <div className="flex flex-col sm:flex-row justify-center items-center mt-8">
             <p className="text-muted-foreground text-sm">
-              © 2024 Exceletto. All rights reserved.
+              © 2025 Exceletto. All rights reserved.
             </p>
           </div>
         </div>
