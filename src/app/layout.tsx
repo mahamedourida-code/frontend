@@ -20,6 +20,11 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   title: "Exceletto",
   description: "Transform any screenshot into a structured Excel spreadsheet with just one click. Save hours of manual data entry with our AI-powered OCR technology.",
+  icons: {
+    icon: '/crop.png',
+    shortcut: '/crop.png',
+    apple: '/crop.png',
+  },
 };
 
 export default function RootLayout({
