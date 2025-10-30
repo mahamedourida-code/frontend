@@ -1341,6 +1341,153 @@ export default function Home() {
           </div>
         </ScrollAnimatedSection>
 
+        {/* Testimonials Section */}
+        <section className="py-16 overflow-hidden relative z-10">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                <h2 className="text-lg sm:text-xl font-bold text-foreground">
+                  Trusted by Professionals
+                </h2>
+              </div>
+            </div>
+
+            {/* First Row - Animates to the left */}
+            <div className="relative mb-8 overflow-hidden">
+              <div
+                className="flex gap-6 items-center"
+                style={{
+                  animation: 'scroll-left 40s linear infinite',
+                  width: 'max-content',
+                  willChange: 'transform'
+                }}
+              >
+                {Array.from({ length: 3 }, (_, setIndex) =>
+                  [
+                    {
+                      name: "Sarah Mitchell",
+                      handle: "@sarahmitchell",
+                      avatar: "/testimonials/avi_schiffmann.jpg",
+                      text: "Exceletto has completely transformed how we process invoices. What used to take hours now takes minutes. The accuracy is incredible!"
+                    },
+                    {
+                      name: "David Chen",
+                      handle: "@davidchen",
+                      avatar: "/testimonials/andrew_brown.jpg",
+                      text: "Best OCR tool I've ever used. The handwritten table recognition is mind-blowing. We've processed thousands of documents with near-perfect accuracy."
+                    },
+                    {
+                      name: "Emily Rodriguez",
+                      handle: "@emilyrodriguez",
+                      avatar: "/testimonials/alex_finn.jpg",
+                      text: "Game changer for our data entry team. The batch processing feature saves us countless hours every week."
+                    },
+                    {
+                      name: "Michael Thompson",
+                      handle: "@mikethompson",
+                      avatar: "/testimonials/tom_blomfield.jpg",
+                      text: "I was skeptical at first, but Exceletto exceeded all expectations. The table structure preservation is phenomenal."
+                    },
+                    {
+                      name: "Jessica Park",
+                      handle: "@jessicapark",
+                      avatar: "/testimonials/catalin.jpg",
+                      text: "Exceletto has become an essential tool in our workflow. The accuracy on complex forms is outstanding."
+                    }
+                  ].map((testimonial, idx) => (
+                    <Card
+                      key={`${setIndex}-${idx}`}
+                      className="flex-shrink-0 bg-transparent border-2 border-primary hover:border-primary/80 transition-all duration-300 hover:shadow-lg w-[400px]"
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4 mb-4">
+                          <img
+                            src={testimonial.avatar}
+                            alt={testimonial.name}
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                          <div className="flex-1">
+                            <p className="font-semibold text-foreground">{testimonial.name}</p>
+                            <p className="text-sm text-muted-foreground">{testimonial.handle}</p>
+                          </div>
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{testimonial.text}</p>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Second Row - Animates to the right */}
+            <div className="relative overflow-hidden">
+              <div
+                className="flex gap-6 items-center"
+                style={{
+                  animation: 'scroll-right 40s linear infinite',
+                  width: 'max-content',
+                  willChange: 'transform'
+                }}
+              >
+                {Array.from({ length: 3 }, (_, setIndex) =>
+                  [
+                    {
+                      name: "Robert Williams",
+                      handle: "@robertwilliams",
+                      avatar: "/testimonials/bodega_man.jpg",
+                      text: "The reason I chose Exceletto is the consistent accuracy and speed. Processing handwritten documents has never been easier."
+                    },
+                    {
+                      name: "Amanda Foster",
+                      handle: "@amandafoster",
+                      avatar: "/testimonials/luca.jpg",
+                      text: "Exceletto makes document digitization insanely fast and accurate. Our team productivity has doubled."
+                    },
+                    {
+                      name: "Chris Anderson",
+                      handle: "@chrisanderson",
+                      avatar: "/testimonials/jon_myers.jpg",
+                      text: "The UX is incredibly intuitive. Just upload your images and get perfect Excel files in seconds. No complex setup needed."
+                    },
+                    {
+                      name: "Rachel Martinez",
+                      handle: "@rachelmartinez",
+                      avatar: "/testimonials/tom_dorr.jpg",
+                      text: "I've been using Exceletto exclusively for the past month. The results speak for themselves. Outstanding tool."
+                    },
+                    {
+                      name: "James Wilson",
+                      handle: "@jameswilson",
+                      avatar: "/testimonials/alexander_wilczek.jpg",
+                      text: "Exceletto's OCR accuracy beats everything else I've tried. The multi-language support is a huge bonus."
+                    }
+                  ].map((testimonial, idx) => (
+                    <Card
+                      key={`${setIndex}-${idx}`}
+                      className="flex-shrink-0 bg-transparent border-2 border-primary hover:border-primary/80 transition-all duration-300 hover:shadow-lg w-[400px]"
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4 mb-4">
+                          <img
+                            src={testimonial.avatar}
+                            alt={testimonial.name}
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                          <div className="flex-1">
+                            <p className="font-semibold text-foreground">{testimonial.name}</p>
+                            <p className="text-sm text-muted-foreground">{testimonial.handle}</p>
+                          </div>
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{testimonial.text}</p>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Final CTA Section */}
         <section className="py-24 relative z-10">
           <div className="container mx-auto px-1 sm:px-3 lg:px-4 text-center">
