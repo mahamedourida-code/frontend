@@ -437,15 +437,22 @@ export default function ProcessImagesPage() {
     // Check if user has enough credits
     const creditsNeeded = uploadedFiles.length
     const creditsAvailable = credits.available
-    
+
     if (creditsAvailable <= 0) {
       toast.error('You have run out of credits. Your credits will reset next month.')
       return
     }
-    
+
     if (creditsNeeded > creditsAvailable) {
       toast.error(`You only have ${creditsAvailable} credits remaining. Remove ${creditsNeeded - creditsAvailable} images to proceed.`)
       return
+    }
+
+    // Before starting a new batch, move current files to previous batches
+    if (resultFiles && resultFiles.length > 0) {
+      setPreviousBatches(prev => [...prev, { files: [...resultFiles], timestamp: Date.now() }])
+      setCurrentBatchStartIndex(prev => prev + resultFiles.length)
+      reset() // Clear current batch now that we're starting a new one
     }
 
     try {
@@ -485,7 +492,7 @@ export default function ProcessImagesPage() {
       }
       console.error('[ProcessImages] Error:', error)
     }
-  }, [uploadedFiles, uploadBatch, connectWebSocket, credits])
+  }, [uploadedFiles, uploadBatch, connectWebSocket, credits, resultFiles, reset])
 
   const handleRemoveFile = (index: number) => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index))
@@ -499,7 +506,9 @@ export default function ProcessImagesPage() {
     }
 
     setUploadedFiles([])
-    reset()
+    // Don't reset resultFiles immediately - they'll stay visible until new batch starts processing
+    // reset() - commented out to keep old files visible
+
     // Reset auto-actions trackers
     autoActionsExecutedRef.current = null
     isExecutingAutoActionsRef.current = false
@@ -1274,11 +1283,25 @@ Best regards`
                           <div className="absolute inset-0 flex items-center">
                             <span className="w-full border-t border-dashed border-muted-foreground/30" />
                           </div>
-                          <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-background px-2 text-muted-foreground">Previous Batch</span>
+                          <div className="relative flex justify-center text-xs">
+                            <span className="bg-background px-2 text-muted-foreground">
+                              {new Date(batch.timestamp).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </span>
                           </div>
                         </div>
                       )}
+                      {/* Batch header with file count */}
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="secondary" className="gap-1 opacity-70">
+                          <FileSpreadsheet className="h-3 w-3" />
+                          {batch.files.length} {batch.files.length === 1 ? 'file' : 'files'}
+                        </Badge>
+                      </div>
                       {batch.files.map((file: any, fileIndex: number) => {
                         const startIdx = previousBatches.slice(0, batchIndex).reduce((sum, b) => sum + b.files.length, 0)
                         const absoluteIndex = startIdx + fileIndex
@@ -1332,13 +1355,28 @@ Best regards`
                       <div className="absolute inset-0 flex items-center">
                         <span className="w-full border-t-2 border-dashed border-primary/50" />
                       </div>
-                      <div className="relative flex justify-center text-sm uppercase">
-                        <span className="bg-background px-3 py-1 text-primary font-semibold">New Batch</span>
+                      <div className="relative flex justify-center text-sm">
+                        <span className="bg-background px-3 py-1 text-primary font-semibold">
+                          {new Date().toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
                       </div>
                     </div>
                   )}
 
                   {/* Current Batch */}
+                  {resultFiles.length > 0 && (
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="secondary" className="gap-1 bg-primary/20">
+                        <FileSpreadsheet className="h-3 w-3" />
+                        {resultFiles.length} {resultFiles.length === 1 ? 'file' : 'files'}
+                      </Badge>
+                    </div>
+                  )}
                   {resultFiles.map((file: any, index: number) => (
                     <Card
                       key={file.file_id || index}
