@@ -1342,7 +1342,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Testimonials Section */}
-        <section className="py-16 overflow-hidden relative z-10 bg-white dark:bg-background">
+        <section className="py-16 overflow-hidden relative z-10">
           <div className="w-full">
             <div className="text-center mb-12 px-4">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
@@ -1353,9 +1353,9 @@ export default function Home() {
             </div>
 
             {/* First Row - Animates to the left */}
-            <div className="relative mb-6 overflow-hidden">
+            <div className="relative mb-6 overflow-hidden group">
               <div
-                className="flex gap-4 items-start"
+                className="flex gap-6 items-start group-hover:[animation-play-state:paused]"
                 style={{
                   animation: 'scroll-left 60s linear infinite',
                   width: 'max-content',
@@ -1397,30 +1397,30 @@ export default function Home() {
                   ].map((testimonial, idx) => (
                     <div
                       key={`${setIndex}-${idx}`}
-                      className="flex-shrink-0 bg-white dark:bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-5 w-[350px]"
+                      className="flex-shrink-0 bg-white dark:bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 w-[450px]"
                     >
-                      {/* Review Text */}
-                      <p className="text-sm text-black dark:text-foreground leading-relaxed mb-4">{testimonial.text}</p>
-
-                      {/* Dashed Line Separator */}
-                      <div className="border-t border-dashed border-border my-4"></div>
-
-                      {/* Person Details */}
-                      <div className="flex items-center gap-3">
+                      {/* Person Details at Top */}
+                      <div className="flex items-center gap-3 mb-4">
                         <img
                           src={testimonial.avatar}
                           alt={testimonial.name}
-                          className="w-10 h-10 rounded-full object-cover"
+                          className="w-12 h-12 rounded-full object-cover"
                         />
                         <div className="flex-1">
-                          <p className="font-semibold text-sm text-foreground">{testimonial.name}</p>
-                          <p className="text-xs text-muted-foreground">{testimonial.handle}</p>
+                          <p className="font-semibold text-base text-foreground">{testimonial.name}</p>
+                          <p className="text-sm text-muted-foreground">{testimonial.handle}</p>
                         </div>
                         {/* X Logo */}
-                        <svg className="w-4 h-4 text-foreground opacity-60" viewBox="0 0 24 24" fill="currentColor">
+                        <svg className="w-5 h-5 text-foreground opacity-60" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                         </svg>
                       </div>
+
+                      {/* Dashed Line Separator */}
+                      <div className="border-t border-dashed border-border mb-4"></div>
+
+                      {/* Review Text at Bottom */}
+                      <p className="text-base text-black dark:text-foreground leading-relaxed">{testimonial.text}</p>
                     </div>
                   ))
                 )}
@@ -1428,9 +1428,9 @@ export default function Home() {
             </div>
 
             {/* Second Row - Animates to the right */}
-            <div className="relative overflow-hidden">
+            <div className="relative overflow-hidden group">
               <div
-                className="flex gap-4 items-start"
+                className="flex gap-6 items-start group-hover:[animation-play-state:paused]"
                 style={{
                   animation: 'scroll-right 60s linear infinite',
                   width: 'max-content',
@@ -1472,30 +1472,30 @@ export default function Home() {
                   ].map((testimonial, idx) => (
                     <div
                       key={`${setIndex}-${idx}`}
-                      className="flex-shrink-0 bg-white dark:bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-5 w-[350px]"
+                      className="flex-shrink-0 bg-white dark:bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 w-[450px]"
                     >
-                      {/* Review Text */}
-                      <p className="text-sm text-black dark:text-foreground leading-relaxed mb-4">{testimonial.text}</p>
-
-                      {/* Dashed Line Separator */}
-                      <div className="border-t border-dashed border-border my-4"></div>
-
-                      {/* Person Details */}
-                      <div className="flex items-center gap-3">
+                      {/* Person Details at Top */}
+                      <div className="flex items-center gap-3 mb-4">
                         <img
                           src={testimonial.avatar}
                           alt={testimonial.name}
-                          className="w-10 h-10 rounded-full object-cover"
+                          className="w-12 h-12 rounded-full object-cover"
                         />
                         <div className="flex-1">
-                          <p className="font-semibold text-sm text-foreground">{testimonial.name}</p>
-                          <p className="text-xs text-muted-foreground">{testimonial.handle}</p>
+                          <p className="font-semibold text-base text-foreground">{testimonial.name}</p>
+                          <p className="text-sm text-muted-foreground">{testimonial.handle}</p>
                         </div>
                         {/* X Logo */}
-                        <svg className="w-4 h-4 text-foreground opacity-60" viewBox="0 0 24 24" fill="currentColor">
+                        <svg className="w-5 h-5 text-foreground opacity-60" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                         </svg>
                       </div>
+
+                      {/* Dashed Line Separator */}
+                      <div className="border-t border-dashed border-border mb-4"></div>
+
+                      {/* Review Text at Bottom */}
+                      <p className="text-base text-black dark:text-foreground leading-relaxed">{testimonial.text}</p>
                     </div>
                   ))
                 )}
