@@ -155,19 +155,43 @@ export default function ProcessImagesPage() {
   }, [])
 
   const fetchUserCredits = async () => {
+    if (!user?.id) {
+      console.log('[ProcessImagesPage] No user ID, skipping credit fetch')
+      return
+    }
+
     try {
       const supabase = createClient()
 
-      // Fetch from user_credits table
+      // Fetch from user_credits table using maybeSingle to handle missing records
       const { data: creditsData, error } = await supabase
         .from('user_credits')
         .select('total_credits, used_credits')
-        .eq('user_id', user?.id || '')
-        .single()
+        .eq('user_id', user.id)
+        .maybeSingle()
 
       if (error) {
         console.error('[ProcessImagesPage] Error fetching credits:', error)
-        // Set default values on error
+        return
+      }
+
+      // If no record exists, create one
+      if (!creditsData) {
+        console.log('[ProcessImagesPage] No credits record found, creating one')
+        const { error: insertError } = await supabase
+          .from('user_credits')
+          .insert({
+            user_id: user.id,
+            total_credits: 80,
+            used_credits: 0
+          })
+
+        if (insertError) {
+          console.error('[ProcessImagesPage] Error creating credits:', insertError)
+          return
+        }
+
+        // Set initial credits after creation
         setCredits({
           used: 0,
           total: 80,
@@ -176,8 +200,8 @@ export default function ProcessImagesPage() {
         return
       }
 
-      const totalCredits = creditsData?.total_credits || 80
-      const usedCredits = creditsData?.used_credits || 0
+      const totalCredits = creditsData.total_credits || 80
+      const usedCredits = creditsData.used_credits || 0
       const availableCredits = Math.max(0, totalCredits - usedCredits)
 
       console.log('[ProcessImagesPage] Credits fetched:', {
@@ -192,13 +216,7 @@ export default function ProcessImagesPage() {
         available: availableCredits
       })
     } catch (error) {
-      console.error('Error fetching credits:', error)
-      // Set default values on error
-      setCredits({
-        used: 0,
-        total: 80,
-        available: 80
-      })
+      console.error('[ProcessImagesPage] Unexpected error fetching credits:', error)
     } finally {
       setCreditLoading(false)
     }

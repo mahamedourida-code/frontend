@@ -215,14 +215,37 @@ export default function DashboardPage() {
       const successRate = totalJobs > 0 ? (successfulJobs / totalJobs) * 100 : 0
 
       // Fetch credits from user_credits table
-      const { data: creditsData } = await supabase
+      const { data: creditsData, error: creditsError } = await supabase
         .from('user_credits')
         .select('total_credits, used_credits')
         .eq('user_id', user.id)
-        .single()
+        .maybeSingle()
 
-      const totalCredits = creditsData?.total_credits || 80
-      const creditsUsed = creditsData?.used_credits || 0
+      let totalCredits = 80
+      let creditsUsed = 0
+
+      // Handle missing credits record
+      if (!creditsData) {
+        console.log('[Dashboard] No credits record found, creating one')
+        const { error: insertError } = await supabase
+          .from('user_credits')
+          .insert({
+            user_id: user.id,
+            total_credits: 80,
+            used_credits: 0
+          })
+
+        if (insertError) {
+          console.error('[Dashboard] Error creating credits:', insertError)
+        }
+        // Use default values for new user
+        totalCredits = 80
+        creditsUsed = 0
+      } else {
+        totalCredits = creditsData.total_credits || 80
+        creditsUsed = creditsData.used_credits || 0
+      }
+
       const creditsAvailable = Math.max(0, totalCredits - creditsUsed)
 
       const newStats = {
