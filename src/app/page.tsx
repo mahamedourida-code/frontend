@@ -372,7 +372,7 @@ export default function Home() {
       {/* Navigation Bar */}
       <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 pt-3 lg:pt-4">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white dark:bg-white rounded-[35px] border-2 border-primary shadow-lg shadow-primary/10 backdrop-blur-md p-2 lg:p-3 flex items-center justify-between">
+          <div className="rounded-[35px] border-2 border-primary shadow-lg shadow-primary/10 backdrop-blur-md p-2 lg:p-3 flex items-center justify-between" style={{ backgroundColor: '#ecf4f5' }}>
             {/* Logo */}
             <div className="flex-shrink-0">
               <AppLogo />
@@ -538,7 +538,7 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-8 sm:gap-12 lg:gap-10 items-center">
               {/* Left Content */}
               <div ref={heroContentRef} className="max-w-xl -mt-4 lg:-mt-8">
-                <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white dark:bg-white border-2 border-primary mb-3 sm:mb-5 shadow-lg shadow-primary/10">
+                <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-primary mb-3 sm:mb-5 shadow-lg shadow-primary/10" style={{ backgroundColor: '#ecf4f5' }}>
                   <span className="text-xs sm:text-sm font-semibold text-foreground">Exceletto-7B Handwritten Specialist</span>
                 </div>
                 <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-black dark:text-white leading-[1.1] tracking-tight">
@@ -671,7 +671,7 @@ export default function Home() {
 
                   {/* Progressive Results Display */}
                   {(isProcessing || resultFiles.length > 0) && (
-                    <div className="border-2 border-primary rounded-xl p-6 bg-white">
+                    <div className="border-2 border-primary rounded-xl p-6" style={{ backgroundColor: '#ecf4f5' }}>
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-semibold">
                           {processingComplete ? 'Ready to Download' : 'Processing...'}
@@ -1006,7 +1006,7 @@ export default function Home() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-16" data-animate="headline">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-primary mb-4 shadow-lg shadow-primary/10" style={{ backgroundColor: '#ecf4f5' }}>
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     How Exceletto's Engine Is Built
                   </h2>
@@ -1020,7 +1020,7 @@ export default function Home() {
               {/* Main Content */}
               <div className="space-y-12">
                 {/* Instruction Fine-Tuning */}
-                <Card className="bg-white dark:bg-card border border-border shadow-lg" data-animate="stagger">
+                <Card className="border border-border shadow-lg" style={{ backgroundColor: '#ecf4f5' }} data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
                       <Layers className="w-6 h-6 text-primary" />
@@ -1078,7 +1078,7 @@ export default function Home() {
                 </Card>
 
                 {/* System Prompts & Guardrails */}
-                <Card className="bg-white dark:bg-card border border-border shadow-lg" data-animate="stagger">
+                <Card className="border border-border shadow-lg" style={{ backgroundColor: '#ecf4f5' }} data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
                       <Shield className="w-6 h-6 text-primary" />
@@ -1130,7 +1130,7 @@ export default function Home() {
                 </Card>
 
                 {/* Content Moderation */}
-                <Card className="bg-white dark:bg-card border border-border shadow-lg" data-animate="stagger">
+                <Card className="border border-border shadow-lg" style={{ backgroundColor: '#ecf4f5' }} data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
                       <Target className="w-6 h-6 text-primary" />
