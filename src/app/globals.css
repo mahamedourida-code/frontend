@@ -193,7 +193,7 @@
   --secondary: oklch(0.70 0.10 140);       /* Excel light green */
   --secondary-foreground: oklch(0.15 0 0);
   --muted: oklch(0.92 0 0);                /* Lighter gray for muted sections */
-  --muted-foreground: oklch(0.45 0 0);
+  --muted-foreground: #4b5497;
   --accent: oklch(0.88 0 0);               /* Distinct accent background */
   --accent-foreground: oklch(0.25 0 0);
   --destructive: oklch(0.5523 0.1927 32.7272);
@@ -249,7 +249,7 @@
   --secondary: #1a742e;       /* Light green accent */
   --secondary-foreground: oklch(0.08 0 0);
   --muted: oklch(0.22 0 0);                /* Subtle muted sections */
-  --muted-foreground: oklch(0.60 0 0);
+  --muted-foreground: #4b5497;
   --accent: oklch(0.25 0 0);               /* Subtle accent */
   --accent-foreground: oklch(0.92 0 0);
   --destructive: oklch(0.3123 0.0852 29.7877);
