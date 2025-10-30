@@ -1310,7 +1310,7 @@ Best regards`
                                         toast.error('Unable to download: File ID is missing')
                                         return
                                       }
-                                      downloadFile(file.file_id, renamedFiles[file.file_id] || file.filename || 'Result.xlsx')
+                                      downloadFile(file.file_id)
                                     }}
                                     className="gap-1.5 bg-primary hover:bg-primary/90 text-white"
                                   >
