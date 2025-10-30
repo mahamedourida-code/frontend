@@ -276,6 +276,10 @@ function VerifyEmailContent() {
               <p className="text-xs text-muted-foreground text-center">
                 Enter the 6-digit code from your email, then click Verify
               </p>
+              <div className="text-xs text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/30 p-3 rounded-md border border-amber-200 dark:border-amber-900">
+                <p className="font-semibold mb-1">📧 Email may take 2-5 minutes to arrive</p>
+                <p>Check your spam/junk folder if you don't see it in your inbox. The email is from <span className="font-mono">noreply@mail.app.supabase.io</span></p>
+              </div>
             </div>
 
             {/* Error Message */}
