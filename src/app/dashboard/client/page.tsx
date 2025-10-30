@@ -132,8 +132,6 @@ export default function ProcessImagesPage() {
   const [editingFileId, setEditingFileId] = useState<string | null>(null)
   const [newFileName, setNewFileName] = useState<string>("")
   const [renamedFiles, setRenamedFiles] = useState<{[key: string]: string}>({})
-  const [previousBatches, setPreviousBatches] = useState<Array<{files: any[], timestamp: number}>>([])
-  const [currentBatchStartIndex, setCurrentBatchStartIndex] = useState(0)
 
   // Track if auto-actions have been executed for current job to prevent duplicates
   const autoActionsExecutedRef = useRef<string | null>(null)
@@ -466,13 +464,6 @@ export default function ProcessImagesPage() {
       return
     }
 
-    // Before starting a new batch, move current files to previous batches
-    if (resultFiles && resultFiles.length > 0) {
-      setPreviousBatches(prev => [...prev, { files: [...resultFiles], timestamp: Date.now() }])
-      setCurrentBatchStartIndex(prev => prev + resultFiles.length)
-      reset() // Clear current batch now that we're starting a new one
-    }
-
     try {
       const response = await uploadBatch(uploadedFiles)
       if (response && response.session_id) {
@@ -517,16 +508,9 @@ export default function ProcessImagesPage() {
   }
 
   const handleReset = () => {
-    // Save current batch to history before resetting
-    if (resultFiles && resultFiles.length > 0) {
-      setPreviousBatches(prev => [...prev, { files: [...resultFiles], timestamp: Date.now() }])
-      setCurrentBatchStartIndex(prev => prev + resultFiles.length)
-    }
-
     setUploadedFiles([])
-    // Don't reset resultFiles immediately - they'll stay visible until new batch starts processing
-    // reset() - commented out to keep old files visible
-
+    reset() // This resets status to 'idle' and clears resultFiles
+    
     // Reset auto-actions trackers
     autoActionsExecutedRef.current = null
     isExecutingAutoActionsRef.current = false
@@ -1303,100 +1287,7 @@ Best regards`
                 )}
                 
                 <div className="space-y-2">
-                  {/* Previous Batches */}
-                  {previousBatches.map((batch, batchIndex) => (
-                    <div key={`batch-${batchIndex}`} className="space-y-2">
-                      {batchIndex > 0 && (
-                        <div className="relative my-6">
-                          <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t border-dashed border-muted-foreground/30" />
-                          </div>
-                          <div className="relative flex justify-center text-xs">
-                            <span className="bg-background px-2 text-muted-foreground">
-                              {new Date(batch.timestamp).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                      {/* Batch header with file count */}
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="secondary" className="gap-1 opacity-70">
-                          <FileSpreadsheet className="h-3 w-3" />
-                          {batch.files.length} {batch.files.length === 1 ? 'file' : 'files'}
-                        </Badge>
-                      </div>
-                      {batch.files.map((file: any, fileIndex: number) => {
-                        const startIdx = previousBatches.slice(0, batchIndex).reduce((sum, b) => sum + b.files.length, 0)
-                        const absoluteIndex = startIdx + fileIndex
-                        return (
-                          <Card
-                            key={`${file.file_id}-${batchIndex}-${fileIndex}`}
-                            className="overflow-hidden opacity-70"
-                          >
-                            <CardContent className="p-4">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3 flex-1 min-w-0">
-                                  <div className="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full bg-muted text-sm font-semibold text-muted-foreground">
-                                    {absoluteIndex + 1}
-                                  </div>
-                                  <div className="flex items-center justify-center flex-shrink-0">
-                                    <FileSpreadsheet className="h-6 w-6 text-primary" />
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="font-medium text-sm truncate">
-                                      {renamedFiles[file.file_id] || file.filename || `Image ${absoluteIndex + 1} Result`}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2 flex-shrink-0">
-                                  <Button
-                                    size="sm"
-                                    onClick={() => {
-                                      if (!file.file_id) {
-                                        toast.error('Unable to download: File ID is missing')
-                                        return
-                                      }
-                                      downloadFile(file.file_id)
-                                    }}
-                                    className="gap-1.5 bg-primary hover:bg-primary/90 text-white"
-                                  >
-                                    <Download className="h-4 w-4" />
-                                    Download
-                                  </Button>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        )
-                      })}
-                    </div>
-                  ))}
-
-                  {/* Separator between old and new batches */}
-                  {previousBatches.length > 0 && resultFiles.length > 0 && (
-                    <div className="relative my-6">
-                      <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t-2 border-dashed border-primary/50" />
-                      </div>
-                      <div className="relative flex justify-center text-sm">
-                        <span className="bg-background px-3 py-1 text-primary font-semibold">
-                          {new Date().toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Current Batch */}
+                  {/* Current Results */}
                   {resultFiles.length > 0 && (
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="secondary" className="gap-1 bg-primary/20">
@@ -1414,7 +1305,7 @@ Best regards`
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3 flex-1 min-w-0">
                             <div className="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full bg-primary text-sm font-semibold text-primary-foreground">
-                              {currentBatchStartIndex + index + 1}
+                              {index + 1}
                             </div>
                             <div className="flex items-center justify-center flex-shrink-0">
                               <FileSpreadsheet className="h-6 w-6 text-primary" />
