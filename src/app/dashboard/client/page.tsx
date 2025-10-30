@@ -156,32 +156,40 @@ export default function ProcessImagesPage() {
 
   const fetchUserCredits = async () => {
     try {
-      // Calculate credits from all processed images (just like dashboard)
       const supabase = createClient()
-      const { data: allJobs } = await supabase
-        .from('processing_jobs')
-        .select('processing_metadata')
-        .eq('user_id', user?.id || '')
-      
-      const typedAllJobs = (allJobs || []) as any[]
-      const totalImagesProcessed = typedAllJobs.reduce((sum, job) => 
-        sum + (job.processing_metadata?.total_images || 1), 0)
 
-      // Simple credit calculation - 80 total, minus what's been used
-      const TOTAL_CREDITS = 80
-      const creditsUsed = Math.min(totalImagesProcessed, TOTAL_CREDITS)
-      const creditsAvailable = Math.max(0, TOTAL_CREDITS - totalImagesProcessed)
-      
-      console.log('[ProcessImagesPage] Credits calculated:', {
-        totalImagesProcessed,
-        creditsUsed,
-        creditsAvailable
+      // Fetch from user_credits table
+      const { data: creditsData, error } = await supabase
+        .from('user_credits')
+        .select('total_credits, used_credits')
+        .eq('user_id', user?.id || '')
+        .single()
+
+      if (error) {
+        console.error('[ProcessImagesPage] Error fetching credits:', error)
+        // Set default values on error
+        setCredits({
+          used: 0,
+          total: 80,
+          available: 80
+        })
+        return
+      }
+
+      const totalCredits = creditsData?.total_credits || 80
+      const usedCredits = creditsData?.used_credits || 0
+      const availableCredits = Math.max(0, totalCredits - usedCredits)
+
+      console.log('[ProcessImagesPage] Credits fetched:', {
+        totalCredits,
+        usedCredits,
+        availableCredits
       })
-      
+
       setCredits({
-        used: creditsUsed,
-        total: TOTAL_CREDITS,
-        available: creditsAvailable
+        used: usedCredits,
+        total: totalCredits,
+        available: availableCredits
       })
     } catch (error) {
       console.error('Error fetching credits:', error)

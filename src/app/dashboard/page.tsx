@@ -214,32 +214,28 @@ export default function DashboardPage() {
       const successfulJobs = typedJobs.filter(job => job.status === 'completed').length
       const successRate = totalJobs > 0 ? (successfulJobs / totalJobs) * 100 : 0
 
-      // Calculate total images processed (all time) - this is our "credits used"
-      const { data: allJobs } = await supabase
-        .from('processing_jobs')
-        .select('processing_metadata')
+      // Fetch credits from user_credits table
+      const { data: creditsData } = await supabase
+        .from('user_credits')
+        .select('total_credits, used_credits')
         .eq('user_id', user.id)
-      
-      const typedAllJobs = (allJobs || []) as Job[]
-      const totalImagesProcessed = typedAllJobs.reduce((sum, job) => 
-        sum + (job.processing_metadata?.total_images || 1), 0)
+        .single()
 
-      // Simple credit calculation - 80 total, minus what's been used
-      const TOTAL_CREDITS = 80
-      const creditsUsed = Math.min(totalImagesProcessed, TOTAL_CREDITS) // Cap at 80
-      const creditsAvailable = Math.max(0, TOTAL_CREDITS - totalImagesProcessed) // Don't go negative
+      const totalCredits = creditsData?.total_credits || 80
+      const creditsUsed = creditsData?.used_credits || 0
+      const creditsAvailable = Math.max(0, totalCredits - creditsUsed)
 
       const newStats = {
         totalProcessed: totalImages,
         todayProcessed: todayImages,
         creditsUsed: creditsUsed,
-        totalCredits: TOTAL_CREDITS,
+        totalCredits: totalCredits,
         availableCredits: creditsAvailable,
         averageTime: avgTime,
         successRate
       }
       console.log('[Dashboard] Stats calculated:', {
-        totalImagesProcessed,
+        totalImages,
         creditsUsed,
         creditsAvailable
       })
