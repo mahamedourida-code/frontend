@@ -493,7 +493,7 @@ export default function ProcessImagesPage() {
 
   const handleReset = () => {
     // Save current batch to history before resetting
-    if (resultFiles.length > 0) {
+    if (resultFiles && resultFiles.length > 0) {
       setPreviousBatches(prev => [...prev, { files: [...resultFiles], timestamp: Date.now() }])
       setCurrentBatchStartIndex(prev => prev + resultFiles.length)
     }
