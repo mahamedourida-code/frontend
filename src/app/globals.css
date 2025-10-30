@@ -249,7 +249,7 @@
   --secondary: #1a742e;       /* Light green accent */
   --secondary-foreground: oklch(0.08 0 0);
   --muted: oklch(0.22 0 0);                /* Subtle muted sections */
-  --muted-foreground: #4b5497;
+  --muted-foreground: #aa813b;
   --accent: oklch(0.25 0 0);               /* Subtle accent */
   --accent-foreground: oklch(0.92 0 0);
   --destructive: oklch(0.3123 0.0852 29.7877);
