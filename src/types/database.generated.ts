@@ -192,11 +192,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_stats: {
+        Row: {
+          created_at: string | null
+          last_processed_at: string | null
+          total_processed: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          last_processed_at?: string | null
+          total_processed?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          last_processed_at?: string | null
+          total_processed?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      increment_processed_count: {
+        Args: { p_count?: number; p_user_id: string }
+        Returns: number
+      }
       get_user_job_history: {
         Args: Record<PropertyKey, never>
         Returns: {
