@@ -112,7 +112,7 @@ export default function ProcessImagesPage() {
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([])
   const [shareSession, setShareSession] = useState<any>(null)
   const [copySuccess, setCopySuccess] = useState(false)
-  const [creditLoading, setCreditLoading] = useState(true)
+  const [creditLoading, setCreditLoading] = useState(false) // Start with false, set to true when fetching
   const [autoDownload, setAutoDownload] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('autoDownload')
@@ -145,14 +145,17 @@ export default function ProcessImagesPage() {
     printed: { label: "Printed Tables", icon: Monitor, color: "bg-purple-500" }
   }[documentType as string] || { label: "Handwritten Tables", icon: PenTool, color: "bg-blue-500" }
   
-  // Log environment configuration on mount
+  // Log environment configuration and session on mount
   useEffect(() => {
     console.log('[ProcessImagesPage] Environment Configuration:', {
       API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev',
       WS_URL: process.env.NEXT_PUBLIC_WS_URL,
-      FB_APP_ID: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID
+      FB_APP_ID: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID,
+      USER: user?.email,
+      SESSION: !!session,
+      AUTH_LOADING: authLoading
     })
-  }, [])
+  }, [user, session, authLoading])
 
   const fetchUserCredits = async () => {
     if (!user?.id) {
@@ -161,8 +164,7 @@ export default function ProcessImagesPage() {
     }
 
     try {
-      const supabase = createClient()
-
+      // Use the supabase instance from component level
       // Fetch from user_credits table using maybeSingle to handle missing records
       const { data: creditsData, error } = await supabase
         .from('user_credits')
@@ -266,18 +268,25 @@ export default function ProcessImagesPage() {
 
   // Fetch user's credit status on mount and periodically refresh
   useEffect(() => {
-    if (user) {
-      console.log('[ProcessImagesPage] Initial credit fetch for user')
+    // Only fetch when we have a user and auth loading is complete
+    if (!authLoading && user?.id) {
+      console.log('[ProcessImagesPage] Initial credit fetch for user:', user.id, user.email)
+      setCreditLoading(true)
       fetchUserCredits()
       
       // Refresh credits every 5 seconds to stay in sync
       const interval = setInterval(() => {
-        fetchUserCredits()
+        if (user?.id) {
+          fetchUserCredits()
+        }
       }, 5000)
       
       return () => clearInterval(interval)
+    } else if (!authLoading && !user) {
+      console.log('[ProcessImagesPage] No user after auth loading complete')
+      setCreditLoading(false)
     }
-  }, [user])
+  }, [user, authLoading, supabase]) // Add supabase to dependencies
 
   // Don't refetch credits after completion - they were already deducted at start
   // Remove this useEffect that was causing the revert issue

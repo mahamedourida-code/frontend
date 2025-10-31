@@ -79,7 +79,8 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const router = useRouter()
-  const { user, loading: authLoading, signOut } = useAuth()
+  const { user, loading: authLoading, signOut, session } = useAuth()
+  const supabase = createClient() // Create single instance at component level
   const [timeRange, setTimeRange] = useState<TimeRange>("7d")
   const [chartData, setChartData] = useState<ProcessingData[]>([])
   const [stats, setStats] = useState<DashboardStats>({
@@ -104,12 +105,11 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/sign-in')
-    } else if (user) {
+    } else if (!authLoading && user) {
       // Initial data fetch
       fetchDashboardData()
 
       // Set up Supabase Realtime subscriptions for instant updates
-      const supabase = createClient()
       const subscription = supabase
         .channel('dashboard-updates')
         .on('postgres_changes',
@@ -158,7 +158,7 @@ export default function DashboardPage() {
     if (!user) return
     
     setLoading(true)
-    const supabase = createClient()
+    // Use the supabase instance from component level
     
     try {
       // Calculate date range based on selected time
