@@ -495,7 +495,6 @@ export default function Home() {
                   className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-4 py-2 text-sm font-medium transition-colors shadow-lg hover:shadow-xl"
                   onClick={() => window.location.href = '/dashboard'}
                 >
-                  <Upload className="w-4 h-4 mr-1.5" />
                   Go to Dashboard
                 </Button>
               ) : (
@@ -1529,7 +1528,6 @@ export default function Home() {
                   className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 transition-all duration-200 shadow-lg shadow-primary/20"
                   onClick={() => window.location.href = isAuthenticated ? '/dashboard' : '/sign-in'}
                 >
-                  <Sparkles className="w-5 h-5 mr-2" />
                   {isAuthenticated ? 'Go to Dashboard' : 'Try for free'}
                 </Button>
               </div>
