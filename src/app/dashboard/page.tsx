@@ -434,11 +434,12 @@ export default function DashboardPage() {
               <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs lg:text-sm text-muted-foreground">Avg. Time</p>
-                    <p className="text-2xl lg:text-3xl font-bold mt-1">{stats.averageTime.toFixed(1)}s</p>
+                    <p className="text-xs lg:text-sm text-muted-foreground">Images Left</p>
+                    <p className="text-2xl lg:text-3xl font-bold mt-1">{110 - stats.thisMonthProcessed}</p>
+                    <p className="text-[10px] lg:text-xs text-muted-foreground mt-0.5">This month</p>
                   </div>
                   <div className="flex-shrink-0">
-                    <Clock className="h-8 w-8 lg:h-10 lg:w-10 text-primary/60" />
+                    <Image className="h-8 w-8 lg:h-10 lg:w-10 text-primary/60" />
                   </div>
                 </div>
               </CardContent>

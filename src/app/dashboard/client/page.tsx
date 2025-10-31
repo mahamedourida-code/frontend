@@ -107,6 +107,8 @@ export default function ProcessImagesPage() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [selectedView, setSelectedView] = useState<"grid" | "list">("grid")
   const [processedCount, setProcessedCount] = useState(0)
+  const [imagesLeft, setImagesLeft] = useState(110)
+  const [resetDate, setResetDate] = useState<string | null>(null)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null)
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([])
@@ -167,7 +169,7 @@ export default function ProcessImagesPage() {
       // Fetch user stats from simple stats table
       const { data: userStats, error } = await supabase
         .from('user_stats')
-        .select('total_processed')
+        .select('total_processed, month_processed, month_start_date')
         .eq('user_id', user.id)
         .maybeSingle()
 
@@ -177,8 +179,27 @@ export default function ProcessImagesPage() {
       }
 
       const totalProcessed = userStats?.total_processed || 0
-      console.log('[ProcessImagesPage] Stats fetched: Total processed =', totalProcessed)
+      const monthProcessed = userStats?.month_processed || 0
+      const monthStart = userStats?.month_start_date
+      
+      // Calculate images left
+      const left = 110 - monthProcessed
       setProcessedCount(totalProcessed)
+      setImagesLeft(left > 0 ? left : 0)
+      
+      // Calculate reset date (30 days from month start)
+      if (monthStart) {
+        const resetDate = new Date(monthStart)
+        resetDate.setDate(resetDate.getDate() + 30)
+        setResetDate(resetDate.toLocaleDateString())
+      }
+      
+      console.log('[ProcessImagesPage] Stats fetched:', {
+        totalProcessed,
+        monthProcessed,
+        imagesLeft: left,
+        resetDate: monthStart
+      })
       
     } catch (error) {
       console.error('[ProcessImagesPage] Unexpected error fetching stats:', error)
@@ -422,14 +443,25 @@ export default function ProcessImagesPage() {
     if (uploadedFiles.length === 0) return
 
     const imagesCount = uploadedFiles.length
+    
+    // Check if user has enough images left
+    if (imagesLeft < imagesCount) {
+      if (imagesLeft === 0) {
+        toast.error(`Monthly limit reached! Your limit will reset on ${resetDate || 'next month'}.`)
+      } else {
+        toast.error(`You only have ${imagesLeft} images left this month. Remove ${imagesCount - imagesLeft} images to proceed.`)
+      }
+      return
+    }
 
     try {
       const response = await uploadBatch(uploadedFiles)
       if (response && response.session_id) {
         connectWebSocket(response.session_id)
         
-        // Update processed count optimistically
+        // Update counts optimistically
         setProcessedCount(prev => prev + imagesCount)
+        setImagesLeft(prev => Math.max(0, prev - imagesCount))
         
         // Refresh stats after a delay
         setTimeout(() => {
@@ -437,11 +469,15 @@ export default function ProcessImagesPage() {
           fetchUserStats()
         }, 2000)
 
-        toast.success(`Processing ${imagesCount} image${imagesCount > 1 ? 's' : ''}`)
+        toast.success(`Processing ${imagesCount} image${imagesCount > 1 ? 's' : ''}. ${imagesLeft - imagesCount} images left this month.`)
       }
     } catch (error: any) {
       // Handle errors
-      if (error?.status_code === 500) {
+      if (error?.status_code === 402) {
+        // Payment required - monthly limit reached
+        toast.error(`Monthly limit reached! Your limit will reset on ${resetDate || 'next month'}.`)
+        fetchUserStats() // Refresh to get accurate counts
+      } else if (error?.status_code === 500) {
         // Server error
         toast.error('Server error. Please try again or contact support.')
       } else {
@@ -450,7 +486,7 @@ export default function ProcessImagesPage() {
       }
       console.error('[ProcessImages] Error:', error)
     }
-  }, [uploadedFiles, uploadBatch, connectWebSocket, resultFiles, reset])
+  }, [uploadedFiles, uploadBatch, connectWebSocket, resultFiles, reset, imagesLeft, resetDate])
 
   const handleRemoveFile = (index: number) => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index))
@@ -916,10 +952,10 @@ Best regards`
             </div>
             <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
               <Badge
-                variant="secondary"
+                variant={imagesLeft <= 10 ? "destructive" : "secondary"}
                 className="gap-1 px-2 py-1 text-xs"
               >
-                {processedCount} processed
+                {imagesLeft} images left
               </Badge>
               <Button
                 size="sm"
@@ -1135,10 +1171,15 @@ Best regards`
                 {/* Process Button */}
                 {uploadedFiles.length > 0 && (
                   <div className="mt-4 flex items-center justify-end">
+                    {uploadedFiles.length > imagesLeft && (
+                      <span className="text-sm text-destructive mr-3">
+                        Not enough images left! Need {uploadedFiles.length - imagesLeft} fewer
+                      </span>
+                    )}
                     <Button
                       size="lg"
                       onClick={handleProcessImages}
-                      disabled={isProcessing}
+                      disabled={isProcessing || uploadedFiles.length > imagesLeft}
                       className="gap-2"
                     >
                       {isProcessing ? (

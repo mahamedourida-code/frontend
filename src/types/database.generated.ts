@@ -197,18 +197,24 @@ export type Database = {
           created_at: string | null
           last_processed_at: string | null
           total_processed: number | null
+          month_processed: number | null
+          month_start_date: string | null
           user_id: string
         }
         Insert: {
           created_at?: string | null
           last_processed_at?: string | null
           total_processed?: number | null
+          month_processed?: number | null
+          month_start_date?: string | null
           user_id: string
         }
         Update: {
           created_at?: string | null
           last_processed_at?: string | null
           total_processed?: number | null
+          month_processed?: number | null
+          month_start_date?: string | null
           user_id?: string
         }
         Relationships: []
@@ -220,7 +226,14 @@ export type Database = {
     Functions: {
       increment_processed_count: {
         Args: { p_count?: number; p_user_id: string }
-        Returns: number
+        Returns: {
+          success: boolean
+          total_processed?: number
+          month_processed?: number
+          images_left?: number
+          reset_date?: string
+          error?: string
+        }
       }
       get_user_job_history: {
         Args: Record<PropertyKey, never>
