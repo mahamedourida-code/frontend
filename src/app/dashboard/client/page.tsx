@@ -505,7 +505,12 @@ export default function ProcessImagesPage() {
           used: prev.used + creditsNeeded,
           available: Math.max(0, prev.available - creditsNeeded)
         }))
-        // Credits will be refetched when status becomes 'completed' via useEffect
+        
+        // Immediately refetch to confirm backend update
+        setTimeout(() => {
+          console.log('[ProcessImages] Refetching credits after processing start')
+          fetchUserCredits()
+        }, 1000)
 
         toast.success(`Processing ${creditsNeeded} image${creditsNeeded > 1 ? 's' : ''}. ${creditsAvailable - creditsNeeded} credits remaining.`)
       }

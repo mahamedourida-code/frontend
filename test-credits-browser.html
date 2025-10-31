@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credits System Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #555;
+            font-size: 18px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        .log {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #3b82f6;
+            padding-left: 10px;
+        }
+        .log-entry.error {
+            border-left-color: #ef4444;
+            background: #fee;
+        }
+        .log-entry.success {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+        .credits-display {
+            background: #f0f9ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border: 2px solid #3b82f6;
+        }
+        .credits-display strong {
+            font-size: 24px;
+            color: #3b82f6;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Credits System Test</h1>
+        
+        <div class="test-section">
+            <h2>Configuration</h2>
+            <label>API URL:</label>
+            <input type="text" id="apiUrl" value="https://backend-lively-hill-7043.fly.dev" />
+            <label>Supabase URL:</label>
+            <input type="text" id="supabaseUrl" value="https://iawkqvdtktnvxqgpupvt.supabase.co" />
+            <label>Supabase Anon Key (from localStorage):</label>
+            <input type="text" id="supabaseKey" placeholder="Will be auto-filled if logged in" />
+        </div>
+
+        <div class="test-section">
+            <h2>Current Credits</h2>
+            <div class="credits-display">
+                <div>Total: <strong id="totalCredits">-</strong></div>
+                <div>Used: <strong id="usedCredits">-</strong></div>
+                <div>Available: <strong id="availableCredits">-</strong></div>
+                <div>Reset Date: <strong id="resetDate">-</strong></div>
+                <div>Last Updated: <strong id="lastUpdated">-</strong></div>
+            </div>
+            <button onclick="checkCredits()">Refresh Credits</button>
+            <button onclick="setupRealtime()">Setup Realtime Updates</button>
+        </div>
+
+        <div class="test-section">
+            <h2>Test Credit Operations</h2>
+            <button onclick="testUseCredits(1)">Use 1 Credit</button>
+            <button onclick="testUseCredits(5)">Use 5 Credits</button>
+            <button onclick="testProcessImage()">Process Test Image (Backend)</button>
+            <button onclick="resetCredits()">Reset Credits to 0</button>
+        </div>
+
+        <div class="test-section">
+            <h2>Test Log</h2>
+            <button onclick="clearLog()">Clear Log</button>
+            <div id="log" class="log"></div>
+        </div>
+    </div>
+
+    <script>
+        let supabase = null;
+        let realtimeChannel = null;
+        let currentUser = null;
+
+        // Initialize on page load
+        window.onload = async function() {
+            log('Initializing...', 'info');
+            
+            // Try to get Supabase credentials from localStorage
+            const storedAuth = localStorage.getItem('sb-iawkqvdtktnvxqgpupvt-auth-token');
+            if (storedAuth) {
+                try {
+                    const auth = JSON.parse(storedAuth);
+                    currentUser = auth.user;
+                    log(`Found user: ${auth.user?.email}`, 'success');
+                    
+                    // Auto-fill the anon key
+                    const anonKey = localStorage.getItem('NEXT_PUBLIC_SUPABASE_ANON_KEY') || 
+                                   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlhd2txdmR0a3RudnhxZ3B1cHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgyMzQ0MDQsImV4cCI6MjA0MzgxMDQwNH0.l8kR0l4m4K7JtMRF-pXn-LtoqJzR0QDe_oBpOZRJPmI';
+                    document.getElementById('supabaseKey').value = anonKey;
+                    
+                    // Initialize Supabase client
+                    initSupabase();
+                    
+                    // Auto-check credits
+                    await checkCredits();
+                } catch (e) {
+                    log('Error parsing auth: ' + e.message, 'error');
+                }
+            } else {
+                log('No user logged in. Please log in to the app first.', 'error');
+            }
+        };
+
+        function initSupabase() {
+            const url = document.getElementById('supabaseUrl').value;
+            const key = document.getElementById('supabaseKey').value;
+            
+            if (!key) {
+                log('Supabase key not provided', 'error');
+                return false;
+            }
+
+            // Create Supabase client using the SDK from CDN
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+            script.onload = () => {
+                supabase = window.supabase.createClient(url, key);
+                log('Supabase client initialized', 'success');
+            };
+            document.head.appendChild(script);
+            
+            return true;
+        }
+
+        async function checkCredits() {
+            if (!supabase) {
+                if (!initSupabase()) return;
+                // Wait for SDK to load
+                setTimeout(checkCredits, 1000);
+                return;
+            }
+
+            if (!currentUser) {
+                log('No user logged in', 'error');
+                return;
+            }
+
+            log('Fetching credits...', 'info');
+
+            try {
+                const { data, error } = await supabase
+                    .from('user_credits')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .maybeSingle();
+
+                if (error) {
+                    log('Error fetching credits: ' + error.message, 'error');
+                    return;
+                }
+
+                if (!data) {
+                    log('No credits record found', 'error');
+                    return;
+                }
+
+                // Update display
+                document.getElementById('totalCredits').textContent = data.total_credits || 80;
+                document.getElementById('usedCredits').textContent = data.used_credits || 0;
+                document.getElementById('availableCredits').textContent = (data.total_credits || 80) - (data.used_credits || 0);
+                document.getElementById('resetDate').textContent = data.reset_date || 'N/A';
+                document.getElementById('lastUpdated').textContent = new Date(data.last_updated).toLocaleString();
+
+                log(`Credits fetched: ${data.used_credits}/${data.total_credits} used`, 'success');
+            } catch (e) {
+                log('Exception: ' + e.message, 'error');
+            }
+        }
+
+        async function setupRealtime() {
+            if (!supabase) {
+                log('Supabase not initialized', 'error');
+                return;
+            }
+
+            if (!currentUser) {
+                log('No user logged in', 'error');
+                return;
+            }
+
+            log('Setting up realtime subscription...', 'info');
+
+            // Unsubscribe from existing channel if any
+            if (realtimeChannel) {
+                await supabase.removeChannel(realtimeChannel);
+            }
+
+            // Subscribe to credits changes
+            realtimeChannel = supabase
+                .channel('credits-changes')
+                .on('postgres_changes', 
+                    {
+                        event: '*',
+                        schema: 'public',
+                        table: 'user_credits',
+                        filter: `user_id=eq.${currentUser.id}`
+                    },
+                    (payload) => {
+                        log(`Realtime update: ${payload.eventType}`, 'success');
+                        console.log('Realtime payload:', payload);
+                        checkCredits();
+                    }
+                )
+                .subscribe((status) => {
+                    if (status === 'SUBSCRIBED') {
+                        log('Realtime subscription active', 'success');
+                    } else {
+                        log(`Subscription status: ${status}`, 'info');
+                    }
+                });
+        }
+
+        async function testUseCredits(amount) {
+            if (!supabase) {
+                log('Supabase not initialized', 'error');
+                return;
+            }
+
+            if (!currentUser) {
+                log('No user logged in', 'error');
+                return;
+            }
+
+            log(`Testing use_credits RPC with ${amount} credits...`, 'info');
+
+            try {
+                const { data, error } = await supabase.rpc('use_credits', {
+                    p_user_id: currentUser.id,
+                    p_credits: amount
+                });
+
+                if (error) {
+                    log(`RPC Error: ${error.message}`, 'error');
+                    return;
+                }
+
+                if (data === true) {
+                    log(`Successfully used ${amount} credits!`, 'success');
+                    await checkCredits();
+                } else {
+                    log(`Failed to use credits - insufficient balance`, 'error');
+                }
+            } catch (e) {
+                log(`Exception: ${e.message}`, 'error');
+            }
+        }
+
+        async function testProcessImage() {
+            const apiUrl = document.getElementById('apiUrl').value;
+            
+            if (!currentUser) {
+                log('No user logged in', 'error');
+                return;
+            }
+
+            log('Testing image processing via backend...', 'info');
+
+            // Get the auth token
+            const storedAuth = localStorage.getItem('sb-iawkqvdtktnvxqgpupvt-auth-token');
+            if (!storedAuth) {
+                log('No auth token found', 'error');
+                return;
+            }
+
+            const auth = JSON.parse(storedAuth);
+            const token = auth.access_token;
+
+            // Create a tiny test image (1x1 transparent PNG)
+            const testImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+
+            try {
+                const response = await fetch(`${apiUrl}/api/v1/jobs/batch`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        images: [testImage]
+                    })
+                });
+
+                const responseText = await response.text();
+                
+                if (response.status === 200) {
+                    const data = JSON.parse(responseText);
+                    log(`Success! Session ID: ${data.session_id}`, 'success');
+                    log('1 credit should have been deducted', 'info');
+                    
+                    // Check credits after a delay
+                    setTimeout(() => {
+                        log('Checking credits after processing...', 'info');
+                        checkCredits();
+                    }, 2000);
+                } else if (response.status === 402) {
+                    log('Insufficient credits!', 'error');
+                    log(`Response: ${responseText}`, 'error');
+                } else {
+                    log(`Unexpected response: ${response.status}`, 'error');
+                    log(`Response: ${responseText}`, 'error');
+                }
+            } catch (e) {
+                log(`Exception: ${e.message}`, 'error');
+            }
+        }
+
+        async function resetCredits() {
+            if (!supabase) {
+                log('Supabase not initialized', 'error');
+                return;
+            }
+
+            if (!currentUser) {
+                log('No user logged in', 'error');
+                return;
+            }
+
+            log('Resetting credits to 0...', 'info');
+
+            try {
+                const { error } = await supabase
+                    .from('user_credits')
+                    .update({ 
+                        used_credits: 0,
+                        last_updated: new Date().toISOString()
+                    })
+                    .eq('user_id', currentUser.id);
+
+                if (error) {
+                    log(`Error: ${error.message}`, 'error');
+                } else {
+                    log('Credits reset successfully!', 'success');
+                    await checkCredits();
+                }
+            } catch (e) {
+                log(`Exception: ${e.message}`, 'error');
+            }
+        }
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type === 'error' ? 'error' : type === 'success' ? 'success' : ''}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            logDiv.insertBefore(entry, logDiv.firstChild);
+            
+            // Keep only last 50 entries
+            while (logDiv.children.length > 50) {
+                logDiv.removeChild(logDiv.lastChild);
+            }
+            
+            console.log(`[${type.toUpperCase()}]`, message);
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+            log('Log cleared', 'info');
+        }
+    </script>
+</body>
+</html>

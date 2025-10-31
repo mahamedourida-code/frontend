@@ -245,7 +245,8 @@ export default function DashboardPage() {
           .insert({
             user_id: user.id,
             total_credits: 80,
-            used_credits: 0
+            used_credits: 0,
+            reset_date: '2024-12-01'
           })
 
         if (insertError) {
