@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/useAuth"
 import { createClient } from "@/utils/supabase/client"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -30,17 +31,36 @@ import {
   ChevronLeft
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Area,
-  AreaChart
-} from "recharts"
+
+// Dynamic import for Recharts components to avoid SSR issues
+const ResponsiveContainer = dynamic(
+  () => import("recharts").then(mod => mod.ResponsiveContainer),
+  { ssr: false }
+)
+const LineChart = dynamic(
+  () => import("recharts").then(mod => mod.LineChart),
+  { ssr: false }
+)
+const Line = dynamic(
+  () => import("recharts").then(mod => mod.Line),
+  { ssr: false }
+)
+const XAxis = dynamic(
+  () => import("recharts").then(mod => mod.XAxis),
+  { ssr: false }
+)
+const YAxis = dynamic(
+  () => import("recharts").then(mod => mod.YAxis),
+  { ssr: false }
+)
+const CartesianGrid = dynamic(
+  () => import("recharts").then(mod => mod.CartesianGrid),
+  { ssr: false }
+)
+const Tooltip = dynamic(
+  () => import("recharts").then(mod => mod.Tooltip),
+  { ssr: false }
+)
 import { format, subDays, subHours, startOfDay, endOfDay, eachDayOfInterval, eachHourOfInterval } from "date-fns"
 
 type TimeRange = "1d" | "7d" | "30d" | "3m"
@@ -152,28 +172,65 @@ export default function DashboardPage() {
       if (error) throw error
 
       const typedJobs = (jobs || []) as Job[]
+      console.log('[Dashboard] Jobs fetched:', {
+        count: typedJobs.length,
+        sample: typedJobs[0],
+        metadata: typedJobs[0]?.processing_metadata
+      })
 
       // Process data for chart
       const processedData = generateChartData(typedJobs, timeRange)
+      console.log('[Dashboard] Chart data generated:', {
+        timeRange,
+        dataPoints: processedData.length,
+        totalJobs: typedJobs.length,
+        data: processedData
+      })
       setChartData(processedData)
 
       // Calculate stats
       const totalJobs = typedJobs.length
-      const totalImages = typedJobs.reduce((sum, job) => 
-        sum + (job.processing_metadata?.total_images || 1), 0)
+      const totalImages = typedJobs.reduce((sum, job) => {
+        let metadata = job.processing_metadata
+        if (typeof metadata === 'string') {
+          try {
+            metadata = JSON.parse(metadata)
+          } catch (e) {
+            metadata = null
+          }
+        }
+        return sum + (metadata?.total_images || 1)
+      }, 0)
       
       // Get today's jobs
       const todayStart = startOfDay(now)
       const todayJobs = typedJobs.filter(job => 
         new Date(job.created_at) >= todayStart
       )
-      const todayImages = todayJobs.reduce((sum, job) => 
-        sum + (job.processing_metadata?.total_images || 1), 0)
+      const todayImages = todayJobs.reduce((sum, job) => {
+        let metadata = job.processing_metadata
+        if (typeof metadata === 'string') {
+          try {
+            metadata = JSON.parse(metadata)
+          } catch (e) {
+            metadata = null
+          }
+        }
+        return sum + (metadata?.total_images || 1)
+      }, 0)
       
       // Calculate average processing time
       const processingTimes = typedJobs.map(job => {
-        if (job.processing_metadata?.processing_time) {
-          return job.processing_metadata.processing_time
+        let metadata = job.processing_metadata
+        if (typeof metadata === 'string') {
+          try {
+            metadata = JSON.parse(metadata)
+          } catch (e) {
+            metadata = null
+          }
+        }
+        if (metadata?.processing_time) {
+          return metadata.processing_time
         }
         return 0
       }).filter(time => time > 0)
@@ -189,22 +246,19 @@ export default function DashboardPage() {
       // Fetch user stats from simplified stats table
       const { data: userStats, error: statsError } = await supabase
         .from('user_stats')
-        .select('total_processed, last_processed_at')
+        .select('total_processed, month_processed, month_start_date, last_processed_at')
         .eq('user_id', user.id)
         .maybeSingle()
 
-      const userTotalProcessed = userStats?.total_processed || 0
+      if (statsError) {
+        console.error('[Dashboard] Error fetching user stats:', statsError)
+      }
 
-      // Calculate this month's processed
-      const monthStart = new Date()
-      monthStart.setDate(1)
-      monthStart.setHours(0, 0, 0, 0)
-      
-      const monthJobs = typedJobs.filter(job => 
-        new Date(job.created_at) >= monthStart
-      )
-      const thisMonthProcessed = monthJobs.reduce((sum, job) => 
-        sum + (job.processing_metadata?.total_images || 1), 0)
+      const userTotalProcessed = userStats?.total_processed || 0
+      const userMonthProcessed = userStats?.month_processed || 0
+
+      // Use month processed from user stats
+      const thisMonthProcessed = userMonthProcessed
       
       // Calculate last week's processed
       const weekAgo = new Date()
@@ -213,8 +267,17 @@ export default function DashboardPage() {
       const weekJobs = typedJobs.filter(job => 
         new Date(job.created_at) >= weekAgo
       )
-      const lastWeekProcessed = weekJobs.reduce((sum, job) => 
-        sum + (job.processing_metadata?.total_images || 1), 0)
+      const lastWeekProcessed = weekJobs.reduce((sum, job) => {
+        let metadata = job.processing_metadata
+        if (typeof metadata === 'string') {
+          try {
+            metadata = JSON.parse(metadata)
+          } catch (e) {
+            metadata = null
+          }
+        }
+        return sum + (metadata?.total_images || 1)
+      }, 0)
 
       const newStats = {
         totalProcessed: userTotalProcessed || totalImages,
@@ -255,8 +318,19 @@ export default function DashboardPage() {
           return jobDate >= hour && jobDate < new Date(hour.getTime() + 60 * 60 * 1000)
         })
         
-        const count = hourJobs.reduce((sum, job) => 
-          sum + (job.processing_metadata?.total_images || 1), 0)
+        const count = hourJobs.reduce((sum, job) => {
+          // Handle case where metadata might be a string
+          let metadata = job.processing_metadata
+          if (typeof metadata === 'string') {
+            try {
+              metadata = JSON.parse(metadata)
+            } catch (e) {
+              console.error('Error parsing metadata:', e)
+              metadata = null
+            }
+          }
+          return sum + (metadata?.total_images || 1)
+        }, 0)
         
         return {
           timestamp: hour,
@@ -279,8 +353,19 @@ export default function DashboardPage() {
           return jobDate >= startOfDay(day) && jobDate <= endOfDay(day)
         })
         
-        const count = dayJobs.reduce((sum, job) => 
-          sum + (job.processing_metadata?.total_images || 1), 0)
+        const count = dayJobs.reduce((sum, job) => {
+          // Handle case where metadata might be a string
+          let metadata = job.processing_metadata
+          if (typeof metadata === 'string') {
+            try {
+              metadata = JSON.parse(metadata)
+            } catch (e) {
+              console.error('Error parsing metadata:', e)
+              metadata = null
+            }
+          }
+          return sum + (metadata?.total_images || 1)
+        }, 0)
         
         return {
           timestamp: day,
