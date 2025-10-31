@@ -1029,11 +1029,11 @@ export default function Home() {
                   <CardContent className="space-y-6">
                     <div className="prose prose-sm max-w-none">
                       <p className="text-black font-semibold leading-relaxed">
-                        To evaluate the generalization capabilities of Exceletto, we fine-tuned the Llama 3 base model on instruction datasets publicly available on the Hugging Face repository. <span className="font-semibold text-foreground">No proprietary data or training tricks were utilized</span> – our approach demonstrates that with careful instruction tuning, open-source models can achieve exceptional performance on document understanding tasks.
+                        Exceletto was built by fine-tuning the Llama 3 base model on instruction datasets publicly available on the Hugging Face repository. <span className="font-semibold text-foreground">No proprietary data or training tricks were utilized</span> – our approach demonstrates that with careful instruction tuning, open-source models can achieve exceptional performance on document understanding tasks.
                       </p>
 
                       <p className="text-black font-semibold leading-relaxed">
-                        The resulting model, <span className="font-semibold text-primary">Exceletto OCR Engine</span>, is a simple yet powerful demonstration that base language models can be fine-tuned to excel at specialized tasks. Our fine-tuning process focused on:
+                        The <span className="font-semibold text-primary">Exceletto OCR Engine</span> is a specialized model that proves base language models can be fine-tuned to excel at specialized tasks. Our fine-tuning process focused on:
                       </p>
                     </div>
 
