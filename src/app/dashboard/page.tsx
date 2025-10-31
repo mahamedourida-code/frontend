@@ -32,35 +32,15 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-// Dynamic import for Recharts components to avoid SSR issues
-const ResponsiveContainer = dynamic(
-  () => import("recharts").then(mod => mod.ResponsiveContainer),
-  { ssr: false }
-)
-const LineChart = dynamic(
-  () => import("recharts").then(mod => mod.LineChart),
-  { ssr: false }
-)
-const Line = dynamic(
-  () => import("recharts").then(mod => mod.Line),
-  { ssr: false }
-)
-const XAxis = dynamic(
-  () => import("recharts").then(mod => mod.XAxis),
-  { ssr: false }
-)
-const YAxis = dynamic(
-  () => import("recharts").then(mod => mod.YAxis),
-  { ssr: false }
-)
-const CartesianGrid = dynamic(
-  () => import("recharts").then(mod => mod.CartesianGrid),
-  { ssr: false }
-)
-const Tooltip = dynamic(
-  () => import("recharts").then(mod => mod.Tooltip),
-  { ssr: false }
-)
+// Dynamic import for the Chart component to avoid SSR issues
+const DashboardChart = dynamic(() => import("@/components/DashboardChart"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-[280px]">
+      <div className="text-muted-foreground">Loading chart...</div>
+    </div>
+  )
+})
 import { format, subDays, subHours, startOfDay, endOfDay, eachDayOfInterval, eachHourOfInterval } from "date-fns"
 
 type TimeRange = "1d" | "7d" | "30d" | "3m"
@@ -326,7 +306,7 @@ export default function DashboardPage() {
               metadata = JSON.parse(metadata)
             } catch (e) {
               console.error('Error parsing metadata:', e)
-              metadata = null
+              metadata = undefined
             }
           }
           return sum + (metadata?.total_images || 1)
@@ -361,7 +341,7 @@ export default function DashboardPage() {
               metadata = JSON.parse(metadata)
             } catch (e) {
               console.error('Error parsing metadata:', e)
-              metadata = null
+              metadata = undefined
             }
           }
           return sum + (metadata?.total_images || 1)
@@ -583,54 +563,10 @@ export default function DashboardPage() {
               </div>
             </CardHeader>
             <CardContent className="p-3 lg:p-4">
-              {chartData.length > 0 && chartData.some(d => d.count > 0) ? (
-                <ResponsiveContainer width="100%" height={280}>
-                  <LineChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" opacity={0.3} />
-                    <XAxis
-                      dataKey={timeRange === "1d" ? "formattedTime" : "formattedDate"}
-                      stroke="#888888"
-                      fontSize={10}
-                      tickLine={false}
-                      axisLine={false}
-                    />
-                    <YAxis
-                      stroke="#888888"
-                      fontSize={10}
-                      tickLine={false}
-                      axisLine={false}
-                      domain={[0, 'dataMax + 2']}
-                      allowDecimals={false}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                        border: '1px solid #e0e0e0',
-                        borderRadius: '8px',
-                        fontSize: '12px'
-                      }}
-                      labelStyle={{ color: '#666' }}
-                      formatter={(value: any) => [`${value} images`, 'Processed']}
-                    />
-                    <Line
-                      type="linear"
-                      dataKey="count"
-                      stroke="#8b5cf6"
-                      strokeWidth={2}
-                      dot={{ fill: '#8b5cf6', r: 3 }}
-                      activeDot={{ r: 5 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-[280px] text-center">
-                  <ChartLine className="h-10 w-10 lg:h-12 lg:w-12 text-muted-foreground/30 mb-3" />
-                  <p className="text-base lg:text-lg font-medium text-muted-foreground">No Activity</p>
-                  <p className="text-xs lg:text-sm text-muted-foreground/60 mt-1">
-                    No images processed in this time period
-                  </p>
-                </div>
-              )}
+              <DashboardChart 
+                chartData={chartData} 
+                timeRange={timeRange}
+              />
             </CardContent>
           </Card>
         </div>
