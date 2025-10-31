@@ -48,7 +48,8 @@ import {
   MessageCircle,
   ChevronLeft,
   FolderUp,
-  Activity
+  Activity,
+  History
 } from "lucide-react"
 import {
   Dialog,
@@ -165,7 +166,7 @@ export default function ProcessImagesPage() {
       // Fetch from user_credits table using maybeSingle to handle missing records
       const { data: creditsData, error } = await supabase
         .from('user_credits')
-        .select('total_credits, used_credits')
+        .select('total_credits, used_credits, reset_date')
         .eq('user_id', user.id)
         .maybeSingle()
 
@@ -174,7 +175,7 @@ export default function ProcessImagesPage() {
         return
       }
 
-      // If no record exists, create one
+      // If no record exists, create one with December 2024 date
       if (!creditsData) {
         console.log('[ProcessImagesPage] No credits record found, creating one')
         const { error: insertError } = await supabase
@@ -182,7 +183,8 @@ export default function ProcessImagesPage() {
           .insert({
             user_id: user.id,
             total_credits: 80,
-            used_credits: 0
+            used_credits: 0,
+            reset_date: '2024-12-01'
           })
 
         if (insertError) {
@@ -206,7 +208,8 @@ export default function ProcessImagesPage() {
       console.log('[ProcessImagesPage] Credits fetched:', {
         totalCredits,
         usedCredits,
-        availableCredits
+        availableCredits,
+        resetDate: creditsData.reset_date
       })
 
       setCredits({
