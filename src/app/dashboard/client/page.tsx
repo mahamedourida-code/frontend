@@ -268,20 +268,11 @@ export default function ProcessImagesPage() {
 
   // Fetch user's credit status on mount and periodically refresh
   useEffect(() => {
-    // Only fetch when we have a user and auth loading is complete
+    // Only fetch once when user is loaded
     if (!authLoading && user?.id) {
       console.log('[ProcessImagesPage] Initial credit fetch for user:', user.id, user.email)
       setCreditLoading(true)
       fetchUserCredits()
-
-      // Refresh credits every 5 seconds to stay in sync
-      const interval = setInterval(() => {
-        if (user?.id) {
-          fetchUserCredits()
-        }
-      }, 5000)
-
-      return () => clearInterval(interval)
     } else if (!authLoading && !user) {
       console.log('[ProcessImagesPage] No user after auth loading complete')
       setCreditLoading(false)
@@ -291,19 +282,6 @@ export default function ProcessImagesPage() {
   // Don't refetch credits after completion - they were already deducted at start
   // Remove this useEffect that was causing the revert issue
   // Credits are deducted when processing starts, not when it completes
-  
-  // Refresh credits when window gains focus
-  useEffect(() => {
-    const handleFocus = () => {
-      if (user && !creditLoading) {
-        console.log('[ProcessImagesPage] Window focused, refreshing credits')
-        fetchUserCredits()
-      }
-    }
-    
-    window.addEventListener('focus', handleFocus)
-    return () => window.removeEventListener('focus', handleFocus)
-  }, [user, creditLoading])
 
   // Auto-download and auto-save when files are ready
   useEffect(() => {

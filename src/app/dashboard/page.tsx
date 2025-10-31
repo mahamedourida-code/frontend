@@ -79,8 +79,7 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const router = useRouter()
-  const { user, loading: authLoading, signOut, session } = useAuth()
-  const supabase = createClient() // Create single instance at component level
+  const { user, loading: authLoading, signOut } = useAuth()
   const [timeRange, setTimeRange] = useState<TimeRange>("7d")
   const [chartData, setChartData] = useState<ProcessingData[]>([])
   const [stats, setStats] = useState<DashboardStats>({
@@ -106,55 +105,10 @@ export default function DashboardPage() {
     if (!authLoading && !user) {
       router.push('/sign-in')
     } else if (!authLoading && user) {
-      // Initial data fetch
       fetchDashboardData()
-
-      // Set up Supabase Realtime subscriptions for instant updates
-      const subscription = supabase
-        .channel('dashboard-updates')
-        .on('postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'processing_jobs',
-            filter: `user_id=eq.${user.id}`
-          },
-          async (payload) => {
-            console.log('Job change detected:', payload)
-            // Refresh data when jobs are created, updated, or deleted
-            fetchDashboardData()
-
-            // Refresh when job completes to update all stats including credits
-            if (payload.new && (payload.new as any).status === 'completed') {
-              console.log('Job completed, refreshing dashboard...')
-            }
-          }
-        )
-        .on('postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'user_credits',
-            filter: `user_id=eq.${user.id}`
-          },
-          async (payload) => {
-            console.log('Credits change detected:', payload)
-            // Refresh dashboard data to get updated credits
-            fetchDashboardData()
-          }
-        )
-        .subscribe((status) => {
-          console.log('Realtime subscription status:', status)
-        })
-
-      // Cleanup on unmount
-      return () => {
-        subscription.unsubscribe()
-      }
     }
   }, [user?.id, authLoading])
 
-  // Separate effect for timeRange changes to avoid re-subscribing
   useEffect(() => {
     if (user?.id && !authLoading) {
       fetchDashboardData()
@@ -163,10 +117,10 @@ export default function DashboardPage() {
 
   const fetchDashboardData = async () => {
     if (!user) return
-    
+
     setLoading(true)
-    // Use the supabase instance from component level
-    
+    const supabase = createClient()
+
     try {
       // Calculate date range based on selected time
       const now = new Date()
