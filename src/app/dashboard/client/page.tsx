@@ -106,7 +106,7 @@ export default function ProcessImagesPage() {
   const [isDragging, setIsDragging] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [selectedView, setSelectedView] = useState<"grid" | "list">("grid")
-  const [credits, setCredits] = useState({ used: 0, total: 80, available: 80 })
+  const [processedCount, setProcessedCount] = useState(0)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null)
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([])
@@ -157,70 +157,31 @@ export default function ProcessImagesPage() {
     })
   }, [user, session, authLoading])
 
-  const fetchUserCredits = async () => {
+  const fetchUserStats = async () => {
     if (!user?.id) {
-      console.log('[ProcessImagesPage] No user ID, skipping credit fetch')
+      console.log('[ProcessImagesPage] No user ID, skipping stats fetch')
       return
     }
 
     try {
-      // Use the supabase instance from component level
-      // Fetch from user_credits table using maybeSingle to handle missing records
-      const { data: creditsData, error } = await supabase
-        .from('user_credits')
-        .select('total_credits, used_credits, reset_date')
+      // Fetch user stats from simple stats table
+      const { data: userStats, error } = await supabase
+        .from('user_stats')
+        .select('total_processed')
         .eq('user_id', user.id)
         .maybeSingle()
 
       if (error) {
-        console.error('[ProcessImagesPage] Error fetching credits:', error)
+        console.error('[ProcessImagesPage] Error fetching stats:', error)
         return
       }
 
-      // If no record exists, create one with December 2024 date
-      if (!creditsData) {
-        console.log('[ProcessImagesPage] No credits record found, creating one')
-        const { error: insertError } = await supabase
-          .from('user_credits')
-          .insert({
-            user_id: user.id,
-            total_credits: 80,
-            used_credits: 0,
-            reset_date: '2024-12-01'
-          })
-
-        if (insertError) {
-          console.error('[ProcessImagesPage] Error creating credits:', insertError)
-          return
-        }
-
-        // Set initial credits after creation
-        setCredits({
-          used: 0,
-          total: 80,
-          available: 80
-        })
-        return
-      }
-
-      const totalCredits = creditsData.total_credits || 80
-      const usedCredits = creditsData.used_credits || 0
-      const availableCredits = Math.max(0, totalCredits - usedCredits)
-
-      console.log('[ProcessImagesPage] Credits fetched:', {
-        totalCredits,
-        usedCredits,
-        availableCredits,
-        resetDate: creditsData.reset_date
-      })
-
-      setCredits({
-        used: usedCredits,
-        total: totalCredits,
-        available: availableCredits
-      })
+      const totalProcessed = userStats?.total_processed || 0
+      console.log('[ProcessImagesPage] Stats fetched: Total processed =', totalProcessed)
+      setProcessedCount(totalProcessed)
+      
     } catch (error) {
-      console.error('[ProcessImagesPage] Unexpected error fetching credits:', error)
+      console.error('[ProcessImagesPage] Unexpected error fetching stats:', error)
     } finally {
       setCreditLoading(false)
     }
@@ -272,7 +233,7 @@ export default function ProcessImagesPage() {
     if (!authLoading && user?.id) {
       console.log('[ProcessImagesPage] Initial credit fetch for user:', user.id, user.email)
       setCreditLoading(true)
-      fetchUserCredits()
+      fetchUserStats()
     } else if (!authLoading && !user) {
       console.log('[ProcessImagesPage] No user after auth loading complete')
       setCreditLoading(false)
@@ -460,54 +421,27 @@ export default function ProcessImagesPage() {
   const handleProcessImages = useCallback(async () => {
     if (uploadedFiles.length === 0) return
 
-    // Check if user has enough credits
-    const creditsNeeded = uploadedFiles.length
-    const creditsAvailable = credits.available
-
-    if (creditsAvailable <= 0) {
-      toast.error('You have run out of credits. Your credits will reset next month.')
-      return
-    }
-
-    if (creditsNeeded > creditsAvailable) {
-      toast.error(`You only have ${creditsAvailable} credits remaining. Remove ${creditsNeeded - creditsAvailable} images to proceed.`)
-      return
-    }
+    const imagesCount = uploadedFiles.length
 
     try {
       const response = await uploadBatch(uploadedFiles)
       if (response && response.session_id) {
         connectWebSocket(response.session_id)
-        // Update credits optimistically after successful upload
-        console.log('[ProcessImages] Optimistically updating credits:', {
-          before: credits,
-          creditsNeeded,
-          after: {
-            used: credits.used + creditsNeeded,
-            available: Math.max(0, credits.available - creditsNeeded)
-          }
-        })
-        setCredits(prev => ({
-          ...prev,
-          used: prev.used + creditsNeeded,
-          available: Math.max(0, prev.available - creditsNeeded)
-        }))
         
-        // Immediately refetch to confirm backend update
+        // Update processed count optimistically
+        setProcessedCount(prev => prev + imagesCount)
+        
+        // Refresh stats after a delay
         setTimeout(() => {
-          console.log('[ProcessImages] Refetching credits after processing start')
-          fetchUserCredits()
-        }, 1000)
+          console.log('[ProcessImages] Refreshing stats after processing start')
+          fetchUserStats()
+        }, 2000)
 
-        toast.success(`Processing ${creditsNeeded} image${creditsNeeded > 1 ? 's' : ''}. ${creditsAvailable - creditsNeeded} credits remaining.`)
+        toast.success(`Processing ${imagesCount} image${imagesCount > 1 ? 's' : ''}`)
       }
     } catch (error: any) {
-      // Handle specific error cases
-      if (error?.status_code === 402) {
-        // Payment required - out of credits
-        toast.error('Insufficient credits. Your available credits may have changed. Refreshing...')
-        fetchUserCredits() // Refresh credits
-      } else if (error?.status_code === 500) {
+      // Handle errors
+      if (error?.status_code === 500) {
         // Server error
         toast.error('Server error. Please try again or contact support.')
       } else {
@@ -516,7 +450,7 @@ export default function ProcessImagesPage() {
       }
       console.error('[ProcessImages] Error:', error)
     }
-  }, [uploadedFiles, uploadBatch, connectWebSocket, credits, resultFiles, reset])
+  }, [uploadedFiles, uploadBatch, connectWebSocket, resultFiles, reset])
 
   const handleRemoveFile = (index: number) => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index))
@@ -982,18 +916,18 @@ Best regards`
             </div>
             <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
               <Badge
-                variant={credits.available <= 10 ? "destructive" : "secondary"}
+                variant="secondary"
                 className="gap-1 px-2 py-1 text-xs"
               >
-                {credits.available} credits
+                {processedCount} processed
               </Badge>
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={() => fetchUserCredits()}
+                onClick={() => fetchUserStats()}
                 disabled={creditLoading}
                 className="h-7 w-7 p-0"
-                title="Refresh credits"
+                title="Refresh stats"
               >
                 <Activity className={cn("h-3 w-3", creditLoading && "animate-spin")} />
               </Button>
@@ -1201,15 +1135,10 @@ Best regards`
                 {/* Process Button */}
                 {uploadedFiles.length > 0 && (
                   <div className="mt-4 flex items-center justify-end">
-                    {uploadedFiles.length > credits.available && (
-                      <span className="text-sm text-destructive mr-3">
-                        Not enough credits! Need {uploadedFiles.length - credits.available} more
-                      </span>
-                    )}
                     <Button
                       size="lg"
                       onClick={handleProcessImages}
-                      disabled={isProcessing || (credits.available < uploadedFiles.length)}
+                      disabled={isProcessing}
                       className="gap-2"
                     >
                       {isProcessing ? (

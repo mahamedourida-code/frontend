@@ -24,7 +24,7 @@ import {
   ChartLine,
   Image,
   Clock,
-  Coins,
+  BarChart3,
   Calendar,
   TrendingUp,
   ChevronLeft
@@ -70,9 +70,8 @@ interface ProcessingData {
 interface DashboardStats {
   totalProcessed: number
   todayProcessed: number
-  creditsUsed: number
-  totalCredits: number
-  availableCredits: number
+  thisMonthProcessed: number
+  lastWeekProcessed: number
   averageTime: number
   successRate: number
 }
@@ -85,9 +84,8 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({
     totalProcessed: 0,
     todayProcessed: 0,
-    creditsUsed: 0,
-    totalCredits: 80,
-    availableCredits: 80,
+    thisMonthProcessed: 0,
+    lastWeekProcessed: 0,
     averageTime: 0,
     successRate: 0
   })
@@ -188,54 +186,49 @@ export default function DashboardPage() {
       const successfulJobs = typedJobs.filter(job => job.status === 'completed').length
       const successRate = totalJobs > 0 ? (successfulJobs / totalJobs) * 100 : 0
 
-      // Fetch credits from user_credits table
-      const { data: creditsData, error: creditsError } = await supabase
-        .from('user_credits')
-        .select('total_credits, used_credits')
+      // Fetch user stats from simplified stats table
+      const { data: userStats, error: statsError } = await supabase
+        .from('user_stats')
+        .select('total_processed, last_processed_at')
         .eq('user_id', user.id)
         .maybeSingle()
 
-      let totalCredits = 80
-      let creditsUsed = 0
+      const userTotalProcessed = userStats?.total_processed || 0
 
-      // Handle missing credits record
-      if (!creditsData) {
-        console.log('[Dashboard] No credits record found, creating one')
-        const { error: insertError } = await supabase
-          .from('user_credits')
-          .insert({
-            user_id: user.id,
-            total_credits: 80,
-            used_credits: 0,
-            reset_date: '2024-12-01'
-          })
-
-        if (insertError) {
-          console.error('[Dashboard] Error creating credits:', insertError)
-        }
-        // Use default values for new user
-        totalCredits = 80
-        creditsUsed = 0
-      } else {
-        totalCredits = creditsData.total_credits || 80
-        creditsUsed = creditsData.used_credits || 0
-      }
-
-      const creditsAvailable = Math.max(0, totalCredits - creditsUsed)
+      // Calculate this month's processed
+      const monthStart = new Date()
+      monthStart.setDate(1)
+      monthStart.setHours(0, 0, 0, 0)
+      
+      const monthJobs = typedJobs.filter(job => 
+        new Date(job.created_at) >= monthStart
+      )
+      const thisMonthProcessed = monthJobs.reduce((sum, job) => 
+        sum + (job.processing_metadata?.total_images || 1), 0)
+      
+      // Calculate last week's processed
+      const weekAgo = new Date()
+      weekAgo.setDate(weekAgo.getDate() - 7)
+      
+      const weekJobs = typedJobs.filter(job => 
+        new Date(job.created_at) >= weekAgo
+      )
+      const lastWeekProcessed = weekJobs.reduce((sum, job) => 
+        sum + (job.processing_metadata?.total_images || 1), 0)
 
       const newStats = {
-        totalProcessed: totalImages,
+        totalProcessed: userTotalProcessed || totalImages,
         todayProcessed: todayImages,
-        creditsUsed: creditsUsed,
-        totalCredits: totalCredits,
-        availableCredits: creditsAvailable,
+        thisMonthProcessed: thisMonthProcessed,
+        lastWeekProcessed: lastWeekProcessed,
         averageTime: avgTime,
         successRate
       }
       console.log('[Dashboard] Stats calculated:', {
-        totalImages,
-        creditsUsed,
-        creditsAvailable
+        totalProcessed: userTotalProcessed || totalImages,
+        todayProcessed: todayImages,
+        thisMonth: thisMonthProcessed,
+        lastWeek: lastWeekProcessed
       })
       setStats(newStats)
     } catch (error) {
@@ -316,8 +309,7 @@ export default function DashboardPage() {
     )
   }
 
-  const creditsPercentage = ((stats.totalCredits - stats.creditsUsed) / stats.totalCredits) * 100
-  const isOutOfCredits = stats.creditsUsed >= stats.totalCredits
+  // Remove credits logic - just track processed images
 
   return (
     <div className="min-h-screen bg-background flex relative">
@@ -412,7 +404,6 @@ export default function DashboardPage() {
               size="lg"
               onClick={() => router.push('/dashboard/client')} // Changed to client
               className="gap-2 shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
-              disabled={isOutOfCredits}
             >
               <Upload className="h-5 w-5" />
               <span className="hidden sm:inline">Process Images</span>
@@ -421,22 +412,7 @@ export default function DashboardPage() {
             </Button>
           </div>
 
-          {/* Out of Credits Alert */}
-          {isOutOfCredits && (
-            <Card className="border-red-500 bg-red-50 dark:bg-red-950/20 mb-6">
-              <CardContent className="flex items-center gap-4 p-6">
-                <div className="flex-shrink-0">
-                  <AlertCircle className="h-8 w-8 text-red-600" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-red-600 text-lg">Out of Credits</h3>
-                  <p className="text-sm text-red-600/80 mt-1">
-                    You've used all {stats.totalCredits} of your monthly image processing credits. Contact support to continue processing.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6 lg:mb-8">
@@ -472,9 +448,9 @@ export default function DashboardPage() {
               <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs lg:text-sm text-muted-foreground">Credits Left</p>
-                    <p className="text-2xl lg:text-3xl font-bold mt-1">{stats.availableCredits}</p>
-                    <p className="text-[10px] lg:text-xs text-muted-foreground mt-0.5">1 credit = 1 image</p>
+                    <p className="text-xs lg:text-sm text-muted-foreground">Total Processed</p>
+                    <p className="text-2xl lg:text-3xl font-bold mt-1">{stats.totalProcessed}</p>
+                    <p className="text-[10px] lg:text-xs text-muted-foreground mt-0.5">All time images</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
@@ -483,11 +459,11 @@ export default function DashboardPage() {
                       onClick={fetchDashboardData}
                       disabled={loading}
                       className="h-8 w-8 p-0"
-                      title="Refresh credits"
+                      title="Refresh stats"
                     >
                       <Activity className={cn("h-4 w-4", loading && "animate-spin")} />
                     </Button>
-                    <Coins className="h-8 w-8 lg:h-10 lg:w-10 text-primary/60" />
+                    <BarChart3 className="h-8 w-8 lg:h-10 lg:w-10 text-primary/60" />
                   </div>
                 </div>
               </CardContent>
