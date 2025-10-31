@@ -273,20 +273,20 @@ export default function ProcessImagesPage() {
       console.log('[ProcessImagesPage] Initial credit fetch for user:', user.id, user.email)
       setCreditLoading(true)
       fetchUserCredits()
-      
+
       // Refresh credits every 5 seconds to stay in sync
       const interval = setInterval(() => {
         if (user?.id) {
           fetchUserCredits()
         }
       }, 5000)
-      
+
       return () => clearInterval(interval)
     } else if (!authLoading && !user) {
       console.log('[ProcessImagesPage] No user after auth loading complete')
       setCreditLoading(false)
     }
-  }, [user, authLoading, supabase]) // Add supabase to dependencies
+  }, [user?.id, authLoading])
 
   // Don't refetch credits after completion - they were already deducted at start
   // Remove this useEffect that was causing the revert issue

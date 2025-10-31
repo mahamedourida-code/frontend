@@ -152,7 +152,14 @@ export default function DashboardPage() {
         subscription.unsubscribe()
       }
     }
-  }, [user, authLoading, router, timeRange])
+  }, [user?.id, authLoading])
+
+  // Separate effect for timeRange changes to avoid re-subscribing
+  useEffect(() => {
+    if (user?.id && !authLoading) {
+      fetchDashboardData()
+    }
+  }, [timeRange])
 
   const fetchDashboardData = async () => {
     if (!user) return
