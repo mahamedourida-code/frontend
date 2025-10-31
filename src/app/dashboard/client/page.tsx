@@ -975,7 +975,7 @@ Best regards`
                 Back
               </Button>
               <AppIcon size={32} />
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-primary shadow-sm" style={{ backgroundColor: '#ecf4f5' }}>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-primary shadow-sm" style={{ backgroundColor: '#fbfdfc' }}>
                 <documentTypeInfo.icon className="h-4 w-4 text-primary" />
                 <h1 className="text-sm font-semibold text-foreground">{documentTypeInfo.label}</h1>
               </div>
@@ -1035,7 +1035,7 @@ Best regards`
       <div className="lg:hidden border-b bg-background sticky top-0 z-40">
         <div className="container max-w-5xl mx-auto px-4 py-2.5">
           <div className="flex items-center justify-between">
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border-2 border-primary shadow-sm" style={{ backgroundColor: '#ecf4f5' }}>
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border-2 border-primary shadow-sm" style={{ backgroundColor: '#fbfdfc' }}>
               <documentTypeInfo.icon className="h-3.5 w-3.5 text-primary" />
               <span className="text-xs font-semibold text-foreground">{documentTypeInfo.label}</span>
             </div>
@@ -1055,7 +1055,7 @@ Best regards`
       <main className="container max-w-5xl mx-auto px-4 py-8 pb-24 relative z-10">
         {/* Processing Timer Card */}
         {isProcessing && !isComplete && (
-          <Card className="mb-4 border-2 border-primary shadow-md max-w-sm" style={{ backgroundColor: '#ecf4f5' }}>
+          <Card className="mb-4 border-2 border-primary shadow-md max-w-sm" style={{ backgroundColor: '#fbfdfc' }}>
             <CardContent className="p-3">
               <div className="flex items-center gap-3">
                 <div className="text-center">
@@ -1423,7 +1423,7 @@ Best regards`
           {/* Info Sidebar */}
           <div className="lg:col-span-1 space-y-4 order-3 lg:order-2">
             {/* Language Selector */}
-            <Card className="border-2 border-primary shadow-lg shadow-primary/10" style={{ backgroundColor: '#ecf4f5' }}>
+            <Card className="border-2 border-primary shadow-lg shadow-primary/10" style={{ backgroundColor: '#fbfdfc' }}>
               <CardContent className="p-3">
                 <h3 className="text-xs font-semibold mb-3 text-foreground">Language</h3>
                 <select
@@ -1451,7 +1451,7 @@ Best regards`
             </Card>
 
             {/* Auto Settings */}
-            <Card className="border-2 border-primary shadow-lg shadow-primary/10" style={{ backgroundColor: '#ecf4f5' }}>
+            <Card className="border-2 border-primary shadow-lg shadow-primary/10" style={{ backgroundColor: '#fbfdfc' }}>
               <CardContent className="p-3">
                 <h3 className="text-xs font-semibold mb-3 text-foreground">Auto Actions</h3>
                 <div className="space-y-2">

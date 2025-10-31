@@ -440,7 +440,7 @@ export default function DashboardPage() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6 lg:mb-8">
-            <Card className="border-2 border-primary shadow-lg shadow-primary/10" style={{ backgroundColor: '#ecf4f5' }}>
+            <Card className="border-2 border-primary shadow-lg shadow-primary/10" style={{ backgroundColor: '#fbfdfc' }}>
               <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -454,7 +454,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-2 border-primary shadow-lg shadow-primary/10" style={{ backgroundColor: '#ecf4f5' }}>
+            <Card className="border-2 border-primary shadow-lg shadow-primary/10" style={{ backgroundColor: '#fbfdfc' }}>
               <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -468,7 +468,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-2 border-primary shadow-lg shadow-primary/10 relative" style={{ backgroundColor: '#ecf4f5' }}>
+            <Card className="border-2 border-primary shadow-lg shadow-primary/10 relative" style={{ backgroundColor: '#fbfdfc' }}>
               <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>
