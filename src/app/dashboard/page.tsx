@@ -176,7 +176,7 @@ export default function DashboardPage() {
           try {
             metadata = JSON.parse(metadata)
           } catch (e) {
-            metadata = null
+            metadata = undefined
           }
         }
         return sum + (metadata?.total_images || 1)
@@ -193,7 +193,7 @@ export default function DashboardPage() {
           try {
             metadata = JSON.parse(metadata)
           } catch (e) {
-            metadata = null
+            metadata = undefined
           }
         }
         return sum + (metadata?.total_images || 1)
@@ -206,7 +206,7 @@ export default function DashboardPage() {
           try {
             metadata = JSON.parse(metadata)
           } catch (e) {
-            metadata = null
+            metadata = undefined
           }
         }
         if (metadata?.processing_time) {
@@ -253,7 +253,7 @@ export default function DashboardPage() {
           try {
             metadata = JSON.parse(metadata)
           } catch (e) {
-            metadata = null
+            metadata = undefined
           }
         }
         return sum + (metadata?.total_images || 1)
