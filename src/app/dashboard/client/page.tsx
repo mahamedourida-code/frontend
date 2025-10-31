@@ -72,8 +72,9 @@ import { PenTool, Monitor, Edit3 } from "lucide-react"
 import { wakeUpBackendSilently } from "@/lib/backend-health"
 
 export default function ProcessImagesPage() {
-  const { user, loading: authLoading } = useAuth()
+  const { user, loading: authLoading, session } = useAuth()
   const router = useRouter()
+  const supabase = createClient() // Create single instance at component level
   const searchParams = useSearchParams()
   const documentType = searchParams.get('type') || 'auto'
   const languageParam = searchParams.get('language') || (typeof window !== 'undefined' ? localStorage.getItem('ocrLanguage') || 'en' : 'en')
@@ -141,9 +142,8 @@ export default function ProcessImagesPage() {
   // Document type display info
   const documentTypeInfo = {
     handwritten: { label: "Handwritten Tables", icon: PenTool, color: "bg-blue-500" },
-    printed: { label: "Printed Tables", icon: Monitor, color: "bg-purple-500" },
-    auto: { label: "Auto-Detect", icon: Sparkles, color: "bg-emerald-500" }
-  }[documentType as string] || { label: "Auto-Detect", icon: Sparkles, color: "bg-emerald-500" }
+    printed: { label: "Printed Tables", icon: Monitor, color: "bg-purple-500" }
+  }[documentType as string] || { label: "Handwritten Tables", icon: PenTool, color: "bg-blue-500" }
   
   // Log environment configuration on mount
   useEffect(() => {
