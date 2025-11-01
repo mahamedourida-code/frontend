@@ -71,6 +71,7 @@ interface DashboardStats {
   totalProcessed: number
   todayProcessed: number
   thisMonthProcessed: number
+  imagesLeft: number
   lastWeekProcessed: number
   averageTime: number
   successRate: number
@@ -85,6 +86,7 @@ export default function DashboardPage() {
     totalProcessed: 0,
     todayProcessed: 0,
     thisMonthProcessed: 0,
+    imagesLeft: 110,
     lastWeekProcessed: 0,
     averageTime: 0,
     successRate: 0
@@ -236,6 +238,8 @@ export default function DashboardPage() {
 
       const userTotalProcessed = userStats?.total_processed || 0
       const userMonthProcessed = userStats?.month_processed || 0
+      const monthStartDate = userStats?.month_start_date
+      const imagesLeft = monthStartDate ? (110 - userMonthProcessed) : 110
 
       // Use month processed from user stats
       const thisMonthProcessed = userMonthProcessed
@@ -263,6 +267,7 @@ export default function DashboardPage() {
         totalProcessed: userTotalProcessed || totalImages,
         todayProcessed: todayImages,
         thisMonthProcessed: thisMonthProcessed,
+        imagesLeft: imagesLeft,
         lastWeekProcessed: lastWeekProcessed,
         averageTime: avgTime,
         successRate
@@ -500,7 +505,7 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs lg:text-sm text-muted-foreground">Images Left</p>
-                    <p className="text-2xl lg:text-3xl font-bold mt-1">{110 - stats.thisMonthProcessed}</p>
+                    <p className="text-2xl lg:text-3xl font-bold mt-1">{stats.imagesLeft}</p>
                     <p className="text-[10px] lg:text-xs text-muted-foreground mt-0.5">This month</p>
                   </div>
                   <div className="flex-shrink-0">
