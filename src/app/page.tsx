@@ -714,6 +714,14 @@ export default function Home() {
                               <div className="flex items-center gap-2 flex-shrink-0">
                                 <Button
                                   size="sm"
+                                  onClick={() => handleDownloadFile(file.file_id)}
+                                  className="h-8 bg-green-600 hover:bg-green-700 text-white border-2 border-green-600 gap-1"
+                                >
+                                  <Download className="h-4 w-4" />
+                                  <span className="text-xs">Download</span>
+                                </Button>
+                                <Button
+                                  size="sm"
                                   variant="outline"
                                   onClick={() => handleShareFile(file)}
                                   className="h-8 border-2 border-primary gap-1"
@@ -725,8 +733,9 @@ export default function Home() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => {
-                                    // Redirect to edit page
-                                    window.location.href = `/dashboard/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'result.xlsx')}`
+                                    // Redirect to edit page without requiring auth
+                                    const editUrl = `/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'result.xlsx')}`;
+                                    window.location.href = editUrl;
                                   }}
                                   className="h-8 border-2 border-primary gap-1"
                                 >
