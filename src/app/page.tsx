@@ -715,32 +715,30 @@ export default function Home() {
                                 <Button
                                   size="sm"
                                   onClick={() => handleDownloadFile(file.file_id)}
-                                  className="h-8 bg-green-600 hover:bg-green-700 text-white border-2 border-green-600 gap-1"
+                                  className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-primary"
                                 >
                                   <Download className="h-4 w-4" />
-                                  <span className="text-xs">Download</span>
+                                  Download
                                 </Button>
                                 <Button
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleShareFile(file)}
-                                  className="h-8 border-2 border-primary gap-1"
+                                  className="gap-1.5 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
                                 >
                                   <Share2 className="h-4 w-4" />
-                                  <span className="text-xs">Share</span>
+                                  Share
                                 </Button>
                                 <Button
                                   size="sm"
                                   variant="outline"
                                   onClick={() => {
-                                    // Redirect to edit page without requiring auth
-                                    const editUrl = `/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'result.xlsx')}`;
-                                    window.location.href = editUrl;
+                                    window.location.href = `/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'result.xlsx')}`
                                   }}
-                                  className="h-8 border-2 border-primary gap-1"
+                                  className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                                 >
                                   <Edit3 className="h-4 w-4" />
-                                  <span className="text-xs">Edit</span>
+                                  Edit
                                 </Button>
                               </div>
                             </div>
