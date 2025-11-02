@@ -827,7 +827,7 @@ export default function Home() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => {
-                                    window.location.href = `/dashboard/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'result.xlsx')}`
+                                    window.location.href = `/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'result.xlsx')}`
                                   }}
                                   className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                                 >
