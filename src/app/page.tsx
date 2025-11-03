@@ -45,6 +45,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
 import { useProcessingState } from "@/contexts/ProcessingStateContext";
+import * as XLSX from 'xlsx';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -72,6 +73,8 @@ export default function Home() {
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [tablePreviewData, setTablePreviewData] = useState<any[][]>([]);
+  const [firstImageUrl, setFirstImageUrl] = useState<string>('');
 
   // Auto download state
   const [autoDownload, setAutoDownload] = useState(() => {
@@ -113,6 +116,11 @@ export default function Home() {
       
       // Restore processed files
       setResultFiles(processingState.processedFiles);
+      
+      // Fetch table preview for the first file if available
+      if (processingState.processedFiles.length > 0) {
+        fetchTablePreview(processingState.processedFiles[0].file_id);
+      }
       
       // Restore status
       if (processingState.status === 'completed' || processingState.processingComplete) {
@@ -334,6 +342,21 @@ export default function Home() {
             setProcessingComplete(true);
             setIsProcessing(false);
             
+            // Store the first uploaded image for preview
+            if (uploadedFiles.length > 0) {
+              const firstFile = uploadedFiles[0];
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                setFirstImageUrl(e.target?.result as string);
+              };
+              reader.readAsDataURL(firstFile);
+            }
+            
+            // Fetch table preview for the first file
+            if (files.length > 0) {
+              fetchTablePreview(files[0].file_id);
+            }
+            
             // Save to context immediately if updateState is available
             if (updateState) {
               updateState({
@@ -398,11 +421,31 @@ export default function Home() {
     }
   };
 
+  // Fetch and parse Excel file for preview
+  const fetchTablePreview = async (fileId: string) => {
+    try {
+      const blob = await ocrApi.downloadFile(fileId);
+      const arrayBuffer = await blob.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+      const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+      const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as any[][];
+      
+      // Limit to first 10 rows for preview
+      const previewData = data.slice(0, Math.min(10, data.length));
+      setTablePreviewData(previewData);
+    } catch (error) {
+      console.error('[Landing] Error fetching table preview:', error);
+      // Don't show error toast - just silently fail to show preview
+    }
+  };
+
   const handleReset = () => {
     setUploadedFiles([]);
     setResultFiles([]);
     setProcessingComplete(false);
     setIsProcessing(false);
+    setTablePreviewData([]);
+    setFirstImageUrl('');
     isExecutingAutoActionsRef.current = false;
     
     // Clear context state
@@ -865,9 +908,141 @@ export default function Home() {
                       </div>
 
                       {resultFiles.length > 0 && (
-                        <div className="space-y-2">
-                          {resultFiles.map((file: any, index: number) => (
-                            <div key={file.file_id || index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-primary/20">
+                        <div className="space-y-4">
+                          {/* Preview Section - Only for first file */}
+                          {resultFiles.length > 0 && tablePreviewData.length > 0 && firstImageUrl && (
+                            <div className="space-y-4">
+                              {/* Image and Table Preview Side by Side */}
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {/* Original Image */}
+                                <div className="flex flex-col">
+                                  <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Original Image</h4>
+                                  <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center min-h-[300px]">
+                                    <img 
+                                      src={firstImageUrl} 
+                                      alt="Original" 
+                                      className="max-w-full h-auto max-h-[400px] object-contain"
+                                    />
+                                  </div>
+                                </div>
+
+                                {/* Table Preview */}
+                                <div className="flex flex-col">
+                                  <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Extracted Data Preview</h4>
+                                  <div className="border-2 border-primary/20 rounded-lg overflow-auto max-h-[400px] bg-white">
+                                    <table className="w-full text-sm">
+                                      <tbody>
+                                        {tablePreviewData.map((row, rowIndex) => (
+                                          <tr key={rowIndex} className={rowIndex === 0 ? 'bg-primary/10 font-semibold' : 'border-t border-gray-200'}>
+                                            {row.map((cell, cellIndex) => (
+                                              <td 
+                                                key={cellIndex} 
+                                                className="px-3 py-2 text-left border-r border-gray-200 last:border-r-0"
+                                              >
+                                                {cell || ''}
+                                              </td>
+                                            ))}
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                    {tablePreviewData.length >= 10 && (
+                                      <div className="px-3 py-2 bg-muted/50 text-xs text-muted-foreground text-center border-t">
+                                        Showing first 10 rows
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* First File Buttons */}
+                              <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-primary">
+                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                  <FileSpreadsheet className="h-5 w-5 text-primary" />
+                                  <span className="text-sm font-medium truncate">{resultFiles[0].filename || 'result.xlsx'}</span>
+                                </div>
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleDownloadFile(resultFiles[0].file_id)}
+                                    className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-primary"
+                                  >
+                                    <Download className="h-4 w-4" />
+                                    Download
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleShareFile(resultFiles[0])}
+                                    className="gap-1.5 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
+                                  >
+                                    <Share2 className="h-4 w-4" />
+                                    Share
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      window.location.href = `/edit/${resultFiles[0].file_id}?fileName=${encodeURIComponent(resultFiles[0].filename || 'result.xlsx')}`
+                                    }}
+                                    className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                                  >
+                                    <Edit3 className="h-4 w-4" />
+                                    Edit
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Other Files - Just buttons, starting from index 1 */}
+                          {resultFiles.slice(1).map((file: any, index: number) => (
+                            <div key={file.file_id || index + 1} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-primary/20">
+                              <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <button
+                                  onClick={() => handleDownloadFile(file.file_id)}
+                                  className="flex-shrink-0 hover:scale-110 transition-transform"
+                                >
+                                  <FileSpreadsheet className="h-5 w-5 text-primary" />
+                                </button>
+                                <span className="text-sm font-medium truncate">{file.filename || 'result.xlsx'}</span>
+                              </div>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleDownloadFile(file.file_id)}
+                                  className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-primary"
+                                >
+                                  <Download className="h-4 w-4" />
+                                  Download
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleShareFile(file)}
+                                  className="gap-1.5 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
+                                >
+                                  <Share2 className="h-4 w-4" />
+                                  Share
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    window.location.href = `/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'result.xlsx')}`
+                                  }}
+                                  className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                                >
+                                  <Edit3 className="h-4 w-4" />
+                                  Edit
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+
+                          {/* Show buttons without preview if no preview data available yet */}
+                          {(!tablePreviewData.length || !firstImageUrl) && resultFiles.map((file: any, index: number) => (
+                            <div key={`no-preview-${file.file_id || index}`} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-primary/20">
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <button
                                   onClick={() => handleDownloadFile(file.file_id)}
