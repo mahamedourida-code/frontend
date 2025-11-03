@@ -104,16 +104,15 @@ export default function Home() {
 
   // Restore state from context on mount
   useEffect(() => {
-    if (processingState && processingState.processedFiles.length > 0) {
+    // Only restore if we don't already have result files
+    if (!resultFiles.length && processingState && processingState.processedFiles && processingState.processedFiles.length > 0) {
       console.log('[Landing] Restoring state from context:', processingState);
       
       // Restore processed files
-      if (processingState.processedFiles) {
-        setResultFiles(processingState.processedFiles);
-      }
+      setResultFiles(processingState.processedFiles);
       
       // Restore status
-      if (processingState.status === 'completed') {
+      if (processingState.status === 'completed' || processingState.processingComplete) {
         setProcessingComplete(true);
         setIsProcessing(false);
       } else if (processingState.status === 'processing') {
@@ -121,7 +120,7 @@ export default function Home() {
         setProcessingComplete(false);
       }
     }
-  }, []);
+  }, []); // Only run once on mount
 
   // Save state to context when it changes
   useEffect(() => {
@@ -129,10 +128,15 @@ export default function Home() {
       updateState({
         processedFiles: resultFiles,
         status: processingComplete ? 'completed' : isProcessing ? 'processing' : 'idle',
-        uploadedFiles: uploadedFiles
+        processingComplete: processingComplete,
+        uploadedFiles: [] // Don't save File objects
+      });
+      console.log('[Landing] Saving state to context:', {
+        processedFiles: resultFiles.length,
+        status: processingComplete ? 'completed' : isProcessing ? 'processing' : 'idle'
       });
     }
-  }, [resultFiles, isProcessing, processingComplete, uploadedFiles]);
+  }, [resultFiles, isProcessing, processingComplete, updateState]);
 
   // Silently wake up backend when page loads
   useEffect(() => {
@@ -311,10 +315,21 @@ export default function Home() {
           const status = await ocrApi.getStatus(response.job_id);
 
           if (status.status === 'completed' && status.results) {
-            setResultFiles(status.results.files);
+            const files = status.results.files;
+            console.log('[Landing] Processing complete, files:', files);
+            setResultFiles(files);
             setProcessingComplete(true);
             setIsProcessing(false);
-            toast.success(`${status.results.files.length} file(s) processed successfully!`);
+            
+            // Save to context immediately
+            updateState({
+              processedFiles: files,
+              status: 'completed',
+              processingComplete: true,
+              uploadedFiles: []
+            });
+            
+            toast.success(`${files.length} file(s) processed successfully!`);
 
             // Show limit dialog if no more free trials (surprise them)
             if (newInfo.remaining === 0) {

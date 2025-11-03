@@ -5,8 +5,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 interface ProcessedFile {
   file_id: string
   filename: string
-  status: 'completed' | 'processing' | 'failed'
-  timestamp: number
+  [key: string]: any // Allow additional properties from the API response
 }
 
 interface ProcessingState {
@@ -16,6 +15,7 @@ interface ProcessingState {
   status: 'idle' | 'processing' | 'completed' | 'failed'
   progress: number
   lastUpdated: number
+  processingComplete: boolean
 }
 
 interface ProcessingStateContextType {
@@ -38,7 +38,8 @@ const initialState: ProcessingState = {
   jobId: null,
   status: 'idle',
   progress: 0,
-  lastUpdated: Date.now()
+  lastUpdated: Date.now(),
+  processingComplete: false
 }
 
 export function ProcessingStateProvider({ children }: { children: ReactNode }) {
@@ -55,19 +56,21 @@ export function ProcessingStateProvider({ children }: { children: ReactNode }) {
           
           // Check if state is expired
           if (parsed.lastUpdated && (now - parsed.lastUpdated) < STATE_EXPIRY_TIME) {
-            // Restore files from base64 if they exist
-            if (parsed.serializedFiles && parsed.serializedFiles.length > 0) {
-              restoreFiles(parsed.serializedFiles)
-            }
-            
-            // Restore other state (without File objects)
+            // Restore state with processed files
             setState({
-              ...parsed,
-              uploadedFiles: [], // Files will be restored separately
+              ...initialState,
+              processedFiles: parsed.processedFiles || [],
+              status: parsed.status || 'idle',
+              jobId: parsed.jobId || null,
+              progress: parsed.progress || 0,
+              processingComplete: parsed.processingComplete || false,
               lastUpdated: parsed.lastUpdated
             })
             
-            console.log('[ProcessingStateContext] State restored from localStorage')
+            console.log('[ProcessingStateContext] State restored from localStorage:', {
+              processedFiles: parsed.processedFiles?.length || 0,
+              status: parsed.status
+            })
           } else {
             // State is expired, clear it
             localStorage.removeItem(STORAGE_KEY)
@@ -87,18 +90,21 @@ export function ProcessingStateProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const saveState = () => {
       try {
-        // Serialize files to base64 for storage
-        const serializedFiles = getSerializableFiles()
-        
+        // Don't try to save File objects, only save the processed files with their IDs
         const stateToSave = {
-          ...state,
-          uploadedFiles: [], // Don't save File objects directly
-          serializedFiles: serializedFiles,
+          processedFiles: state.processedFiles,
+          status: state.status,
+          jobId: state.jobId,
+          progress: state.progress,
+          processingComplete: state.processingComplete,
           lastUpdated: Date.now()
         }
         
         localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave))
-        console.log('[ProcessingStateContext] State saved to localStorage')
+        console.log('[ProcessingStateContext] State saved to localStorage:', {
+          processedFiles: state.processedFiles.length,
+          status: state.status
+        })
       } catch (error) {
         console.error('[ProcessingStateContext] Error saving state:', error)
         // If localStorage is full, clear old data

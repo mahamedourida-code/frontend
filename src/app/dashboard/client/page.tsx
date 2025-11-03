@@ -249,10 +249,15 @@ export default function ProcessImagesPage() {
       updateState({
         processedFiles: resultFiles,
         status: status === 'completed' ? 'completed' : isProcessing ? 'processing' : 'idle',
-        uploadedFiles: uploadedFiles
+        processingComplete: status === 'completed',
+        uploadedFiles: [] // Don't save File objects
+      })
+      console.log('[Dashboard] Saving state to context:', {
+        processedFiles: resultFiles.length,
+        status: status
       })
     }
-  }, [resultFiles, isProcessing, status, uploadedFiles])
+  }, [resultFiles, isProcessing, status, updateState])
 
   // Persist auto-download setting to localStorage
   useEffect(() => {
