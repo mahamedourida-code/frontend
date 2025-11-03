@@ -39,7 +39,7 @@ import { Label } from "@/components/ui/label";
 import { ActiveUsersCounter } from "@/components/ActiveUsersCounter";
 import { wakeUpBackendSilently } from "@/lib/backend-health";
 import { getTrialInfo, incrementTrialUploadCount } from "@/lib/free-trial";
-import { ocrApi } from "@/lib/api-client";
+import { ocrApi, OCRWebSocket } from "@/lib/api-client";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -76,6 +76,7 @@ export default function Home() {
   const [tablePreviewData, setTablePreviewData] = useState<any[][]>([]);
   const [firstImageUrl, setFirstImageUrl] = useState<string>('');
   const [totalFilesToProcess, setTotalFilesToProcess] = useState(0);
+  const wsRef = useRef<OCRWebSocket | null>(null);
 
   // Auto download state
   const [autoDownload, setAutoDownload] = useState(() => {
@@ -160,6 +161,14 @@ export default function Home() {
   // Silently wake up backend when page loads
   useEffect(() => {
     wakeUpBackendSilently()
+    
+    // Cleanup WebSocket on unmount
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.disconnect();
+        wsRef.current = null;
+      }
+    };
   }, [])
 
   // Initialize trial info on mount
@@ -342,59 +351,152 @@ export default function Home() {
         reader.readAsDataURL(firstFile);
       }
 
-      // Poll for completion - progressive results
-      const checkStatus = async () => {
-        try {
-          const status = await ocrApi.getStatus(response.job_id);
+      // Disconnect any existing WebSocket first
+      if (wsRef.current) {
+        wsRef.current.disconnect();
+        wsRef.current = null;
+      }
 
-          // Show partial results as they come in
-          if (status.results && status.results.files && status.results.files.length > 0) {
-            const files = status.results.files;
-            console.log('[Landing] Partial/Complete results:', files);
-            setResultFiles(files);
-            
-            // Fetch table preview for the first file if not already fetched
-            if (files.length > 0 && tablePreviewData.length === 0) {
-              fetchTablePreview(files[0].file_id);
+      // Connect WebSocket for real-time progressive updates
+      if (response.session_id) {
+        console.log('[Landing] Connecting WebSocket for session:', response.session_id);
+        
+        const websocket = new OCRWebSocket(
+          response.session_id,
+          (data) => {
+            console.log('[Landing] WebSocket message:', data);
+            const messageType = data.type || '';
+
+            // Progressive results: Individual file ready for download
+            if (messageType === 'file_ready') {
+              console.log('[Landing] File ready:', data.file_info);
+              
+              if (data.file_info && data.file_info.file_id) {
+                // Add file to results immediately as it becomes available
+                setResultFiles(prev => {
+                  const existing = prev || [];
+                  // Avoid duplicates
+                  if (existing.some(f => f.file_id === data.file_info.file_id)) {
+                    return existing;
+                  }
+                  const newFiles = [...existing, data.file_info];
+                  
+                  // Fetch table preview for the first file
+                  if (newFiles.length === 1 && tablePreviewData.length === 0) {
+                    fetchTablePreview(data.file_info.file_id);
+                  }
+                  
+                  return newFiles;
+                });
+
+                // Show toast for individual file completion
+                toast.success(`File ${data.image_number}/${data.total_images} ready!`);
+              }
             }
-            
-            // Update context with partial results
-            if (updateState) {
-              updateState({
-                processedFiles: files,
-                status: status.status === 'completed' ? 'completed' : 'processing',
-                processingComplete: status.status === 'completed',
-                uploadedFiles: []
-              });
+
+            // Progress updates
+            if (messageType === 'job_progress' || messageType === 'progress') {
+              // Update status but keep processing
+              if (data.total_images && data.processed_images !== undefined) {
+                console.log('[Landing] Progress:', data.processed_images, '/', data.total_images);
+              }
             }
+
+            // Job completed
+            if (messageType === 'job_completed' || data.status === 'completed') {
+              console.log('[Landing] Job completed:', data);
+              
+              setProcessingComplete(true);
+              setIsProcessing(false);
+
+              // Set final files if provided
+              if (data.files && data.files.length > 0) {
+                setResultFiles(data.files);
+              }
+
+              // Update context
+              if (updateState) {
+                updateState({
+                  processedFiles: resultFiles,
+                  status: 'completed',
+                  processingComplete: true,
+                  uploadedFiles: []
+                });
+              }
+
+              toast.success(`All ${data.total_images || totalFilesToProcess} files processed!`);
+
+              // Show limit dialog if no more free trials
+              if (newInfo.remaining === 0) {
+                setTimeout(() => setShowLimitDialog(true), 2000);
+              }
+
+              // Disconnect WebSocket
+              if (wsRef.current) {
+                wsRef.current.disconnect();
+                wsRef.current = null;
+              }
+            }
+
+            // Job failed
+            if (messageType === 'job_error' || data.status === 'failed') {
+              const errorMsg = data.error || data.errors?.[0] || 'Processing failed';
+              setIsProcessing(false);
+              toast.error(errorMsg);
+              
+              // Disconnect WebSocket
+              if (wsRef.current) {
+                wsRef.current.disconnect();
+                wsRef.current = null;
+              }
+            }
+          },
+          (error) => {
+            console.error('[Landing] WebSocket error:', error);
           }
+        );
 
-          if (status.status === 'completed') {
-            setProcessingComplete(true);
+        websocket.connect();
+        wsRef.current = websocket;
+      } else {
+        // Fallback to polling if no session_id
+        console.log('[Landing] No session_id, falling back to polling');
+        
+        const checkStatus = async () => {
+          try {
+            const status = await ocrApi.getStatus(response.job_id);
+            
+            if (status.results && status.results.files && status.results.files.length > 0) {
+              setResultFiles(status.results.files);
+              
+              if (status.results.files.length > 0 && tablePreviewData.length === 0) {
+                fetchTablePreview(status.results.files[0].file_id);
+              }
+            }
+
+            if (status.status === 'completed') {
+              setProcessingComplete(true);
+              setIsProcessing(false);
+              toast.success(`${status.results?.files?.length || 0} file(s) processed!`);
+              
+              if (newInfo.remaining === 0) {
+                setTimeout(() => setShowLimitDialog(true), 2000);
+              }
+            } else if (status.status === 'failed') {
+              setIsProcessing(false);
+              toast.error('Processing failed');
+            } else {
+              setTimeout(checkStatus, 2000);
+            }
+          } catch (error) {
+            console.error('[Landing] Error checking status:', error);
             setIsProcessing(false);
-            
-            const totalFiles = status.results?.files?.length || 0;
-            toast.success(`${totalFiles} file(s) processed successfully!`);
-
-            // Show limit dialog if no more free trials (surprise them)
-            if (newInfo.remaining === 0) {
-              setTimeout(() => setShowLimitDialog(true), 2000);
-            }
-          } else if (status.status === 'failed') {
-            throw new Error('Processing failed');
-          } else {
-            // Poll again
-            setTimeout(checkStatus, 2000);
+            toast.error('Failed to process images. Please try again.');
           }
-        } catch (error) {
-          console.error('[Landing] Error checking status:', error);
-          setIsProcessing(false);
-          toast.error('Failed to process images. Please try again.');
-        }
-      };
-
-      // Start polling
-      setTimeout(checkStatus, 2000);
+        };
+        
+        setTimeout(checkStatus, 2000);
+      }
 
     } catch (error: any) {
       console.error('[Landing] Error processing images:', error);
