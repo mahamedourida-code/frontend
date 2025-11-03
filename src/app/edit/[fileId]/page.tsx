@@ -477,6 +477,9 @@ export default function PublicEditExcelPage() {
       } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
         e.preventDefault()
         redo()
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault()
+        handleDownload()
       }
     }
 
@@ -630,7 +633,7 @@ export default function PublicEditExcelPage() {
   }
 
   // Save and download
-  const handleSave = () => {
+  const handleDownload = () => {
     // Reorder data according to columnOrder
     const reorderedHeaders = columnOrder.map(i => headers[i])
     const reorderedData = data.map(row => columnOrder.map(i => row[i]))
@@ -657,8 +660,7 @@ export default function PublicEditExcelPage() {
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
     
-    toast.success('File downloaded with edits')
-    router.push('/')
+    toast.success('File downloaded successfully!')
   }
 
   if (loading) {
@@ -698,6 +700,19 @@ export default function PublicEditExcelPage() {
           <Badge variant="secondary" className="ml-2">
             {data.length} rows × {headers.length} columns
           </Badge>
+        </div>
+        
+        {/* Download Button */}
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={handleDownload}
+            className="bg-primary hover:bg-primary/90 text-white"
+            size="default"
+            title="Download edited file (Ctrl+S)"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Download Edited File
+          </Button>
         </div>
       </div>
 
@@ -791,6 +806,22 @@ export default function PublicEditExcelPage() {
             >
               <DollarSign className="h-4 w-4 mr-1" />
               <span className="text-xs">Fix Currency</span>
+            </Button>
+          </div>
+          
+          <div className="h-8 w-px bg-border" />
+          
+          {/* Save Section */}
+          <div className="flex items-center gap-1">
+            <Button
+              size="sm"
+              variant="default"
+              onClick={handleDownload}
+              className="h-9 px-4 bg-primary hover:bg-primary/90"
+              title="Download edited file (Ctrl+S)"
+            >
+              <Download className="h-4 w-4 mr-1" />
+              <span className="text-xs font-medium">Download</span>
             </Button>
           </div>
         </div>
@@ -1043,8 +1074,9 @@ export default function PublicEditExcelPage() {
               Cancel
             </Button>
             <Button
-              onClick={handleSave}
+              onClick={handleDownload}
               className="h-9 px-4 bg-primary hover:bg-primary/90 text-white gap-2"
+              title="Download edited file (Ctrl+S)"
             >
               <Download className="h-4 w-4" />
               Save & Download
