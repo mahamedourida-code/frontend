@@ -881,9 +881,9 @@ export default function Home() {
 
                   {/* Progressive Results Display - Full Width only when complete */}
                   {(isProcessing || resultFiles.length > 0) && (
-                    <div className={`border-2 border-primary rounded-xl ${processingComplete && resultFiles.length > 0 ? 'p-6 max-h-[calc(100vh-8rem)] overflow-y-auto' : 'p-6'}`} style={{ backgroundColor: '#fbfdfc' }}>
-                      <div className={`flex items-center justify-between mb-4 ${processingComplete && resultFiles.length > 0 ? 'sticky top-0 bg-[#fbfdfc] z-10 pb-3 border-b border-primary/20' : ''}`}>
-                        <h3 className={`${processingComplete && resultFiles.length > 0 ? 'text-xl' : 'text-lg'} font-semibold`}>
+                    <div className={`border-2 border-primary rounded-xl ${processingComplete && resultFiles.length > 0 ? 'p-4 max-h-[calc(100vh-8rem)] overflow-y-auto' : 'p-6'}`} style={{ backgroundColor: '#fbfdfc' }}>
+                      <div className={`flex items-center justify-between mb-3 ${processingComplete && resultFiles.length > 0 ? 'sticky top-0 bg-[#fbfdfc] z-10 pb-2 border-b border-primary/20' : ''}`}>
+                        <h3 className={`${processingComplete && resultFiles.length > 0 ? 'text-lg' : 'text-lg'} font-semibold`}>
                           {processingComplete ? 'Ready to Download' : 'Processing...'}
                         </h3>
                         <div className="flex gap-2">
@@ -913,33 +913,33 @@ export default function Home() {
                         <div className="space-y-4">
                           {/* Preview Section - Only for first file */}
                           {resultFiles.length > 0 && tablePreviewData.length > 0 && firstImageUrl && (
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                               {/* Image and Table Preview Side by Side */}
-                              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                              <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
                                 {/* Original Image */}
                                 <div className="flex flex-col">
-                                  <h4 className="text-base font-semibold mb-3 text-muted-foreground">Original Image</h4>
-                                  <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center max-h-[350px]">
+                                  <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Original Image</h4>
+                                  <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center max-h-[300px]">
                                     <img 
                                       src={firstImageUrl} 
                                       alt="Original" 
-                                      className="max-w-full h-auto max-h-[350px] object-contain"
+                                      className="max-w-full h-auto max-h-[300px] object-contain"
                                     />
                                   </div>
                                 </div>
 
                                 {/* Table Preview */}
                                 <div className="flex flex-col">
-                                  <h4 className="text-base font-semibold mb-3 text-muted-foreground">Extracted Data Preview</h4>
-                                  <div className="border-2 border-primary/20 rounded-lg overflow-auto max-h-[350px] bg-white">
-                                    <table className="w-full text-lg">
+                                  <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Extracted Data Preview</h4>
+                                  <div className="border-2 border-primary/20 rounded-lg overflow-auto max-h-[300px] bg-white">
+                                    <table className="w-full text-base">
                                       <tbody>
                                         {tablePreviewData.map((row, rowIndex) => (
                                           <tr key={rowIndex} className={rowIndex === 0 ? 'bg-primary/10 font-semibold' : 'border-t border-gray-200'}>
                                             {row.map((cell, cellIndex) => (
                                               <td 
                                                 key={cellIndex} 
-                                                className="px-4 py-3 text-left border-r border-gray-200 last:border-r-0"
+                                                className="px-2 py-1.5 text-left border-r border-gray-200 last:border-r-0"
                                               >
                                                 {cell || ''}
                                               </td>
@@ -949,7 +949,7 @@ export default function Home() {
                                       </tbody>
                                     </table>
                                     {tablePreviewData.length >= 10 && (
-                                      <div className="px-4 py-3 bg-muted/50 text-sm text-muted-foreground text-center border-t">
+                                      <div className="px-3 py-2 bg-muted/50 text-xs text-muted-foreground text-center border-t">
                                         Showing first 10 rows
                                       </div>
                                     )}
@@ -958,38 +958,38 @@ export default function Home() {
                               </div>
 
                               {/* First File Buttons */}
-                              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border-2 border-primary">
-                                <div className="flex items-center gap-4 flex-1 min-w-0">
-                                  <FileSpreadsheet className="h-6 w-6 text-primary" />
-                                  <span className="text-lg font-medium truncate">{resultFiles[0].filename || 'result.xlsx'}</span>
+                              <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-primary">
+                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                  <FileSpreadsheet className="h-5 w-5 text-primary" />
+                                  <span className="text-base font-medium truncate">{resultFiles[0].filename || 'result.xlsx'}</span>
                                 </div>
-                                <div className="flex items-center gap-3 flex-shrink-0">
+                                <div className="flex items-center gap-2 flex-shrink-0">
                                   <Button
-                                    size="lg"
+                                    size="default"
                                     onClick={() => handleDownloadFile(resultFiles[0].file_id)}
                                     className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-primary"
                                   >
-                                    <Download className="h-5 w-5" />
+                                    <Download className="h-4 w-4" />
                                     Download
                                   </Button>
                                   <Button
-                                    size="lg"
+                                    size="default"
                                     variant="outline"
                                     onClick={() => handleShareFile(resultFiles[0])}
                                     className="gap-2 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
                                   >
-                                    <Share2 className="h-5 w-5" />
+                                    <Share2 className="h-4 w-4" />
                                     Share
                                   </Button>
                                   <Button
-                                    size="lg"
+                                    size="default"
                                     variant="outline"
                                     onClick={() => {
                                       window.location.href = `/edit/${resultFiles[0].file_id}?fileName=${encodeURIComponent(resultFiles[0].filename || 'result.xlsx')}`
                                     }}
                                     className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                                   >
-                                    <Edit3 className="h-5 w-5" />
+                                    <Edit3 className="h-4 w-4" />
                                     Edit
                                   </Button>
                                 </div>
