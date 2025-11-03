@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react'
 
 interface ProcessedFile {
   file_id: string
@@ -49,6 +49,9 @@ export function ProcessingStateProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const loadState = () => {
       try {
+        // Check if we're in browser
+        if (typeof window === 'undefined') return
+        
         const stored = localStorage.getItem(STORAGE_KEY)
         if (stored) {
           const parsed = JSON.parse(stored)
@@ -120,19 +123,19 @@ export function ProcessingStateProvider({ children }: { children: ReactNode }) {
     }
   }, [state])
 
-  const updateState = (newState: Partial<ProcessingState>) => {
+  const updateState = useCallback((newState: Partial<ProcessingState>) => {
     setState(prev => ({
       ...prev,
       ...newState,
       lastUpdated: Date.now()
     }))
-  }
+  }, [])
 
-  const clearState = () => {
+  const clearState = useCallback(() => {
     setState(initialState)
     localStorage.removeItem(STORAGE_KEY)
     console.log('[ProcessingStateContext] State cleared')
-  }
+  }, [])
 
   // Convert File objects to serializable format
   const getSerializableFiles = (): any[] => {

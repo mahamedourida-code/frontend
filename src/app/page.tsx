@@ -56,7 +56,10 @@ export default function Home() {
   const heroImageRef = useRef<HTMLDivElement>(null);
 
   // Get state management from context
-  const { state: processingState, updateState, clearState } = useProcessingState();
+  const contextValue = useProcessingState()
+  const processingState = contextValue?.state
+  const updateState = contextValue?.updateState
+  const clearState = contextValue?.clearState;
 
   // Free trial state
   const [trialInfo, setTrialInfo] = useState({ uuid: '', used: 0, remaining: 3, hasRemaining: true, limit: 3 });
@@ -124,17 +127,24 @@ export default function Home() {
 
   // Save state to context when it changes
   useEffect(() => {
+    // Only update if we have updateState function available
+    if (!updateState) return;
+    
     if (resultFiles.length > 0 || isProcessing) {
-      updateState({
-        processedFiles: resultFiles,
-        status: processingComplete ? 'completed' : isProcessing ? 'processing' : 'idle',
-        processingComplete: processingComplete,
-        uploadedFiles: [] // Don't save File objects
-      });
-      console.log('[Landing] Saving state to context:', {
-        processedFiles: resultFiles.length,
-        status: processingComplete ? 'completed' : isProcessing ? 'processing' : 'idle'
-      });
+      try {
+        updateState({
+          processedFiles: resultFiles,
+          status: processingComplete ? 'completed' : isProcessing ? 'processing' : 'idle',
+          processingComplete: processingComplete,
+          uploadedFiles: [] // Don't save File objects
+        });
+        console.log('[Landing] Saving state to context:', {
+          processedFiles: resultFiles.length,
+          status: processingComplete ? 'completed' : isProcessing ? 'processing' : 'idle'
+        });
+      } catch (error) {
+        console.error('[Landing] Error updating state:', error);
+      }
     }
   }, [resultFiles, isProcessing, processingComplete, updateState]);
 
@@ -282,18 +292,21 @@ export default function Home() {
   }, []);
 
   const handleProcessImage = useCallback(async () => {
-    if (uploadedFiles.length === 0) return;
-
-    // Check if user has free trials remaining (silently)
-    if (!trialInfo.hasRemaining) {
-      setShowLimitDialog(true);
-      return;
-    }
-
-    setIsProcessing(true);
-    setProcessingComplete(false);
-
     try {
+      if (!uploadedFiles || uploadedFiles.length === 0) {
+        toast.error('Please select files to process');
+        return;
+      }
+
+      // Check if user has free trials remaining (silently)
+      if (!trialInfo.hasRemaining) {
+        setShowLimitDialog(true);
+        return;
+      }
+
+      setIsProcessing(true);
+      setProcessingComplete(false);
+
       console.log('[Landing] Processing images:', uploadedFiles.length);
 
       // Upload the files
@@ -321,13 +334,15 @@ export default function Home() {
             setProcessingComplete(true);
             setIsProcessing(false);
             
-            // Save to context immediately
-            updateState({
-              processedFiles: files,
-              status: 'completed',
-              processingComplete: true,
-              uploadedFiles: []
-            });
+            // Save to context immediately if updateState is available
+            if (updateState) {
+              updateState({
+                processedFiles: files,
+                status: 'completed',
+                processingComplete: true,
+                uploadedFiles: []
+              });
+            }
             
             toast.success(`${files.length} file(s) processed successfully!`);
 
@@ -354,6 +369,7 @@ export default function Home() {
     } catch (error: any) {
       console.error('[Landing] Error processing images:', error);
       setIsProcessing(false);
+      setProcessingComplete(false);
 
       // Check if error is due to trial limit
       if (error?.status_code === 402 || error?.detail?.includes('trial') || error?.detail?.includes('limit')) {
@@ -362,7 +378,7 @@ export default function Home() {
         toast.error(error?.detail || 'Failed to process images. Please try again.');
       }
     }
-  }, [uploadedFiles, trialInfo]);
+  }, [uploadedFiles, trialInfo, updateState]);
 
   const handleDownloadFile = async (fileId: string) => {
     try {
