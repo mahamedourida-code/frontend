@@ -854,7 +854,7 @@ export default function Home() {
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1400px]">
             <div className={`grid grid-cols-1 ${(processingComplete && !isProcessing && resultFiles.length > 0) ? 'lg:grid-cols-1' : 'lg:grid-cols-[5fr_7fr]'} gap-8 sm:gap-12 lg:gap-10 items-center`}>
-              {/* Left Content - Hide only when showing results (not during processing) */}
+              {/* Left Content - Hide only when ALL processing is complete */}
               {!(processingComplete && !isProcessing && resultFiles.length > 0) && (
                 <div ref={heroContentRef} className="max-w-xl -mt-4 lg:-mt-8">
                   <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-primary mb-3 sm:mb-5 shadow-lg shadow-primary/10" style={{ backgroundColor: '#fbfdfc' }}>
@@ -890,7 +890,7 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Right Upload Area - Try Our Product - Full width only when showing results */}
+              {/* Right Upload Area - Try Our Product - Full width only when ALL processing complete */}
               <div ref={heroImageRef} className={`relative mt-4 ${(processingComplete && !isProcessing && resultFiles.length > 0) ? 'w-full max-w-none' : ''}`}>
                 <div className="relative w-full space-y-3">
                   {/* Upload Dropzone - Hide when showing results */}
@@ -989,7 +989,7 @@ export default function Home() {
                     </div>
                   )}
 
-                  {/* Progressive Results Display - Full Width only when complete */}
+                  {/* Progressive Results Display - Full Width only when ALL complete */}
                   {(isProcessing || resultFiles.length > 0) && (
                     <div className={`border-2 border-primary rounded-xl ${processingComplete && !isProcessing && resultFiles.length > 0 ? 'p-4 max-h-[calc(100vh-8rem)] overflow-y-auto' : 'p-6'}`} style={{ backgroundColor: '#fbfdfc' }}>
                       <div className={`flex items-center justify-between mb-3 ${processingComplete && !isProcessing && resultFiles.length > 0 ? 'sticky top-0 bg-[#fbfdfc] z-10 pb-2 border-b border-primary/20' : ''}`}>
