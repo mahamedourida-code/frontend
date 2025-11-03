@@ -743,9 +743,9 @@ export default function Home() {
         <section ref={heroRef} className="min-h-screen flex items-center justify-center relative pt-16 lg:pt-12">
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1400px]">
-            <div className={`grid grid-cols-1 ${(isProcessing || resultFiles.length > 0) ? 'lg:grid-cols-1' : 'lg:grid-cols-[5fr_7fr]'} gap-8 sm:gap-12 lg:gap-10 items-center`}>
-              {/* Left Content - Hide when processing or showing results */}
-              {!(isProcessing || resultFiles.length > 0) && (
+            <div className={`grid grid-cols-1 ${(processingComplete && resultFiles.length > 0) ? 'lg:grid-cols-1' : 'lg:grid-cols-[5fr_7fr]'} gap-8 sm:gap-12 lg:gap-10 items-center`}>
+              {/* Left Content - Hide only when showing results (not during processing) */}
+              {!(processingComplete && resultFiles.length > 0) && (
                 <div ref={heroContentRef} className="max-w-xl -mt-4 lg:-mt-8">
                   <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-primary mb-3 sm:mb-5 shadow-lg shadow-primary/10" style={{ backgroundColor: '#fbfdfc' }}>
                     <span className="text-xs sm:text-sm font-semibold text-foreground">Exceletto-7B Handwritten Specialist</span>
@@ -780,8 +780,8 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Right Upload Area - Try Our Product - Full width when processing */}
-              <div ref={heroImageRef} className={`relative mt-4 ${(isProcessing || resultFiles.length > 0) ? 'w-full max-w-none' : ''}`}>
+              {/* Right Upload Area - Try Our Product - Full width only when showing results */}
+              <div ref={heroImageRef} className={`relative mt-4 ${(processingComplete && resultFiles.length > 0) ? 'w-full max-w-none' : ''}`}>
                 <div className="relative w-full space-y-3">
                   {/* Upload Dropzone - Hide when showing results */}
                   {!processingComplete && resultFiles.length === 0 && (
@@ -879,11 +879,11 @@ export default function Home() {
                     </div>
                   )}
 
-                  {/* Progressive Results Display - Full Width */}
+                  {/* Progressive Results Display - Full Width only when complete */}
                   {(isProcessing || resultFiles.length > 0) && (
-                    <div className="border-2 border-primary rounded-xl p-8" style={{ backgroundColor: '#fbfdfc' }}>
-                      <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-2xl font-semibold">
+                    <div className={`border-2 border-primary rounded-xl ${processingComplete && resultFiles.length > 0 ? 'p-6 max-h-[calc(100vh-8rem)] overflow-y-auto' : 'p-6'}`} style={{ backgroundColor: '#fbfdfc' }}>
+                      <div className={`flex items-center justify-between mb-4 ${processingComplete && resultFiles.length > 0 ? 'sticky top-0 bg-[#fbfdfc] z-10 pb-3 border-b border-primary/20' : ''}`}>
+                        <h3 className={`${processingComplete && resultFiles.length > 0 ? 'text-xl' : 'text-lg'} font-semibold`}>
                           {processingComplete ? 'Ready to Download' : 'Processing...'}
                         </h3>
                         <div className="flex gap-2">
@@ -913,17 +913,17 @@ export default function Home() {
                         <div className="space-y-4">
                           {/* Preview Section - Only for first file */}
                           {resultFiles.length > 0 && tablePreviewData.length > 0 && firstImageUrl && (
-                            <div className="space-y-6">
-                              {/* Image and Table Preview Side by Side - Larger */}
-                              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              {/* Image and Table Preview Side by Side */}
+                              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                                 {/* Original Image */}
                                 <div className="flex flex-col">
                                   <h4 className="text-base font-semibold mb-3 text-muted-foreground">Original Image</h4>
-                                  <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center min-h-[400px]">
+                                  <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center max-h-[350px]">
                                     <img 
                                       src={firstImageUrl} 
                                       alt="Original" 
-                                      className="max-w-full h-auto max-h-[500px] object-contain"
+                                      className="max-w-full h-auto max-h-[350px] object-contain"
                                     />
                                   </div>
                                 </div>
@@ -931,8 +931,8 @@ export default function Home() {
                                 {/* Table Preview */}
                                 <div className="flex flex-col">
                                   <h4 className="text-base font-semibold mb-3 text-muted-foreground">Extracted Data Preview</h4>
-                                  <div className="border-2 border-primary/20 rounded-lg overflow-auto max-h-[500px] bg-white">
-                                    <table className="w-full text-base">
+                                  <div className="border-2 border-primary/20 rounded-lg overflow-auto max-h-[350px] bg-white">
+                                    <table className="w-full text-lg">
                                       <tbody>
                                         {tablePreviewData.map((row, rowIndex) => (
                                           <tr key={rowIndex} className={rowIndex === 0 ? 'bg-primary/10 font-semibold' : 'border-t border-gray-200'}>
@@ -961,11 +961,11 @@ export default function Home() {
                               <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border-2 border-primary">
                                 <div className="flex items-center gap-4 flex-1 min-w-0">
                                   <FileSpreadsheet className="h-6 w-6 text-primary" />
-                                  <span className="text-base font-medium truncate">{resultFiles[0].filename || 'result.xlsx'}</span>
+                                  <span className="text-lg font-medium truncate">{resultFiles[0].filename || 'result.xlsx'}</span>
                                 </div>
                                 <div className="flex items-center gap-3 flex-shrink-0">
                                   <Button
-                                    size="default"
+                                    size="lg"
                                     onClick={() => handleDownloadFile(resultFiles[0].file_id)}
                                     className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-primary"
                                   >
@@ -973,7 +973,7 @@ export default function Home() {
                                     Download
                                   </Button>
                                   <Button
-                                    size="default"
+                                    size="lg"
                                     variant="outline"
                                     onClick={() => handleShareFile(resultFiles[0])}
                                     className="gap-2 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
@@ -982,7 +982,7 @@ export default function Home() {
                                     Share
                                   </Button>
                                   <Button
-                                    size="default"
+                                    size="lg"
                                     variant="outline"
                                     onClick={() => {
                                       window.location.href = `/edit/${resultFiles[0].file_id}?fileName=${encodeURIComponent(resultFiles[0].filename || 'result.xlsx')}`
