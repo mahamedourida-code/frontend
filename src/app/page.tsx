@@ -44,6 +44,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
+import { useProcessingState } from "@/contexts/ProcessingStateContext";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -53,6 +54,9 @@ export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
   const heroContentRef = useRef<HTMLDivElement>(null);
   const heroImageRef = useRef<HTMLDivElement>(null);
+
+  // Get state management from context
+  const { state: processingState, updateState, clearState } = useProcessingState();
 
   // Free trial state
   const [trialInfo, setTrialInfo] = useState({ uuid: '', used: 0, remaining: 3, hasRemaining: true, limit: 3 });
@@ -97,6 +101,38 @@ export default function Home() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Restore state from context on mount
+  useEffect(() => {
+    if (processingState && processingState.processedFiles.length > 0) {
+      console.log('[Landing] Restoring state from context:', processingState);
+      
+      // Restore processed files
+      if (processingState.processedFiles) {
+        setResultFiles(processingState.processedFiles);
+      }
+      
+      // Restore status
+      if (processingState.status === 'completed') {
+        setProcessingComplete(true);
+        setIsProcessing(false);
+      } else if (processingState.status === 'processing') {
+        setIsProcessing(true);
+        setProcessingComplete(false);
+      }
+    }
+  }, []);
+
+  // Save state to context when it changes
+  useEffect(() => {
+    if (resultFiles.length > 0 || isProcessing) {
+      updateState({
+        processedFiles: resultFiles,
+        status: processingComplete ? 'completed' : isProcessing ? 'processing' : 'idle',
+        uploadedFiles: uploadedFiles
+      });
+    }
+  }, [resultFiles, isProcessing, processingComplete, uploadedFiles]);
 
   // Silently wake up backend when page loads
   useEffect(() => {
@@ -335,7 +371,12 @@ export default function Home() {
     setUploadedFiles([]);
     setResultFiles([]);
     setProcessingComplete(false);
+    setIsProcessing(false);
     isExecutingAutoActionsRef.current = false;
+    
+    // Clear context state
+    clearState();
+    console.log('[Landing] State cleared');
   };
 
   const handleShareFile = (file: any) => {

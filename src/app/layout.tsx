@@ -3,6 +3,7 @@ import { Nunito, Caveat } from "next/font/google";
 import "./globals.css";
 import "../styles/mobile-nav.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ProcessingStateProvider } from "@/contexts/ProcessingStateContext";
 import { Toaster } from "sonner";
 
 const nunito = Nunito({
@@ -39,8 +40,10 @@ export default function RootLayout({
         style={{ fontFamily: 'var(--font-nunito)' }}
       >
         <ThemeProvider defaultTheme="light" storageKey="exceletto-theme">
-          {children}
-          <Toaster richColors position="top-right" />
+          <ProcessingStateProvider>
+            {children}
+            <Toaster richColors position="top-right" />
+          </ProcessingStateProvider>
         </ThemeProvider>
       </body>
     </html>

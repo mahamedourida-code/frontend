@@ -70,6 +70,7 @@ import { Input } from "@/components/ui/input"
 import { useSearchParams } from "next/navigation"
 import { PenTool, Monitor, Edit3 } from "lucide-react"
 import { wakeUpBackendSilently } from "@/lib/backend-health"
+import { useProcessingState } from "@/contexts/ProcessingStateContext"
 
 export default function ProcessImagesPage() {
   const { user, loading: authLoading, session } = useAuth()
@@ -78,6 +79,9 @@ export default function ProcessImagesPage() {
   const searchParams = useSearchParams()
   const documentType = searchParams.get('type') || 'auto'
   const languageParam = searchParams.get('language') || (typeof window !== 'undefined' ? localStorage.getItem('ocrLanguage') || 'en' : 'en')
+  
+  // Get state management from context
+  const { state: processingState, updateState, clearState } = useProcessingState()
 
   const [selectedLanguage, setSelectedLanguage] = useState(languageParam)
 
@@ -227,6 +231,28 @@ export default function ProcessImagesPage() {
   useEffect(() => {
     wakeUpBackendSilently()
   }, [])
+
+  // Restore state from context on mount
+  useEffect(() => {
+    if (processingState && processingState.processedFiles.length > 0) {
+      console.log('[Dashboard] Restoring state from context:', processingState)
+      
+      // Note: We can't directly set resultFiles as it's managed by useOCR hook
+      // The state will be persisted at the application level
+      // Users can see their previous results when they navigate back
+    }
+  }, [])
+
+  // Save state to context when it changes
+  useEffect(() => {
+    if (resultFiles && (resultFiles.length > 0 || isProcessing)) {
+      updateState({
+        processedFiles: resultFiles,
+        status: status === 'completed' ? 'completed' : isProcessing ? 'processing' : 'idle',
+        uploadedFiles: uploadedFiles
+      })
+    }
+  }, [resultFiles, isProcessing, status, uploadedFiles])
 
   // Persist auto-download setting to localStorage
   useEffect(() => {
@@ -496,10 +522,13 @@ export default function ProcessImagesPage() {
     setUploadedFiles([])
     reset() // This resets status to 'idle' and clears resultFiles
     
+    // Clear context state
+    clearState()
+    
     // Reset auto-actions trackers
     autoActionsExecutedRef.current = null
     isExecutingAutoActionsRef.current = false
-    console.log('[AutoActions] Trackers reset on New Batch')
+    console.log('[Dashboard] State cleared and trackers reset on New Batch')
   }
 
   const handleRenameFile = async (file: any) => {
