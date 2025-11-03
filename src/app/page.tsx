@@ -75,6 +75,7 @@ export default function Home() {
   const [copySuccess, setCopySuccess] = useState(false);
   const [tablePreviewData, setTablePreviewData] = useState<any[][]>([]);
   const [firstImageUrl, setFirstImageUrl] = useState<string>('');
+  const [totalFilesToProcess, setTotalFilesToProcess] = useState(0);
 
   // Auto download state
   const [autoDownload, setAutoDownload] = useState(() => {
@@ -314,6 +315,7 @@ export default function Home() {
 
       setIsProcessing(true);
       setProcessingComplete(false);
+      setTotalFilesToProcess(uploadedFiles.length);
 
       console.log('[Landing] Processing images:', uploadedFiles.length);
 
@@ -330,44 +332,49 @@ export default function Home() {
       const newInfo = getTrialInfo();
       setTrialInfo(newInfo);
 
-      // Poll for completion
+      // Store the first uploaded image for preview immediately
+      if (uploadedFiles.length > 0) {
+        const firstFile = uploadedFiles[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setFirstImageUrl(e.target?.result as string);
+        };
+        reader.readAsDataURL(firstFile);
+      }
+
+      // Poll for completion - progressive results
       const checkStatus = async () => {
         try {
           const status = await ocrApi.getStatus(response.job_id);
 
-          if (status.status === 'completed' && status.results) {
+          // Show partial results as they come in
+          if (status.results && status.results.files && status.results.files.length > 0) {
             const files = status.results.files;
-            console.log('[Landing] Processing complete, files:', files);
+            console.log('[Landing] Partial/Complete results:', files);
             setResultFiles(files);
-            setProcessingComplete(true);
-            setIsProcessing(false);
             
-            // Store the first uploaded image for preview
-            if (uploadedFiles.length > 0) {
-              const firstFile = uploadedFiles[0];
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                setFirstImageUrl(e.target?.result as string);
-              };
-              reader.readAsDataURL(firstFile);
-            }
-            
-            // Fetch table preview for the first file
-            if (files.length > 0) {
+            // Fetch table preview for the first file if not already fetched
+            if (files.length > 0 && tablePreviewData.length === 0) {
               fetchTablePreview(files[0].file_id);
             }
             
-            // Save to context immediately if updateState is available
+            // Update context with partial results
             if (updateState) {
               updateState({
                 processedFiles: files,
-                status: 'completed',
-                processingComplete: true,
+                status: status.status === 'completed' ? 'completed' : 'processing',
+                processingComplete: status.status === 'completed',
                 uploadedFiles: []
               });
             }
+          }
+
+          if (status.status === 'completed') {
+            setProcessingComplete(true);
+            setIsProcessing(false);
             
-            toast.success(`${files.length} file(s) processed successfully!`);
+            const totalFiles = status.results?.files?.length || 0;
+            toast.success(`${totalFiles} file(s) processed successfully!`);
 
             // Show limit dialog if no more free trials (surprise them)
             if (newInfo.remaining === 0) {
@@ -446,6 +453,7 @@ export default function Home() {
     setIsProcessing(false);
     setTablePreviewData([]);
     setFirstImageUrl('');
+    setTotalFilesToProcess(0);
     isExecutingAutoActionsRef.current = false;
     
     // Clear context state
@@ -1086,10 +1094,27 @@ export default function Home() {
                               </div>
                             </div>
                           ))}
+
+                          {/* Pending Files - Show processing indicators */}
+                          {isProcessing && totalFilesToProcess > resultFiles.length && (
+                            <>
+                              {Array.from({ length: totalFilesToProcess - resultFiles.length }).map((_, index) => (
+                                <div key={`pending-${index}`} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg border-2 border-dashed border-primary/30">
+                                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                                    <Loader2 className="h-5 w-5 text-primary animate-spin flex-shrink-0" />
+                                    <span className="text-sm font-medium text-muted-foreground">Processing file {resultFiles.length + index + 1}...</span>
+                                  </div>
+                                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    <span>Please wait</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </>
+                          )}
                         </div>
                       )}
 
-                      {isProcessing && !processingComplete && (
+                      {isProcessing && !processingComplete && resultFiles.length === 0 && (
                         <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
                           <Loader2 className="h-4 w-4 animate-spin" />
                           <span>Converting your images...</span>
