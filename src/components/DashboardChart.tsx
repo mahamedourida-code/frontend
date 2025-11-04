@@ -1,14 +1,13 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import {
   LineChart,
   Line,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
-  ResponsiveContainer
+  Tooltip
 } from 'recharts'
 import { ChartLine } from 'lucide-react'
 
@@ -28,15 +27,38 @@ interface DashboardChartProps {
 
 export default function DashboardChart({ chartData, timeRange }: DashboardChartProps) {
   const [isMounted, setIsMounted] = useState(false)
+  const [dimensions, setDimensions] = useState({ width: 0, height: 280 })
+  const containerRef = useRef<HTMLDivElement>(null)
   
   useEffect(() => {
     setIsMounted(true)
-    console.log('[DashboardChart] Mounted with data:', { 
+    
+    // Set initial dimensions
+    if (containerRef.current) {
+      const { width } = containerRef.current.getBoundingClientRect()
+      setDimensions({ width, height: 280 })
+    }
+
+    // Handle resize
+    const handleResize = () => {
+      if (containerRef.current) {
+        const { width } = containerRef.current.getBoundingClientRect()
+        setDimensions({ width, height: 280 })
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
+    console.log('[DashboardChart] Data updated:', { 
       dataLength: chartData.length,
       timeRange,
-      sampleData: chartData[0] 
+      sampleData: chartData[0],
+      dimensions
     })
-  }, [chartData, timeRange])
+  }, [chartData, timeRange, dimensions])
   
   if (!isMounted) {
     return (
@@ -58,9 +80,17 @@ export default function DashboardChart({ chartData, timeRange }: DashboardChartP
     )
   }
 
+  // Use fixed width if dimensions not yet calculated
+  const chartWidth = dimensions.width || 800
+
   return (
-    <ResponsiveContainer width="100%" height={280}>
-      <LineChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+    <div ref={containerRef} style={{ width: '100%', height: 280 }}>
+      <LineChart 
+        width={chartWidth} 
+        height={280} 
+        data={chartData} 
+        margin={{ top: 5, right: 5, left: -20, bottom: 0 }}
+      >
         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" opacity={0.3} />
         <XAxis
           dataKey={timeRange === "1d" ? "formattedTime" : "formattedDate"}
@@ -96,6 +126,6 @@ export default function DashboardChart({ chartData, timeRange }: DashboardChartP
           activeDot={{ r: 5 }}
         />
       </LineChart>
-    </ResponsiveContainer>
+    </div>
   )
 }

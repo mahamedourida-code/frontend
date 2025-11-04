@@ -151,7 +151,22 @@ export default function DashboardPage() {
         .gte('created_at', fromDate.toISOString())
         .order('created_at', { ascending: true })
 
-      if (error) throw error
+      if (error) {
+        console.error('[Dashboard] Error fetching jobs:', error)
+        // Don't throw, continue with empty data
+        const typedJobs: Job[] = []
+        setChartData([])
+        setStats({
+          totalProcessed: 0,
+          todayProcessed: 0,
+          thisMonthProcessed: 0,
+          imagesLeft: 110,
+          lastWeekProcessed: 0,
+          averageTime: 0,
+          successRate: 0
+        })
+        return
+      }
 
       const typedJobs = (jobs || []) as Job[]
       console.log('[Dashboard] Jobs fetched:', {
@@ -280,7 +295,18 @@ export default function DashboardPage() {
       })
       setStats(newStats)
     } catch (error) {
-      console.error('Error fetching dashboard data:', error)
+      console.error('[Dashboard] Error fetching dashboard data:', error)
+      // Set default values on error
+      setChartData([])
+      setStats({
+        totalProcessed: 0,
+        todayProcessed: 0,
+        thisMonthProcessed: 0,
+        imagesLeft: 110,
+        lastWeekProcessed: 0,
+        averageTime: 0,
+        successRate: 0
+      })
     } finally {
       setLoading(false)
     }
