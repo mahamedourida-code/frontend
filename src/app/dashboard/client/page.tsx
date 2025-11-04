@@ -563,7 +563,12 @@ export default function ProcessImagesPage() {
     try {
       // Fetch the file directly from the API
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-      const response = await fetch(`${apiUrl}/api/v1/ocr/download/${fileId}${sessionId ? `?session_id=${sessionId}` : ''}`)
+      
+      // For authenticated users in dashboard, we don't need session_id
+      // The auth token will be handled by the API client
+      const response = await fetch(`${apiUrl}/api/v1/ocr/download/${fileId}`, {
+        credentials: 'include', // Include cookies for auth
+      })
       
       if (!response.ok) {
         throw new Error('Failed to fetch file for preview')
