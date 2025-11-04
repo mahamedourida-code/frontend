@@ -71,6 +71,7 @@ import { useSearchParams } from "next/navigation"
 import { PenTool, Monitor, Edit3 } from "lucide-react"
 import { wakeUpBackendSilently } from "@/lib/backend-health"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
+import * as XLSX from 'xlsx'
 
 export default function ProcessImagesPage() {
   const { user, loading: authLoading, session } = useAuth()
@@ -140,6 +141,8 @@ export default function ProcessImagesPage() {
   const [editingFileId, setEditingFileId] = useState<string | null>(null)
   const [newFileName, setNewFileName] = useState<string>("")
   const [renamedFiles, setRenamedFiles] = useState<{[key: string]: string}>({})
+  const [tablePreviewData, setTablePreviewData] = useState<any[][]>([])
+  const [firstImageUrl, setFirstImageUrl] = useState<string>('')
 
   // Track if auto-actions have been executed for current job to prevent duplicates
   const autoActionsExecutedRef = useRef<string | null>(null)
@@ -324,6 +327,11 @@ export default function ProcessImagesPage() {
         console.log('[AutoActions] Executing for job:', jobId, 'autoDownload:', autoDownload, 'autoSave:', autoSave)
 
         try {
+          // Fetch table preview for the first file
+          if (resultFiles.length > 0 && resultFiles[0].file_id && tablePreviewData.length === 0) {
+            fetchTablePreview(resultFiles[0].file_id)
+          }
+
           // Auto-download all files
           if (autoDownload) {
             console.log('[AutoDownload] Starting download for', resultFiles.length, 'file(s)')
@@ -486,6 +494,16 @@ export default function ProcessImagesPage() {
     }
 
     try {
+      // Store the first uploaded image for preview immediately
+      if (uploadedFiles.length > 0) {
+        const firstFile = uploadedFiles[0]
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          setFirstImageUrl(e.target?.result as string)
+        }
+        reader.readAsDataURL(firstFile)
+      }
+
       const response = await uploadBatch(uploadedFiles)
       if (response && response.session_id) {
         connectWebSocket(response.session_id)
@@ -527,6 +545,10 @@ export default function ProcessImagesPage() {
     setUploadedFiles([])
     reset() // This resets status to 'idle' and clears resultFiles
     
+    // Clear preview data
+    setTablePreviewData([])
+    setFirstImageUrl('')
+    
     // Clear context state
     clearState()
     
@@ -534,6 +556,32 @@ export default function ProcessImagesPage() {
     autoActionsExecutedRef.current = null
     isExecutingAutoActionsRef.current = false
     console.log('[Dashboard] State cleared and trackers reset on New Batch')
+  }
+
+  // Fetch and parse Excel file for preview
+  const fetchTablePreview = async (fileId: string) => {
+    try {
+      // Fetch the file directly from the API
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiUrl}/api/v1/ocr/download/${fileId}${sessionId ? `?session_id=${sessionId}` : ''}`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch file for preview')
+      }
+      
+      const blob = await response.blob()
+      const arrayBuffer = await blob.arrayBuffer()
+      const workbook = XLSX.read(arrayBuffer, { type: 'array' })
+      const firstSheet = workbook.Sheets[workbook.SheetNames[0]]
+      const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as any[][]
+      
+      // Limit to first 10 rows for preview
+      const previewData = data.slice(0, Math.min(10, data.length))
+      setTablePreviewData(previewData)
+    } catch (error) {
+      console.error('[ProcessImages] Error fetching table preview:', error)
+      // Don't show error toast - just silently fail to show preview
+    }
   }
 
   const handleRenameFile = async (file: any) => {
@@ -1324,16 +1372,168 @@ Best regards`
                       </Badge>
                     </div>
                   )}
-                  {resultFiles.map((file: any, index: number) => (
+                  
+                  {/* First file with preview */}
+                  {resultFiles.length > 0 && (
+                    <div className="space-y-3">
+                      {/* Image and Table Preview for first file */}
+                      {tablePreviewData.length > 0 && firstImageUrl && (
+                        <Card className="overflow-hidden">
+                          <CardContent className="p-4">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                              {/* Original Image */}
+                              <div className="flex flex-col">
+                                <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Original Image</h4>
+                                <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center" style={{ maxHeight: '300px' }}>
+                                  <img 
+                                    src={firstImageUrl} 
+                                    alt="Original" 
+                                    className="max-w-full h-auto object-contain"
+                                    style={{ maxHeight: '280px' }}
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Table Preview */}
+                              <div className="flex flex-col">
+                                <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Extracted Data Preview</h4>
+                                <div className="border-2 border-primary/20 rounded-lg overflow-auto bg-white" style={{ maxHeight: '300px' }}>
+                                  <table className="w-full text-sm">
+                                    <tbody>
+                                      {tablePreviewData.map((row, rowIndex) => (
+                                        <tr key={rowIndex} className={rowIndex === 0 ? 'bg-primary/10 font-semibold' : 'border-t border-gray-200'}>
+                                          {row.map((cell, cellIndex) => (
+                                            <td 
+                                              key={cellIndex} 
+                                              className="px-2 py-1.5 text-left border-r border-gray-200 last:border-r-0"
+                                            >
+                                              {cell || ''}
+                                            </td>
+                                          ))}
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                  {tablePreviewData.length >= 10 && (
+                                    <div className="px-3 py-2 bg-muted/50 text-xs text-muted-foreground text-center border-t">
+                                      Showing first 10 rows
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* First file card with buttons */}
+                      {resultFiles[0] && (
+                        <Card
+                          className="overflow-hidden animate-in slide-in-from-bottom-2 duration-300"
+                        >
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                              1
+                            </div>
+                            <div className="flex items-center justify-center flex-shrink-0">
+                              <FileSpreadsheet className="h-6 w-6 text-primary" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              {editingFileId === resultFiles[0].file_id ? (
+                                <input
+                                  type="text"
+                                  value={newFileName}
+                                  onChange={(e) => setNewFileName(e.target.value)}
+                                  onBlur={() => handleRenameFile(resultFiles[0])}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      handleRenameFile(resultFiles[0])
+                                    } else if (e.key === 'Escape') {
+                                      setEditingFileId(null)
+                                      setNewFileName('')
+                                    }
+                                  }}
+                                  className="px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                                  autoFocus
+                                />
+                              ) : (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <p 
+                                      className="font-medium text-sm truncate cursor-pointer hover:text-primary transition-colors"
+                                      onDoubleClick={() => {
+                                        const currentName = renamedFiles[resultFiles[0].file_id] || resultFiles[0].filename || `Image 1 Result.xlsx`
+                                        setEditingFileId(resultFiles[0].file_id)
+                                        setNewFileName(currentName.replace('.xlsx', ''))
+                                      }}
+                                    >
+                                      {renamedFiles[resultFiles[0].file_id] || resultFiles[0].filename || `Image 1 Result`}
+                                    </p>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="max-w-xs break-all">Double-click to rename</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleShareFile(resultFiles[0])}
+                              className="gap-1.5 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
+                            >
+                              <Share2 className="h-4 w-4" />
+                              Share
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                router.push(`/dashboard/edit/${resultFiles[0].file_id}?fileName=${encodeURIComponent(renamedFiles[resultFiles[0].file_id] || resultFiles[0].filename || 'Result.xlsx')}`)
+                              }}
+                              className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                            >
+                              <Edit3 className="h-4 w-4" />
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                console.log('[Download] Downloading file:', resultFiles[0])
+                                if (!resultFiles[0].file_id) {
+                                  toast.error('Unable to download: File ID is missing')
+                                  return
+                                }
+                                downloadFile(resultFiles[0].file_id)
+                              }}
+                              className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-primary"
+                            >
+                              <Download className="h-4 w-4" />
+                              Download
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Other files - Just buttons, starting from index 1 */}
+                  {resultFiles.slice(1).map((file: any, index: number) => (
                     <Card
-                      key={file.file_id || index}
+                      key={file.file_id || index + 1}
                       className="overflow-hidden animate-in slide-in-from-bottom-2 duration-300"
                     >
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3 flex-1 min-w-0">
                             <div className="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full bg-primary text-sm font-semibold text-primary-foreground">
-                              {index + 1}
+                              {index + 2}
                             </div>
                             <div className="flex items-center justify-center flex-shrink-0">
                               <FileSpreadsheet className="h-6 w-6 text-primary" />
@@ -1362,12 +1562,12 @@ Best regards`
                                     <p 
                                       className="font-medium text-sm truncate cursor-pointer hover:text-primary transition-colors"
                                       onDoubleClick={() => {
-                                        const currentName = renamedFiles[file.file_id] || file.filename || `Image ${index + 1} Result.xlsx`
+                                        const currentName = renamedFiles[file.file_id] || file.filename || `Image ${index + 2} Result.xlsx`
                                         setEditingFileId(file.file_id)
                                         setNewFileName(currentName.replace('.xlsx', ''))
                                       }}
                                     >
-                                      {renamedFiles[file.file_id] || file.filename || `Image ${index + 1} Result`}
+                                      {renamedFiles[file.file_id] || file.filename || `Image ${index + 2} Result`}
                                     </p>
                                   </TooltipTrigger>
                                   <TooltipContent>
