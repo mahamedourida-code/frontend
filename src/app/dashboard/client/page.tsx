@@ -407,6 +407,22 @@ export default function ProcessImagesPage() {
     }
   }, [isProcessing])
 
+  // Fetch table preview when first result file is ready
+  useEffect(() => {
+    console.log('[ProcessImages] Preview useEffect triggered - resultFiles:', resultFiles.length, 'tablePreviewData:', tablePreviewData.length, 'firstImageUrl:', !!firstImageUrl)
+    
+    if (resultFiles.length > 0) {
+      console.log('[ProcessImages] First file:', resultFiles[0])
+      
+      if (resultFiles[0].file_id && tablePreviewData.length === 0) {
+        console.log('[ProcessImages] Conditions met, fetching table preview for:', resultFiles[0].file_id)
+        fetchTablePreview(resultFiles[0].file_id)
+      } else {
+        console.log('[ProcessImages] Conditions not met - file_id:', resultFiles[0].file_id, 'tablePreviewData.length:', tablePreviewData.length)
+      }
+    }
+  }, [resultFiles, tablePreviewData.length, fetchTablePreview, firstImageUrl])
+
   // Listen for localStorage changes from settings page
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
@@ -559,10 +575,12 @@ export default function ProcessImagesPage() {
   }
 
   // Fetch and parse Excel file for preview
-  const fetchTablePreview = async (fileId: string) => {
+  const fetchTablePreview = useCallback(async (fileId: string) => {
+    console.log('[fetchTablePreview] Starting fetch for fileId:', fileId)
     try {
       // Fetch the file directly from the API
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+      console.log('[fetchTablePreview] API URL:', apiUrl)
       
       // For authenticated users in dashboard, we don't need session_id
       // The auth token will be handled by the API client
@@ -570,24 +588,31 @@ export default function ProcessImagesPage() {
         credentials: 'include', // Include cookies for auth
       })
       
+      console.log('[fetchTablePreview] Response status:', response.status, response.ok)
+      
       if (!response.ok) {
         throw new Error('Failed to fetch file for preview')
       }
       
       const blob = await response.blob()
+      console.log('[fetchTablePreview] Blob size:', blob.size)
+      
       const arrayBuffer = await blob.arrayBuffer()
       const workbook = XLSX.read(arrayBuffer, { type: 'array' })
       const firstSheet = workbook.Sheets[workbook.SheetNames[0]]
       const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as any[][]
       
+      console.log('[fetchTablePreview] Parsed data rows:', data.length)
+      
       // Limit to first 10 rows for preview
       const previewData = data.slice(0, Math.min(10, data.length))
       setTablePreviewData(previewData)
+      console.log('[fetchTablePreview] Preview data set successfully, rows:', previewData.length)
     } catch (error) {
       console.error('[ProcessImages] Error fetching table preview:', error)
       // Don't show error toast - just silently fail to show preview
     }
-  }
+  }, [])
 
   const handleRenameFile = async (file: any) => {
     if (!newFileName.trim()) {
@@ -1382,6 +1407,10 @@ Best regards`
                   {resultFiles.length > 0 && (
                     <div className="space-y-3">
                       {/* Image and Table Preview for first file */}
+                      {(() => {
+                        console.log('[Render] Checking preview conditions - tablePreviewData:', tablePreviewData.length, 'firstImageUrl:', !!firstImageUrl)
+                        return null
+                      })()}
                       {tablePreviewData.length > 0 && firstImageUrl && (
                         <Card className="overflow-hidden">
                           <CardContent className="p-4">
