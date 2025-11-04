@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   LineChart,
   Line,
@@ -27,6 +27,25 @@ interface DashboardChartProps {
 }
 
 export default function DashboardChart({ chartData, timeRange }: DashboardChartProps) {
+  const [isMounted, setIsMounted] = useState(false)
+  
+  useEffect(() => {
+    setIsMounted(true)
+    console.log('[DashboardChart] Mounted with data:', { 
+      dataLength: chartData.length,
+      timeRange,
+      sampleData: chartData[0] 
+    })
+  }, [chartData, timeRange])
+  
+  if (!isMounted) {
+    return (
+      <div className="flex items-center justify-center h-[280px]">
+        <div className="text-muted-foreground">Loading chart...</div>
+      </div>
+    )
+  }
+  
   if (chartData.length === 0 || !chartData.some(d => d.count > 0)) {
     return (
       <div className="flex flex-col items-center justify-center h-[280px] text-center">
