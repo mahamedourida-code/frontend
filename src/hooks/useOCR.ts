@@ -307,6 +307,52 @@ export function useOCR(): UseOCRReturn {
       } else {
         console.log('[useOCR] Saved to processing_jobs for dashboard')
       }
+      
+      // Update user_stats table for monthly limits tracking
+      const totalImages = files.length
+      const now = new Date()
+      
+      // First, get current user stats
+      const { data: currentStats, error: fetchError } = await supabase
+        .from('user_stats')
+        .select('total_processed, month_processed, month_start_date')
+        .eq('user_id', user.id)
+        .maybeSingle()
+      
+      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = no rows found
+        console.error('[useOCR] Error fetching user stats:', fetchError)
+      }
+      
+      // Check if we need to reset monthly counter (30 days cycle)
+      let monthProcessed = currentStats?.month_processed || 0
+      let monthStartDate = currentStats?.month_start_date || now.toISOString()
+      const monthStart = new Date(monthStartDate)
+      const daysSinceStart = Math.floor((now.getTime() - monthStart.getTime()) / (1000 * 60 * 60 * 24))
+      
+      // Reset monthly counter if 30 days have passed
+      if (daysSinceStart >= 30) {
+        monthProcessed = 0
+        monthStartDate = now.toISOString()
+      }
+      
+      // Update or insert user stats
+      const { error: upsertError } = await supabase
+        .from('user_stats')
+        .upsert({
+          user_id: user.id,
+          total_processed: (currentStats?.total_processed || 0) + totalImages,
+          month_processed: monthProcessed + totalImages,
+          month_start_date: monthStartDate,
+          last_processed_at: now.toISOString()
+        }, {
+          onConflict: 'user_id'
+        })
+      
+      if (upsertError) {
+        console.error('[useOCR] Error updating user stats:', upsertError)
+      } else {
+        console.log('[useOCR] Updated user stats - month_processed:', monthProcessed + totalImages)
+      }
     } catch (err) {
       console.error('[useOCR] Failed to save processing job:', err)
     }
