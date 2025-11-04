@@ -268,6 +268,50 @@ export function useOCR(): UseOCRReturn {
     }
   }, [jobId, files])
 
+  // Save processing job to database for dashboard visibility
+  const saveProcessingJob = useCallback(async (sessionId: string, files: any[], metadata: any) => {
+    try {
+      const { createClient } = await import('@/utils/supabase/client')
+      const supabase = createClient()
+      
+      // Get user
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        console.log('[useOCR] No user, skipping save to processing_jobs')
+        return
+      }
+      
+      // Save to processing_jobs table
+      const { error } = await supabase
+        .from('processing_jobs')
+        .insert({
+          id: sessionId,
+          user_id: user.id,
+          filename: files[0]?.filename || `batch_${Date.now()}.xlsx`,
+          status: 'completed',
+          processing_metadata: {
+            total_images: files.length,
+            successful_images: files.length,
+            processing_time: metadata.processing_time || 0,
+            files: files.map(f => ({
+              file_id: f.file_id,
+              filename: f.filename || 'result.xlsx'
+            }))
+          },
+          result_url: files[0]?.file_id ? `/api/v1/download/${files[0].file_id}` : null,
+          created_at: new Date().toISOString()
+        })
+      
+      if (error) {
+        console.error('[useOCR] Error saving to processing_jobs:', error)
+      } else {
+        console.log('[useOCR] Saved to processing_jobs for dashboard')
+      }
+    } catch (err) {
+      console.error('[useOCR] Failed to save processing job:', err)
+    }
+  }, [])
+
   // Connect to WebSocket for real-time updates
   const connectWebSocket = useCallback((sessionId: string) => {
     // Disconnect any existing WebSocket first
@@ -389,48 +433,6 @@ export function useOCR(): UseOCRReturn {
     websocket.connect()
     wsRef.current = websocket
   }, [saveProcessingJob])
-
-  // Save processing job to database for dashboard visibility
-  const saveProcessingJob = useCallback(async (sessionId: string, files: any[], metadata: any) => {
-    try {
-      const { createClient } = await import('@/utils/supabase/client')
-      const supabase = createClient()
-      
-      // Get user
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        console.log('[useOCR] No user, skipping save to processing_jobs')
-        return
-      }
-      
-      // Save to processing_jobs table
-      const { error } = await supabase
-        .from('processing_jobs')
-        .insert({
-          job_id: sessionId,
-          user_id: user.id,
-          status: 'completed',
-          processing_metadata: {
-            total_images: files.length,
-            successful_images: files.length,
-            processing_time: metadata.processing_time || 0,
-            files: files.map(f => ({
-              file_id: f.file_id,
-              filename: f.filename || 'result.xlsx'
-            }))
-          },
-          created_at: new Date().toISOString()
-        })
-      
-      if (error) {
-        console.error('[useOCR] Error saving to processing_jobs:', error)
-      } else {
-        console.log('[useOCR] Saved to processing_jobs for dashboard')
-      }
-    } catch (err) {
-      console.error('[useOCR] Failed to save processing job:', err)
-    }
-  }, [])
 
   // Disconnect WebSocket
   const disconnectWebSocket = useCallback(() => {
