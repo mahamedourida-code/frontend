@@ -148,11 +148,7 @@ export default function ProcessImagesPage() {
   const autoActionsExecutedRef = useRef<string | null>(null)
   const isExecutingAutoActionsRef = useRef(false)
   
-  // Document type display info
-  const documentTypeInfo = {
-    handwritten: { label: "Handwritten Tables", icon: PenTool, color: "bg-blue-500" },
-    printed: { label: "Printed Tables", icon: Monitor, color: "bg-purple-500" }
-  }[documentType as string] || { label: "Handwritten Tables", icon: PenTool, color: "bg-blue-500" }
+  // Document type removed from UI
   
   // Log environment configuration and session on mount
   useEffect(() => {
@@ -1041,10 +1037,6 @@ Best regards`
                 Back
               </Button>
               <AppIcon size={32} />
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-primary shadow-sm" style={{ backgroundColor: '#fbfdfc' }}>
-                <documentTypeInfo.icon className="h-4 w-4 text-primary" />
-                <h1 className="text-sm font-semibold text-foreground">{documentTypeInfo.label}</h1>
-              </div>
             </div>
             <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
               <Badge
@@ -1101,19 +1093,7 @@ Best regards`
       <div className="lg:hidden border-b bg-background sticky top-0 z-40">
         <div className="container max-w-7xl mx-auto px-4 py-2.5">
           <div className="flex items-center justify-between">
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border-2 border-primary shadow-sm" style={{ backgroundColor: '#fbfdfc' }}>
-              <documentTypeInfo.icon className="h-3.5 w-3.5 text-primary" />
-              <span className="text-xs font-semibold text-foreground">{documentTypeInfo.label}</span>
-            </div>
-            {/* Temporarily disabled - upload-type page commented out
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.push('/dashboard/upload-type')}
-            >
-              Change
-            </Button>
-            */}
+            <AppIcon size={28} />
           </div>
         </div>
       </div>
@@ -1382,7 +1362,7 @@ Best regards`
                   </div>
                 )}
                 
-                <div className="space-y-2">
+                <div className="space-y-2 -mt-2">
                   {/* First file with preview */}
                   {resultFiles.length > 0 && (
                     <div className="space-y-2">
@@ -1393,25 +1373,25 @@ Best regards`
                       })()}
                       {tablePreviewData.length > 0 && firstImageUrl && (
                         <Card className="overflow-hidden">
-                          <CardContent className="p-3">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                          <CardContent className="p-2">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                               {/* Original Image */}
                               <div className="flex flex-col">
-                                <h4 className="text-sm font-semibold mb-1.5 text-muted-foreground">Original Image</h4>
-                                <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center" style={{ maxHeight: '420px' }}>
+                                <h4 className="text-sm font-semibold mb-0.5 text-muted-foreground">Original Image</h4>
+                                <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center" style={{ maxHeight: '450px' }}>
                                   <img 
                                     src={firstImageUrl} 
                                     alt="Original" 
                                     className="max-w-full h-auto object-contain"
-                                    style={{ maxHeight: '400px' }}
+                                    style={{ maxHeight: '430px' }}
                                   />
                                 </div>
                               </div>
 
                               {/* Table Preview */}
                               <div className="flex flex-col">
-                                <h4 className="text-sm font-semibold mb-1.5 text-muted-foreground">Extracted Data Preview</h4>
-                                <div className="border-2 border-primary/20 rounded-lg overflow-auto bg-white" style={{ maxHeight: '420px' }}>
+                                <h4 className="text-sm font-semibold mb-0.5 text-muted-foreground">Extracted Data Preview</h4>
+                                <div className="border-2 border-primary/20 rounded-lg overflow-auto bg-white" style={{ maxHeight: '450px' }}>
                                   <table className="w-full text-base">
                                     <tbody>
                                       {tablePreviewData.map((row, rowIndex) => (
