@@ -1028,7 +1028,7 @@ Best regards`
       </div>
       {/* Minimal Header */}
       <header className="border-b lg:block hidden relative z-10">
-        <div className="container max-w-5xl mx-auto px-4 py-3">
+        <div className="container max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Button
@@ -1099,7 +1099,7 @@ Best regards`
 
       {/* Mobile Header */}
       <div className="lg:hidden border-b bg-background sticky top-0 z-40">
-        <div className="container max-w-5xl mx-auto px-4 py-2.5">
+        <div className="container max-w-7xl mx-auto px-4 py-2.5">
           <div className="flex items-center justify-between">
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border-2 border-primary shadow-sm" style={{ backgroundColor: '#fbfdfc' }}>
               <documentTypeInfo.icon className="h-3.5 w-3.5 text-primary" />
@@ -1118,7 +1118,7 @@ Best regards`
         </div>
       </div>
 
-      <main className="container max-w-5xl mx-auto px-4 py-8 pb-24 relative z-10">
+      <main className="container max-w-7xl mx-auto px-4 py-8 pb-24 relative z-10">
         {/* Processing Timer Card */}
         {isProcessing && !isComplete && (
           <Card className="mb-4 border-2 border-primary shadow-md max-w-sm" style={{ backgroundColor: '#fbfdfc' }}>
@@ -1397,33 +1397,33 @@ Best regards`
                       })()}
                       {tablePreviewData.length > 0 && firstImageUrl && (
                         <Card className="overflow-hidden">
-                          <CardContent className="p-4">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                          <CardContent className="p-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                               {/* Original Image */}
                               <div className="flex flex-col">
-                                <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Original Image</h4>
-                                <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center" style={{ maxHeight: '300px' }}>
+                                <h4 className="text-base font-semibold mb-3 text-muted-foreground">Original Image</h4>
+                                <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center" style={{ maxHeight: '500px' }}>
                                   <img 
                                     src={firstImageUrl} 
                                     alt="Original" 
                                     className="max-w-full h-auto object-contain"
-                                    style={{ maxHeight: '280px' }}
+                                    style={{ maxHeight: '480px' }}
                                   />
                                 </div>
                               </div>
 
                               {/* Table Preview */}
                               <div className="flex flex-col">
-                                <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Extracted Data Preview</h4>
-                                <div className="border-2 border-primary/20 rounded-lg overflow-auto bg-white" style={{ maxHeight: '300px' }}>
-                                  <table className="w-full text-sm">
+                                <h4 className="text-base font-semibold mb-3 text-muted-foreground">Extracted Data Preview</h4>
+                                <div className="border-2 border-primary/20 rounded-lg overflow-auto bg-white" style={{ maxHeight: '500px' }}>
+                                  <table className="w-full text-base">
                                     <tbody>
                                       {tablePreviewData.map((row, rowIndex) => (
                                         <tr key={rowIndex} className={rowIndex === 0 ? 'bg-primary/10 font-semibold' : 'border-t border-gray-200'}>
                                           {row.map((cell, cellIndex) => (
                                             <td 
                                               key={cellIndex} 
-                                              className="px-2 py-1.5 text-left border-r border-gray-200 last:border-r-0"
+                                              className="px-4 py-2.5 text-left border-r border-gray-200 last:border-r-0"
                                             >
                                               {cell || ''}
                                             </td>
@@ -1433,7 +1433,7 @@ Best regards`
                                     </tbody>
                                   </table>
                                   {tablePreviewData.length >= 10 && (
-                                    <div className="px-3 py-2 bg-muted/50 text-xs text-muted-foreground text-center border-t">
+                                    <div className="px-4 py-3 bg-muted/50 text-sm text-muted-foreground text-center border-t">
                                       Showing first 10 rows
                                     </div>
                                   )}
