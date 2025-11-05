@@ -1029,11 +1029,11 @@ export default function Home() {
                                 {/* Original Image */}
                                 <div className="flex flex-col xl:col-span-1">
                                   <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Original Image</h4>
-                                  <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center max-h-[500px]">
+                                  <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center max-h-[600px]">
                                     <img 
                                       src={firstImageUrl} 
                                       alt="Original" 
-                                      className="max-w-full h-auto max-h-[500px] object-contain"
+                                      className="max-w-full h-auto max-h-[600px] object-contain"
                                     />
                                   </div>
                                 </div>
@@ -1041,7 +1041,7 @@ export default function Home() {
                                 {/* Table Preview */}
                                 <div className="flex flex-col xl:col-span-2">
                                   <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Extracted Data Preview</h4>
-                                  <div className="border-2 border-primary/20 rounded-lg overflow-auto max-h-[500px] bg-white">
+                                  <div className="border-2 border-primary/20 rounded-lg overflow-auto max-h-[600px] bg-white">
                                     <table className="w-full text-base">
                                       <tbody>
                                         {tablePreviewData.map((row, rowIndex) => (

@@ -1159,9 +1159,15 @@ Best regards`
 
 
         {/* Main Content Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
+        <div className={cn(
+          "grid grid-cols-1 gap-4 lg:gap-6",
+          isComplete ? "lg:grid-cols-1" : "lg:grid-cols-4"
+        )}>
           {/* Upload Section */}
-          <div className="lg:col-span-3 order-2 lg:order-1">
+          <div className={cn(
+            "order-2 lg:order-1",
+            isComplete ? "lg:col-span-1" : "lg:col-span-3"
+          )}>
             {!isComplete ? (
               <>
                 {/* Drop Zone */}
@@ -1632,7 +1638,8 @@ Best regards`
             )}
           </div>
 
-          {/* Info Sidebar */}
+          {/* Info Sidebar - Hidden when processing is complete */}
+          {!isComplete && (
           <div className="lg:col-span-1 space-y-4 order-3 lg:order-2">
             {/* Language Selector */}
             <Card className="border-2 border-primary shadow-lg shadow-primary/10" style={{ backgroundColor: '#fbfdfc' }}>
@@ -1740,6 +1747,7 @@ Best regards`
               </CardContent>
             </Card>
           </div>
+          )}
         </div>
       </main>
       
