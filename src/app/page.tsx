@@ -1025,23 +1025,23 @@ export default function Home() {
                           {resultFiles.length > 0 && tablePreviewData.length > 0 && firstImageUrl && (
                             <div className="space-y-3">
                               {/* Image and Table Preview Side by Side */}
-                              <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+                              <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
                                 {/* Original Image */}
-                                <div className="flex flex-col">
+                                <div className="flex flex-col xl:col-span-1">
                                   <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Original Image</h4>
-                                  <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center max-h-[300px]">
+                                  <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center max-h-[500px]">
                                     <img 
                                       src={firstImageUrl} 
                                       alt="Original" 
-                                      className="max-w-full h-auto max-h-[300px] object-contain"
+                                      className="max-w-full h-auto max-h-[500px] object-contain"
                                     />
                                   </div>
                                 </div>
 
                                 {/* Table Preview */}
-                                <div className="flex flex-col">
+                                <div className="flex flex-col xl:col-span-2">
                                   <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Extracted Data Preview</h4>
-                                  <div className="border-2 border-primary/20 rounded-lg overflow-auto max-h-[300px] bg-white">
+                                  <div className="border-2 border-primary/20 rounded-lg overflow-auto max-h-[500px] bg-white">
                                     <table className="w-full text-base">
                                       <tbody>
                                         {tablePreviewData.map((row, rowIndex) => (
