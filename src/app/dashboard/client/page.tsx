@@ -407,22 +407,6 @@ export default function ProcessImagesPage() {
     }
   }, [isProcessing])
 
-  // Fetch table preview when first result file is ready
-  useEffect(() => {
-    console.log('[ProcessImages] Preview useEffect triggered - resultFiles:', resultFiles.length, 'tablePreviewData:', tablePreviewData.length, 'firstImageUrl:', !!firstImageUrl)
-    
-    if (resultFiles.length > 0) {
-      console.log('[ProcessImages] First file:', resultFiles[0])
-      
-      if (resultFiles[0].file_id && tablePreviewData.length === 0) {
-        console.log('[ProcessImages] Conditions met, fetching table preview for:', resultFiles[0].file_id)
-        fetchTablePreview(resultFiles[0].file_id)
-      } else {
-        console.log('[ProcessImages] Conditions not met - file_id:', resultFiles[0].file_id, 'tablePreviewData.length:', tablePreviewData.length)
-      }
-    }
-  }, [resultFiles, tablePreviewData.length, fetchTablePreview, firstImageUrl])
-
   // Listen for localStorage changes from settings page
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
@@ -613,6 +597,22 @@ export default function ProcessImagesPage() {
       // Don't show error toast - just silently fail to show preview
     }
   }, [])
+
+  // Fetch table preview when first result file is ready
+  useEffect(() => {
+    console.log('[ProcessImages] Preview useEffect triggered - resultFiles:', resultFiles?.length || 0, 'tablePreviewData:', tablePreviewData.length, 'firstImageUrl:', !!firstImageUrl)
+    
+    if (resultFiles && resultFiles.length > 0) {
+      console.log('[ProcessImages] First file:', resultFiles[0])
+      
+      if (resultFiles[0].file_id && tablePreviewData.length === 0) {
+        console.log('[ProcessImages] Conditions met, fetching table preview for:', resultFiles[0].file_id)
+        fetchTablePreview(resultFiles[0].file_id)
+      } else {
+        console.log('[ProcessImages] Conditions not met - file_id:', resultFiles[0].file_id, 'tablePreviewData.length:', tablePreviewData.length)
+      }
+    }
+  }, [resultFiles, tablePreviewData.length, fetchTablePreview, firstImageUrl])
 
   const handleRenameFile = async (file: any) => {
     if (!newFileName.trim()) {
