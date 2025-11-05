@@ -1299,10 +1299,10 @@ Best regards`
             {/* Progressive Results Section - Show files as they become ready */}
             {(isProcessing || isComplete) && resultFiles && resultFiles.length > 0 && (
               <TooltipProvider>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {/* All action buttons in one row */}
                 {isComplete && (
-                  <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-2 flex-wrap -mt-2">
                     <Button
                       size="sm"
                       onClick={handleReset}
@@ -1379,7 +1379,7 @@ Best regards`
                 <div className="space-y-2">
                   {/* First file with preview */}
                   {resultFiles.length > 0 && (
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {/* Image and Table Preview for first file */}
                       {(() => {
                         console.log('[Render] Checking preview conditions - tablePreviewData:', tablePreviewData.length, 'firstImageUrl:', !!firstImageUrl)
@@ -1387,25 +1387,25 @@ Best regards`
                       })()}
                       {tablePreviewData.length > 0 && firstImageUrl && (
                         <Card className="overflow-hidden">
-                          <CardContent className="p-6">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          <CardContent className="p-3">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                               {/* Original Image */}
                               <div className="flex flex-col">
-                                <h4 className="text-base font-semibold mb-3 text-muted-foreground">Original Image</h4>
-                                <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center" style={{ maxHeight: '350px' }}>
+                                <h4 className="text-sm font-semibold mb-1.5 text-muted-foreground">Original Image</h4>
+                                <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center" style={{ maxHeight: '420px' }}>
                                   <img 
                                     src={firstImageUrl} 
                                     alt="Original" 
                                     className="max-w-full h-auto object-contain"
-                                    style={{ maxHeight: '330px' }}
+                                    style={{ maxHeight: '400px' }}
                                   />
                                 </div>
                               </div>
 
                               {/* Table Preview */}
                               <div className="flex flex-col">
-                                <h4 className="text-base font-semibold mb-3 text-muted-foreground">Extracted Data Preview</h4>
-                                <div className="border-2 border-primary/20 rounded-lg overflow-auto bg-white" style={{ maxHeight: '350px' }}>
+                                <h4 className="text-sm font-semibold mb-1.5 text-muted-foreground">Extracted Data Preview</h4>
+                                <div className="border-2 border-primary/20 rounded-lg overflow-auto bg-white" style={{ maxHeight: '420px' }}>
                                   <table className="w-full text-base">
                                     <tbody>
                                       {tablePreviewData.map((row, rowIndex) => (
@@ -1413,7 +1413,7 @@ Best regards`
                                           {row.map((cell, cellIndex) => (
                                             <td 
                                               key={cellIndex} 
-                                              className="px-4 py-2.5 text-left border-r border-gray-200 last:border-r-0"
+                                              className="px-3 py-2 text-left border-r border-gray-200 last:border-r-0"
                                             >
                                               {cell || ''}
                                             </td>
@@ -1423,7 +1423,7 @@ Best regards`
                                     </tbody>
                                   </table>
                                   {tablePreviewData.length >= 10 && (
-                                    <div className="px-4 py-3 bg-muted/50 text-sm text-muted-foreground text-center border-t">
+                                    <div className="px-3 py-2 bg-muted/50 text-xs text-muted-foreground text-center border-t">
                                       Showing first 10 rows
                                     </div>
                                   )}
