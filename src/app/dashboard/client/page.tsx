@@ -1159,9 +1159,9 @@ Best regards`
 
 
         {/* Main Content Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
           {/* Upload Section */}
-          <div className="lg:col-span-2 order-2 lg:order-1">
+          <div className="lg:col-span-3 order-2 lg:order-1">
             {!isComplete ? (
               <>
                 {/* Drop Zone */}
@@ -1377,16 +1377,6 @@ Best regards`
                 )}
                 
                 <div className="space-y-2">
-                  {/* Current Results */}
-                  {resultFiles.length > 0 && (
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="secondary" className="gap-1 bg-primary/20">
-                        <FileSpreadsheet className="h-3 w-3" />
-                        {resultFiles.length} {resultFiles.length === 1 ? 'file' : 'files'}
-                      </Badge>
-                    </div>
-                  )}
-                  
                   {/* First file with preview */}
                   {resultFiles.length > 0 && (
                     <div className="space-y-3">
@@ -1402,12 +1392,12 @@ Best regards`
                               {/* Original Image */}
                               <div className="flex flex-col">
                                 <h4 className="text-base font-semibold mb-3 text-muted-foreground">Original Image</h4>
-                                <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center" style={{ maxHeight: '500px' }}>
+                                <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center" style={{ maxHeight: '350px' }}>
                                   <img 
                                     src={firstImageUrl} 
                                     alt="Original" 
                                     className="max-w-full h-auto object-contain"
-                                    style={{ maxHeight: '480px' }}
+                                    style={{ maxHeight: '330px' }}
                                   />
                                 </div>
                               </div>
@@ -1415,7 +1405,7 @@ Best regards`
                               {/* Table Preview */}
                               <div className="flex flex-col">
                                 <h4 className="text-base font-semibold mb-3 text-muted-foreground">Extracted Data Preview</h4>
-                                <div className="border-2 border-primary/20 rounded-lg overflow-auto bg-white" style={{ maxHeight: '500px' }}>
+                                <div className="border-2 border-primary/20 rounded-lg overflow-auto bg-white" style={{ maxHeight: '350px' }}>
                                   <table className="w-full text-base">
                                     <tbody>
                                       {tablePreviewData.map((row, rowIndex) => (
