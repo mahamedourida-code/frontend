@@ -558,27 +558,11 @@ export default function ProcessImagesPage() {
     console.log('[Dashboard] State cleared and trackers reset on New Batch')
   }
 
-  // Fetch and parse Excel file for preview
+  // Fetch and parse Excel file for preview (same as landing page)
   const fetchTablePreview = useCallback(async (fileId: string) => {
     console.log('[fetchTablePreview] Starting fetch for fileId:', fileId)
     try {
-      // Fetch the file directly from the API
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-      console.log('[fetchTablePreview] API URL:', apiUrl)
-      
-      // For authenticated users in dashboard, we don't need session_id
-      // The auth token will be handled by the API client
-      const response = await fetch(`${apiUrl}/api/v1/ocr/download/${fileId}`, {
-        credentials: 'include', // Include cookies for auth
-      })
-      
-      console.log('[fetchTablePreview] Response status:', response.status, response.ok)
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch file for preview')
-      }
-      
-      const blob = await response.blob()
+      const blob = await ocrApi.downloadFile(fileId)
       console.log('[fetchTablePreview] Blob size:', blob.size)
       
       const arrayBuffer = await blob.arrayBuffer()
