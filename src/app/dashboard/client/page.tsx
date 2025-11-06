@@ -143,6 +143,12 @@ export default function ProcessImagesPage() {
   const [renamedFiles, setRenamedFiles] = useState<{[key: string]: string}>({})
   const [tablePreviewData, setTablePreviewData] = useState<any[][]>([])
   const [firstImageUrl, setFirstImageUrl] = useState<string>('')
+  
+  // Upload state
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [uploadedSessionId, setUploadedSessionId] = useState<string | null>(null)
+  const [uploadedFileIds, setUploadedFileIds] = useState<string[]>([])
 
   // Track if auto-actions have been executed for current job to prevent duplicates
   const autoActionsExecutedRef = useRef<string | null>(null)
@@ -444,7 +450,7 @@ export default function ProcessImagesPage() {
     setIsDragging(false)
   }, [])
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(false)
@@ -453,26 +459,70 @@ export default function ProcessImagesPage() {
       file.type.startsWith('image/')
     )
     
-    setUploadedFiles(prev => {
-      const remainingSlots = 100 - prev.length
-      const filesToAdd = files.slice(0, remainingSlots)
-      return [...prev, ...filesToAdd]
-    })
-  }, [])
+    const remainingSlots = 100 - uploadedFiles.length
+    const filesToAdd = files.slice(0, remainingSlots)
+    
+    if (filesToAdd.length > 0) {
+      setUploadedFiles(prev => [...prev, ...filesToAdd])
+      
+      // Immediately upload files to backend
+      await handleUploadFiles(filesToAdd)
+    }
+  }, [uploadedFiles.length])
 
-  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files) {
       const fileArray = Array.from(files).filter(file =>
         file.type.startsWith('image/')
       )
-      setUploadedFiles(prev => {
-        const remainingSlots = 100 - prev.length
-        const filesToAdd = fileArray.slice(0, remainingSlots)
-        return [...prev, ...filesToAdd]
-      })
+      
+      const remainingSlots = 100 - uploadedFiles.length
+      const filesToAdd = fileArray.slice(0, remainingSlots)
+      
+      if (filesToAdd.length > 0) {
+        setUploadedFiles(prev => [...prev, ...filesToAdd])
+        
+        // Immediately upload files to backend
+        await handleUploadFiles(filesToAdd)
+      }
     }
-  }, [])
+  }, [uploadedFiles.length])
+
+  // Upload files immediately when selected
+  const handleUploadFiles = useCallback(async (files: File[]) => {
+    console.log('[Upload] Starting immediate upload for', files.length, 'files')
+    setIsUploading(true)
+    setUploadProgress(0)
+    
+    // Store first image for preview if this is the first batch
+    if (!firstImageUrl && files.length > 0) {
+      const firstFile = files[0]
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setFirstImageUrl(e.target?.result as string)
+      }
+      reader.readAsDataURL(firstFile)
+    }
+    
+    try {
+      const result = await ocrApi.uploadFilesOnly(files, (progress) => {
+        setUploadProgress(progress)
+        console.log('[Upload] Progress:', progress + '%')
+      })
+      
+      console.log('[Upload] Upload complete - session:', result.session_id, 'fileIds:', result.file_ids)
+      setUploadedSessionId(result.session_id)
+      setUploadedFileIds(prev => [...prev, ...result.file_ids])
+      toast.success(`${files.length} file(s) uploaded successfully!`)
+    } catch (error: any) {
+      console.error('[Upload] Upload failed:', error)
+      toast.error('Failed to upload files. Please try again.')
+    } finally {
+      setIsUploading(false)
+      setUploadProgress(0)
+    }
+  }, [firstImageUrl])
 
   const handleProcessImages = useCallback(async () => {
     if (uploadedFiles.length === 0) return
@@ -489,18 +539,21 @@ export default function ProcessImagesPage() {
       return
     }
 
-    try {
-      // Store the first uploaded image for preview immediately
-      if (uploadedFiles.length > 0) {
-        const firstFile = uploadedFiles[0]
-        const reader = new FileReader()
-        reader.onload = (e) => {
-          setFirstImageUrl(e.target?.result as string)
-        }
-        reader.readAsDataURL(firstFile)
-      }
+    // Check if files are already uploaded
+    if (!uploadedSessionId || uploadedFileIds.length === 0) {
+      toast.error('Files are still uploading. Please wait.')
+      return
+    }
 
-      const response = await uploadBatch(uploadedFiles)
+    try {
+      // Files are already uploaded, just start processing
+      console.log('[Process] Starting processing for uploaded session:', uploadedSessionId)
+      const response = await ocrApi.startProcessing(uploadedSessionId, {
+        output_format: 'xlsx',
+        consolidation_strategy: 'consolidated',
+        language: selectedLanguage
+      })
+      
       if (response && response.session_id) {
         connectWebSocket(response.session_id)
         
@@ -544,6 +597,12 @@ export default function ProcessImagesPage() {
     // Clear preview data
     setTablePreviewData([])
     setFirstImageUrl('')
+    
+    // Clear upload state
+    setUploadedSessionId(null)
+    setUploadedFileIds([])
+    setIsUploading(false)
+    setUploadProgress(0)
     
     // Clear context state
     clearState()
@@ -1195,6 +1254,12 @@ Best regards`
                             <ImageIcon className="h-3 w-3" />
                             {uploadedFiles.length} {uploadedFiles.length === 1 ? 'image' : 'images'}
                           </Badge>
+                          {isUploading && (
+                            <Badge variant="outline" className="gap-1">
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                              Uploading {uploadProgress}%
+                            </Badge>
+                          )}
                         </div>
                         <div className="flex gap-2">
                           <Button
@@ -1250,8 +1315,19 @@ Best regards`
                   )}
                 </div>
 
+                {/* Upload Progress */}
+                {isUploading && (
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-muted-foreground">Uploading files...</span>
+                      <span className="text-sm font-semibold text-primary">{uploadProgress}%</span>
+                    </div>
+                    <Progress value={uploadProgress} className="h-2" />
+                  </div>
+                )}
+
                 {/* Process Button */}
-                {uploadedFiles.length > 0 && (
+                {uploadedFiles.length > 0 && !isUploading && (
                   <div className="mt-4 flex items-center justify-end">
                     {uploadedFiles.length > imagesLeft && (
                       <span className="text-sm text-destructive mr-3">

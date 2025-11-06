@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -77,6 +78,12 @@ export default function Home() {
   const [firstImageUrl, setFirstImageUrl] = useState<string>('');
   const [totalFilesToProcess, setTotalFilesToProcess] = useState(0);
   const wsRef = useRef<OCRWebSocket | null>(null);
+  
+  // Upload state
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadedSessionId, setUploadedSessionId] = useState<string | null>(null);
+  const [uploadedFileIds, setUploadedFileIds] = useState<string[]>([]);
 
   // Auto download state
   const [autoDownload, setAutoDownload] = useState(() => {
@@ -285,7 +292,7 @@ export default function Home() {
     setIsDragging(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
@@ -295,17 +302,56 @@ export default function Home() {
     );
 
     if (files.length > 0) {
-      setUploadedFiles(files); // Allow multiple files
+      setUploadedFiles(files);
+      // Immediately upload files
+      await handleUploadFiles(files);
     }
   }, []);
 
-  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       const fileArray = Array.from(files).filter(file =>
         file.type.startsWith('image/')
       );
-      setUploadedFiles(fileArray); // Allow multiple files
+      setUploadedFiles(fileArray);
+      // Immediately upload files
+      await handleUploadFiles(fileArray);
+    }
+  }, []);
+
+  // Upload files immediately when selected
+  const handleUploadFiles = useCallback(async (files: File[]) => {
+    console.log('[Upload] Starting immediate upload for', files.length, 'files')
+    setIsUploading(true)
+    setUploadProgress(0)
+    
+    // Store first image for preview
+    if (files.length > 0) {
+      const firstFile = files[0]
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setFirstImageUrl(e.target?.result as string)
+      }
+      reader.readAsDataURL(firstFile)
+    }
+    
+    try {
+      const result = await ocrApi.uploadFilesOnly(files, (progress) => {
+        setUploadProgress(progress)
+        console.log('[Upload] Progress:', progress + '%')
+      })
+      
+      console.log('[Upload] Upload complete - session:', result.session_id, 'fileIds:', result.file_ids)
+      setUploadedSessionId(result.session_id)
+      setUploadedFileIds(result.file_ids)
+      toast.success(`${files.length} file(s) uploaded successfully!`)
+    } catch (error: any) {
+      console.error('[Upload] Upload failed:', error)
+      toast.error('Failed to upload files. Please try again.')
+    } finally {
+      setIsUploading(false)
+      setUploadProgress(0)
     }
   }, []);
 
@@ -322,34 +368,30 @@ export default function Home() {
         return;
       }
 
+      // Check if files are already uploaded
+      if (!uploadedSessionId || uploadedFileIds.length === 0) {
+        toast.error('Files are still uploading. Please wait.');
+        return;
+      }
+
       setIsProcessing(true);
       setProcessingComplete(false);
       setTotalFilesToProcess(uploadedFiles.length);
 
-      console.log('[Landing] Processing images:', uploadedFiles.length);
+      console.log('[Landing] Starting processing for uploaded session:', uploadedSessionId);
 
-      // Upload the files
-      const response = await ocrApi.uploadBatchMultipart(uploadedFiles, {
+      // Files are already uploaded, just start processing
+      const response = await ocrApi.startProcessing(uploadedSessionId, {
         output_format: 'xlsx',
         consolidation_strategy: 'separate'
       });
 
-      console.log('[Landing] Upload successful:', response);
+      console.log('[Landing] Processing started:', response);
 
       // Increment trial count
       incrementTrialUploadCount();
       const newInfo = getTrialInfo();
       setTrialInfo(newInfo);
-
-      // Store the first uploaded image for preview immediately
-      if (uploadedFiles.length > 0) {
-        const firstFile = uploadedFiles[0];
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          setFirstImageUrl(e.target?.result as string);
-        };
-        reader.readAsDataURL(firstFile);
-      }
 
       // Disconnect any existing WebSocket first
       if (wsRef.current) {
@@ -557,6 +599,12 @@ export default function Home() {
     setFirstImageUrl('');
     setTotalFilesToProcess(0);
     isExecutingAutoActionsRef.current = false;
+    
+    // Clear upload state
+    setUploadedSessionId(null);
+    setUploadedFileIds([]);
+    setIsUploading(false);
+    setUploadProgress(0);
     
     // Clear context state
     clearState();
@@ -952,12 +1000,24 @@ export default function Home() {
                                   </div>
                                 ))}
                               </div>
-                              <p className="text-xs text-muted-foreground mb-2">{uploadedFiles.length} image{uploadedFiles.length > 1 ? 's' : ''} ready</p>
+                              <p className="text-xs text-muted-foreground mb-2">
+                                {uploadedFiles.length} image{uploadedFiles.length > 1 ? 's' : ''} ready
+                                {isUploading && (
+                                  <span className="ml-2 text-primary font-semibold">
+                                    Uploading {uploadProgress}%
+                                  </span>
+                                )}
+                              </p>
+                              {isUploading && (
+                                <div className="mb-3">
+                                  <Progress value={uploadProgress} className="h-2" />
+                                </div>
+                              )}
                               <label htmlFor="file-upload-landing-more">
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  disabled={isProcessing}
+                                  disabled={isProcessing || isUploading}
                                   className="border-2 border-primary text-xs"
                                   asChild
                                   onClick={(e) => e.stopPropagation()}
@@ -1228,9 +1288,18 @@ export default function Home() {
                   {/* Convert Button + Options Card Row - Hide when processing or files ready */}
                   {!isProcessing && resultFiles.length === 0 && (
                   <div className="grid grid-cols-3 gap-3">
+                    {isUploading && (
+                      <div className="col-span-3 mb-2">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-muted-foreground">Uploading files...</span>
+                          <span className="text-sm font-semibold text-primary">{uploadProgress}%</span>
+                        </div>
+                        <Progress value={uploadProgress} className="h-2" />
+                      </div>
+                    )}
                     <Button
                      onClick={handleProcessImage}
-                     disabled={uploadedFiles.length === 0 || isProcessing}
+                     disabled={uploadedFiles.length === 0 || isProcessing || isUploading}
                      className={`col-span-2 py-8 text-xl font-semibold border-2 min-h-[120px] transition-all duration-200 ${
                       uploadedFiles.length === 0
                            ? 'bg-gray-300 hover:bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'
