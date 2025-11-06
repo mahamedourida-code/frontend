@@ -71,7 +71,7 @@ interface DashboardStats {
   totalProcessed: number
   todayProcessed: number
   thisMonthProcessed: number
-  imagesLeft: number
+  monthProcessed: number
   lastWeekProcessed: number
   averageTime: number
   successRate: number
@@ -86,7 +86,7 @@ export default function DashboardPage() {
     totalProcessed: 0,
     todayProcessed: 0,
     thisMonthProcessed: 0,
-    imagesLeft: 110,
+    monthProcessed: 0,
     lastWeekProcessed: 0,
     averageTime: 0,
     successRate: 0
@@ -160,7 +160,7 @@ export default function DashboardPage() {
           totalProcessed: 0,
           todayProcessed: 0,
           thisMonthProcessed: 0,
-          imagesLeft: 110,
+          monthProcessed: 0,
           lastWeekProcessed: 0,
           averageTime: 0,
           successRate: 0
@@ -253,8 +253,6 @@ export default function DashboardPage() {
 
       const userTotalProcessed = userStats?.total_processed || 0
       const userMonthProcessed = userStats?.month_processed || 0
-      const monthStartDate = userStats?.month_start_date
-      const imagesLeft = monthStartDate ? (110 - userMonthProcessed) : 110
 
       // Use month processed from user stats
       const thisMonthProcessed = userMonthProcessed
@@ -282,7 +280,7 @@ export default function DashboardPage() {
         totalProcessed: userTotalProcessed || totalImages,
         todayProcessed: todayImages,
         thisMonthProcessed: thisMonthProcessed,
-        imagesLeft: imagesLeft,
+        monthProcessed: thisMonthProcessed,
         lastWeekProcessed: lastWeekProcessed,
         averageTime: avgTime,
         successRate
@@ -302,7 +300,7 @@ export default function DashboardPage() {
         totalProcessed: 0,
         todayProcessed: 0,
         thisMonthProcessed: 0,
-        imagesLeft: 110,
+        monthProcessed: 0,
         lastWeekProcessed: 0,
         averageTime: 0,
         successRate: 0
@@ -530,12 +528,14 @@ export default function DashboardPage() {
               <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs lg:text-sm text-muted-foreground">Images Left</p>
-                    <p className="text-2xl lg:text-3xl font-bold mt-1">{stats.imagesLeft}</p>
-                    <p className="text-[10px] lg:text-xs text-muted-foreground mt-0.5">This month</p>
+                    <p className="text-xs lg:text-sm text-muted-foreground">Average Time</p>
+                    <p className="text-2xl lg:text-3xl font-bold mt-1">
+                      {stats.monthProcessed > 0 ? '~5s' : '-'}
+                    </p>
+                    <p className="text-[10px] lg:text-xs text-muted-foreground mt-0.5">Per image</p>
                   </div>
                   <div className="flex-shrink-0">
-                    <Image className="h-8 w-8 lg:h-10 lg:w-10 text-primary/60" />
+                    <Clock className="h-8 w-8 lg:h-10 lg:w-10 text-primary/60" />
                   </div>
                 </div>
               </CardContent>

@@ -112,8 +112,6 @@ export default function ProcessImagesPage() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [selectedView, setSelectedView] = useState<"grid" | "list">("grid")
   const [processedCount, setProcessedCount] = useState(0)
-  const [imagesLeft, setImagesLeft] = useState(110)
-  const [resetDate, setResetDate] = useState<string | null>(null)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null)
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([])
@@ -182,26 +180,10 @@ export default function ProcessImagesPage() {
       }
 
       const totalProcessed = userStats?.total_processed || 0
-      const monthProcessed = userStats?.month_processed || 0
-      const monthStart = userStats?.month_start_date
-      
-      // Calculate images left
-      const left = 110 - monthProcessed
       setProcessedCount(totalProcessed)
-      setImagesLeft(left > 0 ? left : 0)
-      
-      // Calculate reset date (30 days from month start)
-      if (monthStart) {
-        const resetDate = new Date(monthStart)
-        resetDate.setDate(resetDate.getDate() + 30)
-        setResetDate(resetDate.toLocaleDateString())
-      }
       
       console.log('[ProcessImagesPage] Stats fetched:', {
-        totalProcessed,
-        monthProcessed,
-        imagesLeft: left,
-        resetDate: monthStart
+        totalProcessed
       })
       
     } catch (error) {
@@ -478,16 +460,6 @@ export default function ProcessImagesPage() {
     if (uploadedFiles.length === 0) return
 
     const imagesCount = uploadedFiles.length
-    
-    // Check if user has enough images left
-    if (imagesLeft < imagesCount) {
-      if (imagesLeft === 0) {
-        toast.error(`Monthly limit reached! Your limit will reset on ${resetDate || 'next month'}.`)
-      } else {
-        toast.error(`You only have ${imagesLeft} images left this month. Remove ${imagesCount - imagesLeft} images to proceed.`)
-      }
-      return
-    }
 
     try {
       // Store the first uploaded image for preview immediately
@@ -506,7 +478,6 @@ export default function ProcessImagesPage() {
         
         // Update counts optimistically
         setProcessedCount(prev => prev + imagesCount)
-        setImagesLeft(prev => Math.max(0, prev - imagesCount))
         
         // Refresh stats after a delay
         setTimeout(() => {
@@ -514,15 +485,11 @@ export default function ProcessImagesPage() {
           fetchUserStats()
         }, 2000)
 
-        toast.success(`Processing ${imagesCount} image${imagesCount > 1 ? 's' : ''}. ${imagesLeft - imagesCount} images left this month.`)
+        toast.success(`Processing ${imagesCount} image${imagesCount > 1 ? 's' : ''}...`)
       }
     } catch (error: any) {
       // Handle errors
-      if (error?.status_code === 402) {
-        // Payment required - monthly limit reached
-        toast.error(`Monthly limit reached! Your limit will reset on ${resetDate || 'next month'}.`)
-        fetchUserStats() // Refresh to get accurate counts
-      } else if (error?.status_code === 500) {
+      if (error?.status_code === 500) {
         // Server error
         toast.error('Server error. Please try again or contact support.')
       } else {
@@ -531,7 +498,7 @@ export default function ProcessImagesPage() {
       }
       console.error('[ProcessImages] Error:', error)
     }
-  }, [uploadedFiles, uploadBatch, connectWebSocket, resultFiles, reset, imagesLeft, resetDate])
+  }, [uploadedFiles, uploadBatch, connectWebSocket, resultFiles, reset])
 
   const handleRemoveFile = (index: number) => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index))
@@ -1040,21 +1007,11 @@ Best regards`
             </div>
             <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
               <Badge
-                variant={imagesLeft <= 10 ? "destructive" : "secondary"}
+                variant="secondary"
                 className="gap-1 px-2 py-1 text-xs"
               >
-                {imagesLeft} images left
+                Unlimited Processing
               </Badge>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => fetchUserStats()}
-                disabled={creditLoading}
-                className="h-7 w-7 p-0"
-                title="Refresh stats"
-              >
-                <Activity className={cn("h-3 w-3", creditLoading && "animate-spin")} />
-              </Button>
             </div>
             <div className="flex items-center gap-3">
               {/* Temporarily disabled - upload-type page commented out
@@ -1253,15 +1210,10 @@ Best regards`
                 {/* Process Button */}
                 {uploadedFiles.length > 0 && (
                   <div className="mt-4 flex items-center justify-end">
-                    {uploadedFiles.length > imagesLeft && (
-                      <span className="text-sm text-destructive mr-3">
-                        Not enough images left! Need {uploadedFiles.length - imagesLeft} fewer
-                      </span>
-                    )}
                     <Button
                       size="lg"
                       onClick={handleProcessImages}
-                      disabled={isProcessing || uploadedFiles.length > imagesLeft}
+                      disabled={isProcessing}
                       className="gap-2"
                     >
                       {isProcessing ? (
