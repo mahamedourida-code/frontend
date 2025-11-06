@@ -2035,7 +2035,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="backdrop-blur-md relative z-10">
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <div className="text-2xl font-bold text-foreground mb-4">AxLiner</div>
