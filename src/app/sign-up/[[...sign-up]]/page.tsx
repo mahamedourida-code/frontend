@@ -122,7 +122,7 @@ export default function SignUpPage() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Create your account</CardTitle>
           <CardDescription>
-            Get started with Exceletto today
+            Get started with AxLiner today
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

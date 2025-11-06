@@ -27,7 +27,7 @@ export default function PrivacyPolicyPage() {
           </div>
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <AppIcon size={40} />
-            <span className="text-xl font-bold">Exceletto</span>
+            <span className="text-xl font-bold">AxLiner</span>
           </Link>
         </div>
       </header>
@@ -41,7 +41,7 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">1. Introduction</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Welcome to Exceletto. We respect your privacy and are committed to protecting your personal data. 
+              Welcome to AxLiner. We respect your privacy and are committed to protecting your personal data. 
               This privacy policy explains how we collect, use, and safeguard your information when you use our 
               OCR (Optical Character Recognition) service to convert images of tables into Excel files.
             </p>
@@ -179,7 +179,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <div className="mt-3 p-4 bg-muted/50 rounded-lg">
               <p className="text-muted-foreground">
-                <strong>Email:</strong> privacy@exceletto.com<br />
+                <strong>Email:</strong> privacy@AxLiner.com<br />
                 <strong>Address:</strong> [Your Business Address]
               </p>
             </div>
@@ -201,7 +201,7 @@ export default function PrivacyPolicyPage() {
       <footer className="border-t mt-20">
         <div className="container max-w-4xl mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} Exceletto. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} AxLiner. All rights reserved.</p>
             <div className="flex gap-6">
               <Link href="/privacy-policy" className="hover:text-foreground transition-colors">
                 Privacy Policy

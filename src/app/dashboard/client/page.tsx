@@ -731,13 +731,13 @@ export default function ProcessImagesPage() {
     
     // Check if session-based share
     if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
-      subject = `${selectedFilesForBatch.length} Excel files processed with Exceletto`
+      subject = `${selectedFilesForBatch.length} Excel files processed with AxLiner`
       
       const sessionUrl = shareSession.share_url.replace(/\s/g, '')
       
       body = `Hi,
 
-I've processed ${selectedFilesForBatch.length} files with Exceletto. You can download all files from this link:
+I've processed ${selectedFilesForBatch.length} files with AxLiner. You can download all files from this link:
 
 ${sessionUrl}
 
@@ -745,7 +745,7 @@ Best regards`
     }
     // Legacy batch sharing
     else if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
-      subject = `${selectedFilesForBatch.length} Excel files processed with Exceletto`
+      subject = `${selectedFilesForBatch.length} Excel files processed with AxLiner`
       
       const fileLinks = selectedFilesForBatch.map((file, index) => {
         const fileUrl = `${baseUrl}/api/v1/download/${file.file_id}`.replace(/\s/g, '')
@@ -754,7 +754,7 @@ Best regards`
       
       body = `Hi,
 
-I've processed ${selectedFilesForBatch.length} files with Exceletto. You can download them here:
+I've processed ${selectedFilesForBatch.length} files with AxLiner. You can download them here:
 
 ${fileLinks}
 
@@ -762,10 +762,10 @@ Best regards`
     } else {
       // Single file
       const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
-      subject = `Excel file: ${selectedFileToShare.filename || 'Processed with Exceletto'}`
+      subject = `Excel file: ${selectedFileToShare.filename || 'Processed with AxLiner'}`
       body = `Hi,
 
-I've processed this file with Exceletto. You can download it here:
+I've processed this file with AxLiner. You can download it here:
 
 ${shareUrl}
 
@@ -880,19 +880,19 @@ Best regards`
     // Check if session-based share
     if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
       shareUrl = shareSession.share_url.replace(/\s/g, '')
-      tweetText = `Check out these ${selectedFilesForBatch.length} Excel files I processed with Exceletto! 📊✨`
+      tweetText = `Check out these ${selectedFilesForBatch.length} Excel files I processed with AxLiner! 📊✨`
       console.log('[Share] Session share via X:', shareUrl)
     }
     // Legacy batch sharing
     else if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
       // For batch, use the first file URL as example
       shareUrl = `${baseUrl}/api/v1/download/${selectedFilesForBatch[0].file_id}`.replace(/\s/g, '')
-      tweetText = `Check out these ${selectedFilesForBatch.length} Excel files I processed with Exceletto! 📊✨`
+      tweetText = `Check out these ${selectedFilesForBatch.length} Excel files I processed with AxLiner! 📊✨`
     }
     // Single file
     else {
       shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
-      tweetText = `Check out this Excel file I processed with Exceletto! 📊✨`
+      tweetText = `Check out this Excel file I processed with AxLiner! 📊✨`
     }
     
     // X (Twitter) Web Intent URL

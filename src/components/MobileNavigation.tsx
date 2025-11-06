@@ -48,7 +48,7 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
         <SheetContent side="right" className="w-80 sm:w-96 p-0">
           {/* Header */}
           <div className="px-6 py-4 border-b">
-            <SheetTitle className="text-xl font-bold">Exceletto</SheetTitle>
+            <SheetTitle className="text-xl font-bold">AxLiner</SheetTitle>
             <SheetDescription className="text-sm text-muted-foreground mt-1">
               AI-powered OCR for table screenshots to Excel conversion
             </SheetDescription>

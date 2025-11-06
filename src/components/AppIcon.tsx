@@ -10,7 +10,7 @@ export function AppIcon({ className = '', size = 24 }: AppIconProps) {
   return (
     <Image
       src="/crop.png"
-      alt="Exceletto"
+      alt="AxLiner"
       width={size}
       height={size}
       className={className}
@@ -24,7 +24,7 @@ export function AppIconMinimal({ className = '', size = 24 }: AppIconProps) {
   return (
     <Image
       src="/crop.png"
-      alt="Exceletto"
+      alt="AxLiner"
       width={size}
       height={size}
       className={className}
@@ -39,13 +39,13 @@ export function AppLogo({ className = '' }: { className?: string }) {
     <div className={`flex items-center gap-2 ${className}`}>
       <Image
         src="/crop.png"
-        alt="Exceletto"
+        alt="AxLiner"
         width={32}
         height={32}
         priority
       />
       <span className="text-xl font-bold text-black dark:text-white">
-        Exceletto
+        AxLiner
       </span>
     </div>
   )

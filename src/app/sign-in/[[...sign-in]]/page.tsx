@@ -140,7 +140,7 @@ export default function SignInPage() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Welcome back</CardTitle>
           <CardDescription>
-            Sign in to your Exceletto account
+            Sign in to your AxLiner account
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

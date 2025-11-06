@@ -26,7 +26,7 @@ export default function DataEntryPage() {
                 <ChevronLeft className="h-4 w-4" />
                 <span className="hidden sm:inline">Back</span>
               </Button>
-              <Link href="/" className="text-2xl font-bold text-foreground">Exceletto</Link>
+              <Link href="/" className="text-2xl font-bold text-foreground">AxLiner</Link>
             </div>
             
             {/* Mobile Navigation */}

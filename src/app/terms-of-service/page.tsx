@@ -27,7 +27,7 @@ export default function TermsOfServicePage() {
           </div>
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <AppIcon size={40} />
-            <span className="text-xl font-bold">Exceletto</span>
+            <span className="text-xl font-bold">AxLiner</span>
           </Link>
         </div>
       </header>
@@ -41,7 +41,7 @@ export default function TermsOfServicePage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">1. Agreement to Terms</h2>
             <p className="text-muted-foreground leading-relaxed">
-              By accessing or using Exceletto ("Service"), you agree to be bound by these Terms of Service ("Terms"). 
+              By accessing or using AxLiner ("Service"), you agree to be bound by these Terms of Service ("Terms"). 
               If you disagree with any part of these terms, you may not access the Service.
             </p>
           </section>
@@ -49,7 +49,7 @@ export default function TermsOfServicePage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">2. Description of Service</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Exceletto is an AI-powered OCR (Optical Character Recognition) service that converts images of tables 
+              AxLiner is an AI-powered OCR (Optical Character Recognition) service that converts images of tables 
               and documents into editable Excel (XLSX) files. The Service uses machine learning models to extract 
               and structure data from your uploaded images.
             </p>
@@ -134,7 +134,7 @@ export default function TermsOfServicePage() {
               <div>
                 <h3 className="text-xl font-medium mb-2">6.2 Our Content</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  The Service, including its code, design, algorithms, and branding, is owned by Exceletto and 
+                  The Service, including its code, design, algorithms, and branding, is owned by AxLiner and 
                   protected by intellectual property laws. You may not copy, modify, or distribute our content 
                   without permission.
                 </p>
@@ -175,7 +175,7 @@ export default function TermsOfServicePage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">9. Limitation of Liability</h2>
             <p className="text-muted-foreground leading-relaxed">
-              TO THE MAXIMUM EXTENT PERMITTED BY LAW, EXCELETTO SHALL NOT BE LIABLE FOR ANY INDIRECT, 
+              TO THE MAXIMUM EXTENT PERMITTED BY LAW, AxLiner SHALL NOT BE LIABLE FOR ANY INDIRECT, 
               INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOSS OF DATA OR REVENUE, 
               ARISING FROM YOUR USE OF THE SERVICE.
             </p>
@@ -238,7 +238,7 @@ export default function TermsOfServicePage() {
             </p>
             <div className="mt-3 p-4 bg-muted/50 rounded-lg">
               <p className="text-muted-foreground">
-                <strong>Email:</strong> legal@exceletto.com<br />
+                <strong>Email:</strong> legal@AxLiner.com<br />
                 <strong>Address:</strong> [Your Business Address]
               </p>
             </div>
@@ -268,7 +268,7 @@ export default function TermsOfServicePage() {
       <footer className="border-t mt-20">
         <div className="container max-w-4xl mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} Exceletto. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} AxLiner. All rights reserved.</p>
             <div className="flex gap-6">
               <Link href="/privacy-policy" className="hover:text-foreground transition-colors">
                 Privacy Policy

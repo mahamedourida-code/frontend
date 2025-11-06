@@ -4,9 +4,9 @@
  */
 
 const FREE_TRIAL_LIMIT = 3
-const STORAGE_KEY_UUID = 'exceletto_trial_uuid'
-const STORAGE_KEY_COUNT = 'exceletto_trial_count'
-const STORAGE_KEY_TIMESTAMP = 'exceletto_trial_timestamp'
+const STORAGE_KEY_UUID = 'AxLiner_trial_uuid'
+const STORAGE_KEY_COUNT = 'AxLiner_trial_count'
+const STORAGE_KEY_TIMESTAMP = 'AxLiner_trial_timestamp'
 
 /**
  * Generate a unique user identifier

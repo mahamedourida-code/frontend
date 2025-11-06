@@ -188,7 +188,7 @@ export default function UploadTypePage() {
 
           {/* Help text */}
           <p className="text-center mt-3 lg:mt-5 text-[11px] lg:text-xs text-muted-foreground">
-            Select an option to continue. Exceletto will optimize based on your choice.
+            Select an option to continue. AxLiner will optimize based on your choice.
           </p>
         </div>
       </main>

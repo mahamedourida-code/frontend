@@ -334,12 +334,12 @@ export default function SharePage() {
               <p className="text-sm text-muted-foreground">
                 Powered by{' '}
                 <a 
-                  href="https://exceletto.com" 
+                  href="https://axliner.com" 
                   className="font-medium text-primary hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Exceletto
+                  AxLiner
                 </a>
                 {' '}- AI-powered Excel extraction
               </p>

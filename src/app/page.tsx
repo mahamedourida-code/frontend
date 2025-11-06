@@ -614,8 +614,8 @@ export default function Home() {
     
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim();
     const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
-    const subject = `Excel file: ${selectedFileToShare.filename || 'Processed with Exceletto'}`;
-    const body = `Hi,\n\nI've processed this file with Exceletto. You can download it here:\n\n${shareUrl}\n\nBest regards`;
+    const subject = `Excel file: ${selectedFileToShare.filename || 'Processed with AxLiner'}`;
+    const body = `Hi,\n\nI've processed this file with AxLiner. You can download it here:\n\n${shareUrl}\n\nBest regards`;
     
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     const gmailWindow = window.open(gmailUrl, '_blank');
@@ -658,7 +658,7 @@ export default function Home() {
     
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim();
     const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
-    const tweetText = `Check out this Excel file I processed with Exceletto! 📊✨`;
+    const tweetText = `Check out this Excel file I processed with AxLiner! 📊✨`;
     const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(shareUrl)}`;
     
     window.open(xUrl, '_blank', 'width=550,height=420');
@@ -784,13 +784,13 @@ export default function Home() {
                     </NavigationMenuLink>
                   </NavigationMenuItem> */}
 
-                  {/* How Exceletto's Built */}
+                  {/* How AxLiner's Built */}
                   <NavigationMenuItem>
                     <button
                       className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-accent/50 transition-colors text-black dark:text-white")}
                       onClick={() => scrollToSection('ai-engine')}
                     >
-                      How Exceletto's Built
+                      How AxLiner's Built
                     </button>
                   </NavigationMenuItem>
 
@@ -858,7 +858,7 @@ export default function Home() {
               {resultFiles.length === 0 && (
                 <div ref={heroContentRef} className="max-w-xl -mt-4 lg:-mt-8">
                   <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-primary mb-3 sm:mb-5 shadow-lg shadow-primary/10" style={{ backgroundColor: '#fbfdfc' }}>
-                    <span className="text-xs sm:text-sm font-semibold text-foreground">Exceletto-7B Handwritten Specialist</span>
+                    <span className="text-xs sm:text-sm font-semibold text-foreground">AxLiner-7B Handwritten Specialist</span>
                   </div>
                   <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-black dark:text-white leading-[1.1] tracking-tight">
                     Convert <span className="text-primary font-bold">Handwritten Images</span> to <span className="text-primary font-bold">Excel</span> instantly
@@ -1487,7 +1487,7 @@ export default function Home() {
               <div className="text-center mb-16" data-animate="headline">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-primary mb-4 shadow-lg shadow-primary/10" style={{ backgroundColor: '#fbfdfc' }}>
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                    How Exceletto's Engine Is Built
+                    How AxLiner's Engine Is Built
                   </h2>
                 </div>
 
@@ -1509,11 +1509,11 @@ export default function Home() {
                   <CardContent className="space-y-6">
                     <div className="prose prose-sm max-w-none">
                       <p className="text-black font-semibold leading-relaxed">
-                        Exceletto was built by fine-tuning the Llama 3 base model on instruction datasets publicly available on the Hugging Face repository. <span className="font-semibold text-foreground">No proprietary data or training tricks were utilized</span> – our approach demonstrates that with careful instruction tuning, open-source models can achieve exceptional performance on document understanding tasks.
+                        AxLiner was built by fine-tuning the Llama 3 base model on instruction datasets publicly available on the Hugging Face repository. <span className="font-semibold text-foreground">No proprietary data or training tricks were utilized</span> – our approach demonstrates that with careful instruction tuning, open-source models can achieve exceptional performance on document understanding tasks.
                       </p>
 
                       <p className="text-black font-semibold leading-relaxed">
-                        The <span className="font-semibold text-primary">Exceletto OCR Engine</span> is a specialized model that proves base language models can be fine-tuned to excel at specialized tasks. Our fine-tuning process focused on:
+                        The <span className="font-semibold text-primary">AxLiner OCR Engine</span> is a specialized model that proves base language models can be fine-tuned to excel at specialized tasks. Our fine-tuning process focused on:
                       </p>
                     </div>
 
@@ -1550,7 +1550,7 @@ export default function Home() {
 
                     <div className="mt-6 p-4 bg-primary/5 rounded-lg border-2 border-primary">
                       <p className="text-sm text-muted-foreground">
-                        <span className="font-semibold text-foreground">Benchmark Result:</span> In independent evaluations on MT-Bench, Exceletto achieved a score of <span className="font-semibold text-primary">7.2</span>, outperforming Llama 3 13B (6.65) despite using a more efficient 7B parameter architecture.
+                        <span className="font-semibold text-foreground">Benchmark Result:</span> In independent evaluations on MT-Bench, AxLiner achieved a score of <span className="font-semibold text-primary">7.2</span>, outperforming Llama 3 13B (6.65) despite using a more efficient 7B parameter architecture.
                       </p>
                     </div>
                   </CardContent>
@@ -1595,7 +1595,7 @@ export default function Home() {
                             <td className="p-3 text-right">6.38 ± 0.07</td>
                           </tr>
                           <tr>
-                            <td className="p-3 text-primary font-medium">Exceletto system prompt</td>
+                            <td className="p-3 text-primary font-medium">AxLiner system prompt</td>
                             <td className="p-3 text-right font-semibold text-primary">6.58 ± 0.05</td>
                           </tr>
                         </tbody>
@@ -1619,7 +1619,7 @@ export default function Home() {
                   <CardContent className="space-y-6">
                     <div className="prose prose-sm max-w-none">
                       <p className="text-black font-semibold leading-relaxed">
-                        Exceletto can be used as a content moderator: the model itself is able to accurately classify user prompts or generated answers as either acceptable or falling into restricted categories through a self-reflection mechanism.
+                        AxLiner can be used as a content moderator: the model itself is able to accurately classify user prompts or generated answers as either acceptable or falling into restricted categories through a self-reflection mechanism.
                       </p>
                     </div>
 
@@ -1692,7 +1692,7 @@ export default function Home() {
                       name: "Sarah Mitchell",
                       handle: "@sarahmitchell",
                       avatar: "/testimonials/avi_schiffmann.jpg",
-                      text: "Exceletto has completely transformed how we process invoices. What used to take hours now takes minutes. The accuracy is incredible!"
+                      text: "AxLiner has completely transformed how we process invoices. What used to take hours now takes minutes. The accuracy is incredible!"
                     },
                     {
                       name: "David Chen",
@@ -1710,13 +1710,13 @@ export default function Home() {
                       name: "Michael Thompson",
                       handle: "@mikethompson",
                       avatar: "/testimonials/tom_blomfield.jpg",
-                      text: "I was skeptical at first, but Exceletto exceeded all expectations. The table structure preservation is phenomenal. We've saved thousands of hours in manual data entry."
+                      text: "I was skeptical at first, but AxLiner exceeded all expectations. The table structure preservation is phenomenal. We've saved thousands of hours in manual data entry."
                     },
                     {
                       name: "Jessica Park",
                       handle: "@jessicapark",
                       avatar: "/testimonials/catalin.jpg",
-                      text: "Exceletto has become an essential tool in our workflow. The accuracy on complex forms is outstanding."
+                      text: "AxLiner has become an essential tool in our workflow. The accuracy on complex forms is outstanding."
                     }
                   ].map((testimonial, idx) => (
                     <div
@@ -1769,13 +1769,13 @@ export default function Home() {
                       name: "Robert Williams",
                       handle: "@robertwilliams",
                       avatar: "/testimonials/bodega_man.jpg",
-                      text: "The reason I chose Exceletto is the consistent accuracy and speed. Processing handwritten documents has never been easier. This tool has revolutionized our data extraction workflow and saved us countless hours of manual work."
+                      text: "The reason I chose AxLiner is the consistent accuracy and speed. Processing handwritten documents has never been easier. This tool has revolutionized our data extraction workflow and saved us countless hours of manual work."
                     },
                     {
                       name: "Amanda Foster",
                       handle: "@amandafoster",
                       avatar: "/testimonials/luca.jpg",
-                      text: "Exceletto makes document digitization insanely fast and accurate. Our team productivity has doubled."
+                      text: "AxLiner makes document digitization insanely fast and accurate. Our team productivity has doubled."
                     },
                     {
                       name: "Chris Anderson",
@@ -1787,13 +1787,13 @@ export default function Home() {
                       name: "Rachel Martinez",
                       handle: "@rachelmartinez",
                       avatar: "/testimonials/tom_dorr.jpg",
-                      text: "I've been using Exceletto exclusively for the past month. The results speak for themselves. Outstanding tool that delivers on its promises every single time."
+                      text: "I've been using AxLiner exclusively for the past month. The results speak for themselves. Outstanding tool that delivers on its promises every single time."
                     },
                     {
                       name: "James Wilson",
                       handle: "@jameswilson",
                       avatar: "/testimonials/alexander_wilczek.jpg",
-                      text: "Exceletto's OCR accuracy beats everything else I've tried."
+                      text: "AxLiner's OCR accuracy beats everything else I've tried."
                     }
                   ].map((testimonial, idx) => (
                     <div
@@ -1870,7 +1870,7 @@ export default function Home() {
     >
       <BarChart
         data={[
-          { provider: "Exceletto", accuracy: 96.8 },
+          { provider: "AxLiner", accuracy: 96.8 },
           { provider: "AWS Textract", accuracy: 77.2 },
           { provider: "Google Vision", accuracy: 54.5 },
           { provider: "Azure Vision", accuracy: 51.7 },
@@ -1926,7 +1926,7 @@ export default function Home() {
                         <thead>
                           <tr className="border-b border-border/50 bg-muted/30">
                             <th className="text-left p-3 font-medium">Metric</th>
-                            <th className="text-right p-3 font-medium text-primary">Exceletto</th>
+                            <th className="text-right p-3 font-medium text-primary">AxLiner</th>
                             <th className="text-right p-3 font-medium text-muted-foreground">Industry Avg</th>
                           </tr>
                         </thead>
@@ -1998,7 +1998,7 @@ export default function Home() {
                 </h2>
               </div>
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Join thousands of professionals who have already revolutionized their data extraction process with Exceletto.
+                Join thousands of professionals who have already revolutionized their data extraction process with AxLiner.
               </p>
               
               {/* Single Primary CTA */}
@@ -2039,7 +2039,7 @@ export default function Home() {
         <div className="container mx-auto px-1 sm:px-3 lg:px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <div className="text-2xl font-bold text-foreground mb-4">Exceletto</div>
+              <div className="text-2xl font-bold text-foreground mb-4">AxLiner</div>
               <p className="text-muted-foreground mb-4">
                 Transform screenshots to spreadsheets effortlessly with AI-powered OCR technology.
               </p>
@@ -2058,14 +2058,14 @@ export default function Home() {
             <div>
               <h4 className="font-semibold text-foreground mb-4">Contact</h4>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="mailto:excelettoo@gmail.com" className="hover:text-foreground hover:text-primary transition-colors">excelettoo@gmail.com</a></li>
+                <li><a href="mailto:AxLinero@gmail.com" className="hover:text-foreground hover:text-primary transition-colors">AxLinero@gmail.com</a></li>
               </ul>
             </div>
           </div>
           
           <div className="flex flex-col sm:flex-row justify-center items-center mt-8">
             <p className="text-muted-foreground text-sm">
-              © 2025 Exceletto. All rights reserved.
+              © 2025 AxLiner. All rights reserved.
             </p>
           </div>
         </div>

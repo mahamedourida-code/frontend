@@ -196,7 +196,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
               <SheetHeader className="px-4 py-3 border-b">
                 <div className="flex items-center gap-2">
                   <AppIcon size={32} />
-                  <SheetTitle className="text-base md:text-lg font-bold">Exceletto</SheetTitle>
+                  <SheetTitle className="text-base md:text-lg font-bold">AxLiner</SheetTitle>
                 </div>
               </SheetHeader>
 

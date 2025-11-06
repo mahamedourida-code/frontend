@@ -32,7 +32,7 @@ export default function PricingPage() {
                 <span className="hidden sm:inline">Back</span>
               </Button>
               <Link href="/" className="text-2xl font-bold text-foreground">
-                Exceletto
+                AxLiner
               </Link>
             </div>
             
