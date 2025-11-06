@@ -277,50 +277,6 @@ export interface JobStatusResponse {
 // OCR API endpoints matching the actual backend
 export const ocrApi = {
   /**
-   * Upload files without processing (just store on server)
-   */
-  uploadFilesOnly: async (files: File[], onProgress?: (progress: number) => void): Promise<{ file_ids: string[], session_id: string }> => {
-    console.log('[API Client] uploadFilesOnly called with', files.length, 'files')
-
-    const formData = new FormData()
-    files.forEach(file => {
-      formData.append('files', file)
-    })
-
-    const response = await apiClient.post<{ file_ids: string[], session_id: string }>('/api/v1/jobs/upload-only', formData, {
-      headers: {
-        'Content-Type': undefined
-      },
-      onUploadProgress: (progressEvent) => {
-        if (onProgress && progressEvent.total) {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-          onProgress(percentCompleted)
-        }
-      }
-    })
-    
-    console.log('[API Client] Upload only response:', response.data)
-    return response.data
-  },
-
-  /**
-   * Start processing already uploaded files
-   */
-  startProcessing: async (sessionId: string, options?: { output_format?: string; consolidation_strategy?: string; language?: string }): Promise<BatchConvertResponse> => {
-    console.log('[API Client] startProcessing called for session:', sessionId)
-    
-    const response = await apiClient.post<BatchConvertResponse>('/api/v1/jobs/start-processing', {
-      session_id: sessionId,
-      output_format: options?.output_format || 'xlsx',
-      consolidation_strategy: options?.consolidation_strategy || 'consolidated',
-      language: options?.language || 'en'
-    })
-    
-    console.log('[API Client] Processing started:', response.data)
-    return response.data
-  },
-
-  /**
    * Upload and process multiple images in batch using multipart/form-data
    * This is the recommended method - faster and more efficient than base64
    */
