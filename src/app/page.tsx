@@ -34,7 +34,7 @@ import ParticlesBackground from "@/components/ParticlesBackground";
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target, Wand2, Sparkle, Trophy, Download, Loader2, X, Share2, Edit3, Copy, MessageCircle, Link, CheckCircle2 } from "lucide-react";
+import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target, Wand2, Sparkle, Trophy, Download, Loader2, X, Share2, Edit3, Copy, MessageCircle, Link, CheckCircle2, AlertTriangle } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { ActiveUsersCounter } from "@/components/ActiveUsersCounter";
 import { wakeUpBackendSilently } from "@/lib/backend-health";
@@ -88,6 +88,9 @@ export default function Home() {
   });
   const [showAutoDownloadConfirm, setShowAutoDownloadConfirm] = useState(false);
   const isExecutingAutoActionsRef = useRef(false);
+
+  // First-time convert confirmation
+  const [showFirstConvertConfirm, setShowFirstConvertConfirm] = useState(false);
 
   // User authentication state
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -310,18 +313,32 @@ export default function Home() {
   }, []);
 
   const handleProcessImage = useCallback(async () => {
+    if (!uploadedFiles || uploadedFiles.length === 0) {
+      toast.error('Please select files to process');
+      return;
+    }
+
+    // Check if user has free trials remaining (silently)
+    if (!trialInfo.hasRemaining) {
+      setShowLimitDialog(true);
+      return;
+    }
+
+    // Check if first time converting (show confirmation)
+    if (typeof window !== 'undefined') {
+      const hasConvertedBefore = localStorage.getItem('hasConvertedBefore');
+      if (!hasConvertedBefore) {
+        setShowFirstConvertConfirm(true);
+        return;
+      }
+    }
+
+    // Proceed with processing
+    await processImages();
+  }, [uploadedFiles, trialInfo]);
+
+  const processImages = useCallback(async () => {
     try {
-      if (!uploadedFiles || uploadedFiles.length === 0) {
-        toast.error('Please select files to process');
-        return;
-      }
-
-      // Check if user has free trials remaining (silently)
-      if (!trialInfo.hasRemaining) {
-        setShowLimitDialog(true);
-        return;
-      }
-
       setIsProcessing(true);
       setProcessingComplete(false);
       setTotalFilesToProcess(uploadedFiles.length);
@@ -510,7 +527,7 @@ export default function Home() {
         toast.error(error?.detail || 'Failed to process images. Please try again.');
       }
     }
-  }, [uploadedFiles, trialInfo, updateState]);
+  }, [uploadedFiles, updateState]);
 
   const handleDownloadFile = async (fileId: string) => {
     try {
@@ -914,7 +931,7 @@ export default function Home() {
                             <>
                               <Upload className="h-16 w-16 text-primary mx-auto mb-4" />
                               <h3 className="text-xl font-medium mb-3">
-                                {isDragging ? 'Drop your images here' : 'Upload table images'}
+                                {isDragging ? 'Drop your images here' : 'Upload up to 100 table images now'}
                               </h3>
                               <input
                                 id="file-upload-landing"
@@ -2249,6 +2266,48 @@ export default function Home() {
               className="flex-1 bg-primary hover:bg-primary/90"
             >
               Enable Auto-Download
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* First-Time Convert Confirmation Dialog */}
+      <Dialog open={showFirstConvertConfirm} onOpenChange={setShowFirstConvertConfirm}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <AlertTriangle className="h-6 w-6 text-amber-500" />
+              <DialogTitle>You can add up to 100 images!</DialogTitle>
+            </div>
+            <DialogDescription className="text-sm text-muted-foreground">
+              Process up to 100 table images in one click. 
+              <br /><br />
+              You can add more files now or proceed to convert your current selection.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowFirstConvertConfirm(false);
+                // Trigger file input to add more
+                document.getElementById('file-upload-landing')?.click();
+              }}
+              className="flex-1"
+            >
+              Add More
+            </Button>
+            <Button
+              onClick={async () => {
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem('hasConvertedBefore', 'true');
+                }
+                setShowFirstConvertConfirm(false);
+                await processImages();
+              }}
+              className="flex-1 bg-primary hover:bg-primary/90"
+            >
+              Convert This
             </Button>
           </div>
         </DialogContent>
