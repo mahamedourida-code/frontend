@@ -1425,14 +1425,14 @@ Best regards`
                         <Card
                           className="overflow-hidden animate-in slide-in-from-bottom-2 duration-300"
                         >
-                      <CardContent className="p-2">
+                      <CardContent className="p-1.5">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <div className="flex items-center justify-center flex-shrink-0 w-6 h-6 rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                          <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                            <div className="flex items-center justify-center flex-shrink-0 w-5 h-5 rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                               1
                             </div>
                             <div className="flex items-center justify-center flex-shrink-0">
-                              <FileSpreadsheet className="h-5 w-5 text-primary" />
+                              <FileSpreadsheet className="h-4 w-4 text-primary" />
                             </div>
                             <div className="flex-1 min-w-0">
                               {editingFileId === resultFiles[0].file_id ? (
@@ -1523,14 +1523,14 @@ Best regards`
                       key={file.file_id || index + 1}
                       className="overflow-hidden animate-in slide-in-from-bottom-2 duration-300"
                     >
-                      <CardContent className="p-2">
+                      <CardContent className="p-1.5">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <div className="flex items-center justify-center flex-shrink-0 w-6 h-6 rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                          <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                            <div className="flex items-center justify-center flex-shrink-0 w-5 h-5 rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                               {index + 2}
                             </div>
                             <div className="flex items-center justify-center flex-shrink-0">
-                              <FileSpreadsheet className="h-5 w-5 text-primary" />
+                              <FileSpreadsheet className="h-4 w-4 text-primary" />
                             </div>
                             <div className="flex-1 min-w-0">
                               {editingFileId === file.file_id ? (
