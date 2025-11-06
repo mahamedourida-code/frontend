@@ -1487,7 +1487,8 @@ Best regards`
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                router.push(`/dashboard/edit/${resultFiles[0].file_id}?fileName=${encodeURIComponent(renamedFiles[resultFiles[0].file_id] || resultFiles[0].filename || 'Result.xlsx')}`)
+                                const fileUrl = encodeURIComponent(`https://backend-lively-hill-7043.fly.dev/api/v1/download/${resultFiles[0].file_id}`)
+                                window.open(`https://view.officeapps.live.com/op/view.aspx?src=${fileUrl}`, '_blank')
                               }}
                               className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                             >
@@ -1585,7 +1586,8 @@ Best regards`
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                router.push(`/dashboard/edit/${file.file_id}?fileName=${encodeURIComponent(renamedFiles[file.file_id] || file.filename || 'Result.xlsx')}`)
+                                const fileUrl = encodeURIComponent(`https://backend-lively-hill-7043.fly.dev/api/v1/download/${file.file_id}`)
+                                window.open(`https://view.officeapps.live.com/op/view.aspx?src=${fileUrl}`, '_blank')
                               }}
                               className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                             >

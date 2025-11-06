@@ -1095,7 +1095,8 @@ export default function Home() {
                                     size="default"
                                     variant="outline"
                                     onClick={() => {
-                                      window.location.href = `/edit/${resultFiles[0].file_id}?fileName=${encodeURIComponent(resultFiles[0].filename || 'result.xlsx')}`
+                                      const fileUrl = encodeURIComponent(`https://backend-lively-hill-7043.fly.dev/api/v1/download/${resultFiles[0].file_id}`)
+                                      window.open(`https://view.officeapps.live.com/op/view.aspx?src=${fileUrl}`, '_blank')
                                     }}
                                     className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                                   >
@@ -1141,7 +1142,8 @@ export default function Home() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => {
-                                    window.location.href = `/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'result.xlsx')}`
+                                    const fileUrl = encodeURIComponent(`https://backend-lively-hill-7043.fly.dev/api/v1/download/${file.file_id}`)
+                                    window.open(`https://view.officeapps.live.com/op/view.aspx?src=${fileUrl}`, '_blank')
                                   }}
                                   className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                                 >
@@ -1186,7 +1188,8 @@ export default function Home() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => {
-                                    window.location.href = `/edit/${file.file_id}?fileName=${encodeURIComponent(file.filename || 'result.xlsx')}`
+                                    const fileUrl = encodeURIComponent(`https://backend-lively-hill-7043.fly.dev/api/v1/download/${file.file_id}`)
+                                    window.open(`https://view.officeapps.live.com/op/view.aspx?src=${fileUrl}`, '_blank')
                                   }}
                                   className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                                 >
