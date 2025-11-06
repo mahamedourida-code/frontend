@@ -1251,7 +1251,7 @@ export default function Home() {
                     <Button
                      onClick={handleProcessImage}
                      disabled={uploadedFiles.length === 0 || isProcessing}
-                     className={`col-span-2 py-8 text-xl font-semibold border-2 min-h-[120px] transition-all duration-200 ${
+                     className={`col-span-2 py-8 text-xl font-semibold border-2 h-full transition-all duration-200 ${
                       uploadedFiles.length === 0
                            ? 'bg-gray-300 hover:bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'
                            : 'bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 shadow-lg shadow-primary/20'
@@ -2028,24 +2028,6 @@ export default function Home() {
                   {isAuthenticated ? 'Go to Dashboard' : 'Try for free'}
                 </Button>
               </div>
-              
-              {/* Trust Indicators */}
-              <div className="mt-12 pt-12">
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary" />
-                    <span>No credit card required</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary" />
-                    <span>Free trial for 7 days</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary" />
-                    <span>Cancel anytime</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </section>
@@ -2053,7 +2035,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="backdrop-blur-md relative z-10">
-        <div className="container mx-auto px-1 sm:px-3 lg:px-4 py-12">
+        <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <div className="text-2xl font-bold text-foreground mb-4">AxLiner</div>
@@ -2075,7 +2057,7 @@ export default function Home() {
             <div>
               <h4 className="font-semibold text-foreground mb-4">Contact</h4>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="mailto:AxLinero@gmail.com" className="hover:text-foreground hover:text-primary transition-colors">AxLinero@gmail.com</a></li>
+                <li><a href="mailto:axliner.excel@gmail.com" className="hover:text-foreground hover:text-primary transition-colors">axliner.excel@gmail.com</a></li>
               </ul>
             </div>
           </div>
