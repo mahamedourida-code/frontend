@@ -1425,14 +1425,14 @@ Best regards`
                         <Card
                           className="overflow-hidden animate-in slide-in-from-bottom-2 duration-300"
                         >
-                      <CardContent className="p-4">
+                      <CardContent className="p-2">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div className="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <div className="flex items-center justify-center flex-shrink-0 w-6 h-6 rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                               1
                             </div>
                             <div className="flex items-center justify-center flex-shrink-0">
-                              <FileSpreadsheet className="h-6 w-6 text-primary" />
+                              <FileSpreadsheet className="h-4 w-4 text-primary" />
                             </div>
                             <div className="flex-1 min-w-0">
                               {editingFileId === resultFiles[0].file_id ? (
@@ -1449,14 +1449,14 @@ Best regards`
                                       setNewFileName('')
                                     }
                                   }}
-                                  className="px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                                  className="px-2 py-0.5 text-xs border rounded focus:outline-none focus:ring-2 focus:ring-primary w-full"
                                   autoFocus
                                 />
                               ) : (
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <p 
-                                      className="font-medium text-sm truncate cursor-pointer hover:text-primary transition-colors"
+                                      className="font-medium text-xs truncate cursor-pointer hover:text-primary transition-colors"
                                       onDoubleClick={() => {
                                         const currentName = renamedFiles[resultFiles[0].file_id] || resultFiles[0].filename || `Image 1 Result.xlsx`
                                         setEditingFileId(resultFiles[0].file_id)
@@ -1473,15 +1473,15 @@ Best regards`
                               )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 flex-shrink-0">
+                          <div className="flex items-center gap-1.5 flex-shrink-0">
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => handleShareFile(resultFiles[0])}
-                              className="gap-1.5 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
+                              className="gap-1 bg-white border border-primary text-foreground hover:bg-primary/10 h-7 px-2"
                             >
-                              <Share2 className="h-4 w-4" />
-                              Share
+                              <Share2 className="h-3 w-3" />
+                              <span className="text-xs">Share</span>
                             </Button>
                             <Button
                               size="sm"
@@ -1489,10 +1489,10 @@ Best regards`
                               onClick={() => {
                                 router.push(`/dashboard/edit/${resultFiles[0].file_id}?fileName=${encodeURIComponent(renamedFiles[resultFiles[0].file_id] || resultFiles[0].filename || 'Result.xlsx')}`)
                               }}
-                              className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                              className="gap-1 bg-white border border-foreground text-foreground hover:bg-muted/50 h-7 px-2"
                             >
-                              <Edit3 className="h-4 w-4" />
-                              Edit
+                              <Edit3 className="h-3 w-3" />
+                              <span className="text-xs">Edit</span>
                             </Button>
                             <Button
                               size="sm"
@@ -1504,10 +1504,10 @@ Best regards`
                                 }
                                 downloadFile(resultFiles[0].file_id)
                               }}
-                              className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-primary"
+                              className="gap-1 bg-primary hover:bg-primary/90 text-white border border-primary h-7 px-2"
                             >
-                              <Download className="h-4 w-4" />
-                              Download
+                              <Download className="h-3 w-3" />
+                              <span className="text-xs">Download</span>
                             </Button>
                           </div>
                         </div>
@@ -1523,14 +1523,14 @@ Best regards`
                       key={file.file_id || index + 1}
                       className="overflow-hidden animate-in slide-in-from-bottom-2 duration-300"
                     >
-                      <CardContent className="p-4">
+                      <CardContent className="p-2">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div className="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <div className="flex items-center justify-center flex-shrink-0 w-6 h-6 rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                               {index + 2}
                             </div>
                             <div className="flex items-center justify-center flex-shrink-0">
-                              <FileSpreadsheet className="h-6 w-6 text-primary" />
+                              <FileSpreadsheet className="h-4 w-4 text-primary" />
                             </div>
                             <div className="flex-1 min-w-0">
                               {editingFileId === file.file_id ? (
@@ -1547,14 +1547,14 @@ Best regards`
                                       setNewFileName('')
                                     }
                                   }}
-                                  className="px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                                  className="px-2 py-0.5 text-xs border rounded focus:outline-none focus:ring-2 focus:ring-primary w-full"
                                   autoFocus
                                 />
                               ) : (
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <p 
-                                      className="font-medium text-sm truncate cursor-pointer hover:text-primary transition-colors"
+                                      className="font-medium text-xs truncate cursor-pointer hover:text-primary transition-colors"
                                       onDoubleClick={() => {
                                         const currentName = renamedFiles[file.file_id] || file.filename || `Image ${index + 2} Result.xlsx`
                                         setEditingFileId(file.file_id)
@@ -1571,15 +1571,15 @@ Best regards`
                               )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 flex-shrink-0">
+                          <div className="flex items-center gap-1.5 flex-shrink-0">
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => handleShareFile(file)}
-                              className="gap-1.5 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
+                              className="gap-1 bg-white border border-primary text-foreground hover:bg-primary/10 h-7 px-2"
                             >
-                              <Share2 className="h-4 w-4" />
-                              Share
+                              <Share2 className="h-3 w-3" />
+                              <span className="text-xs">Share</span>
                             </Button>
                             <Button
                               size="sm"
@@ -1587,10 +1587,10 @@ Best regards`
                               onClick={() => {
                                 router.push(`/dashboard/edit/${file.file_id}?fileName=${encodeURIComponent(renamedFiles[file.file_id] || file.filename || 'Result.xlsx')}`)
                               }}
-                              className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                              className="gap-1 bg-white border border-foreground text-foreground hover:bg-muted/50 h-7 px-2"
                             >
-                              <Edit3 className="h-4 w-4" />
-                              Edit
+                              <Edit3 className="h-3 w-3" />
+                              <span className="text-xs">Edit</span>
                             </Button>
                             <Button
                               size="sm"
@@ -1602,10 +1602,10 @@ Best regards`
                                 }
                                 downloadFile(file.file_id)
                               }}
-                              className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-primary"
+                              className="gap-1 bg-primary hover:bg-primary/90 text-white border border-primary h-7 px-2"
                             >
-                              <Download className="h-4 w-4" />
-                              Download
+                              <Download className="h-3 w-3" />
+                              <span className="text-xs">Download</span>
                             </Button>
                           </div>
                         </div>
