@@ -131,12 +131,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // State will be cleared by onAuthStateChange SIGNED_OUT event
       console.log('[AuthContext] Sign out complete')
+      
+      // Redirect to landing page
+      router.push('/')
     } catch (error) {
       console.error('[AuthContext] Sign out error:', error)
       // Clear local state even on error
       setUser(null)
       setSession(null)
       setProfile(null)
+      // Still redirect on error
+      router.push('/')
     }
   }
 

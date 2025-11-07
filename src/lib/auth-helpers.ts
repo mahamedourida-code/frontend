@@ -418,7 +418,8 @@ export const updatePassword = async (newPassword: string) => {
 }
 
 /**
- * Sign out - let Supabase handle session cleanup and redirect to landing page
+ * Sign out - let Supabase handle session cleanup
+ * Note: Redirect should be handled by the calling component
  */
 export const signOut = async () => {
   const supabase = createClient()
@@ -442,9 +443,6 @@ export const signOut = async () => {
       'uploadedFilesCache',
     ]
     appFlags.forEach(key => sessionStorage.removeItem(key))
-    
-    // Redirect to landing page after sign out
-    window.location.href = '/'
   }
 
   console.log('[Auth] Sign out successful')
