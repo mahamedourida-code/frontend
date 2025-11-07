@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/dashboard/upload-type'
+  const next = searchParams.get('next') ?? '/dashboard/client'
 
   if (code) {
     const supabase = await createClient()
@@ -16,6 +16,6 @@ export async function GET(request: Request) {
     }
   }
 
-  // If there's an error or no code, redirect to sign-in
-  return NextResponse.redirect(`${origin}/sign-in?error=auth_callback_error`)
+  // If there's an error or no code, redirect to landing page
+  return NextResponse.redirect(`${origin}/?error=auth_callback_error`)
 }
