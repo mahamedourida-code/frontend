@@ -1331,6 +1331,173 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Testimonials Section */}
+        <section className="py-16 overflow-hidden relative z-10">
+          <div className="w-full">
+            <div className="text-center mb-12 px-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                <h2 className="text-lg sm:text-xl font-bold text-foreground">
+                  Trusted by Professionals
+                </h2>
+              </div>
+            </div>
+
+            {/* First Row - Animates to the left */}
+            <div className="relative mb-6 overflow-hidden">
+              <div
+                className="flex gap-6 items-start"
+                style={{
+                  animation: 'scroll-left 90s linear infinite',
+                  width: 'max-content',
+                  willChange: 'transform'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.animationPlayState = 'paused'}
+                onMouseLeave={(e) => e.currentTarget.style.animationPlayState = 'running'}
+              >
+                {Array.from({ length: 3 }, (_, setIndex) =>
+                  [
+                    {
+                      name: "Sarah Mitchell",
+                      handle: "@sarahmitchell",
+                      avatar: "/testimonials/avi_schiffmann.jpg",
+                      text: "AxLiner has completely transformed how we process invoices. What used to take hours now takes minutes. The accuracy is incredible!"
+                    },
+                    {
+                      name: "David Chen",
+                      handle: "@davidchen",
+                      avatar: "/testimonials/alex_finn.jpg",
+                      text: "Best OCR tool I've ever used. The handwritten table recognition is mind-blowing. We've processed thousands of documents with near-perfect accuracy."
+                    },
+                    {
+                      name: "Emily Rodriguez",
+                      handle: "@emilyrodriguez",
+                      avatar: "/testimonials/alvaro_cintas.jpg",
+                      text: "Game changer for our data entry team."
+                    },
+                    {
+                      name: "Michael Thompson",
+                      handle: "@mikethompson",
+                      avatar: "/testimonials/tom_blomfield.jpg",
+                      text: "I was skeptical at first, but AxLiner exceeded all expectations. The table structure preservation is phenomenal. We've saved thousands of hours in manual data entry."
+                    },
+                    {
+                      name: "Jessica Park",
+                      handle: "@jessicapark",
+                      avatar: "/testimonials/catalin.jpg",
+                      text: "AxLiner has become an essential tool in our workflow. The accuracy on complex forms is outstanding."
+                    }
+                  ].map((testimonial, idx) => (
+                    <div
+                      key={`${setIndex}-${idx}`}
+                      className="flex-shrink-0 bg-white dark:bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 w-[450px]"
+                    >
+                      {/* Person Details at Top */}
+                      <div className="flex items-center gap-3 mb-4">
+                        <img
+                          src={testimonial.avatar}
+                          alt={testimonial.name}
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <p className="font-semibold text-base text-foreground">{testimonial.name}</p>
+                          <p className="text-sm text-muted-foreground">{testimonial.handle}</p>
+                        </div>
+                        {/* X Logo */}
+                        <svg className="w-5 h-5 text-foreground opacity-60" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                      </div>
+
+                      {/* Dashed Line Separator */}
+                      <div className="border-t border-dashed border-border mb-4"></div>
+
+                      {/* Review Text at Bottom */}
+                      <p className="text-base text-black dark:text-foreground leading-relaxed">{testimonial.text}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Second Row - Animates to the right */}
+            <div className="relative overflow-hidden">
+              <div
+                className="flex gap-6 items-start"
+                style={{
+                  animation: 'scroll-right 90s linear infinite',
+                  width: 'max-content',
+                  willChange: 'transform'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.animationPlayState = 'paused'}
+                onMouseLeave={(e) => e.currentTarget.style.animationPlayState = 'running'}
+              >
+                {Array.from({ length: 3 }, (_, setIndex) =>
+                  [
+                    {
+                      name: "Robert Williams",
+                      handle: "@robertwilliams",
+                      avatar: "/testimonials/bodega_man.jpg",
+                      text: "The reason I chose AxLiner is the consistent accuracy and speed. Processing handwritten documents has never been easier. This tool has revolutionized our data extraction workflow and saved us countless hours of manual work."
+                    },
+                    {
+                      name: "Amanda Foster",
+                      handle: "@amandafoster",
+                      avatar: "/testimonials/luca.jpg",
+                      text: "AxLiner makes document digitization insanely fast and accurate. Our team productivity has doubled."
+                    },
+                    {
+                      name: "Chris Anderson",
+                      handle: "@chrisanderson",
+                      avatar: "/testimonials/jon_myers.jpg",
+                      text: "The UX is incredibly intuitive. Just upload your images and get perfect Excel files in seconds."
+                    },
+                    {
+                      name: "Rachel Martinez",
+                      handle: "@rachelmartinez",
+                      avatar: "/testimonials/tom_dorr.jpg",
+                      text: "I've been using AxLiner exclusively for the past month. The results speak for themselves. Outstanding tool that delivers on its promises every single time."
+                    },
+                    {
+                      name: "James Wilson",
+                      handle: "@jameswilson",
+                      avatar: "/testimonials/alexander_wilczek.jpg",
+                      text: "AxLiner's OCR accuracy beats everything else I've tried."
+                    }
+                  ].map((testimonial, idx) => (
+                    <div
+                      key={`${setIndex}-${idx}`}
+                      className="flex-shrink-0 bg-white dark:bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 w-[450px]"
+                    >
+                      {/* Person Details at Top */}
+                      <div className="flex items-center gap-3 mb-4">
+                        <img
+                          src={testimonial.avatar}
+                          alt={testimonial.name}
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <p className="font-semibold text-base text-foreground">{testimonial.name}</p>
+                          <p className="text-sm text-muted-foreground">{testimonial.handle}</p>
+                        </div>
+                        {/* X Logo */}
+                        <svg className="w-5 h-5 text-foreground opacity-60" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                      </div>
+
+                      {/* Dashed Line Separator */}
+                      <div className="border-t border-dashed border-border mb-4"></div>
+
+                      {/* Review Text at Bottom */}
+                      <p className="text-base text-black dark:text-foreground leading-relaxed">{testimonial.text}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Why Choose Us Section */}
         <ScrollAnimatedSection id="features" className="py-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -1681,173 +1848,6 @@ export default function Home() {
             </div>
           </div>
         </ScrollAnimatedSection>
-
-        {/* Testimonials Section */}
-        <section className="py-16 overflow-hidden relative z-10">
-          <div className="w-full">
-            <div className="text-center mb-12 px-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
-                <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                  Trusted by Professionals
-                </h2>
-              </div>
-            </div>
-
-            {/* First Row - Animates to the left */}
-            <div className="relative mb-6 overflow-hidden">
-              <div
-                className="flex gap-6 items-start"
-                style={{
-                  animation: 'scroll-left 90s linear infinite',
-                  width: 'max-content',
-                  willChange: 'transform'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.animationPlayState = 'paused'}
-                onMouseLeave={(e) => e.currentTarget.style.animationPlayState = 'running'}
-              >
-                {Array.from({ length: 3 }, (_, setIndex) =>
-                  [
-                    {
-                      name: "Sarah Mitchell",
-                      handle: "@sarahmitchell",
-                      avatar: "/testimonials/avi_schiffmann.jpg",
-                      text: "AxLiner has completely transformed how we process invoices. What used to take hours now takes minutes. The accuracy is incredible!"
-                    },
-                    {
-                      name: "David Chen",
-                      handle: "@davidchen",
-                      avatar: "/testimonials/alex_finn.jpg",
-                      text: "Best OCR tool I've ever used. The handwritten table recognition is mind-blowing. We've processed thousands of documents with near-perfect accuracy."
-                    },
-                    {
-                      name: "Emily Rodriguez",
-                      handle: "@emilyrodriguez",
-                      avatar: "/testimonials/alvaro_cintas.jpg",
-                      text: "Game changer for our data entry team."
-                    },
-                    {
-                      name: "Michael Thompson",
-                      handle: "@mikethompson",
-                      avatar: "/testimonials/tom_blomfield.jpg",
-                      text: "I was skeptical at first, but AxLiner exceeded all expectations. The table structure preservation is phenomenal. We've saved thousands of hours in manual data entry."
-                    },
-                    {
-                      name: "Jessica Park",
-                      handle: "@jessicapark",
-                      avatar: "/testimonials/catalin.jpg",
-                      text: "AxLiner has become an essential tool in our workflow. The accuracy on complex forms is outstanding."
-                    }
-                  ].map((testimonial, idx) => (
-                    <div
-                      key={`${setIndex}-${idx}`}
-                      className="flex-shrink-0 bg-white dark:bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 w-[450px]"
-                    >
-                      {/* Person Details at Top */}
-                      <div className="flex items-center gap-3 mb-4">
-                        <img
-                          src={testimonial.avatar}
-                          alt={testimonial.name}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                        <div className="flex-1">
-                          <p className="font-semibold text-base text-foreground">{testimonial.name}</p>
-                          <p className="text-sm text-muted-foreground">{testimonial.handle}</p>
-                        </div>
-                        {/* X Logo */}
-                        <svg className="w-5 h-5 text-foreground opacity-60" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                        </svg>
-                      </div>
-
-                      {/* Dashed Line Separator */}
-                      <div className="border-t border-dashed border-border mb-4"></div>
-
-                      {/* Review Text at Bottom */}
-                      <p className="text-base text-black dark:text-foreground leading-relaxed">{testimonial.text}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-
-            {/* Second Row - Animates to the right */}
-            <div className="relative overflow-hidden">
-              <div
-                className="flex gap-6 items-start"
-                style={{
-                  animation: 'scroll-right 90s linear infinite',
-                  width: 'max-content',
-                  willChange: 'transform'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.animationPlayState = 'paused'}
-                onMouseLeave={(e) => e.currentTarget.style.animationPlayState = 'running'}
-              >
-                {Array.from({ length: 3 }, (_, setIndex) =>
-                  [
-                    {
-                      name: "Robert Williams",
-                      handle: "@robertwilliams",
-                      avatar: "/testimonials/bodega_man.jpg",
-                      text: "The reason I chose AxLiner is the consistent accuracy and speed. Processing handwritten documents has never been easier. This tool has revolutionized our data extraction workflow and saved us countless hours of manual work."
-                    },
-                    {
-                      name: "Amanda Foster",
-                      handle: "@amandafoster",
-                      avatar: "/testimonials/luca.jpg",
-                      text: "AxLiner makes document digitization insanely fast and accurate. Our team productivity has doubled."
-                    },
-                    {
-                      name: "Chris Anderson",
-                      handle: "@chrisanderson",
-                      avatar: "/testimonials/jon_myers.jpg",
-                      text: "The UX is incredibly intuitive. Just upload your images and get perfect Excel files in seconds."
-                    },
-                    {
-                      name: "Rachel Martinez",
-                      handle: "@rachelmartinez",
-                      avatar: "/testimonials/tom_dorr.jpg",
-                      text: "I've been using AxLiner exclusively for the past month. The results speak for themselves. Outstanding tool that delivers on its promises every single time."
-                    },
-                    {
-                      name: "James Wilson",
-                      handle: "@jameswilson",
-                      avatar: "/testimonials/alexander_wilczek.jpg",
-                      text: "AxLiner's OCR accuracy beats everything else I've tried."
-                    }
-                  ].map((testimonial, idx) => (
-                    <div
-                      key={`${setIndex}-${idx}`}
-                      className="flex-shrink-0 bg-white dark:bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 w-[450px]"
-                    >
-                      {/* Person Details at Top */}
-                      <div className="flex items-center gap-3 mb-4">
-                        <img
-                          src={testimonial.avatar}
-                          alt={testimonial.name}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                        <div className="flex-1">
-                          <p className="font-semibold text-base text-foreground">{testimonial.name}</p>
-                          <p className="text-sm text-muted-foreground">{testimonial.handle}</p>
-                        </div>
-                        {/* X Logo */}
-                        <svg className="w-5 h-5 text-foreground opacity-60" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                        </svg>
-                      </div>
-
-                      {/* Dashed Line Separator */}
-                      <div className="border-t border-dashed border-border mb-4"></div>
-
-                      {/* Review Text at Bottom */}
-                      <p className="text-base text-black dark:text-foreground leading-relaxed">{testimonial.text}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Benchmark Section */}
         <ScrollAnimatedSection id="benchmarks" className="py-16">
