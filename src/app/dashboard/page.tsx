@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { useAuth } from "@/hooks/useAuth"
 import { createClient } from "@/utils/supabase/client"
 import dynamic from "next/dynamic"
@@ -445,9 +446,9 @@ export default function DashboardPage() {
           <nav className="flex-1 p-4">
             <div className="space-y-1">
               {sidebarItems.map((item) => (
-                <button
+                <Link
                   key={item.label}
-                  onClick={() => router.push(item.href)}
+                  href={item.href}
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors",
                     item.active
@@ -457,7 +458,7 @@ export default function DashboardPage() {
                 >
                   <item.icon className="h-4 w-4" />
                   {item.label}
-                </button>
+                </Link>
               ))}
               
               {/* Sign Out Button - Below Settings */}
@@ -497,13 +498,15 @@ export default function DashboardPage() {
             </div>
             <Button
               size="lg"
-              onClick={() => router.push('/dashboard/client')} // Changed to client
+              asChild
               className="gap-2 shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
             >
-              <Upload className="h-5 w-5" />
-              <span className="hidden sm:inline">Process Images</span>
-              <span className="sm:hidden">Upload</span>
-              <ArrowRight className="h-4 w-4" />
+              <Link href="/dashboard/client">
+                <Upload className="h-5 w-5" />
+                <span className="hidden sm:inline">Process Images</span>
+                <span className="sm:hidden">Upload</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </Button>
           </div>
 
