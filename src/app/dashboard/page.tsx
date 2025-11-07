@@ -389,7 +389,7 @@ export default function DashboardPage() {
 
   const handleSignOut = async () => {
     await signOut()
-    router.push('/sign-in')
+    router.push('/')
   }
 
   if (authLoading || loading) {
@@ -459,19 +459,20 @@ export default function DashboardPage() {
                   {item.label}
                 </button>
               ))}
+              
+              {/* Sign Out Button - Below Settings */}
+              <button
+                onClick={handleSignOut}
+                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </button>
             </div>
           </nav>
 
-          {/* Sign Out */}
-          <div className="p-4 border-t">
-            <button
-              onClick={handleSignOut}
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
-            >
-              <LogOut className="h-4 w-4" />
-              Sign Out
-            </button>
-          </div>
+          {/* Empty space at bottom */}
+          <div className="p-4"></div>
         </div>
       </div>
 
