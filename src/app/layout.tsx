@@ -19,12 +19,32 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "AxLiner",
-  description: "Transform any screenshot into a structured Excel spreadsheet with just one click. Save hours of manual data entry with our AI-powered OCR technology.",
+  title: "Axliner - Convert Images & Screenshots to Excel Instantly",
+  description: "Axliner converts any image, screenshot, or handwritten table into an editable Excel file. Fast, accurate, and simple. Try it now!",
+  keywords: ["image to excel", "screenshot to excel", "convert image to excel", "Axliner", "handwritten table to excel", "OCR to excel", "table extraction"],
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "https://axliner.com/",
+  },
   icons: {
     icon: '/crop.png',
     shortcut: '/crop.png',
     apple: '/crop.png',
+  },
+  openGraph: {
+    title: "Axliner - Convert Images & Screenshots to Excel Instantly",
+    description: "Axliner converts any image, screenshot, or handwritten table into an editable Excel file. Fast, accurate, and simple. Try it now!",
+    url: "https://axliner.com/",
+    siteName: "Axliner",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Axliner - Convert Images & Screenshots to Excel Instantly",
+    description: "Axliner converts any image, screenshot, or handwritten table into an editable Excel file. Fast, accurate, and simple. Try it now!",
   },
 };
 
