@@ -103,7 +103,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/sign-in')
+      router.push('/')
     } else if (!authLoading && user) {
       fetchDashboardData()
     }

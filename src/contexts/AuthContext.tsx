@@ -102,11 +102,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Redirect to dashboard on sign-in (only from auth pages)
         if (event === 'SIGNED_IN') {
           const currentPath = window.location.pathname
-          const authPages = ['/sign-in', '/sign-up', '/verify-email']
+          const authPages = ['/verify-email']
 
           if (authPages.some(page => currentPath.includes(page))) {
             console.log('[AuthContext] Redirecting to dashboard after sign-in')
-            router.push('/dashboard')
+            router.push('/dashboard/client')
           }
         }
       } else {

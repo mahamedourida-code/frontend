@@ -11,8 +11,8 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!loading && !user) {
-      console.log('[ProtectedRoute] No user, redirecting to sign-in')
-      router.push('/sign-in')
+      console.log('[ProtectedRoute] No user, redirecting to landing page')
+      router.push('/')
     }
   }, [user, loading])
 
@@ -24,8 +24,8 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
       const timeoutId = setTimeout(() => {
         console.warn('[ProtectedRoute] Loading timeout reached (10s) - forcing action')
         if (!user) {
-          console.log('[ProtectedRoute] No user after timeout - redirecting to sign-in')
-          router.push('/sign-in')
+          console.log('[ProtectedRoute] No user after timeout - redirecting to landing page')
+          router.push('/')
         } else {
           console.log('[ProtectedRoute] User exists after timeout - showing content')
           setForceShowContent(true)
