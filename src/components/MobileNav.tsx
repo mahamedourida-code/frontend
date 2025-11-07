@@ -20,7 +20,6 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { ThemeToggle } from "@/components/theme-toggle"
 import { AppIcon } from "@/components/AppIcon"
 import { 
   Menu, 
@@ -170,12 +169,6 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
             <LayoutDashboard className={cn("h-5 w-5", pathname === "/dashboard" ? "text-primary-foreground" : "")} />
             <span className="text-[10px] font-medium">Dashboard</span>
           </Button>
-
-          {/* Theme Toggle - Icon only */}
-          <div className="flex-col h-14 flex items-center justify-center gap-1 flex-1 max-w-[72px]">
-            <ThemeToggle />
-            <span className="text-[10px] font-medium text-muted-foreground">Theme</span>
-          </div>
 
           {/* Menu Button */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
