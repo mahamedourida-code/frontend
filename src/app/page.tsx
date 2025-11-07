@@ -1543,54 +1543,6 @@ export default function Home() {
           </div>
         </ScrollAnimatedSection>
 
-        {/* Companies Section - Trusted By */}
-        <ScrollAnimatedSection id="trusted" className="py-12 overflow-hidden">
-          <div className="text-center mb-8" data-animate="headline">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
-              <h2 className="text-lg sm:text-base font-semibold text-foreground">
-                Chosen by experts at top organizations
-              </h2>
-            </div>
-          </div>
-
-          <div className="relative z-10 overflow-hidden" data-animate="stagger">
-            <div
-              className="flex gap-8 items-center"
-              style={{
-                animation: 'scroll-left 60s linear infinite',
-                width: 'max-content',
-                willChange: 'transform'
-              }}
-            >
-              {/* Create multiple sets for truly seamless infinite loop */}
-              {Array.from({ length: 10 }, (_, setIndex) =>
-                [1, 2, 3, 4, 5, 6, 7, 8, 9].map((imgNum) => (
-                  <Card
-                    key={`${setIndex}-${imgNum}`}
-                    className="flex-shrink-0 bg-white dark:bg-white border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-md w-[120px] h-[80px]"
-                  >
-                    <CardContent className="p-2 flex items-center justify-center w-full h-full">
-                      <img
-                        src={`/${imgNum}.jpeg`}
-                        alt={`Company ${imgNum}`}
-                        className="w-[100px] h-[60px] object-contain opacity-60 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const parent = target.parentElement;
-                          if (parent) {
-                            parent.innerHTML = `<span class="text-xs font-medium text-muted-foreground">Company ${imgNum}</span>`;
-                          }
-                        }}
-                      />
-                    </CardContent>
-                  </Card>
-                ))
-              ).flat()}
-            </div>
-          </div>
-        </ScrollAnimatedSection>
-
         {/* Transformation Section */}
         <section className="py-32">
           <div className="container mx-auto px-4 max-w-none">
@@ -2002,6 +1954,54 @@ export default function Home() {
                   <p className="text-sm text-muted-foreground">Data privacy and security certified</p>
                 </div>
               </div>
+            </div>
+          </div>
+        </ScrollAnimatedSection>
+
+        {/* Companies Section - Trusted By */}
+        <ScrollAnimatedSection id="trusted" className="py-12 overflow-hidden">
+          <div className="text-center mb-8" data-animate="headline">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+              <h2 className="text-lg sm:text-base font-semibold text-foreground">
+                Chosen by experts at top organizations
+              </h2>
+            </div>
+          </div>
+
+          <div className="relative z-10 overflow-hidden" data-animate="stagger">
+            <div
+              className="flex gap-8 items-center"
+              style={{
+                animation: 'scroll-left 60s linear infinite',
+                width: 'max-content',
+                willChange: 'transform'
+              }}
+            >
+              {/* Create multiple sets for truly seamless infinite loop */}
+              {Array.from({ length: 10 }, (_, setIndex) =>
+                [1, 2, 3, 4, 5, 6, 7, 8, 9].map((imgNum) => (
+                  <Card
+                    key={`${setIndex}-${imgNum}`}
+                    className="flex-shrink-0 bg-white dark:bg-white border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-md w-[120px] h-[80px]"
+                  >
+                    <CardContent className="p-2 flex items-center justify-center w-full h-full">
+                      <img
+                        src={`/${imgNum}.jpeg`}
+                        alt={`Company ${imgNum}`}
+                        className="w-[100px] h-[60px] object-contain opacity-60 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `<span class="text-xs font-medium text-muted-foreground">Company ${imgNum}</span>`;
+                          }
+                        }}
+                      />
+                    </CardContent>
+                  </Card>
+                ))
+              ).flat()}
             </div>
           </div>
         </ScrollAnimatedSection>
