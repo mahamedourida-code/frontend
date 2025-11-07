@@ -47,10 +47,11 @@ import {
 interface MobileNavProps {
   isAuthenticated?: boolean
   onSectionClick?: (sectionId: string) => void
+  onSignInClick?: () => void
   user?: any
 }
 
-export function MobileNav({ isAuthenticated = false, onSectionClick, user }: MobileNavProps) {
+export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInClick, user }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [solutionsOpen, setSolutionsOpen] = useState(false)
   const router = useRouter()
@@ -151,7 +152,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
           <Button
             variant={pathname === "/dashboard/client" ? "default" : "ghost"}
             size="sm"
-            onClick={() => router.push(isAuthenticated ? "/dashboard/client" : "/sign-in")}
+            onClick={() => isAuthenticated ? router.push("/dashboard/client") : (onSignInClick ? onSignInClick() : null)}
             className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
           >
             <Upload className={cn("h-5 w-5", pathname === "/dashboard/client" ? "text-primary-foreground" : "")} />
@@ -162,7 +163,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
           <Button
             variant={pathname === "/dashboard" ? "default" : "ghost"}
             size="sm"
-            onClick={() => router.push(isAuthenticated ? "/dashboard" : "/sign-in")}
+            onClick={() => isAuthenticated ? router.push("/dashboard") : (onSignInClick ? onSignInClick() : null)}
             className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
           >
             <LayoutDashboard className={cn("h-5 w-5", pathname === "/dashboard" ? "text-primary-foreground" : "")} />
@@ -365,7 +366,10 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, user }: Mob
                   <Button
                     variant="outline"
                     className="w-full h-10 gap-3"
-                    onClick={() => handleNavigation("/sign-in")}
+                    onClick={() => {
+                      setIsOpen(false);
+                      onSignInClick?.();
+                    }}
                   >
                     <LogIn className="h-5 w-5" />
                     <span className="text-sm md:text-base">Sign In</span>

@@ -46,6 +46,7 @@ import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
 import { useProcessingState } from "@/contexts/ProcessingStateContext";
 import * as XLSX from 'xlsx';
+import { GoogleSignInModal } from "@/components/GoogleSignInModal";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -94,6 +95,7 @@ export default function Home() {
 
   // User authentication state
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showSignInModal, setShowSignInModal] = useState(false);
   const supabase = createClient();
 
   // Check authentication status on mount
@@ -837,7 +839,7 @@ export default function Home() {
                 <>
                   <Button
                     className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-4 py-2 text-sm font-medium transition-colors shadow-lg hover:shadow-xl"
-                    onClick={() => window.location.href = '/sign-in'}
+                    onClick={() => setShowSignInModal(true)}
                   >
                     <Upload className="w-4 h-4 mr-1.5" />
                     Try for free
@@ -845,7 +847,7 @@ export default function Home() {
                   <Button
                     variant="outline"
                     className="bg-white/90 dark:bg-white/20 text-foreground border-[1.6px] border-foreground/30 rounded-full px-4 py-2 text-sm font-medium hover:bg-white dark:hover:bg-white/30 transition-colors backdrop-blur-sm"
-                    onClick={() => window.location.href = '/sign-in'}
+                    onClick={() => setShowSignInModal(true)}
                   >
                     Sign in
                   </Button>
@@ -2023,7 +2025,7 @@ export default function Home() {
                 <Button
                   size="lg"
                   className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 transition-all duration-200 shadow-lg shadow-primary/20"
-                  onClick={() => window.location.href = isAuthenticated ? '/dashboard' : '/sign-in'}
+                  onClick={() => isAuthenticated ? window.location.href = '/dashboard' : setShowSignInModal(true)}
                 >
                   {isAuthenticated ? 'Go to Dashboard' : 'Try for free'}
                 </Button>
@@ -2071,7 +2073,11 @@ export default function Home() {
       </footer>
       
       {/* Mobile Navigation */}
-      <MobileNav onSectionClick={scrollToSection} />
+      <MobileNav 
+        onSectionClick={scrollToSection}
+        onSignInClick={() => setShowSignInModal(true)}
+        isAuthenticated={isAuthenticated}
+      />
 
       {/* Share Dialog */}
       <Dialog open={shareDialogOpen} onOpenChange={(open) => {
@@ -2213,7 +2219,10 @@ export default function Home() {
               Maybe Later
             </Button>
             <Button
-              onClick={() => window.location.href = '/sign-in'}
+              onClick={() => {
+                setShowLimitDialog(false);
+                setShowSignInModal(true);
+              }}
               className="flex-1 bg-primary hover:bg-primary/90 border-2 border-primary"
             >
               Sign In
@@ -2294,5 +2303,8 @@ export default function Home() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Google Sign In Modal */}
+      <GoogleSignInModal open={showSignInModal} onOpenChange={setShowSignInModal} />
     </div>
   )}
