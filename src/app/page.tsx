@@ -859,7 +859,7 @@ export default function Home() {
       </nav>
 
       {/* Single Background for Entire Page */}
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-90">
         <img
           src="/duplo30.jpg"
           alt="Background pattern"
