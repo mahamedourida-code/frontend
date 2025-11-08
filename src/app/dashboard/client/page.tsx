@@ -313,7 +313,7 @@ export default function ProcessImagesPage() {
           // Auto-download all files
           if (autoDownload) {
             console.log('[AutoDownload] Starting download for', resultFiles.length, 'file(s)')
-            toast.info(`Auto-downloading ${resultFiles.length} file(s)...`)
+            // toast.info(`Auto-downloading ${resultFiles.length} file(s)...`)
 
             // Create a Set of downloaded file IDs to prevent duplicates
             const downloadedIds = new Set<string>()
@@ -333,14 +333,14 @@ export default function ProcessImagesPage() {
               }
             }
 
-            toast.success(`Auto-downloaded ${downloadedIds.size} file(s)`)
+            // toast.success(`Auto-downloaded ${downloadedIds.size} file(s)`)
           }
 
           // Auto-save to history
           if (autoSave && !isSaved) {
             console.log('[AutoSave] Saving to history automatically')
             await saveToHistory()
-            toast.success('Auto-saved to history')
+            // toast.success('Auto-saved to history')
           }
         } finally {
           // Reset execution flag after completion
@@ -485,7 +485,7 @@ export default function ProcessImagesPage() {
           fetchUserStats()
         }, 2000)
 
-        toast.success(`Processing ${imagesCount} image${imagesCount > 1 ? 's' : ''}...`)
+        // toast.success(`Processing ${imagesCount} image${imagesCount > 1 ? 's' : ''}...`)
       }
     } catch (error: any) {
       // Handle errors
@@ -577,7 +577,7 @@ export default function ProcessImagesPage() {
         [file.file_id]: finalName
       }))
       
-      toast.success('File renamed successfully')
+      // toast.success('File renamed successfully')
       setEditingFileId(null)
       setNewFileName('')
     } catch (error) {
@@ -644,7 +644,7 @@ export default function ProcessImagesPage() {
       const message = selectedFileToShare.file_id === '__BATCH__' 
         ? `Links for ${selectedFilesForBatch.length} files copied!`
         : 'Download link copied to clipboard'
-      toast.success(message)
+      // toast.success(message)
       setTimeout(() => setCopySuccess(false), 2000)
     } catch (error) {
       console.error('[Copy] Failed to copy link:', error)
@@ -709,9 +709,9 @@ export default function ProcessImagesPage() {
     
     // Show note for batch sharing
     if (selectedFileToShare.file_id === '__BATCH__') {
-      toast.info(`Note: Sharing first of ${selectedFilesForBatch.length} files. Copy all links for complete batch.`, {
-        duration: 5000
-      })
+      // toast.info(`Note: Sharing first of ${selectedFilesForBatch.length} files. Copy all links for complete batch.`, {
+      //   duration: 5000
+      // })
     }
   }
   
@@ -837,10 +837,10 @@ Best regards`
         const message = isBatch 
           ? `${selectedFilesForBatch.length} file links copied to clipboard!`
           : 'Link copied to clipboard!'
-        toast.success(message, {
-          duration: 8000,
-          description: 'Opening LinkedIn... Click "New message" → Choose recipient → Paste the links (Ctrl+V or Cmd+V)'
-        })
+        // toast.success(message, {
+        //   duration: 8000,
+        //   description: 'Opening LinkedIn... Click "New message" → Choose recipient → Paste the links (Ctrl+V or Cmd+V)'
+        // })
         
         // Open LinkedIn messaging compose page
         // This URL opens the messaging page with compose view
@@ -856,9 +856,9 @@ Best regards`
         document.execCommand('copy')
         document.body.removeChild(fallbackInput)
         
-        toast.success('Link copied! Opening LinkedIn...', {
-          duration: 6000
-        })
+        // toast.success('Link copied! Opening LinkedIn...', {
+        //   duration: 6000
+        // })
         window.open('https://www.linkedin.com/messaging/compose/', '_blank')
       })
   }
@@ -902,9 +902,9 @@ Best regards`
     
     window.open(xUrl, '_blank', 'width=550,height=420')
     
-    toast.success('X share window opened!', {
-      description: 'Customize your tweet and share with your followers'
-    })
+    // toast.success('X share window opened!', {
+    //   description: 'Customize your tweet and share with your followers'
+    // })
   }
 
   const handleShareAll = async () => {
@@ -953,7 +953,7 @@ Best regards`
       setShareDialogOpen(true)
       setCopySuccess(false)
       
-      toast.success('Share link created successfully!')
+      // toast.success('Share link created successfully!')
       
     } catch (error: any) {
       console.error('[ShareAll] Failed to create share session:', error)
@@ -1278,7 +1278,7 @@ Best regards`
                       variant="outline"
                       onClick={async () => {
                         console.log('[DownloadAll] Starting batch download:', resultFiles)
-                        toast.info(`Downloading ${resultFiles.length} file(s)...`)
+                        // toast.info(`Downloading ${resultFiles.length} file(s)...`)
 
                         let downloadCount = 0
                         for (const file of resultFiles) {
@@ -1299,7 +1299,7 @@ Best regards`
                         }
 
                         if (downloadCount === resultFiles.length) {
-                          toast.success(`Successfully downloaded ${downloadCount} file(s)`)
+                          // toast.success(`Successfully downloaded ${downloadCount} file(s)`)
                         } else if (downloadCount > 0) {
                           toast.warning(`Downloaded ${downloadCount} of ${resultFiles.length} files`)
                         } else {

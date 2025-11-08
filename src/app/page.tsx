@@ -198,7 +198,7 @@ export default function Home() {
       isExecutingAutoActionsRef.current = true
 
       const handleAutoDownload = async () => {
-        toast.info(`Auto-downloading ${resultFiles.length} file(s)...`)
+        // toast.info(`Auto-downloading ${resultFiles.length} file(s)...`)
         const downloadedIds = new Set<string>()
 
         for (const file of resultFiles) {
@@ -212,7 +212,7 @@ export default function Home() {
             }
           }
         }
-        toast.success(`Auto-downloaded ${downloadedIds.size} file(s)`)
+        // toast.success(`Auto-downloaded ${downloadedIds.size} file(s)`)
       }
       handleAutoDownload()
     }
@@ -409,7 +409,7 @@ export default function Home() {
                 });
 
                 // Show toast for individual file completion
-                toast.success(`File ${data.image_number}/${data.total_images} ready!`);
+                // toast.success(`File ${data.image_number}/${data.total_images} ready!`);
               }
             }
 
@@ -443,7 +443,7 @@ export default function Home() {
                 });
               }
 
-              toast.success(`All ${data.total_images || totalFilesToProcess} files processed!`);
+              // toast.success(`All ${data.total_images || totalFilesToProcess} files processed!`);
 
               // Show limit dialog if no more free trials
               if (newInfo.remaining === 0) {
@@ -496,7 +496,7 @@ export default function Home() {
             if (status.status === 'completed') {
               setProcessingComplete(true);
               setIsProcessing(false);
-              toast.success(`${status.results?.files?.length || 0} file(s) processed!`);
+              // toast.success(`${status.results?.files?.length || 0} file(s) processed!`);
               
               if (newInfo.remaining === 0) {
                 setTimeout(() => setShowLimitDialog(true), 2000);
@@ -542,7 +542,7 @@ export default function Home() {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      toast.success('File downloaded successfully!');
+      // toast.success('File downloaded successfully!');
     } catch (error) {
       console.error('[Landing] Error downloading file:', error);
       toast.error('Failed to download file');
@@ -604,7 +604,7 @@ export default function Home() {
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopySuccess(true);
-      toast.success('Download link copied to clipboard');
+      // toast.success('Download link copied to clipboard');
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (error) {
       console.error('[Copy] Failed to copy link:', error);
@@ -653,10 +653,10 @@ export default function Home() {
     
     navigator.clipboard.writeText(shareUrl)
       .then(() => {
-        toast.success('Link copied to clipboard!', {
-          duration: 8000,
-          description: 'Opening LinkedIn... Click "New message" → Choose recipient → Paste the link (Ctrl+V or Cmd+V)'
-        });
+        // toast.success('Link copied to clipboard!', {
+        //   duration: 8000,
+        //   description: 'Opening LinkedIn... Click "New message" → Choose recipient → Paste the link (Ctrl+V or Cmd+V)'
+        // });
         window.open('https://www.linkedin.com/messaging/compose/', '_blank');
       })
       .catch((err) => {
@@ -667,7 +667,7 @@ export default function Home() {
         document.execCommand('copy');
         document.body.removeChild(fallbackInput);
         
-        toast.success('Link copied! Opening LinkedIn...', { duration: 6000 });
+        // toast.success('Link copied! Opening LinkedIn...', { duration: 6000 });
         window.open('https://www.linkedin.com/messaging/compose/', '_blank');
       });
   };
@@ -681,15 +681,15 @@ export default function Home() {
     const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(shareUrl)}`;
     
     window.open(xUrl, '_blank', 'width=550,height=420');
-    toast.success('X share window opened!', {
-      description: 'Customize your tweet and share with your followers'
-    });
+    // toast.success('X share window opened!', {
+    //   description: 'Customize your tweet and share with your followers'
+    // });
   };
 
   const handleDownloadAll = async () => {
     if (resultFiles.length === 0) return;
 
-    toast.info(`Downloading ${resultFiles.length} file(s)...`);
+    // toast.info(`Downloading ${resultFiles.length} file(s)...`);
 
     for (const file of resultFiles) {
       if (file.file_id) {
@@ -702,7 +702,7 @@ export default function Home() {
       }
     }
 
-    toast.success(`Downloaded ${resultFiles.length} file(s)`);
+    // toast.success(`Downloaded ${resultFiles.length} file(s)`);
   };
 
   return (
@@ -1302,7 +1302,7 @@ export default function Home() {
                                   setShowAutoDownloadConfirm(true)
                                 } else {
                                   setAutoDownload(false)
-                                  toast.info('Auto-download disabled')
+                                  // toast.info('Auto-download disabled')
                                 }
                               }}
                               className={cn(
@@ -2252,7 +2252,7 @@ export default function Home() {
               onClick={() => {
                 setAutoDownload(true)
                 setShowAutoDownloadConfirm(false)
-                toast.success('Auto-download enabled')
+                // toast.success('Auto-download enabled')
               }}
               className="flex-1 bg-primary hover:bg-primary/90"
             >
