@@ -1121,8 +1121,8 @@ export default function Home() {
 
                   {/* Progressive Results Display - Full Width as soon as we have results */}
                   {(isProcessing || resultFiles.length > 0) && (
-                    <div className={`border-2 border-[#2BAAD8] rounded-xl ${resultFiles.length > 0 ? 'p-4 max-h-[calc(100vh-8rem)] overflow-y-auto' : 'p-6'}`} style={{ backgroundColor: '#fbfdfc' }}>
-                      <div className={`flex items-center justify-between mb-3 ${resultFiles.length > 0 ? 'sticky top-0 bg-[#fbfdfc] z-10 pb-2 border-b border-[#2BAAD8]/20' : ''}`}>
+                    <div className={`border-2 border-[#2BAAD8] rounded-xl ${resultFiles.length > 0 ? 'p-4' : 'p-6'}`} style={{ backgroundColor: '#fbfdfc' }}>
+                      <div className={`flex items-center justify-between mb-3 ${resultFiles.length > 0 ? 'pb-2 border-b border-[#2BAAD8]/20' : ''}`}>
                         <h3 className={`${processingComplete && resultFiles.length > 0 ? 'text-lg' : 'text-lg'} font-semibold`}>
                           {processingComplete ? 'Ready to Download' : 'Processing...'}
                         </h3>
