@@ -71,17 +71,22 @@ const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   timeout: isMobile ? 60000 : 30000, // 60 seconds for mobile, 30 for desktop
   headers: {
-    'Content-Type': 'application/json',
+    // Don't set default Content-Type, let it be set per request
   },
   // Add retry configuration
   maxRedirects: 5,
   validateStatus: (status) => status < 500, // Don't throw for client errors
 })
 
-// Request interceptor to add JWT token
+// Request interceptor to add JWT token and set Content-Type for JSON requests
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     try {
+      // Set Content-Type for JSON requests (not for FormData)
+      if (!(config.data instanceof FormData)) {
+        config.headers['Content-Type'] = 'application/json'
+      }
+      
       // Only add auth token for API requests, not for auth-related endpoints
       const isAuthEndpoint = config.url?.includes('/auth/') || config.url?.includes('/sign')
       
@@ -297,11 +302,11 @@ export const ocrApi = {
 
     console.log('[API Client] Posting multipart to', `${API_BASE_URL}/api/v1/jobs/batch-upload`)
 
-    // IMPORTANT: Override the default 'application/json' Content-Type
+    // IMPORTANT: Don't set Content-Type header
     // Let browser automatically set 'multipart/form-data' with boundary
     const response = await apiClient.post<BatchConvertResponse>('/api/v1/jobs/batch-upload', formData, {
       headers: {
-        'Content-Type': undefined  // Let browser set multipart/form-data with boundary
+        // Remove Content-Type to let browser set it with proper boundary
       }
     })
     console.log('[API Client] Response received:', response.data)
