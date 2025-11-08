@@ -1660,6 +1660,162 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Benchmark Section */}
+        <ScrollAnimatedSection id="benchmarks" className="py-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12" data-animate="headline">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                  <h2 className="text-lg sm:text-xl font-bold text-foreground">
+                    Industry-Leading OCR Accuracy
+                  </h2>
+                </div>
+
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  Benchmarked against major cloud providers on real-world handwritten documents and complex table structures.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                {/* Accuracy Chart */}
+                <Card className="bg-transparent border-2 border-primary shadow-lg" data-animate="stagger">
+  <CardHeader className="pb-3">
+    <CardTitle className="text-lg font-semibold">
+      Handwritten Text Recognition Accuracy
+    </CardTitle>
+    <p className="text-sm text-muted-foreground">
+      Based on 10,000+ real-world samples
+    </p>
+  </CardHeader>
+
+  <CardContent>
+    <ChartContainer
+      config={{
+        accuracy: {
+          label: "Accuracy",
+          color: "hsl(var(--primary))",
+        },
+      }}
+      className="h-[300px] w-full"
+    >
+      <BarChart
+        data={[
+          { provider: "AxLiner", accuracy: 96.8 },
+          { provider: "AWS Textract", accuracy: 77.2 },
+          { provider: "Google Vision", accuracy: 54.5 },
+          { provider: "Azure Vision", accuracy: 51.7 },
+        ]}
+        margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+      >
+        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+        <XAxis
+          dataKey="provider"
+          tickLine={false}
+          axisLine={true}
+          tickMargin={10}
+          angle={0}
+          textAnchor="middle"
+        />
+        <YAxis
+          tickLine={false}
+          axisLine={true}
+          tickMargin={10}
+          domain={[0, 100]}
+          ticks={[0, 20, 40, 60, 80, 100]}
+          label={{ value: 'Accuracy (%)', angle: -90, position: 'insideLeft' }}
+        />
+        <ChartTooltip content={<ChartTooltipContent />} />
+        <Bar
+          dataKey="accuracy"
+          fill="rgb(180 83 9)"
+          radius={[8, 8, 0, 0]}
+        />
+      </BarChart>
+    </ChartContainer>
+
+    {/* Footer */}
+    <div className="mt-6 pt-4 border-t border-border/50">
+      <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+        <CheckCircle className="w-4 h-4 text-primary" />
+        <span>Tested on IAM Handwriting Database v3.0</span>
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
+
+                {/* Performance Metrics Table */}
+                <Card className="bg-transparent border-2 border-primary shadow-lg" data-animate="stagger">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg font-semibold">Comprehensive Performance Metrics</CardTitle>
+                    <p className="text-sm text-muted-foreground">Average across all test scenarios</p>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-hidden rounded-lg border-2 border-primary">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-border/50 bg-muted/30">
+                            <th className="text-left p-3 font-medium">Metric</th>
+                            <th className="text-right p-3 font-medium text-primary">AxLiner</th>
+                            <th className="text-right p-3 font-medium text-muted-foreground">Industry Avg</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-b border-border/50">
+                            <td className="p-3 text-muted-foreground">Character Error Rate</td>
+                            <td className="p-3 text-right font-semibold text-primary">3.2%</td>
+                            <td className="p-3 text-right text-muted-foreground">5.8%</td>
+                          </tr>
+                          <tr className="border-b border-border/50">
+                            <td className="p-3 text-muted-foreground">Word Recognition</td>
+                            <td className="p-3 text-right font-semibold text-amber-700">99.5%</td>
+                            <td className="p-3 text-right text-muted-foreground">95.1%</td>
+                          </tr>
+                          <tr className="border-b border-border/50">
+                            <td className="p-3 text-muted-foreground">Table Structure</td>
+                            <td className="p-3 text-right font-semibold text-primary">99.1%</td>
+                            <td className="p-3 text-right text-muted-foreground">92.3%</td>
+                          </tr>
+                          <tr className="border-b border-border/50">
+                            <td className="p-3 text-muted-foreground">Noisy Image Handling</td>
+                            <td className="p-3 text-right font-semibold text-primary">94.7%</td>
+                            <td className="p-3 text-right text-muted-foreground">87.2%</td>
+                          </tr>
+                          <tr className="border-b border-border/50">
+                            <td className="p-3 text-muted-foreground">Mixed Font Recognition</td>
+                            <td className="p-3 text-right font-semibold text-primary">97.9%</td>
+                            <td className="p-3 text-right text-muted-foreground">94.6%</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 text-muted-foreground">Processing Speed</td>
+                            <td className="p-3 text-right font-semibold text-primary">0.8s/page</td>
+                            <td className="p-3 text-right text-muted-foreground">2.1s/page</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Key Features */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-primary" data-animate="stagger">
+                  <div className="text-2xl font-bold text-amber-700 mb-1">7+ Languages</div>
+                  <p className="text-sm text-muted-foreground">Multi-language support including complex scripts</p>
+                </div>
+                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-primary" data-animate="stagger">
+                  <div className="text-2xl font-bold text-amber-700 mb-1">99.9% Uptime</div>
+                  <p className="text-sm text-muted-foreground">Enterprise-grade reliability and availability</p>
+                </div>
+                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-primary" data-animate="stagger">
+                  <div className="text-2xl font-bold text-amber-700 mb-1">GDPR Compliant</div>
+                  <p className="text-sm text-muted-foreground">Data privacy and security certified</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ScrollAnimatedSection>
 
         {/* AI Engine Section */}
         <ScrollAnimatedSection id="ai-engine" className="py-16">
@@ -1839,163 +1995,6 @@ export default function Home() {
                 <p className="text-sm text-muted-foreground max-w-4xl mx-auto leading-relaxed">
                   <span className="font-semibold text-foreground">Transparency & Reproducibility:</span> Our fine-tuning methodology uses publicly available datasets and standard transformer architectures. We believe in open, reproducible AI research – no proprietary tricks, just thoughtful engineering and domain-specific optimization for document understanding tasks.
                 </p>
-              </div>
-            </div>
-          </div>
-        </ScrollAnimatedSection>
-
-        {/* Benchmark Section */}
-        <ScrollAnimatedSection id="benchmarks" className="py-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-12" data-animate="headline">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
-                  <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                    Industry-Leading OCR Accuracy
-                  </h2>
-                </div>
-
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Benchmarked against major cloud providers on real-world handwritten documents and complex table structures.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-                {/* Accuracy Chart */}
-                <Card className="bg-transparent border-2 border-primary shadow-lg" data-animate="stagger">
-  <CardHeader className="pb-3">
-    <CardTitle className="text-lg font-semibold">
-      Handwritten Text Recognition Accuracy
-    </CardTitle>
-    <p className="text-sm text-muted-foreground">
-      Based on 10,000+ real-world samples
-    </p>
-  </CardHeader>
-
-  <CardContent>
-    <ChartContainer
-      config={{
-        accuracy: {
-          label: "Accuracy",
-          color: "hsl(var(--primary))",
-        },
-      }}
-      className="h-[300px] w-full"
-    >
-      <BarChart
-        data={[
-          { provider: "AxLiner", accuracy: 96.8 },
-          { provider: "AWS Textract", accuracy: 77.2 },
-          { provider: "Google Vision", accuracy: 54.5 },
-          { provider: "Azure Vision", accuracy: 51.7 },
-        ]}
-        margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-        <XAxis
-          dataKey="provider"
-          tickLine={false}
-          axisLine={true}
-          tickMargin={10}
-          angle={0}
-          textAnchor="middle"
-        />
-        <YAxis
-          tickLine={false}
-          axisLine={true}
-          tickMargin={10}
-          domain={[0, 100]}
-          ticks={[0, 20, 40, 60, 80, 100]}
-          label={{ value: 'Accuracy (%)', angle: -90, position: 'insideLeft' }}
-        />
-        <ChartTooltip content={<ChartTooltipContent />} />
-        <Bar
-          dataKey="accuracy"
-          fill="rgb(180 83 9)"
-          radius={[8, 8, 0, 0]}
-        />
-      </BarChart>
-    </ChartContainer>
-
-    {/* Footer */}
-    <div className="mt-6 pt-4 border-t border-border/50">
-      <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-        <CheckCircle className="w-4 h-4 text-primary" />
-        <span>Tested on IAM Handwriting Database v3.0</span>
-      </div>
-    </div>
-  </CardContent>
-</Card>
-
-
-                {/* Performance Metrics Table */}
-                <Card className="bg-transparent border-2 border-primary shadow-lg" data-animate="stagger">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-semibold">Comprehensive Performance Metrics</CardTitle>
-                    <p className="text-sm text-muted-foreground">Average across all test scenarios</p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="overflow-hidden rounded-lg border-2 border-primary">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-border/50 bg-muted/30">
-                            <th className="text-left p-3 font-medium">Metric</th>
-                            <th className="text-right p-3 font-medium text-primary">AxLiner</th>
-                            <th className="text-right p-3 font-medium text-muted-foreground">Industry Avg</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr className="border-b border-border/50">
-                            <td className="p-3 text-muted-foreground">Character Error Rate</td>
-                            <td className="p-3 text-right font-semibold text-primary">3.2%</td>
-                            <td className="p-3 text-right text-muted-foreground">5.8%</td>
-                          </tr>
-                          <tr className="border-b border-border/50">
-                            <td className="p-3 text-muted-foreground">Word Recognition</td>
-                            <td className="p-3 text-right font-semibold text-amber-700">99.5%</td>
-                            <td className="p-3 text-right text-muted-foreground">95.1%</td>
-                          </tr>
-                          <tr className="border-b border-border/50">
-                            <td className="p-3 text-muted-foreground">Table Structure</td>
-                            <td className="p-3 text-right font-semibold text-primary">99.1%</td>
-                            <td className="p-3 text-right text-muted-foreground">92.3%</td>
-                          </tr>
-                          <tr className="border-b border-border/50">
-                            <td className="p-3 text-muted-foreground">Noisy Image Handling</td>
-                            <td className="p-3 text-right font-semibold text-primary">94.7%</td>
-                            <td className="p-3 text-right text-muted-foreground">87.2%</td>
-                          </tr>
-                          <tr className="border-b border-border/50">
-                            <td className="p-3 text-muted-foreground">Mixed Font Recognition</td>
-                            <td className="p-3 text-right font-semibold text-primary">97.9%</td>
-                            <td className="p-3 text-right text-muted-foreground">94.6%</td>
-                          </tr>
-                          <tr>
-                            <td className="p-3 text-muted-foreground">Processing Speed</td>
-                            <td className="p-3 text-right font-semibold text-primary">0.8s/page</td>
-                            <td className="p-3 text-right text-muted-foreground">2.1s/page</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Key Features */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-primary" data-animate="stagger">
-                  <div className="text-2xl font-bold text-amber-700 mb-1">7+ Languages</div>
-                  <p className="text-sm text-muted-foreground">Multi-language support including complex scripts</p>
-                </div>
-                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-primary" data-animate="stagger">
-                  <div className="text-2xl font-bold text-amber-700 mb-1">99.9% Uptime</div>
-                  <p className="text-sm text-muted-foreground">Enterprise-grade reliability and availability</p>
-                </div>
-                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-primary" data-animate="stagger">
-                  <div className="text-2xl font-bold text-amber-700 mb-1">GDPR Compliant</div>
-                  <p className="text-sm text-muted-foreground">Data privacy and security certified</p>
-                </div>
               </div>
             </div>
           </div>
