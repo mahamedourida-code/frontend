@@ -508,7 +508,7 @@ export function EditableExcelPreview({
         <div className="border-b bg-muted/20">
           {/* Tab Headers */}
           <div className="flex items-center h-9 px-4 border-b gap-4 text-sm">
-            <span className="px-3 py-1 border-b-2 border-primary font-medium">Home</span>
+            <span className="px-3 py-1 border-b-2 border-[#4FB9FF] font-medium">Home</span>
             <span className="px-3 py-1 text-muted-foreground hover:text-foreground cursor-pointer">Insert</span>
             <span className="px-3 py-1 text-muted-foreground hover:text-foreground cursor-pointer">Data</span>
             <span className="px-3 py-1 text-muted-foreground hover:text-foreground cursor-pointer">View</span>
