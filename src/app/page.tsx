@@ -883,7 +883,7 @@ export default function Home() {
                     Convert <span className="text-primary font-bold">Handwritten Images</span> to <span className="text-primary font-bold">Excel</span> instantly
                   </h1>
                   <p className="mt-3 sm:mt-5 text-sm sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
-                    Extract up to 100 table images in one click with our specialized 7B parameter model fine-tuned for handwritten text recognition.
+                    Extract up to 100 table images in one click with our  7B parameter model fine-tuned on Llama 3 for handwritten text recognition.
                   </p>
 
                   {/* User Count Section */}
