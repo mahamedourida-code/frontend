@@ -1501,7 +1501,7 @@ export default function Home() {
         {/* What is Axliner Section */}
         <section className="py-16 relative z-10">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-5xl mx-auto">
               {/* Section Header */}
               <div className="text-center mb-12">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
@@ -1509,101 +1509,33 @@ export default function Home() {
                     What is Axliner?
                   </h2>
                 </div>
-                <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  A state-of-the-art OCR system powered by artificial intelligence
-                </p>
               </div>
 
-              {/* Main Content Card */}
-              <Card className="bg-transparent border-2 border-primary shadow-xl">
-                <CardContent className="p-6 sm:p-8">
-                  <div className="space-y-6">
-                    {/* Core Technology */}
-                    <div>
-                      <h3 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-primary" />
-                        Advanced AI-Powered OCR Engine
-                      </h3>
-                      <p className="text-base text-muted-foreground leading-relaxed">
-                        Axliner is built on a <span className="font-semibold text-foreground">7-billion parameter vision-language model</span> fine-tuned on Meta's Llama 3 architecture. Our model underwent extensive <span className="font-semibold text-foreground">instruction fine-tuning</span> specifically optimized for handwritten text recognition, table structure preservation, and multi-language document understanding.
-                      </p>
-                    </div>
+              {/* Main Content */}
+              <div className="space-y-8">
+                <div>
+                  <p className="text-lg text-foreground leading-relaxed">
+                    Axliner is a <span className="font-bold">7-billion parameter vision-language model</span> fine-tuned on Meta's Llama 3 architecture. The model underwent extensive instruction fine-tuning specifically optimized for <span className="font-bold">handwritten text recognition</span>, <span className="font-bold">table structure preservation</span>, and <span className="font-bold">multi-language document understanding</span>.
+                  </p>
+                </div>
 
-                    <Separator className="my-4" />
+                <div>
+                  <p className="text-lg text-foreground leading-relaxed">
+                    Unlike generic OCR systems, Axliner was trained on diverse handwritten datasets including the <span className="font-bold">IAM Handwriting Database</span>, proprietary table extraction datasets, and synthetic augmented data. The fine-tuning process focused on <span className="font-bold">preserving table semantics, cell relationships, and hierarchical document structures</span> — achieving <span className="font-bold">96.8% accuracy</span> on complex handwritten tables.
+                  </p>
+                </div>
 
-                    {/* Training & Specialization */}
-                    <div>
-                      <h3 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
-                        <Database className="w-5 h-5 text-primary" />
-                        Specialized Training on Handwritten Data
-                      </h3>
-                      <p className="text-base text-muted-foreground leading-relaxed">
-                        Unlike generic OCR systems, Axliner was trained on <span className="font-semibold text-foreground">diverse handwritten datasets</span> including IAM Handwriting Database, proprietary table extraction datasets, and synthetic augmented data. Our fine-tuning process focused on <span className="font-semibold text-foreground">preserving table semantics, cell relationships, and hierarchical document structures</span> — achieving 96.8% accuracy on complex handwritten tables.
-                      </p>
-                    </div>
+                <div>
+                  <p className="text-lg text-foreground leading-relaxed">
+                    The system supports <span className="font-bold">batch processing of up to 100 images simultaneously</span>, with real-time conversion averaging <span className="font-bold">0.8 seconds per page</span>. Axliner handles <span className="font-bold">8+ languages</span> including complex scripts like Arabic and Chinese, while maintaining cell relationships and formatting integrity across all output formats.
+                  </p>
+                </div>
 
-                    <Separator className="my-4" />
-
-                    {/* Key Capabilities */}
-                    <div>
-                      <h3 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
-                        <Target className="w-5 h-5 text-primary" />
-                        Enterprise-Grade Features
-                      </h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="font-semibold text-foreground text-sm">Batch Processing</p>
-                            <p className="text-xs text-muted-foreground">Process up to 100 images simultaneously</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="font-semibold text-foreground text-sm">Multi-Language Support</p>
-                            <p className="text-xs text-muted-foreground">8+ languages including Arabic & Chinese</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="font-semibold text-foreground text-sm">Table Structure Preservation</p>
-                            <p className="text-xs text-muted-foreground">Maintains cell relationships & formatting</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="font-semibold text-foreground text-sm">Real-Time Processing</p>
-                            <p className="text-xs text-muted-foreground">Average 0.8s per page conversion</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Use Cases Badge */}
-                    <div className="mt-6 pt-6 border-t border-border">
-                      <p className="text-sm text-muted-foreground mb-3">Ideal for:</p>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge variant="secondary" className="px-3 py-1">Financial Document Processing</Badge>
-                        <Badge variant="secondary" className="px-3 py-1">Invoice Digitization</Badge>
-                        <Badge variant="secondary" className="px-3 py-1">Form Automation</Badge>
-                        <Badge variant="secondary" className="px-3 py-1">Data Entry Replacement</Badge>
-                        <Badge variant="secondary" className="px-3 py-1">Archive Digitization</Badge>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Technical Specs Footer */}
-              <div className="mt-6 text-center">
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-semibold text-foreground">Model Architecture:</span> Llama 3-based Vision-Language Transformer • 
-                  <span className="font-semibold text-foreground"> Parameters:</span> 7B • 
-                  <span className="font-semibold text-foreground"> Training Dataset:</span> 2M+ handwritten samples
-                </p>
+                <div>
+                  <p className="text-lg text-foreground leading-relaxed">
+                    Built for enterprise workflows, Axliner excels in <span className="font-bold">financial document processing</span>, <span className="font-bold">invoice digitization</span>, <span className="font-bold">form automation</span>, and archive digitization — trained on over <span className="font-bold">2 million handwritten samples</span> using a Llama 3-based vision-language transformer architecture.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
