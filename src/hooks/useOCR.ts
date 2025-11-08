@@ -54,7 +54,7 @@ export function useOCR(): UseOCRReturn {
       setUploadProgress(100)
       setJobId(response.job_id)
       setStatus(response.success ? 'queued' : 'failed')
-      toast.success('Image uploaded successfully!')
+      // toast.success('Image uploaded successfully!')
       return response
     } catch (err: any) {
       const errorMessage = err.detail || 'Failed to upload image'
@@ -93,7 +93,7 @@ export function useOCR(): UseOCRReturn {
       setJobId(response.job_id)
       setSessionId(response.session_id) // Store session ID for downloads
       setStatus(response.success ? 'processing' : 'failed')
-      toast.success(`${files.length} images uploaded successfully!`)
+      // toast.success(`${files.length} images uploaded successfully!`)
       return response
     } catch (err: any) {
       console.error('[useOCR] Upload error:', err)
@@ -125,7 +125,7 @@ export function useOCR(): UseOCRReturn {
       }
 
       if (response.status === 'completed') {
-        toast.success('Processing completed!')
+        // toast.success('Processing completed!')
         setIsProcessing(false)
       } else if (response.status === 'failed') {
         toast.error('Processing failed')
@@ -167,7 +167,7 @@ export function useOCR(): UseOCRReturn {
       document.body.removeChild(link)
       window.URL.revokeObjectURL(url)
 
-      toast.success('File downloaded successfully')
+      // toast.success('File downloaded successfully')
     } catch (err: any) {
       console.error('[useOCR] Download failed:', err)
       const errorMessage = err.detail || err.message || 'Failed to download file'
@@ -401,7 +401,7 @@ export function useOCR(): UseOCRReturn {
           })
 
           // Show toast for individual file completion
-          toast.success(`File ${data.image_number}/${data.total_images} ready for download!`)
+          // toast.success(`File ${data.image_number}/${data.total_images} ready for download!`)
         }
 
         // Progress updates
@@ -449,7 +449,7 @@ export function useOCR(): UseOCRReturn {
           // Only show completion toast once
           setHasShownCompletion(prev => {
             if (!prev) {
-              toast.success(`Processing completed! ${data.successful_images || 0} files ready.`)
+              // toast.success(`Processing completed! ${data.successful_images || 0} files ready.`)
             }
             return true
           })
