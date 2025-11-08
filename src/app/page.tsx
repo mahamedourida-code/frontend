@@ -47,6 +47,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useProcessingState } from "@/contexts/ProcessingStateContext";
 import * as XLSX from 'xlsx';
 import { GoogleSignInModal } from "@/components/GoogleSignInModal";
+import NextLink from "next/link";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -942,9 +943,9 @@ export default function Home() {
               {isAuthenticated ? (
                 <Button
                   className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-4 py-2 text-sm font-medium transition-colors shadow-lg hover:shadow-xl"
-                  onClick={() => window.location.href = '/dashboard'}
+                  asChild
                 >
-                  Go to Dashboard
+                  <NextLink href="/dashboard">Go to Dashboard</NextLink>
                 </Button>
               ) : (
                 <>
@@ -1634,30 +1635,38 @@ export default function Home() {
               </div>
 
               {/* Main Content */}
-              <div className="space-y-8">
-                <div>
-                  <p className="text-lg text-foreground leading-relaxed">
-                    Axliner is a <span className="font-bold">7-billion parameter vision-language model</span> fine-tuned on Meta's Llama 3 architecture. The model underwent extensive instruction fine-tuning specifically optimized for <span className="font-bold">handwritten text recognition</span>, <span className="font-bold">table structure preservation</span>, and <span className="font-bold">multi-language document understanding</span>.
-                  </p>
-                </div>
+              <div className="space-y-6">
+                <Card className="bg-white dark:bg-card border border-border rounded-lg shadow-sm">
+                  <CardContent className="p-6">
+                    <p className="text-lg text-foreground leading-relaxed">
+                      Axliner is a <span className="font-bold">7-billion parameter vision-language model</span> fine-tuned on Meta's Llama 3 architecture. The model underwent extensive instruction fine-tuning specifically optimized for <span className="font-bold">handwritten text recognition</span>, <span className="font-bold">table structure preservation</span>, and <span className="font-bold">multi-language document understanding</span>.
+                    </p>
+                  </CardContent>
+                </Card>
 
-                <div>
-                  <p className="text-lg text-foreground leading-relaxed">
-                    Unlike generic OCR systems, Axliner was trained on diverse handwritten datasets including the <span className="font-bold">IAM Handwriting Database</span>, proprietary table extraction datasets, and synthetic augmented data. The fine-tuning process focused on <span className="font-bold">preserving table semantics, cell relationships, and hierarchical document structures</span> — achieving <span className="font-bold">96.8% accuracy</span> on complex handwritten tables.
-                  </p>
-                </div>
+                <Card className="bg-white dark:bg-card border border-border rounded-lg shadow-sm">
+                  <CardContent className="p-6">
+                    <p className="text-lg text-foreground leading-relaxed">
+                      Unlike generic OCR systems, Axliner was trained on diverse handwritten datasets including the <span className="font-bold">IAM Handwriting Database</span>, proprietary table extraction datasets, and synthetic augmented data. The fine-tuning process focused on <span className="font-bold">preserving table semantics, cell relationships, and hierarchical document structures</span> — achieving <span className="font-bold">96.8% accuracy</span> on complex handwritten tables.
+                    </p>
+                  </CardContent>
+                </Card>
 
-                <div>
-                  <p className="text-lg text-foreground leading-relaxed">
-                    The system supports <span className="font-bold">batch processing of up to 100 images simultaneously</span>, with real-time conversion averaging <span className="font-bold">0.8 seconds per page</span>. Axliner handles <span className="font-bold">8+ languages</span> including complex scripts like Arabic and Chinese, while maintaining cell relationships and formatting integrity across all output formats.
-                  </p>
-                </div>
+                <Card className="bg-white dark:bg-card border border-border rounded-lg shadow-sm">
+                  <CardContent className="p-6">
+                    <p className="text-lg text-foreground leading-relaxed">
+                      The system supports <span className="font-bold">batch processing of up to 100 images simultaneously</span>, with real-time conversion averaging <span className="font-bold">0.8 seconds per page</span>. Axliner handles <span className="font-bold">8+ languages</span> including complex scripts like Arabic and Chinese, while maintaining cell relationships and formatting integrity across all output formats.
+                    </p>
+                  </CardContent>
+                </Card>
 
-                <div>
-                  <p className="text-lg text-foreground leading-relaxed">
-                    Built for enterprise workflows, Axliner excels in <span className="font-bold">financial document processing</span>, <span className="font-bold">invoice digitization</span>, <span className="font-bold">form automation</span>, and archive digitization — trained on over <span className="font-bold">2 million handwritten samples</span> using a Llama 3-based vision-language transformer architecture.
-                  </p>
-                </div>
+                <Card className="bg-white dark:bg-card border border-border rounded-lg shadow-sm">
+                  <CardContent className="p-6">
+                    <p className="text-lg text-foreground leading-relaxed">
+                      Built for enterprise workflows, Axliner excels in <span className="font-bold">financial document processing</span>, <span className="font-bold">invoice digitization</span>, <span className="font-bold">form automation</span>, and archive digitization — trained on over <span className="font-bold">2 million handwritten samples</span> using a Llama 3-based vision-language transformer architecture.
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
@@ -1800,7 +1809,7 @@ export default function Home() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
                 {/* Accuracy Chart */}
-                <Card className="bg-transparent border-2 border-[#2BAAD8] shadow-lg" data-animate="stagger">
+                <Card className="bg-white dark:bg-card border border-border shadow-sm" data-animate="stagger">
   <CardHeader className="pb-3">
     <CardTitle className="text-lg font-semibold">
       Handwritten Text Recognition Accuracy
@@ -1867,7 +1876,7 @@ export default function Home() {
 
 
                 {/* Performance Metrics Table */}
-                <Card className="bg-transparent border-2 border-[#2BAAD8] shadow-lg" data-animate="stagger">
+                <Card className="bg-white dark:bg-card border border-border shadow-sm" data-animate="stagger">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg font-semibold">Comprehensive Performance Metrics</CardTitle>
                     <p className="text-sm text-muted-foreground">Average across all test scenarios</p>
@@ -2186,13 +2195,23 @@ export default function Home() {
               
               {/* Single Primary CTA */}
               <div className="flex justify-center">
-                <Button
-                  size="lg"
-                  className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 transition-all duration-200 shadow-lg shadow-primary/20"
-                  onClick={() => isAuthenticated ? window.location.href = '/dashboard' : setShowSignInModal(true)}
-                >
-                  {isAuthenticated ? 'Go to Dashboard' : 'Try for free'}
-                </Button>
+                {isAuthenticated ? (
+                  <Button
+                    size="lg"
+                    className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 transition-all duration-200 shadow-lg shadow-primary/20"
+                    asChild
+                  >
+                    <NextLink href="/dashboard">Go to Dashboard</NextLink>
+                  </Button>
+                ) : (
+                  <Button
+                    size="lg"
+                    className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 transition-all duration-200 shadow-lg shadow-primary/20"
+                    onClick={() => setShowSignInModal(true)}
+                  >
+                    Try for free
+                  </Button>
+                )}
               </div>
             </div>
           </div>
