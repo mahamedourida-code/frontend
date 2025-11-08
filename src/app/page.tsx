@@ -710,7 +710,7 @@ export default function Home() {
       {/* Navigation Bar */}
       <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 pt-3 lg:pt-4">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-[35px] border-2 border-[#2A41F3] shadow-lg shadow-[#2A41F3]/10 backdrop-blur-md p-2 lg:p-3 flex items-center justify-between" style={{ backgroundColor: '#fbfdfc' }}>
+          <div className="rounded-[35px] border-2 border-[#4FB9FF] shadow-lg shadow-[#4FB9FF]/10 backdrop-blur-md p-2 lg:p-3 flex items-center justify-between" style={{ backgroundColor: '#fbfdfc' }}>
             {/* Logo */}
             <div className="flex-shrink-0">
               <AppLogo />
@@ -876,7 +876,7 @@ export default function Home() {
               {/* Left Content - Hide as soon as we have results */}
               {resultFiles.length === 0 && (
                 <div ref={heroContentRef} className="max-w-xl -mt-4 lg:-mt-8">
-                  <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-[#2A41F3] mb-3 sm:mb-5 shadow-lg shadow-[#2A41F3]/10" style={{ backgroundColor: '#fbfdfc' }}>
+                  <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-[#4FB9FF] mb-3 sm:mb-5 shadow-lg shadow-[#4FB9FF]/10" style={{ backgroundColor: '#fbfdfc' }}>
                     <span className="text-xs sm:text-sm font-semibold text-foreground">AxLiner-7B Handwritten Specialist</span>
                   </div>
                   <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-black dark:text-white leading-[1.1] tracking-tight">
@@ -922,10 +922,10 @@ export default function Home() {
                         onDrop={handleDrop}
                         className={`relative border-2 border-dashed rounded-xl transition-all duration-200 cursor-pointer ${
                           isDragging
-                            ? 'border-[#2A41F3] bg-[#2A41F3]/10 scale-[0.99]'
+                            ? 'border-[#4FB9FF] bg-[#4FB9FF]/10 scale-[0.99]'
                             : uploadedFiles.length > 0
-                              ? 'border-[#2A41F3] bg-[#2A41F3]/5'
-                              : 'border-[#2A41F3]/50 hover:border-[#2A41F3] hover:bg-[#2A41F3]/5'
+                              ? 'border-[#4FB9FF] bg-[#4FB9FF]/5'
+                              : 'border-[#4FB9FF]/50 hover:border-[#4FB9FF] hover:bg-[#4FB9FF]/5'
                         } p-12 lg:p-16 min-h-[200px]`}
                       >
                         <div className="text-center">
@@ -977,7 +977,7 @@ export default function Home() {
                                   variant="outline"
                                   size="sm"
                                   disabled={isProcessing}
-                                  className="border-2 border-[#2A41F3] text-xs"
+                                  className="border-2 border-[#4FB9FF] text-xs"
                                   asChild
                                   onClick={(e) => e.stopPropagation()}
                                 >
@@ -1010,8 +1010,8 @@ export default function Home() {
 
                   {/* Progressive Results Display - Full Width as soon as we have results */}
                   {(isProcessing || resultFiles.length > 0) && (
-                    <div className={`border-2 border-[#2A41F3] rounded-xl ${resultFiles.length > 0 ? 'p-4 max-h-[calc(100vh-8rem)] overflow-y-auto' : 'p-6'}`} style={{ backgroundColor: '#fbfdfc' }}>
-                      <div className={`flex items-center justify-between mb-3 ${resultFiles.length > 0 ? 'sticky top-0 bg-[#fbfdfc] z-10 pb-2 border-b border-[#2A41F3]/20' : ''}`}>
+                    <div className={`border-2 border-[#4FB9FF] rounded-xl ${resultFiles.length > 0 ? 'p-4 max-h-[calc(100vh-8rem)] overflow-y-auto' : 'p-6'}`} style={{ backgroundColor: '#fbfdfc' }}>
+                      <div className={`flex items-center justify-between mb-3 ${resultFiles.length > 0 ? 'sticky top-0 bg-[#fbfdfc] z-10 pb-2 border-b border-[#4FB9FF]/20' : ''}`}>
                         <h3 className={`${processingComplete && resultFiles.length > 0 ? 'text-lg' : 'text-lg'} font-semibold`}>
                           {processingComplete ? 'Ready to Download' : 'Processing...'}
                         </h3>
@@ -1021,7 +1021,7 @@ export default function Home() {
                               size="sm"
                               variant="outline"
                               onClick={handleDownloadAll}
-                              className="border-2 border-[#2A41F3]"
+                              className="border-2 border-[#4FB9FF]"
                             >
                               <Download className="h-4 w-4 mr-1" />
                               Download All
@@ -1031,7 +1031,7 @@ export default function Home() {
                             variant="outline"
                             size="sm"
                             onClick={handleReset}
-                            className="border-2 border-[#2A41F3]"
+                            className="border-2 border-[#4FB9FF]"
                           >
                             Convert Again
                           </Button>
@@ -1048,7 +1048,7 @@ export default function Home() {
                                 {/* Original Image */}
                                 <div className="flex flex-col xl:col-span-1">
                                   <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Original Image</h4>
-                                  <div className="border-2 border-[#2A41F3]/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center max-h-[600px]">
+                                  <div className="border-2 border-[#4FB9FF]/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center max-h-[600px]">
                                     <img 
                                       src={firstImageUrl} 
                                       alt="Original" 
@@ -1060,7 +1060,7 @@ export default function Home() {
                                 {/* Table Preview */}
                                 <div className="flex flex-col xl:col-span-2">
                                   <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Extracted Data Preview</h4>
-                                  <div className="border-2 border-[#2A41F3]/20 rounded-lg overflow-auto max-h-[600px] bg-white">
+                                  <div className="border-2 border-[#4FB9FF]/20 rounded-lg overflow-auto max-h-[600px] bg-white">
                                     <table className="w-full text-base">
                                       <tbody>
                                         {tablePreviewData.map((row, rowIndex) => (
@@ -1087,7 +1087,7 @@ export default function Home() {
                               </div>
 
                               {/* First File Buttons */}
-                              <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#2A41F3]">
+                              <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#4FB9FF]">
                                 <div className="flex items-center gap-3 flex-1 min-w-0">
                                   <FileSpreadsheet className="h-5 w-5 text-primary" />
                                   <span className="text-base font-medium truncate">{resultFiles[0].filename || 'result.xlsx'}</span>
@@ -1096,7 +1096,7 @@ export default function Home() {
                                   <Button
                                     size="default"
                                     onClick={() => handleDownloadFile(resultFiles[0].file_id)}
-                                    className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#2A41F3]"
+                                    className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#4FB9FF]"
                                   >
                                     <Download className="h-4 w-4" />
                                     Download
@@ -1105,7 +1105,7 @@ export default function Home() {
                                     size="default"
                                     variant="outline"
                                     onClick={() => handleShareFile(resultFiles[0])}
-                                    className="gap-2 bg-white border-2 border-[#2A41F3] text-foreground hover:bg-primary/10"
+                                    className="gap-2 bg-white border-2 border-[#4FB9FF] text-foreground hover:bg-primary/10"
                                   >
                                     <Share2 className="h-4 w-4" />
                                     Share
@@ -1129,7 +1129,7 @@ export default function Home() {
 
                           {/* Other Files - Just buttons, starting from index 1 */}
                           {resultFiles.slice(1).map((file: any, index: number) => (
-                            <div key={file.file_id || index + 1} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#2A41F3]/20">
+                            <div key={file.file_id || index + 1} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#4FB9FF]/20">
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <button
                                   onClick={() => handleDownloadFile(file.file_id)}
@@ -1143,7 +1143,7 @@ export default function Home() {
                                 <Button
                                   size="sm"
                                   onClick={() => handleDownloadFile(file.file_id)}
-                                  className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#2A41F3]"
+                                  className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#4FB9FF]"
                                 >
                                   <Download className="h-4 w-4" />
                                   Download
@@ -1152,7 +1152,7 @@ export default function Home() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleShareFile(file)}
-                                  className="gap-1.5 bg-white border-2 border-[#2A41F3] text-foreground hover:bg-primary/10"
+                                  className="gap-1.5 bg-white border-2 border-[#4FB9FF] text-foreground hover:bg-primary/10"
                                 >
                                   <Share2 className="h-4 w-4" />
                                   Share
@@ -1175,7 +1175,7 @@ export default function Home() {
 
                           {/* Show buttons without preview if no preview data available yet */}
                           {(!tablePreviewData.length || !firstImageUrl) && resultFiles.map((file: any, index: number) => (
-                            <div key={`no-preview-${file.file_id || index}`} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#2A41F3]/20">
+                            <div key={`no-preview-${file.file_id || index}`} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#4FB9FF]/20">
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <button
                                   onClick={() => handleDownloadFile(file.file_id)}
@@ -1189,7 +1189,7 @@ export default function Home() {
                                 <Button
                                   size="sm"
                                   onClick={() => handleDownloadFile(file.file_id)}
-                                  className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#2A41F3]"
+                                  className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#4FB9FF]"
                                 >
                                   <Download className="h-4 w-4" />
                                   Download
@@ -1198,7 +1198,7 @@ export default function Home() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleShareFile(file)}
-                                  className="gap-1.5 bg-white border-2 border-[#2A41F3] text-foreground hover:bg-primary/10"
+                                  className="gap-1.5 bg-white border-2 border-[#4FB9FF] text-foreground hover:bg-primary/10"
                                 >
                                   <Share2 className="h-4 w-4" />
                                   Share
@@ -1223,7 +1223,7 @@ export default function Home() {
                           {isProcessing && totalFilesToProcess > resultFiles.length && (
                             <>
                               {Array.from({ length: totalFilesToProcess - resultFiles.length }).map((_, index) => (
-                                <div key={`pending-${index}`} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg border-2 border-dashed border-[#2A41F3]/30">
+                                <div key={`pending-${index}`} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg border-2 border-dashed border-[#4FB9FF]/30">
                                   <div className="flex items-center gap-3 flex-1 min-w-0">
                                     <Loader2 className="h-5 w-5 text-primary animate-spin flex-shrink-0" />
                                     <span className="text-sm font-medium text-muted-foreground">Processing file {resultFiles.length + index + 1}...</span>
@@ -1272,13 +1272,13 @@ export default function Home() {
                     </Button>
 
                     {/* Options Card - Right Side (1 column) */}
-                    <Card className="bg-[#fbfdfc] dark:bg-[#fbfdfc] border-2 border-[#2A41F3] shadow-lg shadow-[#2A41F3]/10">
+                    <Card className="bg-[#fbfdfc] dark:bg-[#fbfdfc] border-2 border-[#4FB9FF] shadow-lg shadow-[#4FB9FF]/10">
                       <CardContent className="p-3">
                         <div className="space-y-2">
                           <div>
                             <h3 className="text-xs font-semibold mb-1 text-foreground">Language</h3>
                             <select
-                              className="w-full p-1.5 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-xs font-medium hover:border-[#2A41F3]/50 transition-all focus:outline-none focus:border-primary cursor-pointer"
+                              className="w-full p-1.5 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-xs font-medium hover:border-[#4FB9FF]/50 transition-all focus:outline-none focus:border-primary cursor-pointer"
                               defaultValue="en"
                               onClick={(e) => e.preventDefault()}
                             >
@@ -1309,7 +1309,7 @@ export default function Home() {
                                 "w-full flex items-center justify-between p-1.5 rounded-lg transition-all border-2",
                                 autoDownload
                                   ? "bg-primary/10 border-primary"
-                                  : "bg-muted/30 border-muted-foreground/20 hover:border-[#2A41F3]/50"
+                                  : "bg-muted/30 border-muted-foreground/20 hover:border-[#4FB9FF]/50"
                               )}
                             >
                               <div className="flex items-center gap-1">
@@ -1335,7 +1335,7 @@ export default function Home() {
         <section className="py-16 overflow-hidden relative z-10">
           <div className="w-full">
             <div className="text-center mb-12 px-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#2A41F3] mb-4 shadow-lg shadow-[#2A41F3]/10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#4FB9FF] mb-4 shadow-lg shadow-[#4FB9FF]/10">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   Trusted by Professionals
                 </h2>
@@ -1504,7 +1504,7 @@ export default function Home() {
             <div className="max-w-5xl mx-auto">
               {/* Section Header */}
               <div className="text-center mb-12">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#2A41F3] mb-4 shadow-lg shadow-[#2A41F3]/10">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#4FB9FF] mb-4 shadow-lg shadow-[#4FB9FF]/10">
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     What is Axliner?
                   </h2>
@@ -1545,7 +1545,7 @@ export default function Home() {
         <ScrollAnimatedSection id="features" className="py-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#2A41F3] mb-4 shadow-lg shadow-[#2A41F3]/10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#4FB9FF] mb-4 shadow-lg shadow-[#4FB9FF]/10">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   Specialized Solutions
                 </h2>
@@ -1553,7 +1553,7 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
-              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#2A41F3]/50 transition-all duration-300 hover:scale-105">
+              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#4FB9FF]/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
                   <PenTool className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Handwritten Tables</CardTitle>
@@ -1563,7 +1563,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#2A41F3]/50 transition-all duration-300 hover:scale-105">
+              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#4FB9FF]/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
                   <FileText className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Paper Forms tables</CardTitle>
@@ -1573,7 +1573,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#2A41F3]/50 transition-all duration-300 hover:scale-105">
+              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#4FB9FF]/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
                   <FileSpreadsheet className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Financial Documents tables</CardTitle>
@@ -1591,7 +1591,7 @@ export default function Home() {
           <div className="container mx-auto px-4 max-w-none">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#2A41F3] mb-4 shadow-lg shadow-[#2A41F3]/10">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#4FB9FF] mb-4 shadow-lg shadow-[#4FB9FF]/10">
                   <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
                     See the Transformation
                   </h2>
@@ -1665,7 +1665,7 @@ export default function Home() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#2A41F3] mb-4 shadow-lg shadow-[#2A41F3]/10">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#4FB9FF] mb-4 shadow-lg shadow-[#4FB9FF]/10">
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     Industry-Leading OCR Accuracy
                   </h2>
@@ -1678,7 +1678,7 @@ export default function Home() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
                 {/* Accuracy Chart */}
-                <Card className="bg-transparent border-2 border-[#2A41F3] shadow-lg" data-animate="stagger">
+                <Card className="bg-transparent border-2 border-[#4FB9FF] shadow-lg" data-animate="stagger">
   <CardHeader className="pb-3">
     <CardTitle className="text-lg font-semibold">
       Handwritten Text Recognition Accuracy
@@ -1745,13 +1745,13 @@ export default function Home() {
 
 
                 {/* Performance Metrics Table */}
-                <Card className="bg-transparent border-2 border-[#2A41F3] shadow-lg" data-animate="stagger">
+                <Card className="bg-transparent border-2 border-[#4FB9FF] shadow-lg" data-animate="stagger">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg font-semibold">Comprehensive Performance Metrics</CardTitle>
                     <p className="text-sm text-muted-foreground">Average across all test scenarios</p>
                   </CardHeader>
                   <CardContent>
-                    <div className="overflow-hidden rounded-lg border-2 border-[#2A41F3]">
+                    <div className="overflow-hidden rounded-lg border-2 border-[#4FB9FF]">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-border/50 bg-muted/30">
@@ -1800,15 +1800,15 @@ export default function Home() {
 
               {/* Key Features */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-[#2A41F3]" data-animate="stagger">
+                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-[#4FB9FF]" data-animate="stagger">
                   <div className="text-2xl font-bold text-amber-700 mb-1">7+ Languages</div>
                   <p className="text-sm text-muted-foreground">Multi-language support including complex scripts</p>
                 </div>
-                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-[#2A41F3]" data-animate="stagger">
+                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-[#4FB9FF]" data-animate="stagger">
                   <div className="text-2xl font-bold text-amber-700 mb-1">99.9% Uptime</div>
                   <p className="text-sm text-muted-foreground">Enterprise-grade reliability and availability</p>
                 </div>
-                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-[#2A41F3]" data-animate="stagger">
+                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-[#4FB9FF]" data-animate="stagger">
                   <div className="text-2xl font-bold text-amber-700 mb-1">GDPR Compliant</div>
                   <p className="text-sm text-muted-foreground">Data privacy and security certified</p>
                 </div>
@@ -1822,7 +1822,7 @@ export default function Home() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-16" data-animate="headline">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-[#2A41F3] mb-4 shadow-lg shadow-[#2A41F3]/10" style={{ backgroundColor: '#fbfdfc' }}>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-[#4FB9FF] mb-4 shadow-lg shadow-[#4FB9FF]/10" style={{ backgroundColor: '#fbfdfc' }}>
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     How AxLiner's Engine Is Built
                   </h2>
@@ -1855,28 +1855,28 @@ export default function Home() {
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4 mt-6">
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-700/10 border-2 border-[#2A41F3]">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-700/10 border-2 border-[#4FB9FF]">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Document Structure Understanding</p>
                           <p className="text-sm text-black font-semibold">Training on table layouts, form structures, and hierarchical document organization</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-700/10 border-2 border-[#2A41F3]">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-700/10 border-2 border-[#4FB9FF]">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Handwriting Recognition</p>
                           <p className="text-sm text-black font-semibold">Extensive exposure to varied handwriting styles and degraded document quality</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-700/10 border-2 border-[#2A41F3]">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-700/10 border-2 border-[#4FB9FF]">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Context Preservation</p>
                           <p className="text-sm text-black font-semibold">Maintaining relationships between cells, columns, and semantic meaning</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-700/10 border-2 border-[#2A41F3]">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-700/10 border-2 border-[#4FB9FF]">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Multi-Language Support</p>
@@ -1885,7 +1885,7 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="mt-6 p-4 bg-primary/5 rounded-lg border-2 border-[#2A41F3]">
+                    <div className="mt-6 p-4 bg-primary/5 rounded-lg border-2 border-[#4FB9FF]">
                       <p className="text-sm text-muted-foreground">
                         <span className="font-semibold text-foreground">Benchmark Result:</span> In independent evaluations on MT-Bench, AxLiner achieved a score of <span className="font-semibold text-primary">7.2</span>, outperforming Llama 3 13B (6.65) despite using a more efficient 7B parameter architecture.
                       </p>
@@ -1908,13 +1908,13 @@ export default function Home() {
                       </p>
                     </div>
 
-                    <div className="p-5 bg-muted/50 rounded-lg border-2 border-[#2A41F3] font-mono text-sm">
+                    <div className="p-5 bg-muted/50 rounded-lg border-2 border-[#4FB9FF] font-mono text-sm">
                       <p className="text-foreground leading-relaxed italic">
                         "Always assist with care, respect, and truth. Respond with utmost utility yet securely. Avoid harmful, unethical, prejudiced, or negative content. Ensure replies promote fairness and positivity."
                       </p>
                     </div>
 
-                    <div className="overflow-hidden rounded-lg border-2 border-[#2A41F3] mt-6">
+                    <div className="overflow-hidden rounded-lg border-2 border-[#4FB9FF] mt-6">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-border/50 bg-muted/30">
@@ -1960,7 +1960,7 @@ export default function Home() {
                       </p>
                     </div>
 
-                    <div className="mt-6 p-5 bg-amber-700/10 rounded-lg border-2 border-[#2A41F3]">
+                    <div className="mt-6 p-5 bg-amber-700/10 rounded-lg border-2 border-[#4FB9FF]">
                       <div className="flex items-start gap-3">
                         <Award className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
@@ -1969,11 +1969,11 @@ export default function Home() {
                             Evaluated on a manually curated and balanced dataset of adversarial and standard prompts:
                           </p>
                           <div className="grid grid-cols-2 gap-4">
-                            <div className="text-center p-3 bg-background rounded-lg border-2 border-[#2A41F3]">
+                            <div className="text-center p-3 bg-background rounded-lg border-2 border-[#4FB9FF]">
                               <p className="text-2xl font-bold text-amber-700">99.4%</p>
                               <p className="text-xs text-muted-foreground mt-1">Precision</p>
                             </div>
-                            <div className="text-center p-3 bg-background rounded-lg border-2 border-[#2A41F3]">
+                            <div className="text-center p-3 bg-background rounded-lg border-2 border-[#4FB9FF]">
                               <p className="text-2xl font-bold text-amber-700">95.6%</p>
                               <p className="text-xs text-muted-foreground mt-1">Recall</p>
                             </div>
@@ -2003,7 +2003,7 @@ export default function Home() {
         {/* Companies Section - Trusted By */}
         <ScrollAnimatedSection id="trusted" className="py-12 overflow-hidden">
           <div className="text-center mb-8" data-animate="headline">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#2A41F3] mb-4 shadow-lg shadow-[#2A41F3]/10">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#4FB9FF] mb-4 shadow-lg shadow-[#4FB9FF]/10">
               <h2 className="text-lg sm:text-base font-semibold text-foreground">
                 Chosen by experts at top organizations
               </h2>
@@ -2024,7 +2024,7 @@ export default function Home() {
                 [1, 2, 3, 4, 5, 6, 7, 8, 9].map((imgNum) => (
                   <Card
                     key={`${setIndex}-${imgNum}`}
-                    className="flex-shrink-0 bg-white dark:bg-white border border-border/50 hover:border-[#2A41F3]/30 transition-all duration-300 hover:shadow-md w-[120px] h-[80px]"
+                    className="flex-shrink-0 bg-white dark:bg-white border border-border/50 hover:border-[#4FB9FF]/30 transition-all duration-300 hover:shadow-md w-[120px] h-[80px]"
                   >
                     <CardContent className="p-2 flex items-center justify-center w-full h-full">
                       <img
@@ -2053,7 +2053,7 @@ export default function Home() {
           <div className="container mx-auto px-1 sm:px-3 lg:px-4 text-center">
             {/* CTA Content */}
             <div className="max-w-3xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#2A41F3] mb-4 shadow-lg shadow-[#2A41F3]/10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#4FB9FF] mb-4 shadow-lg shadow-[#4FB9FF]/10">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
                   Ready to Transform Your Workflow?
                 </h2>
@@ -2256,7 +2256,7 @@ export default function Home() {
             <Button
               variant="outline"
               onClick={() => setShowLimitDialog(false)}
-              className="flex-1 border-2 border-[#2A41F3]"
+              className="flex-1 border-2 border-[#4FB9FF]"
             >
               Maybe Later
             </Button>
@@ -2265,7 +2265,7 @@ export default function Home() {
                 setShowLimitDialog(false);
                 setShowSignInModal(true);
               }}
-              className="flex-1 bg-primary hover:bg-primary/90 border-2 border-[#2A41F3]"
+              className="flex-1 bg-primary hover:bg-primary/90 border-2 border-[#4FB9FF]"
             >
               Sign In
             </Button>
