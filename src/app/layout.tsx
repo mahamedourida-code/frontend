@@ -19,9 +19,9 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Axliner - Convert Images & Screenshots to Excel Instantly",
-  description: "Axliner converts any image, screenshot, or handwritten table into an editable Excel file. Fast, accurate, and simple. Try it now!",
-  keywords: ["image to excel", "screenshot to excel", "convert image to excel", "Axliner", "handwritten table to excel", "OCR to excel", "table extraction"],
+  title: "Image to Excel - 7B finetuned Llama 3 OCR Model",
+  description: "Convert images and handwritten tables to Excel — up to 100 in one click — with Axliner's 7B OCR model fine-tuned on Llama 3. Fast, accurate, and built for scale.",
+  keywords: ["image to excel", "AI OCR", "Llama 3", "7B model", "handwritten OCR", "table extractor", "screenshot to excel", "Axliner"],
   robots: {
     index: true,
     follow: true,
@@ -30,21 +30,41 @@ export const metadata: Metadata = {
     canonical: "https://axliner.com/",
   },
   icons: {
-    icon: '/crop.png',
+    icon: [
+      { url: '/crop.png' },
+      { url: '/crop.png', sizes: '32x32', type: 'image/png' },
+      { url: '/crop.png', sizes: '16x16', type: 'image/png' },
+    ],
     shortcut: '/crop.png',
     apple: '/crop.png',
+    other: [
+      {
+        rel: 'apple-touch-icon',
+        url: '/crop.png',
+      },
+    ],
   },
+  manifest: '/manifest.json',
   openGraph: {
-    title: "Axliner - Convert Images & Screenshots to Excel Instantly",
-    description: "Axliner converts any image, screenshot, or handwritten table into an editable Excel file. Fast, accurate, and simple. Try it now!",
+    title: "Image to Excel - 7B finetuned Llama 3 OCR Model",
+    description: "Convert images and handwritten tables to Excel — up to 100 in one click — with Axliner's 7B OCR model fine-tuned on Llama 3. Fast, accurate, and built for scale.",
     url: "https://axliner.com/",
     siteName: "Axliner",
     type: "website",
+    images: [
+      {
+        url: 'https://axliner.com/crop.png',
+        width: 512,
+        height: 512,
+        alt: 'Axliner Logo',
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Axliner - Convert Images & Screenshots to Excel Instantly",
-    description: "Axliner converts any image, screenshot, or handwritten table into an editable Excel file. Fast, accurate, and simple. Try it now!",
+    title: "Image to Excel - 7B finetuned Llama 3 OCR Model",
+    description: "Convert images and handwritten tables to Excel — up to 100 in one click — with Axliner's 7B OCR model fine-tuned on Llama 3. Fast, accurate, and built for scale.",
+    images: ['https://axliner.com/crop.png'],
   },
 };
 

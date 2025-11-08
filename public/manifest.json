@@ -1,0 +1,23 @@
+{
+  "name": "Axliner - Image to Excel Converter",
+  "short_name": "Axliner",
+  "description": "Convert images and handwritten tables to Excel with Axliner's 7B OCR model fine-tuned on Llama 3",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a742e",
+  "icons": [
+    {
+      "src": "/crop.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/crop.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
