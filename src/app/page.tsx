@@ -1498,6 +1498,117 @@ export default function Home() {
           </div>
         </section>
 
+        {/* What is Axliner Section */}
+        <section className="py-16 relative z-10">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto">
+              {/* Section Header */}
+              <div className="text-center mb-12">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-primary mb-4 shadow-lg shadow-primary/10">
+                  <h2 className="text-lg sm:text-xl font-bold text-foreground">
+                    What is Axliner?
+                  </h2>
+                </div>
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                  A state-of-the-art OCR system powered by artificial intelligence
+                </p>
+              </div>
+
+              {/* Main Content Card */}
+              <Card className="bg-transparent border-2 border-primary shadow-xl">
+                <CardContent className="p-6 sm:p-8">
+                  <div className="space-y-6">
+                    {/* Core Technology */}
+                    <div>
+                      <h3 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-primary" />
+                        Advanced AI-Powered OCR Engine
+                      </h3>
+                      <p className="text-base text-muted-foreground leading-relaxed">
+                        Axliner is built on a <span className="font-semibold text-foreground">7-billion parameter vision-language model</span> fine-tuned on Meta's Llama 3 architecture. Our model underwent extensive <span className="font-semibold text-foreground">instruction fine-tuning</span> specifically optimized for handwritten text recognition, table structure preservation, and multi-language document understanding.
+                      </p>
+                    </div>
+
+                    <Separator className="my-4" />
+
+                    {/* Training & Specialization */}
+                    <div>
+                      <h3 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
+                        <Database className="w-5 h-5 text-primary" />
+                        Specialized Training on Handwritten Data
+                      </h3>
+                      <p className="text-base text-muted-foreground leading-relaxed">
+                        Unlike generic OCR systems, Axliner was trained on <span className="font-semibold text-foreground">diverse handwritten datasets</span> including IAM Handwriting Database, proprietary table extraction datasets, and synthetic augmented data. Our fine-tuning process focused on <span className="font-semibold text-foreground">preserving table semantics, cell relationships, and hierarchical document structures</span> — achieving 96.8% accuracy on complex handwritten tables.
+                      </p>
+                    </div>
+
+                    <Separator className="my-4" />
+
+                    {/* Key Capabilities */}
+                    <div>
+                      <h3 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
+                        <Target className="w-5 h-5 text-primary" />
+                        Enterprise-Grade Features
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-semibold text-foreground text-sm">Batch Processing</p>
+                            <p className="text-xs text-muted-foreground">Process up to 100 images simultaneously</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-semibold text-foreground text-sm">Multi-Language Support</p>
+                            <p className="text-xs text-muted-foreground">8+ languages including Arabic & Chinese</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-semibold text-foreground text-sm">Table Structure Preservation</p>
+                            <p className="text-xs text-muted-foreground">Maintains cell relationships & formatting</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-semibold text-foreground text-sm">Real-Time Processing</p>
+                            <p className="text-xs text-muted-foreground">Average 0.8s per page conversion</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Use Cases Badge */}
+                    <div className="mt-6 pt-6 border-t border-border">
+                      <p className="text-sm text-muted-foreground mb-3">Ideal for:</p>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="secondary" className="px-3 py-1">Financial Document Processing</Badge>
+                        <Badge variant="secondary" className="px-3 py-1">Invoice Digitization</Badge>
+                        <Badge variant="secondary" className="px-3 py-1">Form Automation</Badge>
+                        <Badge variant="secondary" className="px-3 py-1">Data Entry Replacement</Badge>
+                        <Badge variant="secondary" className="px-3 py-1">Archive Digitization</Badge>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Technical Specs Footer */}
+              <div className="mt-6 text-center">
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-semibold text-foreground">Model Architecture:</span> Llama 3-based Vision-Language Transformer • 
+                  <span className="font-semibold text-foreground"> Parameters:</span> 7B • 
+                  <span className="font-semibold text-foreground"> Training Dataset:</span> 2M+ handwritten samples
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Why Choose Us Section */}
         <ScrollAnimatedSection id="features" className="py-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
