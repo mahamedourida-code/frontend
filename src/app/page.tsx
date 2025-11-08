@@ -78,6 +78,8 @@ export default function Home() {
   const [firstImageUrl, setFirstImageUrl] = useState<string>('');
   const [totalFilesToProcess, setTotalFilesToProcess] = useState(0);
   const wsRef = useRef<OCRWebSocket | null>(null);
+  const [shareSession, setShareSession] = useState<any>(null);
+  const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([]);
 
   // Auto download state
   const [autoDownload, setAutoDownload] = useState(() => {
@@ -597,12 +599,22 @@ export default function Home() {
     }
     
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim();
-    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
     
-    console.log('[Copy] Copying content:', shareUrl);
+    let shareContent = '';
+    
+    // Check if this is a session-based batch share
+    if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
+      console.log('[Copy] Copying session share URL:', shareSession.share_url);
+      shareContent = shareSession.share_url;
+    } else {
+      // Single file share
+      shareContent = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
+    }
+    
+    console.log('[Copy] Copying content:', shareContent);
     
     try {
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(shareContent);
       setCopySuccess(true);
       // toast.success('Download link copied to clipboard');
       setTimeout(() => setCopySuccess(false), 2000);
@@ -617,7 +629,16 @@ export default function Home() {
     if (!selectedFileToShare?.file_id) return;
     
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim();
-    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
+    
+    let shareUrl = '';
+    
+    // Check if session-based share
+    if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
+      shareUrl = shareSession.share_url.replace(/\s/g, '');
+    } else {
+      shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
+    }
+    
     const appId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || '140586622674265').replace(/"/g, '').trim();
     const currentUrl = window.location.origin;
     const messengerUrl = `https://www.facebook.com/dialog/send?app_id=${appId}&link=${encodeURIComponent(shareUrl)}&redirect_uri=${encodeURIComponent(currentUrl)}`;
@@ -632,9 +653,20 @@ export default function Home() {
     if (!selectedFileToShare?.file_id) return;
     
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim();
-    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
-    const subject = `Excel file: ${selectedFileToShare.filename || 'Processed with AxLiner'}`;
-    const body = `Hi,\n\nI've processed this file with AxLiner. You can download it here:\n\n${shareUrl}\n\nBest regards`;
+    
+    let subject = '';
+    let body = '';
+    
+    // Check if session-based share
+    if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
+      subject = `${selectedFilesForBatch.length} Excel files processed with AxLiner`;
+      const sessionUrl = shareSession.share_url.replace(/\s/g, '');
+      body = `Hi,\n\nI've processed ${selectedFilesForBatch.length} files with AxLiner. You can download all files from this link:\n\n${sessionUrl}\n\nBest regards`;
+    } else {
+      const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
+      subject = `Excel file: ${selectedFileToShare.filename || 'Processed with AxLiner'}`;
+      body = `Hi,\n\nI've processed this file with AxLiner. You can download it here:\n\n${shareUrl}\n\nBest regards`;
+    }
     
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     const gmailWindow = window.open(gmailUrl, '_blank');
@@ -649,9 +681,17 @@ export default function Home() {
     if (!selectedFileToShare?.file_id) return;
     
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim();
-    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
     
-    navigator.clipboard.writeText(shareUrl)
+    let shareContent = '';
+    
+    // Check if session-based share
+    if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
+      shareContent = shareSession.share_url.replace(/\s/g, '');
+    } else {
+      shareContent = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
+    }
+    
+    navigator.clipboard.writeText(shareContent)
       .then(() => {
         // toast.success('Link copied to clipboard!', {
         //   duration: 8000,
@@ -661,7 +701,7 @@ export default function Home() {
       })
       .catch((err) => {
         const fallbackInput = document.createElement('input');
-        fallbackInput.value = shareUrl;
+        fallbackInput.value = shareContent;
         document.body.appendChild(fallbackInput);
         fallbackInput.select();
         document.execCommand('copy');
@@ -676,8 +716,19 @@ export default function Home() {
     if (!selectedFileToShare?.file_id) return;
     
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim();
-    const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
-    const tweetText = `Check out this Excel file I processed with AxLiner! 📊✨`;
+    
+    let tweetText = '';
+    let shareUrl = '';
+    
+    // Check if session-based share
+    if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
+      shareUrl = shareSession.share_url.replace(/\s/g, '');
+      tweetText = `Check out these ${selectedFilesForBatch.length} Excel files I processed with AxLiner! 📊✨`;
+    } else {
+      shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
+      tweetText = `Check out this Excel file I processed with AxLiner! 📊✨`;
+    }
+    
     const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(shareUrl)}`;
     
     window.open(xUrl, '_blank', 'width=550,height=420');
@@ -703,6 +754,66 @@ export default function Home() {
     }
 
     // toast.success(`Downloaded ${resultFiles.length} file(s)`);
+  };
+
+  const handleShareAll = async () => {
+    console.log('[ShareAll] Sharing batch, files:', resultFiles);
+    
+    if (!resultFiles || resultFiles.length === 0) {
+      console.error('[ShareAll] Invalid batch data:', { resultFiles });
+      toast.error('Unable to share batch: No files available');
+      return;
+    }
+    
+    // Get all valid file IDs
+    const allFileIds = resultFiles.map(f => f.file_id).filter(Boolean);
+    
+    if (allFileIds.length === 0) {
+      console.error('[ShareAll] No valid file IDs found');
+      toast.error('Unable to share: No valid files found');
+      return;
+    }
+    
+    try {
+      // Create a share session for all files
+      console.log('[ShareAll] Creating share session for', allFileIds.length, 'files');
+      
+      const sessionResponse = await ocrApi.createShareSession({
+        file_ids: allFileIds,
+        title: `Batch of ${resultFiles.length} Excel files`,
+        description: `Processed on ${new Date().toLocaleDateString()}`,
+        expires_in_days: 7
+      });
+      
+      console.log('[ShareAll] Session created:', sessionResponse);
+      
+      // Store session info
+      setShareSession(sessionResponse);
+      setSelectedFilesForBatch(resultFiles);
+      
+      // Open share dialog with session info
+      setSelectedFileToShare({
+        file_id: '__SESSION__',
+        filename: `Batch of ${resultFiles.length} Excel files`,
+        isBatch: true,
+        sessionId: sessionResponse.session_id
+      });
+      
+      setShareDialogOpen(true);
+      setCopySuccess(false);
+      
+      // toast.success('Share link created successfully!')
+      
+    } catch (error: any) {
+      console.error('[ShareAll] Failed to create share session:', error);
+      console.error('[ShareAll] Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      const errorMessage = error.response?.data?.detail || error.message || 'Failed to create share link';
+      toast.error(`Error: ${errorMessage}`);
+    }
   };
 
   return (
@@ -1017,15 +1128,26 @@ export default function Home() {
                         </h3>
                         <div className="flex gap-2">
                           {processingComplete && resultFiles.length > 1 && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={handleDownloadAll}
-                              className="border-2 border-[#2BAAD8]"
-                            >
-                              <Download className="h-4 w-4 mr-1" />
-                              Download All
-                            </Button>
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={handleDownloadAll}
+                                className="border-2 border-[#2BAAD8]"
+                              >
+                                <Download className="h-4 w-4 mr-1" />
+                                Download All
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={handleShareAll}
+                                className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                              >
+                                <Share2 className="h-4 w-4" />
+                                Share All
+                              </Button>
+                            </>
                           )}
                           <Button
                             variant="outline"
