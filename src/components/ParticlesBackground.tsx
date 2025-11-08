@@ -50,7 +50,7 @@ export default function ParticlesBackground() {
       },
       particles: {
         color: {
-          value: "#1a742e",
+          value: "#2BAAD8",
         },
         links: {
           enable: false,
@@ -67,9 +67,7 @@ export default function ParticlesBackground() {
         },
         number: {
           density: {
-            enable: true,
-            width: 800,
-            height: 800,
+            enable: false,
           },
           value: 1,
         },

@@ -12,8 +12,17 @@ export default function HandwrittenTablesPage() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-muted/80">
-      <header className="border-b border-border bg-muted/80 backdrop-blur-md sticky top-0 z-50">
+    <div className="min-h-screen bg-background relative" style={{ backgroundColor: '#ffffff' }}>
+      {/* Duplo30 Background */}
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
+        <img
+          src="/duplo30.jpg"
+          alt="Background pattern"
+          className="w-full h-full object-cover object-top"
+        />
+      </div>
+
+      <header className="border-b border-border bg-muted/80 backdrop-blur-md sticky top-0 z-50 relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -41,7 +50,7 @@ export default function HandwrittenTablesPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
         <div className="text-center mb-16">
           <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Solutions</Badge>
           <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
@@ -90,15 +99,17 @@ export default function HandwrittenTablesPage() {
           </Card>
         </div>
 
-        <section className="bg-gradient-to-br from-primary/10 via-background to-background rounded-2xl p-12 text-center">
-          <h2 className="text-3xl font-bold mb-4">Start Digitizing Handwritten Tables</h2>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Save hours of manual typing. Convert handwritten tables to Excel in seconds.
-          </p>
-          <Button size="lg" asChild className="text-lg px-8 py-6 h-auto">
-            <Link href="/sign-up">Try It Free</Link>
-          </Button>
-        </section>
+        <Card className="bg-white dark:bg-card border border-border rounded-2xl shadow-sm">
+          <CardContent className="p-12 text-center">
+            <h2 className="text-3xl font-bold mb-4">Start Digitizing Handwritten Tables</h2>
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Save hours of manual typing. Convert handwritten tables to Excel in seconds.
+            </p>
+            <Button size="lg" asChild className="text-lg px-8 py-6 h-auto">
+              <Link href="/sign-up">Try It Free</Link>
+            </Button>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
