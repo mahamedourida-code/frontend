@@ -972,7 +972,7 @@ Best regards`
   if (authLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <div className="w-16 h-16 border-4 border-[#4FB9FF] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -1058,7 +1058,7 @@ Best regards`
       <main className="container max-w-7xl mx-auto px-4 py-8 pb-24 relative z-10">
         {/* Processing Timer Card */}
         {isProcessing && !isComplete && (
-          <Card className="mb-4 border-2 border-primary shadow-md max-w-sm" style={{ backgroundColor: '#fbfdfc' }}>
+          <Card className="mb-4 border-2 border-[#4FB9FF] shadow-md max-w-sm" style={{ backgroundColor: '#fbfdfc' }}>
             <CardContent className="p-3">
               <div className="flex items-center gap-3">
                 <div className="text-center">
@@ -1115,8 +1115,8 @@ Best regards`
                   className={cn(
                     "relative border-2 border-dashed rounded-lg transition-all duration-200",
                     isDragging 
-                      ? "border-primary bg-primary/5 scale-[0.99]" 
-                      : "border-border hover:border-primary/50",
+                      ? "border-[#4FB9FF] bg-primary/5 scale-[0.99]" 
+                      : "border-border hover:border-[#4FB9FF]/50",
                     uploadedFiles.length > 0 ? "p-3 sm:p-4" : "p-6 sm:p-8 lg:p-12"
                   )}
                 >
@@ -1254,7 +1254,7 @@ Best regards`
                         size="sm"
                         onClick={saveToHistory}
                         disabled={isSaving}
-                        className="gap-2 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
+                        className="gap-2 bg-white border-2 border-[#4FB9FF] text-foreground hover:bg-primary/10"
                       >
                         {isSaving ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -1330,7 +1330,7 @@ Best regards`
                               {/* Original Image */}
                               <div className="flex flex-col">
                                 <h4 className="text-sm font-semibold mb-0.5 text-muted-foreground">Original Image</h4>
-                                <div className="border-2 border-primary/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center" style={{ maxHeight: '450px' }}>
+                                <div className="border-2 border-[#4FB9FF]/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center" style={{ maxHeight: '450px' }}>
                                   <img 
                                     src={firstImageUrl} 
                                     alt="Original" 
@@ -1343,7 +1343,7 @@ Best regards`
                               {/* Table Preview */}
                               <div className="flex flex-col">
                                 <h4 className="text-sm font-semibold mb-0.5 text-muted-foreground">Extracted Data Preview</h4>
-                                <div className="border-2 border-primary/20 rounded-lg overflow-auto bg-white" style={{ maxHeight: '450px' }}>
+                                <div className="border-2 border-[#4FB9FF]/20 rounded-lg overflow-auto bg-white" style={{ maxHeight: '450px' }}>
                                   <table className="w-full text-base">
                                     <tbody>
                                       {tablePreviewData.map((row, rowIndex) => (
@@ -1430,7 +1430,7 @@ Best regards`
                               size="sm"
                               variant="outline"
                               onClick={() => handleShareFile(resultFiles[0])}
-                              className="gap-1.5 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
+                              className="gap-1.5 bg-white border-2 border-[#4FB9FF] text-foreground hover:bg-primary/10"
                             >
                               <Share2 className="h-4 w-4" />
                               Share
@@ -1457,7 +1457,7 @@ Best regards`
                                 }
                                 downloadFile(resultFiles[0].file_id)
                               }}
-                              className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-primary"
+                              className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#4FB9FF]"
                             >
                               <Download className="h-4 w-4" />
                               Download
@@ -1529,7 +1529,7 @@ Best regards`
                               size="sm"
                               variant="outline"
                               onClick={() => handleShareFile(file)}
-                              className="gap-1.5 bg-white border-2 border-primary text-foreground hover:bg-primary/10"
+                              className="gap-1.5 bg-white border-2 border-[#4FB9FF] text-foreground hover:bg-primary/10"
                             >
                               <Share2 className="h-4 w-4" />
                               Share
@@ -1556,7 +1556,7 @@ Best regards`
                                 }
                                 downloadFile(file.file_id)
                               }}
-                              className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-primary"
+                              className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#4FB9FF]"
                             >
                               <Download className="h-4 w-4" />
                               Download
@@ -1576,11 +1576,11 @@ Best regards`
           {!isComplete && (
           <div className="lg:col-span-1 space-y-4 order-3 lg:order-2">
             {/* Language Selector */}
-            <Card className="border-2 border-primary shadow-lg shadow-primary/10" style={{ backgroundColor: '#fbfdfc' }}>
+            <Card className="border-2 border-[#4FB9FF] shadow-lg shadow-[#4FB9FF]/10" style={{ backgroundColor: '#fbfdfc' }}>
               <CardContent className="p-3">
                 <h3 className="text-xs font-semibold mb-3 text-foreground">Language</h3>
                 <select
-                  className="w-full p-2.5 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-xs font-medium hover:border-primary/50 transition-all focus:outline-none focus:border-primary"
+                  className="w-full p-2.5 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-xs font-medium hover:border-[#4FB9FF]/50 transition-all focus:outline-none focus:border-[#4FB9FF]"
                   value={selectedLanguage}
                   onChange={(e) => {
                     const newLanguage = e.target.value
@@ -1604,7 +1604,7 @@ Best regards`
             </Card>
 
             {/* Auto Settings */}
-            <Card className="border-2 border-primary shadow-lg shadow-primary/10" style={{ backgroundColor: '#fbfdfc' }}>
+            <Card className="border-2 border-[#4FB9FF] shadow-lg shadow-[#4FB9FF]/10" style={{ backgroundColor: '#fbfdfc' }}>
               <CardContent className="p-3">
                 <h3 className="text-xs font-semibold mb-3 text-foreground">Auto Actions</h3>
                 <div className="space-y-2">
@@ -1620,9 +1620,9 @@ Best regards`
                     }}
                     className={cn(
                       "w-full flex items-center justify-between p-2.5 rounded-lg transition-all",
-                      "border-2 hover:border-primary/50",
+                      "border-2 hover:border-[#4FB9FF]/50",
                       autoDownload
-                        ? "bg-primary/10 border-primary"
+                        ? "bg-primary/10 border-[#4FB9FF]"
                         : "bg-muted/30 border-muted-foreground/20"
                     )}
                   >
@@ -1654,9 +1654,9 @@ Best regards`
                     onClick={() => setAutoSave(!autoSave)}
                     className={cn(
                       "w-full flex items-center justify-between p-2.5 rounded-lg transition-all",
-                      "border-2 hover:border-primary/50",
+                      "border-2 hover:border-[#4FB9FF]/50",
                       autoSave
-                        ? "bg-primary/10 border-primary"
+                        ? "bg-primary/10 border-[#4FB9FF]"
                         : "bg-muted/30 border-muted-foreground/20"
                     )}
                   >
