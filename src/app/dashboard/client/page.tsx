@@ -145,6 +145,12 @@ export default function ProcessImagesPage() {
   // Track if auto-actions have been executed for current job to prevent duplicates
   const autoActionsExecutedRef = useRef<string | null>(null)
   const isExecutingAutoActionsRef = useRef(false)
+
+  // Helper function to remove _processed from filename
+  const cleanFilename = (filename: string | undefined): string => {
+    if (!filename) return 'result.xlsx';
+    return filename.replace('_processed', '');
+  };
   
   // Document type removed from UI
   

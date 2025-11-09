@@ -966,6 +966,18 @@ export default function Home() {
                       Benchmarks
                     </button>
                   </NavigationMenuItem>
+
+                  {/* Blogs */}
+                  <NavigationMenuItem>
+                    <NavigationMenuLink
+                      asChild
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-accent/50 transition-colors text-black dark:text-white")}
+                    >
+                      <NextLink href="/blogs">
+                        Blogs
+                      </NextLink>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
