@@ -81,6 +81,7 @@ export default function Home() {
   const wsRef = useRef<OCRWebSocket | null>(null);
   const [shareSession, setShareSession] = useState<any>(null);
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
 
   // Auto download state
   const [autoDownload, setAutoDownload] = useState(() => {
@@ -358,6 +359,11 @@ export default function Home() {
 
       console.log('[Landing] Upload successful:', response);
 
+      // Store session ID for downloads
+      if (response.session_id) {
+        setCurrentSessionId(response.session_id);
+      }
+
       // COMMENTED OUT: Increment trial count
       // incrementTrialUploadCount();
       // const newInfo = getTrialInfo();
@@ -536,20 +542,37 @@ export default function Home() {
   }, [uploadedFiles, updateState]);
 
   const handleDownloadFile = async (fileId: string) => {
+    console.log('[Landing] Downloading file:', fileId, 'with session:', currentSessionId);
+
+    if (!fileId) {
+      console.error('[Landing] No file ID provided for download');
+      toast.error('Unable to download: File ID is missing');
+      return;
+    }
+
     try {
-      const blob = await ocrApi.downloadFile(fileId);
+      console.log('[Landing] Calling API to download file:', fileId);
+
+      // Pass session_id to download endpoint
+      const blob = await ocrApi.downloadFile(fileId, currentSessionId || undefined);
+
+      console.log('[Landing] Download successful, blob size:', blob.size);
+
+      // Create download link
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `result-${Date.now()}.xlsx`;
-      document.body.appendChild(a);
-      a.click();
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `excel-result-${fileId}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      // toast.success('File downloaded successfully!');
-    } catch (error) {
-      console.error('[Landing] Error downloading file:', error);
-      toast.error('Failed to download file');
+
+      // toast.success('File downloaded successfully');
+    } catch (error: any) {
+      console.error('[Landing] Download failed:', error);
+      const errorMessage = error?.detail || error?.message || 'Failed to download file';
+      toast.error(errorMessage);
     }
   };
 
@@ -579,6 +602,7 @@ export default function Home() {
     setTablePreviewData([]);
     setFirstImageUrl('');
     setTotalFilesToProcess(0);
+    setCurrentSessionId(null);
     isExecutingAutoActionsRef.current = false;
     
     // Clear context state
