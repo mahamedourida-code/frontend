@@ -323,11 +323,11 @@ export default function Home() {
       return;
     }
 
-    // Check if user has free trials remaining (silently)
-    if (!trialInfo.hasRemaining) {
-      setShowLimitDialog(true);
-      return;
-    }
+    // COMMENTED OUT: Check if user has free trials remaining (silently)
+    // if (!trialInfo.hasRemaining) {
+    //   setShowLimitDialog(true);
+    //   return;
+    // }
 
     // Check if first time converting (show confirmation)
     if (typeof window !== 'undefined') {
@@ -358,10 +358,10 @@ export default function Home() {
 
       console.log('[Landing] Upload successful:', response);
 
-      // Increment trial count
-      incrementTrialUploadCount();
-      const newInfo = getTrialInfo();
-      setTrialInfo(newInfo);
+      // COMMENTED OUT: Increment trial count
+      // incrementTrialUploadCount();
+      // const newInfo = getTrialInfo();
+      // setTrialInfo(newInfo);
 
       // Store the first uploaded image for preview immediately
       if (uploadedFiles.length > 0) {
@@ -448,10 +448,10 @@ export default function Home() {
 
               // toast.success(`All ${data.total_images || totalFilesToProcess} files processed!`);
 
-              // Show limit dialog if no more free trials
-              if (newInfo.remaining === 0) {
-                setTimeout(() => setShowLimitDialog(true), 2000);
-              }
+              // COMMENTED OUT: Show limit dialog if no more free trials
+              // if (newInfo.remaining === 0) {
+              //   setTimeout(() => setShowLimitDialog(true), 2000);
+              // }
 
               // Disconnect WebSocket
               if (wsRef.current) {
@@ -501,9 +501,10 @@ export default function Home() {
               setIsProcessing(false);
               // toast.success(`${status.results?.files?.length || 0} file(s) processed!`);
               
-              if (newInfo.remaining === 0) {
-                setTimeout(() => setShowLimitDialog(true), 2000);
-              }
+              // COMMENTED OUT: Show limit dialog
+              // if (newInfo.remaining === 0) {
+              //   setTimeout(() => setShowLimitDialog(true), 2000);
+              // }
             } else if (status.status === 'failed') {
               setIsProcessing(false);
               toast.error('Processing failed');
@@ -525,12 +526,12 @@ export default function Home() {
       setIsProcessing(false);
       setProcessingComplete(false);
 
-      // Check if error is due to trial limit
-      if (error?.status_code === 402 || error?.detail?.includes('trial') || error?.detail?.includes('limit')) {
-        setShowLimitDialog(true);
-      } else {
+      // COMMENTED OUT: Check if error is due to trial limit
+      // if (error?.status_code === 402 || error?.detail?.includes('trial') || error?.detail?.includes('limit')) {
+      //   setShowLimitDialog(true);
+      // } else {
         toast.error(error?.detail || 'Failed to process images. Please try again.');
-      }
+      // }
     }
   }, [uploadedFiles, updateState]);
 
