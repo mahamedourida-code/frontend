@@ -83,6 +83,12 @@ export default function Home() {
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
 
+  // Helper function to remove _processed from filename
+  const cleanFilename = (filename: string | undefined): string => {
+    if (!filename) return 'result.xlsx';
+    return filename.replace('_processed', '');
+  };
+
   // Auto download state
   const [autoDownload, setAutoDownload] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -562,7 +568,8 @@ export default function Home() {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `excel-result-${fileId}.xlsx`;
+      // Use a simple filename without _processed
+      link.download = `result-${fileId.substring(0, 8)}.xlsx`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -1238,7 +1245,7 @@ export default function Home() {
                               <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#2BAAD8]">
                                 <div className="flex items-center gap-3 flex-1 min-w-0">
                                   <FileSpreadsheet className="h-5 w-5 text-primary" />
-                                  <span className="text-base font-medium truncate">{resultFiles[0].filename || 'result.xlsx'}</span>
+                                  <span className="text-base font-medium truncate">{cleanFilename(resultFiles[0].filename)}</span>
                                 </div>
                                 <div className="flex items-center gap-2 flex-shrink-0">
                                   <Button
@@ -1285,7 +1292,7 @@ export default function Home() {
                                 >
                                   <FileSpreadsheet className="h-5 w-5 text-primary" />
                                 </button>
-                                <span className="text-sm font-medium truncate">{file.filename || 'result.xlsx'}</span>
+                                <span className="text-sm font-medium truncate">{cleanFilename(file.filename)}</span>
                               </div>
                               <div className="flex items-center gap-2 flex-shrink-0">
                                 <Button
@@ -1331,7 +1338,7 @@ export default function Home() {
                                 >
                                   <FileSpreadsheet className="h-5 w-5 text-primary" />
                                 </button>
-                                <span className="text-sm font-medium truncate">{file.filename || 'result.xlsx'}</span>
+                                <span className="text-sm font-medium truncate">{cleanFilename(file.filename)}</span>
                               </div>
                               <div className="flex items-center gap-2 flex-shrink-0">
                                 <Button
