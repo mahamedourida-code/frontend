@@ -985,8 +985,7 @@ export default function Home() {
                     className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-4 py-2 text-sm font-medium transition-colors shadow-lg hover:shadow-xl"
                     onClick={() => setShowSignInModal(true)}
                   >
-                    <Upload className="w-4 h-4 mr-1.5" />
-                    Try for free
+                    Sign Up
                   </Button>
                   <Button
                     variant="outline"
