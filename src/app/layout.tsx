@@ -20,7 +20,7 @@ const caveat = Caveat({
 
 export const metadata: Metadata = {
   title: "Image to Excel – FREE OCR Model",
-  description: "Convert images and handwritten tables to Excel for free — up to 100 in one click — with Axliner's 7B OCR model fine-tuned on Llama 3. Fast, accurate, and built for scale.",
+  description: "Convert images and handwritten tables to Excel for free , up to 100 in one click , with Axliner's 7B OCR model fine-tuned on Llama 3. Fast, accurate, and built for scale.",
   keywords: ["image to excel free", "AI OCR", "Llama 3", "7B model", "handwritten OCR", "table extractor", "screenshot to excel", "Axliner"],
   robots: {
     index: true,
