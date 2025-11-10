@@ -75,6 +75,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-E85ZH4VGDN"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-E85ZH4VGDN');
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${nunito.variable} ${caveat.variable} antialiased font-sans bg-background text-foreground`}
         style={{ fontFamily: 'var(--font-nunito)' }}
