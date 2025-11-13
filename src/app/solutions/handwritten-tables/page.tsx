@@ -22,7 +22,7 @@ export default function HandwrittenTablesPage() {
         />
       </div>
 
-      <header className="border-b border-border bg-muted/80 backdrop-blur-md sticky top-0 z-50 relative">
+      <header className="border-b border-border bg-background/20 backdrop-blur-md sticky top-0 z-50 relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -106,7 +106,7 @@ export default function HandwrittenTablesPage() {
               Save hours of manual typing. Convert handwritten tables to Excel in seconds.
             </p>
             <Button size="lg" asChild className="text-lg px-8 py-6 h-auto">
-              <Link href="/sign-up">Try It Free</Link>
+              <Link href="/sign-up">Try for Free</Link>
             </Button>
           </CardContent>
         </Card>
