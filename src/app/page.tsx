@@ -1069,7 +1069,7 @@ export default function Home() {
                             : uploadedFiles.length > 0
                               ? 'border-[#2BAAD8] bg-[#2BAAD8]/5'
                               : 'border-[#2BAAD8]/50 hover:border-[#2BAAD8] hover:bg-[#2BAAD8]/5'
-                        } p-16 lg:p-24 min-h-[280px]`}
+                        } p-12 lg:p-16 min-h-[200px]`}
                       >
                         <div className="text-center">
                           {uploadedFiles.length === 0 ? (
