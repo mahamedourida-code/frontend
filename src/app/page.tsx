@@ -1018,7 +1018,7 @@ export default function Home() {
             <div className={`grid grid-cols-1 ${resultFiles.length > 0 ? 'lg:grid-cols-1' : 'lg:grid-cols-[5fr_7fr]'} gap-8 sm:gap-12 lg:gap-10 items-center`}>
               {/* Left Content - Hide as soon as we have results */}
               {resultFiles.length === 0 && (
-                <div ref={heroContentRef} className="max-w-xl mt-4 lg:mt-2">
+                <div ref={heroContentRef} className="max-w-xl">
                   <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-[#2BAAD8] mb-8 sm:mb-10 shadow-lg shadow-[#2BAAD8]/10" style={{ backgroundColor: '#fbfdfc' }}>
                     <span className="text-xs sm:text-sm font-semibold text-foreground">AxLiner-7B Handwritten Specialist</span>
                   </div>
