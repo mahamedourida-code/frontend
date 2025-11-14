@@ -1022,7 +1022,7 @@ export default function Home() {
                   <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-[#2BAAD8] mb-3 sm:mb-5 shadow-lg shadow-[#2BAAD8]/10" style={{ backgroundColor: '#fbfdfc' }}>
                     <span className="text-xs sm:text-sm font-semibold text-foreground">AxLiner-7B Handwritten Specialist</span>
                   </div>
-                  <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-black dark:text-white leading-[1.1] tracking-tight">
+                  <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-black dark:text-white leading-[1.1] tracking-tight text-center">
                     Convert <span className="text-primary font-bold"> Images</span><br />
                     to <span className="text-primary font-bold">Excel</span><br />
                     for free
