@@ -1023,7 +1023,9 @@ export default function Home() {
                     <span className="text-xs sm:text-sm font-semibold text-foreground">AxLiner-7B Handwritten Specialist</span>
                   </div>
                   <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-black dark:text-white leading-[1.1] tracking-tight">
-                    Convert <span className="text-primary font-bold"> Images</span> to <span className="text-primary font-bold">Excel</span> for free
+                    Convert <span className="text-primary font-bold"> Images</span><br />
+                    to <span className="text-primary font-bold">Excel</span><br />
+                    for free
                   </h1>
                   <p className="mt-12 sm:mt-16 text-sm sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
                     Extract up to 100 table images in one click with our 7B parameter model fine-tuned on Llama 3 for handwritten text recognition.
@@ -1670,7 +1672,7 @@ export default function Home() {
                 <Card className="bg-white dark:bg-card border border-border rounded-lg shadow-sm">
                   <CardContent className="p-6">
                     <p className="text-lg text-foreground leading-relaxed">
-                      Axliner is a <span className="font-bold">7-billion parameter vision-language model</span> fine-tuned on Meta's Llama 3 architecture. The model underwent extensive instruction fine-tuning specifically optimized for <span className="font-bold">handwritten text recognition</span>, <span className="font-bold">table structure preservation</span>, and <span className="font-bold">multi-language document understanding</span>.
+                      Axliner is a <span className="font-bold">7-billion parameter vision-language model</span> a fine-tuned Meta's Llama 3 Model. The model underwent extensive instruction fine-tuning specifically optimized for <span className="font-bold">handwritten text recognition</span>, <span className="font-bold">table structure preservation</span>, and <span className="font-bold">multi-language document understanding</span>.
                     </p>
                   </CardContent>
                 </Card>
