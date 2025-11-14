@@ -1019,15 +1019,13 @@ export default function Home() {
               {/* Left Content - Hide as soon as we have results */}
               {resultFiles.length === 0 && (
                 <div ref={heroContentRef} className="max-w-xl mt-4 lg:mt-2">
-                  <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-[#2BAAD8] mb-3 sm:mb-5 shadow-lg shadow-[#2BAAD8]/10" style={{ backgroundColor: '#fbfdfc' }}>
+                  <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-[#2BAAD8] mb-8 sm:mb-10 shadow-lg shadow-[#2BAAD8]/10" style={{ backgroundColor: '#fbfdfc' }}>
                     <span className="text-xs sm:text-sm font-semibold text-foreground">AxLiner-7B Handwritten Specialist</span>
                   </div>
-                  <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-black dark:text-white leading-[1.1] tracking-tight text-center">
-                    Convert <span className="text-primary font-bold"> Images</span><br />
-                    to <span className="text-primary font-bold">Excel</span><br />
-                    for free
+                  <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-black dark:text-white leading-[1.1] tracking-tight">
+                    Convert <span className="text-primary font-bold"> Images</span> to <span className="text-primary font-bold">Excel</span> for free
                   </h1>
-                  <p className="mt-12 sm:mt-16 text-sm sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
+                  <p className="mt-16 sm:mt-20 text-sm sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
                     Extract up to 100 table images in one click with our 7B parameter model fine-tuned on Llama 3 for handwritten text recognition.
                   </p>
 
