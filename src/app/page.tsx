@@ -1026,7 +1026,7 @@ export default function Home() {
                     Convert <span className="text-primary font-bold"> Images</span> to <span className="text-primary font-bold">Excel</span> for free
                   </h1>
                   <p className="mt-16 sm:mt-20 text-sm sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
-                    Extract up to 100 table images in one click with our 7B parameter model fine-tuned on Llama 3 for handwritten text recognition.
+                    Extract up to 100 table images in one click  with our 7B parameter model fine-tuned on Llama 3 for handwritten text recognition.
                   </p>
 
                   {/* User Count Section */}
