@@ -57,7 +57,7 @@ export async function updateSession(request: NextRequest) {
 
   // Public paths that should be accessible without auth
   // IMPORTANT: /auth/callback must be allowed for OAuth flow to work
-  const publicPaths = ['/sign-in', '/sign-up', '/auth', '/verify-email', '/forgot-password', '/reset-password']
+  const publicPaths = ['/auth', '/verify-email', '/forgot-password', '/reset-password']
   const isPublicPath = publicPaths.some(path =>
     request.nextUrl.pathname.startsWith(path)
   )
@@ -65,10 +65,10 @@ export async function updateSession(request: NextRequest) {
   // Redirect unauthenticated users trying to access protected routes
   if (!user && isProtectedPath) {
     if (DEBUG_AUTH) {
-      console.log('[Middleware] Redirecting unauthenticated user to /sign-in from', pathname)
+      console.log('[Middleware] Redirecting unauthenticated user to landing page from', pathname)
     }
     const url = request.nextUrl.clone()
-    url.pathname = '/sign-in'
+    url.pathname = '/'
     // IMPORTANT: When redirecting, we must still pass the cookies
     const redirectResponse = NextResponse.redirect(url)
     // Copy over all the cookies from supabaseResponse

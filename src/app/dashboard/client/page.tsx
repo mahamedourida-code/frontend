@@ -262,7 +262,7 @@ export default function ProcessImagesPage() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/sign-in')
+      router.push('/')
     }
   }, [user, authLoading, router])
 

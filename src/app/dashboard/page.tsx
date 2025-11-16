@@ -108,7 +108,7 @@ export default function DashboardPage() {
     } else if (!authLoading && user) {
       fetchDashboardData()
     }
-  }, [user?.id, authLoading])
+  }, [user?.id, authLoading, router])
 
   useEffect(() => {
     if (user?.id && !authLoading) {
