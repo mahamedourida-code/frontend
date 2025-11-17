@@ -28,7 +28,7 @@ export default function HandwrittenToExcel() {
               <span className="text-sm font-semibold text-yellow-600 dark:text-yellow-500 uppercase tracking-wide">7B AI Model</span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              Handwritten Table to Excel
+              Handwritten Table  to Excel
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Convert handwritten tables to Excel with our specialized 7B parameter AI model. Advanced OCR technology for accurate handwriting recognition.

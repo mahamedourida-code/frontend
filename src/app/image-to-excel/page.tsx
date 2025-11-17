@@ -24,10 +24,10 @@ export default function ImageToExcel() {
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-4">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              Image to Excel Converter
+              Image to Excel Converter  
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Convert any image containing tables to Excel instantly with AI-powered OCR. Free, fast, and accurate - no signup required.
+              Convert any image containing  tables to Excel instantly with AI-powered OCR. Free, fast, and accurate - no signup required.
             </p>
           </div>
 

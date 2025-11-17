@@ -25,7 +25,7 @@ export default function ScreenshotToExcel() {
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-4">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              Screenshot to Excel Converter
+              Screenshot to Excel  Converter
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Transform screenshots to Excel spreadsheets instantly with AI-powered OCR. Free, accurate, and no signup required.
