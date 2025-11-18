@@ -1081,7 +1081,7 @@ export default function Home() {
                               <input
                                 id="file-upload-landing"
                                 type="file"
-                                accept="image/*"
+                                accept="image/*,image/heic,image/heif"
                                 multiple
                                 onChange={handleFileInput}
                                 className="hidden"
@@ -1130,7 +1130,7 @@ export default function Home() {
                               <input
                                 id="file-upload-landing-more"
                                 type="file"
-                                accept="image/*"
+                                accept="image/*,image/heic,image/heif"
                                 multiple
                                 onChange={(e) => {
                                   const newFiles = e.target.files;

@@ -1144,7 +1144,7 @@ Best regards`
                         id="file-upload"
                         type="file"
                         multiple
-                        accept="image/*"
+                        accept="image/*,image/heic,image/heif"
                         onChange={handleFileInput}
                         className="hidden"
                       />
@@ -1176,7 +1176,7 @@ Best regards`
                             id="file-upload-more"
                             type="file"
                             multiple
-                            accept="image/*"
+                            accept="image/*,image/heic,image/heif"
                             onChange={handleFileInput}
                             className="hidden"
                           />
