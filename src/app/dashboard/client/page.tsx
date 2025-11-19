@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback, useEffect, useRef } from "react"
+import heic2any from "heic2any"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -110,6 +111,7 @@ export default function ProcessImagesPage() {
   }, [searchParams, router])
   const [isDragging, setIsDragging] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
+  const [filePreviewUrls, setFilePreviewUrls] = useState<{[key: number]: string}>({})
   const [selectedView, setSelectedView] = useState<"grid" | "list">("grid")
   const [processedCount, setProcessedCount] = useState(0)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
@@ -419,6 +421,56 @@ export default function ProcessImagesPage() {
       window.removeEventListener('focus', handleFocus)
     }
   }, [])
+
+  // Helper function to create preview URL for file (converts HEIC if needed)
+  const createFilePreviewUrl = useCallback(async (file: File): Promise<string> => {
+    const fileName = file.name.toLowerCase()
+    const isHeic = fileName.endsWith('.heic') || fileName.endsWith('.heif')
+    
+    if (isHeic) {
+      try {
+        const convertedBlob = await heic2any({
+          blob: file,
+          toType: 'image/jpeg',
+          quality: 0.8
+        })
+        
+        const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob
+        return URL.createObjectURL(blob)
+      } catch (error) {
+        console.error('[Preview] Failed to convert HEIC:', error)
+        return URL.createObjectURL(file)
+      }
+    }
+    
+    return URL.createObjectURL(file)
+  }, [])
+
+  // Update preview URLs when files change
+  useEffect(() => {
+    const generatePreviews = async () => {
+      const newPreviewUrls: {[key: number]: string} = {}
+      
+      for (let i = 0; i < uploadedFiles.length; i++) {
+        const file = uploadedFiles[i]
+        if (!filePreviewUrls[i]) {
+          const url = await createFilePreviewUrl(file)
+          newPreviewUrls[i] = url
+        } else {
+          newPreviewUrls[i] = filePreviewUrls[i]
+        }
+      }
+      
+      setFilePreviewUrls(newPreviewUrls)
+    }
+    
+    if (uploadedFiles.length > 0) {
+      generatePreviews()
+    } else {
+      Object.values(filePreviewUrls).forEach(url => URL.revokeObjectURL(url))
+      setFilePreviewUrls({})
+    }
+  }, [uploadedFiles.length])
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -1209,7 +1261,7 @@ Best regards`
                             className="relative group aspect-square rounded-lg overflow-hidden border bg-card"
                           >
                             <img
-                              src={URL.createObjectURL(file)}
+                              src={filePreviewUrls[index] || ''}
                               alt={file.name}
                               className="w-full h-full object-cover"
                             />
@@ -1867,7 +1919,7 @@ Best regards`
                 </Button>
               </div>
               <p className="text-[11px] text-muted-foreground">
-                Anyone with this link can download the Excel file directly
+                Anyone with  this link can download the Excel file directly
               </p>
             </div>
           </div>

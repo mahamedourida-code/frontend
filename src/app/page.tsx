@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import heic2any from "heic2any";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "@/components/ui/button";
@@ -67,6 +68,7 @@ export default function Home() {
   // Free trial state
   const [trialInfo, setTrialInfo] = useState({ uuid: '', used: 0, remaining: 3, hasRemaining: true, limit: 3 });
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [filePreviewUrls, setFilePreviewUrls] = useState<{[key: number]: string}>({});
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingComplete, setProcessingComplete] = useState(false);
   const [resultFiles, setResultFiles] = useState<any[]>([]);
@@ -286,6 +288,61 @@ export default function Home() {
       });
     }
   };
+
+  // Helper function to create preview URL for file (converts HEIC if needed)
+  const createFilePreviewUrl = useCallback(async (file: File): Promise<string> => {
+    const fileName = file.name.toLowerCase();
+    const isHeic = fileName.endsWith('.heic') || fileName.endsWith('.heif');
+    
+    if (isHeic) {
+      try {
+        // Convert HEIC to JPEG blob for preview
+        const convertedBlob = await heic2any({
+          blob: file,
+          toType: 'image/jpeg',
+          quality: 0.8
+        });
+        
+        // heic2any might return an array of blobs, so handle both cases
+        const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+        return URL.createObjectURL(blob);
+      } catch (error) {
+        console.error('[Preview] Failed to convert HEIC:', error);
+        // Return a placeholder or try original
+        return URL.createObjectURL(file);
+      }
+    }
+    
+    // For non-HEIC files, use normal blob URL
+    return URL.createObjectURL(file);
+  }, []);
+
+  // Update preview URLs when files change
+  useEffect(() => {
+    const generatePreviews = async () => {
+      const newPreviewUrls: {[key: number]: string} = {};
+      
+      for (let i = 0; i < uploadedFiles.length; i++) {
+        const file = uploadedFiles[i];
+        if (!filePreviewUrls[i]) {
+          const url = await createFilePreviewUrl(file);
+          newPreviewUrls[i] = url;
+        } else {
+          newPreviewUrls[i] = filePreviewUrls[i];
+        }
+      }
+      
+      setFilePreviewUrls(newPreviewUrls);
+    };
+    
+    if (uploadedFiles.length > 0) {
+      generatePreviews();
+    } else {
+      // Clean up old URLs
+      Object.values(filePreviewUrls).forEach(url => URL.revokeObjectURL(url));
+      setFilePreviewUrls({});
+    }
+  }, [uploadedFiles.length]);
 
   // File upload handlers
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -1115,7 +1172,7 @@ export default function Home() {
                                 {uploadedFiles.map((file, index) => (
                                   <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border bg-card">
                                     <img
-                                      src={URL.createObjectURL(file)}
+                                      src={filePreviewUrls[index] || ''}
                                       alt={file.name}
                                       className="w-full h-full object-cover"
                                     />
@@ -1214,7 +1271,7 @@ export default function Home() {
                             onClick={handleReset}
                             className="border-2 border-[#2BAAD8]"
                           >
-                            Convert Again
+                            Convert  Again
                           </Button>
                         </div>
                       </div>
