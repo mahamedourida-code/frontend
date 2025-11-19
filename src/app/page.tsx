@@ -1214,7 +1214,7 @@ export default function Home() {
                             onClick={handleReset}
                             className="border-2 border-[#2BAAD8]"
                           >
-                            Convert  Again
+                            Convert Again
                           </Button>
                         </div>
                       </div>

@@ -1867,7 +1867,7 @@ Best regards`
                 </Button>
               </div>
               <p className="text-[11px] text-muted-foreground">
-                Anyone with  this link can download the Excel file directly
+                Anyone with this link can download the Excel file directly
               </p>
             </div>
           </div>
