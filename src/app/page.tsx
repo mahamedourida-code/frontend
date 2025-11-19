@@ -305,9 +305,11 @@ export default function Home() {
     e.stopPropagation();
     setIsDragging(false);
 
-    const files = Array.from(e.dataTransfer.files).filter(file =>
-      file.type.startsWith('image/')
-    );
+    const files = Array.from(e.dataTransfer.files).filter(file => {
+      const isImage = file.type.startsWith('image/');
+      const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
+      return isImage || isHeic;
+    });
 
     if (files.length > 0) {
       setUploadedFiles(files); // Allow multiple files
@@ -317,9 +319,11 @@ export default function Home() {
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      const fileArray = Array.from(files).filter(file =>
-        file.type.startsWith('image/')
-      );
+      const fileArray = Array.from(files).filter(file => {
+        const isImage = file.type.startsWith('image/');
+        const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
+        return isImage || isHeic;
+      });
       setUploadedFiles(fileArray); // Allow multiple files
     }
   }, []);
@@ -1135,9 +1139,11 @@ export default function Home() {
                                 onChange={(e) => {
                                   const newFiles = e.target.files;
                                   if (newFiles && newFiles.length > 0) {
-                                    const fileArray = Array.from(newFiles).filter(file =>
-                                      file.type.startsWith('image/')
-                                    );
+                                    const fileArray = Array.from(newFiles).filter(file => {
+                                      const isImage = file.type.startsWith('image/');
+                                      const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
+                                      return isImage || isHeic;
+                                    });
                                     setUploadedFiles(prev => [...prev, ...fileArray]);
                                   }
                                 }}

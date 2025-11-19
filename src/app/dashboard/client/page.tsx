@@ -437,9 +437,11 @@ export default function ProcessImagesPage() {
     e.stopPropagation()
     setIsDragging(false)
 
-    const files = Array.from(e.dataTransfer.files).filter(file =>
-      file.type.startsWith('image/')
-    )
+    const files = Array.from(e.dataTransfer.files).filter(file => {
+      const isImage = file.type.startsWith('image/')
+      const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif')
+      return isImage || isHeic
+    })
     
     setUploadedFiles(prev => {
       const remainingSlots = 100 - prev.length
@@ -451,9 +453,11 @@ export default function ProcessImagesPage() {
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files) {
-      const fileArray = Array.from(files).filter(file =>
-        file.type.startsWith('image/')
-      )
+      const fileArray = Array.from(files).filter(file => {
+        const isImage = file.type.startsWith('image/')
+        const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif')
+        return isImage || isHeic
+      })
       setUploadedFiles(prev => {
         const remainingSlots = 100 - prev.length
         const filesToAdd = fileArray.slice(0, remainingSlots)
