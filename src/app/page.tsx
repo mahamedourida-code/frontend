@@ -306,9 +306,16 @@ export default function Home() {
     setIsDragging(false);
 
     const files = Array.from(e.dataTransfer.files).filter(file => {
-      const isImage = file.type.startsWith('image/');
-      const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
-      return isImage || isHeic;
+      // Accept any file with image MIME type
+      if (file.type && file.type.startsWith('image/')) return true;
+      
+      // Accept HEIC/HEIF files regardless of MIME type
+      const fileName = file.name.toLowerCase();
+      if (fileName.endsWith('.heic') || fileName.endsWith('.heif')) return true;
+      
+      // Accept common image extensions even without MIME type
+      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
+      return imageExtensions.some(ext => fileName.endsWith(ext));
     });
 
     if (files.length > 0) {
@@ -320,9 +327,16 @@ export default function Home() {
     const files = e.target.files;
     if (files && files.length > 0) {
       const fileArray = Array.from(files).filter(file => {
-        const isImage = file.type.startsWith('image/');
-        const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
-        return isImage || isHeic;
+        // Accept any file with image MIME type
+        if (file.type && file.type.startsWith('image/')) return true;
+        
+        // Accept HEIC/HEIF files regardless of MIME type
+        const fileName = file.name.toLowerCase();
+        if (fileName.endsWith('.heic') || fileName.endsWith('.heif')) return true;
+        
+        // Accept common image extensions even without MIME type
+        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
+        return imageExtensions.some(ext => fileName.endsWith(ext));
       });
       setUploadedFiles(fileArray); // Allow multiple files
     }
@@ -1140,9 +1154,16 @@ export default function Home() {
                                   const newFiles = e.target.files;
                                   if (newFiles && newFiles.length > 0) {
                                     const fileArray = Array.from(newFiles).filter(file => {
-                                      const isImage = file.type.startsWith('image/');
-                                      const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
-                                      return isImage || isHeic;
+                                      // Accept any file with image MIME type
+                                      if (file.type && file.type.startsWith('image/')) return true;
+                                      
+                                      // Accept HEIC/HEIF files regardless of MIME type
+                                      const fileName = file.name.toLowerCase();
+                                      if (fileName.endsWith('.heic') || fileName.endsWith('.heif')) return true;
+                                      
+                                      // Accept common image extensions even without MIME type
+                                      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
+                                      return imageExtensions.some(ext => fileName.endsWith(ext));
                                     });
                                     setUploadedFiles(prev => [...prev, ...fileArray]);
                                   }
