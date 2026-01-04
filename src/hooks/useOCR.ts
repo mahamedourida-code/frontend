@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { ocrApi, OCRWebSocket, BatchConvertResponse, JobStatusResponse } from '@/lib/api-client'
 import { toast } from 'sonner'
+import { compressImages } from '@/lib/image-compression' 
 
 interface UseOCRReturn {
   // State
@@ -81,11 +82,25 @@ export function useOCR(): UseOCRReturn {
     try {
       console.log('[useOCR] Uploading files directly (multipart/form-data)...')
 
-      // Use new multipart upload - NO BASE64 CONVERSION!
-      // Files are sent as binary data directly, much faster and more efficient
-      const response = await ocrApi.uploadBatchMultipart(files, {
+      // Compress images in the browser if they exceed the size threshold so the
+      // server-side base64 payloads are smaller (reduces external API cost).
+      let filesToUpload = files
+      try {
+        const compressionResults = await compressImages(files)
+        filesToUpload = compressionResults.map(r => r.file)
+        const compressedCount = compressionResults.filter(r => r.compressed).length
+        if (compressedCount > 0) {
+          console.log(`[useOCR] Compressed ${compressedCount}/${files.length} images before upload`)
+          toast.success(`${compressedCount} images optimized before upload`)
+        }
+      } catch (e) {
+        console.warn('[useOCR] Image compression failed, proceeding with originals', e)
+      }
+
+      // Use new multipart upload - files are sent as binary data directly
+      const response = await ocrApi.uploadBatchMultipart(filesToUpload, {
         output_format: 'xlsx',
-        consolidation_strategy: 'separate'  // Changed to separate to keep files individual
+        consolidation_strategy: 'separate'  // Keep files individual
       })
       console.log('[useOCR] API response:', response)
 

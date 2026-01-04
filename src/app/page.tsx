@@ -49,6 +49,7 @@ import { useProcessingState } from "@/contexts/ProcessingStateContext";
 import * as XLSX from 'xlsx';
 import { GoogleSignInModal } from "@/components/GoogleSignInModal";
 import NextLink from "next/link";
+import { compressImages, formatFileSize } from "@/lib/image-compression";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -432,8 +433,25 @@ export default function Home() {
 
       console.log('[Landing] Processing images:', uploadedFiles.length);
 
-      // Upload the files
-      const response = await ocrApi.uploadBatchMultipart(uploadedFiles, {
+      // Compress images if needed
+      console.log('[Landing] Compressing images if necessary...');
+      const compressionResults = await compressImages(uploadedFiles);
+      
+      // Log compression summary
+      const compressedCount = compressionResults.filter(r => r.compressed).length;
+      if (compressedCount > 0) {
+        const totalOriginal = compressionResults.reduce((sum, r) => sum + r.originalSize, 0);
+        const totalCompressed = compressionResults.reduce((sum, r) => sum + r.compressedSize, 0);
+        const totalReduction = Math.round(((totalOriginal - totalCompressed) / totalOriginal) * 100);
+        console.log(`[Landing] Compressed ${compressedCount}/${uploadedFiles.length} images (${totalReduction}% total reduction)`);
+        toast.info(`Compressed ${compressedCount} image(s) (${totalReduction}% smaller)`);
+      }
+
+      // Extract compressed files for upload
+      const filesToUpload = compressionResults.map(r => r.file);
+
+      // Upload the (possibly compressed) files
+      const response = await ocrApi.uploadBatchMultipart(filesToUpload, {
         output_format: 'xlsx',
         consolidation_strategy: 'separate'
       });
