@@ -93,13 +93,7 @@ export default function Home() {
   };
 
   // Auto download state
-  const [autoDownload, setAutoDownload] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('autoDownload')
-      return saved === 'true'
-    }
-    return false
-  });
+  const [autoDownload, setAutoDownload] = useState(false);
   const [showAutoDownloadConfirm, setShowAutoDownloadConfirm] = useState(false);
   const isExecutingAutoActionsRef = useRef(false);
 
