@@ -1116,7 +1116,7 @@ export default function Home() {
                     <span className="text-xs sm:text-sm font-semibold text-foreground">AxLiner-7B Handwritten Specialist</span>
                   </div>
                   <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-black dark:text-white leading-[1.1] tracking-tight">
-                    Convert <span className="text-primary font-bold"> Images</span> to <span className="text-primary font-bold">Excel</span> for free
+                    Convert <span className="text-primary font-bold"> multiple Images</span> to <span className="text-primary font-bold">Excel</span> in seconds
                   </h1>
                   <p className="mt-16 sm:mt-20 text-sm sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
                     Extract up to 100 table images in one click  with our 7B parameter model fine-tuned on Llama 3 for handwritten text recognition.
