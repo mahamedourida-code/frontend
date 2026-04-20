@@ -1209,26 +1209,26 @@ export default function Home() {
                   <div className="hero-flow-signal hero-flow-signal-right absolute left-0 top-1/2 h-2 w-10 -translate-y-1/2 rounded-full bg-[#2BAAD8] opacity-0 blur-[1px]" />
                 </div>
 
-                <div className="grid grid-cols-[1.05fr_0.72fr_0.95fr] items-center gap-2 sm:gap-7 lg:gap-10">
-                  <div className="hero-flow-item relative z-10 -rotate-2">
+                <div className="grid grid-cols-3 items-center gap-3 sm:gap-8 lg:gap-12">
+                  <div className="hero-flow-item relative z-10 flex h-[150px] items-center justify-center sm:h-[245px] lg:h-[280px]">
                     <img
                       src="/hero-flow/handwritten.svg"
                       alt="Handwritten table input"
-                      className="mx-auto h-auto w-full max-w-[290px] object-contain drop-shadow-2xl sm:max-w-[340px]"
+                      className="h-full w-full object-contain drop-shadow-2xl"
                     />
                   </div>
-                  <div className="hero-flow-item hero-flow-core relative z-20">
+                  <div className="hero-flow-item hero-flow-core relative z-20 flex h-[150px] items-center justify-center sm:h-[245px] lg:h-[280px]">
                     <img
                       src="/hero-flow/axliner.svg"
                       alt="AxLiner conversion"
-                      className="mx-auto h-auto w-full max-w-[160px] object-contain drop-shadow-2xl sm:max-w-[205px]"
+                      className="h-[68%] w-full object-contain drop-shadow-2xl"
                     />
                   </div>
-                  <div className="hero-flow-item relative z-10 rotate-2">
+                  <div className="hero-flow-item relative z-10 flex h-[150px] items-center justify-center sm:h-[245px] lg:h-[280px]">
                     <img
                       src="/hero-flow/excel.svg"
                       alt="Excel result"
-                      className="mx-auto h-auto w-full max-w-[220px] object-contain drop-shadow-2xl sm:max-w-[280px]"
+                      className="h-full w-full object-contain drop-shadow-2xl"
                     />
                   </div>
                 </div>
