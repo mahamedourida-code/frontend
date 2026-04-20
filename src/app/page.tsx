@@ -54,9 +54,7 @@ import { compressImages, formatFileSize } from "@/lib/image-compression";
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
-  const headerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
-  const heroContentRef = useRef<HTMLDivElement>(null);
   const heroFlowRef = useRef<HTMLDivElement>(null);
   const heroImageRef = useRef<HTMLDivElement>(null);
 
@@ -232,59 +230,10 @@ export default function Home() {
   }, [processingComplete, resultFiles, autoDownload])
 
   useEffect(() => {
-    // Header animation
-    if (headerRef.current) {
-      gsap.fromTo(headerRef.current,
-        { y: -100, opacity: 0 },
-        { 
-          y: 0, 
-          opacity: 1, 
-          duration: 1,
-          ease: "power3.out",
-          delay: 0.2
-        }
-      );
-    }
-
-    // Hero content animation
-    if (heroContentRef.current) {
-      const elements = heroContentRef.current.children;
-      gsap.fromTo(elements,
-        { 
-          y: 50, 
-          opacity: 0,
-          scale: 0.95
-        },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.85,
-          stagger: 0.16,
-          ease: "power3.out",
-          delay: 0.25
-        }
-      );
-    }
-
     if (heroFlowRef.current) {
       const ctx = gsap.context(() => {
         gsap.set(".hero-flow-line", { scaleX: 0, opacity: 0 });
         gsap.set(".hero-flow-signal", { opacity: 0 });
-
-        gsap.fromTo(
-          ".hero-flow-item",
-          { y: 18, scale: 0.96, opacity: 0 },
-          {
-            y: 0,
-            scale: 1,
-            opacity: 1,
-            duration: 0.9,
-            stagger: 0.18,
-            ease: "power3.out",
-            delay: 0.42
-          }
-        );
 
         const flow = gsap.timeline({ repeat: -1, repeatDelay: 1.1, delay: 1.05 });
         flow
@@ -1007,7 +956,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background relative" style={{ backgroundColor: '#ffffff' }}>
       {/* Navigation Bar */}
-      <nav ref={headerRef} className="fixed top-0 left-0 right-0 z-50 pt-3 lg:pt-4">
+      <nav className="fixed top-0 left-0 right-0 z-50 pt-3 lg:pt-4">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-[35px] border-2 border-[#2BAAD8] shadow-lg shadow-[#2BAAD8]/10 backdrop-blur-md p-2 lg:p-3 flex items-center justify-between" style={{ backgroundColor: '#fbfdfc' }}>
             {/* Logo */}
@@ -1171,7 +1120,7 @@ export default function Home() {
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto px-4 sm:px-5 lg:px-9 max-w-[1400px]">
             <div className="relative flex min-h-[620px] flex-col items-center justify-start gap-5 sm:min-h-[calc(100vh-10rem)] sm:justify-center sm:gap-7">
-              <div ref={heroContentRef} className="mx-auto max-w-2xl text-center">
+              <div className="mx-auto max-w-2xl text-center">
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-normal text-black dark:text-white leading-[1.06] tracking-tight">
                   Convert <span className="text-primary font-bold">handwritten images</span> to <span className="text-primary font-bold">Excel</span> in seconds
                 </h1>
@@ -1221,7 +1170,7 @@ export default function Home() {
                     <img
                       src="/hero-flow/axliner.svg"
                       alt="AxLiner conversion"
-                      className="h-[68%] w-full object-contain drop-shadow-2xl"
+                      className="h-[92%] w-full object-contain drop-shadow-2xl sm:h-full"
                     />
                   </div>
                   <div className="hero-flow-item relative z-10 flex h-[150px] items-center justify-center sm:h-[245px] lg:h-[280px]">
