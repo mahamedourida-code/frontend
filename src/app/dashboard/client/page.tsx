@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useCallback, useEffect, useRef } from "react"
-import heic2any from "heic2any"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -429,6 +428,7 @@ export default function ProcessImagesPage() {
     
     if (isHeic) {
       try {
+        const { default: heic2any } = await import("heic2any")
         const convertedBlob = await heic2any({
           blob: file,
           toType: 'image/jpeg',

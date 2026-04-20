@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import heic2any from "heic2any";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "@/components/ui/button";
@@ -297,6 +296,7 @@ export default function Home() {
     
     if (isHeic) {
       try {
+        const { default: heic2any } = await import("heic2any");
         // Convert HEIC to JPEG blob for preview
         const convertedBlob = await heic2any({
           blob: file,
