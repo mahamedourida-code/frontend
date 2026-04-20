@@ -269,12 +269,16 @@ export default function Home() {
 
     if (heroFlowRef.current) {
       const ctx = gsap.context(() => {
+        gsap.set(".hero-flow-line", { scaleX: 0, opacity: 0 });
+        gsap.set(".hero-flow-signal", { opacity: 0 });
+
         gsap.fromTo(
           ".hero-flow-item",
-          { y: 24, scale: 0.96 },
+          { y: 18, scale: 0.96, opacity: 0 },
           {
             y: 0,
             scale: 1,
+            opacity: 1,
             duration: 0.9,
             stagger: 0.18,
             ease: "power3.out",
@@ -282,23 +286,42 @@ export default function Home() {
           }
         );
 
-        gsap.to(".hero-flow-float", {
-          y: -14,
-          duration: 2.8,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-          stagger: 0.28
-        });
-
-        gsap.to(".hero-flow-line", {
-          scaleX: 1,
-          opacity: 1,
-          duration: 1.15,
-          ease: "power2.out",
-          stagger: 0.2,
-          delay: 0.75
-        });
+        const flow = gsap.timeline({ repeat: -1, repeatDelay: 1.1, delay: 1.05 });
+        flow
+          .to(".hero-flow-line-left", {
+            scaleX: 1,
+            opacity: 1,
+            duration: 0.7,
+            ease: "power2.out"
+          })
+          .fromTo(
+            ".hero-flow-signal-left",
+            { left: "0%", opacity: 0 },
+            { left: "82%", opacity: 1, duration: 0.95, ease: "power2.inOut" },
+            "<"
+          )
+          .to(".hero-flow-signal-left", { opacity: 0, duration: 0.2 })
+          .to(".hero-flow-core", {
+            scale: 1.06,
+            duration: 0.24,
+            yoyo: true,
+            repeat: 1,
+            ease: "power2.out"
+          }, "-=0.05")
+          .to(".hero-flow-line-right", {
+            scaleX: 1,
+            opacity: 1,
+            duration: 0.7,
+            ease: "power2.out"
+          }, "-=0.05")
+          .fromTo(
+            ".hero-flow-signal-right",
+            { left: "0%", opacity: 0 },
+            { left: "82%", opacity: 1, duration: 0.95, ease: "power2.inOut" },
+            "<"
+          )
+          .to(".hero-flow-signal-right", { opacity: 0, duration: 0.2 })
+          .to(".hero-flow-line", { opacity: 0.45, duration: 0.45 });
       }, heroFlowRef);
 
       return () => {
@@ -1155,7 +1178,7 @@ export default function Home() {
                 <p className="mx-auto mt-4 max-w-xl text-sm sm:text-base text-muted-foreground leading-relaxed">
                   Upload messy tables, notes, and forms, then get clean spreadsheets without manual typing.
                 </p>
-                <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <div className="mt-5 flex flex-col items-center justify-center gap-4 sm:flex-row">
                   <Button
                     onClick={() => scrollToSection('converter')}
                     className="h-11 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
@@ -1163,44 +1186,45 @@ export default function Home() {
                     Convert now
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => scrollToSection('converter')}
-                    className="h-11 rounded-full border-2 border-foreground/25 bg-white/80 px-6 text-sm font-semibold text-foreground hover:bg-white"
-                  >
-                    Try batch upload
-                  </Button>
+                  <div className="flex -space-x-2">
+                    {[0, 1, 2, 3, 4].map((i) => (
+                      <img
+                        key={i}
+                        src={`/avatars/${i}.webp`}
+                        alt={`User ${i + 1}`}
+                        className="h-9 w-9 rounded-full border-2 border-white object-cover shadow-sm"
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
 
               <div ref={heroFlowRef} className="relative mx-auto w-full max-w-6xl">
-                <div className="pointer-events-none absolute left-[27%] top-[46%] hidden h-16 w-[18%] sm:block">
-                  <div className="hero-flow-line absolute top-1/2 h-px w-full origin-left scale-x-0 bg-[#2BAAD8] opacity-0" />
-                  <div className="hero-flow-line absolute left-[24%] top-[18%] h-px w-2/3 origin-left scale-x-0 bg-primary opacity-0" />
-                  <div className="hero-flow-line absolute left-[12%] top-[78%] h-px w-3/4 origin-left scale-x-0 bg-foreground/30 opacity-0" />
+                <div className="pointer-events-none absolute left-[25%] top-1/2 hidden h-14 w-[22%] -translate-y-1/2 sm:block">
+                  <div className="hero-flow-line hero-flow-line-left absolute top-1/2 h-0.5 w-full origin-left scale-x-0 rounded-full bg-[#2BAAD8] opacity-0" />
+                  <div className="hero-flow-signal hero-flow-signal-left absolute left-0 top-1/2 h-2 w-10 -translate-y-1/2 rounded-full bg-[#2BAAD8] opacity-0 blur-[1px]" />
                 </div>
-                <div className="pointer-events-none absolute right-[27%] top-[46%] hidden h-16 w-[18%] sm:block">
-                  <div className="hero-flow-line absolute top-1/2 h-px w-full origin-left scale-x-0 bg-[#2BAAD8] opacity-0" />
-                  <div className="hero-flow-line absolute left-[10%] top-[22%] h-px w-2/3 origin-left scale-x-0 bg-primary opacity-0" />
-                  <div className="hero-flow-line absolute left-[24%] top-[76%] h-px w-3/4 origin-left scale-x-0 bg-foreground/30 opacity-0" />
+                <div className="pointer-events-none absolute right-[25%] top-1/2 hidden h-14 w-[22%] -translate-y-1/2 sm:block">
+                  <div className="hero-flow-line hero-flow-line-right absolute top-1/2 h-0.5 w-full origin-left scale-x-0 rounded-full bg-[#2BAAD8] opacity-0" />
+                  <div className="hero-flow-signal hero-flow-signal-right absolute left-0 top-1/2 h-2 w-10 -translate-y-1/2 rounded-full bg-[#2BAAD8] opacity-0 blur-[1px]" />
                 </div>
 
                 <div className="grid grid-cols-[1.05fr_0.72fr_0.95fr] items-center gap-2 sm:gap-7 lg:gap-10">
-                  <div className="hero-flow-item hero-flow-float relative z-10 -rotate-2">
+                  <div className="hero-flow-item relative z-10 -rotate-2">
                     <img
                       src="/hero-flow/handwritten.svg"
                       alt="Handwritten table input"
                       className="mx-auto h-auto w-full max-w-[290px] object-contain drop-shadow-2xl sm:max-w-[340px]"
                     />
                   </div>
-                  <div className="hero-flow-item hero-flow-float relative z-20">
+                  <div className="hero-flow-item hero-flow-core relative z-20">
                     <img
                       src="/hero-flow/axliner.svg"
                       alt="AxLiner conversion"
-                      className="mx-auto h-auto w-full max-w-[150px] object-contain drop-shadow-2xl sm:max-w-[190px]"
+                      className="mx-auto h-auto w-full max-w-[160px] object-contain drop-shadow-2xl sm:max-w-[205px]"
                     />
                   </div>
-                  <div className="hero-flow-item hero-flow-float relative z-10 rotate-2">
+                  <div className="hero-flow-item relative z-10 rotate-2">
                     <img
                       src="/hero-flow/excel.svg"
                       alt="Excel result"
