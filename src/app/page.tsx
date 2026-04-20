@@ -1105,21 +1105,20 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <section ref={heroRef} className={`relative ${resultFiles.length > 0 ? 'pt-24 pb-8' : 'min-h-screen flex items-center justify-center pt-24 sm:pt-20 lg:pt-12'}`}>
+        <section ref={heroRef} className="relative pt-24 sm:pt-20 lg:pt-14 pb-16">
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto px-4 sm:px-5 lg:px-9 max-w-[1400px]">
-            <div className={`grid grid-cols-1 ${resultFiles.length > 0 ? 'lg:grid-cols-1' : 'lg:grid-cols-[5fr_7fr]'} gap-8 sm:gap-12 lg:gap-10 items-center`}>
-              {/* Left Content - Hide as soon as we have results */}
-              {resultFiles.length === 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-8 sm:gap-12 lg:gap-10 items-center min-h-[calc(100vh-13rem)]">
+              {/* Left Content */}
                 <div ref={heroContentRef} className="max-w-xl">
-                  <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-[#2BAAD8] mb-8 sm:mb-10 shadow-lg shadow-[#2BAAD8]/10" style={{ backgroundColor: '#fbfdfc' }}>
+                  <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-[#2BAAD8] mb-7 sm:mb-9 shadow-lg shadow-[#2BAAD8]/10" style={{ backgroundColor: '#fbfdfc' }}>
                     <span className="text-xs sm:text-sm font-semibold text-foreground">AxLiner-7B Handwritten Specialist</span>
                   </div>
                   <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-black dark:text-white leading-[1.1] tracking-tight">
-                    Convert <span className="text-primary font-bold"> multiple Images</span> to <span className="text-primary font-bold">Excel</span> in seconds
+                    convert <span className="text-primary font-bold">handwritten images</span> to <span className="text-primary font-bold">excel</span> in seconds
                   </h1>
-                  <p className="mt-16 sm:mt-20 text-sm sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
-                    Extract up to 100 table images in one click  with our 7B parameter model fine-tuned on Llama 3 for handwritten text recognition.
+                  <p className="mt-8 sm:mt-10 text-sm sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
+                    Upload messy tables, notes, and forms, then get structured spreadsheets without manual typing.
                   </p>
 
                   {/* User Count Section */}
@@ -1143,10 +1142,43 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              )}
 
-              {/* Right Upload Area - Try Our Product - Full width as soon as we have results */}
-              <div ref={heroImageRef} className={`relative mt-4 ${resultFiles.length > 0 ? 'w-full max-w-none' : ''}`}>
+              <div className="relative w-full">
+                <div className="relative mx-auto grid grid-cols-[1fr_auto_0.82fr_auto_1fr] items-center gap-2 sm:gap-4 lg:gap-5">
+                  <div className="relative overflow-hidden rounded-lg border-2 border-[#2BAAD8] bg-[#fbfdfc] p-2 sm:p-3 shadow-xl shadow-[#2BAAD8]/10 rotate-[-2deg]">
+                    <img
+                      src="/hero-flow/handwritten.svg"
+                      alt="Handwritten table input"
+                      className="aspect-[4/3] w-full object-contain"
+                    />
+                  </div>
+                  <div className="h-0.5 w-5 sm:w-9 bg-[#2BAAD8]" />
+                  <div className="relative overflow-hidden rounded-lg border-2 border-foreground bg-[#fbfdfc] p-2 sm:p-3 shadow-xl shadow-foreground/10">
+                    <img
+                      src="/hero-flow/axliner.svg"
+                      alt="AxLiner conversion"
+                      className="aspect-square w-full object-contain"
+                    />
+                  </div>
+                  <div className="h-0.5 w-5 sm:w-9 bg-[#2BAAD8]" />
+                  <div className="relative overflow-hidden rounded-lg border-2 border-[#2BAAD8] bg-[#fbfdfc] p-2 sm:p-3 shadow-xl shadow-[#2BAAD8]/10 rotate-[2deg]">
+                    <img
+                      src="/hero-flow/excel.svg"
+                      alt="Excel result"
+                      className="aspect-[4/3] w-full object-contain"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* Conversion Section */}
+        <section className="relative z-10 pt-4 pb-16 sm:pt-6 lg:pt-8">
+          <div className="container mx-auto px-4 sm:px-5 lg:px-9 max-w-[1400px]">
+              <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : 'w-full max-w-3xl'}`}>
                 <div className="relative w-full space-y-3">
                   {/* Upload Dropzone - Hide when showing results */}
                   {!processingComplete && resultFiles.length === 0 && (
@@ -1162,13 +1194,13 @@ export default function Home() {
                             : uploadedFiles.length > 0
                               ? 'border-[#2BAAD8] bg-[#2BAAD8]/5'
                               : 'border-[#2BAAD8]/50 hover:border-[#2BAAD8] hover:bg-[#2BAAD8]/5'
-                        } p-12 lg:p-16 min-h-[200px]`}
+                        } p-6 lg:p-8 min-h-[150px]`}
                       >
                         <div className="text-center">
                           {uploadedFiles.length === 0 ? (
                             <>
-                              <Upload className="h-16 w-16 text-primary mx-auto mb-4" />
-                              <h3 className="text-xl font-medium mb-3">
+                              <Upload className="h-10 w-10 text-primary mx-auto mb-3" />
+                              <h3 className="text-base font-medium mb-2">
                                 {isDragging ? 'Drop your images here' : 'Upload up to 100 table images now'}
                               </h3>
                               <input
@@ -1179,7 +1211,7 @@ export default function Home() {
                                 onChange={handleFileInput}
                                 className="hidden"
                               />
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-xs text-muted-foreground">
                                 Click or drag to select
                               </p>
                             </>
@@ -1509,7 +1541,7 @@ export default function Home() {
                     <Button
                      onClick={handleProcessImage}
                      disabled={uploadedFiles.length === 0 || isProcessing}
-                     className={`col-span-2 py-8 text-xl font-semibold border-2 h-full transition-all duration-200 ${
+                     className={`col-span-2 py-5 text-base font-semibold border-2 h-full transition-all duration-200 ${
                       uploadedFiles.length === 0
                            ? 'bg-gray-300 hover:bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'
                            : 'bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 shadow-lg shadow-primary/20'
@@ -1583,7 +1615,6 @@ export default function Home() {
                   )}
                 </div>
               </div>
-            </div>
           </div>
         </section>
 
