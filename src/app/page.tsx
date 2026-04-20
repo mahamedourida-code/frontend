@@ -57,6 +57,7 @@ export default function Home() {
   const headerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const heroContentRef = useRef<HTMLDivElement>(null);
+  const heroFlowRef = useRef<HTMLDivElement>(null);
   const heroImageRef = useRef<HTMLDivElement>(null);
 
   // Get state management from context
@@ -254,19 +255,57 @@ export default function Home() {
           opacity: 0,
           scale: 0.95
         },
-        { 
-          y: 0, 
+        {
+          y: 0,
           opacity: 1,
           scale: 1,
-          duration: 1.2,
-          stagger: 0.5,
+          duration: 0.85,
+          stagger: 0.16,
           ease: "power3.out",
-          delay: 0.5
+          delay: 0.25
         }
       );
     }
 
-    // Hero image animation removed per user request
+    if (heroFlowRef.current) {
+      const ctx = gsap.context(() => {
+        gsap.fromTo(
+          ".hero-flow-item",
+          { y: 24, scale: 0.96 },
+          {
+            y: 0,
+            scale: 1,
+            duration: 0.9,
+            stagger: 0.18,
+            ease: "power3.out",
+            delay: 0.42
+          }
+        );
+
+        gsap.to(".hero-flow-float", {
+          y: -14,
+          duration: 2.8,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true,
+          stagger: 0.28
+        });
+
+        gsap.to(".hero-flow-line", {
+          scaleX: 1,
+          opacity: 1,
+          duration: 1.15,
+          ease: "power2.out",
+          stagger: 0.2,
+          delay: 0.75
+        });
+      }, heroFlowRef);
+
+      return () => {
+        ctx.revert();
+        ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      };
+    }
 
     // Removed section animations per user request
     // Removed comparison section animation per user request
@@ -1105,67 +1144,67 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <section ref={heroRef} className="relative pt-24 sm:pt-20 lg:pt-14 pb-16">
+        <section ref={heroRef} className="relative overflow-hidden pt-20 sm:pt-28 lg:pt-24 pb-8 sm:pb-10">
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto px-4 sm:px-5 lg:px-9 max-w-[1400px]">
-            <div className="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-8 sm:gap-12 lg:gap-10 items-center min-h-[calc(100vh-13rem)]">
-              {/* Left Content */}
-                <div ref={heroContentRef} className="max-w-xl">
-                  <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-[#2BAAD8] mb-7 sm:mb-9 shadow-lg shadow-[#2BAAD8]/10" style={{ backgroundColor: '#fbfdfc' }}>
-                    <span className="text-xs sm:text-sm font-semibold text-foreground">AxLiner-7B Handwritten Specialist</span>
-                  </div>
-                  <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-normal text-black dark:text-white leading-[1.1] tracking-tight">
-                    convert <span className="text-primary font-bold">handwritten images</span> to <span className="text-primary font-bold">excel</span> in seconds
-                  </h1>
-                  <p className="mt-8 sm:mt-10 text-sm sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
-                    Upload messy tables, notes, and forms, then get structured spreadsheets without manual typing.
-                  </p>
+            <div className="relative flex min-h-[620px] flex-col items-center justify-start gap-5 sm:min-h-[calc(100vh-10rem)] sm:justify-center sm:gap-7">
+              <div ref={heroContentRef} className="mx-auto max-w-2xl text-center">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-normal text-black dark:text-white leading-[1.06] tracking-tight">
+                  Convert <span className="text-primary font-bold">handwritten images</span> to <span className="text-primary font-bold">Excel</span> in seconds
+                </h1>
+                <p className="mx-auto mt-4 max-w-xl text-sm sm:text-base text-muted-foreground leading-relaxed">
+                  Upload messy tables, notes, and forms, then get clean spreadsheets without manual typing.
+                </p>
+                <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                  <Button
+                    onClick={() => scrollToSection('converter')}
+                    className="h-11 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+                  >
+                    Convert now
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => scrollToSection('converter')}
+                    className="h-11 rounded-full border-2 border-foreground/25 bg-white/80 px-6 text-sm font-semibold text-foreground hover:bg-white"
+                  >
+                    Try batch upload
+                  </Button>
+                </div>
+              </div>
 
-                  {/* User Count Section */}
-                  <div className="mt-6 sm:mt-8 flex items-center gap-3">
-                    <div className="flex -space-x-2">
-                      {[0, 1, 2, 3, 4, 5].map((i) => (
-                        <img
-                          key={i}
-                          src={`/avatars/${i}.webp`}
-                          alt={`User ${i + 1}`}
-                          className="w-10 h-10 rounded-full border-2 border-background object-cover"
-                        />
-                      ))}
-                    </div>
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-1">
-                        <Users className="w-4 h-4 text-primary" />
-                        <span className="text-sm font-semibold text-foreground">Join 1,260+ users</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">Converting tables daily</p>
-                    </div>
-                  </div>
+              <div ref={heroFlowRef} className="relative mx-auto w-full max-w-6xl">
+                <div className="pointer-events-none absolute left-[27%] top-[46%] hidden h-16 w-[18%] sm:block">
+                  <div className="hero-flow-line absolute top-1/2 h-px w-full origin-left scale-x-0 bg-[#2BAAD8] opacity-0" />
+                  <div className="hero-flow-line absolute left-[24%] top-[18%] h-px w-2/3 origin-left scale-x-0 bg-primary opacity-0" />
+                  <div className="hero-flow-line absolute left-[12%] top-[78%] h-px w-3/4 origin-left scale-x-0 bg-foreground/30 opacity-0" />
+                </div>
+                <div className="pointer-events-none absolute right-[27%] top-[46%] hidden h-16 w-[18%] sm:block">
+                  <div className="hero-flow-line absolute top-1/2 h-px w-full origin-left scale-x-0 bg-[#2BAAD8] opacity-0" />
+                  <div className="hero-flow-line absolute left-[10%] top-[22%] h-px w-2/3 origin-left scale-x-0 bg-primary opacity-0" />
+                  <div className="hero-flow-line absolute left-[24%] top-[76%] h-px w-3/4 origin-left scale-x-0 bg-foreground/30 opacity-0" />
                 </div>
 
-              <div className="relative w-full">
-                <div className="relative mx-auto grid grid-cols-[1fr_auto_0.82fr_auto_1fr] items-center gap-2 sm:gap-4 lg:gap-5">
-                  <div className="relative overflow-hidden rounded-lg border-2 border-[#2BAAD8] bg-[#fbfdfc] p-2 sm:p-3 shadow-xl shadow-[#2BAAD8]/10 rotate-[-2deg]">
+                <div className="grid grid-cols-[1.05fr_0.72fr_0.95fr] items-center gap-2 sm:gap-7 lg:gap-10">
+                  <div className="hero-flow-item hero-flow-float relative z-10 -rotate-2">
                     <img
                       src="/hero-flow/handwritten.svg"
                       alt="Handwritten table input"
-                      className="aspect-[4/3] w-full object-contain"
+                      className="mx-auto h-auto w-full max-w-[290px] object-contain drop-shadow-2xl sm:max-w-[340px]"
                     />
                   </div>
-                  <div className="h-0.5 w-5 sm:w-9 bg-[#2BAAD8]" />
-                  <div className="relative overflow-hidden rounded-lg border-2 border-foreground bg-[#fbfdfc] p-2 sm:p-3 shadow-xl shadow-foreground/10">
+                  <div className="hero-flow-item hero-flow-float relative z-20">
                     <img
                       src="/hero-flow/axliner.svg"
                       alt="AxLiner conversion"
-                      className="aspect-square w-full object-contain"
+                      className="mx-auto h-auto w-full max-w-[150px] object-contain drop-shadow-2xl sm:max-w-[190px]"
                     />
                   </div>
-                  <div className="h-0.5 w-5 sm:w-9 bg-[#2BAAD8]" />
-                  <div className="relative overflow-hidden rounded-lg border-2 border-[#2BAAD8] bg-[#fbfdfc] p-2 sm:p-3 shadow-xl shadow-[#2BAAD8]/10 rotate-[2deg]">
+                  <div className="hero-flow-item hero-flow-float relative z-10 rotate-2">
                     <img
                       src="/hero-flow/excel.svg"
                       alt="Excel result"
-                      className="aspect-[4/3] w-full object-contain"
+                      className="mx-auto h-auto w-full max-w-[220px] object-contain drop-shadow-2xl sm:max-w-[280px]"
                     />
                   </div>
                 </div>
@@ -1176,7 +1215,7 @@ export default function Home() {
         </section>
 
         {/* Conversion Section */}
-        <section className="relative z-10 pt-4 pb-16 sm:pt-6 lg:pt-8">
+        <section id="converter" className="relative z-10 pt-4 pb-16 sm:pt-6 lg:pt-8">
           <div className="container mx-auto px-4 sm:px-5 lg:px-9 max-w-[1400px]">
               <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : 'w-full max-w-3xl'}`}>
                 <div className="relative w-full space-y-3">
