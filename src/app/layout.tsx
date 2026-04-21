@@ -92,14 +92,11 @@ export default function RootLayout({
         className={`${nunito.variable} ${caveat.variable} antialiased font-sans bg-background text-foreground relative overflow-x-hidden`}
         style={{ fontFamily: 'var(--font-nunito)' }}
       >
-        <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
-          <img
-            src="/leaf-background.jpg"
-            alt="Background pattern"
-            aria-hidden="true"
-            className="w-full h-full object-cover object-top"
-          />
-        </div>
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 pointer-events-none z-0 bg-cover bg-top bg-no-repeat"
+          style={{ backgroundImage: "url('/leaf-background.jpg')" }}
+        />
         <ThemeProvider defaultTheme="light" storageKey="AxLiner-theme">
           <ProcessingStateProvider>
             <div className="relative z-10">
