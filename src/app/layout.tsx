@@ -89,9 +89,18 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${nunito.variable} ${caveat.variable} antialiased font-sans bg-background text-foreground`}
+        className={`${nunito.variable} ${caveat.variable} antialiased font-sans bg-transparent text-foreground relative isolate overflow-x-hidden`}
         style={{ fontFamily: 'var(--font-nunito)' }}
       >
+        <div className="fixed inset-0 -z-10 pointer-events-none">
+          <img
+            src="/duplo30.jpg"
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full object-cover object-top"
+          />
+          <div className="absolute inset-0 bg-white/55" />
+        </div>
         <ThemeProvider defaultTheme="light" storageKey="AxLiner-theme">
           <ProcessingStateProvider>
             {children}
