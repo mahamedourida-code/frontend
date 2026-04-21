@@ -1949,7 +1949,7 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
-              <Card data-animate="stagger" className="min-h-[560px] bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
+              <Card data-animate="stagger" className="min-h-[560px] bg-white/70 dark:bg-white/70 backdrop-blur-[1px] border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center p-10">
                   <img
                     src="/New%20folder/handwritten.svg"
@@ -1963,7 +1963,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="min-h-[560px] bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
+              <Card data-animate="stagger" className="min-h-[560px] bg-white/70 dark:bg-white/70 backdrop-blur-[1px] border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center p-10">
                   <img
                     src="/New%20folder/aa.svg"
@@ -1977,7 +1977,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="min-h-[560px] bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
+              <Card data-animate="stagger" className="min-h-[560px] bg-white/70 dark:bg-white/70 backdrop-blur-[1px] border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center p-10">
                   <img
                     src="/New%20folder/fina.svg"
