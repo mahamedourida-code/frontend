@@ -279,7 +279,7 @@ export default function SettingsPage() {
 
           {/* Sidebar Navigation */}
           <nav className="hidden lg:block w-64 shrink-0">
-            <Card className="bg-white dark:bg-white border-2 border-[#CBB7EE] shadow-lg shadow-[#CBB7EE]/10">
+            <Card className="bg-white dark:bg-white border-2 border-[#7C3BED] shadow-lg shadow-[#7C3BED]/10">
               <CardContent className="p-3 lg:p-4">
                 <div className="space-y-1">
                   {sidebarSections.map((section) => (
@@ -315,7 +315,7 @@ export default function SettingsPage() {
             {activeSection === 'account' && (
               <div className="space-y-4 lg:space-y-6">
                 {/* Profile Information */}
-                <Card className="bg-white dark:bg-white border-2 border-[#CBB7EE] shadow-lg shadow-[#CBB7EE]/10">
+                <Card className="bg-white dark:bg-white border-2 border-[#7C3BED] shadow-lg shadow-[#7C3BED]/10">
                   <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 lg:h-10 lg:w-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -372,7 +372,7 @@ export default function SettingsPage() {
                 </Card>
 
                 {/* Security Settings */}
-                <Card className="bg-white dark:bg-white border-2 border-[#CBB7EE] shadow-lg shadow-[#CBB7EE]/10">
+                <Card className="bg-white dark:bg-white border-2 border-[#7C3BED] shadow-lg shadow-[#7C3BED]/10">
                   <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 lg:h-10 lg:w-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
@@ -475,7 +475,7 @@ export default function SettingsPage() {
             {activeSection === 'preferences' && (
               <div className="space-y-6">
                 {/* Processing Settings */}
-                <Card className="bg-white dark:bg-white border-2 border-[#CBB7EE] shadow-lg shadow-[#CBB7EE]/10">
+                <Card className="bg-white dark:bg-white border-2 border-[#7C3BED] shadow-lg shadow-[#7C3BED]/10">
                   <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
                       <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
@@ -527,7 +527,7 @@ export default function SettingsPage() {
                 </Card>
 
                 {/* OCR Detection Language */}
-                <Card className="bg-white dark:bg-white border-2 border-[#CBB7EE] shadow-lg shadow-[#CBB7EE]/10">
+                <Card className="bg-white dark:bg-white border-2 border-[#7C3BED] shadow-lg shadow-[#7C3BED]/10">
                   <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
                       <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">

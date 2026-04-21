@@ -958,7 +958,7 @@ export default function Home() {
       {/* Navigation Bar */}
       <nav className="fixed top-0 left-0 right-0 z-50 pt-3 lg:pt-4">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-[35px] border-2 border-[#CBB7EE] shadow-lg shadow-[#CBB7EE]/10 backdrop-blur-md p-2 lg:p-3 flex items-center justify-between" style={{ backgroundColor: '#fbfdfc' }}>
+          <div className="rounded-[35px] border-2 border-[#7C3BED] shadow-lg shadow-[#7C3BED]/10 backdrop-blur-md p-2 lg:p-3 flex items-center justify-between" style={{ backgroundColor: '#fbfdfc' }}>
             {/* Logo */}
             <div className="flex-shrink-0">
               <AppLogo />
@@ -1142,12 +1142,12 @@ export default function Home() {
 
               <div ref={heroFlowRef} className="relative mx-auto w-full max-w-6xl">
                 <div className="pointer-events-none absolute left-[25%] top-1/2 hidden h-14 w-[22%] -translate-y-1/2 sm:block">
-                  <div className="hero-flow-line hero-flow-line-left absolute top-1/2 h-0.5 w-full origin-left scale-x-0 rounded-full bg-[#CBB7EE] opacity-0" />
-                  <div className="hero-flow-signal hero-flow-signal-left absolute left-0 top-1/2 h-2 w-10 -translate-y-1/2 rounded-full bg-[#CBB7EE] opacity-0 blur-[1px]" />
+                  <div className="hero-flow-line hero-flow-line-left absolute top-1/2 h-0.5 w-full origin-left scale-x-0 rounded-full bg-[#7C3BED] opacity-0" />
+                  <div className="hero-flow-signal hero-flow-signal-left absolute left-0 top-1/2 h-2 w-10 -translate-y-1/2 rounded-full bg-[#7C3BED] opacity-0 blur-[1px]" />
                 </div>
                 <div className="pointer-events-none absolute right-[25%] top-1/2 hidden h-14 w-[22%] -translate-y-1/2 sm:block">
-                  <div className="hero-flow-line hero-flow-line-right absolute top-1/2 h-0.5 w-full origin-left scale-x-0 rounded-full bg-[#CBB7EE] opacity-0" />
-                  <div className="hero-flow-signal hero-flow-signal-right absolute left-0 top-1/2 h-2 w-10 -translate-y-1/2 rounded-full bg-[#CBB7EE] opacity-0 blur-[1px]" />
+                  <div className="hero-flow-line hero-flow-line-right absolute top-1/2 h-0.5 w-full origin-left scale-x-0 rounded-full bg-[#7C3BED] opacity-0" />
+                  <div className="hero-flow-signal hero-flow-signal-right absolute left-0 top-1/2 h-2 w-10 -translate-y-1/2 rounded-full bg-[#7C3BED] opacity-0 blur-[1px]" />
                 </div>
 
                 <div className="grid grid-cols-3 items-center gap-3 sm:gap-8 lg:gap-12">
@@ -1178,7 +1178,7 @@ export default function Home() {
               {/* Companies Section - Trusted By */}
               <ScrollAnimatedSection id="trusted" className="w-full overflow-hidden pt-2 pb-1">
                 <div className="text-center mb-5" data-animate="headline">
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#CBB7EE] mb-2 shadow-lg shadow-[#CBB7EE]/10">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#7C3BED] mb-2 shadow-lg shadow-[#7C3BED]/10">
                     <h2 className="text-lg sm:text-base font-semibold text-foreground">
                       Chosen by experts at top organizations
                     </h2>
@@ -1199,7 +1199,7 @@ export default function Home() {
                       [1, 2, 3, 4, 5, 6, 7, 8, 9].map((imgNum) => (
                         <Card
                           key={`${setIndex}-${imgNum}`}
-                          className="flex-shrink-0 bg-white dark:bg-white border border-border/50 hover:border-[#CBB7EE]/30 transition-all duration-300 hover:shadow-md w-[120px] h-[80px]"
+                          className="flex-shrink-0 bg-white dark:bg-white border border-border/50 hover:border-[#7C3BED]/30 transition-all duration-300 hover:shadow-md w-[120px] h-[80px]"
                         >
                           <CardContent className="p-2 flex items-center justify-center w-full h-full">
                             <img
@@ -1231,7 +1231,7 @@ export default function Home() {
         <section id="converter" className="relative z-10 pt-4 pb-16 sm:pt-6 lg:pt-8">
           <div className="container mx-auto px-4 sm:px-5 lg:px-9 max-w-[1400px]">
             <div className="mb-5 text-center">
-              <div className="inline-flex items-center gap-2 rounded-full border-2 border-[#CBB7EE] bg-white/70 px-4 py-2 shadow-lg shadow-[#CBB7EE]/10 backdrop-blur-md">
+              <div className="inline-flex items-center gap-2 rounded-full border-2 border-[#7C3BED] bg-white/70 px-4 py-2 shadow-lg shadow-[#7C3BED]/10 backdrop-blur-md">
                 <h2 className="text-lg font-bold text-foreground sm:text-xl">
                   Try It
                 </h2>
@@ -1249,10 +1249,10 @@ export default function Home() {
                         onDrop={handleDrop}
                         className={`relative border-2 border-dashed rounded-xl transition-all duration-200 cursor-pointer ${
                           isDragging
-                            ? 'border-[#CBB7EE] bg-[#CBB7EE]/10 scale-[0.99]'
+                            ? 'border-[#7C3BED] bg-[#7C3BED]/10 scale-[0.99]'
                             : uploadedFiles.length > 0
-                              ? 'border-[#CBB7EE] bg-[#CBB7EE]/5'
-                              : 'border-[#CBB7EE]/50 hover:border-[#CBB7EE] hover:bg-[#CBB7EE]/5'
+                              ? 'border-[#7C3BED] bg-[#7C3BED]/5'
+                              : 'border-[#7C3BED]/50 hover:border-[#7C3BED] hover:bg-[#7C3BED]/5'
                         } p-6 lg:p-8 min-h-[150px]`}
                       >
                         <div className="text-center">
@@ -1304,7 +1304,7 @@ export default function Home() {
                                   variant="outline"
                                   size="sm"
                                   disabled={isProcessing}
-                                  className="border-2 border-[#CBB7EE] text-xs"
+                                  className="border-2 border-[#7C3BED] text-xs"
                                   asChild
                                   onClick={(e) => e.stopPropagation()}
                                 >
@@ -1346,8 +1346,8 @@ export default function Home() {
 
                   {/* Progressive Results Display - Full Width as soon as we have results */}
                   {(isProcessing || resultFiles.length > 0) && (
-                    <div className={`border-2 border-[#CBB7EE] rounded-xl ${resultFiles.length > 0 ? 'p-4' : 'p-6'}`} style={{ backgroundColor: '#fbfdfc' }}>
-                      <div className={`flex items-center justify-between mb-3 ${resultFiles.length > 0 ? 'pb-2 border-b border-[#CBB7EE]/20' : ''}`}>
+                    <div className={`border-2 border-[#7C3BED] rounded-xl ${resultFiles.length > 0 ? 'p-4' : 'p-6'}`} style={{ backgroundColor: '#fbfdfc' }}>
+                      <div className={`flex items-center justify-between mb-3 ${resultFiles.length > 0 ? 'pb-2 border-b border-[#7C3BED]/20' : ''}`}>
                         <h3 className={`${processingComplete && resultFiles.length > 0 ? 'text-lg' : 'text-lg'} font-semibold`}>
                           {processingComplete ? 'Ready to Download' : 'Processing...'}
                         </h3>
@@ -1358,7 +1358,7 @@ export default function Home() {
                                 size="sm"
                                 variant="outline"
                                 onClick={handleDownloadAll}
-                                className="border-2 border-[#CBB7EE]"
+                                className="border-2 border-[#7C3BED]"
                               >
                                 <Download className="h-4 w-4 mr-1" />
                                 Download All
@@ -1378,7 +1378,7 @@ export default function Home() {
                             variant="outline"
                             size="sm"
                             onClick={handleReset}
-                            className="border-2 border-[#CBB7EE]"
+                            className="border-2 border-[#7C3BED]"
                           >
                             Convert  Again
                           </Button>
@@ -1395,7 +1395,7 @@ export default function Home() {
                                 {/* Original Image */}
                                 <div className="flex flex-col xl:col-span-1">
                                   <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Original Image</h4>
-                                  <div className="border-2 border-[#CBB7EE]/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center max-h-[600px]">
+                                  <div className="border-2 border-[#7C3BED]/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center max-h-[600px]">
                                     <img 
                                       src={firstImageUrl} 
                                       alt="Original" 
@@ -1407,7 +1407,7 @@ export default function Home() {
                                 {/* Table Preview */}
                                 <div className="flex flex-col xl:col-span-2">
                                   <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Extracted Data Preview</h4>
-                                  <div className="border-2 border-[#CBB7EE]/20 rounded-lg overflow-auto max-h-[600px] bg-white">
+                                  <div className="border-2 border-[#7C3BED]/20 rounded-lg overflow-auto max-h-[600px] bg-white">
                                     <table className="w-full text-base">
                                       <tbody>
                                         {tablePreviewData.map((row, rowIndex) => (
@@ -1434,7 +1434,7 @@ export default function Home() {
                               </div>
 
                               {/* First File Buttons */}
-                              <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#CBB7EE]">
+                              <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#7C3BED]">
                                 <div className="flex items-center gap-3 flex-1 min-w-0">
                                   <FileSpreadsheet className="h-5 w-5 text-primary" />
                                   <span className="text-base font-medium truncate">{cleanFilename(resultFiles[0].filename)}</span>
@@ -1443,7 +1443,7 @@ export default function Home() {
                                   <Button
                                     size="default"
                                     onClick={() => handleDownloadFile(resultFiles[0].file_id)}
-                                    className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#CBB7EE]"
+                                    className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#7C3BED]"
                                   >
                                     <Download className="h-4 w-4" />
                                     Download
@@ -1452,7 +1452,7 @@ export default function Home() {
                                     size="default"
                                     variant="outline"
                                     onClick={() => handleShareFile(resultFiles[0])}
-                                    className="gap-2 bg-white border-2 border-[#CBB7EE] text-foreground hover:bg-primary/10"
+                                    className="gap-2 bg-white border-2 border-[#7C3BED] text-foreground hover:bg-primary/10"
                                   >
                                     <Share2 className="h-4 w-4" />
                                     Share
@@ -1476,7 +1476,7 @@ export default function Home() {
 
                           {/* Other Files - Just buttons, starting from index 1 */}
                           {resultFiles.slice(1).map((file: any, index: number) => (
-                            <div key={file.file_id || index + 1} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#CBB7EE]/20">
+                            <div key={file.file_id || index + 1} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#7C3BED]/20">
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <button
                                   onClick={() => handleDownloadFile(file.file_id)}
@@ -1490,7 +1490,7 @@ export default function Home() {
                                 <Button
                                   size="sm"
                                   onClick={() => handleDownloadFile(file.file_id)}
-                                  className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#CBB7EE]"
+                                  className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#7C3BED]"
                                 >
                                   <Download className="h-4 w-4" />
                                   Download
@@ -1499,7 +1499,7 @@ export default function Home() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleShareFile(file)}
-                                  className="gap-1.5 bg-white border-2 border-[#CBB7EE] text-foreground hover:bg-primary/10"
+                                  className="gap-1.5 bg-white border-2 border-[#7C3BED] text-foreground hover:bg-primary/10"
                                 >
                                   <Share2 className="h-4 w-4" />
                                   Share
@@ -1522,7 +1522,7 @@ export default function Home() {
 
                           {/* Show buttons without preview if no preview data available yet */}
                           {(!tablePreviewData.length || !firstImageUrl) && resultFiles.map((file: any, index: number) => (
-                            <div key={`no-preview-${file.file_id || index}`} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#CBB7EE]/20">
+                            <div key={`no-preview-${file.file_id || index}`} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#7C3BED]/20">
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <button
                                   onClick={() => handleDownloadFile(file.file_id)}
@@ -1536,7 +1536,7 @@ export default function Home() {
                                 <Button
                                   size="sm"
                                   onClick={() => handleDownloadFile(file.file_id)}
-                                  className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#CBB7EE]"
+                                  className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#7C3BED]"
                                 >
                                   <Download className="h-4 w-4" />
                                   Download
@@ -1545,7 +1545,7 @@ export default function Home() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleShareFile(file)}
-                                  className="gap-1.5 bg-white border-2 border-[#CBB7EE] text-foreground hover:bg-primary/10"
+                                  className="gap-1.5 bg-white border-2 border-[#7C3BED] text-foreground hover:bg-primary/10"
                                 >
                                   <Share2 className="h-4 w-4" />
                                   Share
@@ -1570,7 +1570,7 @@ export default function Home() {
                           {isProcessing && totalFilesToProcess > resultFiles.length && (
                             <>
                               {Array.from({ length: totalFilesToProcess - resultFiles.length }).map((_, index) => (
-                                <div key={`pending-${index}`} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg border-2 border-dashed border-[#CBB7EE]/30">
+                                <div key={`pending-${index}`} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg border-2 border-dashed border-[#7C3BED]/30">
                                   <div className="flex items-center gap-3 flex-1 min-w-0">
                                     <Loader2 className="h-5 w-5 text-primary animate-spin flex-shrink-0" />
                                     <span className="text-sm font-medium text-muted-foreground">Processing file {resultFiles.length + index + 1}...</span>
@@ -1619,13 +1619,13 @@ export default function Home() {
                     </Button>
 
                     {/* Options Card - Right Side (1 column) */}
-                    <Card className="bg-[#fbfdfc] dark:bg-[#fbfdfc] border-2 border-[#CBB7EE] shadow-lg shadow-[#CBB7EE]/10">
+                    <Card className="bg-[#fbfdfc] dark:bg-[#fbfdfc] border-2 border-[#7C3BED] shadow-lg shadow-[#7C3BED]/10">
                       <CardContent className="p-3">
                         <div className="space-y-2">
                           <div>
                             <h3 className="text-xs font-semibold mb-1 text-foreground">Language</h3>
                             <select
-                              className="w-full p-1.5 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-xs font-medium hover:border-[#CBB7EE]/50 transition-all focus:outline-none focus:border-primary cursor-pointer"
+                              className="w-full p-1.5 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-xs font-medium hover:border-[#7C3BED]/50 transition-all focus:outline-none focus:border-primary cursor-pointer"
                               defaultValue="en"
                               onClick={(e) => e.preventDefault()}
                             >
@@ -1656,7 +1656,7 @@ export default function Home() {
                                 "w-full flex items-center justify-between p-1.5 rounded-lg transition-all border-2",
                                 autoDownload
                                   ? "bg-primary/10 border-primary"
-                                  : "bg-muted/30 border-muted-foreground/20 hover:border-[#CBB7EE]/50"
+                                  : "bg-muted/30 border-muted-foreground/20 hover:border-[#7C3BED]/50"
                               )}
                             >
                               <div className="flex items-center gap-1">
@@ -1681,7 +1681,7 @@ export default function Home() {
         <section className="py-16 overflow-hidden relative z-10">
           <div className="w-full">
             <div className="text-center mb-12 px-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#CBB7EE] mb-4 shadow-lg shadow-[#CBB7EE]/10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#7C3BED] mb-4 shadow-lg shadow-[#7C3BED]/10">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   Trusted by Professionals
                 </h2>
@@ -1850,7 +1850,7 @@ export default function Home() {
             <div className="max-w-5xl mx-auto">
               {/* Section Header */}
               <div className="text-center mb-12">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#CBB7EE] mb-4 shadow-lg shadow-[#CBB7EE]/10">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#7C3BED] mb-4 shadow-lg shadow-[#7C3BED]/10">
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     What is Axliner?
                   </h2>
@@ -1899,7 +1899,7 @@ export default function Home() {
         <ScrollAnimatedSection id="features" className="py-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#CBB7EE] mb-4 shadow-lg shadow-[#CBB7EE]/10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#7C3BED] mb-4 shadow-lg shadow-[#7C3BED]/10">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   Specialized Solutions
                 </h2>
@@ -1907,7 +1907,7 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
-              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#CBB7EE]/50 transition-all duration-300 hover:scale-105">
+              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#7C3BED]/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
                   <PenTool className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Handwritten Tables</CardTitle>
@@ -1917,7 +1917,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#CBB7EE]/50 transition-all duration-300 hover:scale-105">
+              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#7C3BED]/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
                   <FileText className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Paper Forms tables</CardTitle>
@@ -1927,7 +1927,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#CBB7EE]/50 transition-all duration-300 hover:scale-105">
+              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#7C3BED]/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
                   <FileSpreadsheet className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
                   <CardTitle className="text-xl mb-2">Financial Documents tables</CardTitle>
@@ -1945,7 +1945,7 @@ export default function Home() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#CBB7EE] mb-4 shadow-lg shadow-[#CBB7EE]/10">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#7C3BED] mb-4 shadow-lg shadow-[#7C3BED]/10">
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     Industry-Leading OCR Accuracy
                   </h2>
@@ -1973,7 +1973,7 @@ export default function Home() {
       config={{
         accuracy: {
           label: "Accuracy",
-          color: "hsl(var(--primary))",
+          color: "var(--primary)",
         },
       }}
       className="h-[300px] w-full"
@@ -2007,7 +2007,7 @@ export default function Home() {
         <ChartTooltip content={<ChartTooltipContent />} />
         <Bar
           dataKey="accuracy"
-          fill="#764ba2"
+          fill="#441F84"
           radius={[8, 8, 0, 0]}
         />
       </BarChart>
@@ -2031,7 +2031,7 @@ export default function Home() {
                     <p className="text-sm text-muted-foreground">Average across all test scenarios</p>
                   </CardHeader>
                   <CardContent>
-                    <div className="overflow-hidden rounded-lg border-2 border-[#CBB7EE]">
+                    <div className="overflow-hidden rounded-lg border-2 border-[#7C3BED]">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-border/50 bg-muted/30">
@@ -2048,7 +2048,7 @@ export default function Home() {
                           </tr>
                           <tr className="border-b border-border/50">
                             <td className="p-3 text-muted-foreground">Word Recognition</td>
-                            <td className="p-3 text-right font-semibold text-[#764ba2]">99.5%</td>
+                            <td className="p-3 text-right font-semibold text-[#441F84]">99.5%</td>
                             <td className="p-3 text-right text-muted-foreground">95.1%</td>
                           </tr>
                           <tr className="border-b border-border/50">
@@ -2080,16 +2080,16 @@ export default function Home() {
 
               {/* Key Features */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-[#CBB7EE]" data-animate="stagger">
-                  <div className="text-2xl font-bold text-[#764ba2] mb-1">7+ Languages</div>
+                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-[#7C3BED]" data-animate="stagger">
+                  <div className="text-2xl font-bold text-[#441F84] mb-1">7+ Languages</div>
                   <p className="text-sm text-muted-foreground">Multi-language support including complex scripts</p>
                 </div>
-                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-[#CBB7EE]" data-animate="stagger">
-                  <div className="text-2xl font-bold text-[#764ba2] mb-1">99.9% Uptime</div>
+                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-[#7C3BED]" data-animate="stagger">
+                  <div className="text-2xl font-bold text-[#441F84] mb-1">99.9% Uptime</div>
                   <p className="text-sm text-muted-foreground">Enterprise-grade reliability and availability</p>
                 </div>
-                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-[#CBB7EE]" data-animate="stagger">
-                  <div className="text-2xl font-bold text-[#764ba2] mb-1">GDPR Compliant</div>
+                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-[#7C3BED]" data-animate="stagger">
+                  <div className="text-2xl font-bold text-[#441F84] mb-1">GDPR Compliant</div>
                   <p className="text-sm text-muted-foreground">Data privacy and security certified</p>
                 </div>
               </div>
@@ -2102,7 +2102,7 @@ export default function Home() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-16" data-animate="headline">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-[#CBB7EE] mb-4 shadow-lg shadow-[#CBB7EE]/10" style={{ backgroundColor: '#fbfdfc' }}>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-[#7C3BED] mb-4 shadow-lg shadow-[#7C3BED]/10" style={{ backgroundColor: '#fbfdfc' }}>
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     How AxLiner's Engine Is Built
                   </h2>
@@ -2135,28 +2135,28 @@ export default function Home() {
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4 mt-6">
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#CBB7EE]">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#7C3BED]">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Document Structure Understanding</p>
                           <p className="text-sm text-black font-semibold">Training on table layouts, form structures, and hierarchical document organization</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#CBB7EE]">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#7C3BED]">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Handwriting Recognition</p>
                           <p className="text-sm text-black font-semibold">Extensive exposure to varied handwriting styles and degraded document quality</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#CBB7EE]">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#7C3BED]">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Context Preservation</p>
                           <p className="text-sm text-black font-semibold">Maintaining relationships between cells, columns, and semantic meaning</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#CBB7EE]">
+                      <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#7C3BED]">
                         <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Multi-Language Support</p>
@@ -2165,7 +2165,7 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="mt-6 p-4 bg-primary/5 rounded-lg border-2 border-[#CBB7EE]">
+                    <div className="mt-6 p-4 bg-primary/5 rounded-lg border-2 border-[#7C3BED]">
                       <p className="text-sm text-muted-foreground">
                         <span className="font-semibold text-foreground">Benchmark Result:</span> In independent evaluations on MT-Bench, AxLiner achieved a score of <span className="font-semibold text-primary">7.2</span>, outperforming Llama 3 13B (6.65) despite using a more efficient 7B parameter architecture.
                       </p>
@@ -2188,13 +2188,13 @@ export default function Home() {
                       </p>
                     </div>
 
-                    <div className="p-5 bg-muted/50 rounded-lg border-2 border-[#CBB7EE] font-mono text-sm">
+                    <div className="p-5 bg-muted/50 rounded-lg border-2 border-[#7C3BED] font-mono text-sm">
                       <p className="text-foreground leading-relaxed italic">
                         "Always assist with care, respect, and truth. Respond with utmost utility yet securely. Avoid harmful, unethical, prejudiced, or negative content. Ensure replies promote fairness and positivity."
                       </p>
                     </div>
 
-                    <div className="overflow-hidden rounded-lg border-2 border-[#CBB7EE] mt-6">
+                    <div className="overflow-hidden rounded-lg border-2 border-[#7C3BED] mt-6">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-border/50 bg-muted/30">
@@ -2240,7 +2240,7 @@ export default function Home() {
                       </p>
                     </div>
 
-                    <div className="mt-6 p-5 bg-[#F5EEFF] rounded-lg border-2 border-[#CBB7EE]">
+                    <div className="mt-6 p-5 bg-[#F5EEFF] rounded-lg border-2 border-[#7C3BED]">
                       <div className="flex items-start gap-3">
                         <Award className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                         <div>
@@ -2249,12 +2249,12 @@ export default function Home() {
                             Evaluated on a manually curated and balanced dataset of adversarial and standard prompts:
                           </p>
                           <div className="grid grid-cols-2 gap-4">
-                            <div className="text-center p-3 bg-background rounded-lg border-2 border-[#CBB7EE]">
-                              <p className="text-2xl font-bold text-[#764ba2]">99.4%</p>
+                            <div className="text-center p-3 bg-background rounded-lg border-2 border-[#7C3BED]">
+                              <p className="text-2xl font-bold text-[#441F84]">99.4%</p>
                               <p className="text-xs text-muted-foreground mt-1">Precision</p>
                             </div>
-                            <div className="text-center p-3 bg-background rounded-lg border-2 border-[#CBB7EE]">
-                              <p className="text-2xl font-bold text-[#764ba2]">95.6%</p>
+                            <div className="text-center p-3 bg-background rounded-lg border-2 border-[#7C3BED]">
+                              <p className="text-2xl font-bold text-[#441F84]">95.6%</p>
                               <p className="text-xs text-muted-foreground mt-1">Recall</p>
                             </div>
                           </div>
@@ -2285,7 +2285,7 @@ export default function Home() {
           <div className="container mx-auto px-1 sm:px-3 lg:px-4 text-center">
             {/* CTA Content */}
             <div className="max-w-3xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#CBB7EE] mb-4 shadow-lg shadow-[#CBB7EE]/10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#7C3BED] mb-4 shadow-lg shadow-[#7C3BED]/10">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
                   Ready to Transform Your Workflow?
                 </h2>
@@ -2498,7 +2498,7 @@ export default function Home() {
             <Button
               variant="outline"
               onClick={() => setShowLimitDialog(false)}
-              className="flex-1 border-2 border-[#CBB7EE]"
+              className="flex-1 border-2 border-[#7C3BED]"
             >
               Maybe Later
             </Button>
@@ -2507,7 +2507,7 @@ export default function Home() {
                 setShowLimitDialog(false);
                 setShowSignInModal(true);
               }}
-              className="flex-1 bg-primary hover:bg-primary/90 border-2 border-[#CBB7EE]"
+              className="flex-1 bg-primary hover:bg-primary/90 border-2 border-[#7C3BED]"
             >
               Sign In
             </Button>

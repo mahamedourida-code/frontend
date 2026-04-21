@@ -102,7 +102,7 @@ export default function UploadTypePage() {
             >
               <ArrowLeft className="h-3.5 w-3.5" />
             </Button>
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white dark:bg-white border-2 border-[#CBB7EE] shadow-sm">
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white dark:bg-white border-2 border-[#7C3BED] shadow-sm">
               <h1 className="text-xs lg:text-sm font-semibold text-foreground">Select Type</h1>
             </div>
           </div>
@@ -159,7 +159,7 @@ export default function UploadTypePage() {
                   disabled={isOutOfCredits}
                   className={cn(
                     "group relative flex flex-col items-center justify-center p-4 lg:p-6",
-                    "bg-white dark:bg-white rounded-xl border-2 border-[#CBB7EE] shadow-lg shadow-[#CBB7EE]/10",
+                    "bg-white dark:bg-white rounded-xl border-2 border-[#7C3BED] shadow-lg shadow-[#7C3BED]/10",
                     "transition-all duration-200",
                     isOutOfCredits ? (
                       "opacity-50 cursor-not-allowed"

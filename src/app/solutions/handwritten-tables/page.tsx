@@ -16,7 +16,7 @@ export default function HandwrittenTablesPage() {
       {/* Duplo30 Background */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
         <img
-          src="/duplo30.jpg"
+          src="/leaf-background.jpg"
           alt="Background pattern"
           className="w-full h-full object-cover object-top"
         />
@@ -54,7 +54,7 @@ export default function HandwrittenTablesPage() {
         <div className="text-center mb-16">
           <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Solutions</Badge>
           <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
-            Handwritten Tables to <span className="bg-gradient-to-r from-primary via-[#9C3DEB] to-[#CBB7EE] bg-clip-text text-transparent">Excel</span>
+            Handwritten Tables to <span className="bg-gradient-to-r from-primary via-[#7C3BED] to-[#7C3BED] bg-clip-text text-transparent">Excel</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Transform handwritten tables, forms, and notes into structured Excel spreadsheets with our advanced OCR technology.

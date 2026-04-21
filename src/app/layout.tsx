@@ -94,7 +94,7 @@ export default function RootLayout({
       >
         <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
           <img
-            src="/duplo30.jpg"
+            src="/leaf-background.jpg"
             alt="Background pattern"
             aria-hidden="true"
             className="w-full h-full object-cover object-top"

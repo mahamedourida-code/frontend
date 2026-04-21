@@ -138,7 +138,7 @@
   
   /* Gradient text */
   .gradient-text {
-    background: linear-gradient(135deg, #CBB7EE 0%, #764ba2 100%);
+    background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -181,39 +181,43 @@
 }
 
 :root {
-  /* Light Mode */
-  --background: rgb(255 255 255 / 0.72);
-  --foreground: oklch(0.2046 0 0);
-  --card: rgb(255 255 255 / 0.96);
-  --card-foreground: oklch(0.2046 0 0);
-  --popover: rgb(255 255 255 / 0.98);
-  --popover-foreground: oklch(0.4386 0 0);
-  --primary: #764ba2;
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: #CBB7EE;
-  --secondary-foreground: oklch(0.15 0 0);
-  --muted: rgb(245 238 255 / 0.78);
-  --muted-foreground: oklch(0.45 0 0);
-  --accent: rgb(245 238 255 / 0.8);
-  --accent-foreground: oklch(0.25 0 0);
-  --destructive: oklch(0.5523 0.1927 32.7272);
-  --destructive-foreground: oklch(0.9934 0.0032 17.2118);
-  --border: oklch(0.87 0 0);               /* More visible borders */
-  --input: rgb(255 255 255 / 0.96);
-  --ring: #764ba2;
-  --chart-1: #764ba2;
-  --chart-2: oklch(0.6231 0.1880 259.8145);
-  --chart-3: oklch(0.6056 0.2189 292.7172);
-  --chart-4: #CBB7EE;
-  --chart-5: oklch(0.6959 0.1491 162.4796);
-  --sidebar: oklch(0.94 0 0);              /* Slightly darker sidebar */
-  --sidebar-foreground: oklch(0.35 0 0);
-  --sidebar-primary: #764ba2;
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.88 0 0);
-  --sidebar-accent-foreground: oklch(0.25 0 0);
-  --sidebar-border: oklch(0.87 0 0);
-  --sidebar-ring: #764ba2;
+  --background: hsl(220 23% 95%);
+  --foreground: hsl(224 71% 4%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(224 71% 4%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(224 71% 4%);
+  --primary: hsl(262 62% 32%);
+  --primary-foreground: hsl(210 40% 98%);
+  --secondary: hsl(210 40% 96%);
+  --secondary-foreground: hsl(222 47% 11%);
+  --muted: hsl(210 40% 96%);
+  --muted-foreground: hsl(215 25% 35%);
+  --accent: hsl(199 89% 48%);
+  --accent-foreground: hsl(222 47% 11%);
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: hsl(210 40% 98%);
+  --border: hsl(214 32% 91%);
+  --input: hsl(214 32% 91%);
+  --ring: hsl(262 83% 58%);
+  --chart-1: hsl(262 62% 32%);
+  --chart-2: hsl(262 83% 58%);
+  --chart-3: hsl(199 89% 48%);
+  --chart-4: hsl(263 70% 50%);
+  --chart-5: hsl(199 89% 48%);
+  --sidebar: hsl(210 40% 96%);
+  --sidebar-foreground: hsl(224 71% 4%);
+  --sidebar-primary: hsl(262 62% 32%);
+  --sidebar-primary-foreground: hsl(210 40% 98%);
+  --sidebar-accent: hsl(210 40% 96%);
+  --sidebar-accent-foreground: hsl(222 47% 11%);
+  --sidebar-border: hsl(214 32% 91%);
+  --sidebar-ring: hsl(262 83% 58%);
+  --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(199 89% 48%) 100%);
+  --gradient-secondary: linear-gradient(135deg, hsl(210 40% 96%) 0%, hsl(214 32% 91%) 100%);
+  --gradient-accent: linear-gradient(135deg, hsl(199 89% 48%) 0%, hsl(262 83% 58%) 100%);
+  --gradient-glass: linear-gradient(135deg, rgb(255 255 255 / 0.1) 0%, rgb(255 255 255 / 0.05) 100%);
+  --shadow-glow: 0 0 50px -12px hsl(262 83% 58% / 0.5);
   --font-sans: var(--font-nunito), system-ui, -apple-system, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: monospace;
@@ -237,39 +241,38 @@
 }
 
 .dark {
-  /* Dark Mode */
-  --background: oklch(0.15 0 0);           /* Darker background */
-  --foreground: oklch(0.92 0 0);
-  --card: oklch(0.18 0 0);                 /* Slightly elevated card surface */
-  --card-foreground: oklch(0.92 0 0);
-  --popover: oklch(0.25 0 0);
-  --popover-foreground: oklch(0.88 0 0);
-  --primary: #9C3DEB;
-  --primary-foreground: oklch(0.08 0 0);
-  --secondary: #CBB7EE;
-  --secondary-foreground: oklch(0.08 0 0);
-  --muted: oklch(0.22 0 0);                /* Subtle muted sections */
-  --muted-foreground: #CBB7EE;
-  --accent: oklch(0.25 0 0);               /* Subtle accent */
-  --accent-foreground: oklch(0.92 0 0);
-  --destructive: oklch(0.3123 0.0852 29.7877);
-  --destructive-foreground: oklch(0.9368 0.0045 34.3092);
-  --border: oklch(0.28 0 0);               /* Subtle borders */
-  --input: oklch(0.22 0 0);                /* Input fields */
-  --ring: #9C3DEB;
-  --chart-1: #9C3DEB;
-  --chart-2: oklch(0.7137 0.1434 254.6240);
-  --chart-3: oklch(0.7090 0.1592 293.5412);
-  --chart-4: #CBB7EE;
-  --chart-5: oklch(0.7845 0.1325 181.9120);
-  --sidebar: oklch(0.12 0 0);              /* Darker sidebar */
-  --sidebar-foreground: oklch(0.70 0 0);
-  --sidebar-primary: #9C3DEB;
-  --sidebar-primary-foreground: oklch(0.08 0 0);
-  --sidebar-accent: oklch(0.25 0 0);
-  --sidebar-accent-foreground: oklch(0.92 0 0);
-  --sidebar-border: oklch(0.28 0 0);
-  --sidebar-ring: #9C3DEB;
+  --background: hsl(224 71% 4%);
+  --foreground: hsl(210 40% 98%);
+  --card: hsl(222 47% 11%);
+  --card-foreground: hsl(210 40% 98%);
+  --popover: hsl(222 47% 11%);
+  --popover-foreground: hsl(210 40% 98%);
+  --primary: hsl(263 70% 50%);
+  --primary-foreground: hsl(224 71% 4%);
+  --secondary: hsl(217 33% 17%);
+  --secondary-foreground: hsl(210 40% 98%);
+  --muted: hsl(217 33% 17%);
+  --muted-foreground: hsl(215 25% 65%);
+  --accent: hsl(199 89% 48%);
+  --accent-foreground: hsl(222 47% 11%);
+  --destructive: hsl(0 63% 31%);
+  --destructive-foreground: hsl(210 40% 98%);
+  --border: hsl(217 33% 17%);
+  --input: hsl(217 33% 17%);
+  --ring: hsl(263 70% 50%);
+  --chart-1: hsl(263 70% 50%);
+  --chart-2: hsl(262 83% 58%);
+  --chart-3: hsl(199 89% 48%);
+  --chart-4: hsl(263 70% 50%);
+  --chart-5: hsl(199 89% 48%);
+  --sidebar: hsl(222 47% 11%);
+  --sidebar-foreground: hsl(210 40% 98%);
+  --sidebar-primary: hsl(263 70% 50%);
+  --sidebar-primary-foreground: hsl(224 71% 4%);
+  --sidebar-accent: hsl(217 33% 17%);
+  --sidebar-accent-foreground: hsl(210 40% 98%);
+  --sidebar-border: hsl(217 33% 17%);
+  --sidebar-ring: hsl(263 70% 50%);
   --font-sans: var(--font-nunito), system-ui, -apple-system, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: monospace;
