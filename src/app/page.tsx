@@ -34,7 +34,7 @@ import ParticlesBackground from "@/components/ParticlesBackground";
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Camera, FileSpreadsheet, Zap, Clock, Users, Star, CheckCircle, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Wand2, Sparkle, Trophy, Download, Loader2, X, Share2, Edit3, Copy, MessageCircle, Link, CheckCircle2, AlertTriangle, CircuitBoard, ScanText, PencilLine, Network, Languages, ScrollText } from "lucide-react";
+import { Camera, FileSpreadsheet, Zap, Clock, Users, Star, CheckCircle, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Wand2, Sparkle, Trophy, Download, Loader2, X, Share2, Edit3, Copy, MessageCircle, Link, CheckCircle2, AlertTriangle, CircuitBoard, ScanText, PencilLine, Network, Languages, ScrollText } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { ActiveUsersCounter } from "@/components/ActiveUsersCounter";
 import { wakeUpBackendSilently } from "@/lib/backend-health";
@@ -1152,21 +1152,21 @@ export default function Home() {
                 </div>
 
                 <div className="grid grid-cols-3 items-center gap-2 sm:gap-6 lg:gap-8">
-                  <div className="hero-flow-item relative z-10 flex h-[210px] items-center justify-center sm:h-[340px] lg:h-[440px] xl:h-[500px]">
+                  <div className="hero-flow-item relative z-10 flex h-[190px] items-center justify-center sm:h-[310px] lg:h-[400px] xl:h-[460px]">
                     <img
                       src="/hero-flow/handwritten.svg"
                       alt="Handwritten table input"
                       className="h-full w-full object-contain drop-shadow-2xl"
                     />
                   </div>
-                  <div className="hero-flow-item hero-flow-core relative z-20 flex h-[225px] items-center justify-center sm:h-[360px] lg:h-[470px] xl:h-[530px]">
+                  <div className="hero-flow-item hero-flow-core relative z-20 flex h-[205px] items-center justify-center sm:h-[330px] lg:h-[430px] xl:h-[490px]">
                     <img
                       src="/hero-flow/axliner.svg"
                       alt="AxLiner conversion"
                       className="h-[92%] w-full object-contain drop-shadow-2xl sm:h-full"
                     />
                   </div>
-                  <div className="hero-flow-item relative z-10 flex h-[210px] items-center justify-center sm:h-[340px] lg:h-[440px] xl:h-[500px]">
+                  <div className="hero-flow-item relative z-10 flex h-[190px] items-center justify-center sm:h-[310px] lg:h-[400px] xl:h-[460px]">
                     <img
                       src="/hero-flow/excel.svg"
                       alt="Excel result"
@@ -1239,7 +1239,7 @@ export default function Home() {
               </div>
             </div>
               <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : isProcessing ? 'w-full max-w-3xl' : 'w-full max-w-7xl'}`}>
-                <div className={!isProcessing && resultFiles.length === 0 ? "grid items-center gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(480px,1.1fr)]" : "relative w-full"}>
+                <div className={!isProcessing && resultFiles.length === 0 ? "grid items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(440px,0.95fr)]" : "relative w-full"}>
                 <div className="relative w-full space-y-3">
                   {/* Upload Dropzone - Hide when showing results */}
                   {!processingComplete && resultFiles.length === 0 && (
@@ -1255,13 +1255,13 @@ export default function Home() {
                             : uploadedFiles.length > 0
                               ? 'border-[#A78BFA] bg-[#A78BFA]/5'
                               : 'border-[#A78BFA]/50 hover:border-[#A78BFA] hover:bg-[#A78BFA]/5'
-                        } p-6 lg:p-8 min-h-[150px]`}
+                        } p-7 lg:p-10 min-h-[190px]`}
                       >
                         <div className="text-center">
                           {uploadedFiles.length === 0 ? (
                             <>
-                              <Upload className="h-10 w-10 text-primary mx-auto mb-3" />
-                              <h3 className="text-base font-medium mb-2">
+                              <Upload className="h-12 w-12 text-primary mx-auto mb-4" />
+                              <h3 className="text-lg font-medium mb-2">
                                 {isDragging ? 'Drop your images here' : 'Upload up to 100 table images now'}
                               </h3>
                               <input
@@ -1871,7 +1871,7 @@ export default function Home() {
               </div>
 
               {/* Main Content */}
-              <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.82fr)_minmax(560px,1.18fr)]">
+              <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(660px,1.28fr)]">
                 <Card className="bg-transparent dark:bg-transparent border border-border/30 rounded-lg shadow-none" style={{ backgroundColor: 'transparent' }}>
                   <CardContent className="space-y-6 p-6 sm:p-8">
                     <p className="text-lg text-foreground leading-relaxed">
@@ -1904,7 +1904,7 @@ export default function Home() {
             <div className="text-center mb-12" data-animate="headline">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#A78BFA] mb-4 shadow-lg shadow-[#A78BFA]/10">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                  Specialized Solutions
+                  Solutions
                 </h2>
               </div>
             </div>
@@ -1912,7 +1912,11 @@ export default function Home() {
             <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
               <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
-                  <PenTool className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
+                  <img
+                    src="/New%20folder/handwritten.svg"
+                    alt=""
+                    className="mx-auto mb-4 h-32 w-full object-contain"
+                  />
                   <CardTitle className="text-xl mb-2">Handwritten Tables</CardTitle>
                   <CardDescription className="text-base">
                     <span className="font-semibold text-amber-700">99.5% accuracy</span> on handwritten tables - industry-leading performance with our specialized model
@@ -1922,7 +1926,11 @@ export default function Home() {
 
               <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
-                  <FileText className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
+                  <img
+                    src="/New%20folder/aa.svg"
+                    alt=""
+                    className="mx-auto mb-4 h-32 w-full object-contain"
+                  />
                   <CardTitle className="text-xl mb-2">Paper Forms tables</CardTitle>
                   <CardDescription className="text-base">
                     Digitize secretary paperwork and manual forms to CSV with intelligent field recognition
@@ -1932,7 +1940,11 @@ export default function Home() {
 
               <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
                 <CardHeader className="text-center">
-                  <FileSpreadsheet className="w-12 h-12 text-primary mx-auto mb-4 stroke-[1.5]" />
+                  <img
+                    src="/New%20folder/fina.svg"
+                    alt=""
+                    className="mx-auto mb-4 h-32 w-full object-contain"
+                  />
                   <CardTitle className="text-xl mb-2">Financial Documents tables</CardTitle>
                   <CardDescription className="text-base">
                     Process invoices, receipts, and expense reports to XLSX with accurate financial data extraction

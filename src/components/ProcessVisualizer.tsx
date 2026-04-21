@@ -20,7 +20,7 @@ function FlowPacket({ delay, duration, shouldReduceMotion }: FlowPacketProps) {
 
   return (
     <motion.div
-      className="absolute left-1/2 z-20 h-24 w-36 -translate-x-1/2 overflow-hidden rounded-xl border border-[#A78BFA]/25 bg-white/35 shadow-lg shadow-black/10 backdrop-blur-md"
+      className="absolute left-1/2 z-20 h-28 w-44 -translate-x-1/2 overflow-hidden"
       initial={false}
       animate={
         shouldReduceMotion
@@ -105,7 +105,7 @@ export function ProcessVisualizer() {
   return (
     <motion.div
       aria-label="Axliner automation pipeline"
-      className="relative mx-auto min-h-[780px] w-full max-w-[620px] overflow-hidden rounded-[28px] border border-[#A78BFA]/25 bg-white/15 p-6 shadow-2xl shadow-black/5 backdrop-blur-xl sm:min-h-[820px]"
+      className="relative mx-auto min-h-[940px] w-full max-w-[820px] overflow-visible p-0 sm:min-h-[980px]"
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       whileHover={{ scale: 1.01 }}
@@ -131,13 +131,13 @@ export function ProcessVisualizer() {
       <FlowPacket delay={0} duration={duration} shouldReduceMotion={Boolean(shouldReduceMotion)} />
       <FlowPacket delay={duration / 2} duration={duration} shouldReduceMotion={Boolean(shouldReduceMotion)} />
 
-      <div className="relative z-10 flex h-full min-h-[720px] flex-col justify-between sm:min-h-[760px]">
-        <div className="mx-auto flex h-56 w-full max-w-[500px] items-center justify-center">
+      <div className="relative z-10 flex h-full min-h-[900px] flex-col justify-between sm:min-h-[940px]">
+        <div className="mx-auto flex h-72 w-full max-w-[720px] items-center justify-center">
           <img src={assetPaths.chaos} alt="" className="h-full w-full object-contain drop-shadow-xl" />
         </div>
 
         <motion.div
-          className="relative mx-auto flex h-64 w-full max-w-[520px] items-center justify-center"
+          className="relative mx-auto flex h-80 w-full max-w-[760px] items-center justify-center"
           animate={shouldReduceMotion ? {} : { scale: [1, 1.035, 1] }}
           transition={{ duration: 2.4, repeat, ease: "easeInOut" }}
         >
@@ -145,7 +145,7 @@ export function ProcessVisualizer() {
         </motion.div>
 
         <motion.div
-          className="mx-auto flex h-56 w-full max-w-[500px] items-center justify-center rounded-2xl"
+          className="mx-auto flex h-72 w-full max-w-[720px] items-center justify-center"
           animate={{
             scale: isHovered ? 1.045 : 1,
             filter: isHovered ? "drop-shadow(0 18px 32px rgba(15, 23, 42, 0.16))" : "drop-shadow(0 12px 24px rgba(15, 23, 42, 0.08))",
