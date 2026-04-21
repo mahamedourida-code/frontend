@@ -2277,21 +2277,21 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         {/* Final CTA Section */}
-        <section className="py-24 relative z-10">
-          <div className="container mx-auto px-1 sm:px-3 lg:px-4 text-center">
+        <section className="relative z-10 overflow-hidden py-24">
+          <div className="grid w-full items-center gap-10 pl-4 sm:pl-6 lg:grid-cols-[minmax(420px,0.82fr)_minmax(620px,1.18fr)] lg:gap-14 lg:pl-12 xl:pl-20">
             {/* CTA Content */}
-            <div className="max-w-3xl mx-auto">
+            <div className="max-w-3xl text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#A78BFA] mb-4 shadow-lg shadow-[#A78BFA]/10">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
                   Ready to Transform Your Workflow?
                 </h2>
               </div>
-              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto lg:mx-0">
                 Join thousands of professionals who have already revolutionized their data extraction process with AxLiner.
               </p>
               
               {/* Single Primary CTA */}
-              <div className="flex justify-center">
+              <div className="flex justify-center lg:justify-start">
                 {isAuthenticated ? (
                   <Button
                     size="lg"
@@ -2310,6 +2310,14 @@ export default function Home() {
                   </Button>
                 )}
               </div>
+            </div>
+
+            <div className="relative min-h-[340px] w-full overflow-hidden sm:min-h-[430px] lg:min-h-[560px]">
+              <img
+                src="/cta-team.jpg"
+                alt="Team collaborating around laptops"
+                className="absolute inset-0 h-full w-full object-cover object-center lg:rounded-l-[2rem]"
+              />
             </div>
           </div>
         </section>
