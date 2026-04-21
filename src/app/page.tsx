@@ -1224,7 +1224,7 @@ export default function Home() {
 
                 <div className="relative z-10 overflow-hidden" data-animate="stagger">
                   <div
-                    className="flex gap-8 items-center"
+                    className="flex gap-10 items-center"
                     style={{
                       animation: 'scroll-left 60s linear infinite',
                       width: 'max-content',
@@ -1236,13 +1236,13 @@ export default function Home() {
                       [1, 2, 3, 4, 5, 6, 7, 8, 9].map((imgNum) => (
                         <Card
                           key={`${setIndex}-${imgNum}`}
-                          className="flex-shrink-0 bg-white dark:bg-white border border-border/50 hover:border-[#A78BFA]/30 transition-all duration-300 hover:shadow-md w-[120px] h-[80px]"
+                          className="flex-shrink-0 bg-white dark:bg-white border border-border/50 hover:border-[#A78BFA]/30 transition-all duration-300 hover:shadow-md w-[180px] h-[120px]"
                         >
-                          <CardContent className="p-2 flex items-center justify-center w-full h-full">
+                          <CardContent className="p-4 flex items-center justify-center w-full h-full">
                             <img
                               src={`/${imgNum}.jpeg`}
                               alt={`Company ${imgNum}`}
-                              className="w-[100px] h-[60px] object-contain opacity-60 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0"
+                              className="w-[150px] h-[90px] object-contain opacity-60 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.style.display = 'none';
@@ -1910,7 +1910,7 @@ export default function Home() {
               </div>
 
               {/* Main Content */}
-              <div className="grid items-center gap-3 xl:grid-cols-[minmax(680px,0.98fr)_minmax(820px,1.02fr)]">
+              <div className="grid items-start gap-3 xl:grid-cols-[minmax(680px,0.98fr)_minmax(820px,1.02fr)]">
                 <Card className="bg-transparent dark:bg-transparent border border-border/30 rounded-lg shadow-none" style={{ backgroundColor: 'transparent' }}>
                   <CardContent className="space-y-6 p-6 sm:p-8">
                     <p className="text-lg text-foreground leading-relaxed">
@@ -1948,44 +1948,44 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
-              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
-                <CardHeader className="text-center">
+            <div className="flex flex-col md:flex-row gap-8 max-w-[1500px] mx-auto justify-center">
+              <Card data-animate="stagger" className="flex-1 min-h-[440px] bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
+                <CardHeader className="text-center p-8">
                   <img
                     src="/New%20folder/handwritten.svg"
                     alt=""
-                    className="mx-auto mb-4 h-32 w-full object-contain"
+                    className="mx-auto mb-7 h-56 w-full object-contain xl:h-64"
                   />
-                  <CardTitle className="text-xl mb-2">Handwritten Tables</CardTitle>
-                  <CardDescription className="text-base">
+                  <CardTitle className="text-2xl mb-3">Handwritten Tables</CardTitle>
+                  <CardDescription className="text-lg leading-relaxed">
                     <span className="font-semibold text-amber-700">99.5% accuracy</span> on handwritten tables - industry-leading performance with our specialized model
                   </CardDescription>
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
-                <CardHeader className="text-center">
+              <Card data-animate="stagger" className="flex-1 min-h-[440px] bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
+                <CardHeader className="text-center p-8">
                   <img
                     src="/New%20folder/aa.svg"
                     alt=""
-                    className="mx-auto mb-4 h-32 w-full object-contain"
+                    className="mx-auto mb-7 h-56 w-full object-contain xl:h-64"
                   />
-                  <CardTitle className="text-xl mb-2">Paper Forms tables</CardTitle>
-                  <CardDescription className="text-base">
+                  <CardTitle className="text-2xl mb-3">Paper Forms tables</CardTitle>
+                  <CardDescription className="text-lg leading-relaxed">
                     Digitize secretary paperwork and manual forms to CSV with intelligent field recognition
                   </CardDescription>
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
-                <CardHeader className="text-center">
+              <Card data-animate="stagger" className="flex-1 min-h-[440px] bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
+                <CardHeader className="text-center p-8">
                   <img
                     src="/New%20folder/fina.svg"
                     alt=""
-                    className="mx-auto mb-4 h-32 w-full object-contain"
+                    className="mx-auto mb-7 h-56 w-full object-contain xl:h-64"
                   />
-                  <CardTitle className="text-xl mb-2">Financial Documents tables</CardTitle>
-                  <CardDescription className="text-base">
+                  <CardTitle className="text-2xl mb-3">Financial Documents tables</CardTitle>
+                  <CardDescription className="text-lg leading-relaxed">
                     Process invoices, receipts, and expense reports to XLSX with accurate financial data extraction
                   </CardDescription>
                 </CardHeader>
