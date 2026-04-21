@@ -49,6 +49,7 @@ import * as XLSX from 'xlsx';
 import { GoogleSignInModal } from "@/components/GoogleSignInModal";
 import NextLink from "next/link";
 import { compressImages, formatFileSize } from "@/lib/image-compression";
+import { ProcessVisualizer } from "@/components/ProcessVisualizer";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -1879,23 +1880,7 @@ export default function Home() {
                   </CardContent>
                 </Card>
 
-                <div className="grid gap-8 sm:grid-cols-3 lg:grid-cols-1 lg:gap-10" aria-hidden="true">
-                  <img
-                    src="/what-is/invoice-problem.svg"
-                    alt=""
-                    className="mx-auto h-48 w-full max-w-[260px] object-contain drop-shadow-xl sm:h-56 lg:h-44 lg:max-w-[340px] xl:h-48"
-                  />
-                  <img
-                    src="/what-is/discover-axliner.svg"
-                    alt=""
-                    className="mx-auto h-48 w-full max-w-[260px] object-contain drop-shadow-xl sm:h-56 lg:h-44 lg:max-w-[340px] xl:h-48"
-                  />
-                  <img
-                    src="/what-is/chill-result.svg"
-                    alt=""
-                    className="mx-auto h-48 w-full max-w-[260px] object-contain drop-shadow-xl sm:h-56 lg:h-44 lg:max-w-[340px] xl:h-48"
-                  />
-                </div>
+                <ProcessVisualizer />
               </div>
             </div>
           </div>
