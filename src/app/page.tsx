@@ -1144,6 +1144,17 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
+        <div className="relative isolate overflow-hidden">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
+            style={{
+              backgroundImage: "url('/lifo.jpg')",
+              clipPath:
+                "polygon(0 0, 100% 0, 100% 90%, 96% 94%, 91% 90%, 86% 96%, 80% 92%, 73% 98%, 66% 93%, 58% 96%, 50% 91%, 42% 97%, 34% 93%, 27% 96%, 20% 91%, 14% 95%, 8% 90%, 0 94%)",
+            }}
+          />
+          <div className="relative z-10">
         <section ref={heroRef} className="relative overflow-hidden pt-20 sm:pt-28 lg:pt-24 pb-8 sm:pb-10">
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto px-4 sm:px-5 lg:px-9 max-w-[1400px]">
@@ -1263,6 +1274,8 @@ export default function Home() {
 
           </div>
         </section>
+          </div>
+        </div>
 
         {/* Conversion Section */}
         <section id="converter" className="relative z-10 pt-4 pb-16 sm:pt-6 lg:pt-8">
