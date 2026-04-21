@@ -2287,7 +2287,15 @@ export default function Home() {
 
         {/* Final CTA Section */}
         <section className="relative z-10 overflow-hidden py-24">
-          <div className="grid w-full items-start gap-10 pl-4 sm:pl-6 lg:grid-cols-[minmax(420px,0.82fr)_minmax(620px,1.18fr)] lg:gap-14 lg:pl-12 xl:pl-20">
+          <div className="grid w-full items-start gap-10 pr-4 sm:pr-6 lg:grid-cols-[minmax(620px,1.18fr)_minmax(420px,0.82fr)] lg:gap-14 lg:pr-12 xl:pr-20">
+            <div className="relative min-h-[340px] w-full overflow-hidden sm:min-h-[430px] lg:min-h-[560px]">
+              <img
+                src="/cta-team.jpg"
+                alt="Team collaborating around laptops"
+                className="absolute inset-0 h-full w-full object-cover object-center lg:rounded-r-[2rem]"
+              />
+            </div>
+
             {/* CTA Content */}
             <div className="flex min-h-[560px] max-w-3xl flex-col text-center lg:text-left">
               <div className="inline-flex w-fit items-center gap-2 self-center rounded-full border-2 border-[#A78BFA] bg-transparent px-3 py-1.5 shadow-lg shadow-[#A78BFA]/10 lg:self-start mb-14">
@@ -2319,14 +2327,6 @@ export default function Home() {
                   </Button>
                 )}
               </div>
-            </div>
-
-            <div className="relative min-h-[340px] w-full overflow-hidden sm:min-h-[430px] lg:min-h-[560px]">
-              <img
-                src="/cta-team.jpg"
-                alt="Team collaborating around laptops"
-                className="absolute inset-0 h-full w-full object-cover object-center lg:rounded-l-[2rem]"
-              />
             </div>
           </div>
         </section>
