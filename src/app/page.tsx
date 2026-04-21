@@ -1111,11 +1111,11 @@ export default function Home() {
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto px-4 sm:px-5 lg:px-9 max-w-[1400px]">
             <div className="relative flex min-h-[680px] flex-col items-center justify-start gap-5 pt-4 sm:min-h-[calc(100vh-6rem)] sm:justify-start sm:gap-7 sm:pt-6 lg:pt-8">
-              <div className="mx-auto max-w-5xl text-center">
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-normal text-black dark:text-white leading-[1.06] tracking-tight">
+              <div className="mx-auto w-full max-w-7xl text-center">
+                <h1 className="text-4xl sm:text-5xl lg:text-7xl font-normal text-black dark:text-white leading-[1.04] tracking-tight">
                   <span className="text-primary font-bold">Handwritten images</span> to <span className="text-primary font-bold">Excel</span> in seconds
                 </h1>
-                <p className="mx-auto mt-10 max-w-5xl text-sm sm:text-base text-muted-foreground leading-relaxed lg:mt-12">
+                <p className="mx-auto mt-10 w-full max-w-7xl text-sm sm:text-base lg:text-lg text-muted-foreground leading-relaxed lg:mt-12">
                   Upload handwritten tables, class notes, invoices, receipts, paper forms, and screenshots from any workflow. AxLiner reads the structure, preserves the rows and columns, and gives you clean Excel files you can review, edit, share, or use in reporting without retyping everything by hand.
                 </p>
                 <div className="mt-5 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -1123,7 +1123,7 @@ export default function Home() {
                     onClick={() => scrollToSection('converter')}
                     className="h-11 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
                   >
-                    Convert now
+                    Try it
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <div className="flex -space-x-2">
