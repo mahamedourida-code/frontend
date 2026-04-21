@@ -1859,7 +1859,7 @@ export default function Home() {
 
               {/* Main Content */}
               <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.9fr)]">
-                <Card className="bg-white/90 dark:bg-card border border-border rounded-lg shadow-sm backdrop-blur-sm">
+                <Card className="bg-transparent dark:bg-transparent border border-border/30 rounded-lg shadow-none" style={{ backgroundColor: 'transparent' }}>
                   <CardContent className="space-y-6 p-6 sm:p-8">
                     <p className="text-lg text-foreground leading-relaxed">
                       Axliner is a <span className="font-bold">7-billion parameter vision-language model</span> a fine-tuned Meta's Llama 3 Model. The model underwent extensive instruction fine-tuning specifically optimized for <span className="font-bold">handwritten text recognition</span>, <span className="font-bold">table structure preservation</span>, and <span className="font-bold">multi-language document understanding</span>.
@@ -1879,21 +1879,21 @@ export default function Home() {
                   </CardContent>
                 </Card>
 
-                <div className="grid gap-5 sm:grid-cols-3 lg:relative lg:block lg:min-h-[520px]" aria-hidden="true">
+                <div className="grid gap-8 sm:grid-cols-3 lg:grid-cols-1 lg:gap-10" aria-hidden="true">
                   <img
                     src="/what-is/invoice-problem.svg"
                     alt=""
-                    className="h-48 w-full object-contain drop-shadow-xl sm:h-56 lg:absolute lg:left-0 lg:top-0 lg:h-[230px] lg:w-[58%]"
+                    className="mx-auto h-48 w-full max-w-[260px] object-contain drop-shadow-xl sm:h-56 lg:h-44 lg:max-w-[340px] xl:h-48"
                   />
                   <img
                     src="/what-is/discover-axliner.svg"
                     alt=""
-                    className="h-48 w-full object-contain drop-shadow-xl sm:h-56 lg:absolute lg:right-0 lg:top-[118px] lg:h-[245px] lg:w-[62%]"
+                    className="mx-auto h-48 w-full max-w-[260px] object-contain drop-shadow-xl sm:h-56 lg:h-44 lg:max-w-[340px] xl:h-48"
                   />
                   <img
                     src="/what-is/chill-result.svg"
                     alt=""
-                    className="h-48 w-full object-contain drop-shadow-xl sm:h-56 lg:absolute lg:bottom-0 lg:left-[8%] lg:h-[245px] lg:w-[64%]"
+                    className="mx-auto h-48 w-full max-w-[260px] object-contain drop-shadow-xl sm:h-56 lg:h-44 lg:max-w-[340px] xl:h-48"
                   />
                 </div>
               </div>
