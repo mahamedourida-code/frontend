@@ -2138,8 +2138,8 @@ export default function Home() {
 
         {/* AI Engine Section */}
         <ScrollAnimatedSection id="ai-engine" className="py-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-5xl mx-auto">
+          <div className="container mx-auto max-w-[1640px] px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto">
               <div className="text-center mb-16" data-animate="headline">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-[#A78BFA] mb-4 shadow-lg shadow-[#A78BFA]/10" style={{ backgroundColor: '#fbfdfc' }}>
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
@@ -2153,7 +2153,8 @@ export default function Home() {
               </div>
 
               {/* Main Content */}
-              <div className="space-y-12">
+              <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(440px,0.9fr)] lg:items-start">
+                <div className="space-y-12">
                 {/* Instruction Fine-Tuning */}
                 <Card className="border border-border shadow-lg" style={{ backgroundColor: '#fbfdfc' }} data-animate="stagger">
                   <CardHeader>
@@ -2263,7 +2264,15 @@ export default function Home() {
                     </p>
                   </CardContent>
                 </Card>
+                </div>
 
+                <div className="relative min-h-[520px] overflow-hidden rounded-l-[2rem] border border-[#A78BFA]/40 shadow-xl shadow-[#A78BFA]/10 lg:min-h-[760px]" data-animate="stagger">
+                  <img
+                    src="/frfr.jpg"
+                    alt="Professionals reviewing documents"
+                    className="absolute inset-0 h-full w-full object-cover object-center"
+                  />
+                </div>
               </div>
 
               {/* Footer Note */}
@@ -2291,7 +2300,7 @@ export default function Home() {
               </p>
               
               {/* Single Primary CTA */}
-              <div className="mt-auto flex justify-center">
+              <div className="mt-24 flex justify-center">
                 {isAuthenticated ? (
                   <Button
                     size="lg"
