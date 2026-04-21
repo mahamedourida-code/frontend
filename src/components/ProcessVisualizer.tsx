@@ -20,7 +20,7 @@ function FlowPacket({ delay, duration, shouldReduceMotion }: FlowPacketProps) {
 
   return (
     <motion.div
-      className="absolute left-1/2 z-20 h-20 w-28 -translate-x-1/2 overflow-hidden rounded-xl border border-[#A78BFA]/25 bg-white/35 shadow-lg shadow-[#441F84]/10 backdrop-blur-md"
+      className="absolute left-1/2 z-20 h-24 w-36 -translate-x-1/2 overflow-hidden rounded-xl border border-[#A78BFA]/25 bg-white/35 shadow-lg shadow-black/10 backdrop-blur-md"
       initial={false}
       animate={
         shouldReduceMotion
@@ -105,14 +105,12 @@ export function ProcessVisualizer() {
   return (
     <motion.div
       aria-label="Axliner automation pipeline"
-      className="relative mx-auto min-h-[620px] w-full max-w-[460px] overflow-hidden rounded-[28px] border border-[#A78BFA]/25 bg-white/15 p-5 shadow-2xl shadow-[#441F84]/10 backdrop-blur-xl sm:min-h-[660px]"
+      className="relative mx-auto min-h-[780px] w-full max-w-[620px] overflow-hidden rounded-[28px] border border-[#A78BFA]/25 bg-white/15 p-6 shadow-2xl shadow-black/5 backdrop-blur-xl sm:min-h-[820px]"
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       whileHover={{ scale: 1.01 }}
       transition={{ duration: 0.25 }}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,rgba(167,139,250,0.22),transparent_34%)]" />
-
       <svg
         className="pointer-events-none absolute left-1/2 top-16 h-[calc(100%-8rem)] w-10 -translate-x-1/2"
         viewBox="0 0 40 520"
@@ -133,29 +131,24 @@ export function ProcessVisualizer() {
       <FlowPacket delay={0} duration={duration} shouldReduceMotion={Boolean(shouldReduceMotion)} />
       <FlowPacket delay={duration / 2} duration={duration} shouldReduceMotion={Boolean(shouldReduceMotion)} />
 
-      <div className="relative z-10 flex h-full min-h-[580px] flex-col justify-between sm:min-h-[620px]">
-        <div className="mx-auto flex h-40 w-full max-w-[330px] items-center justify-center">
+      <div className="relative z-10 flex h-full min-h-[720px] flex-col justify-between sm:min-h-[760px]">
+        <div className="mx-auto flex h-56 w-full max-w-[500px] items-center justify-center">
           <img src={assetPaths.chaos} alt="" className="h-full w-full object-contain drop-shadow-xl" />
         </div>
 
         <motion.div
-          className="relative mx-auto flex h-44 w-full max-w-[350px] items-center justify-center"
+          className="relative mx-auto flex h-64 w-full max-w-[520px] items-center justify-center"
           animate={shouldReduceMotion ? {} : { scale: [1, 1.035, 1] }}
           transition={{ duration: 2.4, repeat, ease: "easeInOut" }}
         >
-          <motion.div
-            className="absolute inset-[-18%] rounded-full bg-[radial-gradient(circle,rgba(167,139,250,0.5),rgba(167,139,250,0.12)_38%,transparent_70%)] blur-xl"
-            animate={shouldReduceMotion ? { opacity: 0.45 } : { opacity: [0.25, 0.7, 0.25] }}
-            transition={{ duration: duration / 2 || 2.4, repeat, ease: "easeInOut" }}
-          />
-          <img src={assetPaths.cpu} alt="" className="relative h-full w-full object-contain drop-shadow-2xl" />
+          <img src={assetPaths.cpu} alt="" className="relative h-full w-full object-contain" />
         </motion.div>
 
         <motion.div
-          className="mx-auto flex h-40 w-full max-w-[330px] items-center justify-center rounded-2xl"
+          className="mx-auto flex h-56 w-full max-w-[500px] items-center justify-center rounded-2xl"
           animate={{
             scale: isHovered ? 1.045 : 1,
-            filter: isHovered ? "drop-shadow(0 18px 32px rgba(68, 31, 132, 0.28))" : "drop-shadow(0 12px 24px rgba(68, 31, 132, 0.14))",
+            filter: isHovered ? "drop-shadow(0 18px 32px rgba(15, 23, 42, 0.16))" : "drop-shadow(0 12px 24px rgba(15, 23, 42, 0.08))",
           }}
           transition={{ duration: 0.28 }}
         >

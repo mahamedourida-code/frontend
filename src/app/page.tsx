@@ -1141,32 +1141,32 @@ export default function Home() {
                 </div>
               </div>
 
-              <div ref={heroFlowRef} className="relative mx-auto w-full max-w-6xl">
-                <div className="pointer-events-none absolute left-[25%] top-1/2 hidden h-14 w-[22%] -translate-y-1/2 sm:block">
+              <div ref={heroFlowRef} className="relative mx-auto w-full max-w-[1500px]">
+                <div className="pointer-events-none absolute left-[24%] top-1/2 hidden h-16 w-[24%] -translate-y-1/2 sm:block">
                   <div className="hero-flow-line hero-flow-line-left absolute top-1/2 h-0.5 w-full origin-left scale-x-0 rounded-full bg-[#A78BFA] opacity-0" />
                   <div className="hero-flow-signal hero-flow-signal-left absolute left-0 top-1/2 h-2 w-10 -translate-y-1/2 rounded-full bg-[#A78BFA] opacity-0 blur-[1px]" />
                 </div>
-                <div className="pointer-events-none absolute right-[25%] top-1/2 hidden h-14 w-[22%] -translate-y-1/2 sm:block">
+                <div className="pointer-events-none absolute right-[24%] top-1/2 hidden h-16 w-[24%] -translate-y-1/2 sm:block">
                   <div className="hero-flow-line hero-flow-line-right absolute top-1/2 h-0.5 w-full origin-left scale-x-0 rounded-full bg-[#A78BFA] opacity-0" />
                   <div className="hero-flow-signal hero-flow-signal-right absolute left-0 top-1/2 h-2 w-10 -translate-y-1/2 rounded-full bg-[#A78BFA] opacity-0 blur-[1px]" />
                 </div>
 
-                <div className="grid grid-cols-3 items-center gap-3 sm:gap-8 lg:gap-12">
-                  <div className="hero-flow-item relative z-10 flex h-[150px] items-center justify-center sm:h-[245px] lg:h-[280px]">
+                <div className="grid grid-cols-3 items-center gap-2 sm:gap-6 lg:gap-8">
+                  <div className="hero-flow-item relative z-10 flex h-[210px] items-center justify-center sm:h-[340px] lg:h-[440px] xl:h-[500px]">
                     <img
                       src="/hero-flow/handwritten.svg"
                       alt="Handwritten table input"
                       className="h-full w-full object-contain drop-shadow-2xl"
                     />
                   </div>
-                  <div className="hero-flow-item hero-flow-core relative z-20 flex h-[150px] items-center justify-center sm:h-[245px] lg:h-[280px]">
+                  <div className="hero-flow-item hero-flow-core relative z-20 flex h-[225px] items-center justify-center sm:h-[360px] lg:h-[470px] xl:h-[530px]">
                     <img
                       src="/hero-flow/axliner.svg"
                       alt="AxLiner conversion"
                       className="h-[92%] w-full object-contain drop-shadow-2xl sm:h-full"
                     />
                   </div>
-                  <div className="hero-flow-item relative z-10 flex h-[150px] items-center justify-center sm:h-[245px] lg:h-[280px]">
+                  <div className="hero-flow-item relative z-10 flex h-[210px] items-center justify-center sm:h-[340px] lg:h-[440px] xl:h-[500px]">
                     <img
                       src="/hero-flow/excel.svg"
                       alt="Excel result"
@@ -1238,7 +1238,8 @@ export default function Home() {
                 </h2>
               </div>
             </div>
-              <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : 'w-full max-w-3xl'}`}>
+              <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : isProcessing ? 'w-full max-w-3xl' : 'w-full max-w-7xl'}`}>
+                <div className={!isProcessing && resultFiles.length === 0 ? "grid items-center gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(480px,1.1fr)]" : "relative w-full"}>
                 <div className="relative w-full space-y-3">
                   {/* Upload Dropzone - Hide when showing results */}
                   {!processingComplete && resultFiles.length === 0 && (
@@ -1674,6 +1675,17 @@ export default function Home() {
                   </div>
                   )}
                 </div>
+
+                {!isProcessing && resultFiles.length === 0 && (
+                  <div className="relative flex min-h-[360px] items-center justify-center sm:min-h-[480px] lg:min-h-[520px]" aria-hidden="true">
+                    <img
+                      src="/what-is/b.svg"
+                      alt=""
+                      className="h-[360px] w-full max-w-[720px] object-contain drop-shadow-xl sm:h-[500px] lg:h-[620px]"
+                    />
+                  </div>
+                )}
+                </div>
               </div>
           </div>
         </section>
@@ -1859,7 +1871,7 @@ export default function Home() {
               </div>
 
               {/* Main Content */}
-              <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.9fr)]">
+              <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.82fr)_minmax(560px,1.18fr)]">
                 <Card className="bg-transparent dark:bg-transparent border border-border/30 rounded-lg shadow-none" style={{ backgroundColor: 'transparent' }}>
                   <CardContent className="space-y-6 p-6 sm:p-8">
                     <p className="text-lg text-foreground leading-relaxed">
