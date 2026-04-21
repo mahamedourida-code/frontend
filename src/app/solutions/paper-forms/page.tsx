@@ -54,7 +54,7 @@ export default function PaperFormsPage() {
         <div className="text-center mb-16">
           <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Solutions</Badge>
           <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
-            Automate Paper Forms to <span className="bg-gradient-to-r from-primary via-[#7C3BED] to-[#7C3BED] bg-clip-text text-transparent">CSV</span>
+            Automate Paper Forms to <span className="bg-gradient-to-r from-primary via-[#A78BFA] to-[#A78BFA] bg-clip-text text-transparent">CSV</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Digitize secretary paperwork, manual forms, and administrative documents into structured CSV and Excel files automatically.
