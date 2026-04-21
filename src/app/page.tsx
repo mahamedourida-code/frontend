@@ -2281,12 +2281,12 @@ export default function Home() {
           <div className="grid w-full items-center gap-10 pl-4 sm:pl-6 lg:grid-cols-[minmax(420px,0.82fr)_minmax(620px,1.18fr)] lg:gap-14 lg:pl-12 xl:pl-20">
             {/* CTA Content */}
             <div className="max-w-3xl text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#A78BFA] mb-4 shadow-lg shadow-[#A78BFA]/10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#A78BFA] mb-9 shadow-lg shadow-[#A78BFA]/10">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
                   Ready to Transform Your Workflow?
                 </h2>
               </div>
-              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto lg:mx-0">
+              <p className="text-xl text-muted-foreground mb-14 max-w-2xl mx-auto lg:mx-0">
                 Join thousands of professionals who have already revolutionized their data extraction process with AxLiner.
               </p>
               
