@@ -34,7 +34,7 @@ import ParticlesBackground from "@/components/ParticlesBackground";
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Camera, FileSpreadsheet, Zap, Clock, Users, Star, CheckCircle, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Wand2, Sparkle, Trophy, Download, Loader2, X, Share2, Edit3, Copy, MessageCircle, Link, CheckCircle2, AlertTriangle, CircuitBoard, ScanText, PencilLine, Network, Languages, ScrollText } from "lucide-react";
+import { CircuitBoard, ScanText, PencilLine, Network, Languages, ScrollText } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { ActiveUsersCounter } from "@/components/ActiveUsersCounter";
 import { wakeUpBackendSilently } from "@/lib/backend-health";
@@ -53,6 +53,42 @@ import { ProcessVisualizer } from "@/components/ProcessVisualizer";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
+
+const siteIcons = {
+  arrow: "/site-icons/io/arrow.svg",
+  copy: "/site-icons/io/copy.svg",
+  database: "/site-icons/io/database.svg",
+  document: "/site-icons/io/document.svg",
+  edit: "/site-icons/io/edit.svg",
+  export: "/site-icons/io/export.svg",
+  link: "/site-icons/io/link.svg",
+  share: "/site-icons/io/share.svg",
+  table: "/site-icons/io/table.svg",
+  upload: "/site-icons/io/upload.svg",
+};
+
+function SiteIcon({ src, className, alt = "" }: { src: string; className?: string; alt?: string }) {
+  return (
+    <img
+      src={src}
+      alt={alt}
+      aria-hidden={alt ? undefined : true}
+      className={cn("inline-block object-contain", className)}
+    />
+  );
+}
+
+function InlineSpinner({ className }: { className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "inline-block rounded-full border-2 border-current border-r-transparent animate-spin",
+        className
+      )}
+    />
+  );
+}
 
 export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
@@ -984,7 +1020,7 @@ export default function Home() {
                               className="block select-none space-y-2 rounded-lg p-4 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground border border-transparent hover:border-accent"
                             >
                               <div className="flex items-center gap-3">
-                                <PenTool className="w-5 h-5 text-primary" />
+                                <SiteIcon src={siteIcons.document} className="h-6 w-6" />
                                 <div className="text-base font-semibold leading-none">Handwritten Tables</div>
                               </div>
                               <p className="text-sm leading-relaxed text-muted-foreground mt-2">
@@ -998,7 +1034,7 @@ export default function Home() {
                               className="block select-none space-y-2 rounded-lg p-4 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground border border-transparent hover:border-accent"
                             >
                               <div className="flex items-center gap-3">
-                                <FileInput className="w-5 h-5 text-primary" />
+                                <SiteIcon src={siteIcons.upload} className="h-6 w-6" />
                                 <div className="text-base font-semibold leading-none">Paper Forms Automation</div>
                               </div>
                               <p className="text-sm leading-relaxed text-muted-foreground mt-2">
@@ -1015,7 +1051,7 @@ export default function Home() {
                               className="block select-none space-y-2 rounded-lg p-4 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground border border-transparent hover:border-accent"
                             >
                               <div className="flex items-center gap-3">
-                                <DollarSign className="w-5 h-5 text-primary" />
+                                <SiteIcon src={siteIcons.export} className="h-6 w-6" />
                                 <div className="text-base font-semibold leading-none">Financial Documents</div>
                               </div>
                               <p className="text-sm leading-relaxed text-muted-foreground mt-2">
@@ -1029,7 +1065,7 @@ export default function Home() {
                               className="block select-none space-y-2 rounded-lg p-4 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground border border-transparent hover:border-accent"
                             >
                               <div className="flex items-center gap-3">
-                                <Database className="w-5 h-5 text-primary" />
+                                <SiteIcon src={siteIcons.database} className="h-6 w-6" />
                                 <div className="text-base font-semibold leading-none">Data Entry Automation</div>
                               </div>
                               <p className="text-sm leading-relaxed text-muted-foreground mt-2">
@@ -1125,7 +1161,7 @@ export default function Home() {
                     className="h-11 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
                   >
                     Try it
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <SiteIcon src={siteIcons.arrow} className="ml-2 h-5 w-5" />
                   </Button>
                   <div className="flex -space-x-2">
                     {[0, 1, 2, 3, 4].map((i) => (
@@ -1260,7 +1296,7 @@ export default function Home() {
                         <div className="text-center">
                           {uploadedFiles.length === 0 ? (
                             <>
-                              <Upload className="h-12 w-12 text-primary mx-auto mb-4" />
+                              <SiteIcon src={siteIcons.upload} className="mx-auto mb-4 h-16 w-16" />
                               <h3 className="text-lg font-medium mb-2">
                                 {isDragging ? 'Drop your images here' : 'Upload up to 100 table images now'}
                               </h3>
@@ -1295,7 +1331,10 @@ export default function Home() {
                                       disabled={isProcessing}
                                       className="absolute top-1 right-1 h-5 w-5 rounded-full bg-background/80 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                                     >
-                                      <X className="h-3 w-3" />
+                                      <span className="relative h-3 w-3" aria-hidden="true">
+                                        <span className="absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 rotate-45 bg-foreground" />
+                                        <span className="absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 -rotate-45 bg-foreground" />
+                                      </span>
                                     </button>
                                   </div>
                                 ))}
@@ -1362,7 +1401,7 @@ export default function Home() {
                                 onClick={handleDownloadAll}
                                 className="border-2 border-[#A78BFA]"
                               >
-                                <Download className="h-4 w-4 mr-1" />
+                                <SiteIcon src={siteIcons.export} className="mr-1 h-5 w-5" />
                                 Download All
                               </Button>
                               <Button
@@ -1371,7 +1410,7 @@ export default function Home() {
                                 onClick={handleShareAll}
                                 className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                               >
-                                <Share2 className="h-4 w-4" />
+                                <SiteIcon src={siteIcons.share} className="h-5 w-5" />
                                 Share All
                               </Button>
                             </>
@@ -1438,7 +1477,7 @@ export default function Home() {
                               {/* First File Buttons */}
                               <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#A78BFA]">
                                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                                  <FileSpreadsheet className="h-5 w-5 text-primary" />
+                                  <SiteIcon src={siteIcons.table} className="h-6 w-6" />
                                   <span className="text-base font-medium truncate">{cleanFilename(resultFiles[0].filename)}</span>
                                 </div>
                                 <div className="flex items-center gap-2 flex-shrink-0">
@@ -1447,7 +1486,7 @@ export default function Home() {
                                     onClick={() => handleDownloadFile(resultFiles[0].file_id)}
                                     className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#A78BFA]"
                                   >
-                                    <Download className="h-4 w-4" />
+                                    <SiteIcon src={siteIcons.export} className="h-5 w-5" />
                                     Download
                                   </Button>
                                   <Button
@@ -1456,7 +1495,7 @@ export default function Home() {
                                     onClick={() => handleShareFile(resultFiles[0])}
                                     className="gap-2 bg-white border-2 border-[#A78BFA] text-foreground hover:bg-primary/10"
                                   >
-                                    <Share2 className="h-4 w-4" />
+                                    <SiteIcon src={siteIcons.share} className="h-5 w-5" />
                                     Share
                                   </Button>
                                   <Button
@@ -1468,7 +1507,7 @@ export default function Home() {
                                     }}
                                     className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                                   >
-                                    <Edit3 className="h-4 w-4" />
+                                    <SiteIcon src={siteIcons.edit} className="h-5 w-5" />
                                     Edit
                                   </Button>
                                 </div>
@@ -1484,7 +1523,7 @@ export default function Home() {
                                   onClick={() => handleDownloadFile(file.file_id)}
                                   className="flex-shrink-0 hover:scale-110 transition-transform"
                                 >
-                                  <FileSpreadsheet className="h-5 w-5 text-primary" />
+                                  <SiteIcon src={siteIcons.table} className="h-6 w-6" />
                                 </button>
                                 <span className="text-sm font-medium truncate">{cleanFilename(file.filename)}</span>
                               </div>
@@ -1494,7 +1533,7 @@ export default function Home() {
                                   onClick={() => handleDownloadFile(file.file_id)}
                                   className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#A78BFA]"
                                 >
-                                  <Download className="h-4 w-4" />
+                                  <SiteIcon src={siteIcons.export} className="h-5 w-5" />
                                   Download
                                 </Button>
                                 <Button
@@ -1503,7 +1542,7 @@ export default function Home() {
                                   onClick={() => handleShareFile(file)}
                                   className="gap-1.5 bg-white border-2 border-[#A78BFA] text-foreground hover:bg-primary/10"
                                 >
-                                  <Share2 className="h-4 w-4" />
+                                  <SiteIcon src={siteIcons.share} className="h-5 w-5" />
                                   Share
                                 </Button>
                                 <Button
@@ -1515,7 +1554,7 @@ export default function Home() {
                                   }}
                                   className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                                 >
-                                  <Edit3 className="h-4 w-4" />
+                                  <SiteIcon src={siteIcons.edit} className="h-5 w-5" />
                                   Edit
                                 </Button>
                               </div>
@@ -1530,7 +1569,7 @@ export default function Home() {
                                   onClick={() => handleDownloadFile(file.file_id)}
                                   className="flex-shrink-0 hover:scale-110 transition-transform"
                                 >
-                                  <FileSpreadsheet className="h-5 w-5 text-primary" />
+                                  <SiteIcon src={siteIcons.table} className="h-6 w-6" />
                                 </button>
                                 <span className="text-sm font-medium truncate">{cleanFilename(file.filename)}</span>
                               </div>
@@ -1540,7 +1579,7 @@ export default function Home() {
                                   onClick={() => handleDownloadFile(file.file_id)}
                                   className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#A78BFA]"
                                 >
-                                  <Download className="h-4 w-4" />
+                                  <SiteIcon src={siteIcons.export} className="h-5 w-5" />
                                   Download
                                 </Button>
                                 <Button
@@ -1549,7 +1588,7 @@ export default function Home() {
                                   onClick={() => handleShareFile(file)}
                                   className="gap-1.5 bg-white border-2 border-[#A78BFA] text-foreground hover:bg-primary/10"
                                 >
-                                  <Share2 className="h-4 w-4" />
+                                  <SiteIcon src={siteIcons.share} className="h-5 w-5" />
                                   Share
                                 </Button>
                                 <Button
@@ -1561,7 +1600,7 @@ export default function Home() {
                                   }}
                                   className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                                 >
-                                  <Edit3 className="h-4 w-4" />
+                                  <SiteIcon src={siteIcons.edit} className="h-5 w-5" />
                                   Edit
                                 </Button>
                               </div>
@@ -1574,7 +1613,7 @@ export default function Home() {
                               {Array.from({ length: totalFilesToProcess - resultFiles.length }).map((_, index) => (
                                 <div key={`pending-${index}`} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg border-2 border-dashed border-[#A78BFA]/30">
                                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                                    <Loader2 className="h-5 w-5 text-primary animate-spin flex-shrink-0" />
+                                    <InlineSpinner className="h-5 w-5 text-primary flex-shrink-0" />
                                     <span className="text-sm font-medium text-muted-foreground">Processing file {resultFiles.length + index + 1}...</span>
                                   </div>
                                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -1589,7 +1628,7 @@ export default function Home() {
 
                       {isProcessing && !processingComplete && resultFiles.length === 0 && (
                         <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
-                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <InlineSpinner className="h-4 w-4" />
                           <span>Converting your images...</span>
                         </div>
                       )}
@@ -1610,7 +1649,7 @@ export default function Home() {
                     >
                       {isProcessing ? (
                         <>
-                          <Loader2 className="h-6 w-6 mr-2 animate-spin" />
+                          <InlineSpinner className="h-6 w-6 mr-2" />
                           Converting...
                         </>
                       ) : (
@@ -1662,7 +1701,7 @@ export default function Home() {
                               )}
                             >
                               <div className="flex items-center gap-1">
-                                <Download className={cn("h-3 w-3", autoDownload ? "text-primary" : "text-muted-foreground")} />
+                                <SiteIcon src={siteIcons.export} className={cn("h-4 w-4", autoDownload ? "opacity-100" : "opacity-60")} />
                                 <Label className="text-xs font-medium text-foreground cursor-pointer">
                                   Auto Download
                                 </Label>
@@ -1859,8 +1898,8 @@ export default function Home() {
 
         {/* What is Axliner Section */}
         <section className="py-16 relative z-10">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
+          <div className="container mx-auto max-w-[1860px] px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-[1780px]">
               {/* Section Header */}
               <div className="text-center mb-12">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#A78BFA] mb-4 shadow-lg shadow-[#A78BFA]/10">
@@ -1871,7 +1910,7 @@ export default function Home() {
               </div>
 
               {/* Main Content */}
-              <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(660px,1.28fr)]">
+              <div className="grid items-center gap-3 xl:grid-cols-[minmax(680px,0.98fr)_minmax(820px,1.02fr)]">
                 <Card className="bg-transparent dark:bg-transparent border border-border/30 rounded-lg shadow-none" style={{ backgroundColor: 'transparent' }}>
                   <CardContent className="space-y-6 p-6 sm:p-8">
                     <p className="text-lg text-foreground leading-relaxed">
@@ -2031,7 +2070,7 @@ export default function Home() {
     {/* Footer */}
     <div className="mt-6 pt-4 border-t border-border/50">
       <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-        <CheckCircle className="w-4 h-4 text-primary" />
+        <SiteIcon src={siteIcons.table} className="h-5 w-5" />
         <span>Tested on IAM Handwriting Database v3.0</span>
       </div>
     </div>
@@ -2382,7 +2421,7 @@ export default function Home() {
                   className="group flex flex-col items-center gap-1.5 cursor-pointer"
                   title="Send via Facebook Messenger"
                 >
-                  <MessageCircle className="h-10 w-10 text-[#0084FF] group-hover:scale-110 transition-transform" />
+                  <SiteIcon src={siteIcons.share} className="h-10 w-10 transition-transform group-hover:scale-110" />
                   <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Messenger</span>
                 </button>
               </div>
@@ -2406,7 +2445,7 @@ export default function Home() {
             {/* Direct Download Link */}
             <div className="space-y-2.5">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Link className="h-3.5 w-3.5" />
+                <SiteIcon src={siteIcons.link} className="h-4 w-4" />
                 <span className="font-medium">Direct download link</span>
               </div>
               <div className="flex items-center gap-2">
@@ -2423,12 +2462,12 @@ export default function Home() {
                 >
                   {copySuccess ? (
                     <>
-                      <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" />
+                      <SiteIcon src={siteIcons.table} className="mr-1.5 h-4 w-4" />
                       <span className="text-xs">Copied</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="h-3.5 w-3.5 mr-1.5" />
+                      <SiteIcon src={siteIcons.copy} className="mr-1.5 h-4 w-4" />
                       <span className="text-xs">Copy</span>
                     </>
                   )}
@@ -2508,7 +2547,7 @@ export default function Home() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <div className="flex items-center gap-3 mb-2">
-              <AlertTriangle className="h-6 w-6 text-amber-500" />
+              <SiteIcon src={siteIcons.document} className="h-7 w-7" />
               <DialogTitle>You can add up to 100 images!</DialogTitle>
             </div>
             <DialogDescription className="text-sm text-muted-foreground">
