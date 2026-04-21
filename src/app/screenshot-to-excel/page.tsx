@@ -87,28 +87,28 @@ export default function ScreenshotToExcel() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+                <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Save Time</h3>
                   <p className="text-muted-foreground">No need to manually type data from screenshots. Convert in seconds instead of hours.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+                <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">High Accuracy</h3>
                   <p className="text-muted-foreground">AI-powered OCR ensures accurate data extraction from your screenshots.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+                <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Free to Use</h3>
                   <p className="text-muted-foreground">No signup, no credit card, no hidden fees. Just upload and convert.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+                <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Secure & Private</h3>
                   <p className="text-muted-foreground">Your files are processed securely and deleted after conversion.</p>

@@ -90,9 +90,9 @@ function ResetPasswordForm() {
           <CardContent className="space-y-4">
             <div className="text-center space-y-4">
               <div className="flex justify-center">
-                <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
                   <svg
-                    className="w-8 h-8 text-green-600 dark:text-green-400"
+                    className="w-8 h-8 text-primary dark:text-primary"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

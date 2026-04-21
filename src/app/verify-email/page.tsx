@@ -205,8 +205,8 @@ function VerifyEmailContent() {
         </div>
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 w-16 h-16 bg-green-100 dark:bg-green-950 rounded-full flex items-center justify-center">
-              <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
+            <div className="mx-auto mb-4 w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center">
+              <CheckCircle2 className="w-8 h-8 text-primary dark:text-primary" />
             </div>
             <CardTitle className="text-2xl">Email Verified!</CardTitle>
             <CardDescription>
@@ -291,7 +291,7 @@ function VerifyEmailContent() {
 
             {/* Success Message */}
             {resendSuccess && (
-              <div className="text-sm text-green-600 text-center p-2 bg-green-50 dark:bg-green-950 rounded-md">
+              <div className="text-sm text-primary text-center p-2 bg-primary/10 dark:bg-primary/20 rounded-md">
                 Verification code resent successfully!
               </div>
             )}

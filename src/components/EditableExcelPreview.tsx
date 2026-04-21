@@ -508,7 +508,7 @@ export function EditableExcelPreview({
         <div className="border-b bg-muted/20">
           {/* Tab Headers */}
           <div className="flex items-center h-9 px-4 border-b gap-4 text-sm">
-            <span className="px-3 py-1 border-b-2 border-[#2BAAD8] font-medium">Home</span>
+            <span className="px-3 py-1 border-b-2 border-[#CBB7EE] font-medium">Home</span>
             <span className="px-3 py-1 text-muted-foreground hover:text-foreground cursor-pointer">Insert</span>
             <span className="px-3 py-1 text-muted-foreground hover:text-foreground cursor-pointer">Data</span>
             <span className="px-3 py-1 text-muted-foreground hover:text-foreground cursor-pointer">View</span>
@@ -754,7 +754,7 @@ export function EditableExcelPreview({
               </Button>
               <Button 
                 onClick={handleSave} 
-                className="h-9 px-4 bg-green-600 hover:bg-green-700 text-white gap-2"
+                className="h-9 px-4 bg-primary hover:bg-primary/90 text-white gap-2"
               >
                 <Download className="h-4 w-4" />
                 Save & Download

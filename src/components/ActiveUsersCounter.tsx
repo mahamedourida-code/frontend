@@ -52,7 +52,7 @@ export function ActiveUsersCounter() {
       <div className="relative">
         <Users className="h-4 w-4" />
         <span 
-          className={`absolute -top-0.5 -right-0.5 h-2 w-2 bg-green-500 rounded-full transition-opacity duration-200 ${
+          className={`absolute -top-0.5 -right-0.5 h-2 w-2 bg-primary/100 rounded-full transition-opacity duration-200 ${
             isVisible ? 'opacity-100 shadow-[0_0_8px_rgba(34,197,94,1)]' : 'opacity-0'
           }`}
         />

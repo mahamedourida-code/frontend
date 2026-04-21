@@ -86,28 +86,28 @@ export default function ImageToExcel() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+                <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Scanned Documents</h3>
                   <p className="text-muted-foreground">Convert scanned paper documents with tables into editable Excel spreadsheets.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+                <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Photos from Phone</h3>
                   <p className="text-muted-foreground">Take a photo of any table with your smartphone and convert it to Excel instantly.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+                <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">PDF Tables</h3>
                   <p className="text-muted-foreground">Extract tables from PDF images or convert PDF screenshots to Excel format.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+                <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Financial Reports</h3>
                   <p className="text-muted-foreground">Digitize financial statements, invoices, and reports from image format.</p>

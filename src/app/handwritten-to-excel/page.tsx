@@ -90,28 +90,28 @@ export default function HandwrittenToExcel() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+                <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Paper Forms & Surveys</h3>
                   <p className="text-muted-foreground">Digitize handwritten forms, surveys, and questionnaires filled out on paper.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+                <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Research Notes & Data</h3>
                   <p className="text-muted-foreground">Convert handwritten research notes, lab data, and field observations into Excel.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+                <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Meeting Notes & Lists</h3>
                   <p className="text-muted-foreground">Transform handwritten meeting notes, action items, and lists into organized spreadsheets.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+                <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Financial Records</h3>
                   <p className="text-muted-foreground">Digitize handwritten expense logs, receipts, and financial tracking sheets.</p>

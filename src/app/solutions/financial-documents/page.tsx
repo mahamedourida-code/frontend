@@ -12,7 +12,7 @@ export default function FinancialDocumentsPage() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-background relative" style={{ backgroundColor: '#ffffff' }}>
+    <div className="min-h-screen bg-background relative">
       {/* Duplo30 Background */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
         <img
@@ -54,7 +54,7 @@ export default function FinancialDocumentsPage() {
         <div className="text-center mb-16">
           <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Solutions</Badge>
           <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
-            Financial Documents to <span className="bg-gradient-to-r from-primary via-green-600 to-emerald-500 bg-clip-text text-transparent">XLSX</span>
+            Financial Documents to <span className="bg-gradient-to-r from-primary via-[#9C3DEB] to-[#CBB7EE] bg-clip-text text-transparent">XLSX</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Convert invoices, receipts, and expense reports to Excel spreadsheets for accounting and bookkeeping.

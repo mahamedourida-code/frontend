@@ -397,7 +397,7 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#2BAAD8] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-16 h-16 border-4 border-[#CBB7EE] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-muted-foreground">Loading Dashboard...</p>
         </div>
       </div>
@@ -514,7 +514,7 @@ export default function DashboardPage() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6 lg:mb-8">
-            <Card className="border-2 border-[#2BAAD8] shadow-lg shadow-[#2BAAD8]/10" style={{ backgroundColor: '#fbfdfc' }}>
+            <Card className="border-2 border-[#CBB7EE] shadow-lg shadow-[#CBB7EE]/10" style={{ backgroundColor: '#fbfdfc' }}>
               <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -528,7 +528,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-2 border-[#2BAAD8] shadow-lg shadow-[#2BAAD8]/10" style={{ backgroundColor: '#fbfdfc' }}>
+            <Card className="border-2 border-[#CBB7EE] shadow-lg shadow-[#CBB7EE]/10" style={{ backgroundColor: '#fbfdfc' }}>
               <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -545,7 +545,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-2 border-[#2BAAD8] shadow-lg shadow-[#2BAAD8]/10 relative" style={{ backgroundColor: '#fbfdfc' }}>
+            <Card className="border-2 border-[#CBB7EE] shadow-lg shadow-[#CBB7EE]/10 relative" style={{ backgroundColor: '#fbfdfc' }}>
               <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -572,7 +572,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Chart Section */}
-          <Card className="bg-transparent border-2 border-[#2BAAD8] shadow-lg shadow-[#2BAAD8]/10">
+          <Card className="bg-transparent border-2 border-[#CBB7EE] shadow-lg shadow-[#CBB7EE]/10">
             <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 lg:p-4">
               <div>
                 <CardTitle className="text-base lg:text-lg flex items-center gap-2">

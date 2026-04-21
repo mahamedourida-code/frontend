@@ -128,9 +128,9 @@ export default function DataDeletionPage() {
               </div>
             </div>
 
-            <div className="mt-4 p-4 bg-green-500/10 border border-green-500/20 rounded-lg flex gap-3">
-              <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-green-900 dark:text-green-100">
+            <div className="mt-4 p-4 bg-primary/10 border border-primary/20 rounded-lg flex gap-3">
+              <CheckCircle2 className="h-5 w-5 text-primary dark:text-primary flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-primary dark:text-primary">
                 <strong>Instant Deletion:</strong> Your data will be deleted immediately upon confirmation.
               </p>
             </div>

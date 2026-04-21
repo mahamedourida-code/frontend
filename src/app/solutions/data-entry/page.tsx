@@ -12,7 +12,7 @@ export default function DataEntryPage() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-background relative" style={{ backgroundColor: '#ffffff' }}>
+    <div className="min-h-screen bg-background relative">
       {/* Duplo30 Background */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
         <img
@@ -54,7 +54,7 @@ export default function DataEntryPage() {
         <div className="text-center mb-16">
           <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Solutions</Badge>
           <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
-            Eliminate Manual <span className="bg-gradient-to-r from-primary via-green-600 to-emerald-500 bg-clip-text text-transparent">Data Entry</span>
+            Eliminate Manual <span className="bg-gradient-to-r from-primary via-[#9C3DEB] to-[#CBB7EE] bg-clip-text text-transparent">Data Entry</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Automate data entry from any document. Convert images to Excel spreadsheets 60x faster than manual typing.

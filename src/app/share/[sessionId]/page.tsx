@@ -289,7 +289,7 @@ export default function SharePage() {
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex-shrink-0">
-                      <FileSpreadsheet className="h-8 w-8 text-green-600" />
+                      <FileSpreadsheet className="h-8 w-8 text-primary" />
                     </div>
                     <div>
                       <p className="font-medium text-sm">
