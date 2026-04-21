@@ -2278,20 +2278,20 @@ export default function Home() {
 
         {/* Final CTA Section */}
         <section className="relative z-10 overflow-hidden py-24">
-          <div className="grid w-full items-center gap-10 pl-4 sm:pl-6 lg:grid-cols-[minmax(420px,0.82fr)_minmax(620px,1.18fr)] lg:gap-14 lg:pl-12 xl:pl-20">
+          <div className="grid w-full items-start gap-10 pl-4 sm:pl-6 lg:grid-cols-[minmax(420px,0.82fr)_minmax(620px,1.18fr)] lg:gap-14 lg:pl-12 xl:pl-20">
             {/* CTA Content */}
-            <div className="max-w-3xl text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#A78BFA] mb-9 shadow-lg shadow-[#A78BFA]/10">
+            <div className="flex min-h-[560px] max-w-3xl flex-col text-center lg:text-left">
+              <div className="inline-flex w-fit items-center gap-2 self-center rounded-full border-2 border-[#A78BFA] bg-transparent px-3 py-1.5 shadow-lg shadow-[#A78BFA]/10 lg:self-start mb-14">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
                   Ready to Transform Your Workflow?
                 </h2>
               </div>
-              <p className="text-xl text-muted-foreground mb-14 max-w-2xl mx-auto lg:mx-0">
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
                 Join thousands of professionals who have already revolutionized their data extraction process with AxLiner.
               </p>
               
               {/* Single Primary CTA */}
-              <div className="flex justify-center lg:justify-start">
+              <div className="mt-auto flex justify-center">
                 {isAuthenticated ? (
                   <Button
                     size="lg"
