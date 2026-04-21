@@ -1224,7 +1224,7 @@ export default function Home() {
 
                 <div className="relative z-10 overflow-hidden" data-animate="stagger">
                   <div
-                    className="flex gap-10 items-center"
+                    className="flex gap-12 items-center"
                     style={{
                       animation: 'scroll-left 60s linear infinite',
                       width: 'max-content',
@@ -1236,13 +1236,13 @@ export default function Home() {
                       [1, 2, 3, 4, 5, 6, 7, 8, 9].map((imgNum) => (
                         <Card
                           key={`${setIndex}-${imgNum}`}
-                          className="flex-shrink-0 bg-white dark:bg-white border border-border/50 hover:border-[#A78BFA]/30 transition-all duration-300 hover:shadow-md w-[180px] h-[120px]"
+                          className="flex-shrink-0 bg-white dark:bg-white border border-border/50 hover:border-[#A78BFA]/30 transition-all duration-300 hover:shadow-md w-[240px] h-[150px]"
                         >
-                          <CardContent className="p-4 flex items-center justify-center w-full h-full">
+                          <CardContent className="p-5 flex items-center justify-center w-full h-full">
                             <img
                               src={`/${imgNum}.jpeg`}
                               alt={`Company ${imgNum}`}
-                              className="w-[150px] h-[90px] object-contain opacity-60 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0"
+                              className="w-[205px] h-[112px] object-contain opacity-60 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.style.display = 'none';
@@ -1911,21 +1911,21 @@ export default function Home() {
 
               {/* Main Content */}
               <div className="grid items-start gap-3 xl:grid-cols-[minmax(680px,0.98fr)_minmax(820px,1.02fr)]">
-                <Card className="bg-transparent dark:bg-transparent border border-border/30 rounded-lg shadow-none" style={{ backgroundColor: 'transparent' }}>
-                  <CardContent className="space-y-6 p-6 sm:p-8">
-                    <p className="text-lg text-foreground leading-relaxed">
+                <Card className="bg-transparent dark:bg-transparent border-0 rounded-lg shadow-none" style={{ backgroundColor: 'transparent' }}>
+                  <CardContent className="space-y-8 px-0 py-0">
+                    <p className="text-xl text-foreground leading-relaxed">
                       Axliner is a <span className="font-bold">7-billion parameter vision-language model</span> a fine-tuned Meta's Llama 3 Model. The model underwent extensive instruction fine-tuning specifically optimized for <span className="font-bold">handwritten text recognition</span>, <span className="font-bold">table structure preservation</span>, and <span className="font-bold">multi-language document understanding</span>.
                     </p>
 
-                    <p className="text-lg text-foreground leading-relaxed">
+                    <p className="text-xl text-foreground leading-relaxed">
                       Unlike generic OCR systems, Axliner was trained on diverse handwritten datasets including the <span className="font-bold">IAM Handwriting Database</span>, proprietary table extraction datasets, and synthetic augmented data. The fine-tuning process focused on <span className="font-bold">preserving table semantics, cell relationships, and hierarchical document structures</span> — achieving <span className="font-bold">96.8% accuracy</span> on complex handwritten tables.
                     </p>
 
-                    <p className="text-lg text-foreground leading-relaxed">
+                    <p className="text-xl text-foreground leading-relaxed">
                       The system supports <span className="font-bold">batch processing of up to 100 images simultaneously</span>, with real-time conversion averaging <span className="font-bold">0.8 seconds per page</span>. Axliner handles <span className="font-bold">8+ languages</span> including complex scripts like Arabic and Chinese, while maintaining cell relationships and formatting integrity across all output formats.
                     </p>
 
-                    <p className="text-lg text-foreground leading-relaxed">
+                    <p className="text-xl text-foreground leading-relaxed">
                       Built for enterprise workflows, Axliner excels in <span className="font-bold">financial document processing</span>, <span className="font-bold">invoice digitization</span>, <span className="font-bold">form automation</span>, and archive digitization — trained on over <span className="font-bold">2 million handwritten samples</span> using a Llama 3-based vision-language transformer architecture.
                     </p>
                   </CardContent>
@@ -1938,8 +1938,8 @@ export default function Home() {
         </section>
 
         {/* Why Choose Us Section */}
-        <ScrollAnimatedSection id="features" className="py-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <ScrollAnimatedSection id="features" className="py-20">
+          <div className="container mx-auto max-w-[1780px] px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#A78BFA] mb-4 shadow-lg shadow-[#A78BFA]/10">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
@@ -1948,44 +1948,44 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-8 max-w-[1500px] mx-auto justify-center">
-              <Card data-animate="stagger" className="flex-1 min-h-[440px] bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
-                <CardHeader className="text-center p-8">
+            <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
+              <Card data-animate="stagger" className="min-h-[560px] bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
+                <CardHeader className="text-center p-10">
                   <img
                     src="/New%20folder/handwritten.svg"
                     alt=""
-                    className="mx-auto mb-7 h-56 w-full object-contain xl:h-64"
+                    className="mx-auto mb-8 h-72 w-full object-contain xl:h-80"
                   />
-                  <CardTitle className="text-2xl mb-3">Handwritten Tables</CardTitle>
-                  <CardDescription className="text-lg leading-relaxed">
+                  <CardTitle className="text-3xl mb-4">Handwritten Tables</CardTitle>
+                  <CardDescription className="text-xl leading-relaxed">
                     <span className="font-semibold text-amber-700">99.5% accuracy</span> on handwritten tables - industry-leading performance with our specialized model
                   </CardDescription>
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 min-h-[440px] bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
-                <CardHeader className="text-center p-8">
+              <Card data-animate="stagger" className="min-h-[560px] bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
+                <CardHeader className="text-center p-10">
                   <img
                     src="/New%20folder/aa.svg"
                     alt=""
-                    className="mx-auto mb-7 h-56 w-full object-contain xl:h-64"
+                    className="mx-auto mb-8 h-72 w-full object-contain xl:h-80"
                   />
-                  <CardTitle className="text-2xl mb-3">Paper Forms tables</CardTitle>
-                  <CardDescription className="text-lg leading-relaxed">
+                  <CardTitle className="text-3xl mb-4">Paper Forms tables</CardTitle>
+                  <CardDescription className="text-xl leading-relaxed">
                     Digitize secretary paperwork and manual forms to CSV with intelligent field recognition
                   </CardDescription>
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 min-h-[440px] bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
-                <CardHeader className="text-center p-8">
+              <Card data-animate="stagger" className="min-h-[560px] bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
+                <CardHeader className="text-center p-10">
                   <img
                     src="/New%20folder/fina.svg"
                     alt=""
-                    className="mx-auto mb-7 h-56 w-full object-contain xl:h-64"
+                    className="mx-auto mb-8 h-72 w-full object-contain xl:h-80"
                   />
-                  <CardTitle className="text-2xl mb-3">Financial Documents tables</CardTitle>
-                  <CardDescription className="text-lg leading-relaxed">
+                  <CardTitle className="text-3xl mb-4">Financial Documents tables</CardTitle>
+                  <CardDescription className="text-xl leading-relaxed">
                     Process invoices, receipts, and expense reports to XLSX with accurate financial data extraction
                   </CardDescription>
                 </CardHeader>
