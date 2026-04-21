@@ -34,7 +34,7 @@ import ParticlesBackground from "@/components/ParticlesBackground";
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Camera, FileSpreadsheet, Zap, Shield, Clock, Users, Star, CheckCircle, Layers, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Award, Target, Wand2, Sparkle, Trophy, Download, Loader2, X, Share2, Edit3, Copy, MessageCircle, Link, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Camera, FileSpreadsheet, Zap, Clock, Users, Star, CheckCircle, FileText, PenTool, FileInput, DollarSign, Database, Upload, ArrowRight, Sparkles, TrendingUp, Wand2, Sparkle, Trophy, Download, Loader2, X, Share2, Edit3, Copy, MessageCircle, Link, CheckCircle2, AlertTriangle, CircuitBoard, ScanText, PencilLine, Network, Languages, ScrollText } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { ActiveUsersCounter } from "@/components/ActiveUsersCounter";
 import { wakeUpBackendSilently } from "@/lib/backend-health";
@@ -1938,7 +1938,7 @@ export default function Home() {
               <div className="text-center mb-12" data-animate="headline">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#A78BFA] mb-4 shadow-lg shadow-[#A78BFA]/10">
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                    Industry-Leading OCR Accuracy
+                    Benchmarks
                   </h2>
                 </div>
 
@@ -2069,21 +2069,6 @@ export default function Home() {
                 </Card>
               </div>
 
-              {/* Key Features */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-[#A78BFA]" data-animate="stagger">
-                  <div className="text-2xl font-bold text-[#441F84] mb-1">7+ Languages</div>
-                  <p className="text-sm text-muted-foreground">Multi-language support including complex scripts</p>
-                </div>
-                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-[#A78BFA]" data-animate="stagger">
-                  <div className="text-2xl font-bold text-[#441F84] mb-1">99.9% Uptime</div>
-                  <p className="text-sm text-muted-foreground">Enterprise-grade reliability and availability</p>
-                </div>
-                <div className="text-center p-4 rounded-lg bg-muted/30 border-2 border-[#A78BFA]" data-animate="stagger">
-                  <div className="text-2xl font-bold text-[#441F84] mb-1">GDPR Compliant</div>
-                  <p className="text-sm text-muted-foreground">Data privacy and security certified</p>
-                </div>
-              </div>
             </div>
           </div>
         </ScrollAnimatedSection>
@@ -2110,7 +2095,7 @@ export default function Home() {
                 <Card className="border border-border shadow-lg" style={{ backgroundColor: '#fbfdfc' }} data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
-                      <Layers className="w-6 h-6 text-primary" />
+                      <CircuitBoard className="w-6 h-6 text-[#F97316]" />
                       <CardTitle className="text-2xl">Instruction Fine-Tuning on Llama 3</CardTitle>
                     </div>
                   </CardHeader>
@@ -2127,28 +2112,28 @@ export default function Home() {
 
                     <div className="grid md:grid-cols-2 gap-4 mt-6">
                       <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#A78BFA]">
-                        <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <ScanText className="w-5 h-5 text-[#F97316] mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Document Structure Understanding</p>
                           <p className="text-sm text-black font-semibold">Training on table layouts, form structures, and hierarchical document organization</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#A78BFA]">
-                        <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <PencilLine className="w-5 h-5 text-[#F97316] mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Handwriting Recognition</p>
                           <p className="text-sm text-black font-semibold">Extensive exposure to varied handwriting styles and degraded document quality</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#A78BFA]">
-                        <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <Network className="w-5 h-5 text-[#F97316] mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Context Preservation</p>
                           <p className="text-sm text-black font-semibold">Maintaining relationships between cells, columns, and semantic meaning</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#A78BFA]">
-                        <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <Languages className="w-5 h-5 text-[#F97316] mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Multi-Language Support</p>
                           <p className="text-sm text-black font-semibold">Fine-tuned on 7+ languages including complex scripts like Arabic and Chinese</p>
@@ -2168,7 +2153,7 @@ export default function Home() {
                 <Card className="border border-border shadow-lg" style={{ backgroundColor: '#fbfdfc' }} data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
-                      <Shield className="w-6 h-6 text-primary" />
+                      <ScrollText className="w-6 h-6 text-[#F97316]" />
                       <CardTitle className="text-2xl">System Prompts for Output Quality</CardTitle>
                     </div>
                   </CardHeader>
@@ -2212,49 +2197,6 @@ export default function Home() {
 
                     <p className="text-sm text-muted-foreground">
                       Our optimized system prompt maintains strong performance while ensuring <span className="font-semibold text-foreground">100% rejection rate</span> on harmful questions from a curated test set of 175 unsafe prompts.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                {/* Content Moderation */}
-                <Card className="border border-border shadow-lg" style={{ backgroundColor: '#fbfdfc' }} data-animate="stagger">
-                  <CardHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                      <Target className="w-6 h-6 text-primary" />
-                      <CardTitle className="text-2xl">Content Moderation with Self-Reflection</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="prose prose-sm max-w-none">
-                      <p className="text-black font-semibold leading-relaxed">
-                        AxLiner can be used as a content moderator: the model itself is able to accurately classify user prompts or generated answers as either acceptable or falling into restricted categories through a self-reflection mechanism.
-                      </p>
-                    </div>
-
-                    <div className="mt-6 p-5 bg-[#F5EEFF] rounded-lg border-2 border-[#A78BFA]">
-                      <div className="flex items-start gap-3">
-                        <Award className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-semibold text-foreground mb-2">Self-Reflection Performance</p>
-                          <p className="text-sm text-black font-semibold mb-3">
-                            Evaluated on a manually curated and balanced dataset of adversarial and standard prompts:
-                          </p>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="text-center p-3 bg-background rounded-lg border-2 border-[#A78BFA]">
-                              <p className="text-2xl font-bold text-[#441F84]">99.4%</p>
-                              <p className="text-xs text-muted-foreground mt-1">Precision</p>
-                            </div>
-                            <div className="text-center p-3 bg-background rounded-lg border-2 border-[#A78BFA]">
-                              <p className="text-2xl font-bold text-[#441F84]">95.6%</p>
-                              <p className="text-xs text-muted-foreground mt-1">Recall</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <p className="text-sm text-muted-foreground">
-                      Use cases include moderating user-submitted content, brand monitoring, and ensuring compliance in regulated industries. End users can select which categories to filter based on their specific requirements.
                     </p>
                   </CardContent>
                 </Card>
