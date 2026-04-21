@@ -94,6 +94,8 @@ export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
   const heroFlowRef = useRef<HTMLDivElement>(null);
   const heroImageRef = useRef<HTMLDivElement>(null);
+  const topBackgroundSectionRef = useRef<HTMLDivElement>(null);
+  const topBackgroundRef = useRef<HTMLDivElement>(null);
 
   // Get state management from context
   const contextValue = useProcessingState()
@@ -324,6 +326,31 @@ export default function Home() {
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
+  }, []);
+
+  useEffect(() => {
+    const topSection = topBackgroundSectionRef.current;
+    const topBackground = topBackgroundRef.current;
+    if (!topSection || !topBackground) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        topBackground,
+        { y: 0 },
+        {
+          y: -90,
+          ease: "none",
+          scrollTrigger: {
+            trigger: topSection,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1.2,
+          },
+        }
+      );
+    }, topSection);
+
+    return () => ctx.revert();
   }, []);
 
   // Smooth scroll function
@@ -1144,14 +1171,15 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <div className="relative isolate overflow-hidden">
+        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden">
           <div
+            ref={topBackgroundRef}
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
+            className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat will-change-transform"
             style={{
               backgroundImage: "url('/lifo.jpg')",
               clipPath:
-                "polygon(0 0, 100% 0, 100% 90%, 96% 94%, 91% 90%, 86% 96%, 80% 92%, 73% 98%, 66% 93%, 58% 96%, 50% 91%, 42% 97%, 34% 93%, 27% 96%, 20% 91%, 14% 95%, 8% 90%, 0 94%)",
+                "polygon(0 0, 100% 0, 100% 86%, 96% 91%, 92% 95%, 87% 97%, 13% 97%, 8% 95%, 4% 91%, 0 86%)",
             }}
           />
           <div className="relative z-10">
@@ -1274,8 +1302,6 @@ export default function Home() {
 
           </div>
         </section>
-          </div>
-        </div>
 
         {/* Conversion Section */}
         <section id="converter" className="relative z-10 pt-4 pb-16 sm:pt-6 lg:pt-8">
@@ -2006,6 +2032,8 @@ export default function Home() {
             </div>
           </div>
         </ScrollAnimatedSection>
+          </div>
+        </div>
 
         {/* Benchmark Section */}
         <ScrollAnimatedSection id="benchmarks" className="py-16">
