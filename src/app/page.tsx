@@ -1179,7 +1179,7 @@ export default function Home() {
             style={{
               backgroundImage: "url('/lifo.jpg')",
               clipPath:
-                "polygon(0 0, 100% 0, 100% 94%, 98.5% 95.2%, 96.5% 96%, 93% 96.5%, 7% 96.5%, 3.5% 96%, 1.5% 95.2%, 0 94%)",
+                "polygon(0 0, 100% 0, 100% 98.9%, 98.8% 99.15%, 96.5% 99.35%, 92% 99.45%, 8% 99.45%, 3.5% 99.35%, 1.2% 99.15%, 0 98.9%)",
             }}
           />
           <div className="relative z-10">
