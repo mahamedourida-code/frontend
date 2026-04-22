@@ -1825,7 +1825,7 @@ export default function Home() {
                   ].map((testimonial, idx) => (
                     <div
                       key={`${setIndex}-${idx}`}
-                      className="ax-glass-card flex-shrink-0 rounded-lg p-6 w-[450px] transition-all duration-300 hover:-translate-y-1 hover:bg-white/45"
+                      className="flex-shrink-0 bg-white dark:bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 w-[450px]"
                     >
                       {/* Person Details at Top */}
                       <div className="flex items-center gap-3 mb-4">
@@ -1902,7 +1902,7 @@ export default function Home() {
                   ].map((testimonial, idx) => (
                     <div
                       key={`${setIndex}-${idx}`}
-                      className="ax-glass-card flex-shrink-0 rounded-lg p-6 w-[450px] transition-all duration-300 hover:-translate-y-1 hover:bg-white/45"
+                      className="flex-shrink-0 bg-white dark:bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 w-[450px]"
                     >
                       {/* Person Details at Top */}
                       <div className="flex items-center gap-3 mb-4">
