@@ -1976,7 +1976,7 @@ export default function Home() {
         </section>
 
         {/* Why Choose Us Section */}
-        <ScrollAnimatedSection id="features" className="py-16">
+        <ScrollAnimatedSection id="features" className="pt-8 pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#A78BFA] mb-4 shadow-lg shadow-[#A78BFA]/10">
@@ -1987,7 +1987,7 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
-              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
+              <Card data-animate="stagger" className="flex-1 border border-[#A78BFA]/35 bg-white/55 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-[#A78BFA]/60 hover:bg-white/70">
                 <CardHeader className="text-center">
                   <img
                     src="/New%20folder/handwritten.svg"
@@ -2001,7 +2001,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
+              <Card data-animate="stagger" className="flex-1 border border-[#A78BFA]/35 bg-white/55 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-[#A78BFA]/60 hover:bg-white/70">
                 <CardHeader className="text-center">
                   <img
                     src="/New%20folder/aa.svg"
@@ -2015,7 +2015,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 bg-transparent border border-border/50 hover:border-[#A78BFA]/50 transition-all duration-300 hover:scale-105">
+              <Card data-animate="stagger" className="flex-1 border border-[#A78BFA]/35 bg-white/55 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-[#A78BFA]/60 hover:bg-white/70">
                 <CardHeader className="text-center">
                   <img
                     src="/New%20folder/fina.svg"
@@ -2052,7 +2052,7 @@ export default function Home() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
                 {/* Accuracy Chart */}
-                <Card className="bg-white dark:bg-card border border-border shadow-sm" data-animate="stagger">
+                <Card className="border border-[#A78BFA]/35 bg-white/55 shadow-xl shadow-[#A78BFA]/10 backdrop-blur-md dark:bg-card/70" data-animate="stagger">
   <CardHeader className="pb-3">
     <CardTitle className="text-lg font-semibold">
       Handwritten Text Recognition Accuracy
@@ -2119,13 +2119,13 @@ export default function Home() {
 
 
                 {/* Performance Metrics Table */}
-                <Card className="bg-white dark:bg-card border border-border shadow-sm" data-animate="stagger">
+                <Card className="border border-[#A78BFA]/35 bg-white/55 shadow-xl shadow-[#A78BFA]/10 backdrop-blur-md dark:bg-card/70" data-animate="stagger">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg font-semibold">Comprehensive Performance Metrics</CardTitle>
                     <p className="text-sm text-muted-foreground">Average across all test scenarios</p>
                   </CardHeader>
                   <CardContent>
-                    <div className="overflow-hidden rounded-lg border-2 border-[#A78BFA]">
+                      <div className="overflow-hidden rounded-lg border border-[#A78BFA]/45 bg-white/45 backdrop-blur-md">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-border/50 bg-muted/30">
@@ -2180,17 +2180,13 @@ export default function Home() {
         <ScrollAnimatedSection id="ai-engine" className="py-16">
           <div className="container mx-auto max-w-[1640px] px-4 sm:px-6 lg:px-8">
             <div className="mx-auto">
-              <div className="mb-12 max-w-4xl" data-animate="headline">
+              <div className="mx-auto mb-12 max-w-4xl text-center" data-animate="headline">
                 <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#A78BFA]/70 bg-white/55 px-4 py-2 shadow-lg shadow-[#A78BFA]/10 backdrop-blur">
                   <span className="h-2 w-2 rounded-full bg-[#F97316]" />
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     How AxLiner's Engine Is Built
                   </h2>
                 </div>
-
-                <p className="text-2xl font-semibold leading-tight text-foreground sm:text-3xl lg:text-4xl">
-                  A document pipeline designed around messy handwriting, not generic chat output.
-                </p>
               </div>
 
               {/* Main Content */}
