@@ -57,7 +57,7 @@ export default function SignOutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen ax-page-bg flex items-center justify-center p-4 relative overflow-hidden">
       {/* Decorative Background Circles */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/3 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
@@ -82,7 +82,7 @@ export default function SignOutPage() {
         </Button>
       </div>
 
-      <Card className="w-full max-w-2xl shadow-2xl border-2 border-border/50 bg-card/95 backdrop-blur-sm relative z-10">
+      <Card className="ax-glass-card w-full max-w-2xl relative z-10">
         <CardHeader className="text-center space-y-4 pb-8">
           <div className="mx-auto w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/10 rounded-full flex items-center justify-center mb-4">
             <Sparkles className="w-10 h-10 text-primary" />

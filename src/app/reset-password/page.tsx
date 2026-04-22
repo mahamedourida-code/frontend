@@ -79,8 +79,8 @@ function ResetPasswordForm() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-muted/20">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen flex items-center justify-center p-4 ax-page-bg">
+        <Card className="ax-glass-card w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Password updated!</CardTitle>
             <CardDescription>
@@ -117,7 +117,7 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen flex items-center justify-center p-4 ax-page-bg">
       <div className="fixed top-4 left-4 z-50">
         <Button
           variant="ghost"
@@ -129,7 +129,7 @@ function ResetPasswordForm() {
           Back
         </Button>
       </div>
-      <Card className="w-full max-w-md">
+      <Card className="ax-glass-card w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Reset your password</CardTitle>
           <CardDescription>
@@ -187,8 +187,8 @@ function ResetPasswordForm() {
 export default function ResetPasswordPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-muted/20">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen flex items-center justify-center p-4 ax-page-bg">
+        <Card className="ax-glass-card w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Loading...</CardTitle>
           </CardHeader>

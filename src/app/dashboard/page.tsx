@@ -407,11 +407,11 @@ export default function DashboardPage() {
   // Remove credits logic - just track processed images
 
   return (
-    <div className="min-h-screen bg-background flex relative">
+    <div className="ax-page-bg min-h-screen flex relative">
       {/* Duplo29 Background */}
       <div className="fixed top-0 left-0 w-full pointer-events-none z-0">
         <img
-          src="/duplo29.jpg"
+          src="/lifo.jpg"
           alt="Background pattern"
           className="w-full h-auto"
         />
@@ -514,7 +514,7 @@ export default function DashboardPage() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6 lg:mb-8">
-            <Card className="border-2 border-[#A78BFA] shadow-lg shadow-[#A78BFA]/10" style={{ backgroundColor: '#fbfdfc' }}>
+            <Card className="ax-glass-card">
               <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -528,7 +528,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-2 border-[#A78BFA] shadow-lg shadow-[#A78BFA]/10" style={{ backgroundColor: '#fbfdfc' }}>
+            <Card className="ax-glass-card">
               <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -545,7 +545,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-2 border-[#A78BFA] shadow-lg shadow-[#A78BFA]/10 relative" style={{ backgroundColor: '#fbfdfc' }}>
+            <Card className="ax-glass-card relative">
               <CardContent className="p-3 lg:p-4">
                 <div className="flex items-center justify-between">
                   <div>

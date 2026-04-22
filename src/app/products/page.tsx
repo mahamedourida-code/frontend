@@ -12,9 +12,9 @@ export default function ProductsPage() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="ax-page-bg min-h-screen">
       {/* Header */}
-      <header className="border-b border-border/50 bg-background/95 backdrop-blur-md sticky top-0 z-50">
+      <header className="ax-glass-header sticky top-0 z-50 border-b">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -45,7 +45,7 @@ export default function ProductsPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <main className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Hero Section */}
         <div className="text-center mb-16">
           <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Products</Badge>
@@ -67,7 +67,7 @@ export default function ProductsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300">
+            <Card className="ax-glass-card hover:border-primary/50 transition-all duration-300">
               <CardHeader>
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <Camera className="w-6 h-6 text-primary" />
@@ -79,7 +79,7 @@ export default function ProductsPage() {
               </CardHeader>
             </Card>
 
-            <Card id="custom-templates" className="bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300">
+            <Card id="custom-templates" className="ax-glass-card hover:border-primary/50 transition-all duration-300">
               <CardHeader>
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <Receipt className="w-6 h-6 text-primary" />
@@ -91,7 +91,7 @@ export default function ProductsPage() {
               </CardHeader>
             </Card>
 
-            <Card id="excel-export" className="bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300">
+            <Card id="excel-export" className="ax-glass-card hover:border-primary/50 transition-all duration-300">
               <CardHeader>
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <FileSpreadsheet className="w-6 h-6 text-primary" />
@@ -103,7 +103,7 @@ export default function ProductsPage() {
               </CardHeader>
             </Card>
 
-            <Card id="accuracy" className="bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300">
+            <Card id="accuracy" className="ax-glass-card hover:border-primary/50 transition-all duration-300">
               <CardHeader>
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <FileCheck className="w-6 h-6 text-primary" />
@@ -115,7 +115,7 @@ export default function ProductsPage() {
               </CardHeader>
             </Card>
 
-            <Card className="bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300">
+            <Card className="ax-glass-card hover:border-primary/50 transition-all duration-300">
               <CardHeader>
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <Table className="w-6 h-6 text-primary" />
@@ -127,7 +127,7 @@ export default function ProductsPage() {
               </CardHeader>
             </Card>
 
-            <Card className="bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300">
+            <Card className="ax-glass-card hover:border-primary/50 transition-all duration-300">
               <CardHeader>
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <Zap className="w-6 h-6 text-primary" />
@@ -142,7 +142,7 @@ export default function ProductsPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="bg-gradient-to-br from-primary/10 via-background to-background rounded-2xl p-12 text-center">
+        <section className="ax-glass-card rounded-2xl p-12 text-center">
           <h2 className="text-3xl font-bold text-foreground mb-4">
             Ready to Automate Your Data Entry?
           </h2>

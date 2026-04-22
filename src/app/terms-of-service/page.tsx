@@ -10,9 +10,9 @@ export default function TermsOfServicePage() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="ax-page-bg min-h-screen">
       {/* Header */}
-      <header className="border-b">
+      <header className="ax-glass-header relative z-10 border-b">
         <div className="container max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center gap-3 mb-4">
             <Button
@@ -33,7 +33,7 @@ export default function TermsOfServicePage() {
       </header>
 
       {/* Content */}
-      <main className="container max-w-4xl mx-auto px-4 py-12">
+      <main className="ax-glass-card relative z-10 rounded-3xl container max-w-4xl mx-auto px-4 py-12">
         <h1 className="text-4xl font-bold mb-4">Terms of Service</h1>
         <p className="text-muted-foreground mb-8">Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
 

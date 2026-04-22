@@ -145,13 +145,13 @@ export default function SharePage() {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-16 max-w-4xl">
+      <div className="ax-page-bg min-h-screen">
+        <div className="container relative z-10 mx-auto px-4 py-16 max-w-4xl">
           <div className="flex items-center justify-center mb-8">
             <AppIcon size={48} />
           </div>
           
-          <Card className="border-muted">
+          <Card className="ax-glass-card border-muted">
             <CardHeader>
               <Skeleton className="h-8 w-3/4 mb-2" />
               <Skeleton className="h-4 w-1/2" />
@@ -171,13 +171,13 @@ export default function SharePage() {
   
   if (error) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-16 max-w-4xl">
+      <div className="ax-page-bg min-h-screen">
+        <div className="container relative z-10 mx-auto px-4 py-16 max-w-4xl">
           <div className="flex items-center justify-center mb-8">
             <AppIcon size={48} />
           </div>
           
-          <Card className="border-destructive/50">
+          <Card className="ax-glass-card border-destructive/50">
             <CardContent className="pt-6">
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
@@ -206,14 +206,14 @@ export default function SharePage() {
   }
   
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-16 max-w-4xl">
+    <div className="ax-page-bg min-h-screen">
+      <div className="container relative z-10 mx-auto px-4 py-16 max-w-4xl">
         {/* Header */}
         <div className="flex items-center justify-center mb-8">
           <AppIcon size={48} />
         </div>
         
-        <Card>
+        <Card className="ax-glass-card">
           <CardHeader>
             <div className="flex items-start justify-between">
               <div className="space-y-1">
@@ -285,7 +285,7 @@ export default function SharePage() {
               {session.files.map((file, index) => (
                 <div
                   key={file.file_id}
-                  className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                  className="ax-glass-card flex items-center justify-between rounded-lg p-4 transition-colors hover:bg-white/45"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex-shrink-0">

@@ -81,17 +81,17 @@ export default function UploadTypePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 relative">
+    <div className="ax-page-bg min-h-screen relative">
       {/* Duplo29 Background */}
       <div className="fixed top-0 left-0 w-full pointer-events-none z-0">
         <img
-          src="/duplo29.jpg"
+          src="/lifo.jpg"
           alt="Background pattern"
           className="w-full h-auto"
         />
       </div>
       {/* Header */}
-      <header className="border-b bg-white dark:bg-gray-900 relative z-10">
+      <header className="ax-glass-header relative z-10 border-b">
         <div className="container flex h-12 lg:h-14 max-w-5xl items-center justify-between px-3 sm:px-4 lg:px-6">
           <div className="flex items-center gap-2">
             <Button
@@ -102,7 +102,7 @@ export default function UploadTypePage() {
             >
               <ArrowLeft className="h-3.5 w-3.5" />
             </Button>
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white dark:bg-white border-2 border-[#A78BFA] shadow-sm">
+            <div className="ax-glass-card inline-flex items-center gap-2 rounded-full px-2.5 py-1 shadow-sm">
               <h1 className="text-xs lg:text-sm font-semibold text-foreground">Select Type</h1>
             </div>
           </div>
@@ -159,7 +159,7 @@ export default function UploadTypePage() {
                   disabled={isOutOfCredits}
                   className={cn(
                     "group relative flex flex-col items-center justify-center p-4 lg:p-6",
-                    "bg-white dark:bg-white rounded-xl border-2 border-[#A78BFA] shadow-lg shadow-[#A78BFA]/10",
+                    "ax-glass-card rounded-xl",
                     "transition-all duration-200",
                     isOutOfCredits ? (
                       "opacity-50 cursor-not-allowed"

@@ -7,8 +7,8 @@ import NextLink from 'next/link';
 
 export default function ImageToExcel() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="ax-page-bg min-h-screen">
+      <header className="ax-glass-header sticky top-0 z-50 w-full border-b">
         <div className="container flex h-16 items-center justify-between">
           <NextLink href="/" className="flex items-center space-x-2">
             <FileSpreadsheet className="h-6 w-6" />
@@ -20,7 +20,7 @@ export default function ImageToExcel() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-16">
+      <main className="container relative z-10 mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-4">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
@@ -43,7 +43,7 @@ export default function ImageToExcel() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 mt-16">
-            <Card>
+            <Card className="ax-glass-card">
               <CardHeader>
                 <Upload className="h-12 w-12 mb-4 text-primary" />
                 <CardTitle>Upload Any Image</CardTitle>
@@ -55,7 +55,7 @@ export default function ImageToExcel() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="ax-glass-card">
               <CardHeader>
                 <Zap className="h-12 w-12 mb-4 text-primary" />
                 <CardTitle>AI-Powered OCR</CardTitle>
@@ -67,7 +67,7 @@ export default function ImageToExcel() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="ax-glass-card">
               <CardHeader>
                 <FileSpreadsheet className="h-12 w-12 mb-4 text-primary" />
                 <CardTitle>Excel Ready</CardTitle>
@@ -80,7 +80,7 @@ export default function ImageToExcel() {
             </Card>
           </div>
 
-          <Card className="mt-16 text-left">
+          <Card className="ax-glass-card mt-16 text-left">
             <CardHeader>
               <CardTitle className="text-2xl">Perfect For</CardTitle>
             </CardHeader>
@@ -116,7 +116,7 @@ export default function ImageToExcel() {
             </CardContent>
           </Card>
 
-          <Card className="mt-8 text-left">
+          <Card className="ax-glass-card mt-8 text-left">
             <CardHeader>
               <CardTitle className="text-2xl">How It Works</CardTitle>
             </CardHeader>
@@ -146,7 +146,7 @@ export default function ImageToExcel() {
         </div>
       </main>
 
-      <footer className="border-t mt-24 py-8">
+      <footer className="relative z-10 border-t mt-24 py-8">
         <div className="container text-center text-muted-foreground">
           <p>&copy; 2025 AxLiner. All rights reserved.</p>
         </div>

@@ -12,17 +12,17 @@ export default function PaperFormsPage() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="ax-page-bg min-h-screen relative">
       {/* Duplo30 Background */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
         <img
-          src="/leaf-background.jpg"
+          src="/lifo.jpg"
           alt="Background pattern"
           className="w-full h-full object-cover object-top"
         />
       </div>
 
-      <header className="border-b border-border bg-background/20 backdrop-blur-md sticky top-0 z-50 relative">
+      <header className="ax-glass-header sticky top-0 z-50 relative border-b">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -62,7 +62,7 @@ export default function PaperFormsPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          <Card className="bg-card/50 border border-border/50">
+          <Card className="ax-glass-card">
             <CardHeader>
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                 <FileText className="w-6 h-6 text-primary" />
@@ -74,7 +74,7 @@ export default function PaperFormsPage() {
             </CardHeader>
           </Card>
 
-          <Card className="bg-card/50 border border-border/50">
+          <Card className="ax-glass-card">
             <CardHeader>
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                 <Workflow className="w-6 h-6 text-primary" />
@@ -86,7 +86,7 @@ export default function PaperFormsPage() {
             </CardHeader>
           </Card>
 
-          <Card className="bg-card/50 border border-border/50">
+          <Card className="ax-glass-card">
             <CardHeader>
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                 <Database className="w-6 h-6 text-primary" />
@@ -99,7 +99,7 @@ export default function PaperFormsPage() {
           </Card>
         </div>
 
-        <Card className="bg-white dark:bg-card border border-border rounded-2xl shadow-sm">
+        <Card className="ax-glass-card rounded-2xl">
           <CardContent className="p-12 text-center">
             <h2 className="text-3xl font-bold mb-4">Eliminate Manual Data Entry</h2>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">

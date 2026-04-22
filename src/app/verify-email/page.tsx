@@ -199,11 +199,11 @@ function VerifyEmailContent() {
   // Show success screen if verification succeeded
   if (verificationSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="min-h-screen flex items-center justify-center p-4 ax-page-bg">
         <div className="fixed top-4 right-4 z-50">
           <ThemeToggle />
         </div>
-        <Card className="w-full max-w-md">
+        <Card className="ax-glass-card w-full max-w-md">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center">
               <CheckCircle2 className="w-8 h-8 text-primary dark:text-primary" />
@@ -225,7 +225,7 @@ function VerifyEmailContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen flex items-center justify-center p-4 ax-page-bg">
       <div className="fixed top-4 left-4 z-50">
         <Button
           variant="ghost"
@@ -240,7 +240,7 @@ function VerifyEmailContent() {
       <div className="fixed top-4 right-4 z-50">
         <ThemeToggle />
       </div>
-      <Card className="w-full max-w-md">
+      <Card className="ax-glass-card w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
             <Mail className="w-8 h-8 text-primary" />

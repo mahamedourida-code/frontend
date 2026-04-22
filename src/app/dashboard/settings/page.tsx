@@ -215,17 +215,17 @@ export default function SettingsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="ax-page-bg min-h-screen relative">
       {/* Duplo29 Background */}
       <div className="fixed top-0 left-0 w-full pointer-events-none z-0">
         <img
-          src="/duplo29.jpg"
+          src="/lifo.jpg"
           alt="Background pattern"
           className="w-full h-auto"
         />
       </div>
       {/* Header */}
-      <header className="border-b bg-card/50 backdrop-blur sticky top-0 z-10">
+      <header className="ax-glass-header sticky top-0 z-10 border-b">
         <div className="container max-w-7xl mx-auto px-3 lg:px-4 py-3 lg:py-4">
           <div className="flex items-center gap-2 lg:gap-3">
             <Button
@@ -279,7 +279,7 @@ export default function SettingsPage() {
 
           {/* Sidebar Navigation */}
           <nav className="hidden lg:block w-64 shrink-0">
-            <Card className="bg-white dark:bg-white border-2 border-[#A78BFA] shadow-lg shadow-[#A78BFA]/10">
+            <Card className="ax-glass-card">
               <CardContent className="p-3 lg:p-4">
                 <div className="space-y-1">
                   {sidebarSections.map((section) => (
@@ -315,7 +315,7 @@ export default function SettingsPage() {
             {activeSection === 'account' && (
               <div className="space-y-4 lg:space-y-6">
                 {/* Profile Information */}
-                <Card className="bg-white dark:bg-white border-2 border-[#A78BFA] shadow-lg shadow-[#A78BFA]/10">
+                <Card className="ax-glass-card">
                   <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 lg:h-10 lg:w-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -372,7 +372,7 @@ export default function SettingsPage() {
                 </Card>
 
                 {/* Security Settings */}
-                <Card className="bg-white dark:bg-white border-2 border-[#A78BFA] shadow-lg shadow-[#A78BFA]/10">
+                <Card className="ax-glass-card">
                   <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 lg:h-10 lg:w-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
@@ -475,7 +475,7 @@ export default function SettingsPage() {
             {activeSection === 'preferences' && (
               <div className="space-y-6">
                 {/* Processing Settings */}
-                <Card className="bg-white dark:bg-white border-2 border-[#A78BFA] shadow-lg shadow-[#A78BFA]/10">
+                <Card className="ax-glass-card">
                   <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
                       <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
@@ -527,7 +527,7 @@ export default function SettingsPage() {
                 </Card>
 
                 {/* OCR Detection Language */}
-                <Card className="bg-white dark:bg-white border-2 border-[#A78BFA] shadow-lg shadow-[#A78BFA]/10">
+                <Card className="ax-glass-card">
                   <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
                       <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">

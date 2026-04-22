@@ -1056,11 +1056,11 @@ Best regards`
   const isComplete = status === 'completed' && resultFiles && resultFiles.length > 0
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="ax-page-bg min-h-screen relative">
       {/* Duplo29 Background */}
       <div className="fixed top-0 left-0 w-full pointer-events-none z-0">
         <img
-          src="/duplo29.jpg"
+          src="/lifo.jpg"
           alt="Background pattern"
           className="w-full h-auto"
         />
@@ -1134,7 +1134,7 @@ Best regards`
       <main className="container max-w-7xl mx-auto px-4 py-8 pb-24 relative z-10">
         {/* Processing Timer Card */}
         {isProcessing && !isComplete && (
-          <Card className="mb-4 border-2 border-[#A78BFA] shadow-md max-w-sm" style={{ backgroundColor: '#fbfdfc' }}>
+          <Card className="ax-glass-card mb-4 max-w-sm">
             <CardContent className="p-3">
               <div className="flex items-center gap-3">
                 <div className="text-center">
@@ -1652,7 +1652,7 @@ Best regards`
           {!isComplete && (
           <div className="lg:col-span-1 space-y-4 order-3 lg:order-2">
             {/* Language Selector */}
-            <Card className="border-2 border-[#A78BFA] shadow-lg shadow-[#A78BFA]/10" style={{ backgroundColor: '#fbfdfc' }}>
+            <Card className="ax-glass-card">
               <CardContent className="p-3">
                 <h3 className="text-xs font-semibold mb-3 text-foreground">Language</h3>
                 <select
@@ -1680,7 +1680,7 @@ Best regards`
             </Card>
 
             {/* Auto Settings */}
-            <Card className="border-2 border-[#A78BFA] shadow-lg shadow-[#A78BFA]/10" style={{ backgroundColor: '#fbfdfc' }}>
+            <Card className="ax-glass-card">
               <CardContent className="p-3">
                 <h3 className="text-xs font-semibold mb-3 text-foreground">Auto Actions</h3>
                 <div className="space-y-2">

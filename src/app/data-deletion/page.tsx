@@ -10,9 +10,9 @@ export default function DataDeletionPage() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="ax-page-bg min-h-screen">
       {/* Header */}
-      <header className="border-b">
+      <header className="ax-glass-header relative z-10 border-b">
         <div className="container max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center gap-3 mb-4">
             <Button
@@ -33,7 +33,7 @@ export default function DataDeletionPage() {
       </header>
 
       {/* Content */}
-      <main className="container max-w-4xl mx-auto px-4 py-12">
+      <main className="ax-glass-card relative z-10 rounded-3xl container max-w-4xl mx-auto px-4 py-12">
         <div className="flex items-center gap-3 mb-4">
           <Trash2 className="h-8 w-8 text-primary" />
           <h1 className="text-4xl font-bold">Data Deletion Instructions</h1>
@@ -145,7 +145,7 @@ export default function DataDeletionPage() {
 
             <div className="bg-muted/30 rounded-lg p-6 border">
               <h3 className="font-medium mb-3">Send an email to:</h3>
-              <div className="bg-background rounded p-4 border mb-4">
+              <div className="ax-glass-card rounded p-4 mb-4">
                 <p className="font-mono text-sm">privacy@AxLiner.com</p>
               </div>
 
