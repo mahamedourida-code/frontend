@@ -1021,7 +1021,7 @@ export default function Home() {
       {/* Navigation Bar */}
       <nav className="fixed top-0 left-0 right-0 z-50 pt-3 lg:pt-4">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-[35px] border-2 border-[#A78BFA] shadow-lg shadow-[#A78BFA]/10 backdrop-blur-md p-2 lg:p-3 flex items-center justify-between" style={{ backgroundColor: '#fbfdfc' }}>
+          <div className="flex items-center justify-between rounded-[35px] border border-white/50 !bg-white/30 p-2 shadow-xl shadow-[#441F84]/15 ring-1 ring-[#A78BFA]/30 backdrop-blur-2xl lg:p-3">
             {/* Logo */}
             <div className="flex-shrink-0">
               <AppLogo />
@@ -1976,7 +1976,7 @@ export default function Home() {
         </section>
 
         {/* Why Choose Us Section */}
-        <ScrollAnimatedSection id="features" className="pt-8 pb-16">
+        <ScrollAnimatedSection id="features" className="relative z-20 -mt-16 pt-0 pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#A78BFA] mb-4 shadow-lg shadow-[#A78BFA]/10">
@@ -1987,7 +1987,7 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
-              <Card data-animate="stagger" className="flex-1 border border-[#A78BFA]/35 bg-white/55 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-[#A78BFA]/60 hover:bg-white/70">
+              <Card data-animate="stagger" className="flex-1 border border-white/45 !bg-white/30 shadow-xl shadow-[#441F84]/15 ring-1 ring-[#A78BFA]/30 backdrop-blur-2xl transition-all duration-300 hover:scale-105 hover:border-[#A78BFA]/70 hover:!bg-white/45">
                 <CardHeader className="text-center">
                   <img
                     src="/New%20folder/handwritten.svg"
@@ -2001,7 +2001,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 border border-[#A78BFA]/35 bg-white/55 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-[#A78BFA]/60 hover:bg-white/70">
+              <Card data-animate="stagger" className="flex-1 border border-white/45 !bg-white/30 shadow-xl shadow-[#441F84]/15 ring-1 ring-[#A78BFA]/30 backdrop-blur-2xl transition-all duration-300 hover:scale-105 hover:border-[#A78BFA]/70 hover:!bg-white/45">
                 <CardHeader className="text-center">
                   <img
                     src="/New%20folder/aa.svg"
@@ -2015,7 +2015,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 border border-[#A78BFA]/35 bg-white/55 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-[#A78BFA]/60 hover:bg-white/70">
+              <Card data-animate="stagger" className="flex-1 border border-white/45 !bg-white/30 shadow-xl shadow-[#441F84]/15 ring-1 ring-[#A78BFA]/30 backdrop-blur-2xl transition-all duration-300 hover:scale-105 hover:border-[#A78BFA]/70 hover:!bg-white/45">
                 <CardHeader className="text-center">
                   <img
                     src="/New%20folder/fina.svg"
