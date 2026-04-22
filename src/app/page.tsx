@@ -34,7 +34,6 @@ import ParticlesBackground from "@/components/ParticlesBackground";
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { CircuitBoard, ScanText, PencilLine, Network, Languages, ScrollText } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { ActiveUsersCounter } from "@/components/ActiveUsersCounter";
 import { wakeUpBackendSilently } from "@/lib/backend-health";
@@ -2181,127 +2180,141 @@ export default function Home() {
         <ScrollAnimatedSection id="ai-engine" className="py-16">
           <div className="container mx-auto max-w-[1640px] px-4 sm:px-6 lg:px-8">
             <div className="mx-auto">
-              <div className="text-center mb-16" data-animate="headline">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-[#A78BFA] mb-4 shadow-lg shadow-[#A78BFA]/10" style={{ backgroundColor: '#fbfdfc' }}>
+              <div className="mb-12 max-w-4xl" data-animate="headline">
+                <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#A78BFA]/70 bg-white/55 px-4 py-2 shadow-lg shadow-[#A78BFA]/10 backdrop-blur">
+                  <span className="h-2 w-2 rounded-full bg-[#F97316]" />
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     How AxLiner's Engine Is Built
                   </h2>
                 </div>
 
-                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                  A transparent look at our instruction fine-tuning methodology, system prompts, and the engineering decisions that power industry-leading OCR accuracy.
+                <p className="text-2xl font-semibold leading-tight text-foreground sm:text-3xl lg:text-4xl">
+                  A document pipeline designed around messy handwriting, not generic chat output.
                 </p>
               </div>
 
               {/* Main Content */}
               <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(440px,0.9fr)] lg:items-start">
                 <div className="space-y-12">
-                {/* Instruction Fine-Tuning */}
-                <Card className="border border-border shadow-lg" style={{ backgroundColor: '#fbfdfc' }} data-animate="stagger">
+                {/* Engine Workflow */}
+                <Card className="overflow-hidden border border-[#A78BFA]/35 bg-white/55 shadow-xl shadow-[#A78BFA]/10 backdrop-blur-md" data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
-                      <CircuitBoard className="w-6 h-6 text-[#F97316]" />
-                      <CardTitle className="text-2xl">Instruction Fine-Tuning on Llama 3</CardTitle>
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F97316]/12 text-sm font-black text-[#C2410C] ring-1 ring-[#F97316]/25">01</span>
+                      <CardTitle className="text-2xl">Built as a document workflow</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="prose prose-sm max-w-none">
-                      <p className="text-black font-semibold leading-relaxed">
-                        AxLiner was built by fine-tuning the Llama 3 base model on instruction datasets publicly available on the Hugging Face repository. <span className="font-semibold text-foreground">No proprietary data or training tricks were utilized</span> – our approach demonstrates that with careful instruction tuning, open-source models can achieve exceptional performance on document understanding tasks.
+                      <p className="text-[#1f2937] font-medium leading-8 text-base sm:text-lg">
+                        AxLiner separates the work into focused stages: clean the image, locate the table, read the handwriting, rebuild the rows, then package the result as an editable workbook. That keeps the experience predictable when a file is crooked, crowded, photographed from a phone, or mixed with notes and totals.
                       </p>
 
-                      <p className="text-black font-semibold leading-relaxed">
-                        The <span className="font-semibold text-primary">AxLiner OCR Engine</span> is a specialized model that proves base language models can be fine-tuned to excel at specialized tasks. Our fine-tuning process focused on:
+                      <p className="text-[#1f2937] font-medium leading-8 text-base sm:text-lg">
+                        The engine is tuned for batch jobs where every page needs the same level of structure. Instead of returning a wall of extracted text, it preserves the relationships that matter in Excel: headers, columns, repeated rows, numeric values, and the original reading order.
                       </p>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4 mt-6">
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#A78BFA]">
-                        <ScanText className="w-5 h-5 text-[#F97316] mt-0.5 flex-shrink-0" />
+                      <div className="flex items-start gap-3 rounded-2xl border border-[#A78BFA]/35 bg-[#fbfdfc]/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-[#F97316]/50 hover:shadow-lg">
+                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-[#F97316]" />
                         <div>
-                          <p className="font-semibold text-foreground mb-1">Document Structure Understanding</p>
-                          <p className="text-sm text-black font-semibold">Training on table layouts, form structures, and hierarchical document organization</p>
+                          <p className="font-semibold text-foreground mb-1">Image cleanup</p>
+                          <p className="text-sm text-muted-foreground font-medium">Rotation, contrast, and page noise are normalized before extraction.</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#A78BFA]">
-                        <PencilLine className="w-5 h-5 text-[#F97316] mt-0.5 flex-shrink-0" />
+                      <div className="flex items-start gap-3 rounded-2xl border border-[#A78BFA]/35 bg-[#fbfdfc]/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-[#F97316]/50 hover:shadow-lg">
+                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-[#F97316]" />
                         <div>
-                          <p className="font-semibold text-foreground mb-1">Handwriting Recognition</p>
-                          <p className="text-sm text-black font-semibold">Extensive exposure to varied handwriting styles and degraded document quality</p>
+                          <p className="font-semibold text-foreground mb-1">Handwriting read</p>
+                          <p className="text-sm text-muted-foreground font-medium">Letters, numbers, and totals stay connected to their table context.</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#A78BFA]">
-                        <Network className="w-5 h-5 text-[#F97316] mt-0.5 flex-shrink-0" />
+                      <div className="flex items-start gap-3 rounded-2xl border border-[#A78BFA]/35 bg-[#fbfdfc]/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-[#F97316]/50 hover:shadow-lg">
+                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-[#F97316]" />
                         <div>
-                          <p className="font-semibold text-foreground mb-1">Context Preservation</p>
-                          <p className="text-sm text-black font-semibold">Maintaining relationships between cells, columns, and semantic meaning</p>
+                          <p className="font-semibold text-foreground mb-1">Table rebuild</p>
+                          <p className="text-sm text-muted-foreground font-medium">Cells are mapped back into rows and columns instead of plain text.</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 p-4 rounded-lg bg-[#F5EEFF] border-2 border-[#A78BFA]">
-                        <Languages className="w-5 h-5 text-[#F97316] mt-0.5 flex-shrink-0" />
+                      <div className="flex items-start gap-3 rounded-2xl border border-[#A78BFA]/35 bg-[#fbfdfc]/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-[#F97316]/50 hover:shadow-lg">
+                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-[#F97316]" />
                         <div>
-                          <p className="font-semibold text-foreground mb-1">Multi-Language Support</p>
-                          <p className="text-sm text-black font-semibold">Fine-tuned on 7+ languages including complex scripts like Arabic and Chinese</p>
+                          <p className="font-semibold text-foreground mb-1">Workbook export</p>
+                          <p className="text-sm text-muted-foreground font-medium">The final XLSX is shaped for review, editing, and sharing.</p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="mt-6 p-4 bg-primary/5 rounded-lg border-2 border-[#A78BFA]">
-                      <p className="text-sm text-muted-foreground">
-                        <span className="font-semibold text-foreground">Benchmark Result:</span> In independent evaluations on MT-Bench, AxLiner achieved a score of <span className="font-semibold text-primary">7.2</span>, outperforming Llama 3 13B (6.65) despite using a more efficient 7B parameter architecture.
-                      </p>
+                    <div className="mt-6 rounded-3xl border border-[#4C1D95]/20 bg-[#2E145F] p-5 text-white shadow-2xl shadow-[#2E145F]/20">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#FDBA74]">Extraction plan</p>
+                      <p className="mt-2 text-lg font-bold">Messy page in, structured spreadsheet out</p>
+                      <div className="mt-5 grid gap-2 sm:grid-cols-3">
+                        {["headers", "rows", "totals"].map((item) => (
+                          <div key={item} className="rounded-xl bg-white/10 px-3 py-2 text-center text-sm font-semibold">
+                            {item}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* System Prompts & Guardrails */}
-                <Card className="border border-border shadow-lg" style={{ backgroundColor: '#fbfdfc' }} data-animate="stagger">
+                {/* Export Quality */}
+                <Card className="overflow-hidden border border-[#A78BFA]/35 bg-white/55 shadow-xl shadow-[#A78BFA]/10 backdrop-blur-md" data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
-                      <ScrollText className="w-6 h-6 text-[#F97316]" />
-                      <CardTitle className="text-2xl">System Prompts for Output Quality</CardTitle>
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F97316]/12 text-sm font-black text-[#C2410C] ring-1 ring-[#F97316]/25">02</span>
+                      <CardTitle className="text-2xl">Quality control before export</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="prose prose-sm max-w-none">
-                      <p className="text-black font-semibold leading-relaxed">
-                        We introduce carefully crafted system prompts to guide the model in generating high-quality, safe outputs within specified guardrails. This approach allows users to move along the Pareto front of <span className="font-semibold text-foreground">model utility versus guardrails enforcement</span>.
+                      <p className="text-[#1f2937] font-medium leading-8 text-base sm:text-lg">
+                        AxLiner treats export quality as part of the engine, not a final download button. Before a workbook is returned, the output is checked for row continuity, empty columns, mismatched totals, and values that are likely to have been read from the wrong cell.
                       </p>
                     </div>
 
-                    <div className="p-5 bg-muted/50 rounded-lg border-2 border-[#A78BFA] font-mono text-sm">
-                      <p className="text-foreground leading-relaxed italic">
-                        "Always assist with care, respect, and truth. Respond with utmost utility yet securely. Avoid harmful, unethical, prejudiced, or negative content. Ensure replies promote fairness and positivity."
-                      </p>
+                    <div className="grid gap-3">
+                      {[
+                        ["Input", "crooked invoice photo"],
+                        ["Structure", "detected columns and repeated rows"],
+                        ["Output", "editable XLSX with clean sheet names"],
+                      ].map(([label, value]) => (
+                        <div key={label} className="grid grid-cols-[110px_1fr] items-center rounded-2xl border border-[#A78BFA]/25 bg-[#fbfdfc]/80 px-4 py-3">
+                          <span className="text-xs font-black uppercase tracking-[0.18em] text-[#C2410C]">{label}</span>
+                          <span className="text-sm font-semibold text-foreground">{value}</span>
+                        </div>
+                      ))}
                     </div>
 
-                    <div className="overflow-hidden rounded-lg border-2 border-[#A78BFA] mt-6">
+                    <div className="overflow-hidden rounded-2xl border border-[#A78BFA]/40 mt-6 bg-white/70">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="border-b border-border/50 bg-muted/30">
-                            <th className="text-left p-3 font-medium">Configuration</th>
-                            <th className="text-right p-3 font-medium">MT-Bench Score</th>
+                          <tr className="border-b border-border/50 bg-[#F5EEFF]/70">
+                            <th className="text-left p-3 font-medium">Check</th>
+                            <th className="text-right p-3 font-medium">Status</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr className="border-b border-border/50">
-                            <td className="p-3 text-muted-foreground">No system prompt</td>
-                            <td className="p-3 text-right font-semibold">6.84 ± 0.07</td>
+                            <td className="p-3 text-muted-foreground">Column count</td>
+                            <td className="p-3 text-right font-semibold text-primary">matched</td>
                           </tr>
                           <tr className="border-b border-border/50">
-                            <td className="p-3 text-muted-foreground">Llama 3 system prompt</td>
-                            <td className="p-3 text-right">6.38 ± 0.07</td>
+                            <td className="p-3 text-muted-foreground">Numeric fields</td>
+                            <td className="p-3 text-right font-semibold text-primary">verified</td>
                           </tr>
                           <tr>
-                            <td className="p-3 text-primary font-medium">AxLiner system prompt</td>
-                            <td className="p-3 text-right font-semibold text-primary">6.58 ± 0.05</td>
+                            <td className="p-3 text-muted-foreground">Workbook format</td>
+                            <td className="p-3 text-right font-semibold text-primary">ready</td>
                           </tr>
                         </tbody>
                       </table>
                     </div>
 
                     <p className="text-sm text-muted-foreground">
-                      Our optimized system prompt maintains strong performance while ensuring <span className="font-semibold text-foreground">100% rejection rate</span> on harmful questions from a curated test set of 175 unsafe prompts.
+                      The result is a file that feels closer to a finished spreadsheet than a raw OCR dump.
                     </p>
                   </CardContent>
                 </Card>
@@ -2313,13 +2326,27 @@ export default function Home() {
                     alt="Professionals reviewing documents"
                     className="absolute inset-0 h-full w-full object-cover object-center"
                   />
+                  <div className="absolute inset-x-6 bottom-6 rounded-3xl border border-white/35 bg-white/75 p-5 shadow-2xl backdrop-blur-md sm:inset-x-8 sm:bottom-8">
+                    <div className="grid gap-4 sm:grid-cols-3">
+                      {[
+                        ["96.8%", "handwriting accuracy"],
+                        ["XLSX", "ready export"],
+                        ["Batch", "multi-file runs"],
+                      ].map(([value, label]) => (
+                        <div key={value} className="rounded-2xl border border-[#A78BFA]/30 bg-white/70 p-4">
+                          <p className="text-2xl font-black text-primary">{value}</p>
+                          <p className="mt-1 text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {/* Footer Note */}
               <div className="mt-12 text-center" data-animate="stagger">
                 <p className="text-sm text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-                  <span className="font-semibold text-foreground">Transparency & Reproducibility:</span> Our fine-tuning methodology uses publicly available datasets and standard transformer architectures. We believe in open, reproducible AI research – no proprietary tricks, just thoughtful engineering and domain-specific optimization for document understanding tasks.
+                  <span className="font-semibold text-foreground">Designed for operators:</span> every step is shaped around the spreadsheet people need after the upload, from invoices and paper forms to handwritten class notes and archive tables.
                 </p>
               </div>
             </div>
