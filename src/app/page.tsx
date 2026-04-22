@@ -1179,7 +1179,7 @@ export default function Home() {
             style={{
               backgroundImage: "url('/lifo.jpg')",
               clipPath:
-                "polygon(0 0, 100% 0, 100% 86%, 96% 91%, 92% 95%, 87% 97%, 13% 97%, 8% 95%, 4% 91%, 0 86%)",
+                "polygon(0 0, 100% 0, 100% 94%, 98.5% 95.2%, 96.5% 96%, 93% 96.5%, 7% 96.5%, 3.5% 96%, 1.5% 95.2%, 0 94%)",
             }}
           />
           <div className="relative z-10">
@@ -2036,7 +2036,7 @@ export default function Home() {
         </div>
 
         {/* Benchmark Section */}
-        <ScrollAnimatedSection id="benchmarks" className="py-16">
+        <ScrollAnimatedSection id="benchmarks" className="pt-8 pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
