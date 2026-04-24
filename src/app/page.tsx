@@ -1201,17 +1201,23 @@ export default function Home() {
                     Try it
                     <SiteIcon src={siteIcons.arrow} className="ml-2 h-5 w-5" />
                   </Button>
-                  <div className="flex -space-x-2">
-                    {[0, 1, 2, 3, 4].map((i) => (
-                      <img
-                        key={i}
-                        src={`/avatars/${i}.webp`}
-                        alt={`User ${i + 1}`}
-                        className="h-9 w-9 rounded-full border-2 border-white object-cover shadow-sm"
-                      />
-                    ))}
+                  <div className="flex items-center gap-3 rounded-full border border-white/45 bg-white/35 px-3 py-2 shadow-lg shadow-[#441F84]/10 backdrop-blur-2xl">
+                    <div className="flex -space-x-2">
+                      {[0, 1, 2, 3, 4].map((i) => (
+                        <img
+                          key={i}
+                          src={`/avatars/${i}.webp`}
+                          alt={`User ${i + 1}`}
+                          className="h-9 w-9 rounded-full border-2 border-white object-cover shadow-sm"
+                        />
+                      ))}
+                    </div>
+                    <div className="h-8 w-px bg-[#A78BFA]/25" />
+                    <div className="text-left">
+                      <p className="text-sm font-bold leading-none text-foreground">5,000+</p>
+                      <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">active teams</p>
+                    </div>
                   </div>
-                  <span className="text-sm font-semibold text-foreground">+5000</span>
                 </div>
               </div>
 
@@ -1970,8 +1976,8 @@ export default function Home() {
 
               {/* Main Content */}
               <div className="grid items-start gap-3 xl:grid-cols-[minmax(680px,0.98fr)_minmax(820px,1.02fr)]">
-                <Card className="bg-transparent dark:bg-transparent border-0 rounded-lg shadow-none" style={{ backgroundColor: 'transparent' }}>
-                  <CardContent className="space-y-8 px-0 py-0">
+                <Card className="ax-glass-card overflow-hidden rounded-[1.75rem] border border-white/45 shadow-xl shadow-[#441F84]/15">
+                  <CardContent className="space-y-8 p-6 sm:p-8 lg:p-10">
                     <p className="text-xl text-foreground leading-relaxed">
                       Axliner is a <span className="font-bold">7-billion parameter vision-language model</span> a fine-tuned Meta's Llama 3 Model. The model underwent extensive instruction fine-tuning specifically optimized for <span className="font-bold">handwritten text recognition</span>, <span className="font-bold">table structure preservation</span>, and <span className="font-bold">multi-language document understanding</span>.
                     </p>
