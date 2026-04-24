@@ -1425,19 +1425,40 @@ export default function Home() {
 
                   {/* Progressive Results Display - Full Width as soon as we have results */}
                   {(isProcessing || resultFiles.length > 0) && (
-                    <div className={`border-2 border-[#A78BFA] rounded-xl ${resultFiles.length > 0 ? 'p-4' : 'p-6'}`} style={{ backgroundColor: '#fbfdfc' }}>
-                      <div className={`flex items-center justify-between mb-3 ${resultFiles.length > 0 ? 'pb-2 border-b border-[#A78BFA]/20' : ''}`}>
-                        <h3 className={`${processingComplete && resultFiles.length > 0 ? 'text-lg' : 'text-lg'} font-semibold`}>
-                          {processingComplete ? 'Ready to Download' : 'Processing...'}
-                        </h3>
-                        <div className="flex gap-2">
+                    <div className={`ax-glass-card overflow-hidden rounded-[1.5rem] border border-white/45 ${resultFiles.length > 0 ? 'p-4 sm:p-5' : 'p-6'}`}>
+                      <div className={`mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between ${resultFiles.length > 0 ? 'border-b border-white/35 pb-4' : ''}`}>
+                        <div className="flex items-start gap-4">
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#441F84] text-white shadow-lg shadow-[#441F84]/20">
+                            {processingComplete ? (
+                              <SiteIcon src={siteIcons.export} className="h-5 w-5" />
+                            ) : (
+                              <InlineSpinner className="h-5 w-5" />
+                            )}
+                          </div>
+                          <div className="space-y-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h3 className="text-lg font-semibold tracking-tight">
+                                {processingComplete ? 'Ready to Download' : 'Processing...'}
+                              </h3>
+                              <span className="rounded-full border border-[#A78BFA]/35 bg-white/45 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground backdrop-blur-md">
+                                {processingComplete ? `${resultFiles.length} file${resultFiles.length === 1 ? '' : 's'} ready` : 'live status'}
+                              </span>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              {processingComplete
+                                ? 'Review the preview, download individual files, or export everything at once.'
+                                : 'Your files are being converted now. The panel will update as each result is ready.'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-2 lg:justify-end">
                           {processingComplete && resultFiles.length > 1 && (
                             <>
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={handleDownloadAll}
-                                className="border-2 border-[#A78BFA]"
+                                className="border-2 border-[#A78BFA] bg-white/55 backdrop-blur-md"
                               >
                                 <SiteIcon src={siteIcons.export} className="mr-1 h-5 w-5" />
                                 Download All
@@ -1446,7 +1467,7 @@ export default function Home() {
                                 size="sm"
                                 variant="outline"
                                 onClick={handleShareAll}
-                                className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                                className="gap-2 bg-white/55 border-2 border-foreground text-foreground backdrop-blur-md hover:bg-muted/50"
                               >
                                 <SiteIcon src={siteIcons.share} className="h-5 w-5" />
                                 Share All
@@ -1457,7 +1478,7 @@ export default function Home() {
                             variant="outline"
                             size="sm"
                             onClick={handleReset}
-                            className="border-2 border-[#A78BFA]"
+                            className="border-2 border-[#A78BFA] bg-white/55 backdrop-blur-md"
                           >
                             Convert  Again
                           </Button>
