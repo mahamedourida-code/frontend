@@ -1256,53 +1256,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Companies Section - Trusted By */}
-              <ScrollAnimatedSection id="trusted" className="w-full overflow-hidden pt-2 pb-1">
-                <div className="text-center mb-5" data-animate="headline">
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#A78BFA] mb-2 shadow-lg shadow-[#A78BFA]/10">
-                    <h2 className="text-lg sm:text-base font-semibold text-foreground">
-                      Chosen by experts at top organizations
-                    </h2>
-                  </div>
-                </div>
-
-                <div className="relative z-10 overflow-hidden" data-animate="stagger">
-                  <div
-                    className="flex gap-8 items-center"
-                    style={{
-                      animation: 'scroll-left 60s linear infinite',
-                      width: 'max-content',
-                      willChange: 'transform'
-                    }}
-                  >
-                    {/* Create multiple sets for truly seamless infinite loop */}
-                    {Array.from({ length: 10 }, (_, setIndex) =>
-                      [1, 2, 3, 4, 5, 6, 7, 8, 9].map((imgNum) => (
-                        <Card
-                          key={`${setIndex}-${imgNum}`}
-                          className="flex-shrink-0 bg-white dark:bg-white border border-border/50 hover:border-[#A78BFA]/30 transition-all duration-300 hover:shadow-md w-[120px] h-[80px]"
-                        >
-                          <CardContent className="p-2 flex items-center justify-center w-full h-full">
-                            <img
-                              src={`/${imgNum}.jpeg`}
-                              alt={`Company ${imgNum}`}
-                              className="w-[100px] h-[60px] object-contain opacity-60 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                                const parent = target.parentElement;
-                                if (parent) {
-                                  parent.innerHTML = `<span class="text-xs font-medium text-muted-foreground">Company ${imgNum}</span>`;
-                                }
-                              }}
-                            />
-                          </CardContent>
-                        </Card>
-                      ))
-                    ).flat()}
-                  </div>
-                </div>
-              </ScrollAnimatedSection>
             </div>
 
           </div>
@@ -1798,7 +1751,7 @@ export default function Home() {
         <section className="py-16 overflow-hidden relative z-10">
           <div className="w-full">
             <div className="text-center mb-12 px-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#A78BFA] mb-4 shadow-lg shadow-[#A78BFA]/10">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 mb-4 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   Trusted by Professionals
                 </h2>
@@ -1967,7 +1920,7 @@ export default function Home() {
             <div className="mx-auto max-w-[1780px]">
               {/* Section Header */}
               <div className="text-center mb-12">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#A78BFA] mb-4 shadow-lg shadow-[#A78BFA]/10">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 mb-4 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     What is Axliner?
                   </h2>
@@ -2006,7 +1959,7 @@ export default function Home() {
         <ScrollAnimatedSection id="features" className="relative z-20 -mt-16 pt-0 pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#A78BFA] mb-4 shadow-lg shadow-[#A78BFA]/10">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 mb-4 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   Solutions
                 </h2>
@@ -2066,7 +2019,7 @@ export default function Home() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border-2 border-[#A78BFA] mb-4 shadow-lg shadow-[#A78BFA]/10">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 mb-4 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     Benchmarks
                   </h2>
@@ -2199,6 +2152,55 @@ export default function Home() {
                 </Card>
               </div>
 
+            </div>
+          </div>
+        </ScrollAnimatedSection>
+
+        {/* Companies Section - Trusted By */}
+        <ScrollAnimatedSection id="trusted" className="w-full overflow-hidden py-6">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-5" data-animate="headline">
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
+                <h2 className="text-base font-semibold text-foreground sm:text-lg">
+                  Chosen by experts at top organizations
+                </h2>
+              </div>
+            </div>
+
+            <div className="relative z-10 overflow-hidden" data-animate="stagger">
+              <div
+                className="flex gap-8 items-center"
+                style={{
+                  animation: 'scroll-left 60s linear infinite',
+                  width: 'max-content',
+                  willChange: 'transform'
+                }}
+              >
+                {Array.from({ length: 10 }, (_, setIndex) =>
+                  [1, 2, 3, 4, 5, 6, 7, 8, 9].map((imgNum) => (
+                    <Card
+                      key={`${setIndex}-${imgNum}`}
+                      className="flex-shrink-0 bg-white dark:bg-white border border-border/50 hover:border-[#A78BFA]/30 transition-all duration-300 hover:shadow-md w-[120px] h-[80px]"
+                    >
+                      <CardContent className="p-2 flex items-center justify-center w-full h-full">
+                        <img
+                          src={`/${imgNum}.jpeg`}
+                          alt={`Company ${imgNum}`}
+                          className="w-[100px] h-[60px] object-contain opacity-60 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const parent = target.parentElement;
+                            if (parent) {
+                              parent.innerHTML = `<span class="text-xs font-medium text-muted-foreground">Company ${imgNum}</span>`;
+                            }
+                          }}
+                        />
+                      </CardContent>
+                    </Card>
+                  ))
+                ).flat()}
+              </div>
             </div>
           </div>
         </ScrollAnimatedSection>
@@ -2389,7 +2391,7 @@ export default function Home() {
 
             {/* CTA Content */}
             <div className="flex min-h-[560px] max-w-3xl flex-col text-center lg:text-left">
-              <div className="inline-flex w-fit items-center gap-2 self-center rounded-full border-2 border-[#A78BFA] bg-transparent px-3 py-1.5 shadow-lg shadow-[#A78BFA]/10 lg:self-start mb-14">
+              <div className="inline-flex w-fit items-center gap-2 self-center rounded-full border border-white/45 bg-white/45 px-4 py-2 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl lg:self-start mb-14">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
                   Ready to Transform Your Workflow?
                 </h2>
