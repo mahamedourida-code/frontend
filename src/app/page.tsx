@@ -1265,7 +1265,7 @@ export default function Home() {
         <section id="converter" className="relative z-10 pt-4 pb-16 sm:pt-6 lg:pt-8">
           <div className="container mx-auto px-4 sm:px-5 lg:px-9 max-w-[1400px]">
             <div className="mb-5 text-center">
-              <div className="inline-flex items-center gap-2 rounded-full border-2 border-[#A78BFA] bg-white/70 px-4 py-2 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-md">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
                 <h2 className="text-lg font-bold text-foreground sm:text-xl">
                   Try It
                 </h2>
@@ -1273,7 +1273,7 @@ export default function Home() {
             </div>
               <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : isProcessing ? 'w-full max-w-3xl' : 'w-full max-w-7xl'}`}>
                 <div className={!isProcessing && resultFiles.length === 0 ? "grid items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(440px,0.95fr)]" : "relative w-full"}>
-                <div className="relative w-full space-y-3">
+                <div className="ax-glass-card relative w-full space-y-3 rounded-[1.5rem] border border-white/45 p-4 sm:p-5">
                   {/* Upload Dropzone - Hide when showing results */}
                   {!processingComplete && resultFiles.length === 0 && (
                     <div className="space-y-3">
@@ -1282,7 +1282,7 @@ export default function Home() {
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
-                        className={`relative border-2 border-dashed rounded-xl transition-all duration-200 cursor-pointer ${
+                        className={`relative border-2 border-dashed rounded-[1.25rem] bg-white/25 backdrop-blur-xl transition-all duration-200 cursor-pointer ${
                           isDragging
                             ? 'border-[#A78BFA] bg-[#A78BFA]/10 scale-[0.99]'
                             : uploadedFiles.length > 0
