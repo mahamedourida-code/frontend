@@ -94,9 +94,14 @@ export default function RootLayout({
       >
         <div
           aria-hidden="true"
-          className="fixed inset-0 pointer-events-none z-0 bg-cover bg-top bg-no-repeat"
-          style={{ backgroundImage: "url('/leaf-background.jpg')" }}
-        />
+          className="pointer-events-none absolute inset-x-0 top-0 z-0 overflow-hidden"
+        >
+          <img
+            src="/diwdiw.jpg"
+            alt=""
+            className="block h-auto w-full max-w-none"
+          />
+        </div>
         <ThemeProvider defaultTheme="light" storageKey="AxLiner-theme">
           <ProcessingStateProvider>
             <div className="relative z-10">

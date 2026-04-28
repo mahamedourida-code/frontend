@@ -16,7 +16,7 @@ export default function DataEntryPage() {
       {/* Duplo30 Background */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
         <img
-          src="/lifo.jpg"
+          src="/diwdiw1.jpg"
           alt="Background pattern"
           className="w-full h-full object-cover object-top"
         />
