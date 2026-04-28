@@ -2385,9 +2385,6 @@ export default function Home() {
             </div>
           </div>
         </ScrollAnimatedSection>
-          </div>
-        </div>
-
         {/* Final CTA Section */}
         <section className="relative z-10 overflow-hidden py-24">
           <div className="grid w-full items-start gap-10 pr-4 sm:pr-6 lg:grid-cols-[minmax(620px,1.18fr)_minmax(420px,0.82fr)] lg:gap-14 lg:pr-12 xl:pr-20">
