@@ -411,14 +411,6 @@ function HistoryContent() {
 
   return (
     <div className="ax-page-bg min-h-screen relative">
-      {/* Duplo27 Background */}
-      <div className="fixed top-0 left-0 w-full pointer-events-none z-0">
-        <img
-          src="/diwdiw1.jpg"
-          alt="Background pattern"
-          className="w-full h-auto"
-        />
-      </div>
       {/* Compact Header */}
       <header className="ax-glass-header sticky top-0 z-50 border-b">
         <div className="container mx-auto px-3 lg:px-4 py-2 lg:py-3">

@@ -13,15 +13,6 @@ export default function PaperFormsPage() {
 
   return (
     <div className="ax-page-bg min-h-screen relative">
-      {/* Duplo30 Background */}
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
-        <img
-          src="/diwdiw1.jpg"
-          alt="Background pattern"
-          className="w-full h-full object-cover object-top"
-        />
-      </div>
-
       <header className="ax-glass-header sticky top-0 z-50 relative border-b">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">

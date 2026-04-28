@@ -216,14 +216,6 @@ export default function SettingsPage() {
 
   return (
     <div className="ax-page-bg min-h-screen relative">
-      {/* Duplo29 Background */}
-      <div className="fixed top-0 left-0 w-full pointer-events-none z-0">
-        <img
-          src="/diwdiw1.jpg"
-          alt="Background pattern"
-          className="w-full h-auto"
-        />
-      </div>
       {/* Header */}
       <header className="ax-glass-header sticky top-0 z-10 border-b">
         <div className="container max-w-7xl mx-auto px-3 lg:px-4 py-3 lg:py-4">

@@ -408,14 +408,6 @@ export default function DashboardPage() {
 
   return (
     <div className="ax-page-bg min-h-screen flex relative">
-      {/* Duplo29 Background */}
-      <div className="fixed top-0 left-0 w-full pointer-events-none z-0">
-        <img
-          src="/diwdiw1.jpg"
-          alt="Background pattern"
-          className="w-full h-auto"
-        />
-      </div>
       {/* Sidebar - Hidden on Mobile */}
       <div className="hidden lg:block w-64 border-r bg-card/50 backdrop-blur relative z-10">
         <div className="flex flex-col h-full">

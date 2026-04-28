@@ -82,14 +82,6 @@ export default function UploadTypePage() {
 
   return (
     <div className="ax-page-bg min-h-screen relative">
-      {/* Duplo29 Background */}
-      <div className="fixed top-0 left-0 w-full pointer-events-none z-0">
-        <img
-          src="/diwdiw1.jpg"
-          alt="Background pattern"
-          className="w-full h-auto"
-        />
-      </div>
       {/* Header */}
       <header className="ax-glass-header relative z-10 border-b">
         <div className="container flex h-12 lg:h-14 max-w-5xl items-center justify-between px-3 sm:px-4 lg:px-6">

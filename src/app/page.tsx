@@ -2213,6 +2213,13 @@ export default function Home() {
           </div>
         </div>
 
+        <div className="relative isolate overflow-hidden">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
+            style={{ backgroundImage: "url('/diwdiw2.jpg')" }}
+          />
+          <div className="relative z-10">
         {/* AI Engine Section */}
         <ScrollAnimatedSection id="ai-engine" className="py-16">
           <div className="container mx-auto max-w-[1640px] px-4 sm:px-6 lg:px-8">
@@ -2430,6 +2437,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+          </div>
+        </div>
       </main>
 
       {/* Footer */}

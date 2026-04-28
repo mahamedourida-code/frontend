@@ -154,19 +154,11 @@
 
   .ax-page-bg {
     position: relative;
-    background-image: url('/diwdiw1.jpg');
-    background-size: cover;
-    background-position: top center;
-    background-attachment: fixed;
+    background: #ffffff;
   }
 
   .ax-page-bg::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background: rgb(255 255 255 / 0.12);
+    content: none;
   }
 
   .ax-glass-card {
