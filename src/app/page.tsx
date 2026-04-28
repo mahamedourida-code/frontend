@@ -2014,6 +2014,13 @@ export default function Home() {
           </div>
         </div>
 
+        <div className="relative isolate overflow-hidden">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
+            style={{ backgroundImage: "url('/diwdiw.jpg')" }}
+          />
+          <div className="relative z-10">
         {/* Benchmark Section */}
         <ScrollAnimatedSection id="benchmarks" className="pt-8 pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -2377,6 +2384,8 @@ export default function Home() {
             </div>
           </div>
         </ScrollAnimatedSection>
+          </div>
+        </div>
 
         {/* Final CTA Section */}
         <section className="relative z-10 overflow-hidden py-24">

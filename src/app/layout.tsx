@@ -95,7 +95,7 @@ export default function RootLayout({
         <div
           aria-hidden="true"
           className="fixed inset-0 pointer-events-none z-0 bg-cover bg-top bg-no-repeat"
-          style={{ backgroundImage: "url('/diwdiw.jpg')" }}
+          style={{ backgroundImage: "url('/diwdiw2.jpg')" }}
         />
         <ThemeProvider defaultTheme="light" storageKey="AxLiner-theme">
           <ProcessingStateProvider>
