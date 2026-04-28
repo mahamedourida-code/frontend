@@ -1954,7 +1954,16 @@ export default function Home() {
             </div>
           </div>
         </section>
+          </div>
+        </div>
 
+        <div className="relative isolate overflow-hidden">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
+            style={{ backgroundImage: "url('/leaf-background.jpg')" }}
+          />
+          <div className="relative z-10">
         {/* Why Choose Us Section */}
         <ScrollAnimatedSection id="features" className="relative z-20 -mt-16 pt-0 pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -2011,16 +2020,6 @@ export default function Home() {
             </div>
           </div>
         </ScrollAnimatedSection>
-          </div>
-        </div>
-
-        <div className="relative isolate overflow-hidden">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
-            style={{ backgroundImage: "url('/diwdiw.jpg')" }}
-          />
-          <div className="relative z-10">
         {/* Benchmark Section */}
         <ScrollAnimatedSection id="benchmarks" className="pt-8 pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -2211,6 +2210,8 @@ export default function Home() {
             </div>
           </div>
         </ScrollAnimatedSection>
+          </div>
+        </div>
 
         {/* AI Engine Section */}
         <ScrollAnimatedSection id="ai-engine" className="py-16">
