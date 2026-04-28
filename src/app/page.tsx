@@ -93,6 +93,8 @@ export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
   const heroFlowRef = useRef<HTMLDivElement>(null);
   const heroImageRef = useRef<HTMLDivElement>(null);
+  const topBackgroundSectionRef = useRef<HTMLDivElement>(null);
+  const topBackgroundRef = useRef<HTMLDivElement>(null);
 
   // Get state management from context
   const contextValue = useProcessingState()
@@ -323,6 +325,31 @@ export default function Home() {
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
+  }, []);
+
+  useEffect(() => {
+    const topSection = topBackgroundSectionRef.current;
+    const topBackground = topBackgroundRef.current;
+    if (!topSection || !topBackground) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        topBackground,
+        { y: 0 },
+        {
+          y: -90,
+          ease: "none",
+          scrollTrigger: {
+            trigger: topSection,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1.2,
+          },
+        }
+      );
+    }, topSection);
+
+    return () => ctx.revert();
   }, []);
 
   // Smooth scroll function
@@ -1143,12 +1170,13 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <div className="relative isolate overflow-hidden">
+        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden">
           <div
+            ref={topBackgroundRef}
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
+            className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat will-change-transform"
             style={{
-              backgroundImage: "url('/diwdiw1.jpg')",
+              backgroundImage: "url('/lifo.jpg')",
               clipPath:
                 "polygon(0 0, 100% 0, 100% 98.9%, 98.8% 99.15%, 96.5% 99.35%, 92% 99.45%, 8% 99.45%, 3.5% 99.35%, 1.2% 99.15%, 0 98.9%)",
             }}
