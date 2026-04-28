@@ -337,7 +337,7 @@ export default function Home() {
         topBackground,
         { y: 0 },
         {
-          y: -90,
+          y: -180,
           ease: "none",
           scrollTrigger: {
             trigger: topSection,
