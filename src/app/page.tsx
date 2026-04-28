@@ -1957,7 +1957,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative isolate -mt-16 overflow-hidden pt-16">
+        <div className="relative isolate -mt-28 overflow-hidden pt-28">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
