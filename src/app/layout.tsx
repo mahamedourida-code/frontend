@@ -94,14 +94,9 @@ export default function RootLayout({
       >
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 z-0 overflow-hidden"
-        >
-          <img
-            src="/diwdiw.jpg"
-            alt=""
-            className="block h-auto w-full max-w-none"
-          />
-        </div>
+          className="fixed inset-0 pointer-events-none z-0 bg-cover bg-top bg-no-repeat"
+          style={{ backgroundImage: "url('/diwdiw.jpg')" }}
+        />
         <ThemeProvider defaultTheme="light" storageKey="AxLiner-theme">
           <ProcessingStateProvider>
             <div className="relative z-10">
