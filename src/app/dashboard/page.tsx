@@ -96,10 +96,10 @@ export default function DashboardPage() {
 
   // Sidebar navigation items
   const sidebarItems = [
-    { label: "Overview", icon: Activity, href: "/dashboard", active: true },
-    { label: "Process Images", icon: Upload, href: "/dashboard/client", active: false }, // Changed to client
-    { label: "History", icon: History, href: "/history", active: false },
-    { label: "Settings", icon: Settings, href: "/dashboard/settings", active: false }
+    { label: "Overview", description: "Usage and activity", icon: Activity, href: "/dashboard", active: true },
+    { label: "Process Images", description: "Run new conversions", icon: Upload, href: "/dashboard/client", active: false },
+    { label: "History", description: "Review past exports", icon: History, href: "/history", active: false },
+    { label: "Settings", description: "Manage preferences", icon: Settings, href: "/dashboard/settings", active: false }
   ]
 
   useEffect(() => {
@@ -407,99 +407,179 @@ export default function DashboardPage() {
   // Remove credits logic - just track processed images
 
   return (
-    <div className="ax-page-bg min-h-screen flex relative">
+    <div className="ax-page-bg min-h-screen bg-[#fcfbff] lg:p-4">
       {/* Sidebar - Hidden on Mobile */}
-      <div className="hidden lg:block w-64 border-r bg-card/50 backdrop-blur relative z-10">
-        <div className="flex flex-col h-full">
+      <aside className="relative z-10 hidden lg:flex lg:w-[290px] lg:flex-col">
+        <div className="sticky top-4 flex h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-[30px] border border-[#ebe2ff] bg-white/92 shadow-[0_24px_80px_rgba(68,31,132,0.10)] backdrop-blur-xl">
           {/* App Logo */}
-          <div className="p-6 border-b">
-            <div className="flex items-center gap-2 mb-6">
-              <AppIcon size={32} />
-              <span className="text-xl font-bold text-black dark:text-white">AxLiner</span>
+          <div className="border-b border-[#efe7ff] px-5 pb-5 pt-6">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#eadfff] bg-[#f7f1ff]">
+                  <AppIcon size={30} />
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7c62b1]">Workspace</p>
+                  <span className="text-xl font-bold text-black dark:text-white">AxLiner</span>
+                </div>
+              </div>
+              <Badge className="rounded-full border border-[#e8dcff] bg-[#fbf8ff] px-2.5 py-1 text-[11px] font-semibold text-[#5b3f92] shadow-none hover:bg-[#fbf8ff]">
+                Active
+              </Badge>
             </div>
             {/* User Profile */}
-            <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={user?.user_metadata?.avatar_url} />
-                <AvatarFallback className="bg-primary/10">
-                  {user?.email?.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">
-                  {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email}
-                </p>
-                <p className="text-xs text-muted-foreground">Free Plan</p>
+            <div className="mt-5 rounded-[24px] border border-[#efe7ff] bg-[#fbf9ff] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-11 w-11 border border-[#eadfff] shadow-sm">
+                  <AvatarImage src={user?.user_metadata?.avatar_url} />
+                  <AvatarFallback className="bg-primary/10">
+                    {user?.email?.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-foreground">
+                    {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email}
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">Free plan workspace</p>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center justify-between rounded-2xl border border-[#eadfff] bg-white px-3 py-2">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7c62b1]">Total processed</p>
+                  <p className="text-lg font-bold text-foreground">{stats.totalProcessed}</p>
+                </div>
+                <div className="rounded-full bg-[#f5eeff] px-2.5 py-1 text-[11px] font-semibold text-[#5b3f92]">
+                  all time
+                </div>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4">
-            <div className="space-y-1">
+          <nav className="flex-1 px-4 py-5">
+            <div className="mb-3 px-2">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8d79bb]">Navigation</p>
+            </div>
+            <div className="space-y-2">
               {sidebarItems.map((item) => (
                 <Link
                   key={item.label}
                   href={item.href}
                   className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors",
+                    "group flex w-full items-center gap-3 rounded-[22px] px-3 py-3 text-sm transition-all duration-200",
                     item.active
-                      ? "bg-primary/10 text-primary font-medium"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                      ? "bg-[#2f165e] text-white shadow-[0_18px_40px_rgba(68,31,132,0.22)]"
+                      : "text-muted-foreground hover:bg-[#f6f1ff] hover:text-foreground"
                   )}
                 >
-                  <item.icon className="h-4 w-4" />
-                  {item.label}
+                  <div
+                    className={cn(
+                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border transition-colors",
+                      item.active
+                        ? "border-white/10 bg-white/10 text-white"
+                        : "border-[#eadfff] bg-white text-[#65479f] group-hover:border-[#dccbff]"
+                    )}
+                  >
+                    <item.icon className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className={cn("truncate font-semibold", item.active ? "text-white" : "text-foreground")}>
+                      {item.label}
+                    </p>
+                    <p className={cn("truncate text-xs", item.active ? "text-white/70" : "text-muted-foreground")}>
+                      {item.description}
+                    </p>
+                  </div>
                 </Link>
               ))}
               
               {/* Sign Out Button - Below Settings */}
               <button
                 onClick={handleSignOut}
-                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
+                className="mt-4 flex w-full items-center gap-3 rounded-[22px] border border-[#f1e9ff] px-3 py-3 text-sm text-muted-foreground transition-colors hover:bg-[#f8f4ff] hover:text-foreground"
               >
-                <LogOut className="h-4 w-4" />
-                Sign Out
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#eadfff] bg-white text-[#65479f]">
+                  <LogOut className="h-4 w-4" />
+                </div>
+                <div className="text-left">
+                  <p className="font-semibold text-foreground">Sign Out</p>
+                  <p className="text-xs text-muted-foreground">Exit this workspace</p>
+                </div>
               </button>
             </div>
           </nav>
 
-          {/* Empty space at bottom */}
-          <div className="p-4"></div>
+          <div className="border-t border-[#efe7ff] p-4">
+            <div className="rounded-[24px] border border-[#efe7ff] bg-[#fbf9ff] p-4">
+              <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <HelpCircle className="h-4 w-4 text-[#65479f]" />
+                Need a faster run?
+              </div>
+              <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                Jump straight into the upload workspace for new handwritten and table conversions.
+              </p>
+              <Button asChild className="mt-4 h-10 w-full rounded-2xl bg-[#2f165e] text-white hover:bg-[#3a1d72] shadow-[0_12px_30px_rgba(68,31,132,0.22)]">
+                <Link href="/dashboard/client">Open uploader</Link>
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
+      </aside>
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto relative z-10">
-        <div className="container max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-          {/* Back Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.back()}
-            className="gap-1 mb-4"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Back
-          </Button>
-          {/* Header with Process Images Button */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 lg:mb-8">
-            <div>
-              <h1 className="text-2xl lg:text-3xl font-bold">Dashboard</h1>
-              <p className="text-sm text-muted-foreground mt-0.5 hidden sm:block">Monitor your document processing activity</p>
+        <div className="container max-w-7xl mx-auto p-4 sm:p-6 lg:px-8 lg:py-4">
+          <div className="mb-6 rounded-[30px] border border-[#ebe2ff] bg-white/92 p-4 shadow-[0_24px_80px_rgba(68,31,132,0.08)] backdrop-blur-xl sm:p-5 lg:mb-8 lg:p-6">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+              <div className="flex items-start gap-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => router.back()}
+                  className="mt-1 h-11 rounded-2xl border border-[#eadfff] bg-[#faf7ff] px-4 text-[#5b3f92] hover:bg-[#f3ebff] hover:text-[#2f165e]"
+                >
+                  <ChevronLeft className="mr-1 h-4 w-4" />
+                  Back
+                </Button>
+                <div>
+                  <div className="inline-flex items-center rounded-full border border-[#eadfff] bg-[#fbf8ff] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7c62b1]">
+                    Overview
+                  </div>
+                  <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground lg:text-4xl">Dashboard</h1>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                    Monitor image volume, processing pace, and recent activity across your AxLiner workspace.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="flex items-center gap-3 rounded-[22px] border border-[#efe7ff] bg-[#fbf9ff] px-3 py-2.5">
+                  <Avatar className="h-10 w-10 border border-[#eadfff] shadow-sm">
+                    <AvatarImage src={user?.user_metadata?.avatar_url} />
+                    <AvatarFallback className="bg-primary/10">
+                      {user?.email?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">{user?.email}</p>
+                  </div>
+                </div>
+                <Button
+                  size="lg"
+                  asChild
+                  className="h-12 rounded-[22px] bg-[#2f165e] px-5 text-white shadow-[0_18px_40px_rgba(68,31,132,0.22)] transition-all hover:bg-[#3a1d72] hover:shadow-[0_22px_44px_rgba(68,31,132,0.26)] w-full sm:w-auto"
+                >
+                  <Link href="/dashboard/client">
+                    <Upload className="h-5 w-5" />
+                    <span className="ml-2">Process Images</span>
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
             </div>
-            <Button
-              size="lg"
-              asChild
-              className="gap-2 shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
-            >
-              <Link href="/dashboard/client">
-                <Upload className="h-5 w-5" />
-                <span className="hidden sm:inline">Process Images</span>
-                <span className="sm:hidden">Upload</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
           </div>
 
 
