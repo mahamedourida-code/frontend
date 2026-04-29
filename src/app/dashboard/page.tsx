@@ -96,10 +96,10 @@ export default function DashboardPage() {
 
   // Sidebar navigation items
   const sidebarItems = [
-    { label: "Overview", description: "Usage and activity", icon: Activity, href: "/dashboard", active: true },
-    { label: "Process Images", description: "Run new conversions", icon: Upload, href: "/dashboard/client", active: false },
-    { label: "History", description: "Review past exports", icon: History, href: "/history", active: false },
-    { label: "Settings", description: "Manage preferences", icon: Settings, href: "/dashboard/settings", active: false }
+    { label: "Overview", icon: Activity, href: "/dashboard", active: true },
+    { label: "Process Images", icon: Upload, href: "/dashboard/client", active: false },
+    { label: "History", icon: History, href: "/history", active: false },
+    { label: "Settings", icon: Settings, href: "/dashboard/settings", active: false }
   ]
 
   useEffect(() => {
@@ -407,7 +407,7 @@ export default function DashboardPage() {
   // Remove credits logic - just track processed images
 
   return (
-    <div className="ax-page-bg min-h-screen bg-[#fcfbff] lg:p-4">
+    <div className="ax-page-bg min-h-screen bg-[#fcfbff] lg:flex lg:gap-4 lg:p-4">
       {/* Sidebar - Hidden on Mobile */}
       <aside className="relative z-10 hidden lg:flex lg:w-[290px] lg:flex-col">
         <div className="sticky top-4 flex h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-[30px] border border-[#ebe2ff] bg-white/92 shadow-[0_24px_80px_rgba(68,31,132,0.10)] backdrop-blur-xl">
@@ -418,14 +418,8 @@ export default function DashboardPage() {
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#eadfff] bg-[#f7f1ff]">
                   <AppIcon size={30} />
                 </div>
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7c62b1]">Workspace</p>
-                  <span className="text-xl font-bold text-black dark:text-white">AxLiner</span>
-                </div>
+                <span className="text-xl font-bold text-black dark:text-white">AxLiner</span>
               </div>
-              <Badge className="rounded-full border border-[#e8dcff] bg-[#fbf8ff] px-2.5 py-1 text-[11px] font-semibold text-[#5b3f92] shadow-none hover:bg-[#fbf8ff]">
-                Active
-              </Badge>
             </div>
             {/* User Profile */}
             <div className="mt-5 rounded-[24px] border border-[#efe7ff] bg-[#fbf9ff] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
@@ -440,16 +434,7 @@ export default function DashboardPage() {
                   <p className="truncate text-sm font-semibold text-foreground">
                     {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email}
                   </p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">Free plan workspace</p>
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between rounded-2xl border border-[#eadfff] bg-white px-3 py-2">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7c62b1]">Total processed</p>
-                  <p className="text-lg font-bold text-foreground">{stats.totalProcessed}</p>
-                </div>
-                <div className="rounded-full bg-[#f5eeff] px-2.5 py-1 text-[11px] font-semibold text-[#5b3f92]">
-                  all time
+                  <p className="mt-0.5 truncate text-xs text-muted-foreground">{user?.email}</p>
                 </div>
               </div>
             </div>
@@ -482,14 +467,9 @@ export default function DashboardPage() {
                   >
                     <item.icon className="h-4 w-4" />
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className={cn("truncate font-semibold", item.active ? "text-white" : "text-foreground")}>
-                      {item.label}
-                    </p>
-                    <p className={cn("truncate text-xs", item.active ? "text-white/70" : "text-muted-foreground")}>
-                      {item.description}
-                    </p>
-                  </div>
+                  <p className={cn("truncate font-semibold", item.active ? "text-white" : "text-foreground")}>
+                    {item.label}
+                  </p>
                 </Link>
               ))}
               
@@ -503,7 +483,6 @@ export default function DashboardPage() {
                 </div>
                 <div className="text-left">
                   <p className="font-semibold text-foreground">Sign Out</p>
-                  <p className="text-xs text-muted-foreground">Exit this workspace</p>
                 </div>
               </button>
             </div>
@@ -511,14 +490,7 @@ export default function DashboardPage() {
 
           <div className="border-t border-[#efe7ff] p-4">
             <div className="rounded-[24px] border border-[#efe7ff] bg-[#fbf9ff] p-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <HelpCircle className="h-4 w-4 text-[#65479f]" />
-                Need a faster run?
-              </div>
-              <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                Jump straight into the upload workspace for new handwritten and table conversions.
-              </p>
-              <Button asChild className="mt-4 h-10 w-full rounded-2xl bg-[#2f165e] text-white hover:bg-[#3a1d72] shadow-[0_12px_30px_rgba(68,31,132,0.22)]">
+              <Button asChild className="h-10 w-full rounded-2xl bg-[#2f165e] text-white hover:bg-[#3a1d72] shadow-[0_12px_30px_rgba(68,31,132,0.22)]">
                 <Link href="/dashboard/client">Open uploader</Link>
               </Button>
             </div>
@@ -542,13 +514,7 @@ export default function DashboardPage() {
                   Back
                 </Button>
                 <div>
-                  <div className="inline-flex items-center rounded-full border border-[#eadfff] bg-[#fbf8ff] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7c62b1]">
-                    Overview
-                  </div>
                   <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground lg:text-4xl">Dashboard</h1>
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                    Monitor image volume, processing pace, and recent activity across your AxLiner workspace.
-                  </p>
                 </div>
               </div>
 
