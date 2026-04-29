@@ -1057,73 +1057,97 @@ Best regards`
 
   return (
     <div className="ax-page-bg min-h-screen relative">
-      {/* Minimal Header */}
-      <header className="border-b lg:block hidden relative z-10">
-        <div className="container max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => router.back()}
-                className="gap-1"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Back
-              </Button>
-              <AppIcon size={32} />
-            </div>
-            <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
-              <Badge
-                variant="secondary"
-                className="gap-1 px-2 py-1 text-xs"
-              >
-                Unlimited Processing
-              </Badge>
-            </div>
-            <div className="flex items-center gap-3">
-              {/* Temporarily disabled - upload-type page commented out
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => router.push('/dashboard/upload-type')}
-              >
-                Change Type
-              </Button>
-              */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => router.push('/history')}
-                className="gap-1.5"
-              >
-                <History className="h-3.5 w-3.5" />
-                History
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => router.push('/dashboard')}
-                className="gap-1.5"
-              >
-                <BarChart3 className="h-3.5 w-3.5" />
-                Dashboard
-              </Button>
+      {/* Desktop Header */}
+      <header className="relative z-10 hidden lg:block">
+        <div className="container max-w-7xl mx-auto px-4 pt-4">
+          <div className="rounded-[30px] border border-[#ebe2ff] bg-white/92 p-5 shadow-[0_24px_80px_rgba(68,31,132,0.08)] backdrop-blur-xl">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => router.back()}
+                  className="mt-1 h-11 rounded-2xl border border-[#eadfff] bg-[#faf7ff] px-4 text-[#5b3f92] hover:bg-[#f3ebff] hover:text-[#2f165e]"
+                >
+                  <ChevronLeft className="mr-1 h-4 w-4" />
+                  Back
+                </Button>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#eadfff] bg-[#f7f1ff]">
+                    <AppIcon size={30} />
+                  </div>
+                  <div>
+                    <div className="inline-flex items-center rounded-full border border-[#eadfff] bg-[#fbf8ff] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7c62b1]">
+                      Processing
+                    </div>
+                    <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground">Process Images</h1>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 rounded-[22px] border border-[#efe7ff] bg-[#fbf9ff] px-3 py-2.5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#eadfff] bg-white">
+                    <AppIcon size={22} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">{user?.email}</p>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => router.push('/history')}
+                  className="h-11 rounded-2xl border-[#eadfff] bg-white px-4 text-foreground hover:bg-[#f8f4ff]"
+                >
+                  History
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => router.push('/dashboard')}
+                  className="h-11 rounded-2xl border-[#eadfff] bg-white px-4 text-foreground hover:bg-[#f8f4ff]"
+                >
+                  Dashboard
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
       {/* Mobile Header */}
-      <div className="lg:hidden border-b bg-background sticky top-0 z-40">
-        <div className="container max-w-7xl mx-auto px-4 py-2.5">
-          <div className="flex items-center justify-between">
-            <AppIcon size={28} />
+      <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur lg:hidden">
+        <div className="container max-w-7xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.back()}
+              className="h-10 rounded-2xl border border-[#eadfff] bg-[#faf7ff] px-3 text-[#5b3f92]"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex items-center gap-2">
+              <AppIcon size={28} />
+              <span className="text-sm font-semibold text-foreground">Process Images</span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push('/dashboard')}
+              className="h-10 rounded-2xl border-[#eadfff] bg-white px-3"
+            >
+              Dashboard
+            </Button>
           </div>
         </div>
       </div>
 
-      <main className="container max-w-7xl mx-auto px-4 py-8 pb-24 relative z-10">
+      <main className="container max-w-7xl mx-auto px-4 py-6 pb-24 lg:py-8 relative z-10">
         {/* Processing Timer Card */}
         {isProcessing && !isComplete && (
           <Card className="ax-glass-card mb-4 max-w-sm">
