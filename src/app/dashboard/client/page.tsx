@@ -1089,17 +1089,6 @@ Best regards`
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-3 rounded-[22px] border border-[#efe7ff] bg-[#fbf9ff] px-3 py-2.5">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#eadfff] bg-white">
-                    <AppIcon size={22} />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email}
-                    </p>
-                    <p className="truncate text-xs text-muted-foreground">{user?.email}</p>
-                  </div>
-                </div>
                 <Button
                   variant="outline"
                   size="sm"

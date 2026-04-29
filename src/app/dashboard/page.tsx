@@ -8,7 +8,6 @@ import { createClient } from "@/utils/supabase/client"
 import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
 import { cn } from "@/lib/utils"
@@ -408,20 +407,6 @@ export default function DashboardPage() {
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <div className="flex items-center gap-3 rounded-[22px] border border-[#efe7ff] bg-[#fbf9ff] px-3 py-2.5">
-                  <Avatar className="h-10 w-10 border border-[#eadfff] shadow-sm">
-                    <AvatarImage src={user?.user_metadata?.avatar_url} />
-                    <AvatarFallback className="bg-primary/10">
-                      {user?.email?.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email}
-                    </p>
-                    <p className="truncate text-xs text-muted-foreground">{user?.email}</p>
-                  </div>
-                </div>
                 <Button
                   size="lg"
                   asChild
