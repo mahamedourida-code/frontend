@@ -35,8 +35,8 @@ import { useHistory } from "@/hooks/useHistory"
 import { ocrApi } from "@/lib/api-client"
 import { toast } from "sonner"
 import { useAuth } from "@/hooks/useAuth"
-import { AppIcon } from "@/components/AppIcon"
 import { MobileNav } from "@/components/MobileNav"
+import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
 
 import { Database } from '@/types/database.generated'
 
@@ -410,19 +410,17 @@ function HistoryContent() {
   }
 
   return (
-    <div className="ax-page-bg min-h-screen relative">
+    <div className="ax-page-bg min-h-screen relative lg:flex lg:gap-4 lg:p-4">
+      <WorkspaceSidebar activeItem="history" user={user} />
+      <div className="relative z-10 flex-1">
       {/* Compact Header */}
       <header className="ax-glass-header sticky top-0 z-50 border-b">
         <div className="container mx-auto px-3 lg:px-4 py-2 lg:py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 lg:gap-4">
-              <div className="hidden sm:flex items-center gap-2 lg:gap-4">
-                <AppIcon size={24} className="lg:w-7 lg:h-7" />
-                <div className="border-l h-6" />
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
+              <div className="flex items-center gap-2 lg:gap-4">
+                <Button
+                  variant="ghost"
+                  size="icon"
                 onClick={() => router.push('/dashboard')}
                 className="h-8 w-8 lg:h-9 lg:w-9"
               >
@@ -679,6 +677,7 @@ function HistoryContent() {
           </div>
         )}
       </main>
+      </div>
       
       {/* Mobile Navigation */}
       <MobileNav 

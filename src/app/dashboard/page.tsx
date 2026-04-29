@@ -8,30 +8,17 @@ import { createClient } from "@/utils/supabase/client"
 import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { AppIcon } from "@/components/AppIcon"
 import { MobileNav } from "@/components/MobileNav"
+import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
 import {
-  FileSpreadsheet,
   Upload,
-  History,
-  Settings,
-  CreditCard,
-  HelpCircle,
-  LogOut,
-  Activity,
-  AlertCircle,
   ArrowRight,
-  ChartLine,
   Image,
   Clock,
   BarChart3,
-  Calendar,
   TrendingUp,
   ChevronLeft
 } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 // Dynamic import for the Chart component to avoid SSR issues
 const DashboardChart = dynamic(() => import("@/components/DashboardChart"), {
@@ -80,7 +67,7 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const router = useRouter()
-  const { user, loading: authLoading, signOut } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const [timeRange, setTimeRange] = useState<TimeRange>("7d")
   const [chartData, setChartData] = useState<ProcessingData[]>([])
   const [stats, setStats] = useState<DashboardStats>({
@@ -93,14 +80,6 @@ export default function DashboardPage() {
     successRate: 0
   })
   const [loading, setLoading] = useState(true)
-
-  // Sidebar navigation items
-  const sidebarItems = [
-    { label: "Overview", icon: Activity, href: "/dashboard", active: true },
-    { label: "Process Images", icon: Upload, href: "/dashboard/client", active: false },
-    { label: "History", icon: History, href: "/history", active: false },
-    { label: "Settings", icon: Settings, href: "/dashboard/settings", active: false }
-  ]
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -388,11 +367,6 @@ export default function DashboardPage() {
     return data
   }
 
-  const handleSignOut = async () => {
-    await signOut()
-    router.push('/')
-  }
-
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -408,95 +382,7 @@ export default function DashboardPage() {
 
   return (
     <div className="ax-page-bg min-h-screen bg-[#fcfbff] lg:flex lg:gap-4 lg:p-4">
-      {/* Sidebar - Hidden on Mobile */}
-      <aside className="relative z-10 hidden lg:flex lg:w-[290px] lg:flex-col">
-        <div className="sticky top-4 flex h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-[30px] border border-[#ebe2ff] bg-white/92 shadow-[0_24px_80px_rgba(68,31,132,0.10)] backdrop-blur-xl">
-          {/* App Logo */}
-          <div className="border-b border-[#efe7ff] px-5 pb-5 pt-6">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#eadfff] bg-[#f7f1ff]">
-                  <AppIcon size={30} />
-                </div>
-                <span className="text-xl font-bold text-black dark:text-white">AxLiner</span>
-              </div>
-            </div>
-            {/* User Profile */}
-            <div className="mt-5 rounded-[24px] border border-[#efe7ff] bg-[#fbf9ff] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-11 w-11 border border-[#eadfff] shadow-sm">
-                  <AvatarImage src={user?.user_metadata?.avatar_url} />
-                  <AvatarFallback className="bg-primary/10">
-                    {user?.email?.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-foreground">
-                    {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email}
-                  </p>
-                  <p className="mt-0.5 truncate text-xs text-muted-foreground">{user?.email}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 px-4 py-5">
-            <div className="mb-3 px-2">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8d79bb]">Navigation</p>
-            </div>
-            <div className="space-y-2">
-              {sidebarItems.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className={cn(
-                    "group flex w-full items-center gap-3 rounded-[22px] px-3 py-3 text-sm transition-all duration-200",
-                    item.active
-                      ? "bg-[#2f165e] text-white shadow-[0_18px_40px_rgba(68,31,132,0.22)]"
-                      : "text-muted-foreground hover:bg-[#f6f1ff] hover:text-foreground"
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border transition-colors",
-                      item.active
-                        ? "border-white/10 bg-white/10 text-white"
-                        : "border-[#eadfff] bg-white text-[#65479f] group-hover:border-[#dccbff]"
-                    )}
-                  >
-                    <item.icon className="h-4 w-4" />
-                  </div>
-                  <p className={cn("truncate font-semibold", item.active ? "text-white" : "text-foreground")}>
-                    {item.label}
-                  </p>
-                </Link>
-              ))}
-              
-              {/* Sign Out Button - Below Settings */}
-              <button
-                onClick={handleSignOut}
-                className="mt-4 flex w-full items-center gap-3 rounded-[22px] border border-[#f1e9ff] px-3 py-3 text-sm text-muted-foreground transition-colors hover:bg-[#f8f4ff] hover:text-foreground"
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#eadfff] bg-white text-[#65479f]">
-                  <LogOut className="h-4 w-4" />
-                </div>
-                <div className="text-left">
-                  <p className="font-semibold text-foreground">Sign Out</p>
-                </div>
-              </button>
-            </div>
-          </nav>
-
-          <div className="border-t border-[#efe7ff] p-4">
-            <div className="rounded-[24px] border border-[#efe7ff] bg-[#fbf9ff] p-4">
-              <Button asChild className="h-10 w-full rounded-2xl bg-[#2f165e] text-white hover:bg-[#3a1d72] shadow-[0_12px_30px_rgba(68,31,132,0.22)]">
-                <Link href="/dashboard/client">Open uploader</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </aside>
+      <WorkspaceSidebar activeItem="overview" user={user} />
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto relative z-10">

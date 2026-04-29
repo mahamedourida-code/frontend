@@ -14,8 +14,8 @@ import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { AppIcon } from "@/components/AppIcon"
 import { MobileNav } from "@/components/MobileNav"
+import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
 import {
   User,
   Globe,
@@ -215,7 +215,9 @@ export default function SettingsPage() {
   ]
 
   return (
-    <div className="ax-page-bg min-h-screen relative">
+    <div className="ax-page-bg min-h-screen relative lg:flex lg:gap-4 lg:p-4">
+      <WorkspaceSidebar activeItem="settings" user={user} />
+      <div className="relative z-10 flex-1">
       {/* Header */}
       <header className="ax-glass-header sticky top-0 z-10 border-b">
         <div className="container max-w-7xl mx-auto px-3 lg:px-4 py-3 lg:py-4">
@@ -229,9 +231,6 @@ export default function SettingsPage() {
               <ChevronLeft className="h-4 w-4 lg:h-5 lg:w-5" />
             </Button>
             <div className="flex items-center gap-2 lg:gap-3">
-              <div className="hidden sm:block">
-                <AppIcon size={28} className="lg:w-8 lg:h-8" />
-              </div>
               <div>
                 <h1 className="text-base lg:text-lg font-semibold flex items-center gap-2">
                   <Settings2 className="h-4 w-4 lg:hidden" />
@@ -599,6 +598,7 @@ export default function SettingsPage() {
             )}
           </div>
         </div>
+      </div>
       </div>
 
       {/* Mobile Navigation */}

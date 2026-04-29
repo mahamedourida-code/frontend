@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { MobileNav } from "@/components/MobileNav"
+import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
 import { FileText, TableProperties, Sparkles, LayoutDashboard, ArrowLeft, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/useAuth"
@@ -81,7 +82,9 @@ export default function UploadTypePage() {
   }
 
   return (
-    <div className="ax-page-bg min-h-screen relative">
+    <div className="ax-page-bg min-h-screen relative lg:flex lg:gap-4 lg:p-4">
+      <WorkspaceSidebar activeItem="process" user={user} />
+      <div className="relative z-10 flex-1">
       {/* Header */}
       <header className="ax-glass-header relative z-10 border-b">
         <div className="container flex h-12 lg:h-14 max-w-5xl items-center justify-between px-3 sm:px-4 lg:px-6">
@@ -184,6 +187,7 @@ export default function UploadTypePage() {
           </p>
         </div>
       </main>
+      </div>
 
       {/* Mobile Navigation */}
       <MobileNav isAuthenticated={true} user={user} />

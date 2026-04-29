@@ -18,6 +18,7 @@ import { toast } from "sonner"
 import { AppIcon } from "@/components/AppIcon"
 import { ocrApi } from "@/lib/api-client"
 import { MobileNav } from "@/components/MobileNav"
+import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
 import { createClient } from "@/utils/supabase/client"
 import Image from "next/image"
 import {
@@ -1056,7 +1057,9 @@ Best regards`
   const isComplete = status === 'completed' && resultFiles && resultFiles.length > 0
 
   return (
-    <div className="ax-page-bg min-h-screen relative">
+    <div className="ax-page-bg min-h-screen relative lg:flex lg:gap-4 lg:p-4">
+      <WorkspaceSidebar activeItem="process" user={user} />
+      <div className="relative z-10 flex-1">
       {/* Desktop Header */}
       <header className="relative z-10 hidden lg:block">
         <div className="container max-w-7xl mx-auto px-4 pt-4">
@@ -1776,6 +1779,7 @@ Best regards`
           )}
         </div>
       </main>
+      </div>
       
       {/* Share Dialog */}
       <Dialog open={shareDialogOpen} onOpenChange={(open) => {
