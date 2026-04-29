@@ -624,19 +624,12 @@ export default function ProcessImagesPage() {
 
   // Fetch table preview when first result file is ready
   useEffect(() => {
-    console.log('[ProcessImages] Preview useEffect triggered - resultFiles:', resultFiles?.length || 0, 'tablePreviewData:', tablePreviewData.length, 'firstImageUrl:', !!firstImageUrl)
-    
     if (resultFiles && resultFiles.length > 0) {
-      console.log('[ProcessImages] First file:', resultFiles[0])
-      
       if (resultFiles[0].file_id && tablePreviewData.length === 0) {
-        console.log('[ProcessImages] Conditions met, fetching table preview for:', resultFiles[0].file_id)
         fetchTablePreview(resultFiles[0].file_id)
-      } else {
-        console.log('[ProcessImages] Conditions not met - file_id:', resultFiles[0].file_id, 'tablePreviewData.length:', tablePreviewData.length)
       }
     }
-  }, [resultFiles, tablePreviewData.length, fetchTablePreview, firstImageUrl])
+  }, [resultFiles, tablePreviewData.length, fetchTablePreview])
 
   const handleRenameFile = async (file: any) => {
     if (!newFileName.trim()) {
@@ -1055,36 +1048,30 @@ Best regards`
   }
 
   const isComplete = status === 'completed' && resultFiles && resultFiles.length > 0
+  const uploadedSizeMb = uploadedFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024)
+  const uploadedLabel = `${uploadedFiles.length} ${uploadedFiles.length === 1 ? 'image' : 'images'}`
+  const processLabel = uploadedFiles.length > 1 ? `Process ${uploadedFiles.length} images` : 'Process image'
 
   return (
     <div className="ax-page-bg min-h-screen relative lg:flex lg:gap-4 lg:p-4">
       <WorkspaceSidebar activeItem="process" user={user} />
       <div className="relative z-10 flex-1">
-      {/* Desktop Header */}
       <header className="relative z-10 hidden lg:block">
         <div className="container max-w-7xl mx-auto px-4 pt-4">
-          <div className="rounded-[30px] border border-[#ebe2ff] bg-white/92 p-5 shadow-[0_24px_80px_rgba(68,31,132,0.08)] backdrop-blur-xl">
+          <div className="ax-glass-header rounded-[28px] px-5 py-4">
             <div className="flex items-center justify-between gap-4">
-              <div className="flex items-start gap-4">
+              <div className="flex items-center gap-4">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => router.back()}
-                  className="mt-1 h-11 rounded-2xl border border-[#eadfff] bg-[#faf7ff] px-4 text-[#5b3f92] hover:bg-[#f3ebff] hover:text-[#2f165e]"
+                  className="h-10 rounded-2xl border border-[#eadfff] bg-white/55 px-3 text-[#5b3f92] hover:bg-white hover:text-[#2f165e]"
                 >
-                  <ChevronLeft className="mr-1 h-4 w-4" />
-                  Back
+                  <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#eadfff] bg-[#f7f1ff]">
-                    <AppIcon size={30} />
-                  </div>
-                  <div>
-                    <div className="inline-flex items-center rounded-full border border-[#eadfff] bg-[#fbf8ff] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7c62b1]">
-                      Processing
-                    </div>
-                    <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground">Process Images</h1>
-                  </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7c62b1]">Batch workspace</p>
+                  <h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground">Process Images</h1>
                 </div>
               </div>
 
@@ -1093,7 +1080,7 @@ Best regards`
                   variant="outline"
                   size="sm"
                   onClick={() => router.push('/history')}
-                  className="h-11 rounded-2xl border-[#eadfff] bg-white px-4 text-foreground hover:bg-[#f8f4ff]"
+                  className="h-10 rounded-2xl border-[#eadfff] bg-white/60 px-4 text-foreground hover:bg-white"
                 >
                   History
                 </Button>
@@ -1101,7 +1088,7 @@ Best regards`
                   variant="outline"
                   size="sm"
                   onClick={() => router.push('/dashboard')}
-                  className="h-11 rounded-2xl border-[#eadfff] bg-white px-4 text-foreground hover:bg-[#f8f4ff]"
+                  className="h-10 rounded-2xl border-[#eadfff] bg-white/60 px-4 text-foreground hover:bg-white"
                 >
                   Dashboard
                 </Button>
@@ -1111,7 +1098,6 @@ Best regards`
         </div>
       </header>
 
-      {/* Mobile Header */}
       <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur lg:hidden">
         <div className="container max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-3">
@@ -1140,165 +1126,182 @@ Best regards`
       </div>
 
       <main className="container max-w-7xl mx-auto px-4 py-6 pb-24 lg:py-8 relative z-10">
-        {/* Processing Timer Card */}
         {isProcessing && !isComplete && (
-          <Card className="ax-glass-card mb-4 max-w-sm">
-            <CardContent className="p-3">
-              <div className="flex items-center gap-3">
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 mb-1">
-                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                    <p className="text-sm font-semibold text-foreground">Processing</p>
+          <Card className="ax-glass-card mb-5 overflow-hidden rounded-[28px]">
+            <CardContent className="p-4">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/55">
+                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Processing batch</p>
+                    {progress && (
+                      <p className="text-xs text-muted-foreground">
+                        {progress.processed_images} of {progress.total_images} ready
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 sm:flex sm:items-center">
+                  <div className="rounded-2xl border border-[#eadfff] bg-white/50 px-4 py-2">
+                    <p className="text-xl font-bold text-primary">{processingTime}s</p>
+                    <p className="text-[11px] text-muted-foreground">elapsed</p>
                   </div>
                   {progress && (
-                    <p className="text-xs text-muted-foreground">
-                      {progress.processed_images} of {progress.total_images} images
-                    </p>
+                    <div className="rounded-2xl border border-[#eadfff] bg-white/50 px-4 py-2">
+                      <p className="text-xl font-bold text-primary">{progress.percentage}%</p>
+                      <p className="text-[11px] text-muted-foreground">complete</p>
+                    </div>
                   )}
                 </div>
-                <Separator orientation="vertical" className="h-12" />
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-primary">{processingTime}</p>
-                  <p className="text-xs text-muted-foreground">seconds</p>
-                </div>
-                {progress && (
-                  <>
-                    <Separator orientation="vertical" className="h-12" />
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-primary">{progress.percentage}%</p>
-                      <p className="text-xs text-muted-foreground">complete</p>
-                    </div>
-                  </>
-                )}
               </div>
               {progress && (
-                <Progress value={progress.percentage} className="mt-3" />
+                <Progress value={progress.percentage} className="mt-4 h-2" />
               )}
             </CardContent>
           </Card>
         )}
 
 
-        {/* Main Content Area */}
         <div className={cn(
           "grid grid-cols-1 gap-4 lg:gap-6",
           isComplete ? "lg:grid-cols-1" : "lg:grid-cols-4"
         )}>
-          {/* Upload Section */}
           <div className={cn(
             "order-2 lg:order-1",
             isComplete ? "lg:col-span-1" : "lg:col-span-3"
           )}>
             {!isComplete ? (
-              <>
-                {/* Drop Zone */}
-                <div
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                  className={cn(
-                    "relative border-2 border-dashed rounded-lg transition-all duration-200",
-                    isDragging 
-                      ? "border-[#A78BFA] bg-primary/5 scale-[0.99]"
-                      : "border-border hover:border-[#A78BFA]/50",
-                    uploadedFiles.length > 0 ? "p-3 sm:p-4" : "p-6 sm:p-8 lg:p-12"
-                  )}
-                >
-                  {uploadedFiles.length === 0 ? (
-                    <div className="text-center">
-                      <Upload className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-3 sm:mb-4" />
-                      <h3 className="text-sm sm:text-base font-medium mb-3 sm:mb-4">
-                        {isDragging ? "Drop your images here" : "Upload table images"}
-                      </h3>
-                      <label htmlFor="file-upload">
-                        <Button asChild>
-                          <span>
-                            <FileImage className="h-4 w-4 mr-2" />
-                            Select Images
-                          </span>
-                        </Button>
-                      </label>
-                      <input
-                        id="file-upload"
-                        type="file"
-                        multiple
-                        accept="image/*,image/heic,image/heif"
-                        onChange={handleFileInput}
-                        className="hidden"
-                      />
-                    </div>
-                  ) : (
+              <Card className="ax-glass-card overflow-hidden rounded-[32px]">
+                <CardContent className="p-4 sm:p-5 lg:p-6">
+                  <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                      {/* File Count Header */}
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <Badge variant="secondary" className="gap-1">
-                            <ImageIcon className="h-3 w-3" />
-                            {uploadedFiles.length} {uploadedFiles.length === 1 ? 'image' : 'images'}
-                          </Badge>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => setUploadedFiles([])}
-                          >
-                            Clear all
-                          </Button>
-                          <label htmlFor="file-upload-more">
-                            <Button size="sm" variant="outline" asChild>
-                              <span>Add more</span>
-                            </Button>
-                          </label>
-                          <input
-                            id="file-upload-more"
-                            type="file"
-                            multiple
-                            accept="image/*,image/heic,image/heif"
-                            onChange={handleFileInput}
-                            className="hidden"
-                          />
-                        </div>
-                      </div>
-
-                      {/* File Grid */}
-                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 max-h-[400px] overflow-y-auto">
-                        {uploadedFiles.map((file, index) => (
-                          <div
-                            key={index}
-                            className="relative group aspect-square rounded-lg overflow-hidden border bg-card"
-                          >
-                            <img
-                              src={filePreviewUrls[index] || ''}
-                              alt={file.name}
-                              className="w-full h-full object-cover"
-                            />
-                            <button
-                              onClick={() => handleRemoveFile(index)}
-                              className="absolute top-1 right-1 h-6 w-6 rounded-full bg-background/80 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-                              <p className="text-[10px] text-white truncate">
-                                {file.name}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7c62b1]">Upload</p>
+                      <h2 className="mt-1 text-2xl font-bold tracking-tight text-foreground">Build a batch</h2>
                     </div>
-                  )}
-                </div>
+                    <div className="flex items-center gap-2 rounded-2xl border border-[#eadfff] bg-white/45 px-3 py-2 text-sm font-semibold text-[#4b2d82]">
+                      <span>{uploadedFiles.length}</span>
+                      <span className="text-muted-foreground">/ 100</span>
+                    </div>
+                  </div>
 
-                {/* Process Button */}
+                  <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    className={cn(
+                      "relative overflow-hidden rounded-[28px] border border-dashed transition-all duration-200",
+                      isDragging
+                        ? "border-[#7c3aed] bg-[#f5efff]/80 scale-[0.995]"
+                        : "border-[#d9c9fb] bg-white/45 hover:border-[#a78bfa]"
+                    )}
+                  >
+                    {uploadedFiles.length === 0 ? (
+                      <div className="flex min-h-[360px] flex-col items-center justify-center px-6 py-12 text-center">
+                        <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-[24px] border border-[#eadfff] bg-white/65 shadow-[0_18px_45px_rgba(68,31,132,0.10)]">
+                          <FolderUp className="h-8 w-8 text-primary" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-foreground">
+                          {isDragging ? "Drop images here" : "Drop images to convert"}
+                        </h3>
+                        <p className="mt-2 max-w-md text-sm text-muted-foreground">
+                          Add screenshots, handwritten tables, forms, or receipts in one batch.
+                        </p>
+                        <label htmlFor="file-upload" className="mt-6">
+                          <Button asChild className="h-12 rounded-2xl px-6">
+                            <span>
+                              <FileImage className="mr-2 h-4 w-4" />
+                              Choose images
+                            </span>
+                          </Button>
+                        </label>
+                        <input
+                          id="file-upload"
+                          type="file"
+                          multiple
+                          accept="image/*,image/heic,image/heif"
+                          onChange={handleFileInput}
+                          className="hidden"
+                        />
+                      </div>
+                    ) : (
+                      <div className="p-3 sm:p-4">
+                        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge variant="secondary" className="gap-1 rounded-full border border-[#eadfff] bg-white/70 px-3 py-1">
+                              <ImageIcon className="h-3 w-3" />
+                              {uploadedLabel}
+                            </Badge>
+                            <span className="text-xs font-medium text-muted-foreground">
+                              {uploadedSizeMb.toFixed(1)} MB selected
+                            </span>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setUploadedFiles([])}
+                              className="rounded-2xl"
+                            >
+                              Clear
+                            </Button>
+                            <label htmlFor="file-upload-more">
+                              <Button size="sm" variant="outline" asChild className="rounded-2xl border-[#eadfff] bg-white/65">
+                                <span>Add images</span>
+                              </Button>
+                            </label>
+                            <input
+                              id="file-upload-more"
+                              type="file"
+                              multiple
+                              accept="image/*,image/heic,image/heif"
+                              onChange={handleFileInput}
+                              className="hidden"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid max-h-[430px] grid-cols-3 gap-2 overflow-y-auto pr-1 sm:grid-cols-4 md:grid-cols-5">
+                          {uploadedFiles.map((file, index) => (
+                            <div
+                              key={index}
+                              className="group relative aspect-square overflow-hidden rounded-2xl border border-[#eadfff] bg-white/70 shadow-sm"
+                            >
+                              <img
+                                src={filePreviewUrls[index] || ''}
+                                alt={file.name}
+                                className="h-full w-full object-cover"
+                              />
+                              <button
+                                onClick={() => handleRemoveFile(index)}
+                                className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/85 text-foreground opacity-0 shadow-sm backdrop-blur transition-opacity group-hover:opacity-100"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 to-transparent p-2">
+                                <p className="truncate text-[10px] font-medium text-white">
+                                  {file.name}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                 {uploadedFiles.length > 0 && (
-                  <div className="mt-4 flex items-center justify-end">
+                  <div className="mt-5 flex flex-col gap-3 rounded-[24px] border border-[#eadfff] bg-white/45 p-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">{uploadedLabel} ready</p>
+                      <p className="text-xs text-muted-foreground">Each file becomes downloadable as soon as it finishes.</p>
+                    </div>
                     <Button
                       size="lg"
                       onClick={handleProcessImages}
                       disabled={isProcessing}
-                      className="gap-2"
+                      className="h-12 gap-2 rounded-2xl px-6"
                     >
                       {isProcessing ? (
                         <>
@@ -1308,37 +1311,44 @@ Best regards`
                       ) : (
                         <>
                           <Zap className="h-4 w-4" />
-                          Process All Images
+                          {processLabel}
                           <ArrowRight className="h-4 w-4 ml-1" />
                         </>
                       )}
                     </Button>
                   </div>
                 )}
-              </>
+                </CardContent>
+              </Card>
             ) : null}
 
-            {/* Progressive Results Section - Show files as they become ready */}
             {(isProcessing || isComplete) && resultFiles && resultFiles.length > 0 && (
               <TooltipProvider>
-              <div className="space-y-3">
-                {/* All action buttons in one row */}
+              <Card className="ax-glass-card mt-5 overflow-hidden rounded-[32px]">
+                <CardContent className="p-4 sm:p-5">
+                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7c62b1]">Results</p>
+                      <h2 className="mt-1 text-2xl font-bold tracking-tight text-foreground">
+                        {isComplete ? "Batch ready" : "Ready files"}
+                      </h2>
+                    </div>
                 {isComplete && (
-                  <div className="flex items-center gap-2 flex-wrap -mt-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Button
                       size="sm"
                       onClick={handleReset}
-                      className="gap-2 bg-primary hover:bg-primary/90 text-white"
+                      className="h-10 gap-2 rounded-2xl bg-primary text-white hover:bg-primary/90"
                     >
                       <ArrowRight className="h-4 w-4" />
-                      Start Fresh
+                      New batch
                     </Button>
                     {!isSaved && (
                       <Button
                         size="sm"
                         onClick={saveToHistory}
                         disabled={isSaving}
-                        className="gap-2 bg-white border-2 border-[#A78BFA] text-foreground hover:bg-primary/10"
+                        className="h-10 gap-2 rounded-2xl border border-[#eadfff] bg-white/65 text-foreground hover:bg-white"
                       >
                         {isSaving ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -1352,27 +1362,22 @@ Best regards`
                       size="sm"
                       variant="outline"
                       onClick={resultFiles.length > 1 ? handleShareAll : () => handleShareFile(resultFiles[0])}
-                      className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                      className="h-10 gap-2 rounded-2xl border-[#eadfff] bg-white/65 text-foreground hover:bg-white"
                     >
                       <Share2 className="h-4 w-4" />
-                      Share All
+                      Share
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={async () => {
-                        console.log('[DownloadAll] Starting batch download:', resultFiles)
-                        // toast.info(`Downloading ${resultFiles.length} file(s)...`)
-
                         let downloadCount = 0
                         for (const file of resultFiles) {
                           if (!file.file_id) {
-                            console.error('[DownloadAll] Skipping file without ID:', file)
                             continue
                           }
 
                           try {
-                            console.log(`[DownloadAll] Downloading ${downloadCount + 1}/${resultFiles.length}:`, file.file_id)
                             await downloadFile(file.file_id)
                             downloadCount++
                             await new Promise(resolve => setTimeout(resolve, 500))
@@ -1382,36 +1387,28 @@ Best regards`
                           }
                         }
 
-                        if (downloadCount === resultFiles.length) {
-                          // toast.success(`Successfully downloaded ${downloadCount} file(s)`)
-                        } else if (downloadCount > 0) {
+                        if (downloadCount > 0 && downloadCount < resultFiles.length) {
                           toast.warning(`Downloaded ${downloadCount} of ${resultFiles.length} files`)
-                        } else {
+                        } else if (downloadCount === 0) {
                           toast.error('Failed to download any files')
                         }
                       }}
-                      className="gap-2 bg-muted/30 border-2 border-foreground text-foreground hover:bg-muted/50"
+                      className="h-10 gap-2 rounded-2xl border-[#eadfff] bg-white/65 text-foreground hover:bg-white"
                     >
                       <DownloadCloud className="h-4 w-4" />
-                      Download All
+                      Download all
                     </Button>
                   </div>
                 )}
-                
-                <div className="space-y-2 -mt-2">
-                  {/* First file with preview */}
+                  </div>
+
+                <div className="space-y-3">
                   {resultFiles.length > 0 && (
                     <div className="space-y-2">
-                      {/* Image and Table Preview for first file */}
-                      {(() => {
-                        console.log('[Render] Checking preview conditions - tablePreviewData:', tablePreviewData.length, 'firstImageUrl:', !!firstImageUrl)
-                        return null
-                      })()}
                       {tablePreviewData.length > 0 && firstImageUrl && (
-                        <Card className="overflow-hidden">
-                          <CardContent className="p-2">
+                        <Card className="overflow-hidden rounded-[24px] border-[#eadfff] bg-white/55">
+                          <CardContent className="p-3">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                              {/* Original Image */}
                               <div className="flex flex-col">
                                 <h4 className="text-sm font-semibold mb-0.5 text-muted-foreground">Original Image</h4>
                                 <div className="border-2 border-[#A78BFA]/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center" style={{ maxHeight: '450px' }}>
@@ -1424,7 +1421,6 @@ Best regards`
                                 </div>
                               </div>
 
-                              {/* Table Preview */}
                               <div className="flex flex-col">
                                 <h4 className="text-sm font-semibold mb-0.5 text-muted-foreground">Extracted Data Preview</h4>
                                 <div className="border-2 border-[#A78BFA]/20 rounded-lg overflow-auto bg-white" style={{ maxHeight: '450px' }}>
@@ -1456,19 +1452,18 @@ Best regards`
                         </Card>
                       )}
 
-                      {/* First file card with buttons */}
                       {resultFiles[0] && (
                         <Card
-                          className="overflow-hidden animate-in slide-in-from-bottom-2 duration-300"
+                          className="overflow-hidden rounded-[22px] border-[#eadfff] bg-white/60 animate-in slide-in-from-bottom-2 duration-300"
                         >
-                      <CardContent className="p-1.5">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                            <div className="flex items-center justify-center flex-shrink-0 w-5 h-5 rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                      <CardContent className="p-3">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex min-w-0 flex-1 items-center gap-3">
+                            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                               1
                             </div>
                             <div className="flex items-center justify-center flex-shrink-0">
-                              <FileSpreadsheet className="h-4 w-4 text-primary" />
+                              <FileSpreadsheet className="h-5 w-5 text-primary" />
                             </div>
                             <div className="flex-1 min-w-0">
                               {editingFileId === resultFiles[0].file_id ? (
@@ -1509,12 +1504,12 @@ Best regards`
                               )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 flex-shrink-0">
+                          <div className="flex flex-wrap items-center gap-2 sm:flex-shrink-0">
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => handleShareFile(resultFiles[0])}
-                              className="gap-1.5 bg-white border-2 border-[#A78BFA] text-foreground hover:bg-primary/10"
+                              className="h-9 gap-1.5 rounded-xl border-[#eadfff] bg-white/70 text-foreground hover:bg-white"
                             >
                               <Share2 className="h-4 w-4" />
                               Share
@@ -1526,7 +1521,7 @@ Best regards`
                                 const fileUrl = encodeURIComponent(`https://backend-lively-hill-7043.fly.dev/api/v1/download/${resultFiles[0].file_id}`)
                                 window.open(`https://view.officeapps.live.com/op/view.aspx?src=${fileUrl}`, '_blank')
                               }}
-                              className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                              className="h-9 gap-1.5 rounded-xl border-[#eadfff] bg-white/70 text-foreground hover:bg-white"
                             >
                               <Edit3 className="h-4 w-4" />
                               Edit
@@ -1534,14 +1529,13 @@ Best regards`
                             <Button
                               size="sm"
                               onClick={() => {
-                                console.log('[Download] Downloading file:', resultFiles[0])
                                 if (!resultFiles[0].file_id) {
                                   toast.error('Unable to download: File ID is missing')
                                   return
                                 }
                                 downloadFile(resultFiles[0].file_id)
                               }}
-                              className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#A78BFA]"
+                              className="h-9 gap-2 rounded-xl bg-primary text-white hover:bg-primary/90"
                             >
                               <Download className="h-4 w-4" />
                               Download
@@ -1554,20 +1548,19 @@ Best regards`
                     </div>
                   )}
 
-                  {/* Other files - Just buttons, starting from index 1 */}
                   {resultFiles.slice(1).map((file: any, index: number) => (
                     <Card
                       key={file.file_id || index + 1}
-                      className="overflow-hidden animate-in slide-in-from-bottom-2 duration-300"
+                      className="overflow-hidden rounded-[22px] border-[#eadfff] bg-white/60 animate-in slide-in-from-bottom-2 duration-300"
                     >
-                      <CardContent className="p-1.5">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                            <div className="flex items-center justify-center flex-shrink-0 w-5 h-5 rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                      <CardContent className="p-3">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex min-w-0 flex-1 items-center gap-3">
+                            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                               {index + 2}
                             </div>
                             <div className="flex items-center justify-center flex-shrink-0">
-                              <FileSpreadsheet className="h-4 w-4 text-primary" />
+                              <FileSpreadsheet className="h-5 w-5 text-primary" />
                             </div>
                             <div className="flex-1 min-w-0">
                               {editingFileId === file.file_id ? (
@@ -1608,12 +1601,12 @@ Best regards`
                               )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 flex-shrink-0">
+                          <div className="flex flex-wrap items-center gap-2 sm:flex-shrink-0">
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => handleShareFile(file)}
-                              className="gap-1.5 bg-white border-2 border-[#A78BFA] text-foreground hover:bg-primary/10"
+                              className="h-9 gap-1.5 rounded-xl border-[#eadfff] bg-white/70 text-foreground hover:bg-white"
                             >
                               <Share2 className="h-4 w-4" />
                               Share
@@ -1625,7 +1618,7 @@ Best regards`
                                 const fileUrl = encodeURIComponent(`https://backend-lively-hill-7043.fly.dev/api/v1/download/${file.file_id}`)
                                 window.open(`https://view.officeapps.live.com/op/view.aspx?src=${fileUrl}`, '_blank')
                               }}
-                              className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                              className="h-9 gap-1.5 rounded-xl border-[#eadfff] bg-white/70 text-foreground hover:bg-white"
                             >
                               <Edit3 className="h-4 w-4" />
                               Edit
@@ -1633,14 +1626,13 @@ Best regards`
                             <Button
                               size="sm"
                               onClick={() => {
-                                console.log('[Download] Downloading file:', file)
                                 if (!file.file_id) {
                                   toast.error('Unable to download: File ID is missing')
                                   return
                                 }
                                 downloadFile(file.file_id)
                               }}
-                              className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#A78BFA]"
+                              className="h-9 gap-2 rounded-xl bg-primary text-white hover:bg-primary/90"
                             >
                               <Download className="h-4 w-4" />
                               Download
@@ -1651,20 +1643,25 @@ Best regards`
                     </Card>
                   ))}
                 </div>
-              </div>
+                </CardContent>
+              </Card>
               </TooltipProvider>
             )}
           </div>
 
-          {/* Info Sidebar - Hidden when processing is complete */}
           {!isComplete && (
-          <div className="lg:col-span-1 space-y-4 order-3 lg:order-2">
-            {/* Language Selector */}
-            <Card className="ax-glass-card">
-              <CardContent className="p-3">
-                <h3 className="text-xs font-semibold mb-3 text-foreground">Language</h3>
+          <div className="order-3 space-y-4 lg:order-2 lg:col-span-1">
+            <Card className="ax-glass-card overflow-hidden rounded-[28px]">
+              <CardContent className="space-y-4 p-4">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7c62b1]">Preferences</p>
+                  <h3 className="mt-1 text-lg font-bold tracking-tight text-foreground">Output flow</h3>
+                </div>
+
+                <div>
+                <Label className="mb-2 block text-xs font-semibold text-muted-foreground">Language</Label>
                 <select
-                  className="w-full p-2.5 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-xs font-medium hover:border-[#A78BFA]/50 transition-all focus:outline-none focus:border-[#A78BFA]"
+                  className="w-full rounded-2xl border border-[#eadfff] bg-white/60 p-3 text-sm font-medium text-foreground transition-all hover:border-[#A78BFA]/70 focus:border-[#A78BFA] focus:outline-none"
                   value={selectedLanguage}
                   onChange={(e) => {
                     const newLanguage = e.target.value
@@ -1684,30 +1681,22 @@ Best regards`
                   <option value="pt">Português</option>
                   <option value="zh">中文</option>
                 </select>
-              </CardContent>
-            </Card>
+                </div>
 
-            {/* Auto Settings */}
-            <Card className="ax-glass-card">
-              <CardContent className="p-3">
-                <h3 className="text-xs font-semibold mb-3 text-foreground">Auto Actions</h3>
                 <div className="space-y-2">
                   <button
                     onClick={() => {
                       if (!autoDownload) {
-                        // Show confirmation when enabling
                         setShowAutoDownloadConfirm(true)
                       } else {
-                        // Disable directly without confirmation
                         setAutoDownload(false)
                       }
                     }}
                     className={cn(
-                      "w-full flex items-center justify-between p-2.5 rounded-lg transition-all",
-                      "border-2 hover:border-[#A78BFA]/50",
+                      "flex w-full items-center justify-between rounded-2xl border p-3 transition-all hover:border-[#A78BFA]/70",
                       autoDownload
-                        ? "bg-primary/10 border-[#A78BFA]"
-                        : "bg-muted/30 border-muted-foreground/20"
+                        ? "border-[#A78BFA] bg-primary/10"
+                        : "border-[#eadfff] bg-white/45"
                     )}
                   >
                     <div className="flex items-center gap-2">
@@ -1716,7 +1705,7 @@ Best regards`
                         autoDownload ? "text-primary" : "text-muted-foreground"
                       )} />
                       <Label htmlFor="auto-download" className="text-xs font-medium text-foreground cursor-pointer">
-                        Auto Download
+                        Auto-download
                       </Label>
                     </div>
                     <Switch
@@ -1737,11 +1726,10 @@ Best regards`
                   <button
                     onClick={() => setAutoSave(!autoSave)}
                     className={cn(
-                      "w-full flex items-center justify-between p-2.5 rounded-lg transition-all",
-                      "border-2 hover:border-[#A78BFA]/50",
+                      "flex w-full items-center justify-between rounded-2xl border p-3 transition-all hover:border-[#A78BFA]/70",
                       autoSave
-                        ? "bg-primary/10 border-[#A78BFA]"
-                        : "bg-muted/30 border-muted-foreground/20"
+                        ? "border-[#A78BFA] bg-primary/10"
+                        : "border-[#eadfff] bg-white/45"
                     )}
                   >
                     <div className="flex items-center gap-2">
@@ -1750,7 +1738,7 @@ Best regards`
                         autoSave ? "text-primary" : "text-muted-foreground"
                       )} />
                       <Label htmlFor="auto-save" className="text-xs font-medium text-foreground cursor-pointer">
-                        Auto Save
+                        Auto-save
                       </Label>
                     </div>
                     <Switch
@@ -1770,23 +1758,7 @@ Best regards`
       </main>
       </div>
       
-      {/* Share Dialog */}
       <Dialog open={shareDialogOpen} onOpenChange={(open) => {
-        console.log('[ShareDialog] Dialog state changed:', open)
-        if (open && selectedFileToShare) {
-          const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
-          if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
-            console.log('[ShareDialog] Session share:', shareSession)
-          } else if (selectedFileToShare.file_id === '__BATCH__') {
-            console.log('[ShareDialog] Batch share for', selectedFilesForBatch.length, 'files')
-          } else {
-            const downloadUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`
-            console.log('[ShareDialog] File to share:', selectedFileToShare)
-            console.log('[ShareDialog] Download URL:', downloadUrl)
-          }
-        }
-        
-        // Clean up when closing
         if (!open) {
           setSelectedFilesForBatch([])
           setShareSession(null)
@@ -1815,11 +1787,9 @@ Best regards`
           </DialogHeader>
           
           <div className="space-y-4">
-            {/* Direct Message Share Options - Send to friends, not posting on social media */}
             <div className="space-y-3">
               <p className="text-xs text-center text-muted-foreground">Share your download link:</p>
               <div className="flex justify-center gap-4">
-                {/* Gmail */}
                 <button
                   onClick={handleEmailShare}
                   className="group flex flex-col items-center gap-1.5 cursor-pointer"
@@ -1831,7 +1801,6 @@ Best regards`
                   <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Gmail</span>
                 </button>
 
-                {/* LinkedIn Message */}
                 <button
                   onClick={handleLinkedInMessage}
                   className="group flex flex-col items-center gap-1.5 cursor-pointer"
@@ -1843,7 +1812,6 @@ Best regards`
                   <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">LinkedIn</span>
                 </button>
 
-                {/* X (Twitter) */}
                 <button
                   onClick={handleXShare}
                   className="group flex flex-col items-center gap-1.5 cursor-pointer"
@@ -1855,7 +1823,6 @@ Best regards`
                   <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">X</span>
                 </button>
 
-                {/* Facebook Messenger */}
                 <button
                   onClick={handleMessengerShare}
                   className="group flex flex-col items-center gap-1.5 cursor-pointer"
@@ -1865,16 +1832,6 @@ Best regards`
                   <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Messenger</span>
                 </button>
               </div>
-              {selectedFileToShare && (
-                <div className="text-center space-y-1">
-                  <p className="text-[10px] text-muted-foreground/70">
-                    {selectedFileToShare.filename || 'Excel file'} ready to share
-                  </p>
-                  <p className="text-[9px] text-muted-foreground/50">
-                    Gmail: Compose email • LinkedIn: Copy & paste • X: Tweet • Messenger: Direct message
-                  </p>
-                </div>
-              )}
             </div>
             
             <div className="relative">
@@ -1886,7 +1843,6 @@ Best regards`
               </div>
             </div>
             
-            {/* Direct Download Link */}
             <div className="space-y-2.5">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Link className="h-3.5 w-3.5" />
@@ -1897,12 +1853,11 @@ Best regards`
                   readOnly
                   value={(() => {
                     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
-                    
-                    // Handle batch share display
+
                     if (selectedFileToShare?.file_id === '__BATCH__' && selectedFilesForBatch?.length > 0) {
                       return `Multiple files (${selectedFilesForBatch.length} links) - Click copy to get all`
                     }
-                    
+
                     const fileId = selectedFileToShare?.file_id || ''
                     return fileId && fileId !== '__BATCH__' ? `${baseUrl}/api/v1/download/${fileId}`.replace(/\s/g, '') : ''
                   })()}
@@ -1927,15 +1882,11 @@ Best regards`
                   )}
                 </Button>
               </div>
-              <p className="text-[11px] text-muted-foreground">
-                Anyone with  this link can download the Excel file directly
-              </p>
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Auto-Download Confirmation Dialog */}
       <Dialog open={showAutoDownloadConfirm} onOpenChange={setShowAutoDownloadConfirm}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -1944,9 +1895,7 @@ Best regards`
               <DialogTitle>Enable Auto-Download?</DialogTitle>
             </div>
             <DialogDescription className="text-sm text-muted-foreground">
-              When enabled, all processed files will be automatically downloaded to your device as soon as they're ready.
-              <br /><br />
-              This means files will download immediately without asking for permission each time.
+              Files will download to your device as soon as they finish.
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-3 mt-4">
@@ -1970,7 +1919,6 @@ Best regards`
         </DialogContent>
       </Dialog>
 
-      {/* Mobile Navigation */}
       <MobileNav
         isAuthenticated={true}
         user={{
