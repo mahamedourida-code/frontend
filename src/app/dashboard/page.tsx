@@ -8,6 +8,7 @@ import { createClient } from "@/utils/supabase/client"
 import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
 import {
