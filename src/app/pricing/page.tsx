@@ -15,67 +15,66 @@ import { useAuth } from "@/hooks/useAuth"
 import { billingApi, type BillingPlanKey } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
 
-const paidPlans: Array<{
-  key: BillingPlanKey
+type BillingMode = "monthly" | "annual"
+
+const plans: Array<{
   name: string
-  cadence: string
+  eyebrow: string
   credits: string
-  note: string
-  tone: string
-  featured?: boolean
+  detail: string
+  features: Array<{ text: string; muted?: boolean }>
+  planKey?: BillingPlanKey
+  popular?: boolean
 }> = [
   {
-    key: "pro_monthly",
+    name: "Free",
+    eyebrow: "Start",
+    credits: "Live free limit",
+    detail: "Try the workflow before upgrading.",
+    features: [
+      { text: "Use the current backend free limits" },
+      { text: "Single-user workspace" },
+      { text: "Download Excel results" },
+      { text: "Billing portal not required", muted: true },
+    ],
+  },
+  {
     name: "Pro",
-    cadence: "Monthly",
-    credits: "1,000 credits",
-    note: "For steady weekly document batches.",
-    tone: "from-[#2f165e] to-[#7147c5]",
-    featured: true,
+    eyebrow: "Best for operators",
+    credits: "1,000 monthly credits",
+    detail: "For repeat document batches and weekly processing.",
+    planKey: "pro_monthly",
+    popular: true,
+    features: [
+      { text: "More batch capacity" },
+      { text: "Monthly credit renewal" },
+      { text: "Saved billing portal" },
+      { text: "Verified webhook plan sync" },
+    ],
   },
   {
-    key: "pro_yearly",
-    name: "Pro Annual",
-    cadence: "Yearly",
-    credits: "12,000 credits",
-    note: "Same Pro workflow with annual billing.",
-    tone: "from-[#3a236e] to-[#8b5cf6]",
-  },
-  {
-    key: "business_monthly",
     name: "Business",
-    cadence: "Monthly",
-    credits: "5,000 credits",
-    note: "For larger teams and heavier batch work.",
-    tone: "from-[#1f163c] to-[#5b3da8]",
+    eyebrow: "Heavy workflows",
+    credits: "5,000 monthly credits",
+    detail: "For larger batches and higher processing volume.",
+    planKey: "business_monthly",
+    features: [
+      { text: "Highest launch credit pool" },
+      { text: "Business workspace limits" },
+      { text: "Customer portal management" },
+      { text: "Durable credit ledger" },
+    ],
   },
 ]
 
-const trustBadges: Array<{
-  label: string
-  Icon: typeof BillingSeal
-}> = [
-  { label: "Secure checkout", Icon: BillingSeal },
-  { label: "Credit ledger", Icon: CreditStack },
-  { label: "Plan sync", Icon: PlanSwitch },
-]
+const companyLogos = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 function PricingFallback() {
   return (
     <main className="ax-page-bg min-h-screen">
-      <section className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
-        <nav className="flex items-center justify-between rounded-[28px] border border-[#eadfff] bg-white/55 px-4 py-3 shadow-[0_18px_55px_rgba(68,31,132,0.10)] backdrop-blur-xl">
-          <Link href="/" className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/70">
-              <AppIcon size={28} />
-            </span>
-            <span className="text-lg font-bold text-foreground">AxLiner</span>
-          </Link>
-        </nav>
-        <div className="grid flex-1 place-items-center">
-          <div className="h-12 w-12 rounded-full border-4 border-[#d9c9fb] border-t-[#2f165e] animate-spin" />
-        </div>
-      </section>
+      <div className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-4">
+        <div className="h-12 w-12 rounded-full border-4 border-[#d9c9fb] border-t-[#2f165e] animate-spin" />
+      </div>
     </main>
   )
 }
@@ -92,24 +91,40 @@ function PricingContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user, loading } = useAuth()
+  const [billingMode, setBillingMode] = useState<BillingMode>("monthly")
   const [signInOpen, setSignInOpen] = useState(false)
   const [signInRedirectPath, setSignInRedirectPath] = useState("/pricing")
   const [checkoutLoading, setCheckoutLoading] = useState<BillingPlanKey | null>(null)
   const [autoCheckoutStarted, setAutoCheckoutStarted] = useState(false)
 
-  const startCheckout = async (planKey: BillingPlanKey) => {
+  const getPlanKey = (planKey?: BillingPlanKey): BillingPlanKey | undefined => {
+    if (!planKey) return undefined
+    if (planKey === "pro_monthly" && billingMode === "annual") return "pro_yearly"
+    return planKey
+  }
+
+  const startCheckout = async (planKey?: BillingPlanKey) => {
+    const resolvedPlanKey = getPlanKey(planKey)
+    if (!resolvedPlanKey) {
+      if (!user && !loading) {
+        setSignInRedirectPath("/dashboard/client")
+        setSignInOpen(true)
+        return
+      }
+      router.push("/dashboard/client")
+      return
+    }
+
     if (!user && !loading) {
-      setSignInRedirectPath(`/pricing?checkout=${planKey}`)
+      setSignInRedirectPath(`/pricing?checkout=${resolvedPlanKey}`)
       setSignInOpen(true)
       return
     }
 
-    setCheckoutLoading(planKey)
+    setCheckoutLoading(resolvedPlanKey)
     try {
-      const checkout = await billingApi.createCheckout(planKey)
-      if (checkout.checkout_url) {
-        window.location.assign(checkout.checkout_url)
-      }
+      const checkout = await billingApi.createCheckout(resolvedPlanKey)
+      if (checkout.checkout_url) window.location.assign(checkout.checkout_url)
     } catch (error: any) {
       toast.error(error?.detail || "Checkout is not available yet.")
     } finally {
@@ -119,7 +134,7 @@ function PricingContent() {
 
   useEffect(() => {
     const checkoutPlan = searchParams.get("checkout") as BillingPlanKey | null
-    const validPlan = paidPlans.some((plan) => plan.key === checkoutPlan)
+    const validPlan = ["pro_monthly", "pro_yearly", "business_monthly"].includes(checkoutPlan || "")
 
     if (!loading && user && checkoutPlan && validPlan && !autoCheckoutStarted) {
       setAutoCheckoutStarted(true)
@@ -128,95 +143,165 @@ function PricingContent() {
   }, [searchParams, user?.id, loading, autoCheckoutStarted])
 
   return (
-    <main className="ax-page-bg min-h-screen">
-      <section className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
-        <nav className="flex items-center justify-between rounded-[28px] border border-[#eadfff] bg-white/55 px-4 py-3 shadow-[0_18px_55px_rgba(68,31,132,0.10)] backdrop-blur-xl">
+    <main className="ax-page-bg min-h-screen overflow-hidden">
+      <section className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+        <nav className="mx-auto flex max-w-6xl items-center justify-between rounded-[28px] border border-[#eadfff] bg-white/60 px-4 py-3 shadow-[0_18px_55px_rgba(68,31,132,0.10)] backdrop-blur-xl">
           <Link href="/" className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/70">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/75">
               <AppIcon size={28} />
             </span>
-            <span className="text-lg font-bold text-foreground">AxLiner</span>
+            <span className="text-lg font-black text-foreground">AxLiner</span>
           </Link>
           <Button
             variant="outline"
-            className="rounded-2xl border-[#d9c9fb] bg-white/60"
+            className="rounded-2xl border-[#d9c9fb] bg-white/65"
             onClick={() => router.push(user ? "/dashboard/settings?section=billing" : "/")}
           >
             {user ? "Billing settings" : "Try it"}
           </Button>
         </nav>
 
-        <div className="grid flex-1 items-center gap-10 py-14 lg:grid-cols-[0.9fr_1.1fr]">
-          <div>
-            <Badge className="mb-5 rounded-full border border-[#d8c7fb] bg-white/55 px-4 py-1.5 text-[#4b2d82] shadow-sm backdrop-blur">
-              Billing handled by Lemon Squeezy
-            </Badge>
-            <h1 className="max-w-2xl text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-              Upgrade when batches become real work.
-            </h1>
-            <p className="mt-6 max-w-xl text-base leading-8 text-muted-foreground sm:text-lg">
-              Pick a plan, confirm in Lemon Squeezy checkout, and AxLiner updates your credits from verified billing webhooks.
-            </p>
+        <div className="mx-auto mt-12 max-w-4xl text-center sm:mt-16">
+          <Badge className="mb-5 rounded-full border border-[#d8c7fb] bg-white/60 px-4 py-1.5 text-[#4b2d82] shadow-sm backdrop-blur">
+            Simple billing for document batches
+          </Badge>
+          <h1 className="mx-auto max-w-3xl text-4xl font-black tracking-tight text-foreground sm:text-6xl">
+            Simple and transparent pricing for growing teams
+          </h1>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">
+            Start free, then upgrade when your document volume needs larger batches, renewed credits, and managed billing.
+          </p>
 
-            <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-3">
-              {trustBadges.map(({ label, Icon }) => (
-                <div key={label} className="rounded-[24px] border border-[#eadfff] bg-white/45 p-4 text-[#4b2d82] backdrop-blur">
-                  <Icon className="mb-3 h-6 w-6" />
-                  <p className="text-sm font-bold text-foreground">{label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid gap-4">
-            <Card className="ax-glass-card rounded-[32px]">
-              <CardContent className="p-5 sm:p-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#7c62b1]">Free</p>
-                    <h2 className="mt-1 text-2xl font-black text-foreground">Start with live free limits</h2>
-                  </div>
-                  <Button className="rounded-2xl" onClick={() => router.push("/dashboard/client")}>
-                    Open workspace
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="grid gap-4 lg:grid-cols-3">
-              {paidPlans.map((plan) => (
-                <Card
-                  key={plan.key}
-                  className={cn(
-                    "relative overflow-hidden rounded-[32px] border-[#eadfff] bg-white/48 shadow-[0_22px_70px_rgba(68,31,132,0.12)] backdrop-blur-xl",
-                    plan.featured && "ring-2 ring-[#7c3aed]/35"
-                  )}
-                >
-                  <div className={cn("h-2 bg-gradient-to-r", plan.tone)} />
-                  <CardContent className="flex min-h-[320px] flex-col p-5">
-                    {plan.featured && (
-                      <Badge className="mb-4 w-fit rounded-full bg-[#2f165e] text-white">Most direct</Badge>
-                    )}
-                    <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#7c62b1]">{plan.cadence}</p>
-                    <h3 className="mt-2 text-2xl font-black text-foreground">{plan.name}</h3>
-                    <div className="mt-5 rounded-[24px] border border-[#eadfff] bg-white/55 p-4">
-                      <CreditStack className="mb-3 h-7 w-7 text-[#4b2d82]" />
-                      <p className="text-xl font-black text-foreground">{plan.credits}</p>
-                      <p className="mt-1 text-sm leading-6 text-muted-foreground">{plan.note}</p>
-                    </div>
-                    <Button
-                      className="mt-auto h-12 rounded-2xl bg-[#2f165e] text-white hover:bg-[#42207c]"
-                      disabled={checkoutLoading === plan.key}
-                      onClick={() => startCheckout(plan.key)}
-                    >
-                      {checkoutLoading === plan.key ? "Opening checkout..." : "Continue"}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+          <div className="mt-8 inline-flex rounded-[18px] border border-[#e6dbff] bg-white/55 p-1 shadow-[0_16px_45px_rgba(68,31,132,0.10)] backdrop-blur">
+            {(["monthly", "annual"] as BillingMode[]).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setBillingMode(mode)}
+                className={cn(
+                  "rounded-[14px] px-5 py-2 text-sm font-bold transition",
+                  billingMode === mode
+                    ? "bg-[#2f165e] text-white shadow-[0_10px_28px_rgba(68,31,132,0.24)]"
+                    : "text-[#5d4a83] hover:bg-white/70"
+                )}
+              >
+                {mode === "monthly" ? "Monthly billing" : "Annual billing"}
+              </button>
+            ))}
           </div>
         </div>
+
+        <div className="mx-auto mt-12 grid max-w-6xl gap-5 lg:grid-cols-3">
+          {plans.map((plan) => {
+            const resolvedPlanKey = getPlanKey(plan.planKey)
+            const isLoading = checkoutLoading === resolvedPlanKey
+            const displayedCredits =
+              plan.planKey === "pro_monthly" && billingMode === "annual"
+                ? "12,000 annual credits"
+                : plan.credits
+
+            return (
+              <Card
+                key={plan.name}
+                className={cn(
+                  "relative overflow-visible rounded-[28px] border-[#ded3f4] bg-white/72 shadow-[0_24px_70px_rgba(30,18,57,0.08)] backdrop-blur-xl",
+                  plan.popular && "border-[#2f165e] shadow-[0_30px_90px_rgba(68,31,132,0.16)]"
+                )}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-4 right-5 rounded-[12px] bg-[#151216] px-4 py-2 text-xs font-bold text-white shadow-lg">
+                    Most popular
+                  </div>
+                )}
+                <CardContent className="p-0">
+                  <div className="border-b border-[#ece5fb] p-6">
+                    <p className="text-sm font-black text-foreground">{plan.name}</p>
+                    <div className="mt-5 flex items-end gap-2">
+                      <span className="text-3xl font-black tracking-tight text-foreground">{displayedCredits}</span>
+                    </div>
+                    <p className="mt-3 min-h-[48px] text-sm leading-6 text-muted-foreground">{plan.detail}</p>
+                    <Button
+                      className={cn(
+                        "mt-6 h-12 w-full rounded-[16px] font-bold",
+                        plan.popular
+                          ? "bg-[#151216] text-white hover:bg-[#2f165e]"
+                          : "bg-[#f1eee9] text-[#151216] hover:bg-[#e7e1d9]"
+                      )}
+                      disabled={isLoading}
+                      onClick={() => startCheckout(plan.planKey)}
+                    >
+                      {isLoading ? "Opening checkout..." : plan.planKey ? "Get started" : "Start free"}
+                    </Button>
+                  </div>
+
+                  <div className="p-6">
+                    <div className="mb-4 flex items-center gap-2">
+                      {plan.planKey ? <CreditStack className="h-5 w-5 text-[#2f165e]" /> : <BillingSeal className="h-5 w-5 text-[#2f165e]" />}
+                      <p className="text-xs font-black uppercase tracking-[0.16em] text-foreground">Features</p>
+                    </div>
+                    <p className="mb-5 text-sm text-muted-foreground">{plan.eyebrow}</p>
+                    <ul className="space-y-3">
+                      {plan.features.map((feature) => (
+                        <li key={feature.text} className={cn("flex items-center gap-3 text-sm", feature.muted && "text-muted-foreground")}>
+                          <span
+                            className={cn(
+                              "flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-black",
+                              feature.muted ? "bg-[#d8d3cf] text-white" : "bg-[#151216] text-white"
+                            )}
+                          >
+                            {feature.muted ? "-" : <span className="h-2 w-2 rounded-full bg-white" />}
+                          </span>
+                          <span>{feature.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+
+        <section className="mx-auto mt-14 max-w-6xl overflow-hidden">
+          <div className="mb-6 text-center">
+            <p className="text-sm font-semibold text-muted-foreground">Chosen by experts at top organizations</p>
+          </div>
+          <div className="relative z-10 overflow-hidden">
+            <div
+              className="flex items-center gap-8"
+              style={{
+                animation: "scroll-left 60s linear infinite",
+                width: "max-content",
+                willChange: "transform",
+              }}
+            >
+              {Array.from({ length: 10 }, (_, setIndex) =>
+                companyLogos.map((imgNum) => (
+                  <Card
+                    key={`${setIndex}-${imgNum}`}
+                    className="h-[80px] w-[120px] flex-shrink-0 border border-[#ded3f4] bg-white/78 shadow-[0_14px_35px_rgba(68,31,132,0.08)] transition-all duration-300 hover:border-[#A78BFA]/50 hover:shadow-md"
+                  >
+                    <CardContent className="flex h-full w-full items-center justify-center p-2">
+                      <img
+                        src={`/${imgNum}.jpeg`}
+                        alt={`Company ${imgNum}`}
+                        className="h-[60px] w-[100px] object-contain opacity-60 grayscale transition-opacity duration-300 hover:opacity-100 hover:grayscale-0"
+                      />
+                    </CardContent>
+                  </Card>
+                ))
+              ).flat()}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto mt-14 max-w-4xl rounded-[30px] border border-[#e5daf9] bg-white/58 p-6 text-center shadow-[0_24px_70px_rgba(68,31,132,0.10)] backdrop-blur-xl sm:p-8">
+          <PlanSwitch className="mx-auto mb-4 h-8 w-8 text-[#2f165e]" />
+          <h2 className="text-2xl font-black text-foreground">Recommendation for a top SaaS pricing page</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
+            Bring one clean visual direction: exact plan names, real monthly and annual prices, final feature limits, and 3-5 brand references you like. Strong SaaS pricing pages usually keep three plans, make one plan clearly recommended, show trust logos below the cards, answer billing objections near the CTA, and use custom product-specific icons instead of generic icon packs.
+          </p>
+        </section>
       </section>
 
       <GoogleSignInModal open={signInOpen} onOpenChange={setSignInOpen} redirectPath={signInRedirectPath} />
