@@ -1,9 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect } from "react"
 import { toast } from "sonner"
 
 import { AppIcon } from "@/components/AppIcon"
@@ -61,7 +60,35 @@ const trustBadges: Array<{
   { label: "Plan sync", Icon: PlanSwitch },
 ]
 
+function PricingFallback() {
+  return (
+    <main className="ax-page-bg min-h-screen">
+      <section className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
+        <nav className="flex items-center justify-between rounded-[28px] border border-[#eadfff] bg-white/55 px-4 py-3 shadow-[0_18px_55px_rgba(68,31,132,0.10)] backdrop-blur-xl">
+          <Link href="/" className="flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/70">
+              <AppIcon size={28} />
+            </span>
+            <span className="text-lg font-bold text-foreground">AxLiner</span>
+          </Link>
+        </nav>
+        <div className="grid flex-1 place-items-center">
+          <div className="h-12 w-12 rounded-full border-4 border-[#d9c9fb] border-t-[#2f165e] animate-spin" />
+        </div>
+      </section>
+    </main>
+  )
+}
+
 export default function PricingPage() {
+  return (
+    <Suspense fallback={<PricingFallback />}>
+      <PricingContent />
+    </Suspense>
+  )
+}
+
+function PricingContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user, loading } = useAuth()
