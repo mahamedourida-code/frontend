@@ -10,11 +10,12 @@ import { toast } from 'sonner'
 interface GoogleSignInModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  redirectPath?: string
 }
 
 type Provider = 'google' | 'github' | 'facebook'
 
-export function GoogleSignInModal({ open, onOpenChange }: GoogleSignInModalProps) {
+export function GoogleSignInModal({ open, onOpenChange, redirectPath = '/dashboard/client' }: GoogleSignInModalProps) {
   const [loading, setLoading] = useState<Provider | null>(null)
   const supabase = createClient()
 
@@ -24,7 +25,7 @@ export function GoogleSignInModal({ open, onOpenChange }: GoogleSignInModalProps
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard/client`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectPath)}`,
       },
     })
 

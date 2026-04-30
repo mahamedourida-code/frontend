@@ -4,9 +4,10 @@ import Link from "next/link"
 import { Activity, History, LogOut, Settings, Upload } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { AppIcon } from "@/components/AppIcon"
+import { BillingSeal } from "@/components/BillingGlyphs"
 import { cn } from "@/lib/utils"
 
-type SidebarItemKey = "overview" | "process" | "history" | "settings"
+type SidebarItemKey = "overview" | "process" | "history" | "pricing" | "settings"
 
 interface WorkspaceSidebarProps {
   activeItem: SidebarItemKey
@@ -24,6 +25,7 @@ const sidebarItems = [
   { key: "overview" as const, label: "Overview", icon: Activity, href: "/dashboard" },
   { key: "process" as const, label: "Process Images", icon: Upload, href: "/dashboard/client" },
   { key: "history" as const, label: "History", icon: History, href: "/history" },
+  { key: "pricing" as const, label: "Pricing", icon: BillingSeal, href: "/pricing" },
   { key: "settings" as const, label: "Settings", icon: Settings, href: "/dashboard/settings" },
 ]
 

@@ -21,6 +21,7 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { AppIcon } from "@/components/AppIcon"
+import { BillingSeal } from "@/components/BillingGlyphs"
 import { 
   Menu, 
   X,
@@ -29,7 +30,6 @@ import {
   PenTool, 
   FileInput, 
   Target, 
-  DollarSign,
   TrendingUp,
   LogIn,
   UserPlus,
@@ -90,13 +90,12 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       icon: Settings,
       show: isAuthenticated
     },
-    // Pricing - Hidden
-    // {
-    //   label: "Pricing",
-    //   href: "/pricing",
-    //   icon: DollarSign,
-    //   show: isAuthenticated
-    // },
+    {
+      label: "Pricing",
+      href: "/pricing",
+      icon: BillingSeal,
+      show: isAuthenticated
+    },
     // Non-Authenticated User Menu
     {
       label: "Home",
@@ -104,13 +103,12 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       icon: Home,
       show: !isAuthenticated
     },
-    // Pricing - Hidden
-    // {
-    //   label: "Pricing",
-    //   href: "/pricing",
-    //   icon: DollarSign,
-    //   show: !isAuthenticated
-    // },
+    {
+      label: "Pricing",
+      href: "/pricing",
+      icon: BillingSeal,
+      show: !isAuthenticated
+    },
     {
       label: "Solutions",
       icon: FileSpreadsheet,

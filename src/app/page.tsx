@@ -39,6 +39,7 @@ import { ActiveUsersCounter } from "@/components/ActiveUsersCounter";
 import { wakeUpBackendSilently } from "@/lib/backend-health";
 import { getTrialInfo, incrementTrialUploadCount } from "@/lib/free-trial";
 import { ocrApi, OCRWebSocket } from "@/lib/api-client";
+import type { AppLimits } from "@/lib/api-client";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -121,12 +122,33 @@ export default function Home() {
   const [shareSession, setShareSession] = useState<any>(null);
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [limits, setLimits] = useState<AppLimits | null>(null);
+  const maxUploadFiles = limits?.max_files_per_batch ?? 3;
 
   // Helper function to remove _processed from filename
   const cleanFilename = (filename: string | undefined): string => {
     if (!filename) return 'result.xlsx';
     return filename.replace('_processed', '');
   };
+
+  useEffect(() => {
+    let mounted = true;
+    ocrApi.getLimits()
+      .then((data) => {
+        if (mounted) setLimits(data);
+      })
+      .catch((error) => {
+        console.error('[Landing] Failed to load limits:', error);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    setUploadedFiles(prev => prev.length > maxUploadFiles ? prev.slice(0, maxUploadFiles) : prev);
+  }, [maxUploadFiles]);
 
   // Auto download state
   const [autoDownload, setAutoDownload] = useState(() => {
@@ -145,7 +167,13 @@ export default function Home() {
   // User authentication state
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showSignInModal, setShowSignInModal] = useState(false);
+  const [signInRedirectPath, setSignInRedirectPath] = useState("/dashboard/client");
   const supabase = createClient();
+
+  const openSignInModal = useCallback((redirectPath = "/dashboard/client") => {
+    setSignInRedirectPath(redirectPath);
+    setShowSignInModal(true);
+  }, []);
 
   // Check authentication status on mount
   useEffect(() => {
@@ -451,9 +479,13 @@ export default function Home() {
     });
 
     if (files.length > 0) {
-      setUploadedFiles(files); // Allow multiple files
+      const filesToUse = files.slice(0, maxUploadFiles);
+      if (files.length > maxUploadFiles) {
+        toast.error(`Your current limit is ${maxUploadFiles} images per batch.`);
+      }
+      setUploadedFiles(filesToUse);
     }
-  }, []);
+  }, [maxUploadFiles]);
 
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -470,13 +502,23 @@ export default function Home() {
         const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
         return imageExtensions.some(ext => fileName.endsWith(ext));
       });
-      setUploadedFiles(fileArray); // Allow multiple files
+      const filesToUse = fileArray.slice(0, maxUploadFiles);
+      if (fileArray.length > maxUploadFiles) {
+        toast.error(`Your current limit is ${maxUploadFiles} images per batch.`);
+      }
+      setUploadedFiles(filesToUse);
     }
-  }, []);
+  }, [maxUploadFiles]);
 
   const handleProcessImage = useCallback(async () => {
     if (!uploadedFiles || uploadedFiles.length === 0) {
       toast.error('Please select files to process');
+      return;
+    }
+
+    if (uploadedFiles.length > maxUploadFiles) {
+      toast.error(`Your current limit is ${maxUploadFiles} images per batch.`);
+      setUploadedFiles(prev => prev.slice(0, maxUploadFiles));
       return;
     }
 
@@ -497,10 +539,16 @@ export default function Home() {
 
     // Proceed with processing
     await processImages();
-  }, [uploadedFiles, trialInfo]);
+  }, [uploadedFiles, trialInfo, maxUploadFiles]);
 
   const processImages = useCallback(async () => {
     try {
+      if (uploadedFiles.length > maxUploadFiles) {
+        toast.error(`Your current limit is ${maxUploadFiles} images per batch.`);
+        setUploadedFiles(prev => prev.slice(0, maxUploadFiles));
+        return;
+      }
+
       setIsProcessing(true);
       setProcessingComplete(false);
       setTotalFilesToProcess(uploadedFiles.length);
@@ -712,7 +760,7 @@ export default function Home() {
         toast.error(error?.detail || 'Failed to process images. Please try again.');
       // }
     }
-  }, [uploadedFiles, updateState]);
+  }, [uploadedFiles, updateState, maxUploadFiles]);
 
   const handleDownloadFile = async (fileId: string) => {
     console.log('[Landing] Downloading file:', fileId, 'with session:', currentSessionId);
@@ -1104,15 +1152,14 @@ export default function Home() {
                     </NavigationMenuContent>
                   </NavigationMenuItem>
 
-                  {/* Pricing Link - Hidden */}
-                  {/* <NavigationMenuItem>
+                  <NavigationMenuItem>
                     <NavigationMenuLink
                       href="/pricing"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-accent/50 transition-colors")}
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-accent/50 transition-colors text-black dark:text-white")}
                     >
                       Pricing
                     </NavigationMenuLink>
-                  </NavigationMenuItem> */}
+                  </NavigationMenuItem>
 
                   {/* How AxLiner's Built */}
                   <NavigationMenuItem>
@@ -1150,14 +1197,14 @@ export default function Home() {
                 <>
                   <Button
                     className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-4 py-2 text-sm font-medium transition-colors shadow-lg hover:shadow-xl"
-                    onClick={() => setShowSignInModal(true)}
+                    onClick={() => openSignInModal("/pricing?from=signup")}
                   >
                     Sign Up
                   </Button>
                   <Button
                     variant="outline"
                     className="bg-white/90 dark:bg-white/20 text-foreground border-[1.6px] border-foreground/30 rounded-full px-4 py-2 text-sm font-medium hover:bg-white dark:hover:bg-white/30 transition-colors backdrop-blur-sm"
-                    onClick={() => setShowSignInModal(true)}
+                    onClick={() => openSignInModal("/dashboard/client")}
                   >
                     Sign in
                   </Button>
@@ -1295,7 +1342,7 @@ export default function Home() {
                             <>
                               <SiteIcon src={siteIcons.upload} className="mx-auto mb-4 h-16 w-16" />
                               <h3 className="text-lg font-medium mb-2">
-                                {isDragging ? 'Drop your images here' : 'Upload up to 100 table images now'}
+                                {isDragging ? 'Drop your images here' : `Upload up to ${maxUploadFiles} table images now`}
                               </h3>
                               <input
                                 id="file-upload-landing"
@@ -1369,7 +1416,14 @@ export default function Home() {
                                       const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
                                       return imageExtensions.some(ext => fileName.endsWith(ext));
                                     });
-                                    setUploadedFiles(prev => [...prev, ...fileArray]);
+                                    setUploadedFiles(prev => {
+                                      const remainingSlots = maxUploadFiles - prev.length;
+                                      const filesToAdd = fileArray.slice(0, Math.max(0, remainingSlots));
+                                      if (fileArray.length > filesToAdd.length) {
+                                        toast.error(`Your current limit is ${maxUploadFiles} images per batch.`);
+                                      }
+                                      return [...prev, ...filesToAdd];
+                                    });
                                   }
                                 }}
                                 className="hidden"
@@ -1940,7 +1994,7 @@ export default function Home() {
                     </p>
 
                     <p className="text-xl text-foreground leading-relaxed">
-                      The system supports <span className="font-bold">batch processing of up to 100 images simultaneously</span>, with real-time conversion averaging <span className="font-bold">0.8 seconds per page</span>. Axliner handles <span className="font-bold">8+ languages</span> including complex scripts like Arabic and Chinese, while maintaining cell relationships and formatting integrity across all output formats.
+                      The system supports <span className="font-bold">batch processing using your live plan limit</span>, with real-time conversion progress as each page finishes. Axliner handles <span className="font-bold">8+ languages</span> including complex scripts like Arabic and Chinese, while maintaining cell relationships and formatting integrity across all output formats.
                     </p>
 
                     <p className="text-xl text-foreground leading-relaxed">
@@ -2428,7 +2482,7 @@ export default function Home() {
                   <Button
                     size="lg"
                     className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 transition-all duration-200 shadow-lg shadow-primary/20"
-                    onClick={() => setShowSignInModal(true)}
+                    onClick={() => openSignInModal("/pricing?from=signup")}
                   >
                     Try for free
                   </Button>
@@ -2457,6 +2511,7 @@ export default function Home() {
               <ul className="space-y-2 text-muted-foreground">
                 <li><a href="#features" className="hover:text-foreground hover:text-primary transition-colors">Why Choose Us</a></li>
                 <li><a href="#trusted" className="hover:text-foreground hover:text-primary transition-colors">Trusted By</a></li>
+                <li><a href="/pricing" className="hover:text-foreground hover:text-primary transition-colors">Pricing</a></li>
                 <li><a href="#benchmarks" className="hover:text-foreground hover:text-primary transition-colors">Performance Benchmarks</a></li>
                 <li><a href="#how-it-works" className="hover:text-foreground hover:text-primary transition-colors">How It Works</a></li>
               </ul>
@@ -2481,7 +2536,7 @@ export default function Home() {
       {/* Mobile Navigation */}
       <MobileNav 
         onSectionClick={scrollToSection}
-        onSignInClick={() => setShowSignInModal(true)}
+        onSignInClick={() => openSignInModal("/dashboard/client")}
         isAuthenticated={isAuthenticated}
       />
 
@@ -2627,7 +2682,7 @@ export default function Home() {
             <Button
               onClick={() => {
                 setShowLimitDialog(false);
-                setShowSignInModal(true);
+                openSignInModal("/dashboard/client");
               }}
               className="flex-1 bg-primary hover:bg-primary/90 border-2 border-[#A78BFA]"
             >
@@ -2674,10 +2729,10 @@ export default function Home() {
           <DialogHeader>
             <div className="flex items-center gap-3 mb-2">
               <SiteIcon src={siteIcons.document} className="h-7 w-7" />
-              <DialogTitle>You can add up to 100 images!</DialogTitle>
+              <DialogTitle>You can add up to {maxUploadFiles} images!</DialogTitle>
             </div>
             <DialogDescription className="text-sm text-muted-foreground">
-              Process up to 100 table images in one click. 
+              Process up to {maxUploadFiles} table images in one click.
               <br /><br />
               You can add more files now or proceed to convert your current selection.
             </DialogDescription>
@@ -2711,6 +2766,6 @@ export default function Home() {
       </Dialog>
 
       {/* Google Sign In Modal */}
-      <GoogleSignInModal open={showSignInModal} onOpenChange={setShowSignInModal} />
+      <GoogleSignInModal open={showSignInModal} onOpenChange={setShowSignInModal} redirectPath={signInRedirectPath} />
     </div>
   )}

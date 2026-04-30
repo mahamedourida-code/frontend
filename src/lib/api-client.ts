@@ -75,7 +75,7 @@ const apiClient: AxiosInstance = axios.create({
   },
   // Add retry configuration
   maxRedirects: 5,
-  validateStatus: (status) => status < 500, // Don't throw for client errors
+  validateStatus: (status) => status < 400,
 })
 
 // Request interceptor to add JWT token
@@ -133,8 +133,10 @@ apiClient.interceptors.response.use(
         data: error.response.data
       })
 
+      const responseData = error.response.data || {}
       const apiError = {
-        detail: error.response.data?.message || error.response.data?.detail || 'An error occurred',
+        ...responseData,
+        detail: responseData.message || responseData.detail || 'An error occurred',
         status_code: error.response.status,
       }
 
@@ -274,8 +276,91 @@ export interface JobStatusResponse {
   updated_at: string
 }
 
+export interface AppLimits {
+  plan: 'anonymous' | 'free' | 'pro' | 'enterprise'
+  max_files_per_batch: number
+  absolute_max_files_per_batch: number
+  max_file_size_mb: number
+  max_file_size_bytes: number
+  daily_image_limit: number
+  accepted_file_types: string[]
+  queue: {
+    max_queued_jobs: number
+    max_active_jobs: number
+    queued_jobs: number | null
+    active_jobs: number | null
+    available: boolean
+  }
+  credits?: {
+    total_credits: number
+    used_credits: number
+    available_credits: number
+  } | null
+}
+
+export type BillingPlanKey = 'pro_monthly' | 'pro_yearly' | 'business_monthly'
+
+export interface BillingCheckoutResponse {
+  checkout_id?: string
+  checkout_url: string
+  plan_key: BillingPlanKey
+  plan: 'pro' | 'enterprise'
+  credits: number
+}
+
+export interface BillingSubscription {
+  plan?: 'free' | 'pro' | 'enterprise'
+  status?: string
+  renews_at?: string | null
+  ends_at?: string | null
+  cancelled?: boolean
+  customer_portal_url?: string | null
+  metadata?: {
+    plan_key?: BillingPlanKey
+    [key: string]: unknown
+  } | null
+}
+
+export interface BillingStatusResponse {
+  plan: 'free' | 'pro' | 'enterprise'
+  credits: {
+    total_credits: number
+    used_credits: number
+    available_credits: number
+  }
+  subscription?: BillingSubscription | null
+  customer?: {
+    portal_url?: string | null
+    provider_customer_id?: string
+  } | null
+}
+
+export const billingApi = {
+  createCheckout: async (planKey: BillingPlanKey): Promise<BillingCheckoutResponse> => {
+    const response = await apiClient.post<BillingCheckoutResponse>('/api/v1/billing/lemon/checkout', {
+      plan_key: planKey,
+    })
+    return response.data
+  },
+
+  getStatus: async (): Promise<BillingStatusResponse> => {
+    const response = await apiClient.get<BillingStatusResponse>('/api/v1/billing/status')
+    return response.data
+  },
+
+  getPortal: async (): Promise<{ url: string }> => {
+    const response = await apiClient.get<{ url: string }>('/api/v1/billing/portal')
+    return response.data
+  },
+}
+
 // OCR API endpoints matching the actual backend
 export const ocrApi = {
+  getLimits: async (): Promise<AppLimits> => {
+    const response = await apiClient.get<AppLimits>('/api/v1/config/limits')
+    return response.data
+  },
+
   /**
    * Upload and process multiple images in batch using multipart/form-data
    * This is the recommended method - faster and more efficient than base64

@@ -16,6 +16,8 @@ import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
+import { BillingSeal, CreditStack, PlanSwitch } from "@/components/BillingGlyphs"
+import { billingApi, ocrApi, type AppLimits, type BillingPlanKey, type BillingStatusResponse } from "@/lib/api-client"
 import {
   User,
   Globe,
@@ -34,7 +36,7 @@ import {
 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
-type SettingsSection = 'account' | 'preferences'
+type SettingsSection = 'account' | 'billing' | 'preferences'
 type Theme = 'dark' | 'light' | 'system'
 
 export default function SettingsPage() {
@@ -48,6 +50,10 @@ export default function SettingsPage() {
 
   const [activeSection, setActiveSection] = useState<SettingsSection>('account')
   const [loading, setLoading] = useState(false)
+  const [billingStatus, setBillingStatus] = useState<BillingStatusResponse | null>(null)
+  const [limits, setLimits] = useState<AppLimits | null>(null)
+  const [billingLoading, setBillingLoading] = useState(false)
+  const [billingAction, setBillingAction] = useState<string | null>(null)
 
   // Account state
   const [fullName, setFullName] = useState("")
@@ -82,6 +88,13 @@ export default function SettingsPage() {
     setMounted(true)
   }, [])
 
+  useEffect(() => {
+    const section = searchParams.get('section')
+    if (section === 'account' || section === 'billing' || section === 'preferences') {
+      setActiveSection(section)
+    }
+  }, [searchParams])
+
   // Sync language with localStorage and listen for changes
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -112,6 +125,30 @@ export default function SettingsPage() {
       setFullName(user.user_metadata?.full_name || user.user_metadata?.name || "")
     }
   }, [user])
+
+  useEffect(() => {
+    if (!user) return
+
+    let mounted = true
+    setBillingLoading(true)
+
+    Promise.all([billingApi.getStatus(), ocrApi.getLimits()])
+      .then(([status, liveLimits]) => {
+        if (!mounted) return
+        setBillingStatus(status)
+        setLimits(liveLimits)
+      })
+      .catch(() => {
+        if (mounted) toast.error("Billing details are not available right now")
+      })
+      .finally(() => {
+        if (mounted) setBillingLoading(false)
+      })
+
+    return () => {
+      mounted = false
+    }
+  }, [user?.id])
 
   // Update user profile
   const handleUpdateProfile = async () => {
@@ -204,11 +241,57 @@ export default function SettingsPage() {
     toast.success(`Theme changed to ${newTheme}`)
   }
 
+  const formatPlan = (plan?: string | null) => {
+    if (!plan) return "Free"
+    return plan === "enterprise" ? "Business" : plan.charAt(0).toUpperCase() + plan.slice(1)
+  }
+
+  const formatDate = (dateValue?: string | null) => {
+    if (!dateValue) return "Not scheduled"
+    return new Intl.DateTimeFormat("en", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(new Date(dateValue))
+  }
+
+  const startCheckout = async (planKey: BillingPlanKey) => {
+    setBillingAction(planKey)
+    try {
+      const checkout = await billingApi.createCheckout(planKey)
+      if (checkout.checkout_url) window.location.assign(checkout.checkout_url)
+    } catch (error: any) {
+      toast.error(error?.detail || "Checkout is not available yet")
+    } finally {
+      setBillingAction(null)
+    }
+  }
+
+  const openBillingPortal = async () => {
+    setBillingAction("portal")
+    try {
+      const portal = await billingApi.getPortal()
+      if (portal.url) window.location.assign(portal.url)
+    } catch (error: any) {
+      toast.error(error?.detail || "Billing portal is available after your first subscription")
+    } finally {
+      setBillingAction(null)
+    }
+  }
+
+  const creditTotal = billingStatus?.credits?.total_credits ?? 0
+  const creditUsed = billingStatus?.credits?.used_credits ?? 0
+  const creditAvailable = billingStatus?.credits?.available_credits ?? 0
+  const creditPercent = creditTotal > 0 ? Math.min(100, Math.round((creditUsed / creditTotal) * 100)) : 0
+  const currentSubscription = billingStatus?.subscription
+  const hasBillingPortal = Boolean(currentSubscription?.customer_portal_url || billingStatus?.customer?.portal_url)
+
   const sidebarSections = [
     {
       title: "Settings",
       items: [
         { id: 'account', label: 'Account', icon: User },
+        { id: 'billing', label: 'Billing', icon: BillingSeal },
         { id: 'preferences', label: 'Preferences', icon: Settings2 },
       ]
     }
@@ -457,6 +540,122 @@ export default function SettingsPage() {
                         </div>
                       </div>
                     )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {activeSection === 'billing' && (
+              <div className="space-y-5 lg:space-y-6">
+                <Card className="ax-glass-card overflow-hidden rounded-[30px]">
+                  <CardContent className="p-0">
+                    <div className="grid gap-0 lg:grid-cols-[1.05fr_0.95fr]">
+                      <div className="p-5 sm:p-6">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#7c62b1]">Billing</p>
+                            <h2 className="mt-2 text-2xl font-black tracking-tight text-foreground">
+                              {billingLoading ? "Loading plan" : `${formatPlan(billingStatus?.plan)} workspace`}
+                            </h2>
+                          </div>
+                          <div className="flex h-12 w-12 items-center justify-center rounded-[20px] border border-[#eadfff] bg-white/55 text-[#4b2d82]">
+                            <BillingSeal className="h-7 w-7" />
+                          </div>
+                        </div>
+
+                        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                          <div className="rounded-[24px] border border-[#eadfff] bg-white/45 p-4 backdrop-blur">
+                            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#7c62b1]">Status</p>
+                            <p className="mt-2 text-xl font-black text-foreground">
+                              {currentSubscription?.status || (billingStatus?.plan === "free" ? "free" : "active")}
+                            </p>
+                          </div>
+                          <div className="rounded-[24px] border border-[#eadfff] bg-white/45 p-4 backdrop-blur">
+                            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#7c62b1]">Renew date</p>
+                            <p className="mt-2 text-xl font-black text-foreground">
+                              {formatDate(currentSubscription?.renews_at || currentSubscription?.ends_at)}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 rounded-[26px] border border-[#eadfff] bg-white/45 p-4 backdrop-blur">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                              <CreditStack className="h-6 w-6 text-[#4b2d82]" />
+                              <div>
+                                <p className="text-sm font-bold text-foreground">Credits</p>
+                                <p className="text-xs text-muted-foreground">{creditAvailable} available of {creditTotal}</p>
+                              </div>
+                            </div>
+                            <p className="text-sm font-bold text-[#4b2d82]">{creditUsed} used</p>
+                          </div>
+                          <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#eee7ff]">
+                            <div
+                              className="h-full rounded-full bg-[#2f165e] transition-all"
+                              style={{ width: `${creditPercent}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+                          <Button
+                            className="h-11 rounded-2xl bg-[#2f165e] text-white hover:bg-[#42207c]"
+                            onClick={openBillingPortal}
+                            disabled={!hasBillingPortal || billingAction === "portal"}
+                          >
+                            {billingAction === "portal" ? "Opening..." : "Manage billing"}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="h-11 rounded-2xl border-[#d9c9fb] bg-white/55"
+                            onClick={() => window.location.assign("/pricing")}
+                          >
+                            Compare plans
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-[#eadfff] bg-white/25 p-5 backdrop-blur lg:border-l lg:border-t-0 sm:p-6">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-11 w-11 items-center justify-center rounded-[18px] border border-[#eadfff] bg-white/60 text-[#4b2d82]">
+                            <PlanSwitch className="h-6 w-6" />
+                          </div>
+                          <div>
+                            <h3 className="font-black text-foreground">Upgrade path</h3>
+                            <p className="text-sm text-muted-foreground">Checkout opens in Lemon Squeezy.</p>
+                          </div>
+                        </div>
+
+                        <div className="mt-5 space-y-3">
+                          {[
+                            { label: "Pro monthly", key: "pro_monthly" as BillingPlanKey, credits: "1,000 credits" },
+                            { label: "Pro annual", key: "pro_yearly" as BillingPlanKey, credits: "12,000 credits" },
+                            { label: "Business", key: "business_monthly" as BillingPlanKey, credits: "5,000 credits" },
+                          ].map((plan) => (
+                            <button
+                              key={plan.key}
+                              type="button"
+                              onClick={() => startCheckout(plan.key)}
+                              disabled={billingAction === plan.key}
+                              className="group flex w-full items-center justify-between gap-3 rounded-[22px] border border-[#eadfff] bg-white/48 p-4 text-left transition hover:border-[#bca7ef] hover:bg-white/65 disabled:cursor-wait disabled:opacity-70"
+                            >
+                              <span>
+                                <span className="block text-sm font-black text-foreground">{plan.label}</span>
+                                <span className="mt-1 block text-xs text-muted-foreground">{plan.credits}</span>
+                              </span>
+                              <span className="h-2.5 w-2.5 rounded-full bg-[#7c3aed] shadow-[0_0_0_6px_rgba(124,58,237,0.12)] transition group-hover:scale-110" />
+                            </button>
+                          ))}
+                        </div>
+
+                        <div className="mt-5 rounded-[22px] border border-[#eadfff] bg-white/42 p-4 text-sm text-muted-foreground">
+                          Current batch size and file limits come from the backend:
+                          <span className="ml-1 font-bold text-foreground">
+                            {limits ? `${limits.max_files_per_batch} files, ${limits.max_file_size_mb} MB each` : "loading live limits"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>

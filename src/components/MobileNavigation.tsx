@@ -17,7 +17,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Menu, ChevronDown, ChevronRight, PenTool, FileInput, Target, Users, TrendingUp, DollarSign, ArrowRight } from "lucide-react";
+import { BillingSeal } from "@/components/BillingGlyphs";
+import { Menu, ChevronDown, ChevronRight, PenTool, FileInput, Target, Users, TrendingUp, ArrowRight } from "lucide-react";
 
 interface MobileNavigationProps {
   onSectionClick?: (sectionId: string) => void;
@@ -123,7 +124,7 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
                   href="/pricing"
                   className="flex items-center gap-3 h-12 px-3 rounded-lg hover:bg-accent transition-colors font-medium text-base"
                 >
-                  <DollarSign className="w-5 h-5 text-primary" />
+                  <BillingSeal className="w-5 h-5 text-primary" />
                   Pricing
                 </a>
               </SheetClose>

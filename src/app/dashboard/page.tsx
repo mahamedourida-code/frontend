@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
+import { BillingSeal } from "@/components/BillingGlyphs"
 import { cn } from "@/lib/utils"
 import {
   Activity,
@@ -407,6 +408,17 @@ export default function DashboardPage() {
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  asChild
+                  className="h-12 rounded-[22px] border-[#d9c9fb] bg-white/60 px-5 text-[#2f165e] shadow-[0_14px_35px_rgba(68,31,132,0.10)] hover:bg-[#f7f1ff] w-full sm:w-auto"
+                >
+                  <Link href="/pricing">
+                    <BillingSeal className="h-5 w-5" />
+                    <span className="ml-2">Plans</span>
+                  </Link>
+                </Button>
                 <Button
                   size="lg"
                   asChild
