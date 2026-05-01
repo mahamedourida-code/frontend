@@ -86,7 +86,7 @@ export default function DataDeletionPage() {
                 <div>
                   <h3 className="font-medium mb-1">Log in to your account</h3>
                   <p className="text-sm text-muted-foreground">
-                    Visit <Link href="/sign-in" className="text-primary hover:underline">https://AxLiner.vercel.app/sign-in</Link>
+                    Visit <Link href="/sign-in" className="text-primary hover:underline">https://www.axliner.com/sign-in</Link>
                   </p>
                 </div>
               </div>

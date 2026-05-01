@@ -152,7 +152,8 @@ apiClient.interceptors.response.use(
             if (errorDetail.toLowerCase().includes('expired') || errorDetail.toLowerCase().includes('invalid')) {
               console.log('[API Client Interceptor] Token expired/invalid, signing out')
               signOut().then(() => {
-                window.location.href = '/sign-in'
+                const next = `${window.location.pathname}${window.location.search}`
+                window.location.href = `/sign-in?next=${encodeURIComponent(next)}`
               }).catch((signOutError) => {
                 console.error('[API Client Interceptor] Error signing out after 401:', signOutError)
               })
