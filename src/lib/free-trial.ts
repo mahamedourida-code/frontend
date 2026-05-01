@@ -1,9 +1,10 @@
 /**
  * Free trial management utilities
- * Tracks anonymous user uploads using localStorage with UUID
+ * Stores anonymous trial display state in localStorage.
+ * The backend is the source of truth for quota enforcement.
  */
 
-const FREE_TRIAL_LIMIT = 3
+const FREE_TRIAL_LIMIT = 5
 const STORAGE_KEY_UUID = 'AxLiner_trial_uuid'
 const STORAGE_KEY_COUNT = 'AxLiner_trial_count'
 const STORAGE_KEY_TIMESTAMP = 'AxLiner_trial_timestamp'
@@ -66,11 +67,11 @@ export function hasTrialUploadsRemaining(): boolean {
  * Increment upload count
  * Returns the new count
  */
-export function incrementTrialUploadCount(): number {
+export function incrementTrialUploadCount(amount: number = 1): number {
   if (typeof window === 'undefined') return 0
 
   const currentCount = getTrialUploadCount()
-  const newCount = currentCount + 1
+  const newCount = currentCount + Math.max(1, amount)
 
   localStorage.setItem(STORAGE_KEY_COUNT, newCount.toString())
   localStorage.setItem(STORAGE_KEY_TIMESTAMP, Date.now().toString())

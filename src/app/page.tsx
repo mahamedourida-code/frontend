@@ -105,7 +105,7 @@ export default function Home() {
   const clearState = contextValue?.clearState;
 
   // Free trial state
-  const [trialInfo, setTrialInfo] = useState({ uuid: '', used: 0, remaining: 3, hasRemaining: true, limit: 3 });
+  const [trialInfo, setTrialInfo] = useState({ uuid: '', used: 0, remaining: 5, hasRemaining: true, limit: 5 });
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [filePreviewUrls, setFilePreviewUrls] = useState<{[key: number]: string}>({});
   const [isProcessing, setIsProcessing] = useState(false);
@@ -124,7 +124,7 @@ export default function Home() {
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [limits, setLimits] = useState<AppLimits | null>(null);
-  const maxUploadFiles = limits?.max_files_per_batch ?? 3;
+  const maxUploadFiles = limits?.max_files_per_batch ?? 5;
 
   // Helper function to remove _processed from filename
   const cleanFilename = (filename: string | undefined): string => {
@@ -571,10 +571,13 @@ export default function Home() {
         setCurrentSessionId(response.session_id);
       }
 
-      // COMMENTED OUT: Increment trial count
-      // incrementTrialUploadCount();
-      // const newInfo = getTrialInfo();
-      // setTrialInfo(newInfo);
+      if (!isAuthenticated) {
+        incrementTrialUploadCount(filesToUpload.length);
+        setTrialInfo(getTrialInfo());
+        ocrApi.getLimits()
+          .then(setLimits)
+          .catch(() => undefined);
+      }
 
       // Store the first uploaded image for preview immediately
       if (uploadedFiles.length > 0) {
@@ -730,14 +733,26 @@ export default function Home() {
       setIsProcessing(false);
       setProcessingComplete(false);
 
-      // COMMENTED OUT: Check if error is due to trial limit
-      // if (error?.status_code === 402 || error?.detail?.includes('trial') || error?.detail?.includes('limit')) {
-      //   setShowLimitDialog(true);
-      // } else {
-        toast.error(error?.detail || 'Failed to process images. Please try again.');
-      // }
+      const code = error?.code || '';
+      const quotaError =
+        error?.status_code === 402 ||
+        code === 'ANONYMOUS_FREE_TRIAL_LIMIT_REACHED' ||
+        code === 'INSUFFICIENT_CREDITS' ||
+        code === 'DAILY_IMAGE_LIMIT_EXCEEDED';
+
+      if (quotaError) {
+        toast.error(error?.detail || 'Free trial limit reached. Create an account or upgrade to keep converting.');
+        if (isAuthenticated) {
+          window.location.href = '/pricing?from=quota';
+        } else {
+          setShowLimitDialog(true);
+        }
+        return;
+      }
+
+      toast.error(error?.detail || 'Failed to process images. Please try again.');
     }
-  }, [uploadedFiles, updateState, maxUploadFiles]);
+  }, [uploadedFiles, updateState, maxUploadFiles, isAuthenticated]);
 
   const handleDownloadFile = async (fileId: string) => {
 
@@ -2610,18 +2625,21 @@ export default function Home() {
       <Dialog open={showLimitDialog} onOpenChange={setShowLimitDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Sign In to Continue</DialogTitle>
+            <DialogTitle className="text-xl font-bold">Free trial limit reached</DialogTitle>
             <DialogDescription className="text-base">
-              To keep using our service, please sign in or create a free account to get 80 free monthly uploads and more features.
+              You can convert 5 images without an account. Create an account to keep using AxLiner, or choose a paid plan if you need more pages.
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-3 mt-6">
             <Button
               variant="outline"
-              onClick={() => setShowLimitDialog(false)}
+              onClick={() => {
+                setShowLimitDialog(false);
+                window.location.href = "/pricing?from=trial-limit";
+              }}
               className="flex-1 border-2 border-[#A78BFA]"
             >
-              Maybe Later
+              See Plans
             </Button>
             <Button
               onClick={() => {
@@ -2630,7 +2648,7 @@ export default function Home() {
               }}
               className="flex-1 bg-primary hover:bg-primary/90 border-2 border-[#A78BFA]"
             >
-              Sign In
+              Create Account
             </Button>
           </div>
         </DialogContent>

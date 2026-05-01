@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios'
 import { createClient } from '@/utils/supabase/client'
 import { publicConfig } from '@/lib/public-config'
+import { getOrCreateTrialUUID } from '@/lib/free-trial'
 
 // Create Supabase client instance
 const supabase = createClient()
@@ -58,6 +59,11 @@ async function signOut() {
   }
 }
 
+function getAnonymousSessionId(): string | null {
+  if (typeof window === 'undefined') return null
+  return getOrCreateTrialUUID() || null
+}
+
 // API configuration
 // Create axios instance with mobile-optimized settings
 const apiClient: AxiosInstance = axios.create({
@@ -85,6 +91,11 @@ apiClient.interceptors.request.use(
         if (token) {
           // Add Authorization header if user is authenticated
           config.headers.Authorization = `Bearer ${token}`
+        } else {
+          const anonymousSessionId = getAnonymousSessionId()
+          if (anonymousSessionId) {
+            config.headers['X-Session-Id'] = anonymousSessionId
+          }
         }
       }
 
@@ -114,9 +125,18 @@ apiClient.interceptors.response.use(
       // Server responded with error status
 
       const responseData = error.response.data || {}
+      const detailPayload = responseData.detail && typeof responseData.detail === 'object'
+        ? responseData.detail
+        : {}
+      const detailMessage =
+        responseData.message ||
+        detailPayload.message ||
+        (typeof responseData.detail === 'string' ? responseData.detail : null) ||
+        'An error occurred'
       const apiError = {
         ...responseData,
-        detail: responseData.message || responseData.detail || 'An error occurred',
+        ...detailPayload,
+        detail: detailMessage,
         status_code: error.response.status,
       }
 

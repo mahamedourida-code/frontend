@@ -17,6 +17,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { toast } from "sonner"
 import { AppIcon } from "@/components/AppIcon"
 import { ocrApi } from "@/lib/api-client"
+import type { AppLimits } from "@/lib/api-client"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
 import Image from "next/image"
@@ -128,6 +129,8 @@ function ProcessImagesContent() {
   }, [searchParams, router])
   const [isDragging, setIsDragging] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
+  const [limits, setLimits] = useState<AppLimits | null>(null)
+  const maxUploadFiles = limits?.max_files_per_batch ?? 10
   const [filePreviewUrls, setFilePreviewUrls] = useState<{[key: number]: string}>({})
   const [selectedView, setSelectedView] = useState<"grid" | "list">("grid")
   const [processedCount, setProcessedCount] = useState(0)
@@ -170,7 +173,7 @@ function ProcessImagesContent() {
     if (!filename) return 'result.xlsx';
     return filename.replace('_processed', '');
   };
-  
+
   // Document type removed from UI
 
   const fetchUserStats = async () => {
@@ -210,6 +213,25 @@ function ProcessImagesContent() {
   useEffect(() => {
     wakeUpBackendSilently()
   }, [])
+
+  useEffect(() => {
+    if (authLoading) return
+
+    let mounted = true
+    ocrApi.getLimits()
+      .then((data) => {
+        if (mounted) setLimits(data)
+      })
+      .catch(() => undefined)
+
+    return () => {
+      mounted = false
+    }
+  }, [authLoading, user?.id])
+
+  useEffect(() => {
+    setUploadedFiles(prev => prev.length > maxUploadFiles ? prev.slice(0, maxUploadFiles) : prev)
+  }, [maxUploadFiles])
 
   // Restore state from context on mount
   useEffect(() => {
@@ -477,11 +499,14 @@ function ProcessImagesContent() {
     })
     
     setUploadedFiles(prev => {
-      const remainingSlots = 100 - prev.length
+      const remainingSlots = Math.max(0, maxUploadFiles - prev.length)
       const filesToAdd = files.slice(0, remainingSlots)
+      if (files.length > filesToAdd.length) {
+        toast.error(`Your current limit is ${maxUploadFiles} images per batch.`)
+      }
       return [...prev, ...filesToAdd]
     })
-  }, [])
+  }, [maxUploadFiles])
 
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -495,19 +520,27 @@ function ProcessImagesContent() {
         if (fileName.endsWith('.heic') || fileName.endsWith('.heif')) return true
         
         // Accept common image extensions even without MIME type
-        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg']
-        return imageExtensions.some(ext => fileName.endsWith(ext))
+      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg']
+      return imageExtensions.some(ext => fileName.endsWith(ext))
       })
       setUploadedFiles(prev => {
-        const remainingSlots = 100 - prev.length
+        const remainingSlots = Math.max(0, maxUploadFiles - prev.length)
         const filesToAdd = fileArray.slice(0, remainingSlots)
+        if (fileArray.length > filesToAdd.length) {
+          toast.error(`Your current limit is ${maxUploadFiles} images per batch.`)
+        }
         return [...prev, ...filesToAdd]
       })
     }
-  }, [])
+  }, [maxUploadFiles])
 
   const handleProcessImages = useCallback(async () => {
     if (uploadedFiles.length === 0) return
+    if (uploadedFiles.length > maxUploadFiles) {
+      toast.error(`Your current limit is ${maxUploadFiles} images per batch.`)
+      setUploadedFiles(prev => prev.slice(0, maxUploadFiles))
+      return
+    }
 
     const imagesCount = uploadedFiles.length
 
@@ -538,7 +571,12 @@ function ProcessImagesContent() {
       }
     } catch (error: any) {
       // Handle errors
-      if (error?.status_code === 500) {
+      if (error?.status_code === 402 || error?.code === "INSUFFICIENT_CREDITS" || error?.code === "DAILY_IMAGE_LIMIT_EXCEEDED") {
+        toast.error(error?.detail || "You need more credits to process this batch.")
+        router.push("/pricing?from=quota")
+      } else if (error?.status_code === 429) {
+        toast.error(error?.detail || "Processing is busy. Please try again shortly.")
+      } else if (error?.status_code === 500) {
         // Server error
         toast.error('Server error. Please try again or contact support.')
       } else {
@@ -546,7 +584,7 @@ function ProcessImagesContent() {
         toast.error(error?.detail || 'Failed to process images. Please try again.')
       }
     }
-  }, [uploadedFiles, uploadBatch, connectWebSocket, resultFiles, reset])
+  }, [uploadedFiles, uploadBatch, connectWebSocket, resultFiles, reset, maxUploadFiles])
 
   const handleRemoveFile = (index: number) => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index))
@@ -1092,7 +1130,7 @@ Best regards`
                     </div>
                     <div className="flex items-center gap-2 rounded-2xl border border-[#eadfff] bg-white/45 px-3 py-2 text-sm font-semibold text-[#4b2d82]">
                       <span>{uploadedFiles.length}</span>
-                      <span className="text-muted-foreground">/ 100</span>
+                      <span className="text-muted-foreground">/ {maxUploadFiles}</span>
                     </div>
                   </div>
 
@@ -1116,7 +1154,7 @@ Best regards`
                           {isDragging ? "Drop images here" : "Drop images to convert"}
                         </h3>
                         <p className="mt-2 max-w-md text-sm text-muted-foreground">
-                          Add screenshots, handwritten tables, forms, or receipts in one batch.
+                          Add up to {maxUploadFiles} screenshots, handwritten tables, forms, or receipts in one batch.
                         </p>
                         <label htmlFor="file-upload" className="mt-6">
                           <Button asChild className="h-12 rounded-2xl px-6">
