@@ -27,6 +27,7 @@ interface UseOCRReturn {
   connectWebSocket: (sessionId: string, jobIdToTrack?: string) => void
   disconnectWebSocket: () => void
   resumeJob: (jobId: string, sessionId?: string) => Promise<void>
+  cancelProcessing: () => Promise<void>
   reset: () => void
 }
 
@@ -44,6 +45,7 @@ export function useOCR(): UseOCRReturn {
   const [isSaving, setIsSaving] = useState(false)
   const wsRef = useRef<OCRWebSocket | null>(null) // Use ref instead of state for WebSocket
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const uploadAbortRef = useRef<AbortController | null>(null)
   const [hasShownCompletion, setHasShownCompletion] = useState(false) // Track if completion toast shown
 
   // Upload single image
@@ -79,6 +81,8 @@ export function useOCR(): UseOCRReturn {
     setUploadProgress(0)
     setStatus('processing')
     setHasShownCompletion(false) // Reset completion flag for new batch
+    const uploadController = new AbortController()
+    uploadAbortRef.current = uploadController
 
     try {
 
@@ -95,10 +99,17 @@ export function useOCR(): UseOCRReturn {
       } catch (e) {
       }
 
-      // Use new multipart upload - files are sent as binary data directly
+      if (uploadController.signal.aborted) {
+        const cancelledError = new Error('Upload cancelled') as Error & { code?: string }
+        cancelledError.code = 'ERR_CANCELED'
+        throw cancelledError
+      }
+
       const response = await ocrApi.uploadBatchMultipart(filesToUpload, {
         output_format: 'xlsx',
-        consolidation_strategy: 'separate'  // Keep files individual
+        consolidation_strategy: 'separate',
+        signal: uploadController.signal,
+        onUploadProgress: setUploadProgress,
       })
 
       setUploadProgress(100)
@@ -108,12 +119,21 @@ export function useOCR(): UseOCRReturn {
       // toast.success(`${files.length} images uploaded successfully!`)
       return response
     } catch (err: any) {
+      if (err?.code === 'ERR_CANCELED' || err?.name === 'CanceledError') {
+        setStatus('cancelled')
+        setIsProcessing(false)
+        setUploadProgress(0)
+        setError(null)
+        return null
+      }
+
       const errorMessage = err.detail || err.message || 'Failed to upload images'
       setError(errorMessage)
       setIsProcessing(false) // Reset processing state on error
       toast.error(errorMessage)
       return null
     } finally {
+      uploadAbortRef.current = null
       setIsUploading(false)
     }
   }, [])
@@ -394,8 +414,40 @@ export function useOCR(): UseOCRReturn {
     await getStatus(jobIdToResume)
   }, [connectWebSocket, getStatus, startPolling])
 
+  const cancelProcessing = useCallback(async (): Promise<void> => {
+    const activeJobId = jobId
+
+    if (uploadAbortRef.current) {
+      uploadAbortRef.current.abort()
+      uploadAbortRef.current = null
+    }
+
+    if (wsRef.current) {
+      wsRef.current.disconnect()
+      wsRef.current = null
+    }
+
+    stopPolling()
+    setIsUploading(false)
+    setIsProcessing(false)
+    setUploadProgress(0)
+    setStatus('cancelled')
+    setProgress(null)
+
+    if (activeJobId) {
+      try {
+        await ocrApi.cancelJob(activeJobId)
+      } catch {
+      }
+    }
+  }, [jobId, stopPolling])
+
   // Reset state
   const reset = useCallback(() => {
+    if (uploadAbortRef.current) {
+      uploadAbortRef.current.abort()
+      uploadAbortRef.current = null
+    }
     setIsUploading(false)
     setIsProcessing(false)
     setUploadProgress(0)
@@ -416,6 +468,10 @@ export function useOCR(): UseOCRReturn {
   useEffect(() => {
     return () => {
       stopPolling()
+      if (uploadAbortRef.current) {
+        uploadAbortRef.current.abort()
+        uploadAbortRef.current = null
+      }
       if (wsRef.current) {
         wsRef.current.disconnect()
         wsRef.current = null
@@ -442,6 +498,7 @@ export function useOCR(): UseOCRReturn {
     connectWebSocket,
     disconnectWebSocket,
     resumeJob,
+    cancelProcessing,
     reset,
   }
 }

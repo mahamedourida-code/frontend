@@ -77,7 +77,7 @@ import { buildDownloadUrl, buildMessengerShareUrl, buildOfficeViewerUrl } from "
 
 function ProcessImagesFallback() {
   return (
-    <div className="min-h-screen bg-[#FFF9E7] p-3 sm:p-4">
+    <div className="min-h-screen bg-[#EFFFFD] p-3 sm:p-4">
       <div className="flex min-h-[calc(100vh-2rem)] items-center justify-center rounded-[30px] border border-[#eadfff] bg-white/55 backdrop-blur-xl">
         <div className="h-12 w-12 rounded-full border-4 border-[#d9c9fb] border-t-[#2f165e] animate-spin" />
       </div>
@@ -195,7 +195,9 @@ function ProcessImagesContent() {
   }
 
   const {
+    isUploading,
     isProcessing,
+    uploadProgress,
     status,
     progress,
     files: resultFiles,
@@ -204,6 +206,7 @@ function ProcessImagesContent() {
     saveToHistory,
     connectWebSocket,
     resumeJob,
+    cancelProcessing,
     reset,
     isSaving,
     isSaved,
@@ -623,6 +626,12 @@ function ProcessImagesContent() {
     }
   }, [uploadedFiles, uploadBatch, connectWebSocket, resultFiles, reset, maxUploadFiles])
 
+  const handleCancelProcessing = useCallback(async () => {
+    await cancelProcessing()
+    setLatestRecoverableJob(null)
+    toast.info("Batch cancelled.")
+  }, [cancelProcessing])
+
   const handleRemoveFile = (index: number) => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index))
   }
@@ -1036,6 +1045,7 @@ Best regards`
   const uploadedSizeMb = uploadedFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024)
   const uploadedLabel = `${uploadedFiles.length} ${uploadedFiles.length === 1 ? 'image' : 'images'}`
   const processLabel = uploadedFiles.length > 1 ? `Process ${uploadedFiles.length} images` : 'Process image'
+  const displayedProgress = isUploading ? uploadProgress : progress?.percentage
 
   return (
     <div className="ax-page-bg min-h-screen relative lg:flex lg:gap-4 lg:p-4">
@@ -1145,8 +1155,10 @@ Best regards`
                     <Loader2 className="h-5 w-5 animate-spin text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">Processing batch</p>
-                    {progress && (
+                    <p className="text-sm font-semibold text-foreground">{isUploading ? "Uploading batch" : "Processing batch"}</p>
+                    {isUploading ? (
+                      <p className="text-xs text-muted-foreground">{uploadProgress}% uploaded</p>
+                    ) : progress && (
                       <p className="text-xs text-muted-foreground">
                         {progress.processed_images} of {progress.total_images} ready
                       </p>
@@ -1158,16 +1170,24 @@ Best regards`
                     <p className="text-xl font-bold text-primary">{processingTime}s</p>
                     <p className="text-[11px] text-muted-foreground">elapsed</p>
                   </div>
-                  {progress && (
+                  {typeof displayedProgress === "number" && (
                     <div className="rounded-2xl border border-[#eadfff] bg-white/50 px-4 py-2">
-                      <p className="text-xl font-bold text-primary">{progress.percentage}%</p>
-                      <p className="text-[11px] text-muted-foreground">complete</p>
+                      <p className="text-xl font-bold text-primary">{displayedProgress}%</p>
+                      <p className="text-[11px] text-muted-foreground">{isUploading ? "uploaded" : "complete"}</p>
                     </div>
                   )}
+                  <Button
+                    variant="outline"
+                    onClick={handleCancelProcessing}
+                    className="h-full min-h-14 rounded-2xl border-[#eadfff] bg-white/55 px-4 text-[#5b3f92] hover:bg-white"
+                  >
+                    <X className="mr-2 h-4 w-4" />
+                    Cancel
+                  </Button>
                 </div>
               </div>
-              {progress && (
-                <Progress value={progress.percentage} className="mt-4 h-2" />
+              {typeof displayedProgress === "number" && (
+                <Progress value={displayedProgress} className="mt-4 h-2" />
               )}
             </CardContent>
           </Card>

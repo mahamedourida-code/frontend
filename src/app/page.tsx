@@ -121,9 +121,13 @@ export default function Home() {
   const [totalFilesToProcess, setTotalFilesToProcess] = useState(0);
   const wsRef = useRef<OCRWebSocket | null>(null);
   const pollingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const uploadAbortRef = useRef<AbortController | null>(null);
+  const currentJobIdRef = useRef<string | null>(null);
   const [shareSession, setShareSession] = useState<any>(null);
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [limits, setLimits] = useState<AppLimits | null>(null);
   const [latestRecoverableJob, setLatestRecoverableJob] = useState<RecoverableJobSummary | null>(null);
   const [recoveryLoading, setRecoveryLoading] = useState(false);
@@ -174,6 +178,10 @@ export default function Home() {
 
   useEffect(() => {
     return () => {
+      if (uploadAbortRef.current) {
+        uploadAbortRef.current.abort();
+        uploadAbortRef.current = null;
+      }
       stopJobMonitoring();
     };
   }, []);
@@ -563,8 +571,13 @@ export default function Home() {
       }
 
       setIsProcessing(true);
+      setIsUploading(true);
+      setUploadProgress(0);
+      currentJobIdRef.current = null;
       setProcessingComplete(false);
       setTotalFilesToProcess(uploadedFiles.length);
+      const uploadController = new AbortController();
+      uploadAbortRef.current = uploadController;
 
 
       // Compress images if needed
@@ -582,12 +595,22 @@ export default function Home() {
       // Extract compressed files for upload
       const filesToUpload = compressionResults.map(r => r.file);
 
-      // Upload the (possibly compressed) files
+      if (uploadController.signal.aborted) {
+        const cancelledError = new Error('Upload cancelled') as Error & { code?: string };
+        cancelledError.code = 'ERR_CANCELED';
+        throw cancelledError;
+      }
+
       const response = await ocrApi.uploadBatchMultipart(filesToUpload, {
         output_format: 'xlsx',
-        consolidation_strategy: 'separate'
+        consolidation_strategy: 'separate',
+        signal: uploadController.signal,
+        onUploadProgress: setUploadProgress
       });
 
+      currentJobIdRef.current = response.job_id;
+      setUploadProgress(100);
+      setIsUploading(false);
 
       // Store session ID for downloads
       if (response.session_id) {
@@ -615,6 +638,14 @@ export default function Home() {
       startJobMonitoring(response.job_id, response.session_id);
 
     } catch (error: any) {
+      if (error?.code === 'ERR_CANCELED' || error?.name === 'CanceledError') {
+        setIsUploading(false);
+        setUploadProgress(0);
+        setIsProcessing(false);
+        setProcessingComplete(false);
+        return;
+      }
+
       setIsProcessing(false);
       setProcessingComplete(false);
 
@@ -636,6 +667,9 @@ export default function Home() {
       }
 
       toast.error(error?.detail || 'Failed to process images. Please try again.');
+    } finally {
+      uploadAbortRef.current = null;
+      setIsUploading(false);
     }
   }, [uploadedFiles, updateState, maxUploadFiles, isAuthenticated]);
 
@@ -763,6 +797,7 @@ export default function Home() {
     if (!jobId) return;
 
     stopJobMonitoring();
+    currentJobIdRef.current = jobId;
     setCurrentSessionId(sessionId || null);
     setIsProcessing(true);
     setProcessingComplete(false);
@@ -813,6 +848,32 @@ export default function Home() {
     wsRef.current = websocket;
   }
 
+  async function cancelCurrentBatch() {
+    const activeJobId = currentJobIdRef.current;
+
+    if (uploadAbortRef.current) {
+      uploadAbortRef.current.abort();
+      uploadAbortRef.current = null;
+    }
+
+    stopJobMonitoring();
+
+    if (activeJobId) {
+      try {
+        await ocrApi.cancelJob(activeJobId);
+      } catch {
+      }
+    }
+
+    currentJobIdRef.current = null;
+    setIsUploading(false);
+    setUploadProgress(0);
+    setIsProcessing(false);
+    setProcessingComplete(false);
+    setLatestRecoverableJob(null);
+    toast.info('Batch cancelled.');
+  }
+
   async function continueLatestJob() {
     if (!latestRecoverableJob?.job_id) return;
 
@@ -831,10 +892,17 @@ export default function Home() {
   }
 
   const handleReset = () => {
+    if (uploadAbortRef.current) {
+      uploadAbortRef.current.abort();
+      uploadAbortRef.current = null;
+    }
+    currentJobIdRef.current = null;
     setUploadedFiles([]);
     setResultFiles([]);
     setProcessingComplete(false);
     setIsProcessing(false);
+    setIsUploading(false);
+    setUploadProgress(0);
     setTablePreviewData([]);
     setFirstImageUrl('');
     setTotalFilesToProcess(0);
@@ -1055,6 +1123,12 @@ export default function Home() {
     }
   };
 
+  const liveProgressPercent = isUploading
+    ? uploadProgress
+    : totalFilesToProcess > 0
+      ? Math.min(100, Math.round((resultFiles.length / totalFilesToProcess) * 100))
+      : 0;
+
   return (
     <div className="min-h-screen relative bg-transparent">
       {/* Navigation Bar */}
@@ -1214,7 +1288,7 @@ export default function Home() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat will-change-transform"
             style={{
-              backgroundColor: "#FFF9E7",
+              backgroundColor: "#EFFFFD",
               clipPath:
                 "polygon(0 0, 100% 0, 100% 98.9%, 98.8% 99.15%, 96.5% 99.35%, 92% 99.45%, 8% 99.45%, 3.5% 99.35%, 1.2% 99.15%, 0 98.9%)",
             }}
@@ -1629,16 +1703,18 @@ export default function Home() {
                           <div className="space-y-1">
                             <div className="flex flex-wrap items-center gap-2">
                               <h3 className="text-lg font-semibold tracking-tight">
-                                {processingComplete ? 'Ready to Download' : 'Processing...'}
+                                {processingComplete ? 'Ready to Download' : isUploading ? 'Uploading...' : 'Processing...'}
                               </h3>
                               <span className="rounded-full border border-[#A78BFA]/35 bg-white/45 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground backdrop-blur-md">
-                                {processingComplete ? `${resultFiles.length} file${resultFiles.length === 1 ? '' : 's'} ready` : 'live status'}
+                                {processingComplete ? `${resultFiles.length} file${resultFiles.length === 1 ? '' : 's'} ready` : isUploading ? 'uploading' : 'live status'}
                               </span>
                             </div>
                             <p className="text-sm text-muted-foreground">
                               {processingComplete
                                 ? 'Review the preview, download individual files, or export everything at once.'
-                                : 'Your files are being converted now. The panel will update as each result is ready.'}
+                                : isUploading
+                                  ? 'Your batch is uploading. You can cancel before processing starts.'
+                                  : 'Your files are being converted now. The panel will update as each result is ready.'}
                             </p>
                           </div>
                         </div>
@@ -1668,13 +1744,28 @@ export default function Home() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={handleReset}
+                            onClick={isProcessing && !processingComplete ? cancelCurrentBatch : handleReset}
                             className="border-2 border-[#A78BFA] bg-white/55 backdrop-blur-md"
                           >
-                            Convert  Again
+                            {isProcessing && !processingComplete ? 'Cancel' : 'Convert Again'}
                           </Button>
                         </div>
                       </div>
+
+                      {isProcessing && !processingComplete && (
+                        <div className="mb-4 rounded-2xl border border-[#eadfff] bg-white/45 p-3 backdrop-blur-md">
+                          <div className="mb-2 flex items-center justify-between text-xs font-semibold text-muted-foreground">
+                            <span>{isUploading ? 'Upload progress' : 'Batch progress'}</span>
+                            <span>{liveProgressPercent}%</span>
+                          </div>
+                          <div className="h-2 overflow-hidden rounded-full bg-white/70">
+                            <div
+                              className="h-full rounded-full bg-[#441F84] transition-all duration-300"
+                              style={{ width: `${liveProgressPercent}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
 
                       {resultFiles.length > 0 && (
                         <div className="space-y-4">
@@ -1876,7 +1967,7 @@ export default function Home() {
                       {isProcessing && !processingComplete && resultFiles.length === 0 && (
                         <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
                           <InlineSpinner className="h-4 w-4" />
-                          <span>Converting your images...</span>
+                          <span>{isUploading ? 'Uploading your images...' : 'Converting your images...'}</span>
                         </div>
                       )}
                     </div>
@@ -2279,7 +2370,7 @@ export default function Home() {
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
-            style={{ backgroundColor: "#FFF9E7" }}
+            style={{ backgroundColor: "#EFFFFD" }}
           />
           <div className="relative z-10">
         {/* AI Engine Section */}

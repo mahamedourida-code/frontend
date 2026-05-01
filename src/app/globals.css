@@ -154,7 +154,7 @@
 
   .ax-page-bg {
     position: relative;
-    background: #FFF9E7;
+    background: #EFFFFD;
   }
 
   .ax-page-bg::before {
@@ -206,7 +206,7 @@
 }
 
 :root {
-  --background: hsl(220 23% 95%);
+  --background: hsl(173 100% 97%);
   --foreground: hsl(224 71% 4%);
   --card: hsl(0 0% 100%);
   --card-foreground: hsl(224 71% 4%);

@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios'
+import type { AxiosProgressEvent } from 'axios'
 import { createClient } from '@/utils/supabase/client'
 import { publicConfig } from '@/lib/public-config'
 import { getOrCreateTrialUUID } from '@/lib/free-trial'
@@ -120,6 +121,15 @@ apiClient.interceptors.response.use(
     return response
   },
   async (error: AxiosError<any>) => {
+    if (axios.isCancel(error) || error.code === 'ERR_CANCELED') {
+      return Promise.reject({
+        code: 'ERR_CANCELED',
+        name: 'CanceledError',
+        detail: 'Request cancelled',
+        status_code: 0,
+      })
+    }
+
     // Handle common errors
     if (error.response) {
       // Server responded with error status
@@ -282,6 +292,13 @@ export interface JobRecoveryResponse {
   jobs: RecoverableJobSummary[]
 }
 
+export interface UploadBatchMultipartOptions {
+  output_format?: string
+  consolidation_strategy?: string
+  signal?: AbortSignal
+  onUploadProgress?: (percent: number, event: AxiosProgressEvent) => void
+}
+
 export interface AppLimits {
   plan: 'anonymous' | 'free' | 'pro' | 'enterprise'
   max_files_per_batch: number
@@ -400,7 +417,7 @@ export const ocrApi = {
    * Upload and process multiple images in batch using multipart/form-data
    * This is the recommended method - faster and more efficient than base64
    */
-  uploadBatchMultipart: async (files: File[], options?: { output_format?: string; consolidation_strategy?: string }): Promise<BatchConvertResponse> => {
+  uploadBatchMultipart: async (files: File[], options?: UploadBatchMultipartOptions): Promise<BatchConvertResponse> => {
 
     // Create FormData object
     const formData = new FormData()
@@ -420,7 +437,18 @@ export const ocrApi = {
     const response = await apiClient.post<BatchConvertResponse>('/api/v1/jobs/batch-upload', formData, {
       headers: {
         'Content-Type': undefined  // Let browser set multipart/form-data with boundary
-      }
+      },
+      signal: options?.signal,
+      timeout: isMobile ? 120000 : 90000,
+      onUploadProgress: (event) => {
+        if (!options?.onUploadProgress) return
+        const percent = typeof event.progress === 'number'
+          ? Math.round(event.progress * 100)
+          : event.total
+            ? Math.round((event.loaded * 100) / event.total)
+            : 0
+        options.onUploadProgress(Math.min(100, Math.max(0, percent)), event)
+      },
     })
     return response.data
   },
