@@ -32,15 +32,12 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useHistory } from "@/hooks/useHistory"
+import type { HistoryJob } from "@/hooks/useHistory"
 import { ocrApi } from "@/lib/api-client"
 import { toast } from "sonner"
 import { useAuth } from "@/hooks/useAuth"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
-
-import { Database } from '@/types/database.generated'
-
-type HistoryJob = Database['public']['Tables']['job_history']['Row']
 
 function HistoryContent() {
   const router = useRouter()

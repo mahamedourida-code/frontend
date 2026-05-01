@@ -19,7 +19,6 @@ import { AppIcon } from "@/components/AppIcon"
 import { ocrApi } from "@/lib/api-client"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
-import { createClient } from "@/utils/supabase/client"
 import Image from "next/image"
 import {
   Upload,
@@ -95,7 +94,6 @@ export default function ProcessImagesPage() {
 function ProcessImagesContent() {
   const { user, loading: authLoading, session } = useAuth()
   const router = useRouter()
-  const supabase = createClient() // Create single instance at component level
   const searchParams = useSearchParams()
   const documentType = searchParams.get('type') || 'auto'
   const languageParam = searchParams.get('language') || (typeof window !== 'undefined' ? localStorage.getItem('ocrLanguage') || 'en' : 'en')
@@ -189,23 +187,13 @@ function ProcessImagesContent() {
   const fetchUserStats = async () => {
     if (!user?.id) {
       console.log('[ProcessImagesPage] No user ID, skipping stats fetch')
+      setCreditLoading(false)
       return
     }
 
     try {
-      // Fetch user stats from simple stats table
-      const { data: userStats, error } = await supabase
-        .from('user_stats')
-        .select('total_processed, month_processed, month_start_date')
-        .eq('user_id', user.id)
-        .maybeSingle()
-
-      if (error) {
-        console.error('[ProcessImagesPage] Error fetching stats:', error)
-        return
-      }
-
-      const totalProcessed = userStats?.total_processed || 0
+      const credits = await ocrApi.getUserCredits()
+      const totalProcessed = credits.used_credits || 0
       setProcessedCount(totalProcessed)
       
       console.log('[ProcessImagesPage] Stats fetched:', {

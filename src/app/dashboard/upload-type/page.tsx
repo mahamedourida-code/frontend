@@ -8,7 +8,7 @@ import { FileText, TableProperties, Sparkles, LayoutDashboard, ArrowLeft, AlertC
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/useAuth"
 import { useState, useEffect } from "react"
-import { createClient } from "@/utils/supabase/client"
+import { ocrApi } from "@/lib/api-client"
 import { Card, CardContent } from "@/components/ui/card"
 import { wakeUpBackendSilently } from "@/lib/backend-health"
 
@@ -31,25 +31,11 @@ export default function UploadTypePage() {
 
   const fetchUserCredits = async () => {
     try {
-      // Calculate credits from all processed images (just like dashboard)
-      const supabase = createClient()
-      const { data: allJobs } = await supabase
-        .from('processing_jobs')
-        .select('processing_metadata')
-        .eq('user_id', user?.id || '')
-      
-      const typedAllJobs = (allJobs || []) as any[]
-      const totalImagesProcessed = typedAllJobs.reduce((sum, job) => 
-        sum + (job.processing_metadata?.total_images || 1), 0)
-
-      // Simple credit calculation - 80 total, minus what's been used
-      const TOTAL_CREDITS = 80
-      const creditsAvailable = Math.max(0, TOTAL_CREDITS - totalImagesProcessed)
-      
-      setAvailableCredits(creditsAvailable)
+      const credits = await ocrApi.getUserCredits()
+      setAvailableCredits(credits.available_credits)
     } catch (error) {
       console.error('Error fetching credits:', error)
-      setAvailableCredits(80) // Default to full credits on error
+      setAvailableCredits(0)
     } finally {
       setLoading(false)
     }

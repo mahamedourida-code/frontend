@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useAuth } from "@/hooks/useAuth"
-import { createClient } from "@/utils/supabase/client"
+import { ocrApi } from "@/lib/api-client"
 import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -102,7 +102,6 @@ export default function DashboardPage() {
     if (!user) return
 
     setLoading(true)
-    const supabase = createClient()
 
     try {
       // Calculate date range based on selected time
@@ -126,32 +125,14 @@ export default function DashboardPage() {
           fromDate = subDays(now, 7)
       }
 
-      // Fetch user's jobs
-      const { data: jobs, error } = await supabase
-        .from('processing_jobs')
-        .select('*')
-        .eq('user_id', user.id)
-        .gte('created_at', fromDate.toISOString())
-        .order('created_at', { ascending: true })
-
-      if (error) {
-        console.error('[Dashboard] Error fetching jobs:', error)
-        // Don't throw, continue with empty data
-        const typedJobs: Job[] = []
-        setChartData([])
-        setStats({
-          totalProcessed: 0,
-          todayProcessed: 0,
-          thisMonthProcessed: 0,
-          monthProcessed: 0,
-          lastWeekProcessed: 0,
-          averageTime: 0,
-          successRate: 0
-        })
-        return
-      }
-
-      const typedJobs = (jobs || []) as Job[]
+      const [historyResponse, creditsResponse] = await Promise.all([
+        ocrApi.getHistory(500, 0),
+        ocrApi.getUserCredits().catch(() => null),
+      ])
+      const allJobs = normalizeHistoryJobs(historyResponse)
+      const typedJobs = allJobs
+        .filter(job => new Date(job.created_at) >= fromDate)
+        .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
       console.log('[Dashboard] Jobs fetched:', {
         count: typedJobs.length,
         sample: typedJobs[0],
@@ -223,22 +204,21 @@ export default function DashboardPage() {
       const successfulJobs = typedJobs.filter(job => job.status === 'completed').length
       const successRate = totalJobs > 0 ? (successfulJobs / totalJobs) * 100 : 0
 
-      // Fetch user stats from simplified stats table
-      const { data: userStats, error: statsError } = await supabase
-        .from('user_stats')
-        .select('total_processed, month_processed, month_start_date, last_processed_at')
-        .eq('user_id', user.id)
-        .maybeSingle()
+      const userTotalProcessed = creditsResponse?.used_credits ?? 0
 
-      if (statsError) {
-        console.error('[Dashboard] Error fetching user stats:', statsError)
-      }
-
-      const userTotalProcessed = userStats?.total_processed || 0
-      const userMonthProcessed = userStats?.month_processed || 0
-
-      // Use month processed from user stats
-      const thisMonthProcessed = userMonthProcessed
+      const monthStart = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1))
+      const monthJobs = allJobs.filter(job => new Date(job.created_at) >= monthStart)
+      const thisMonthProcessed = monthJobs.reduce((sum, job) => {
+        let metadata = job.processing_metadata
+        if (typeof metadata === 'string') {
+          try {
+            metadata = JSON.parse(metadata)
+          } catch (e) {
+            metadata = undefined
+          }
+        }
+        return sum + (metadata?.total_images || 1)
+      }, 0)
       
       // Calculate last week's processed
       const weekAgo = new Date()
@@ -291,6 +271,23 @@ export default function DashboardPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const normalizeHistoryJobs = (response: any): Job[] => {
+    const rawJobs = Array.isArray(response)
+      ? response
+      : response?.jobs || response?.history || response?.items || response?.data || []
+
+    return rawJobs.map((job: any) => ({
+      ...job,
+      id: job.id || job.job_id || job.original_job_id,
+      created_at: job.created_at || job.saved_at || job.completed_at || new Date().toISOString(),
+      status: job.status || 'completed',
+      processing_metadata: job.processing_metadata || job.metadata || {
+        total_images: job.total_images || job.successful_images || 1,
+        processing_time: job.processing_time || job.processing_time_seconds,
+      },
+    }))
   }
 
   const generateChartData = (jobs: Job[], range: TimeRange): ProcessingData[] => {

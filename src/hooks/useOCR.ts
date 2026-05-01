@@ -200,80 +200,13 @@ export function useOCR(): UseOCRReturn {
 
     setIsSaving(true)
     try {
-      // First, try the backend endpoint
-      try {
-        const response = await ocrApi.saveToHistory(jobId)
-        if (response.success) {
-          setIsSaved(true)
-          toast.success('Job saved to history!')
-          return
-        }
-      } catch (backendErr) {
-        console.log('[useOCR] Backend save failed, using direct Supabase save')
+      const response = await ocrApi.saveToHistory(jobId)
+      if (response.success) {
+        setIsSaved(true)
+        toast.success('Job saved to history!')
+      } else {
+        toast.error(response.message || 'Failed to save to history')
       }
-
-      // Fallback: Save directly to Supabase
-      const { createClient } = await import('@/utils/supabase/client')
-      const supabase = createClient()
-
-      // Get user
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        toast.error('Please sign in to save jobs')
-        return
-      }
-
-      // Get the processing job to copy its data
-      const { data: processingJob, error: fetchError } = await supabase
-        .from('processing_jobs')
-        .select('*')
-        .eq('job_id', jobId)
-        .single()
-
-      if (fetchError || !processingJob) {
-        console.error('[useOCR] Failed to fetch processing job:', fetchError)
-        toast.error('Failed to find job data')
-        return
-      }
-
-      // Type the metadata properly
-      const metadata = processingJob.processing_metadata as Record<string, any> | null
-      const storageFiles = metadata?.storage_files as Array<{ url?: string }> | undefined
-
-      // Save to job_history table (create if not exists)
-      const { error: saveError } = await supabase
-        .from('job_history')
-        .insert({
-          original_job_id: jobId, // Changed from job_id to original_job_id
-          user_id: user.id,
-          filename: files[0]?.filename || `batch_${new Date().toISOString().split('T')[0]}.xlsx`,
-          status: 'completed',
-          result_url: storageFiles?.[0]?.url ||
-                     (files[0]?.file_id ? `/api/v1/download/${files[0].file_id}` : null),
-          processing_metadata: {
-            ...(metadata || {}),
-            total_images: files.length,
-            files: files.map(f => ({
-              file_id: f.file_id,
-              filename: f.filename
-            }))
-          }
-        })
-
-      if (saveError) {
-        // If table doesn't exist, show helpful error
-        if (saveError.code === '42P01') {
-          toast.error('History table not set up. Please contact support.')
-          console.error('[useOCR] job_history table does not exist')
-        } else {
-          console.error('[useOCR] Supabase save error:', saveError)
-          toast.error('Failed to save to history')
-        }
-        return
-      }
-
-      setIsSaved(true)
-      toast.success('Job saved to history!')
     } catch (err: any) {
       const errorMessage = err.detail || err.message || 'Failed to save to history'
       console.error('[useOCR] Save error:', err)
@@ -282,96 +215,6 @@ export function useOCR(): UseOCRReturn {
       setIsSaving(false)
     }
   }, [jobId, files])
-
-  // Save processing job to database for dashboard visibility
-  const saveProcessingJob = useCallback(async (sessionId: string, files: any[], metadata: any) => {
-    try {
-      const { createClient } = await import('@/utils/supabase/client')
-      const supabase = createClient()
-      
-      // Get user
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        console.log('[useOCR] No user, skipping save to processing_jobs')
-        return
-      }
-      
-      // Save to processing_jobs table
-      const { error } = await supabase
-        .from('processing_jobs')
-        .insert({
-          id: sessionId,
-          user_id: user.id,
-          filename: files[0]?.filename || `batch_${Date.now()}.xlsx`,
-          status: 'completed',
-          processing_metadata: {
-            total_images: files.length,
-            successful_images: files.length,
-            processing_time: metadata.processing_time || 0,
-            files: files.map(f => ({
-              file_id: f.file_id,
-              filename: f.filename || 'result.xlsx'
-            }))
-          },
-          result_url: files[0]?.file_id ? `/api/v1/download/${files[0].file_id}` : null,
-          created_at: new Date().toISOString()
-        })
-      
-      if (error) {
-        console.error('[useOCR] Error saving to processing_jobs:', error)
-      } else {
-        console.log('[useOCR] Saved to processing_jobs for dashboard')
-      }
-      
-      // Update user_stats table for monthly limits tracking
-      const totalImages = files.length
-      const now = new Date()
-      
-      // First, get current user stats
-      const { data: currentStats, error: fetchError } = await supabase
-        .from('user_stats')
-        .select('total_processed, month_processed, month_start_date')
-        .eq('user_id', user.id)
-        .maybeSingle()
-      
-      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = no rows found
-        console.error('[useOCR] Error fetching user stats:', fetchError)
-      }
-      
-      // Check if we need to reset monthly counter (30 days cycle)
-      let monthProcessed = currentStats?.month_processed || 0
-      let monthStartDate = currentStats?.month_start_date || now.toISOString()
-      const monthStart = new Date(monthStartDate)
-      const daysSinceStart = Math.floor((now.getTime() - monthStart.getTime()) / (1000 * 60 * 60 * 24))
-      
-      // Reset monthly counter if 30 days have passed
-      if (daysSinceStart >= 30) {
-        monthProcessed = 0
-        monthStartDate = now.toISOString()
-      }
-      
-      // Update or insert user stats
-      const { error: upsertError } = await supabase
-        .from('user_stats')
-        .upsert({
-          user_id: user.id,
-          total_processed: (currentStats?.total_processed || 0) + totalImages,
-          month_processed: monthProcessed + totalImages,
-          month_start_date: monthStartDate,
-          last_processed_at: now.toISOString()
-        }, {
-          onConflict: 'user_id'
-        })
-      
-      if (upsertError) {
-        console.error('[useOCR] Error updating user stats:', upsertError)
-      } else {
-        console.log('[useOCR] Updated user stats - month_processed:', monthProcessed + totalImages)
-      }
-    } catch (err) {
-      console.error('[useOCR] Failed to save processing job:', err)
-    }
-  }, [])
 
   // Connect to WebSocket for real-time updates
   const connectWebSocket = useCallback((sessionId: string) => {
@@ -455,8 +298,7 @@ export function useOCR(): UseOCRReturn {
             console.log('[WebSocket] Setting completed files:', fileList)
             setFiles(fileList)
             
-            // Save to processing_jobs table for dashboard visibility
-            saveProcessingJob(sessionId, fileList, data)
+            // Durable job/file metadata is owned by the backend.
           } else {
             console.warn('[WebSocket] Job completed but no files data received')
           }
@@ -493,7 +335,7 @@ export function useOCR(): UseOCRReturn {
 
     websocket.connect()
     wsRef.current = websocket
-  }, [saveProcessingJob])
+  }, [])
 
   // Disconnect WebSocket
   const disconnectWebSocket = useCallback(() => {

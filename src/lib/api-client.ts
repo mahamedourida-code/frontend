@@ -498,7 +498,7 @@ export const ocrApi = {
 
   /**
    * Get saved job history for authenticated user
-   * This fetches only explicitly saved jobs from job_history table
+   * This fetches only explicitly saved jobs through the backend API
    */
   getSavedHistory: async (limit: number = 50, offset: number = 0): Promise<any> => {
     const response = await apiClient.get(`/api/v1/jobs/saved-history`, {
