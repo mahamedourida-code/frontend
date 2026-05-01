@@ -77,15 +77,6 @@ const plans: Array<{
 
 const companyLogos = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-function SymbolTile({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-[20px] border border-[#e6dbff] bg-white/60 px-4 py-3 text-left shadow-[0_12px_35px_rgba(68,31,132,0.08)] backdrop-blur">
-      <p className="text-xl font-black text-[#2f165e]">{value}</p>
-      <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#7c62b1]">{label}</p>
-    </div>
-  )
-}
-
 function PricingFallback() {
   return (
     <main className="ax-page-bg min-h-screen">
@@ -178,42 +169,30 @@ function PricingContent() {
           </Button>
         </nav>
 
-        <div className="mx-auto mt-10 grid max-w-6xl items-end gap-8 lg:grid-cols-[1fr_360px]">
-          <div>
-            <Badge className="mb-5 rounded-full border border-[#d8c7fb] bg-white/62 px-4 py-1.5 text-[#4b2d82] shadow-sm backdrop-blur">
-              Pricing for OCR pages
-            </Badge>
-            <h1 className="max-w-3xl text-4xl font-black leading-[1.03] tracking-tight text-foreground sm:text-5xl">
-              Clear plans for turning images into Excel.
-            </h1>
-            <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground">
-              Start free. Upgrade when batch volume matters. Each page equals one processed image or document page.
-            </p>
-          </div>
+        <div className="mx-auto mt-10 max-w-4xl text-center">
+          <h1 className="mx-auto max-w-3xl text-4xl font-black leading-[1.04] tracking-tight text-foreground sm:text-5xl">
+            Plans for clean Excel conversion.
+          </h1>
+          <p className="mx-auto mt-5 max-w-xl text-base leading-8 text-muted-foreground">
+            Pick the page volume that matches your batch workflow.
+          </p>
 
-          <div className="rounded-[28px] border border-[#e6dbff] bg-white/48 p-4 shadow-[0_20px_60px_rgba(68,31,132,0.10)] backdrop-blur-xl">
-            <div className="grid grid-cols-3 gap-2">
-              <SymbolTile label="entry" value="$5" />
-              <SymbolTile label="unit" value="1k" />
-              <SymbolTile label="scale" value="5k" />
-            </div>
-            <div className="mt-4 inline-flex w-full rounded-[18px] border border-[#e6dbff] bg-white/60 p-1">
-              {(["monthly", "annual"] as BillingMode[]).map((mode) => (
-                <button
-                  key={mode}
-                  type="button"
-                  onClick={() => setBillingMode(mode)}
-                  className={cn(
-                    "flex-1 rounded-[14px] px-4 py-2 text-sm font-bold transition",
-                    billingMode === mode
-                      ? "bg-[#2f165e] text-white shadow-[0_10px_28px_rgba(68,31,132,0.24)]"
-                      : "text-[#5d4a83] hover:bg-white/70"
-                  )}
-                >
-                  {mode === "monthly" ? "Monthly" : "Annual"}
-                </button>
-              ))}
-            </div>
+          <div className="mt-7 inline-flex rounded-[18px] border border-[#e6dbff] bg-white/58 p-1 shadow-[0_16px_45px_rgba(68,31,132,0.10)] backdrop-blur">
+            {(["monthly", "annual"] as BillingMode[]).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setBillingMode(mode)}
+                className={cn(
+                  "rounded-[14px] px-6 py-2 text-sm font-bold transition",
+                  billingMode === mode
+                    ? "bg-[#2f165e] text-white shadow-[0_10px_28px_rgba(68,31,132,0.24)]"
+                    : "text-[#5d4a83] hover:bg-white/70"
+                )}
+              >
+                {mode === "monthly" ? "Monthly" : "Annual"}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -252,7 +231,7 @@ function PricingContent() {
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="text-sm font-black text-foreground">{plan.name}</p>
-                        <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#7c62b1]">{displayedPages}</p>
+                        <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#7c62b1]">{plan.eyebrow}</p>
                       </div>
                       <div className="flex h-11 w-11 items-center justify-center rounded-[18px] border border-[#e6dbff] bg-white/70 text-[#2f165e]">
                         {plan.name === "Business" ? <PlanSwitch className="h-5 w-5" /> : <CreditStack className="h-5 w-5" />}
@@ -261,6 +240,13 @@ function PricingContent() {
                     <div className="mt-5 flex items-end gap-2">
                       <span className="text-5xl font-black tracking-tight text-foreground">{displayedPrice}</span>
                       <span className="pb-2 text-sm font-bold text-muted-foreground">{displayedCadence}</span>
+                    </div>
+                    <div className="mt-5 rounded-[22px] border border-[#e4d8fb] bg-[#f8f4ff]/80 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.82)]">
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="text-xs font-black uppercase tracking-[0.16em] text-[#7c62b1]">Included volume</span>
+                        <span className="h-2.5 w-2.5 rounded-full bg-[#2f165e] shadow-[0_0_0_6px_rgba(47,22,94,0.10)]" />
+                      </div>
+                      <p className="mt-2 text-2xl font-black text-[#2f165e]">{displayedPages}</p>
                     </div>
                     <p className="mt-3 min-h-[48px] text-sm leading-6 text-muted-foreground">{plan.detail}</p>
                     <Button
@@ -282,7 +268,6 @@ function PricingContent() {
                       {plan.planKey ? <CreditStack className="h-5 w-5 text-[#2f165e]" /> : <BillingSeal className="h-5 w-5 text-[#2f165e]" />}
                       <p className="text-xs font-black uppercase tracking-[0.16em] text-foreground">Features</p>
                     </div>
-                    <p className="mb-5 text-sm text-muted-foreground">{plan.eyebrow}</p>
                     <ul className="space-y-3">
                       {plan.features.map((feature) => (
                         <li key={feature.text} className={cn("flex items-center gap-3 text-sm", feature.muted && "text-muted-foreground")}>
