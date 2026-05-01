@@ -9,7 +9,6 @@ export async function updateSession(request: NextRequest) {
   const DEBUG_AUTH = process.env.NODE_ENV === 'development'
 
   if (DEBUG_AUTH) {
-    console.log('[Middleware] Processing request:', pathname)
   }
 
   let supabaseResponse = NextResponse.next({
@@ -46,7 +45,6 @@ export async function updateSession(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (DEBUG_AUTH) {
-    console.log('[Middleware] User authenticated:', !!user, user?.email || 'none')
   }
 
   // Protected routes that require authentication
@@ -65,7 +63,6 @@ export async function updateSession(request: NextRequest) {
   // Redirect unauthenticated users trying to access protected routes
   if (!user && isProtectedPath) {
     if (DEBUG_AUTH) {
-      console.log('[Middleware] Redirecting unauthenticated user to landing page from', pathname)
     }
     const url = request.nextUrl.clone()
     url.pathname = '/'
@@ -82,14 +79,11 @@ export async function updateSession(request: NextRequest) {
   // The page component will show "Already Authenticated" UI
   if (user && isPublicPath) {
     if (DEBUG_AUTH) {
-      console.log('[Middleware] Authenticated user accessing auth page:', pathname)
-      console.log('[Middleware] Allowing access - page will handle UI')
     }
     // Don't redirect - let the page show appropriate UI for authenticated users
   }
 
   if (DEBUG_AUTH) {
-    console.log('[Middleware] Returning response for', pathname)
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.

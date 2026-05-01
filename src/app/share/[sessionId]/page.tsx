@@ -80,7 +80,6 @@ export default function SharePage() {
       setSession(details)
       
     } catch (err: any) {
-      console.error('Failed to load session:', err)
       if (err.response?.status === 404) {
         setError('Share link not found. It may have been deleted or expired.')
       } else {
@@ -106,7 +105,6 @@ export default function SharePage() {
       toast.success(`Downloading ${filename}`)
       
     } catch (err) {
-      console.error('Download failed:', err)
       toast.error('Failed to download file. Please try again.')
     } finally {
       setDownloading(null)
@@ -129,7 +127,6 @@ export default function SharePage() {
       toast.success('Downloading all files as ZIP')
       
     } catch (err) {
-      console.error('Batch download failed:', err)
       toast.error('Failed to download files. Please try again.')
     } finally {
       setDownloadingAll(false)

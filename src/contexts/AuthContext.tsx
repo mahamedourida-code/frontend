@@ -48,7 +48,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setProfile(data)
       }
     } catch (error) {
-      console.error('[AuthContext] Error fetching profile:', error)
     }
   }
 
@@ -59,7 +58,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    console.log('[AuthContext] Initializing auth...')
     let mounted = true
 
     // Get initial session
@@ -67,12 +65,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!mounted) return
 
       if (error) {
-        console.error('[AuthContext] Error getting session:', error)
         setLoading(false)
         return
       }
 
-      console.log('[AuthContext] Initial session:', session ? 'authenticated' : 'anonymous')
       setSession(session)
       setUser(session?.user ?? null)
 
@@ -91,7 +87,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return
 
-      console.log('[AuthContext] Auth event:', event, session?.user?.email)
 
       setSession(session)
       setUser(session?.user ?? null)
@@ -105,7 +100,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const authPages = ['/verify-email']
 
           if (authPages.some(page => currentPath.includes(page))) {
-            console.log('[AuthContext] Redirecting to dashboard after sign-in')
             router.push('/dashboard/client')
           }
         }
@@ -123,19 +117,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []) // Register once on mount
 
   const signOut = async () => {
-    console.log('[AuthContext] Signing out...')
 
     try {
       // Use the signOut helper
       await (await import('@/lib/auth-helpers')).signOut()
 
       // State will be cleared by onAuthStateChange SIGNED_OUT event
-      console.log('[AuthContext] Sign out complete')
       
       // Redirect to landing page
       router.push('/')
     } catch (error) {
-      console.error('[AuthContext] Sign out error:', error)
       // Clear local state even on error
       setUser(null)
       setSession(null)

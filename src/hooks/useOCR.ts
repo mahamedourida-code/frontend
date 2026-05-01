@@ -69,7 +69,6 @@ export function useOCR(): UseOCRReturn {
 
   // Upload multiple images
   const uploadBatch = useCallback(async (files: File[]): Promise<BatchConvertResponse | null> => {
-    console.log('[useOCR] uploadBatch called with', files.length, 'files')
 
     // Set processing state immediately for better UX
     setIsProcessing(true)
@@ -80,7 +79,6 @@ export function useOCR(): UseOCRReturn {
     setHasShownCompletion(false) // Reset completion flag for new batch
 
     try {
-      console.log('[useOCR] Uploading files directly (multipart/form-data)...')
 
       // Compress images in the browser if they exceed the size threshold so the
       // server-side base64 payloads are smaller (reduces external API cost).
@@ -90,11 +88,9 @@ export function useOCR(): UseOCRReturn {
         filesToUpload = compressionResults.map(r => r.file)
         const compressedCount = compressionResults.filter(r => r.compressed).length
         if (compressedCount > 0) {
-          console.log(`[useOCR] Compressed ${compressedCount}/${files.length} images before upload`)
           toast.success(`${compressedCount} images optimized before upload`)
         }
       } catch (e) {
-        console.warn('[useOCR] Image compression failed, proceeding with originals', e)
       }
 
       // Use new multipart upload - files are sent as binary data directly
@@ -102,7 +98,6 @@ export function useOCR(): UseOCRReturn {
         output_format: 'xlsx',
         consolidation_strategy: 'separate'  // Keep files individual
       })
-      console.log('[useOCR] API response:', response)
 
       setUploadProgress(100)
       setJobId(response.job_id)
@@ -111,7 +106,6 @@ export function useOCR(): UseOCRReturn {
       // toast.success(`${files.length} images uploaded successfully!`)
       return response
     } catch (err: any) {
-      console.error('[useOCR] Upload error:', err)
       const errorMessage = err.detail || err.message || 'Failed to upload images'
       setError(errorMessage)
       setIsProcessing(false) // Reset processing state on error
@@ -156,21 +150,17 @@ export function useOCR(): UseOCRReturn {
 
   // Download file
   const downloadFile = useCallback(async (fileId: string): Promise<void> => {
-    console.log('[useOCR] Downloading file:', fileId, 'with session:', sessionId)
 
     if (!fileId) {
-      console.error('[useOCR] No file ID provided for download')
       toast.error('Unable to download: File ID is missing')
       return
     }
 
     try {
-      console.log('[useOCR] Calling API to download file:', fileId)
 
       // Pass session_id to download endpoint
       const blob = await ocrApi.downloadFile(fileId, sessionId || undefined)
 
-      console.log('[useOCR] Download successful, blob size:', blob.size)
 
       // Create download link
       const url = window.URL.createObjectURL(blob)
@@ -184,7 +174,6 @@ export function useOCR(): UseOCRReturn {
 
       // toast.success('File downloaded successfully')
     } catch (err: any) {
-      console.error('[useOCR] Download failed:', err)
       const errorMessage = err.detail || err.message || 'Failed to download file'
       setError(errorMessage)
       toast.error(errorMessage)
@@ -209,7 +198,6 @@ export function useOCR(): UseOCRReturn {
       }
     } catch (err: any) {
       const errorMessage = err.detail || err.message || 'Failed to save to history'
-      console.error('[useOCR] Save error:', err)
       toast.error(errorMessage)
     } finally {
       setIsSaving(false)
@@ -231,18 +219,15 @@ export function useOCR(): UseOCRReturn {
       sessionId,
       (data) => {
         // Handle WebSocket messages
-        console.log('WebSocket message:', data)
 
         // Handle different message types from backend
         const messageType = data.type || ''
 
         // PROGRESSIVE RESULTS: Individual file ready for download
         if (messageType === 'file_ready') {
-          console.log('[WebSocket] File ready:', data.file_info)
           
           // Validate file_info structure
           if (!data.file_info || !data.file_info.file_id) {
-            console.error('[WebSocket] Invalid file_info structure:', data.file_info)
             return
           }
           
@@ -251,10 +236,8 @@ export function useOCR(): UseOCRReturn {
             const existing = prev || []
             // Avoid duplicates by checking file_id
             if (existing.some(f => f.file_id === data.file_info.file_id)) {
-              console.log('[WebSocket] Duplicate file_id, skipping:', data.file_info.file_id)
               return existing
             }
-            console.log('[WebSocket] Adding new file to list:', data.file_info)
             return [...existing, data.file_info]
           })
 
@@ -278,7 +261,6 @@ export function useOCR(): UseOCRReturn {
 
         // Job completed
         if (messageType === 'job_completed' || data.status === 'completed') {
-          console.log('[WebSocket] Job completed:', data)
           
           setStatus('completed')
           setProgress({
@@ -295,12 +277,10 @@ export function useOCR(): UseOCRReturn {
               filename: `result-${idx + 1}.xlsx`
             }))
             
-            console.log('[WebSocket] Setting completed files:', fileList)
             setFiles(fileList)
             
             // Durable job/file metadata is owned by the backend.
           } else {
-            console.warn('[WebSocket] Job completed but no files data received')
           }
 
           // Only show completion toast once
@@ -324,11 +304,9 @@ export function useOCR(): UseOCRReturn {
 
         // System messages
         if (messageType === 'system') {
-          console.log('System message:', data.message)
         }
       },
       (error) => {
-        console.error('WebSocket error:', error)
         // Don't show error toast for normal disconnects
       }
     )
@@ -340,7 +318,6 @@ export function useOCR(): UseOCRReturn {
   // Disconnect WebSocket
   const disconnectWebSocket = useCallback(() => {
     if (wsRef.current) {
-      console.log('[useOCR] Disconnecting WebSocket...')
       wsRef.current.disconnect()
       wsRef.current = null
     }
@@ -348,7 +325,6 @@ export function useOCR(): UseOCRReturn {
 
   // Reset state
   const reset = useCallback(() => {
-    console.log('[useOCR] Resetting state...')
     setIsUploading(false)
     setIsProcessing(false)
     setUploadProgress(0)
@@ -367,7 +343,6 @@ export function useOCR(): UseOCRReturn {
   // Cleanup on unmount - FIXED: stable dependency
   useEffect(() => {
     return () => {
-      console.log('[useOCR] Component unmounting, cleaning up WebSocket...')
       if (wsRef.current) {
         wsRef.current.disconnect()
         wsRef.current = null

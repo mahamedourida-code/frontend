@@ -12,7 +12,6 @@ export default function Error({
 }) {
   useEffect(() => {
     // Log the error to console for debugging
-    console.error('[Error Boundary] Caught error:', error)
   }, [error])
 
   return (

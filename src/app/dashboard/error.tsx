@@ -14,7 +14,6 @@ export default function DashboardError({
 }) {
   useEffect(() => {
     // Log the error to console for debugging
-    console.error('[Dashboard Error]:', error)
 
     // Clear any stuck processing state
     if (typeof window !== 'undefined') {

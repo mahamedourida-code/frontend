@@ -133,20 +133,9 @@ export default function DashboardPage() {
       const typedJobs = allJobs
         .filter(job => new Date(job.created_at) >= fromDate)
         .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-      console.log('[Dashboard] Jobs fetched:', {
-        count: typedJobs.length,
-        sample: typedJobs[0],
-        metadata: typedJobs[0]?.processing_metadata
-      })
 
       // Process data for chart
       const processedData = generateChartData(typedJobs, timeRange)
-      console.log('[Dashboard] Chart data generated:', {
-        timeRange,
-        dataPoints: processedData.length,
-        totalJobs: typedJobs.length,
-        data: processedData
-      })
       setChartData(processedData)
 
       // Calculate stats
@@ -248,15 +237,8 @@ export default function DashboardPage() {
         averageTime: avgTime,
         successRate
       }
-      console.log('[Dashboard] Stats calculated:', {
-        totalProcessed: userTotalProcessed || totalImages,
-        todayProcessed: todayImages,
-        thisMonth: thisMonthProcessed,
-        lastWeek: lastWeekProcessed
-      })
       setStats(newStats)
     } catch (error) {
-      console.error('[Dashboard] Error fetching dashboard data:', error)
       // Set default values on error
       setChartData([])
       setStats({
@@ -314,7 +296,6 @@ export default function DashboardPage() {
             try {
               metadata = JSON.parse(metadata)
             } catch (e) {
-              console.error('Error parsing metadata:', e)
               metadata = undefined
             }
           }
@@ -349,7 +330,6 @@ export default function DashboardPage() {
             try {
               metadata = JSON.parse(metadata)
             } catch (e) {
-              console.error('Error parsing metadata:', e)
               metadata = undefined
             }
           }

@@ -247,7 +247,6 @@ export function EditableExcelPreview({
         setOriginalImage(originalImageUrl)
       }
     } catch (error) {
-      console.error('Error loading Excel data:', error)
       toast.error('Failed to load Excel data')
     } finally {
       setLoading(false)

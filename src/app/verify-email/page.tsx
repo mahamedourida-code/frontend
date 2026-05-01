@@ -35,7 +35,6 @@ function VerifyEmailContent() {
 
     // Prevent multiple simultaneous verification attempts
     if (isSubmitting || loading) {
-      console.log('Verification already in progress, skipping...')
       return
     }
 
@@ -47,8 +46,6 @@ function VerifyEmailContent() {
     }
     setLastSubmissionTime(now)
 
-    console.log('Starting OTP verification for email:', email)
-    console.log('OTP code:', otp)
 
     setIsSubmitting(true)
     setLoading(true)
@@ -79,10 +76,8 @@ function VerifyEmailContent() {
       clearTimeout(timeout)
       setVerificationTimeout(null)
 
-      console.log('Verify OTP response:', { hasData: !!data, hasError: !!error, hasSession: !!data?.session })
 
       if (error) {
-        console.error('✗ OTP verification error:', error)
         
         // Handle specific error cases
         if (error.message?.includes('429') || error.message?.includes('rate limit') || error.message?.includes('Request rate limit')) {
@@ -98,7 +93,6 @@ function VerifyEmailContent() {
       }
 
       if (data?.session) {
-        console.log('✓ Email verified successfully, user is now signed in')
 
         // Clear 2FA flow flag since verification is complete
         if (typeof window !== 'undefined') {
@@ -112,12 +106,10 @@ function VerifyEmailContent() {
 
         // Redirect immediately after brief delay to show success message
         setTimeout(() => {
-          console.log('[VerifyEmail] Redirecting to dashboard...')
           router.push('/dashboard/client') // Redirect to client
           router.refresh()
         }, 1000)
       } else {
-        console.error('⚠ Verification succeeded but no session created')
         setError('Verification failed. Please try again.')
         setLoading(false)
         setIsSubmitting(false)
@@ -129,7 +121,6 @@ function VerifyEmailContent() {
         setVerificationTimeout(null)
       }
       
-      console.error('✗ Unexpected error:', err)
       setError(err?.message || 'An unexpected error occurred. Please try again.')
       setLoading(false)
       setIsSubmitting(false)
@@ -151,7 +142,6 @@ function VerifyEmailContent() {
       })
 
       if (error) {
-        console.error('Resend error:', error)
         // Handle specific error cases
         if (error.message.includes('Email rate limit exceeded')) {
           setError('Please wait before requesting another code. Try again in a few minutes.')
@@ -160,12 +150,10 @@ function VerifyEmailContent() {
         }
       } else {
         setResendSuccess(true)
-        console.log('✓ Verification code resent successfully')
         // Auto-hide success message
         setTimeout(() => setResendSuccess(false), 5000)
       }
     } catch (err: any) {
-      console.error('Unexpected error:', err)
       setError('Failed to resend code. Please try again.')
     } finally {
       setResending(false)

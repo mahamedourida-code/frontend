@@ -15,7 +15,6 @@ async function getAccessToken(): Promise<string | null> {
     const { data: { session }, error } = await supabase.auth.getSession()
 
     if (error) {
-      console.error('[Supabase] Error getting session:', error)
       return null
     }
 
@@ -32,7 +31,6 @@ async function getAccessToken(): Promise<string | null> {
       const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession()
 
       if (refreshError || !refreshedSession) {
-        console.error('[Supabase] Error refreshing session:', refreshError)
         return null
       }
 
@@ -41,7 +39,6 @@ async function getAccessToken(): Promise<string | null> {
 
     return session.access_token
   } catch (error) {
-    console.error('[Supabase] Unexpected error getting access token:', error)
     return null
   }
 }
@@ -53,11 +50,9 @@ async function signOut() {
   try {
     const { error } = await supabase.auth.signOut()
     if (error) {
-      console.error('[Supabase] Error signing out:', error)
       throw error
     }
   } catch (error) {
-    console.error('[Supabase] Unexpected error during sign out:', error)
     throw error
   }
 }
@@ -86,27 +81,21 @@ apiClient.interceptors.request.use(
       const isAuthEndpoint = config.url?.includes('/auth/') || config.url?.includes('/sign')
       
       if (!isAuthEndpoint) {
-        console.log('[API Client Interceptor] Request to:', config.url)
         // Get JWT token from Supabase session
         const token = await getAccessToken()
 
         if (token) {
-          console.log('[API Client Interceptor] Token found, adding to Authorization header')
           // Add Authorization header if user is authenticated
           config.headers.Authorization = `Bearer ${token}`
-        } else {
-          console.log('[API Client Interceptor] No token found, proceeding without auth')
         }
       }
 
       return config
     } catch (error) {
-      console.error('[API Client Interceptor] Error getting access token:', error)
       return config
     }
   },
   (error) => {
-    console.error('[API Client Interceptor] Request error:', error)
     return Promise.reject(error)
   }
 )
@@ -118,20 +107,13 @@ const MAX_RETRIES = isMobile ? 3 : 1
 // Response interceptor for error handling with mobile retry logic
 apiClient.interceptors.response.use(
   (response) => {
-    console.log('[API Client Interceptor] Response received:', response.status, response.statusText)
     retryCount = 0 // Reset retry count on success
     return response
   },
   async (error: AxiosError<any>) => {
-    console.error('[API Client Interceptor] Response error:', error)
     // Handle common errors
     if (error.response) {
       // Server responded with error status
-      console.error('[API Client Interceptor] Server error response:', {
-        status: error.response.status,
-        statusText: error.response.statusText,
-        data: error.response.data
-      })
 
       const responseData = error.response.data || {}
       const apiError = {
@@ -143,45 +125,34 @@ apiClient.interceptors.response.use(
       // Handle specific status codes
       switch (error.response.status) {
         case 401:
-          console.error('[API Client Interceptor] Unauthorized - Session may have expired')
           // Only sign out if we're not already on the sign-in page
           // This prevents infinite loops
           if (typeof window !== 'undefined' && !window.location.pathname.includes('/sign-in')) {
             // Check if error is specifically about expired token
             const errorDetail = error.response.data?.detail || error.response.data?.message || ''
             if (errorDetail.toLowerCase().includes('expired') || errorDetail.toLowerCase().includes('invalid')) {
-              console.log('[API Client Interceptor] Token expired/invalid, signing out')
               signOut().then(() => {
                 const next = `${window.location.pathname}${window.location.search}`
                 window.location.href = `/sign-in?next=${encodeURIComponent(next)}`
-              }).catch((signOutError) => {
-                console.error('[API Client Interceptor] Error signing out after 401:', signOutError)
-              })
-            } else {
-              console.log('[API Client Interceptor] 401 error but not signing out - may be backend issue')
+              }).catch(() => undefined)
             }
           }
           break
         case 403:
-          console.error('[API Client Interceptor] Forbidden - Insufficient permissions')
           break
         case 429:
-          console.error('[API Client Interceptor] Rate limit exceeded')
           break
         case 500:
-          console.error('[API Client Interceptor] Server error')
           break
       }
 
       return Promise.reject(apiError)
     } else if (error.request) {
       // Request made but no response received - likely network error or cold start
-      console.error('[API Client Interceptor] No response received:', error.request)
       
       // Mobile retry logic for network/timeout errors
       if (isMobile && retryCount < MAX_RETRIES && error.config) {
         retryCount++
-        console.log(`[API Client Interceptor] Mobile retry attempt ${retryCount}/${MAX_RETRIES}`)
         
         // Exponential backoff: 1s, 2s, 4s
         const delay = Math.pow(2, retryCount - 1) * 1000
@@ -195,7 +166,6 @@ apiClient.interceptors.response.use(
           retryCount = 0 // Reset on success
           return response
         } catch (retryError) {
-          console.error('[API Client Interceptor] Retry failed:', retryError)
           // Continue to next retry or fail
         }
       }
@@ -209,7 +179,6 @@ apiClient.interceptors.response.use(
       return Promise.reject(apiError)
     } else {
       // Something else happened
-      console.error('[API Client Interceptor] Request setup error:', error.message)
       const apiError = {
         detail: error.message || 'An unexpected error occurred',
         status_code: 0,
@@ -367,7 +336,6 @@ export const ocrApi = {
    * This is the recommended method - faster and more efficient than base64
    */
   uploadBatchMultipart: async (files: File[], options?: { output_format?: string; consolidation_strategy?: string }): Promise<BatchConvertResponse> => {
-    console.log('[API Client] uploadBatchMultipart called with', files.length, 'files')
 
     // Create FormData object
     const formData = new FormData()
@@ -381,7 +349,6 @@ export const ocrApi = {
     formData.append('output_format', options?.output_format || 'xlsx')
     formData.append('consolidation_strategy', options?.consolidation_strategy || 'consolidated')
 
-    console.log('[API Client] Posting multipart to', `${API_BASE_URL}/api/v1/jobs/batch-upload`)
 
     // IMPORTANT: Override the default 'application/json' Content-Type
     // Let browser automatically set 'multipart/form-data' with boundary
@@ -390,7 +357,6 @@ export const ocrApi = {
         'Content-Type': undefined  // Let browser set multipart/form-data with boundary
       }
     })
-    console.log('[API Client] Response received:', response.data)
     return response.data
   },
 
@@ -400,16 +366,13 @@ export const ocrApi = {
    * @deprecated Use uploadBatchMultipart for better performance
    */
   uploadBatch: async (images: ImageData[]): Promise<BatchConvertResponse> => {
-    console.log('[API Client] uploadBatch called with', images.length, 'images')
     const request: BatchConvertRequest = {
       images,
       output_format: 'xlsx',
       consolidation_strategy: 'separate'
     }
 
-    console.log('[API Client] Posting to', `${API_BASE_URL}/api/v1/jobs/batch`)
     const response = await apiClient.post<BatchConvertResponse>('/api/v1/jobs/batch', request)
-    console.log('[API Client] Response received:', response.data)
     return response.data
   },
 
@@ -607,7 +570,6 @@ export class OCRWebSocket {
       this.ws = new WebSocket(wsUrl)
 
       this.ws.onopen = () => {
-        console.log('WebSocket connected')
         this.reconnectAttempts = 0
         this.reconnectDelay = 1000
       }
@@ -621,31 +583,25 @@ export class OCRWebSocket {
               data.type === 'job_error' || data.status === 'failed') {
             this.isCompleted = true
             this.shouldReconnect = false
-            console.log('Job finished, disabling reconnection')
           }
 
           this.onMessage(data)
-        } catch (error) {
-          console.error('Error parsing WebSocket message:', error)
+        } catch {
+          return
         }
       }
 
       this.ws.onerror = (error) => {
-        console.error('WebSocket error:', error)
         this.onError?.(error)
       }
 
       this.ws.onclose = () => {
-        console.log('WebSocket closed')
         // Only attempt reconnect if job is not completed
         if (this.shouldReconnect && !this.isCompleted) {
           this.attemptReconnect()
-        } else {
-          console.log('WebSocket closed - not reconnecting (job finished or manual disconnect)')
         }
       }
     } catch (error) {
-      console.error('Error connecting to WebSocket:', error)
       throw error
     }
   }
@@ -653,7 +609,6 @@ export class OCRWebSocket {
   private attemptReconnect(): void {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++
-      console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`)
 
       setTimeout(() => {
         this.connect()
@@ -661,8 +616,6 @@ export class OCRWebSocket {
 
       // Exponential backoff
       this.reconnectDelay *= 2
-    } else {
-      console.error('Max reconnection attempts reached')
     }
   }
 
@@ -677,8 +630,6 @@ export class OCRWebSocket {
   send(data: any): void {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(data))
-    } else {
-      console.error('WebSocket is not connected')
     }
   }
 }

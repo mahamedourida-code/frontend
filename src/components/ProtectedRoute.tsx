@@ -11,7 +11,6 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!loading && !user) {
-      console.log('[ProtectedRoute] No user, redirecting to landing page')
       router.push('/')
     }
   }, [user, loading])
@@ -20,14 +19,10 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   // This prevents infinite loading if AuthContext has issues
   useEffect(() => {
     if (loading) {
-      console.log('[ProtectedRoute] Loading started...')
       const timeoutId = setTimeout(() => {
-        console.warn('[ProtectedRoute] Loading timeout reached (10s) - forcing action')
         if (!user) {
-          console.log('[ProtectedRoute] No user after timeout - redirecting to landing page')
           router.push('/')
         } else {
-          console.log('[ProtectedRoute] User exists after timeout - showing content')
           setForceShowContent(true)
         }
       }, 10000) // 10 second maximum loading time

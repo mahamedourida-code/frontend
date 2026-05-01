@@ -137,9 +137,7 @@ export default function Home() {
       .then((data) => {
         if (mounted) setLimits(data);
       })
-      .catch((error) => {
-        console.error('[Landing] Failed to load limits:', error);
-      });
+      .catch(() => undefined);
 
     return () => {
       mounted = false;
@@ -196,7 +194,6 @@ export default function Home() {
   useEffect(() => {
     // Only restore if we don't already have result files
     if (!resultFiles.length && processingState && processingState.processedFiles && processingState.processedFiles.length > 0) {
-      console.log('[Landing] Restoring state from context:', processingState);
       
       // Restore processed files
       setResultFiles(processingState.processedFiles);
@@ -230,12 +227,7 @@ export default function Home() {
           processingComplete: processingComplete,
           uploadedFiles: [] // Don't save File objects
         });
-        console.log('[Landing] Saving state to context:', {
-          processedFiles: resultFiles.length,
-          status: processingComplete ? 'completed' : isProcessing ? 'processing' : 'idle'
-        });
       } catch (error) {
-        console.error('[Landing] Error updating state:', error);
       }
     }
   }, [resultFiles, isProcessing, processingComplete, updateState]);
@@ -257,7 +249,6 @@ export default function Home() {
   useEffect(() => {
     const info = getTrialInfo();
     setTrialInfo(info);
-    console.log('[Landing] Trial info loaded:', info);
   }, [])
 
   // Persist auto download setting
@@ -285,7 +276,6 @@ export default function Home() {
               downloadedIds.add(file.file_id)
               await new Promise(resolve => setTimeout(resolve, 500))
             } catch (error) {
-              console.error('[AutoDownload] Failed to download:', error)
             }
           }
         }
@@ -410,7 +400,6 @@ export default function Home() {
         const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
         return URL.createObjectURL(blob);
       } catch (error) {
-        console.error('[Preview] Failed to convert HEIC:', error);
         // Return a placeholder or try original
         return URL.createObjectURL(file);
       }
@@ -553,10 +542,8 @@ export default function Home() {
       setProcessingComplete(false);
       setTotalFilesToProcess(uploadedFiles.length);
 
-      console.log('[Landing] Processing images:', uploadedFiles.length);
 
       // Compress images if needed
-      console.log('[Landing] Compressing images if necessary...');
       const compressionResults = await compressImages(uploadedFiles);
       
       // Log compression summary
@@ -565,7 +552,6 @@ export default function Home() {
         const totalOriginal = compressionResults.reduce((sum, r) => sum + r.originalSize, 0);
         const totalCompressed = compressionResults.reduce((sum, r) => sum + r.compressedSize, 0);
         const totalReduction = Math.round(((totalOriginal - totalCompressed) / totalOriginal) * 100);
-        console.log(`[Landing] Compressed ${compressedCount}/${uploadedFiles.length} images (${totalReduction}% total reduction)`);
         toast.info(`Compressed ${compressedCount} image(s) (${totalReduction}% smaller)`);
       }
 
@@ -578,7 +564,6 @@ export default function Home() {
         consolidation_strategy: 'separate'
       });
 
-      console.log('[Landing] Upload successful:', response);
 
       // Store session ID for downloads
       if (response.session_id) {
@@ -608,17 +593,14 @@ export default function Home() {
 
       // Connect WebSocket for real-time progressive updates
       if (response.session_id) {
-        console.log('[Landing] Connecting WebSocket for session:', response.session_id);
         
         const websocket = new OCRWebSocket(
           response.session_id,
           (data) => {
-            console.log('[Landing] WebSocket message:', data);
             const messageType = data.type || '';
 
             // Progressive results: Individual file ready for download
             if (messageType === 'file_ready') {
-              console.log('[Landing] File ready:', data.file_info);
               
               if (data.file_info && data.file_info.file_id) {
                 // Add file to results immediately as it becomes available
@@ -647,13 +629,11 @@ export default function Home() {
             if (messageType === 'job_progress' || messageType === 'progress') {
               // Update status but keep processing
               if (data.total_images && data.processed_images !== undefined) {
-                console.log('[Landing] Progress:', data.processed_images, '/', data.total_images);
               }
             }
 
             // Job completed
             if (messageType === 'job_completed' || data.status === 'completed') {
-              console.log('[Landing] Job completed:', data);
               
               setProcessingComplete(true);
               setIsProcessing(false);
@@ -701,7 +681,6 @@ export default function Home() {
             }
           },
           (error) => {
-            console.error('[Landing] WebSocket error:', error);
           }
         );
 
@@ -709,7 +688,6 @@ export default function Home() {
         wsRef.current = websocket;
       } else {
         // Fallback to polling if no session_id
-        console.log('[Landing] No session_id, falling back to polling');
         
         const checkStatus = async () => {
           try {
@@ -739,7 +717,6 @@ export default function Home() {
               setTimeout(checkStatus, 2000);
             }
           } catch (error) {
-            console.error('[Landing] Error checking status:', error);
             setIsProcessing(false);
             toast.error('Failed to process images. Please try again.');
           }
@@ -749,7 +726,6 @@ export default function Home() {
       }
 
     } catch (error: any) {
-      console.error('[Landing] Error processing images:', error);
       setIsProcessing(false);
       setProcessingComplete(false);
 
@@ -763,21 +739,17 @@ export default function Home() {
   }, [uploadedFiles, updateState, maxUploadFiles]);
 
   const handleDownloadFile = async (fileId: string) => {
-    console.log('[Landing] Downloading file:', fileId, 'with session:', currentSessionId);
 
     if (!fileId) {
-      console.error('[Landing] No file ID provided for download');
       toast.error('Unable to download: File ID is missing');
       return;
     }
 
     try {
-      console.log('[Landing] Calling API to download file:', fileId);
 
       // Pass session_id to download endpoint
       const blob = await ocrApi.downloadFile(fileId, currentSessionId || undefined);
 
-      console.log('[Landing] Download successful, blob size:', blob.size);
 
       // Create download link
       const url = window.URL.createObjectURL(blob);
@@ -792,7 +764,6 @@ export default function Home() {
 
       // toast.success('File downloaded successfully');
     } catch (error: any) {
-      console.error('[Landing] Download failed:', error);
       const errorMessage = error?.detail || error?.message || 'Failed to download file';
       toast.error(errorMessage);
     }
@@ -811,7 +782,6 @@ export default function Home() {
       const previewData = data.slice(0, Math.min(10, data.length));
       setTablePreviewData(previewData);
     } catch (error) {
-      console.error('[Landing] Error fetching table preview:', error);
       // Don't show error toast - just silently fail to show preview
     }
   };
@@ -829,11 +799,9 @@ export default function Home() {
     
     // Clear context state
     clearState();
-    console.log('[Landing] State cleared');
   };
 
   const handleShareFile = (file: any) => {
-    console.log('[Share] Opening share dialog for file:', file);
     setSelectedFileToShare(file);
     setShareDialogOpen(true);
     setCopySuccess(false);
@@ -841,7 +809,6 @@ export default function Home() {
 
   const handleCopyLink = async () => {
     if (!selectedFileToShare?.file_id) {
-      console.error('[Copy] No file selected or file_id missing');
       toast.error('Unable to copy link: File information is missing');
       return;
     }
@@ -852,14 +819,12 @@ export default function Home() {
     
     // Check if this is a session-based batch share
     if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
-      console.log('[Copy] Copying session share URL:', shareSession.share_url);
       shareContent = shareSession.share_url;
     } else {
       // Single file share
       shareContent = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
     }
     
-    console.log('[Copy] Copying content:', shareContent);
     
     try {
       await navigator.clipboard.writeText(shareContent);
@@ -867,7 +832,6 @@ export default function Home() {
       // toast.success('Download link copied to clipboard');
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (error) {
-      console.error('[Copy] Failed to copy link:', error);
       toast.error('Failed to copy link to clipboard');
     }
   };
@@ -996,7 +960,6 @@ export default function Home() {
           await handleDownloadFile(file.file_id);
           await new Promise(resolve => setTimeout(resolve, 500));
         } catch (error) {
-          console.error('[DownloadAll] Failed:', error);
         }
       }
     }
@@ -1005,10 +968,8 @@ export default function Home() {
   };
 
   const handleShareAll = async () => {
-    console.log('[ShareAll] Sharing batch, files:', resultFiles);
     
     if (!resultFiles || resultFiles.length === 0) {
-      console.error('[ShareAll] Invalid batch data:', { resultFiles });
       toast.error('Unable to share batch: No files available');
       return;
     }
@@ -1017,14 +978,12 @@ export default function Home() {
     const allFileIds = resultFiles.map(f => f.file_id).filter(Boolean);
     
     if (allFileIds.length === 0) {
-      console.error('[ShareAll] No valid file IDs found');
       toast.error('Unable to share: No valid files found');
       return;
     }
     
     try {
       // Create a share session for all files
-      console.log('[ShareAll] Creating share session for', allFileIds.length, 'files');
       
       const sessionResponse = await ocrApi.createShareSession({
         file_ids: allFileIds,
@@ -1033,7 +992,6 @@ export default function Home() {
         expires_in_days: 7
       });
       
-      console.log('[ShareAll] Session created:', sessionResponse);
       
       // Store session info
       setShareSession(sessionResponse);
@@ -1053,12 +1011,6 @@ export default function Home() {
       // toast.success('Share link created successfully!')
       
     } catch (error: any) {
-      console.error('[ShareAll] Failed to create share session:', error);
-      console.error('[ShareAll] Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      });
       const errorMessage = error.response?.data?.detail || error.message || 'Failed to create share link';
       toast.error(`Error: ${errorMessage}`);
     }
@@ -1217,7 +1169,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden">
+        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden" style={{ backgroundColor: "#D0BCD5" }}>
           <div
             ref={topBackgroundRef}
             aria-hidden="true"
@@ -2011,11 +1963,11 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative isolate -mt-28 overflow-hidden pt-28">
+        <div className="relative isolate -mt-32 overflow-hidden pt-32" style={{ backgroundColor: "#D0BCD5" }}>
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
-            style={{ backgroundImage: "url('/leaf-background.jpg')" }}
+            className="pointer-events-none absolute inset-0 z-0"
+            style={{ backgroundColor: "#D0BCD5" }}
           />
           <div className="relative z-10">
         {/* Why Choose Us Section */}

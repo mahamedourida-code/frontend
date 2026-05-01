@@ -49,9 +49,6 @@ export async function compressImageIfNeeded(file: File): Promise<CompressionResu
     const compressedSize = compressedFile.size;
     const reduction = Math.round(((originalSize - compressedSize) / originalSize) * 100);
 
-    console.log(
-      `[ImageCompression] ${file.name}: ${(originalSize / 1024).toFixed(2)} KB → ${(compressedSize / 1024).toFixed(2)} KB (${reduction}% reduction)`
-    );
 
     return {
       file: compressedFile,
@@ -61,7 +58,6 @@ export async function compressImageIfNeeded(file: File): Promise<CompressionResu
       reduction
     };
   } catch (error) {
-    console.error(`[ImageCompression] Failed to compress ${file.name}:`, error);
     // Return original file on error
     return {
       file,

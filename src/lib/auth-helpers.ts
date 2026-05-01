@@ -110,7 +110,6 @@ export const checkUserExists = async (email: string): Promise<boolean> => {
 
     return false // We can't definitively check without admin access
   } catch (error) {
-    console.error('Error checking user existence:', error)
     return false
   }
 }
@@ -188,7 +187,6 @@ export const verifyOTP = async (email: string, token: string) => {
     }
 
     // Handle unexpected errors
-    console.error('Unexpected OTP verification error:', error)
     throw new Error('An unexpected error occurred during verification. Please try again.')
   }
 }
@@ -312,7 +310,6 @@ export const verifyCredentialsAndSendOTP = async (
 ) => {
   const supabase = createClient()
 
-  console.log('[Auth] Starting 2FA flow for:', email)
 
   // Check rate limiting
   const credentialCheckKey = `2fa-verify-${email}`
@@ -324,31 +321,26 @@ export const verifyCredentialsAndSendOTP = async (
   }
 
   // Step 1: Verify the credentials by attempting sign in
-  console.log('[Auth] Step 1: Verifying password...')
   const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
     email,
     password,
   })
 
   if (signInError) {
-    console.error('[Auth] Password verification failed:', signInError.message)
     throw new Error('Invalid email or password')
   }
 
-  console.log('[Auth] Password verified successfully')
 
   // Check if email is confirmed
   const needsEmailVerification = signInData.user && !signInData.user.email_confirmed_at
 
   if (needsEmailVerification) {
-    console.warn('[Auth] Email not confirmed for user:', email)
   }
 
   // Step 2: Send OTP for 2FA
   // IMPORTANT: We do NOT sign out here. The password session remains active.
   // When the user verifies the OTP, Supabase will handle the session transition.
   // This preserves httpOnly cookies needed for SSR.
-  console.log('[Auth] Step 2: Sending OTP (keeping existing session)...')
   const { error: otpError } = await supabase.auth.signInWithOtp({
     email,
     options: {
@@ -357,11 +349,9 @@ export const verifyCredentialsAndSendOTP = async (
   })
 
   if (otpError) {
-    console.error('[Auth] OTP send failed:', otpError.message)
     throw new Error('Failed to send verification code. Please try again.')
   }
 
-  console.log('[Auth] OTP sent successfully')
 
   // Reset rate limiter on successful flow
   rateLimiter.reset(credentialCheckKey)
@@ -424,7 +414,6 @@ export const updatePassword = async (newPassword: string) => {
 export const signOut = async () => {
   const supabase = createClient()
 
-  console.log('[Auth] Signing out...')
 
   // Trust Supabase to handle all cookie and session cleanup
   const { error } = await supabase.auth.signOut({
@@ -432,7 +421,6 @@ export const signOut = async () => {
   })
 
   if (error) {
-    console.error('[Auth] Sign out error:', error)
     throw error
   }
 
@@ -445,7 +433,6 @@ export const signOut = async () => {
     appFlags.forEach(key => sessionStorage.removeItem(key))
   }
 
-  console.log('[Auth] Sign out successful')
 }
 
 /**

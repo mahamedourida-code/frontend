@@ -70,18 +70,12 @@ export function ProcessingStateProvider({ children }: { children: ReactNode }) {
               lastUpdated: parsed.lastUpdated
             })
             
-            console.log('[ProcessingStateContext] State restored from localStorage:', {
-              processedFiles: parsed.processedFiles?.length || 0,
-              status: parsed.status
-            })
           } else {
             // State is expired, clear it
             localStorage.removeItem(STORAGE_KEY)
-            console.log('[ProcessingStateContext] State expired, cleared localStorage')
           }
         }
       } catch (error) {
-        console.error('[ProcessingStateContext] Error loading state:', error)
         localStorage.removeItem(STORAGE_KEY)
       }
     }
@@ -104,12 +98,7 @@ export function ProcessingStateProvider({ children }: { children: ReactNode }) {
         }
         
         localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave))
-        console.log('[ProcessingStateContext] State saved to localStorage:', {
-          processedFiles: state.processedFiles.length,
-          status: state.status
-        })
       } catch (error) {
-        console.error('[ProcessingStateContext] Error saving state:', error)
         // If localStorage is full, clear old data
         if (error instanceof DOMException && error.code === 22) {
           localStorage.removeItem(STORAGE_KEY)
@@ -134,7 +123,6 @@ export function ProcessingStateProvider({ children }: { children: ReactNode }) {
   const clearState = useCallback(() => {
     setState(initialState)
     localStorage.removeItem(STORAGE_KEY)
-    console.log('[ProcessingStateContext] State cleared')
   }, [])
 
   // Convert File objects to serializable format
@@ -161,7 +149,6 @@ export function ProcessingStateProvider({ children }: { children: ReactNode }) {
   const restoreFiles = (serializedFiles: any[]) => {
     // Note: We can't recreate actual File objects from localStorage
     // This is just metadata for display purposes
-    console.log('[ProcessingStateContext] Files metadata restored:', serializedFiles)
   }
 
   return (

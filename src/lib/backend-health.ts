@@ -24,7 +24,6 @@ export async function wakeUpBackendSilently(): Promise<void> {
       },
     }).catch(() => {
       // Silently ignore errors - this is just a wake-up call
-      console.log('Backend wake-up call sent')
     }).finally(() => {
       clearTimeout(timeout)
     })

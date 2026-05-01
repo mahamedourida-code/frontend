@@ -34,7 +34,6 @@ export default function UploadTypePage() {
       const credits = await ocrApi.getUserCredits()
       setAvailableCredits(credits.available_credits)
     } catch (error) {
-      console.error('Error fetching credits:', error)
       setAvailableCredits(0)
     } finally {
       setLoading(false)

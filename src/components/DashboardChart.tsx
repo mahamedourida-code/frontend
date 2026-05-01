@@ -52,12 +52,6 @@ export default function DashboardChart({ chartData, timeRange }: DashboardChartP
   }, [])
 
   useEffect(() => {
-    console.log('[DashboardChart] Data updated:', { 
-      dataLength: chartData.length,
-      timeRange,
-      sampleData: chartData[0],
-      dimensions
-    })
   }, [chartData, timeRange, dimensions])
   
   if (!isMounted) {

@@ -92,7 +92,7 @@ export default function ProcessImagesPage() {
 }
 
 function ProcessImagesContent() {
-  const { user, loading: authLoading, session } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const documentType = searchParams.get('type') || 'auto'
@@ -171,22 +171,9 @@ function ProcessImagesContent() {
   };
   
   // Document type removed from UI
-  
-  // Log environment configuration and session on mount
-  useEffect(() => {
-    console.log('[ProcessImagesPage] Environment Configuration:', {
-      API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev',
-      WS_URL: process.env.NEXT_PUBLIC_WS_URL,
-      FB_APP_ID: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID,
-      USER: user?.email,
-      SESSION: !!session,
-      AUTH_LOADING: authLoading
-    })
-  }, [user, session, authLoading])
 
   const fetchUserStats = async () => {
     if (!user?.id) {
-      console.log('[ProcessImagesPage] No user ID, skipping stats fetch')
       setCreditLoading(false)
       return
     }
@@ -196,12 +183,8 @@ function ProcessImagesContent() {
       const totalProcessed = credits.used_credits || 0
       setProcessedCount(totalProcessed)
       
-      console.log('[ProcessImagesPage] Stats fetched:', {
-        totalProcessed
-      })
       
     } catch (error) {
-      console.error('[ProcessImagesPage] Unexpected error fetching stats:', error)
     } finally {
       setCreditLoading(false)
     }
@@ -230,7 +213,6 @@ function ProcessImagesContent() {
   // Restore state from context on mount
   useEffect(() => {
     if (processingState && processingState.processedFiles.length > 0) {
-      console.log('[Dashboard] Restoring state from context:', processingState)
       
       // Note: We can't directly set resultFiles as it's managed by useOCR hook
       // The state will be persisted at the application level
@@ -246,10 +228,6 @@ function ProcessImagesContent() {
         status: status === 'completed' ? 'completed' : isProcessing ? 'processing' : 'idle',
         processingComplete: status === 'completed',
         uploadedFiles: [] // Don't save File objects
-      })
-      console.log('[Dashboard] Saving state to context:', {
-        processedFiles: resultFiles.length,
-        status: status
       })
     }
   }, [resultFiles, isProcessing, status, updateState])
@@ -278,11 +256,9 @@ function ProcessImagesContent() {
   useEffect(() => {
     // Only fetch once when user is loaded
     if (!authLoading && user?.id) {
-      console.log('[ProcessImagesPage] Initial credit fetch for user:', user.id, user.email)
       setCreditLoading(true)
       fetchUserStats()
     } else if (!authLoading && !user) {
-      console.log('[ProcessImagesPage] No user after auth loading complete')
       setCreditLoading(false)
     }
   }, [user?.id, authLoading])
@@ -301,13 +277,11 @@ function ProcessImagesContent() {
     if (status === 'completed' && resultFiles && resultFiles.length > 0 && jobId) {
       // Check if we've already executed auto-actions for this job
       if (autoActionsExecutedRef.current === jobId) {
-        console.log('[AutoActions] Already executed for job:', jobId)
         return
       }
 
       // Check if auto-actions are currently executing
       if (isExecutingAutoActionsRef.current) {
-        console.log('[AutoActions] Already executing, skipping...')
         return
       }
 
@@ -316,7 +290,6 @@ function ProcessImagesContent() {
       isExecutingAutoActionsRef.current = true
 
       const handleAutoActions = async () => {
-        console.log('[AutoActions] Executing for job:', jobId, 'autoDownload:', autoDownload, 'autoSave:', autoSave)
 
         try {
           // Fetch table preview for the first file
@@ -326,7 +299,6 @@ function ProcessImagesContent() {
 
           // Auto-download all files
           if (autoDownload) {
-            console.log('[AutoDownload] Starting download for', resultFiles.length, 'file(s)')
             // toast.info(`Auto-downloading ${resultFiles.length} file(s)...`)
 
             // Create a Set of downloaded file IDs to prevent duplicates
@@ -335,15 +307,12 @@ function ProcessImagesContent() {
             for (const file of resultFiles) {
               if (file.file_id && !downloadedIds.has(file.file_id)) {
                 try {
-                  console.log('[AutoDownload] Downloading file:', file.file_id)
                   await downloadFile(file.file_id)
                   downloadedIds.add(file.file_id)
                   await new Promise(resolve => setTimeout(resolve, 500))
                 } catch (error) {
-                  console.error('[AutoDownload] Failed to download:', file.file_id, error)
                 }
               } else if (downloadedIds.has(file.file_id)) {
-                console.log('[AutoDownload] Skipping duplicate file_id:', file.file_id)
               }
             }
 
@@ -352,7 +321,6 @@ function ProcessImagesContent() {
 
           // Auto-save to history
           if (autoSave && !isSaved) {
-            console.log('[AutoSave] Saving to history automatically')
             await saveToHistory()
             // toast.success('Auto-saved to history')
           }
@@ -369,7 +337,6 @@ function ProcessImagesContent() {
   // Reset auto-actions tracker when user starts a new batch
   useEffect(() => {
     if (uploadedFiles.length > 0 && !isProcessing) {
-      console.log('[AutoActions] Resetting tracker for new batch')
       autoActionsExecutedRef.current = null
       isExecutingAutoActionsRef.current = false
     }
@@ -445,7 +412,6 @@ function ProcessImagesContent() {
         const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob
         return URL.createObjectURL(blob)
       } catch (error) {
-        console.error('[Preview] Failed to convert HEIC:', error)
         return URL.createObjectURL(file)
       }
     }
@@ -564,7 +530,6 @@ function ProcessImagesContent() {
         
         // Refresh stats after a delay
         setTimeout(() => {
-          console.log('[ProcessImages] Refreshing stats after processing start')
           fetchUserStats()
         }, 2000)
 
@@ -579,7 +544,6 @@ function ProcessImagesContent() {
         // Generic error
         toast.error(error?.detail || 'Failed to process images. Please try again.')
       }
-      console.error('[ProcessImages] Error:', error)
     }
   }, [uploadedFiles, uploadBatch, connectWebSocket, resultFiles, reset])
 
@@ -601,29 +565,23 @@ function ProcessImagesContent() {
     // Reset auto-actions trackers
     autoActionsExecutedRef.current = null
     isExecutingAutoActionsRef.current = false
-    console.log('[Dashboard] State cleared and trackers reset on New Batch')
   }
 
   // Fetch and parse Excel file for preview (same as landing page)
   const fetchTablePreview = useCallback(async (fileId: string) => {
-    console.log('[fetchTablePreview] Starting fetch for fileId:', fileId)
     try {
       const blob = await ocrApi.downloadFile(fileId)
-      console.log('[fetchTablePreview] Blob size:', blob.size)
       
       const arrayBuffer = await blob.arrayBuffer()
       const workbook = XLSX.read(arrayBuffer, { type: 'array' })
       const firstSheet = workbook.Sheets[workbook.SheetNames[0]]
       const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as any[][]
       
-      console.log('[fetchTablePreview] Parsed data rows:', data.length)
       
       // Limit to first 10 rows for preview
       const previewData = data.slice(0, Math.min(10, data.length))
       setTablePreviewData(previewData)
-      console.log('[fetchTablePreview] Preview data set successfully, rows:', previewData.length)
     } catch (error) {
-      console.error('[ProcessImages] Error fetching table preview:', error)
       // Don't show error toast - just silently fail to show preview
     }
   }, [])
@@ -657,17 +615,14 @@ function ProcessImagesContent() {
       setEditingFileId(null)
       setNewFileName('')
     } catch (error) {
-      console.error('[RenameFile] Error:', error)
       toast.error('Failed to rename file')
     }
   }
 
   const handleShareFile = async (file: any) => {
-    console.log('[Share] Opening share dialog for file:', file)
     
     // Ensure we have a valid file_id
     if (!file || !file.file_id) {
-      console.error('[Share] Invalid file object:', file)
       toast.error('Unable to share: File information is missing')
       return
     }
@@ -679,7 +634,6 @@ function ProcessImagesContent() {
   
   const handleCopyLink = async () => {
     if (!selectedFileToShare?.file_id) {
-      console.error('[Copy] No file selected or file_id missing')
       toast.error('Unable to copy link: File information is missing')
       return
     }
@@ -691,12 +645,10 @@ function ProcessImagesContent() {
     
     // Check if this is a session-based batch share
     if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
-      console.log('[Copy] Copying session share URL:', shareSession.share_url)
       shareContent = shareSession.share_url
     } 
     // Legacy batch share (fallback)
     else if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
-      console.log('[Copy] Copying batch download links for', selectedFilesForBatch.length, 'files')
       
       // Generate links for all files
       const links = selectedFilesForBatch.map((file, index) => {
@@ -712,7 +664,6 @@ function ProcessImagesContent() {
       shareContent = shareUrl
     }
     
-    console.log('[Copy] Copying content:', shareContent)
     
     try {
       await navigator.clipboard.writeText(shareContent)
@@ -723,7 +674,6 @@ function ProcessImagesContent() {
       // toast.success(message)
       setTimeout(() => setCopySuccess(false), 2000)
     } catch (error) {
-      console.error('[Copy] Failed to copy link:', error)
       toast.error('Failed to copy link to clipboard')
     }
   }
@@ -732,11 +682,9 @@ function ProcessImagesContent() {
   // Share handlers for direct messaging (not social media posts)
   const handleMessengerShare = () => {
     if (!selectedFileToShare?.file_id) {
-      console.error('[Share] No file selected for Messenger share')
       return
     }
     
-    console.log('[Share] Messenger share initiated for file:', selectedFileToShare)
     
     // Clean the base URL to remove any newlines or whitespace
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
@@ -747,21 +695,18 @@ function ProcessImagesContent() {
     // Check if session-based share
     if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
       shareUrl = shareSession.share_url.replace(/\s/g, '')
-      console.log('[Share] Session share via Messenger:', shareUrl)
     } 
     // Legacy batch share
     else if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
       // For Messenger, we can only share one link at a time, so create a landing page URL
       // For now, we'll share the first file and indicate there are more
       shareUrl = `${baseUrl}/api/v1/download/${selectedFilesForBatch[0].file_id}`.replace(/\s/g, '')
-      console.log('[Share] Batch share via Messenger - sharing first file with note about multiple files')
     } 
     // Single file share
     else {
       shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
     }
     
-    console.log('[Share] Clean Messenger share URL:', shareUrl)
     
     // Get app ID from environment or use default
     const appId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || '140586622674265').replace(/"/g, '').trim()
@@ -771,14 +716,11 @@ function ProcessImagesContent() {
     const currentUrl = window.location.origin
     const messengerUrl = `https://www.facebook.com/dialog/send?app_id=${appId}&link=${encodeURIComponent(shareUrl)}&redirect_uri=${encodeURIComponent(currentUrl)}`
     
-    console.log('[Share] Opening Messenger dialog with app_id:', appId)
-    console.log('[Share] Full Messenger URL:', messengerUrl)
     
     // Try to open in popup first
     const popup = window.open(messengerUrl, 'messenger-share-dialog', 'width=600,height=500')
     
     if (!popup || popup.closed || typeof popup.closed == 'undefined') {
-      console.warn('[Share] Popup blocked, opening in new tab')
       // Fallback: open in new tab
       window.open(messengerUrl, '_blank')
     }
@@ -793,11 +735,9 @@ function ProcessImagesContent() {
   
   const handleEmailShare = () => {
     if (!selectedFileToShare?.file_id) {
-      console.error('[Share] No file selected for email share')
       return
     }
     
-    console.log('[Share] Email share initiated for file:', selectedFileToShare)
     
     // Clean the base URL to ensure no whitespace
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
@@ -848,19 +788,16 @@ ${shareUrl}
 Best regards`
     }
     
-    console.log('[Share] Email share subject:', subject)
     
     // Gmail compose URL with parameters
     // This opens Gmail in a new tab with the compose window pre-filled
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     
-    console.log('[Share] Opening Gmail compose:', gmailUrl)
     
     // Open Gmail compose in new tab
     const gmailWindow = window.open(gmailUrl, '_blank')
     
     if (!gmailWindow) {
-      console.warn('[Share] Gmail popup blocked, trying mailto fallback')
       // Fallback to mailto if popup is blocked
       const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
       window.location.href = mailtoUrl
@@ -869,11 +806,9 @@ Best regards`
   
   const handleLinkedInMessage = () => {
     if (!selectedFileToShare?.file_id) {
-      console.error('[Share] No file selected for LinkedIn share')
       return
     }
     
-    console.log('[Share] LinkedIn message initiated for file:', selectedFileToShare)
     
     // Clean the base URL to ensure no whitespace
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
@@ -883,7 +818,6 @@ Best regards`
     // Check if session-based share
     if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
       shareContent = shareSession.share_url.replace(/\s/g, '')
-      console.log('[Share] Session share for LinkedIn:', shareContent)
     }
     // Legacy batch sharing
     else if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
@@ -900,13 +834,11 @@ Best regards`
       shareContent = shareUrl
     }
     
-    console.log('[Share] LinkedIn share content:', shareContent)
     
     // LinkedIn doesn't support direct message URLs with pre-filled content
     // Best approach: Copy link and show instructions
     navigator.clipboard.writeText(shareContent)
       .then(() => {
-        console.log('[Share] Link copied to clipboard successfully')
         
         // Show detailed instructions
         const isBatch = selectedFileToShare.file_id === '__BATCH__'
@@ -923,7 +855,6 @@ Best regards`
         window.open('https://www.linkedin.com/messaging/compose/', '_blank')
       })
       .catch((err) => {
-        console.error('[Share] Failed to copy link:', err)
         // Fallback: show the link for manual copying
         const fallbackInput = document.createElement('input')
         fallbackInput.value = shareContent
@@ -941,11 +872,9 @@ Best regards`
 
   const handleXShare = () => {
     if (!selectedFileToShare?.file_id) {
-      console.error('[Share] No file selected for X (Twitter) share')
       return
     }
     
-    console.log('[Share] X (Twitter) share initiated for file:', selectedFileToShare)
     
     // Clean the base URL to ensure no whitespace
     const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
@@ -957,7 +886,6 @@ Best regards`
     if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
       shareUrl = shareSession.share_url.replace(/\s/g, '')
       tweetText = `Check out these ${selectedFilesForBatch.length} Excel files I processed with AxLiner! 📊✨`
-      console.log('[Share] Session share via X:', shareUrl)
     }
     // Legacy batch sharing
     else if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
@@ -974,7 +902,6 @@ Best regards`
     // X (Twitter) Web Intent URL
     const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(shareUrl)}`
     
-    console.log('[Share] Opening X share dialog:', xUrl)
     
     window.open(xUrl, '_blank', 'width=550,height=420')
     
@@ -984,10 +911,8 @@ Best regards`
   }
 
   const handleShareAll = async () => {
-    console.log('[ShareAll] Sharing batch with jobId:', jobId, 'files:', resultFiles)
     
     if (!jobId || !resultFiles || resultFiles.length === 0) {
-      console.error('[ShareAll] Invalid batch data:', { jobId, resultFiles })
       toast.error('Unable to share batch: No files available')
       return
     }
@@ -996,14 +921,12 @@ Best regards`
     const allFileIds = resultFiles.map(f => f.file_id).filter(Boolean)
     
     if (allFileIds.length === 0) {
-      console.error('[ShareAll] No valid file IDs found')
       toast.error('Unable to share: No valid files found')
       return
     }
     
     try {
       // Create a share session for all files
-      console.log('[ShareAll] Creating share session for', allFileIds.length, 'files')
       
       const sessionResponse = await ocrApi.createShareSession({
         file_ids: allFileIds,
@@ -1012,7 +935,6 @@ Best regards`
         expires_in_days: 7
       })
       
-      console.log('[ShareAll] Session created:', sessionResponse)
       
       // Store session info
       setShareSession(sessionResponse)
@@ -1032,12 +954,6 @@ Best regards`
       // toast.success('Share link created successfully!')
       
     } catch (error: any) {
-      console.error('[ShareAll] Failed to create share session:', error)
-      console.error('[ShareAll] Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      })
       const errorMessage = error.response?.data?.detail || error.message || 'Failed to create share link'
       toast.error(`Error: ${errorMessage}`)
     }
@@ -1388,7 +1304,6 @@ Best regards`
                             downloadCount++
                             await new Promise(resolve => setTimeout(resolve, 500))
                           } catch (error) {
-                            console.error('[DownloadAll] Failed to download file:', file.file_id, error)
                             toast.error(`Failed to download ${file.filename || 'file'}`)
                           }
                         }

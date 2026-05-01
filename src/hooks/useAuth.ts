@@ -17,11 +17,9 @@ export function useAuth() {
     const initAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession()
-        console.log('[useAuth] Initial session check:', session?.user?.email)
         setSession(session)
         setUser(session?.user ?? null)
       } catch (error) {
-        console.error('[useAuth] Error getting session:', error)
       } finally {
         setLoading(false)
       }
@@ -33,7 +31,6 @@ export function useAuth() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('[useAuth] Auth state changed:', _event, session?.user?.email)
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)

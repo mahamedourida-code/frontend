@@ -78,19 +78,18 @@ function HistoryContent() {
     try {
       let blob: Blob;
       
-      console.log('Downloading job:', job); // Debug log
+// Debug log
       
       // Simply use result_url if available (it's a signed URL)
       if (job.result_url) {
         // Try direct download if result_url is a signed URL
-        console.log('Using result_url:', job.result_url); // Debug log
+// Debug log
         
         if (job.result_url.includes('supabase') && job.result_url.includes('token=')) {
           // This is likely a signed URL, fetch directly
-          console.log('Fetching signed result_url directly'); // Debug log
+// Debug log
           const response = await fetch(job.result_url);
           if (!response.ok) {
-            console.error('Result URL fetch failed:', response.status, response.statusText);
             throw new Error('Download failed');
           }
           blob = await response.blob();
@@ -108,7 +107,6 @@ function HistoryContent() {
           blob = await ocrApi.downloadFile(fileId)
         }
       } else {
-        console.error('No download URL available. Job data:', job);
         toast.error('No download URL available')
         return
       }
