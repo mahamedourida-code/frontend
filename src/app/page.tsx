@@ -1485,9 +1485,9 @@ export default function Home() {
                 </h2>
               </div>
             </div>
-              <div ref={heroImageRef} className={`relative mx-auto transform-gpu transition-[max-width,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${resultFiles.length > 0 ? 'w-full max-w-none scale-100' : isProcessing ? 'w-full max-w-5xl scale-[1.01]' : 'w-full max-w-7xl scale-100'}`}>
-                <div className={resultFiles.length === 0 ? `grid items-center gap-8 transition-[grid-template-columns,gap] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${isProcessing ? 'lg:grid-cols-[minmax(0,1fr)_0px] lg:gap-0' : 'lg:grid-cols-[minmax(0,1.05fr)_minmax(440px,0.95fr)]'}` : "relative w-full"}>
-                <div className={`ax-glass-card relative w-full transform-gpu space-y-3 rounded-[1.5rem] border border-white/45 p-4 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] sm:p-5 ${isProcessing && resultFiles.length === 0 ? 'scale-[1.015] shadow-2xl shadow-[#441F84]/20 ring-1 ring-[#A78BFA]/35' : ''}`}>
+              <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : 'w-full max-w-7xl'}`}>
+                <div className={resultFiles.length === 0 ? "grid items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(440px,0.95fr)]" : "relative w-full"}>
+                <div className="ax-glass-card relative w-full space-y-3 rounded-[1.5rem] border border-white/45 p-4 sm:p-5">
                   {/* Upload Dropzone - Hide when showing results */}
                   {!processingComplete && resultFiles.length === 0 && (
                     <div className="space-y-3">
@@ -1954,7 +1954,7 @@ export default function Home() {
                   )}
                 </div>
 
-                {!isProcessing && resultFiles.length === 0 && (
+                {resultFiles.length === 0 && (
                   <div className="relative flex min-h-[360px] items-center justify-center sm:min-h-[480px] lg:min-h-[520px]" aria-hidden="true">
                     <img
                       src="/what-is/b.svg"
