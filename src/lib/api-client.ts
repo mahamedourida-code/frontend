@@ -286,7 +286,31 @@ export interface AppLimits {
   } | null
 }
 
-export type BillingPlanKey = 'pro_monthly' | 'pro_yearly' | 'business_monthly'
+export type BillingPlanKey = 'pro_monthly' | 'pro_yearly' | 'business_monthly' | 'business_yearly'
+
+export interface BillingPlan {
+  key: 'free' | BillingPlanKey
+  checkout_key?: BillingPlanKey | null
+  name: string
+  plan: 'anonymous' | 'free' | 'pro' | 'enterprise'
+  interval: 'forever' | 'month' | 'year'
+  price_cents: number
+  price_formatted: string
+  currency: string
+  credits: number
+  included_volume: string
+  max_files_per_batch: number
+  daily_image_limit: number
+  max_file_size_mb: number
+  annual_discount_percent: number
+  checkout_available: boolean
+}
+
+export interface BillingPlansResponse {
+  provider: 'lemonsqueezy'
+  currency: string
+  plans: BillingPlan[]
+}
 
 export interface BillingCheckoutResponse {
   checkout_id?: string
@@ -324,6 +348,11 @@ export interface BillingStatusResponse {
 }
 
 export const billingApi = {
+  getPlans: async (): Promise<BillingPlansResponse> => {
+    const response = await apiClient.get<BillingPlansResponse>('/api/v1/billing/plans')
+    return response.data
+  },
+
   createCheckout: async (planKey: BillingPlanKey): Promise<BillingCheckoutResponse> => {
     const response = await apiClient.post<BillingCheckoutResponse>('/api/v1/billing/lemon/checkout', {
       plan_key: planKey,

@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
 import { BillingSeal, CreditStack, PlanSwitch } from "@/components/BillingGlyphs"
-import { billingApi, ocrApi, type AppLimits, type BillingPlanKey, type BillingStatusResponse } from "@/lib/api-client"
+import { billingApi, ocrApi, type AppLimits, type BillingPlan, type BillingPlanKey, type BillingStatusResponse } from "@/lib/api-client"
 import {
   User,
   Globe,
@@ -70,6 +70,7 @@ function SettingsContent() {
   const [loading, setLoading] = useState(false)
   const [billingStatus, setBillingStatus] = useState<BillingStatusResponse | null>(null)
   const [limits, setLimits] = useState<AppLimits | null>(null)
+  const [billingPlans, setBillingPlans] = useState<BillingPlan[]>([])
   const [billingLoading, setBillingLoading] = useState(false)
   const [billingAction, setBillingAction] = useState<string | null>(null)
 
@@ -150,11 +151,12 @@ function SettingsContent() {
     let mounted = true
     setBillingLoading(true)
 
-    Promise.all([billingApi.getStatus(), ocrApi.getLimits()])
-      .then(([status, liveLimits]) => {
+    Promise.all([billingApi.getStatus(), ocrApi.getLimits(), billingApi.getPlans()])
+      .then(([status, liveLimits, planCatalog]) => {
         if (!mounted) return
         setBillingStatus(status)
         setLimits(liveLimits)
+        setBillingPlans(planCatalog.plans || [])
       })
       .catch(() => {
         if (mounted) toast.error("Billing details are not available right now")
@@ -645,21 +647,21 @@ function SettingsContent() {
                         </div>
 
                         <div className="mt-5 space-y-3">
-                          {[
-                            { label: "Pro monthly", key: "pro_monthly" as BillingPlanKey, credits: "1,000 credits" },
-                            { label: "Pro annual", key: "pro_yearly" as BillingPlanKey, credits: "12,000 credits" },
-                            { label: "Business", key: "business_monthly" as BillingPlanKey, credits: "5,000 credits" },
-                          ].map((plan) => (
+                          {billingPlans
+                            .filter((plan) => plan.checkout_key)
+                            .map((plan) => (
                             <button
                               key={plan.key}
                               type="button"
-                              onClick={() => startCheckout(plan.key)}
-                              disabled={billingAction === plan.key}
+                              onClick={() => startCheckout(plan.checkout_key as BillingPlanKey)}
+                              disabled={billingAction === plan.checkout_key || !plan.checkout_available}
                               className="group flex w-full items-center justify-between gap-3 rounded-[22px] border border-[#eadfff] bg-white/48 p-4 text-left transition hover:border-[#bca7ef] hover:bg-white/65 disabled:cursor-wait disabled:opacity-70"
                             >
                               <span>
-                                <span className="block text-sm font-black text-foreground">{plan.label}</span>
-                                <span className="mt-1 block text-xs text-muted-foreground">{plan.credits}</span>
+                                <span className="block text-sm font-black text-foreground">
+                                  {plan.name} {plan.interval === "year" ? "annual" : "monthly"} · {plan.price_formatted}
+                                </span>
+                                <span className="mt-1 block text-xs text-muted-foreground">{plan.included_volume}</span>
                               </span>
                               <span className="h-2.5 w-2.5 rounded-full bg-[#7c3aed] shadow-[0_0_0_6px_rgba(124,58,237,0.12)] transition group-hover:scale-110" />
                             </button>
