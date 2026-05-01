@@ -2,11 +2,9 @@
 
 import React, { useState, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
@@ -24,15 +22,12 @@ import { AppIcon } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { 
   Menu, 
-  X,
   ChevronRight,
   Home,
   PenTool, 
   FileInput, 
   Target, 
-  TrendingUp,
   LogIn,
-  UserPlus,
   Activity,
   Upload,
   History,
@@ -40,7 +35,6 @@ import {
   LogOut,
   HelpCircle,
   FileSpreadsheet,
-  Building2,
   LayoutDashboard
 } from "lucide-react"
 
@@ -49,6 +43,22 @@ interface MobileNavProps {
   onSectionClick?: (sectionId: string) => void
   onSignInClick?: () => void
   user?: any
+}
+
+type NavIcon = React.ComponentType<{ className?: string }>
+
+type MobileNavItem = {
+  label: string
+  href?: string
+  sectionId?: string
+  icon: NavIcon
+  show?: boolean
+  children?: Array<{
+    label: string
+    href: string
+    icon: NavIcon
+    description?: string
+  }>
 }
 
 export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInClick, user }: MobileNavProps) {
@@ -68,16 +78,27 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
   }
 
   const handleSectionClick = (sectionId: string) => {
-    if (onSectionClick) {
+    if (pathname === "/" && onSectionClick) {
       onSectionClick(sectionId)
     } else {
-      window.location.href = `/#${sectionId}`
+      router.push(`/#${sectionId}`)
     }
     setIsOpen(false)
   }
 
-  const mainNavItems = [
-    // Authenticated User Menu - Only show items NOT in bottom nav
+  const mainNavItems: MobileNavItem[] = [
+    {
+      label: "Overview",
+      href: "/dashboard",
+      icon: Activity,
+      show: isAuthenticated
+    },
+    {
+      label: "Process Images",
+      href: "/dashboard/client",
+      icon: Upload,
+      show: isAuthenticated
+    },
     {
       label: "History",
       href: "/history",
@@ -104,6 +125,12 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       show: !isAuthenticated
     },
     {
+      label: "Try It",
+      sectionId: "converter",
+      icon: Upload,
+      show: !isAuthenticated
+    },
+    {
       label: "Pricing",
       href: "/pricing",
       icon: BillingSeal,
@@ -125,68 +152,83 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
           href: "/solutions/paper-forms",
           icon: FileInput,
           description: "Digitize paper forms"
+        },
+        {
+          label: "Data Entry Automation",
+          href: "/solutions/data-entry",
+          icon: Target,
+          description: "Structure repetitive data entry"
         }
       ]
     }
   ]
 
+  const bottomNavItems: Array<{
+    label: string
+    icon: NavIcon
+    active: boolean
+    onClick: () => void
+  }> = isAuthenticated
+    ? [
+        { label: "Dashboard", icon: LayoutDashboard, active: pathname === "/dashboard", onClick: () => handleNavigation("/dashboard") },
+        { label: "Process", icon: Upload, active: pathname === "/dashboard/client", onClick: () => handleNavigation("/dashboard/client") },
+        { label: "History", icon: History, active: pathname === "/history", onClick: () => handleNavigation("/history") },
+      ]
+    : [
+        { label: "Home", icon: Home, active: pathname === "/", onClick: () => handleNavigation("/") },
+        { label: "Try It", icon: Upload, active: false, onClick: () => handleSectionClick("converter") },
+        { label: "Pricing", icon: BillingSeal, active: pathname === "/pricing", onClick: () => handleNavigation("/pricing") },
+      ]
+
   return (
     <>
-      {/* Enhanced Mobile Navigation - Fixed bottom bar with icon-based navigation */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#FCF2FF]/95 backdrop-blur-lg border-t shadow-lg">
-        <div className="flex items-center justify-around px-2 h-16">
-          {/* Home Button */}
-          <Button
-            variant={pathname === "/" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => router.push("/")}
-            className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
-          >
-            <Home className={cn("h-5 w-5", pathname === "/" ? "text-primary-foreground" : "")} />
-            <span className="text-[10px] font-medium">Home</span>
-          </Button>
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-[#eadfff] bg-[#FCF2FF]/95 shadow-[0_-18px_45px_rgba(68,31,132,0.12)] backdrop-blur-xl lg:hidden"
+        style={{ paddingBottom: "max(0.35rem, env(safe-area-inset-bottom))" }}
+      >
+        <div className="mx-auto grid h-16 max-w-md grid-cols-4 items-center gap-1 px-2 pt-1">
+          {bottomNavItems.map((item) => {
+            const Icon = item.icon
+            return (
+              <Button
+                key={item.label}
+                variant="ghost"
+                size="sm"
+                aria-current={item.active ? "page" : undefined}
+                onClick={item.onClick}
+                className={cn(
+                  "h-14 min-w-0 flex-col gap-1 rounded-2xl px-1.5 text-[10px] font-semibold transition-all",
+                  item.active
+                    ? "bg-[#2f165e] text-white shadow-[0_12px_28px_rgba(68,31,132,0.22)] hover:bg-[#2f165e] hover:text-white"
+                    : "text-[#4b2d82] hover:bg-white/55 hover:text-[#2f165e]"
+                )}
+              >
+                <Icon className="h-5 w-5 shrink-0" />
+                <span className="w-full truncate leading-none">{item.label}</span>
+              </Button>
+            )
+          })}
 
-          {/* Upload Button - Goes directly to client */}
-          <Button
-            variant={pathname === "/dashboard/client" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => isAuthenticated ? router.push("/dashboard/client") : (onSignInClick ? onSignInClick() : null)}
-            className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
-          >
-            <Upload className={cn("h-5 w-5", pathname === "/dashboard/client" ? "text-primary-foreground" : "")} />
-            <span className="text-[10px] font-medium">Upload</span>
-          </Button>
-
-          {/* Dashboard Button - Always shows Dashboard icon */}
-          <Button
-            variant={pathname === "/dashboard" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => isAuthenticated ? router.push("/dashboard") : (onSignInClick ? onSignInClick() : null)}
-            className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
-          >
-            <LayoutDashboard className={cn("h-5 w-5", pathname === "/dashboard" ? "text-primary-foreground" : "")} />
-            <span className="text-[10px] font-medium">Dashboard</span>
-          </Button>
-
-          {/* Menu Button */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button 
                 variant="ghost"
                 size="sm" 
-                className="flex-col h-14 px-3 gap-1 flex-1 max-w-[72px]"
+                className={cn(
+                  "h-14 min-w-0 flex-col gap-1 rounded-2xl px-1.5 text-[10px] font-semibold transition-all",
+                  isOpen ? "bg-[#2f165e] text-white" : "text-[#4b2d82] hover:bg-white/55 hover:text-[#2f165e]"
+                )}
               >
                 <Menu className="h-5 w-5" />
-                <span className="text-[10px] font-medium">Menu</span>
+                <span className="w-full truncate leading-none">Menu</span>
               </Button>
             </SheetTrigger>
             
             <SheetContent 
               side="right" 
-              className="w-[85vw] sm:w-[380px] max-w-[420px] p-0 h-full flex flex-col"
+              className="flex h-dvh w-[88vw] max-w-[390px] flex-col border-l border-[#eadfff] bg-[#EFFFFD]/95 p-0 backdrop-blur-xl sm:w-[380px]"
             >
-              {/* Header */}
-              <SheetHeader className="px-4 py-3 border-b">
+              <SheetHeader className="border-b border-[#eadfff] bg-[#FCF2FF]/75 px-4 py-4">
                 <div className="flex items-center gap-2">
                   <AppIcon size={32} />
                   <SheetTitle className="text-base md:text-lg font-bold">AxLiner</SheetTitle>
@@ -195,11 +237,11 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
 
               {/* User Info - if authenticated */}
               {isAuthenticated && user && (
-                <div className="px-4 py-3 bg-muted/30 border-b">
+                <div className="border-b border-[#eadfff] px-4 py-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <span className="text-sm md:text-base font-semibold text-primary">
+                      <div className="h-10 w-10 rounded-2xl bg-[#2f165e] text-white flex items-center justify-center">
+                        <span className="text-sm md:text-base font-semibold text-white">
                           {user.email?.[0]?.toUpperCase() || "U"}
                         </span>
                       </div>
@@ -222,7 +264,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
               )}
 
               {/* Navigation Items */}
-              <div className="flex-1 overflow-y-auto py-2">
+              <div className="flex-1 overflow-y-auto py-3">
                 <nav className="space-y-1 px-3">
                   {mainNavItems
                     .filter(item => item.show !== false)
@@ -238,9 +280,9 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                               <Button
                                 variant="ghost"
                                 className={cn(
-                                  "w-full justify-start h-10 px-3 gap-3",
-                                  "hover:bg-accent hover:text-accent-foreground",
-                                  "transition-colors"
+                                  "h-11 w-full justify-start gap-3 rounded-2xl px-3",
+                                  "hover:bg-white/60 hover:text-[#2f165e]",
+                                  "transition-colors text-[#2f165e]"
                                 )}
                               >
                                 {item.icon && <item.icon className="h-5 w-5" />}
@@ -253,7 +295,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                 />
                               </Button>
                             </CollapsibleTrigger>
-                            <CollapsibleContent className="pl-4 pr-2 space-y-1">
+                            <CollapsibleContent className="space-y-1 pl-4 pr-2">
                               {item.children.map((child, childIndex) => (
                                 <Button
                                   key={childIndex}
@@ -262,8 +304,8 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                   onClick={() => handleNavigation(child.href)}
                                   className={cn(
                                     "w-full justify-start h-auto py-2 px-3",
-                                    "hover:bg-accent/50 transition-colors",
-                                    pathname === child.href && "bg-accent"
+                                    "rounded-2xl hover:bg-white/55 transition-colors",
+                                    pathname === child.href && "bg-white/70"
                                   )}
                                 >
                                   <div className="flex items-start gap-2 w-full">
@@ -292,12 +334,12 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                         <Button
                           key={index}
                           variant="ghost"
-                          onClick={() => item.href && handleNavigation(item.href)}
+                          onClick={() => item.sectionId ? handleSectionClick(item.sectionId) : item.href && handleNavigation(item.href)}
                           className={cn(
-                            "w-full justify-start h-10 px-3 gap-2",
-                            "hover:bg-accent hover:text-accent-foreground",
-                            "transition-colors",
-                            pathname === item.href && "bg-accent"
+                            "h-11 w-full justify-start gap-3 rounded-2xl px-3",
+                            "hover:bg-white/60 hover:text-[#2f165e]",
+                            "transition-colors text-[#2f165e]",
+                            pathname === item.href && "bg-white/70"
                           )}
                         >
                           {item.icon && <item.icon className="h-5 w-5" />}
@@ -310,29 +352,29 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 {/* Quick Links Section */}
                 {!isAuthenticated && (
                   <>
-                    <Separator className="my-2" />
+                    <Separator className="my-3 bg-[#eadfff]" />
                     <div className="px-4">
-                      <p className="text-xs font-medium text-muted-foreground mb-2">
+                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8d79bb] mb-2">
                         Quick Links
                       </p>
                       <div className="space-y-1">
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleSectionClick("differentiators")}
-                          className="w-full justify-start h-9 px-2 gap-3"
+                          onClick={() => handleSectionClick("features")}
+                          className="h-10 w-full justify-start gap-3 rounded-2xl px-2 hover:bg-white/55"
                         >
                           <Target className="h-5 w-5" />
-                          <span className="text-sm md:text-base">What Makes Us Different</span>
+                          <span className="text-sm md:text-base">Features</span>
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleSectionClick("how-it-works")}
-                          className="w-full justify-start h-9 px-2 gap-3"
+                          onClick={() => handleSectionClick("benchmarks")}
+                          className="h-10 w-full justify-start gap-3 rounded-2xl px-2 hover:bg-white/55"
                         >
                           <HelpCircle className="h-5 w-5" />
-                          <span className="text-sm md:text-base">How It Works</span>
+                          <span className="text-sm md:text-base">Benchmarks</span>
                         </Button>
                       </div>
                     </div>
@@ -341,11 +383,11 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
               </div>
 
               {/* Footer Actions */}
-              <div className="mt-auto border-t p-3 space-y-2 bg-muted/30">
+              <div className="mt-auto space-y-2 border-t border-[#eadfff] bg-[#FCF2FF]/60 p-3">
                 {isAuthenticated ? (
                   <Button
                     variant="ghost"
-                    className="w-full h-10 gap-3 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    className="h-11 w-full gap-3 rounded-2xl text-destructive hover:bg-destructive/10 hover:text-destructive"
                     onClick={() => {
                       // Handle logout
                       handleNavigation("/signout")
@@ -357,7 +399,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 ) : (
                   <Button
                     variant="outline"
-                    className="w-full h-10 gap-3"
+                    className="h-11 w-full gap-3 rounded-2xl border-[#d9c9fb] bg-white/60"
                     onClick={() => {
                       setIsOpen(false);
                       onSignInClick?.();
@@ -377,7 +419,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       <style jsx global>{`
         @media (max-width: 1023px) {
           body {
-            padding-bottom: 3.5rem;
+            padding-bottom: calc(4.75rem + env(safe-area-inset-bottom));
           }
         }
       `}</style>

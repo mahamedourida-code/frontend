@@ -7,7 +7,6 @@ import {
   SheetClose,
   SheetContent,
   SheetDescription,
-  SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
@@ -18,7 +17,7 @@ import {
 } from "@/components/ui/collapsible";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { BillingSeal } from "@/components/BillingGlyphs";
-import { Menu, ChevronDown, ChevronRight, PenTool, FileInput, Target, Users, TrendingUp, ArrowRight } from "lucide-react";
+import { Menu, ChevronDown, ChevronRight, PenTool, FileInput, Target, TrendingUp, ArrowRight, Upload } from "lucide-react";
 
 interface MobileNavigationProps {
   onSectionClick?: (sectionId: string) => void;
@@ -46,17 +45,17 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
             <span className="sr-only">Open navigation menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="right" className="w-80 sm:w-96 p-0">
+        <SheetContent side="right" className="w-[88vw] max-w-[390px] border-l border-[#eadfff] bg-[#EFFFFD]/95 p-0 backdrop-blur-xl sm:w-96">
           {/* Header */}
-          <div className="px-6 py-4 border-b">
+          <div className="border-b border-[#eadfff] bg-[#FCF2FF]/75 px-6 py-4">
             <SheetTitle className="text-xl font-bold">AxLiner</SheetTitle>
-            <SheetDescription className="text-sm text-muted-foreground mt-1">
-              AI-powered OCR for table screenshots to Excel conversion
+            <SheetDescription className="mt-1 text-sm text-muted-foreground">
+              Convert images and handwritten tables into Excel.
             </SheetDescription>
           </div>
           
           {/* Navigation Content */}
-          <div className="flex flex-col h-[calc(100vh-120px)]">
+          <div className="flex h-[calc(100dvh-120px)] flex-col">
             <div className="flex-1 px-6 py-4 space-y-1 overflow-y-auto">
               
               {/* Solutions Section */}
@@ -88,12 +87,12 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
                     </SheetClose>
                     <SheetClose asChild>
                       <a
-                        href="/solutions/business-documents"
+                        href="/solutions/paper-forms"
                         className="flex items-start gap-3 p-3 rounded-lg hover:bg-accent transition-colors group"
                       >
                         <FileInput className="w-5 h-5 text-primary mt-0.5 group-hover:scale-105 transition-transform" />
                         <div className="flex-1 space-y-1">
-                          <div className="font-medium text-sm leading-tight">Business Documents</div>
+                          <div className="font-medium text-sm leading-tight">Paper Forms</div>
                           <div className="text-xs text-muted-foreground leading-relaxed">
                             Invoices, receipts, and forms
                           </div>
@@ -102,14 +101,14 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
                     </SheetClose>
                     <SheetClose asChild>
                       <a
-                        href="/solutions/enterprise"
+                        href="/solutions/data-entry"
                         className="flex items-start gap-3 p-3 rounded-lg hover:bg-accent transition-colors group"
                       >
                         <Target className="w-5 h-5 text-primary mt-0.5 group-hover:scale-105 transition-transform" />
                         <div className="flex-1 space-y-1">
-                          <div className="font-medium text-sm leading-tight">Enterprise Solutions</div>
+                          <div className="font-medium text-sm leading-tight">Data Entry Automation</div>
                           <div className="text-xs text-muted-foreground leading-relaxed">
-                            Custom integrations & API access
+                            Repetitive data entry workflows
                           </div>
                         </div>
                       </a>
@@ -119,6 +118,16 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
               </Collapsible>
 
               {/* Direct Links */}
+              <SheetClose asChild>
+                <button
+                  onClick={() => scrollToSection('converter')}
+                  className="flex h-12 w-full items-center gap-3 rounded-lg px-3 text-left text-base font-medium transition-colors hover:bg-accent"
+                >
+                  <Upload className="h-5 w-5 text-primary" />
+                  Try It
+                </button>
+              </SheetClose>
+
               <SheetClose asChild>
                 <a
                   href="/pricing"
@@ -131,17 +140,17 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
               
               <SheetClose asChild>
                 <button
-                  onClick={() => scrollToSection('differentiators')}
+                  onClick={() => scrollToSection('features')}
                   className="flex items-center gap-3 w-full h-12 px-3 rounded-lg hover:bg-accent transition-colors font-medium text-base text-left"
                 >
                   <TrendingUp className="w-5 h-5 text-primary" />
-                  What Makes Us Different
+                  Features
                 </button>
               </SheetClose>
             </div>
 
             {/* CTA Section */}
-            <div className="px-6 py-4 border-t bg-muted/30 space-y-3">
+            <div className="space-y-3 border-t border-[#eadfff] bg-[#FCF2FF]/60 px-6 py-4">
               <SheetClose asChild>
                 <Button
                   variant="outline"
@@ -154,7 +163,7 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
               <SheetClose asChild>
                 <Button
                   className="w-full h-11 text-base font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                  onClick={() => window.location.href = '/sign-in'}
+                  onClick={() => window.location.href = '/sign-up'}
                 >
                   Get Started
                   <ArrowRight className="w-4 h-4 ml-2" />
