@@ -1223,7 +1223,7 @@ export default function Home() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat will-change-transform"
             style={{
-              backgroundImage: "url('/diwdiw2.jpg')",
+              backgroundColor: "#FFF9E7",
               clipPath:
                 "polygon(0 0, 100% 0, 100% 98.9%, 98.8% 99.15%, 96.5% 99.35%, 92% 99.45%, 8% 99.45%, 3.5% 99.35%, 1.2% 99.15%, 0 98.9%)",
             }}
@@ -2271,7 +2271,7 @@ export default function Home() {
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
-            style={{ backgroundImage: "url('/diwdiw2.jpg')" }}
+            style={{ backgroundColor: "#FFF9E7" }}
           />
           <div className="relative z-10">
         {/* AI Engine Section */}

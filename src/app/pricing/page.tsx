@@ -241,10 +241,10 @@ function PricingContent() {
                       <span className="text-5xl font-black tracking-tight text-foreground">{displayedPrice}</span>
                       <span className="pb-2 text-sm font-bold text-muted-foreground">{displayedCadence}</span>
                     </div>
-                    <div className="mt-5 rounded-[22px] border border-[#e4d8fb] bg-[#f8f4ff]/80 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.82)]">
+                    <div className="mt-5 rounded-[22px] bg-white/55 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_14px_34px_rgba(68,31,132,0.07)] backdrop-blur">
                       <div className="flex items-center justify-between gap-3">
                         <span className="text-xs font-black uppercase tracking-[0.16em] text-[#7c62b1]">Included volume</span>
-                        <span className="h-2.5 w-2.5 rounded-full bg-[#2f165e] shadow-[0_0_0_6px_rgba(47,22,94,0.10)]" />
+                        <span className="h-2.5 w-2.5 rounded-full bg-[#2f165e]" />
                       </div>
                       <p className="mt-2 text-2xl font-black text-[#2f165e]">{displayedPages}</p>
                     </div>
