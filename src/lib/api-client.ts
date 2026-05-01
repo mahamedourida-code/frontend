@@ -264,6 +264,24 @@ export interface JobStatusResponse {
   updated_at: string
 }
 
+export interface RecoverableJobSummary {
+  job_id: string
+  status: 'queued' | 'processing' | 'completed' | 'failed' | 'partially_completed' | string
+  session_id?: string
+  created_at?: string
+  updated_at?: string
+  total_images?: number
+  processed_images?: number
+  percentage?: number
+  active?: boolean
+}
+
+export interface JobRecoveryResponse {
+  job: RecoverableJobSummary | null
+  active: boolean
+  jobs: RecoverableJobSummary[]
+}
+
 export interface AppLimits {
   plan: 'anonymous' | 'free' | 'pro' | 'enterprise'
   max_files_per_batch: number
@@ -453,6 +471,11 @@ export const ocrApi = {
    */
   getStatus: async (jobId: string): Promise<JobStatusResponse> => {
     const response = await apiClient.get<JobStatusResponse>(`/api/v1/jobs/${jobId}/status`)
+    return response.data
+  },
+
+  getLatestRecoverableJob: async (): Promise<JobRecoveryResponse> => {
+    const response = await apiClient.get<JobRecoveryResponse>('/api/v1/jobs/recover/latest')
     return response.data
   },
 

@@ -17,7 +17,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { toast } from "sonner"
 import { AppIcon } from "@/components/AppIcon"
 import { ocrApi } from "@/lib/api-client"
-import type { AppLimits } from "@/lib/api-client"
+import type { AppLimits, RecoverableJobSummary } from "@/lib/api-client"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
 import Image from "next/image"
@@ -203,11 +203,14 @@ function ProcessImagesContent() {
     downloadFile,
     saveToHistory,
     connectWebSocket,
+    resumeJob,
     reset,
     isSaving,
     isSaved,
     jobId
   } = useOCR()
+  const [latestRecoverableJob, setLatestRecoverableJob] = useState<RecoverableJobSummary | null>(null)
+  const [recoveryLoading, setRecoveryLoading] = useState(false)
 
   // Silently wake up backend when page loads
   useEffect(() => {
@@ -232,6 +235,39 @@ function ProcessImagesContent() {
   useEffect(() => {
     setUploadedFiles(prev => prev.length > maxUploadFiles ? prev.slice(0, maxUploadFiles) : prev)
   }, [maxUploadFiles])
+
+  useEffect(() => {
+    if (authLoading || !user) return
+
+    let mounted = true
+    ocrApi.getLatestRecoverableJob()
+      .then((data) => {
+        if (!mounted) return
+        const job = data.job
+        setLatestRecoverableJob(job?.active ? job : null)
+      })
+      .catch(() => undefined)
+
+    return () => {
+      mounted = false
+    }
+  }, [authLoading, user?.id])
+
+  const continueLatestJob = useCallback(async () => {
+    if (!latestRecoverableJob?.job_id) return
+
+    setRecoveryLoading(true)
+    try {
+      setUploadedFiles([])
+      await resumeJob(latestRecoverableJob.job_id, latestRecoverableJob.session_id)
+      setLatestRecoverableJob(null)
+      toast.success("Latest batch resumed.")
+    } catch (error: any) {
+      toast.error(error?.detail || "Could not resume the latest batch.")
+    } finally {
+      setRecoveryLoading(false)
+    }
+  }, [latestRecoverableJob, resumeJob])
 
   // Restore state from context on mount
   useEffect(() => {
@@ -557,7 +593,8 @@ function ProcessImagesContent() {
 
       const response = await uploadBatch(uploadedFiles)
       if (response && response.session_id) {
-        connectWebSocket(response.session_id)
+        connectWebSocket(response.session_id, response.job_id)
+        setLatestRecoverableJob(null)
         
         // Update counts optimistically
         setProcessedCount(prev => prev + imagesCount)
@@ -1013,7 +1050,7 @@ Best regards`
                   variant="ghost"
                   size="sm"
                   onClick={() => router.back()}
-                  className="h-10 rounded-2xl border border-[#eadfff] bg-white/55 px-3 text-[#5b3f92] hover:bg-white hover:text-[#2f165e]"
+                  className="h-10 rounded-2xl border border-[#eadfff] bg-white/60 px-3 text-[#5b3f92] hover:bg-white hover:text-[#2f165e]"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
@@ -1046,14 +1083,14 @@ Best regards`
         </div>
       </header>
 
-      <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur lg:hidden">
+      <div className="sticky top-0 z-40 border-b bg-[#FCF2FF]/95 backdrop-blur lg:hidden">
         <div className="container max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => router.back()}
-              className="h-10 rounded-2xl border border-[#eadfff] bg-[#faf7ff] px-3 text-[#5b3f92]"
+              className="h-10 rounded-2xl border border-[#eadfff] bg-white/60 px-3 text-[#5b3f92]"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -1065,7 +1102,7 @@ Best regards`
               variant="outline"
               size="sm"
               onClick={() => router.push('/dashboard')}
-              className="h-10 rounded-2xl border-[#eadfff] bg-white px-3"
+              className="h-10 rounded-2xl border-[#eadfff] bg-white/60 px-3"
             >
               Dashboard
             </Button>
@@ -1074,6 +1111,31 @@ Best regards`
       </div>
 
       <main className="container max-w-7xl mx-auto px-4 py-6 pb-24 lg:py-8 relative z-10">
+        {latestRecoverableJob && !isProcessing && (
+          <Card className="mb-5 overflow-hidden rounded-[28px] border-[#eadfff] bg-[#FCF2FF]/85 shadow-[0_18px_55px_rgba(68,31,132,0.10)] backdrop-blur-xl">
+            <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/65">
+                  <Loader2 className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-black text-foreground">Continue latest batch</p>
+                  <p className="text-xs text-muted-foreground">
+                    {latestRecoverableJob.processed_images || 0} of {latestRecoverableJob.total_images || 0} images processed
+                  </p>
+                </div>
+              </div>
+              <Button
+                onClick={continueLatestJob}
+                disabled={recoveryLoading}
+                className="h-11 rounded-2xl bg-[#2f165e] px-5 text-white hover:bg-[#441f84]"
+              >
+                {recoveryLoading ? "Resuming..." : "Continue latest job"}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {isProcessing && !isComplete && (
           <Card className="ax-glass-card mb-5 overflow-hidden rounded-[28px]">
             <CardContent className="p-4">

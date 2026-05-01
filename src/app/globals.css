@@ -170,7 +170,7 @@
   }
 
   .ax-glass-header {
-    background: rgb(255 255 255 / 0.30) !important;
+    background: rgb(252 242 255 / 0.88) !important;
     border-color: rgb(255 255 255 / 0.45) !important;
     box-shadow: 0 16px 36px rgb(68 31 132 / 0.12);
     backdrop-filter: blur(24px);
@@ -214,7 +214,7 @@
   --popover-foreground: hsl(224 71% 4%);
   --primary: hsl(262 62% 32%);
   --primary-foreground: hsl(210 40% 98%);
-  --secondary: hsl(210 40% 96%);
+  --secondary: hsl(286 100% 97%);
   --secondary-foreground: hsl(222 47% 11%);
   --muted: hsl(210 40% 96%);
   --muted-foreground: hsl(215 25% 35%);

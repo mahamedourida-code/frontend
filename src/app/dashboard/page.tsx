@@ -361,20 +361,20 @@ export default function DashboardPage() {
   // Remove credits logic - just track processed images
 
   return (
-    <div className="ax-page-bg min-h-screen bg-[#fcfbff] lg:flex lg:gap-4 lg:p-4">
+    <div className="ax-page-bg min-h-screen lg:flex lg:gap-4 lg:p-4">
       <WorkspaceSidebar activeItem="overview" user={user} />
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto relative z-10">
         <div className="container max-w-7xl mx-auto p-4 sm:p-6 lg:px-8 lg:py-4">
-          <div className="mb-6 rounded-[30px] border border-[#ebe2ff] bg-white/92 p-4 shadow-[0_24px_80px_rgba(68,31,132,0.08)] backdrop-blur-xl sm:p-5 lg:mb-8 lg:p-6">
+          <div className="mb-6 rounded-[30px] border border-[#ebe2ff] bg-[#FCF2FF]/90 p-4 shadow-[0_24px_80px_rgba(68,31,132,0.08)] backdrop-blur-xl sm:p-5 lg:mb-8 lg:p-6">
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
               <div className="flex items-start gap-4">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => router.back()}
-                  className="mt-1 h-11 rounded-2xl border border-[#eadfff] bg-[#faf7ff] px-4 text-[#5b3f92] hover:bg-[#f3ebff] hover:text-[#2f165e]"
+                  className="mt-1 h-11 rounded-2xl border border-[#eadfff] bg-white/55 px-4 text-[#5b3f92] hover:bg-white hover:text-[#2f165e]"
                 >
                   <ChevronLeft className="mr-1 h-4 w-4" />
                   Back
@@ -389,7 +389,7 @@ export default function DashboardPage() {
                   size="lg"
                   variant="outline"
                   asChild
-                  className="h-12 rounded-[22px] border-[#d9c9fb] bg-white/60 px-5 text-[#2f165e] shadow-[0_14px_35px_rgba(68,31,132,0.10)] hover:bg-[#f7f1ff] w-full sm:w-auto"
+                  className="h-12 rounded-[22px] border-[#d9c9fb] bg-white/55 px-5 text-[#2f165e] shadow-[0_14px_35px_rgba(68,31,132,0.10)] hover:bg-white w-full sm:w-auto"
                 >
                   <Link href="/pricing">
                     <BillingSeal className="h-5 w-5" />

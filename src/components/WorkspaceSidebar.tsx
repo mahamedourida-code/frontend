@@ -35,16 +35,16 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
 
   return (
     <aside className="relative z-10 hidden lg:flex lg:w-[290px] lg:flex-col">
-      <div className="sticky top-4 flex h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-[30px] border border-[#ebe2ff] bg-white/92 shadow-[0_24px_80px_rgba(68,31,132,0.10)] backdrop-blur-xl">
+      <div className="sticky top-4 flex h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-[30px] border border-[#ebe2ff] bg-[#FCF2FF]/90 shadow-[0_24px_80px_rgba(68,31,132,0.10)] backdrop-blur-xl">
         <div className="border-b border-[#efe7ff] px-5 pb-5 pt-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#eadfff] bg-[#f7f1ff]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/60">
               <AppIcon size={30} />
             </div>
             <span className="text-xl font-bold text-black dark:text-white">AxLiner</span>
           </div>
 
-          <div className="mt-5 rounded-[24px] border border-[#efe7ff] bg-[#fbf9ff] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+          <div className="mt-5 rounded-[24px] border border-[#efe7ff] bg-white/50 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
             <div className="flex items-center gap-3">
               <Avatar className="h-11 w-11 border border-[#eadfff] shadow-sm">
                 <AvatarImage src={user?.user_metadata?.avatar_url || undefined} />
@@ -73,7 +73,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                   "group flex w-full items-center gap-3 rounded-[22px] px-3 py-3 text-sm transition-all duration-200",
                   activeItem === item.key
                     ? "bg-[#2f165e] text-white shadow-[0_18px_40px_rgba(68,31,132,0.22)]"
-                    : "text-muted-foreground hover:bg-[#f6f1ff] hover:text-foreground"
+                    : "text-muted-foreground hover:bg-white/55 hover:text-foreground"
                 )}
               >
                 <div
@@ -81,7 +81,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                     "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border transition-colors",
                     activeItem === item.key
                       ? "border-white/10 bg-white/10 text-white"
-                      : "border-[#eadfff] bg-white text-[#65479f] group-hover:border-[#dccbff]"
+                      : "border-[#eadfff] bg-white/70 text-[#65479f] group-hover:border-[#dccbff]"
                   )}
                 >
                   <item.icon className="h-4 w-4" />
@@ -94,9 +94,9 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
 
             <Link
               href="/signout"
-              className="mt-4 flex w-full items-center gap-3 rounded-[22px] border border-[#f1e9ff] px-3 py-3 text-sm text-muted-foreground transition-colors hover:bg-[#f8f4ff] hover:text-foreground"
+              className="mt-4 flex w-full items-center gap-3 rounded-[22px] border border-[#f1e9ff] px-3 py-3 text-sm text-muted-foreground transition-colors hover:bg-white/55 hover:text-foreground"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#eadfff] bg-white text-[#65479f]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/70 text-[#65479f]">
                 <LogOut className="h-4 w-4" />
               </div>
               <p className="font-semibold text-foreground">Sign Out</p>

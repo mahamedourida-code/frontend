@@ -133,7 +133,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
   return (
     <>
       {/* Enhanced Mobile Navigation - Fixed bottom bar with icon-based navigation */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/98 backdrop-blur-lg border-t shadow-lg">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#FCF2FF]/95 backdrop-blur-lg border-t shadow-lg">
         <div className="flex items-center justify-around px-2 h-16">
           {/* Home Button */}
           <Button

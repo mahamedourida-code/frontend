@@ -24,8 +24,9 @@ interface UseOCRReturn {
   getStatus: (jobId: string) => Promise<void>
   downloadFile: (fileId: string) => Promise<void>
   saveToHistory: () => Promise<void>
-  connectWebSocket: (sessionId: string) => void
+  connectWebSocket: (sessionId: string, jobIdToTrack?: string) => void
   disconnectWebSocket: () => void
+  resumeJob: (jobId: string, sessionId?: string) => Promise<void>
   reset: () => void
 }
 
@@ -42,6 +43,7 @@ export function useOCR(): UseOCRReturn {
   const [isSaved, setIsSaved] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const wsRef = useRef<OCRWebSocket | null>(null) // Use ref instead of state for WebSocket
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [hasShownCompletion, setHasShownCompletion] = useState(false) // Track if completion toast shown
 
   // Upload single image
@@ -116,29 +118,70 @@ export function useOCR(): UseOCRReturn {
     }
   }, [])
 
+  const stopPolling = useCallback(() => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current)
+      pollingRef.current = null
+    }
+  }, [])
+
+  const applyJobStatus = useCallback((response: JobStatusResponse): boolean => {
+    setJobId(response.job_id)
+    setStatus(response.status)
+    setProgress(response.progress || null)
+
+    if (response.results) {
+      setFiles(response.results.files)
+    }
+
+    if (response.errors && response.errors.length > 0) {
+      setError(response.errors.join(', '))
+    }
+
+    if (response.status === 'completed' || response.status === 'partially_completed') {
+      setIsProcessing(false)
+      stopPolling()
+      return true
+    }
+
+    if (response.status === 'failed') {
+      setIsProcessing(false)
+      stopPolling()
+      return true
+    }
+
+    setIsProcessing(true)
+    return false
+  }, [stopPolling])
+
+  const startPolling = useCallback((jobIdToPoll: string) => {
+    if (!jobIdToPoll) return
+
+    stopPolling()
+    const poll = async () => {
+      try {
+        const response = await ocrApi.getStatus(jobIdToPoll)
+        applyJobStatus(response)
+      } catch (err: any) {
+        setError(err.detail || 'Unable to refresh job status')
+      }
+    }
+
+    poll()
+    pollingRef.current = setInterval(poll, 3000)
+  }, [applyJobStatus, stopPolling])
+
   // Get job status
   const getStatus = useCallback(async (jobId: string): Promise<void> => {
     setIsProcessing(true)
     try {
       const response: JobStatusResponse = await ocrApi.getStatus(jobId)
-      setStatus(response.status)
-      setProgress(response.progress || null)
-
-      if (response.results) {
-        setFiles(response.results.files)
-      }
-
+      const terminal = applyJobStatus(response)
       if (response.errors && response.errors.length > 0) {
-        setError(response.errors.join(', '))
         toast.error(response.errors[0])
       }
-
-      if (response.status === 'completed') {
-        // toast.success('Processing completed!')
-        setIsProcessing(false)
-      } else if (response.status === 'failed') {
+      if (terminal && response.status === 'failed') {
         toast.error('Processing failed')
-        setIsProcessing(false)
       }
     } catch (err: any) {
       const errorMessage = err.detail || 'Failed to get job status'
@@ -146,7 +189,7 @@ export function useOCR(): UseOCRReturn {
       toast.error(errorMessage)
       setIsProcessing(false)
     }
-  }, [])
+  }, [applyJobStatus])
 
   // Download file
   const downloadFile = useCallback(async (fileId: string): Promise<void> => {
@@ -205,7 +248,7 @@ export function useOCR(): UseOCRReturn {
   }, [jobId, files])
 
   // Connect to WebSocket for real-time updates
-  const connectWebSocket = useCallback((sessionId: string) => {
+  const connectWebSocket = useCallback((sessionId: string, jobIdToTrack?: string) => {
     // Disconnect any existing WebSocket first
     if (wsRef.current) {
       wsRef.current.disconnect()
@@ -214,6 +257,11 @@ export function useOCR(): UseOCRReturn {
 
     // Start processing state immediately
     setIsProcessing(true)
+    setSessionId(sessionId)
+    if (jobIdToTrack) {
+      setJobId(jobIdToTrack)
+      startPolling(jobIdToTrack)
+    }
 
     const websocket = new OCRWebSocket(
       sessionId,
@@ -291,6 +339,7 @@ export function useOCR(): UseOCRReturn {
             return true
           })
           setIsProcessing(false)
+          stopPolling()
         }
 
         // Job failed
@@ -300,6 +349,7 @@ export function useOCR(): UseOCRReturn {
           setStatus('failed')
           toast.error(errorMsg)
           setIsProcessing(false)
+          stopPolling()
         }
 
         // System messages
@@ -307,13 +357,15 @@ export function useOCR(): UseOCRReturn {
         }
       },
       (error) => {
-        // Don't show error toast for normal disconnects
+        if (jobIdToTrack) {
+          startPolling(jobIdToTrack)
+        }
       }
     )
 
     websocket.connect()
     wsRef.current = websocket
-  }, [])
+  }, [startPolling, stopPolling])
 
   // Disconnect WebSocket
   const disconnectWebSocket = useCallback(() => {
@@ -321,7 +373,26 @@ export function useOCR(): UseOCRReturn {
       wsRef.current.disconnect()
       wsRef.current = null
     }
-  }, [])
+    stopPolling()
+  }, [stopPolling])
+
+  const resumeJob = useCallback(async (jobIdToResume: string, sessionIdToResume?: string): Promise<void> => {
+    setJobId(jobIdToResume)
+    if (sessionIdToResume) setSessionId(sessionIdToResume)
+    setStatus('processing')
+    setIsProcessing(true)
+    setIsUploading(false)
+    setError(null)
+    setHasShownCompletion(false)
+
+    if (sessionIdToResume) {
+      connectWebSocket(sessionIdToResume, jobIdToResume)
+    } else {
+      startPolling(jobIdToResume)
+    }
+
+    await getStatus(jobIdToResume)
+  }, [connectWebSocket, getStatus, startPolling])
 
   // Reset state
   const reset = useCallback(() => {
@@ -337,18 +408,20 @@ export function useOCR(): UseOCRReturn {
     setIsSaved(false)
     setIsSaving(false)
     setHasShownCompletion(false)
+    stopPolling()
     disconnectWebSocket()
-  }, [disconnectWebSocket])
+  }, [disconnectWebSocket, stopPolling])
 
   // Cleanup on unmount - FIXED: stable dependency
   useEffect(() => {
     return () => {
+      stopPolling()
       if (wsRef.current) {
         wsRef.current.disconnect()
         wsRef.current = null
       }
     }
-  }, []) // Empty dependency array - cleanup only runs on unmount
+  }, [stopPolling])
 
   return {
     isUploading,
@@ -368,6 +441,7 @@ export function useOCR(): UseOCRReturn {
     saveToHistory,
     connectWebSocket,
     disconnectWebSocket,
+    resumeJob,
     reset,
   }
 }

@@ -178,9 +178,9 @@ function PricingContent() {
   return (
     <main className="min-h-screen overflow-hidden bg-[#FFF9E7]">
       <section className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between rounded-[28px] border border-[#eadfff] bg-white/60 px-4 py-3 shadow-[0_18px_55px_rgba(68,31,132,0.10)] backdrop-blur-xl">
+        <nav className="mx-auto flex max-w-6xl items-center justify-between rounded-[28px] border border-[#eadfff] bg-[#FCF2FF]/90 px-4 py-3 shadow-[0_18px_55px_rgba(68,31,132,0.10)] backdrop-blur-xl">
           <Link href="/" className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/75">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/65">
               <AppIcon size={28} />
             </span>
             <span className="text-lg font-black text-foreground">AxLiner</span>

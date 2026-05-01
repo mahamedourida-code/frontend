@@ -39,7 +39,7 @@ import { ActiveUsersCounter } from "@/components/ActiveUsersCounter";
 import { wakeUpBackendSilently } from "@/lib/backend-health";
 import { getTrialInfo, incrementTrialUploadCount } from "@/lib/free-trial";
 import { ocrApi, OCRWebSocket } from "@/lib/api-client";
-import type { AppLimits } from "@/lib/api-client";
+import type { AppLimits, JobStatusResponse, RecoverableJobSummary } from "@/lib/api-client";
 import { buildDownloadUrl, buildMessengerShareUrl, buildOfficeViewerUrl } from "@/lib/public-config";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -120,10 +120,17 @@ export default function Home() {
   const [firstImageUrl, setFirstImageUrl] = useState<string>('');
   const [totalFilesToProcess, setTotalFilesToProcess] = useState(0);
   const wsRef = useRef<OCRWebSocket | null>(null);
+  const pollingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [shareSession, setShareSession] = useState<any>(null);
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [limits, setLimits] = useState<AppLimits | null>(null);
+  const [latestRecoverableJob, setLatestRecoverableJob] = useState<RecoverableJobSummary | null>(null);
+  const [recoveryLoading, setRecoveryLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showSignInModal, setShowSignInModal] = useState(false);
+  const [signInRedirectPath, setSignInRedirectPath] = useState("/dashboard/client");
+  const supabase = createClient();
   const maxUploadFiles = limits?.max_files_per_batch ?? 5;
 
   // Helper function to remove _processed from filename
@@ -149,6 +156,28 @@ export default function Home() {
     setUploadedFiles(prev => prev.length > maxUploadFiles ? prev.slice(0, maxUploadFiles) : prev);
   }, [maxUploadFiles]);
 
+  useEffect(() => {
+    let mounted = true;
+
+    ocrApi.getLatestRecoverableJob()
+      .then((data) => {
+        if (!mounted) return;
+        const job = data.job;
+        setLatestRecoverableJob(job?.active ? job : null);
+      })
+      .catch(() => undefined);
+
+    return () => {
+      mounted = false;
+    };
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    return () => {
+      stopJobMonitoring();
+    };
+  }, []);
+
   // Auto download state
   const [autoDownload, setAutoDownload] = useState(() => {
   if (typeof window !== 'undefined') {
@@ -162,12 +191,6 @@ export default function Home() {
 
   // First-time convert confirmation
   const [showFirstConvertConfirm, setShowFirstConvertConfirm] = useState(false);
-
-  // User authentication state
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showSignInModal, setShowSignInModal] = useState(false);
-  const [signInRedirectPath, setSignInRedirectPath] = useState("/dashboard/client");
-  const supabase = createClient();
 
   const openSignInModal = useCallback((redirectPath = "/dashboard/client") => {
     setSignInRedirectPath(redirectPath);
@@ -589,145 +612,7 @@ export default function Home() {
         reader.readAsDataURL(firstFile);
       }
 
-      // Disconnect any existing WebSocket first
-      if (wsRef.current) {
-        wsRef.current.disconnect();
-        wsRef.current = null;
-      }
-
-      // Connect WebSocket for real-time progressive updates
-      if (response.session_id) {
-        
-        const websocket = new OCRWebSocket(
-          response.session_id,
-          (data) => {
-            const messageType = data.type || '';
-
-            // Progressive results: Individual file ready for download
-            if (messageType === 'file_ready') {
-              
-              if (data.file_info && data.file_info.file_id) {
-                // Add file to results immediately as it becomes available
-                setResultFiles(prev => {
-                  const existing = prev || [];
-                  // Avoid duplicates
-                  if (existing.some(f => f.file_id === data.file_info.file_id)) {
-                    return existing;
-                  }
-                  const newFiles = [...existing, data.file_info];
-                  
-                  // Fetch table preview for the first file
-                  if (newFiles.length === 1 && tablePreviewData.length === 0) {
-                    fetchTablePreview(data.file_info.file_id);
-                  }
-                  
-                  return newFiles;
-                });
-
-                // Show toast for individual file completion
-                // toast.success(`File ${data.image_number}/${data.total_images} ready!`);
-              }
-            }
-
-            // Progress updates
-            if (messageType === 'job_progress' || messageType === 'progress') {
-              // Update status but keep processing
-              if (data.total_images && data.processed_images !== undefined) {
-              }
-            }
-
-            // Job completed
-            if (messageType === 'job_completed' || data.status === 'completed') {
-              
-              setProcessingComplete(true);
-              setIsProcessing(false);
-
-              // Set final files if provided
-              if (data.files && data.files.length > 0) {
-                setResultFiles(data.files);
-              }
-
-              // Update context
-              if (updateState) {
-                updateState({
-                  processedFiles: resultFiles,
-                  status: 'completed',
-                  processingComplete: true,
-                  uploadedFiles: []
-                });
-              }
-
-              // toast.success(`All ${data.total_images || totalFilesToProcess} files processed!`);
-
-              // COMMENTED OUT: Show limit dialog if no more free trials
-              // if (newInfo.remaining === 0) {
-              //   setTimeout(() => setShowLimitDialog(true), 2000);
-              // }
-
-              // Disconnect WebSocket
-              if (wsRef.current) {
-                wsRef.current.disconnect();
-                wsRef.current = null;
-              }
-            }
-
-            // Job failed
-            if (messageType === 'job_error' || data.status === 'failed') {
-              const errorMsg = data.error || data.errors?.[0] || 'Processing failed';
-              setIsProcessing(false);
-              toast.error(errorMsg);
-              
-              // Disconnect WebSocket
-              if (wsRef.current) {
-                wsRef.current.disconnect();
-                wsRef.current = null;
-              }
-            }
-          },
-          (error) => {
-          }
-        );
-
-        websocket.connect();
-        wsRef.current = websocket;
-      } else {
-        // Fallback to polling if no session_id
-        
-        const checkStatus = async () => {
-          try {
-            const status = await ocrApi.getStatus(response.job_id);
-            
-            if (status.results && status.results.files && status.results.files.length > 0) {
-              setResultFiles(status.results.files);
-              
-              if (status.results.files.length > 0 && tablePreviewData.length === 0) {
-                fetchTablePreview(status.results.files[0].file_id);
-              }
-            }
-
-            if (status.status === 'completed') {
-              setProcessingComplete(true);
-              setIsProcessing(false);
-              // toast.success(`${status.results?.files?.length || 0} file(s) processed!`);
-              
-              // COMMENTED OUT: Show limit dialog
-              // if (newInfo.remaining === 0) {
-              //   setTimeout(() => setShowLimitDialog(true), 2000);
-              // }
-            } else if (status.status === 'failed') {
-              setIsProcessing(false);
-              toast.error('Processing failed');
-            } else {
-              setTimeout(checkStatus, 2000);
-            }
-          } catch (error) {
-            setIsProcessing(false);
-            toast.error('Failed to process images. Please try again.');
-          }
-        };
-        
-        setTimeout(checkStatus, 2000);
-      }
+      startJobMonitoring(response.job_id, response.session_id);
 
     } catch (error: any) {
       setIsProcessing(false);
@@ -802,6 +687,149 @@ export default function Home() {
     }
   };
 
+  function stopJobMonitoring() {
+    if (pollingRef.current) {
+      clearTimeout(pollingRef.current);
+      pollingRef.current = null;
+    }
+    if (wsRef.current) {
+      wsRef.current.disconnect();
+      wsRef.current = null;
+    }
+  }
+
+  function applyRecoveredStatus(status: JobStatusResponse): boolean {
+    if (status.progress?.total_images) {
+      setTotalFilesToProcess(status.progress.total_images);
+    }
+
+    if (status.results?.files?.length) {
+      setResultFiles(status.results.files);
+      if (tablePreviewData.length === 0) {
+        fetchTablePreview(status.results.files[0].file_id);
+      }
+    }
+
+    if (status.status === 'completed' || status.status === 'partially_completed') {
+      setProcessingComplete(true);
+      setIsProcessing(false);
+      if (updateState) {
+        updateState({
+          processedFiles: status.results?.files || [],
+          status: 'completed',
+          processingComplete: true,
+          uploadedFiles: []
+        });
+      }
+      stopJobMonitoring();
+      return true;
+    }
+
+    if (status.status === 'failed') {
+      setProcessingComplete(false);
+      setIsProcessing(false);
+      stopJobMonitoring();
+      toast.error(status.errors?.[0] || 'Processing failed');
+      return true;
+    }
+
+    setIsProcessing(true);
+    setProcessingComplete(false);
+    return false;
+  }
+
+  function startStatusPolling(jobId: string) {
+    if (pollingRef.current) {
+      clearTimeout(pollingRef.current);
+      pollingRef.current = null;
+    }
+
+    const checkStatus = async () => {
+      try {
+        const status = await ocrApi.getStatus(jobId);
+        const terminal = applyRecoveredStatus(status);
+        if (!terminal) {
+          pollingRef.current = setTimeout(checkStatus, 3000);
+        }
+      } catch {
+        pollingRef.current = setTimeout(checkStatus, 5000);
+      }
+    };
+
+    pollingRef.current = setTimeout(checkStatus, 800);
+  }
+
+  function startJobMonitoring(jobId: string, sessionId?: string) {
+    if (!jobId) return;
+
+    stopJobMonitoring();
+    setCurrentSessionId(sessionId || null);
+    setIsProcessing(true);
+    setProcessingComplete(false);
+    setLatestRecoverableJob(null);
+    startStatusPolling(jobId);
+
+    if (!sessionId) return;
+
+    const websocket = new OCRWebSocket(
+      sessionId,
+      (data) => {
+        const messageType = data.type || '';
+
+        if (messageType === 'file_ready' && data.file_info?.file_id) {
+          setResultFiles(prev => {
+            const existing = prev || [];
+            if (existing.some(f => f.file_id === data.file_info.file_id)) return existing;
+            const newFiles = [...existing, data.file_info];
+            if (newFiles.length === 1 && tablePreviewData.length === 0) {
+              fetchTablePreview(data.file_info.file_id);
+            }
+            return newFiles;
+          });
+        }
+
+        if (messageType === 'job_completed' || data.status === 'completed') {
+          setProcessingComplete(true);
+          setIsProcessing(false);
+          if (data.files && data.files.length > 0) {
+            setResultFiles(data.files);
+          }
+          stopJobMonitoring();
+        }
+
+        if (messageType === 'job_error' || data.status === 'failed') {
+          const errorMsg = data.error || data.errors?.[0] || 'Processing failed';
+          setIsProcessing(false);
+          stopJobMonitoring();
+          toast.error(errorMsg);
+        }
+      },
+      () => {
+        startStatusPolling(jobId);
+      }
+    );
+
+    websocket.connect();
+    wsRef.current = websocket;
+  }
+
+  async function continueLatestJob() {
+    if (!latestRecoverableJob?.job_id) return;
+
+    setRecoveryLoading(true);
+    try {
+      setUploadedFiles([]);
+      setResultFiles([]);
+      setTotalFilesToProcess(latestRecoverableJob.total_images || 0);
+      startJobMonitoring(latestRecoverableJob.job_id, latestRecoverableJob.session_id);
+      toast.success('Latest batch resumed.');
+    } catch (error: any) {
+      toast.error(error?.detail || 'Could not resume the latest batch.');
+    } finally {
+      setRecoveryLoading(false);
+    }
+  }
+
   const handleReset = () => {
     setUploadedFiles([]);
     setResultFiles([]);
@@ -811,6 +839,7 @@ export default function Home() {
     setFirstImageUrl('');
     setTotalFilesToProcess(0);
     setCurrentSessionId(null);
+    stopJobMonitoring();
     isExecutingAutoActionsRef.current = false;
     
     // Clear context state
@@ -1031,7 +1060,7 @@ export default function Home() {
       {/* Navigation Bar */}
       <nav className="fixed top-0 left-0 right-0 z-50 pt-3 lg:pt-4">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between rounded-[35px] border border-white/50 !bg-white/30 p-2 shadow-xl shadow-[#441F84]/15 ring-1 ring-[#A78BFA]/30 backdrop-blur-2xl lg:p-3">
+          <div className="flex items-center justify-between rounded-[35px] border border-white/50 bg-[#FCF2FF]/80 p-2 shadow-xl shadow-[#441F84]/15 ring-1 ring-[#A78BFA]/30 backdrop-blur-2xl lg:p-3">
             {/* Logo */}
             <div className="flex-shrink-0">
               <AppLogo />
@@ -1179,7 +1208,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden" style={{ backgroundColor: "#FAE4FF" }}>
+        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden" style={{ backgroundColor: "#FCF2FF" }}>
           <div
             ref={topBackgroundRef}
             aria-hidden="true"
@@ -1450,6 +1479,26 @@ export default function Home() {
               <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : 'w-full max-w-7xl'}`}>
                 <div className={resultFiles.length === 0 ? "grid items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(440px,0.95fr)]" : "relative w-full"}>
                 <div className="ax-glass-card relative w-full space-y-3 rounded-[1.5rem] border border-white/45 p-4 sm:p-5">
+                  {latestRecoverableJob && !isProcessing && (
+                    <div className="rounded-[1.25rem] border border-[#eadfff] bg-[#FCF2FF]/85 p-4 shadow-[0_16px_45px_rgba(68,31,132,0.10)] backdrop-blur-xl">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <p className="text-sm font-bold text-foreground">Continue latest batch</p>
+                          <p className="text-xs text-muted-foreground">
+                            {latestRecoverableJob.processed_images || 0} of {latestRecoverableJob.total_images || 0} images processed
+                          </p>
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={continueLatestJob}
+                          disabled={recoveryLoading}
+                          className="rounded-2xl bg-[#2f165e] text-white hover:bg-[#441f84]"
+                        >
+                          {recoveryLoading ? 'Resuming...' : 'Continue latest job'}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                   {/* Upload Dropzone - Hide when showing results */}
                   {!processingComplete && resultFiles.length === 0 && (
                     <div className="space-y-3">
@@ -1970,11 +2019,11 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative isolate -mt-32 overflow-hidden pt-32" style={{ backgroundColor: "#FAE4FF" }}>
+        <div className="relative isolate -mt-32 overflow-hidden pt-32" style={{ backgroundColor: "#FCF2FF" }}>
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0"
-            style={{ backgroundColor: "#FAE4FF" }}
+            style={{ backgroundColor: "#FCF2FF" }}
           />
           <div className="relative z-10">
         {/* Why Choose Us Section */}
