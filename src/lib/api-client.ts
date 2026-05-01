@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios'
 import { createClient } from '@/utils/supabase/client'
+import { publicConfig } from '@/lib/public-config'
 
 // Create Supabase client instance
 const supabase = createClient()
@@ -58,12 +59,9 @@ async function signOut() {
 }
 
 // API configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
-const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://backend-lively-hill-7043.fly.dev'
-
 // Create axios instance with mobile-optimized settings
 const apiClient: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: publicConfig.apiUrl,
   timeout: isMobile ? 60000 : 30000, // 60 seconds for mobile, 30 for desktop
   headers: {
     'Content-Type': 'application/json',
@@ -564,8 +562,8 @@ export class OCRWebSocket {
     try {
       const token = await getAccessToken()
       const wsUrl = token
-        ? `${WS_BASE_URL}/api/v1/ws/session/${this.sessionId}?token=${token}`
-        : `${WS_BASE_URL}/api/v1/ws/session/${this.sessionId}`
+        ? `${publicConfig.wsUrl}/api/v1/ws/session/${this.sessionId}?token=${token}`
+        : `${publicConfig.wsUrl}/api/v1/ws/session/${this.sessionId}`
 
       this.ws = new WebSocket(wsUrl)
 

@@ -72,6 +72,7 @@ import { PenTool, Monitor, Edit3 } from "lucide-react"
 import { wakeUpBackendSilently } from "@/lib/backend-health"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import * as XLSX from 'xlsx'
+import { buildDownloadUrl, buildMessengerShareUrl, buildOfficeViewerUrl } from "@/lib/public-config"
 
 function ProcessImagesFallback() {
   return (
@@ -638,9 +639,6 @@ function ProcessImagesContent() {
       return
     }
     
-    // Clean the base URL to ensure no whitespace
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
-    
     let shareContent = ''
     
     // Check if this is a session-based batch share
@@ -652,7 +650,7 @@ function ProcessImagesContent() {
       
       // Generate links for all files
       const links = selectedFilesForBatch.map((file, index) => {
-        const fileUrl = `${baseUrl}/api/v1/download/${file.file_id}`.replace(/\s/g, '')
+        const fileUrl = buildDownloadUrl(file.file_id)
         return `File ${index + 1} (${file.filename || 'result.xlsx'}): ${fileUrl}`
       }).join('\n')
       
@@ -660,7 +658,7 @@ function ProcessImagesContent() {
     } 
     // Single file share
     else {
-      const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
+      const shareUrl = buildDownloadUrl(selectedFileToShare.file_id)
       shareContent = shareUrl
     }
     
@@ -686,9 +684,6 @@ function ProcessImagesContent() {
     }
     
     
-    // Clean the base URL to remove any newlines or whitespace
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
-    
     // For batch sharing, create a message with all links
     let shareUrl = ''
     
@@ -700,21 +695,23 @@ function ProcessImagesContent() {
     else if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
       // For Messenger, we can only share one link at a time, so create a landing page URL
       // For now, we'll share the first file and indicate there are more
-      shareUrl = `${baseUrl}/api/v1/download/${selectedFilesForBatch[0].file_id}`.replace(/\s/g, '')
+      shareUrl = buildDownloadUrl(selectedFilesForBatch[0].file_id)
     } 
     // Single file share
     else {
-      shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
+      shareUrl = buildDownloadUrl(selectedFileToShare.file_id)
     }
     
-    
-    // Get app ID from environment or use default
-    const appId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || '140586622674265').replace(/"/g, '').trim()
     
     // Facebook Messenger Send Dialog for desktop/web
     // Note: This opens the send dialog, not the share dialog
     const currentUrl = window.location.origin
-    const messengerUrl = `https://www.facebook.com/dialog/send?app_id=${appId}&link=${encodeURIComponent(shareUrl)}&redirect_uri=${encodeURIComponent(currentUrl)}`
+    const messengerUrl = buildMessengerShareUrl(shareUrl, currentUrl)
+    if (!messengerUrl) {
+      navigator.clipboard.writeText(shareUrl).catch(() => undefined)
+      toast.error('Messenger sharing is not configured. Link copied instead.')
+      return
+    }
     
     
     // Try to open in popup first
@@ -739,9 +736,6 @@ function ProcessImagesContent() {
     }
     
     
-    // Clean the base URL to ensure no whitespace
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
-    
     let subject = ''
     let body = ''
     
@@ -764,7 +758,7 @@ Best regards`
       subject = `${selectedFilesForBatch.length} Excel files processed with AxLiner`
       
       const fileLinks = selectedFilesForBatch.map((file, index) => {
-        const fileUrl = `${baseUrl}/api/v1/download/${file.file_id}`.replace(/\s/g, '')
+        const fileUrl = buildDownloadUrl(file.file_id)
         return `File ${index + 1} (${file.filename || 'result.xlsx'}): ${fileUrl}`
       }).join('\n')
       
@@ -777,7 +771,7 @@ ${fileLinks}
 Best regards`
     } else {
       // Single file
-      const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
+      const shareUrl = buildDownloadUrl(selectedFileToShare.file_id)
       subject = `Excel file: ${selectedFileToShare.filename || 'Processed with AxLiner'}`
       body = `Hi,
 
@@ -810,9 +804,6 @@ Best regards`
     }
     
     
-    // Clean the base URL to ensure no whitespace
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
-    
     let shareContent = ''
     
     // Check if session-based share
@@ -822,7 +813,7 @@ Best regards`
     // Legacy batch sharing
     else if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
       const fileLinks = selectedFilesForBatch.map((file, index) => {
-        const fileUrl = `${baseUrl}/api/v1/download/${file.file_id}`.replace(/\s/g, '')
+        const fileUrl = buildDownloadUrl(file.file_id)
         return `File ${index + 1} (${file.filename || 'result.xlsx'}): ${fileUrl}`
       }).join('\n')
       
@@ -830,7 +821,7 @@ Best regards`
     } 
     // Single file
     else {
-      const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
+      const shareUrl = buildDownloadUrl(selectedFileToShare.file_id)
       shareContent = shareUrl
     }
     
@@ -876,9 +867,6 @@ Best regards`
     }
     
     
-    // Clean the base URL to ensure no whitespace
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
-    
     let tweetText = ''
     let shareUrl = ''
     
@@ -890,12 +878,12 @@ Best regards`
     // Legacy batch sharing
     else if (selectedFileToShare.file_id === '__BATCH__' && selectedFilesForBatch.length > 0) {
       // For batch, use the first file URL as example
-      shareUrl = `${baseUrl}/api/v1/download/${selectedFilesForBatch[0].file_id}`.replace(/\s/g, '')
+      shareUrl = buildDownloadUrl(selectedFilesForBatch[0].file_id)
       tweetText = `Check out these ${selectedFilesForBatch.length} Excel files I processed with AxLiner! 📊✨`
     }
     // Single file
     else {
-      shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '')
+      shareUrl = buildDownloadUrl(selectedFileToShare.file_id)
       tweetText = `Check out this Excel file I processed with AxLiner! 📊✨`
     }
     
@@ -1439,8 +1427,7 @@ Best regards`
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                const fileUrl = encodeURIComponent(`https://backend-lively-hill-7043.fly.dev/api/v1/download/${resultFiles[0].file_id}`)
-                                window.open(`https://view.officeapps.live.com/op/view.aspx?src=${fileUrl}`, '_blank')
+                                window.open(buildOfficeViewerUrl(resultFiles[0].file_id), '_blank')
                               }}
                               className="h-9 gap-1.5 rounded-xl border-[#eadfff] bg-white/70 text-foreground hover:bg-white"
                             >
@@ -1536,8 +1523,7 @@ Best regards`
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                const fileUrl = encodeURIComponent(`https://backend-lively-hill-7043.fly.dev/api/v1/download/${file.file_id}`)
-                                window.open(`https://view.officeapps.live.com/op/view.aspx?src=${fileUrl}`, '_blank')
+                                window.open(buildOfficeViewerUrl(file.file_id), '_blank')
                               }}
                               className="h-9 gap-1.5 rounded-xl border-[#eadfff] bg-white/70 text-foreground hover:bg-white"
                             >
@@ -1773,14 +1759,12 @@ Best regards`
                 <Input
                   readOnly
                   value={(() => {
-                    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
-
                     if (selectedFileToShare?.file_id === '__BATCH__' && selectedFilesForBatch?.length > 0) {
                       return `Multiple files (${selectedFilesForBatch.length} links) - Click copy to get all`
                     }
 
                     const fileId = selectedFileToShare?.file_id || ''
-                    return fileId && fileId !== '__BATCH__' ? `${baseUrl}/api/v1/download/${fileId}`.replace(/\s/g, '') : ''
+                    return fileId && fileId !== '__BATCH__' ? buildDownloadUrl(fileId) : ''
                   })()}
                   className="text-xs h-9 bg-muted/50 border-muted-foreground/20"
                 />

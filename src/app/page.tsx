@@ -40,6 +40,7 @@ import { wakeUpBackendSilently } from "@/lib/backend-health";
 import { getTrialInfo, incrementTrialUploadCount } from "@/lib/free-trial";
 import { ocrApi, OCRWebSocket } from "@/lib/api-client";
 import type { AppLimits } from "@/lib/api-client";
+import { buildDownloadUrl, buildMessengerShareUrl, buildOfficeViewerUrl } from "@/lib/public-config";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -813,8 +814,6 @@ export default function Home() {
       return;
     }
     
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim();
-    
     let shareContent = '';
     
     // Check if this is a session-based batch share
@@ -822,7 +821,7 @@ export default function Home() {
       shareContent = shareSession.share_url;
     } else {
       // Single file share
-      shareContent = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
+      shareContent = buildDownloadUrl(selectedFileToShare.file_id);
     }
     
     
@@ -840,20 +839,22 @@ export default function Home() {
   const handleMessengerShare = () => {
     if (!selectedFileToShare?.file_id) return;
     
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim();
-    
     let shareUrl = '';
     
     // Check if session-based share
     if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
       shareUrl = shareSession.share_url.replace(/\s/g, '');
     } else {
-      shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
+      shareUrl = buildDownloadUrl(selectedFileToShare.file_id);
     }
     
-    const appId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || '140586622674265').replace(/"/g, '').trim();
     const currentUrl = window.location.origin;
-    const messengerUrl = `https://www.facebook.com/dialog/send?app_id=${appId}&link=${encodeURIComponent(shareUrl)}&redirect_uri=${encodeURIComponent(currentUrl)}`;
+    const messengerUrl = buildMessengerShareUrl(shareUrl, currentUrl);
+    if (!messengerUrl) {
+      navigator.clipboard.writeText(shareUrl).catch(() => undefined);
+      toast.error('Messenger sharing is not configured. Link copied instead.');
+      return;
+    }
     
     const popup = window.open(messengerUrl, 'messenger-share-dialog', 'width=600,height=500');
     if (!popup || popup.closed || typeof popup.closed == 'undefined') {
@@ -864,8 +865,6 @@ export default function Home() {
   const handleEmailShare = () => {
     if (!selectedFileToShare?.file_id) return;
     
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim();
-    
     let subject = '';
     let body = '';
     
@@ -875,7 +874,7 @@ export default function Home() {
       const sessionUrl = shareSession.share_url.replace(/\s/g, '');
       body = `Hi,\n\nI've processed ${selectedFilesForBatch.length} files with AxLiner. You can download all files from this link:\n\n${sessionUrl}\n\nBest regards`;
     } else {
-      const shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
+      const shareUrl = buildDownloadUrl(selectedFileToShare.file_id);
       subject = `Excel file: ${selectedFileToShare.filename || 'Processed with AxLiner'}`;
       body = `Hi,\n\nI've processed this file with AxLiner. You can download it here:\n\n${shareUrl}\n\nBest regards`;
     }
@@ -892,15 +891,13 @@ export default function Home() {
   const handleLinkedInMessage = () => {
     if (!selectedFileToShare?.file_id) return;
     
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim();
-    
     let shareContent = '';
     
     // Check if session-based share
     if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
       shareContent = shareSession.share_url.replace(/\s/g, '');
     } else {
-      shareContent = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
+      shareContent = buildDownloadUrl(selectedFileToShare.file_id);
     }
     
     navigator.clipboard.writeText(shareContent)
@@ -927,8 +924,6 @@ export default function Home() {
   const handleXShare = () => {
     if (!selectedFileToShare?.file_id) return;
     
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim();
-    
     let tweetText = '';
     let shareUrl = '';
     
@@ -937,7 +932,7 @@ export default function Home() {
       shareUrl = shareSession.share_url.replace(/\s/g, '');
       tweetText = `Check out these ${selectedFilesForBatch.length} Excel files I processed with AxLiner! 📊✨`;
     } else {
-      shareUrl = `${baseUrl}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '');
+      shareUrl = buildDownloadUrl(selectedFileToShare.file_id);
       tweetText = `Check out this Excel file I processed with AxLiner! 📊✨`;
     }
     
@@ -1169,7 +1164,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden" style={{ backgroundColor: "#D0BCD5" }}>
+        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden" style={{ backgroundColor: "#FAE4FF" }}>
           <div
             ref={topBackgroundRef}
             aria-hidden="true"
@@ -1693,8 +1688,7 @@ export default function Home() {
                                     size="default"
                                     variant="outline"
                                     onClick={() => {
-                                      const fileUrl = encodeURIComponent(`https://backend-lively-hill-7043.fly.dev/api/v1/download/${resultFiles[0].file_id}`)
-                                      window.open(`https://view.officeapps.live.com/op/view.aspx?src=${fileUrl}`, '_blank')
+                                      window.open(buildOfficeViewerUrl(resultFiles[0].file_id), '_blank')
                                     }}
                                     className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                                   >
@@ -1740,8 +1734,7 @@ export default function Home() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => {
-                                    const fileUrl = encodeURIComponent(`https://backend-lively-hill-7043.fly.dev/api/v1/download/${file.file_id}`)
-                                    window.open(`https://view.officeapps.live.com/op/view.aspx?src=${fileUrl}`, '_blank')
+                                    window.open(buildOfficeViewerUrl(file.file_id), '_blank')
                                   }}
                                   className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                                 >
@@ -1786,8 +1779,7 @@ export default function Home() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => {
-                                    const fileUrl = encodeURIComponent(`https://backend-lively-hill-7043.fly.dev/api/v1/download/${file.file_id}`)
-                                    window.open(`https://view.officeapps.live.com/op/view.aspx?src=${fileUrl}`, '_blank')
+                                    window.open(buildOfficeViewerUrl(file.file_id), '_blank')
                                   }}
                                   className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
                                 >
@@ -1963,11 +1955,11 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative isolate -mt-32 overflow-hidden pt-32" style={{ backgroundColor: "#D0BCD5" }}>
+        <div className="relative isolate -mt-32 overflow-hidden pt-32" style={{ backgroundColor: "#FAE4FF" }}>
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0"
-            style={{ backgroundColor: "#D0BCD5" }}
+            style={{ backgroundColor: "#FAE4FF" }}
           />
           <div className="relative z-10">
         {/* Why Choose Us Section */}
@@ -2584,7 +2576,7 @@ export default function Home() {
               <div className="flex items-center gap-2">
                 <Input
                   readOnly
-                  value={selectedFileToShare?.file_id ? `${(process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()}/api/v1/download/${selectedFileToShare.file_id}`.replace(/\s/g, '') : ''}
+                  value={selectedFileToShare?.file_id ? buildDownloadUrl(selectedFileToShare.file_id) : ''}
                   className="text-xs h-9 bg-muted/50 border-muted-foreground/20"
                 />
                 <Button

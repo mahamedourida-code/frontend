@@ -3,7 +3,7 @@
  * Silently wakes the backend without blocking the user
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev'
+import { buildApiUrl } from "@/lib/public-config"
 
 /**
  * Silently wake up the backend server
@@ -16,7 +16,7 @@ export async function wakeUpBackendSilently(): Promise<void> {
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 10000) // 10s timeout
     
-    fetch(`${API_URL}/api/v1/`, {
+    fetch(buildApiUrl("/api/v1/"), {
       method: 'GET',
       signal: controller.signal,
       headers: {
@@ -31,5 +31,4 @@ export async function wakeUpBackendSilently(): Promise<void> {
     // Ignore all errors - this is fire and forget
   }
 }
-
 

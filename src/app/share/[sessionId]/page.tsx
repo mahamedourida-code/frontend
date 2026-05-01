@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { AppIcon } from '@/components/AppIcon'
 import { ocrApi } from '@/lib/api-client'
+import { buildApiUrl, buildDownloadUrl } from '@/lib/public-config'
 import { toast } from 'sonner'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -95,9 +96,7 @@ export default function SharePage() {
     try {
       setDownloading(fileId)
       
-      // Clean the base URL
-      const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
-      const downloadUrl = `${baseUrl}/api/v1/download/${fileId}`
+      const downloadUrl = buildDownloadUrl(fileId)
       
       // Open in new tab for download
       window.open(downloadUrl, '_blank')
@@ -117,9 +116,7 @@ export default function SharePage() {
     try {
       setDownloadingAll(true)
       
-      // Clean the base URL
-      const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://backend-lively-hill-7043.fly.dev').trim()
-      const downloadUrl = `${baseUrl}/api/v1/sessions/${sessionId}/download-all`
+      const downloadUrl = buildApiUrl(`/api/v1/sessions/${sessionId}/download-all`)
       
       // Open in new tab for download
       window.open(downloadUrl, '_blank')
