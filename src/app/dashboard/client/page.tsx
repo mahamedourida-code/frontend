@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect, useRef } from "react"
+import { Suspense, useState, useCallback, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -74,7 +74,25 @@ import { wakeUpBackendSilently } from "@/lib/backend-health"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import * as XLSX from 'xlsx'
 
+function ProcessImagesFallback() {
+  return (
+    <div className="min-h-screen bg-[#FFF9E7] p-3 sm:p-4">
+      <div className="flex min-h-[calc(100vh-2rem)] items-center justify-center rounded-[30px] border border-[#eadfff] bg-white/55 backdrop-blur-xl">
+        <div className="h-12 w-12 rounded-full border-4 border-[#d9c9fb] border-t-[#2f165e] animate-spin" />
+      </div>
+    </div>
+  )
+}
+
 export default function ProcessImagesPage() {
+  return (
+    <Suspense fallback={<ProcessImagesFallback />}>
+      <ProcessImagesContent />
+    </Suspense>
+  )
+}
+
+function ProcessImagesContent() {
   const { user, loading: authLoading, session } = useAuth()
   const router = useRouter()
   const supabase = createClient() // Create single instance at component level
