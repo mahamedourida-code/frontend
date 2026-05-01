@@ -41,6 +41,7 @@ import { getTrialInfo, incrementTrialUploadCount } from "@/lib/free-trial";
 import { ocrApi, OCRWebSocket } from "@/lib/api-client";
 import type { AppLimits, JobStatusResponse, RecoverableJobSummary } from "@/lib/api-client";
 import { buildDownloadUrl, buildMessengerShareUrl, buildOfficeViewerUrl } from "@/lib/public-config";
+import { showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -502,7 +503,7 @@ export default function Home() {
     if (files.length > 0) {
       const filesToUse = files.slice(0, maxUploadFiles);
       if (files.length > maxUploadFiles) {
-        toast.error(`Your current limit is ${maxUploadFiles} images per batch.`);
+        showBatchLimitToast(maxUploadFiles);
       }
       setUploadedFiles(filesToUse);
     }
@@ -525,7 +526,7 @@ export default function Home() {
       });
       const filesToUse = fileArray.slice(0, maxUploadFiles);
       if (fileArray.length > maxUploadFiles) {
-        toast.error(`Your current limit is ${maxUploadFiles} images per batch.`);
+        showBatchLimitToast(maxUploadFiles);
       }
       setUploadedFiles(filesToUse);
     }
@@ -538,7 +539,7 @@ export default function Home() {
     }
 
     if (uploadedFiles.length > maxUploadFiles) {
-      toast.error(`Your current limit is ${maxUploadFiles} images per batch.`);
+      showBatchLimitToast(maxUploadFiles);
       setUploadedFiles(prev => prev.slice(0, maxUploadFiles));
       return;
     }
@@ -565,7 +566,7 @@ export default function Home() {
   const processImages = useCallback(async () => {
     try {
       if (uploadedFiles.length > maxUploadFiles) {
-        toast.error(`Your current limit is ${maxUploadFiles} images per batch.`);
+        showBatchLimitToast(maxUploadFiles);
         setUploadedFiles(prev => prev.slice(0, maxUploadFiles));
         return;
       }
@@ -656,22 +657,25 @@ export default function Home() {
         code === 'INSUFFICIENT_CREDITS' ||
         code === 'DAILY_IMAGE_LIMIT_EXCEEDED';
 
-      if (quotaError) {
-        toast.error(error?.detail || 'Free trial limit reached. Create an account or upgrade to keep converting.');
-        if (isAuthenticated) {
-          window.location.href = '/pricing?from=quota';
-        } else {
-          setShowLimitDialog(true);
-        }
+      if (quotaError && !isAuthenticated) {
+        setShowLimitDialog(true);
         return;
       }
 
-      toast.error(error?.detail || 'Failed to process images. Please try again.');
+      showApiErrorToast(error, {
+        isAuthenticated,
+        upgradeHref: "/pricing?from=quota",
+        billingHref: "/dashboard/settings?section=billing",
+        onSignIn: () => openSignInModal("/pricing?from=quota"),
+        onRetry: () => {
+          void processImages();
+        },
+      });
     } finally {
       uploadAbortRef.current = null;
       setIsUploading(false);
     }
-  }, [uploadedFiles, updateState, maxUploadFiles, isAuthenticated]);
+  }, [uploadedFiles, updateState, maxUploadFiles, isAuthenticated, openSignInModal]);
 
   const handleDownloadFile = async (fileId: string) => {
 
@@ -1672,7 +1676,7 @@ export default function Home() {
                                       const remainingSlots = maxUploadFiles - prev.length;
                                       const filesToAdd = fileArray.slice(0, Math.max(0, remainingSlots));
                                       if (fileArray.length > filesToAdd.length) {
-                                        toast.error(`Your current limit is ${maxUploadFiles} images per batch.`);
+                                        showBatchLimitToast(maxUploadFiles);
                                       }
                                       return [...prev, ...filesToAdd];
                                     });

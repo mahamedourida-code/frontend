@@ -18,6 +18,7 @@ import { toast } from "sonner"
 import { AppIcon } from "@/components/AppIcon"
 import { ocrApi } from "@/lib/api-client"
 import type { AppLimits, RecoverableJobSummary } from "@/lib/api-client"
+import { showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
 import Image from "next/image"
@@ -541,7 +542,7 @@ function ProcessImagesContent() {
       const remainingSlots = Math.max(0, maxUploadFiles - prev.length)
       const filesToAdd = files.slice(0, remainingSlots)
       if (files.length > filesToAdd.length) {
-        toast.error(`Your current limit is ${maxUploadFiles} images per batch.`)
+        showBatchLimitToast(maxUploadFiles)
       }
       return [...prev, ...filesToAdd]
     })
@@ -566,7 +567,7 @@ function ProcessImagesContent() {
         const remainingSlots = Math.max(0, maxUploadFiles - prev.length)
         const filesToAdd = fileArray.slice(0, remainingSlots)
         if (fileArray.length > filesToAdd.length) {
-          toast.error(`Your current limit is ${maxUploadFiles} images per batch.`)
+          showBatchLimitToast(maxUploadFiles)
         }
         return [...prev, ...filesToAdd]
       })
@@ -576,7 +577,7 @@ function ProcessImagesContent() {
   const handleProcessImages = useCallback(async () => {
     if (uploadedFiles.length === 0) return
     if (uploadedFiles.length > maxUploadFiles) {
-      toast.error(`Your current limit is ${maxUploadFiles} images per batch.`)
+      showBatchLimitToast(maxUploadFiles)
       setUploadedFiles(prev => prev.slice(0, maxUploadFiles))
       return
     }
@@ -610,21 +611,17 @@ function ProcessImagesContent() {
         // toast.success(`Processing ${imagesCount} image${imagesCount > 1 ? 's' : ''}...`)
       }
     } catch (error: any) {
-      // Handle errors
-      if (error?.status_code === 402 || error?.code === "INSUFFICIENT_CREDITS" || error?.code === "DAILY_IMAGE_LIMIT_EXCEEDED") {
-        toast.error(error?.detail || "You need more credits to process this batch.")
-        router.push("/pricing?from=quota")
-      } else if (error?.status_code === 429) {
-        toast.error(error?.detail || "Processing is busy. Please try again shortly.")
-      } else if (error?.status_code === 500) {
-        // Server error
-        toast.error('Server error. Please try again or contact support.')
-      } else {
-        // Generic error
-        toast.error(error?.detail || 'Failed to process images. Please try again.')
-      }
+      showApiErrorToast(error, {
+        isAuthenticated: true,
+        upgradeHref: "/pricing?from=quota",
+        billingHref: "/dashboard/settings?section=billing",
+        onSignIn: () => router.push(`/sign-in?next=${encodeURIComponent("/dashboard/client")}`),
+        onRetry: () => {
+          void handleProcessImages()
+        },
+      })
     }
-  }, [uploadedFiles, uploadBatch, connectWebSocket, resultFiles, reset, maxUploadFiles])
+  }, [uploadedFiles, uploadBatch, connectWebSocket, resultFiles, reset, maxUploadFiles, router])
 
   const handleCancelProcessing = useCallback(async () => {
     await cancelProcessing()

@@ -130,8 +130,7 @@ export function useOCR(): UseOCRReturn {
       const errorMessage = err.detail || err.message || 'Failed to upload images'
       setError(errorMessage)
       setIsProcessing(false) // Reset processing state on error
-      toast.error(errorMessage)
-      return null
+      throw err
     } finally {
       uploadAbortRef.current = null
       setIsUploading(false)
