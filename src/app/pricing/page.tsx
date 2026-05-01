@@ -20,7 +20,9 @@ type BillingMode = "monthly" | "annual"
 const plans: Array<{
   name: string
   eyebrow: string
-  credits: string
+  price: string
+  cadence: string
+  pages: string
   detail: string
   features: Array<{ text: string; muted?: boolean }>
   planKey?: BillingPlanKey
@@ -29,7 +31,9 @@ const plans: Array<{
   {
     name: "Free",
     eyebrow: "Start",
-    credits: "Live free limit",
+    price: "$0",
+    cadence: "forever",
+    pages: "Live free limit",
     detail: "Try the workflow before upgrading.",
     features: [
       { text: "Use the current backend free limits" },
@@ -41,7 +45,9 @@ const plans: Array<{
   {
     name: "Pro",
     eyebrow: "Best for operators",
-    credits: "1,000 monthly credits",
+    price: "$5",
+    cadence: "per month",
+    pages: "1,000 pages",
     detail: "For repeat document batches and weekly processing.",
     planKey: "pro_monthly",
     popular: true,
@@ -55,7 +61,9 @@ const plans: Array<{
   {
     name: "Business",
     eyebrow: "Heavy workflows",
-    credits: "5,000 monthly credits",
+    price: "$25",
+    cadence: "per month",
+    pages: "5,000 pages",
     detail: "For larger batches and higher processing volume.",
     planKey: "business_monthly",
     features: [
@@ -68,6 +76,15 @@ const plans: Array<{
 ]
 
 const companyLogos = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+function SymbolTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[20px] border border-[#e6dbff] bg-white/60 px-4 py-3 text-left shadow-[0_12px_35px_rgba(68,31,132,0.08)] backdrop-blur">
+      <p className="text-xl font-black text-[#2f165e]">{value}</p>
+      <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#7c62b1]">{label}</p>
+    </div>
+  )
+}
 
 function PricingFallback() {
   return (
@@ -161,33 +178,42 @@ function PricingContent() {
           </Button>
         </nav>
 
-        <div className="mx-auto mt-12 max-w-4xl text-center sm:mt-16">
-          <Badge className="mb-5 rounded-full border border-[#d8c7fb] bg-white/60 px-4 py-1.5 text-[#4b2d82] shadow-sm backdrop-blur">
-            Simple billing for document batches
-          </Badge>
-          <h1 className="mx-auto max-w-3xl text-4xl font-black tracking-tight text-foreground sm:text-6xl">
-            Simple and transparent pricing for growing teams
-          </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">
-            Start free, then upgrade when your document volume needs larger batches, renewed credits, and managed billing.
-          </p>
+        <div className="mx-auto mt-10 grid max-w-6xl items-end gap-8 lg:grid-cols-[1fr_360px]">
+          <div>
+            <Badge className="mb-5 rounded-full border border-[#d8c7fb] bg-white/62 px-4 py-1.5 text-[#4b2d82] shadow-sm backdrop-blur">
+              Pricing for OCR pages
+            </Badge>
+            <h1 className="max-w-3xl text-4xl font-black leading-[1.03] tracking-tight text-foreground sm:text-5xl">
+              Clear plans for turning images into Excel.
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground">
+              Start free. Upgrade when batch volume matters. Each page equals one processed image or document page.
+            </p>
+          </div>
 
-          <div className="mt-8 inline-flex rounded-[18px] border border-[#e6dbff] bg-white/55 p-1 shadow-[0_16px_45px_rgba(68,31,132,0.10)] backdrop-blur">
-            {(["monthly", "annual"] as BillingMode[]).map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => setBillingMode(mode)}
-                className={cn(
-                  "rounded-[14px] px-5 py-2 text-sm font-bold transition",
-                  billingMode === mode
-                    ? "bg-[#2f165e] text-white shadow-[0_10px_28px_rgba(68,31,132,0.24)]"
-                    : "text-[#5d4a83] hover:bg-white/70"
-                )}
-              >
-                {mode === "monthly" ? "Monthly billing" : "Annual billing"}
-              </button>
-            ))}
+          <div className="rounded-[28px] border border-[#e6dbff] bg-white/48 p-4 shadow-[0_20px_60px_rgba(68,31,132,0.10)] backdrop-blur-xl">
+            <div className="grid grid-cols-3 gap-2">
+              <SymbolTile label="entry" value="$5" />
+              <SymbolTile label="unit" value="1k" />
+              <SymbolTile label="scale" value="5k" />
+            </div>
+            <div className="mt-4 inline-flex w-full rounded-[18px] border border-[#e6dbff] bg-white/60 p-1">
+              {(["monthly", "annual"] as BillingMode[]).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setBillingMode(mode)}
+                  className={cn(
+                    "flex-1 rounded-[14px] px-4 py-2 text-sm font-bold transition",
+                    billingMode === mode
+                      ? "bg-[#2f165e] text-white shadow-[0_10px_28px_rgba(68,31,132,0.24)]"
+                      : "text-[#5d4a83] hover:bg-white/70"
+                  )}
+                >
+                  {mode === "monthly" ? "Monthly" : "Annual"}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -195,10 +221,18 @@ function PricingContent() {
           {plans.map((plan) => {
             const resolvedPlanKey = getPlanKey(plan.planKey)
             const isLoading = checkoutLoading === resolvedPlanKey
-            const displayedCredits =
+            const displayedPages =
               plan.planKey === "pro_monthly" && billingMode === "annual"
-                ? "12,000 annual credits"
-                : plan.credits
+                ? "12,000 pages"
+                : plan.pages
+            const displayedPrice =
+              plan.planKey === "pro_monthly" && billingMode === "annual"
+                ? "$50"
+                : plan.price
+            const displayedCadence =
+              plan.planKey === "pro_monthly" && billingMode === "annual"
+                ? "per year"
+                : plan.cadence
 
             return (
               <Card
@@ -215,9 +249,18 @@ function PricingContent() {
                 )}
                 <CardContent className="p-0">
                   <div className="border-b border-[#ece5fb] p-6">
-                    <p className="text-sm font-black text-foreground">{plan.name}</p>
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-black text-foreground">{plan.name}</p>
+                        <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#7c62b1]">{displayedPages}</p>
+                      </div>
+                      <div className="flex h-11 w-11 items-center justify-center rounded-[18px] border border-[#e6dbff] bg-white/70 text-[#2f165e]">
+                        {plan.name === "Business" ? <PlanSwitch className="h-5 w-5" /> : <CreditStack className="h-5 w-5" />}
+                      </div>
+                    </div>
                     <div className="mt-5 flex items-end gap-2">
-                      <span className="text-3xl font-black tracking-tight text-foreground">{displayedCredits}</span>
+                      <span className="text-5xl font-black tracking-tight text-foreground">{displayedPrice}</span>
+                      <span className="pb-2 text-sm font-bold text-muted-foreground">{displayedCadence}</span>
                     </div>
                     <p className="mt-3 min-h-[48px] text-sm leading-6 text-muted-foreground">{plan.detail}</p>
                     <Button
@@ -295,13 +338,6 @@ function PricingContent() {
           </div>
         </section>
 
-        <section className="mx-auto mt-14 max-w-4xl rounded-[30px] border border-[#e5daf9] bg-white/58 p-6 text-center shadow-[0_24px_70px_rgba(68,31,132,0.10)] backdrop-blur-xl sm:p-8">
-          <PlanSwitch className="mx-auto mb-4 h-8 w-8 text-[#2f165e]" />
-          <h2 className="text-2xl font-black text-foreground">Recommendation for a top SaaS pricing page</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-            Bring one clean visual direction: exact plan names, real monthly and annual prices, final feature limits, and 3-5 brand references you like. Strong SaaS pricing pages usually keep three plans, make one plan clearly recommended, show trust logos below the cards, answer billing objections near the CTA, and use custom product-specific icons instead of generic icon packs.
-          </p>
-        </section>
       </section>
 
       <GoogleSignInModal open={signInOpen} onOpenChange={setSignInOpen} redirectPath={signInRedirectPath} />
