@@ -78,7 +78,7 @@ import { buildDownloadUrl, buildMessengerShareUrl, buildOfficeViewerUrl } from "
 
 function ProcessImagesFallback() {
   return (
-    <div className="min-h-screen bg-white p-3 sm:p-4">
+    <div className="min-h-screen bg-[#E9ECE4] p-3 sm:p-4">
       <div className="flex min-h-[calc(100vh-2rem)] items-center justify-center rounded-[30px] border border-[#eadfff] bg-white/55 backdrop-blur-xl">
         <div className="h-12 w-12 rounded-full border-4 border-[#d9c9fb] border-t-[#2f165e] animate-spin" />
       </div>
