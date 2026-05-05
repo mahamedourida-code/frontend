@@ -334,7 +334,7 @@ export default function Home() {
         gsap.set(".hero-feed-line-left", { scaleX: 1, opacity: 0.55 });
         gsap.set(".hero-feed-line-right", { scaleX: 1, opacity: 0.45 });
         gsap.set(".hero-processor-glow", { opacity: 0.2, scale: 0.9 });
-        gsap.set(".hero-output-card", { opacity: 0, x: -120, y: 0, scale: 0.46 });
+        gsap.set(".hero-output-card", { opacity: 0, x: -34, y: 0, scale: 0.5 });
         gsap.set(".hero-output-spark", { opacity: 0, scale: 0.4 });
 
         gsap.utils.toArray<HTMLElement>(".hero-input-card").forEach((card, index) => {
@@ -381,16 +381,16 @@ export default function Home() {
 
         const outputFlow = gsap.timeline({
           repeat: -1,
-          repeatDelay: 0.85,
-          delay: 0.4,
+          repeatDelay: 0.42,
+          delay: 0.25,
           defaults: { ease: "power2.inOut" }
         });
 
         outputFlow
           .to(".hero-output-spark", {
-            opacity: 0.7,
+            opacity: 0.62,
             scale: 1,
-            duration: 0.22,
+            duration: 0.18,
             stagger: 0.05
           })
           .to(".hero-output-card", {
@@ -398,20 +398,26 @@ export default function Home() {
             x: 0,
             y: 0,
             scale: 1,
-            duration: 0.64,
-            ease: "back.out(1.75)",
-            stagger: 0.13
+            duration: 0.58,
+            ease: "back.out(1.45)",
+            stagger: 0.12
           }, "-=0.05")
           .to(".hero-output-card", {
-            y: (index) => (index % 2 === 0 ? -8 : 8),
-            duration: 1.3,
-            yoyo: true,
-            repeat: 1,
-            stagger: 0.05,
-            ease: "sine.inOut"
+            scale: 1.035,
+            duration: 0.9,
+            ease: "sine.inOut",
+            stagger: 0.03
           })
-          .to(".hero-output-spark", { opacity: 0, scale: 0.5, duration: 0.26 }, "-=0.45")
-          .to(".hero-output-card", { opacity: 0, x: 62, scale: 0.82, duration: 0.42, stagger: 0.06 });
+          .to(".hero-output-spark", { opacity: 0, scale: 0.5, duration: 0.22 }, "-=0.45")
+          .to(".hero-output-card", {
+            opacity: 0,
+            x: 46,
+            y: 0,
+            scale: 0.92,
+            duration: 0.34,
+            stagger: 0.05,
+            ease: "power2.in"
+          });
       }, heroFlowRef);
 
       return () => {
@@ -1188,9 +1194,9 @@ export default function Home() {
   return (
     <div className="min-h-screen relative bg-transparent">
       {/* Navigation Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 pt-3 lg:pt-4">
+      <nav className="fixed top-0 left-0 right-0 z-50 pt-3 backdrop-blur-2xl lg:pt-4">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between rounded-[35px] border border-white/45 bg-transparent p-2 shadow-none ring-0 backdrop-blur-xl lg:p-3">
+          <div className="flex items-center justify-between rounded-[35px] border border-white/20 bg-white/0 p-2 shadow-none ring-0 backdrop-blur-2xl lg:p-3">
             {/* Logo */}
             <div className="flex-shrink-0">
               <AppLogo />
@@ -1423,11 +1429,11 @@ export default function Home() {
                   />
                 </div>
 
-                <div className="pointer-events-none absolute left-[56%] top-[49%] z-0 hidden h-px w-[19%] -translate-y-1/2 overflow-hidden sm:block sm:left-[57%] lg:left-[58%]">
+                <div className="pointer-events-none absolute left-[60%] top-[49%] z-0 hidden h-px w-[14%] -translate-y-1/2 overflow-hidden sm:block lg:left-[61%]">
                   <div className="hero-feed-line hero-feed-line-right h-full origin-left rounded-full bg-[#7B5BBE]" />
                 </div>
 
-                <div className="pointer-events-none absolute left-[59%] top-[40%] z-10 hidden gap-3 sm:flex">
+                <div className="pointer-events-none absolute left-[62%] top-[40%] z-10 hidden gap-3 sm:flex lg:left-[63%]">
                   {[0, 1, 2].map((item) => (
                     <span
                       key={item}
@@ -1436,7 +1442,7 @@ export default function Home() {
                   ))}
                 </div>
 
-                <div className="absolute left-1/2 top-[62%] z-10 grid w-[76%] max-w-[500px] -translate-x-1/2 grid-cols-3 items-center gap-2 sm:left-auto sm:right-[3%] sm:top-[31%] sm:w-[35%] sm:translate-x-0 sm:gap-4 lg:right-[2%] lg:w-[35%] lg:gap-5">
+                <div className="absolute left-1/2 top-[62%] z-10 grid w-[76%] max-w-[500px] -translate-x-1/2 grid-cols-3 items-center gap-2 overflow-hidden pl-3 sm:left-[64%] sm:top-[31%] sm:w-[33%] sm:translate-x-0 sm:gap-4 sm:pl-0 lg:left-[64%] lg:w-[32%] lg:gap-5">
                   {[
                     { src: "/33.svg", alt: "Excel result preview" },
                     { src: "/44.svg", alt: "Spreadsheet result preview" },
