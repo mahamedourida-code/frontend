@@ -334,8 +334,6 @@ export default function Home() {
         gsap.set(".hero-feed-line-left", { scaleX: 1, opacity: 0.55 });
         gsap.set(".hero-feed-line-right", { scaleX: 1, opacity: 0.45 });
         gsap.set(".hero-processor-glow", { opacity: 0.2, scale: 0.9 });
-        gsap.set(".hero-output-card", { opacity: 0, x: -34, y: 0, scale: 0.5 });
-        gsap.set(".hero-output-spark", { opacity: 0, scale: 0.4 });
 
         gsap.utils.toArray<HTMLElement>(".hero-input-card").forEach((card, index) => {
           gsap.timeline({ repeat: -1, delay: index * 0.48 })
@@ -378,46 +376,6 @@ export default function Home() {
             repeat: 1,
             ease: "power2.out"
           }, "<");
-
-        const outputFlow = gsap.timeline({
-          repeat: -1,
-          repeatDelay: 0.42,
-          delay: 0.25,
-          defaults: { ease: "power2.inOut" }
-        });
-
-        outputFlow
-          .to(".hero-output-spark", {
-            opacity: 0.62,
-            scale: 1,
-            duration: 0.18,
-            stagger: 0.05
-          })
-          .to(".hero-output-card", {
-            opacity: 1,
-            x: 0,
-            y: 0,
-            scale: 1,
-            duration: 0.58,
-            ease: "back.out(1.45)",
-            stagger: 0.12
-          }, "-=0.05")
-          .to(".hero-output-card", {
-            scale: 1.035,
-            duration: 0.9,
-            ease: "sine.inOut",
-            stagger: 0.03
-          })
-          .to(".hero-output-spark", { opacity: 0, scale: 0.5, duration: 0.22 }, "-=0.45")
-          .to(".hero-output-card", {
-            opacity: 0,
-            x: 46,
-            y: 0,
-            scale: 0.92,
-            duration: 0.34,
-            stagger: 0.05,
-            ease: "power2.in"
-          });
       }, heroFlowRef);
 
       return () => {
@@ -1344,7 +1302,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden" style={{ backgroundColor: "#4C287F" }}>
+        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden" style={{ backgroundColor: "#2f165e" }}>
           <div
             ref={topBackgroundRef}
             aria-hidden="true"
@@ -1433,35 +1391,36 @@ export default function Home() {
                   <div className="hero-feed-line hero-feed-line-right h-full origin-left rounded-full bg-[#7B5BBE]" />
                 </div>
 
-                <div className="pointer-events-none absolute left-[62%] top-[40%] z-10 hidden gap-3 sm:flex lg:left-[63%]">
-                  {[0, 1, 2].map((item) => (
-                    <span
-                      key={item}
-                      className="hero-output-spark h-2.5 w-2.5 rounded-full bg-[#7B5BBE] shadow-[0_0_18px_rgba(123,91,190,0.55)]"
-                    />
-                  ))}
-                </div>
-
-                <div className="absolute left-1/2 top-[62%] z-10 grid w-[76%] max-w-[500px] -translate-x-1/2 grid-cols-3 items-center gap-2 overflow-hidden pl-3 sm:left-[64%] sm:top-[31%] sm:w-[33%] sm:translate-x-0 sm:gap-4 sm:pl-0 lg:left-[64%] lg:w-[32%] lg:gap-5">
-                  {[
-                    { src: "/33.svg", alt: "Excel result preview" },
-                    { src: "/44.svg", alt: "Spreadsheet result preview" },
-                    { src: "/55.svg", alt: "Clean table result preview" }
-                  ].map((item, index) => (
-                    <div
-                      key={item.src}
-                      className={cn(
-                        "hero-output-card flex h-[78px] items-center justify-center sm:h-[155px] lg:h-[210px]",
-                        index % 2 === 1 && "sm:mt-8"
-                      )}
-                    >
-                      <img
-                        src={item.src}
-                        alt={item.alt}
-                        className="h-full w-full object-contain drop-shadow-[0_18px_28px_rgba(34,20,60,0.14)]"
-                      />
-                    </div>
-                  ))}
+                <div className="absolute left-1/2 top-[62%] z-10 w-[78%] max-w-[520px] -translate-x-1/2 overflow-hidden sm:left-[65%] sm:top-[31%] sm:w-[30%] sm:translate-x-0 lg:left-[64%] lg:w-[31%]">
+                  <div
+                    className="flex w-max items-center gap-3 sm:gap-5"
+                    style={{
+                      animation: 'scroll-right 22s linear infinite',
+                      willChange: 'transform'
+                    }}
+                  >
+                    {Array.from({ length: 3 }, (_, setIndex) =>
+                      [
+                        { src: "/33.svg", alt: "Excel result preview" },
+                        { src: "/44.svg", alt: "Spreadsheet result preview" },
+                        { src: "/55.svg", alt: "Clean table result preview" }
+                      ].map((item, index) => (
+                        <div
+                          key={`${setIndex}-${item.src}`}
+                          className={cn(
+                            "flex h-[78px] w-[92px] shrink-0 items-center justify-center sm:h-[155px] sm:w-[148px] lg:h-[210px] lg:w-[178px]",
+                            index % 2 === 1 && "sm:mt-8"
+                          )}
+                        >
+                          <img
+                            src={item.src}
+                            alt={item.alt}
+                            className="h-full w-full object-contain drop-shadow-[0_18px_28px_rgba(34,20,60,0.14)]"
+                          />
+                        </div>
+                      ))
+                    ).flat()}
+                  </div>
                 </div>
               </div>
 
@@ -2207,18 +2166,18 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative isolate -mt-32 overflow-hidden pt-32" style={{ backgroundColor: "#4C287F" }}>
+        <div className="relative isolate -mt-32 overflow-hidden pt-32 text-white [&_.text-card-foreground]:!text-white [&_.text-foreground]:!text-white [&_.text-muted-foreground]:!text-white/85 [&_.text-primary]:!text-white" style={{ backgroundColor: "#2f165e" }}>
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0"
-            style={{ backgroundColor: "#4C287F" }}
+            style={{ backgroundColor: "#2f165e" }}
           />
           <div className="relative z-10">
         {/* Why Choose Us Section */}
         <ScrollAnimatedSection id="features" className="relative z-20 -mt-16 pt-0 pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 mb-4 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 mb-4 shadow-lg shadow-black/10 backdrop-blur-2xl">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   Solutions
                 </h2>
@@ -2226,7 +2185,7 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
-              <Card data-animate="stagger" className="flex-1 border border-white/45 !bg-white/30 shadow-xl shadow-[#441F84]/15 ring-1 ring-[#A78BFA]/30 backdrop-blur-2xl transition-all duration-300 hover:scale-105 hover:border-[#A78BFA]/70 hover:!bg-white/45">
+              <Card data-animate="stagger" className="flex-1 border border-white/25 !bg-white/10 shadow-xl shadow-black/10 ring-1 ring-white/15 backdrop-blur-2xl transition-all duration-300 hover:scale-105 hover:border-white/45 hover:!bg-white/15">
                 <CardHeader className="text-center">
                   <img
                     src="/New%20folder/handwritten.svg"
@@ -2235,12 +2194,12 @@ export default function Home() {
                   />
                   <CardTitle className="text-xl mb-2">Handwritten Tables</CardTitle>
                   <CardDescription className="text-base">
-                    <span className="font-semibold text-amber-700">99.5% accuracy</span> on handwritten tables - industry-leading performance with our specialized model
+                    <span className="font-semibold text-white">99.5% accuracy</span> on handwritten tables - industry-leading performance with our specialized model
                   </CardDescription>
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 border border-white/45 !bg-white/30 shadow-xl shadow-[#441F84]/15 ring-1 ring-[#A78BFA]/30 backdrop-blur-2xl transition-all duration-300 hover:scale-105 hover:border-[#A78BFA]/70 hover:!bg-white/45">
+              <Card data-animate="stagger" className="flex-1 border border-white/25 !bg-white/10 shadow-xl shadow-black/10 ring-1 ring-white/15 backdrop-blur-2xl transition-all duration-300 hover:scale-105 hover:border-white/45 hover:!bg-white/15">
                 <CardHeader className="text-center">
                   <img
                     src="/New%20folder/aa.svg"
@@ -2254,7 +2213,7 @@ export default function Home() {
                 </CardHeader>
               </Card>
 
-              <Card data-animate="stagger" className="flex-1 border border-white/45 !bg-white/30 shadow-xl shadow-[#441F84]/15 ring-1 ring-[#A78BFA]/30 backdrop-blur-2xl transition-all duration-300 hover:scale-105 hover:border-[#A78BFA]/70 hover:!bg-white/45">
+              <Card data-animate="stagger" className="flex-1 border border-white/25 !bg-white/10 shadow-xl shadow-black/10 ring-1 ring-white/15 backdrop-blur-2xl transition-all duration-300 hover:scale-105 hover:border-white/45 hover:!bg-white/15">
                 <CardHeader className="text-center">
                   <img
                     src="/New%20folder/fina.svg"
@@ -2275,7 +2234,7 @@ export default function Home() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 mb-4 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 mb-4 shadow-lg shadow-black/10 backdrop-blur-2xl">
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     Benchmarks
                   </h2>
@@ -2288,7 +2247,7 @@ export default function Home() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
                 {/* Accuracy Chart */}
-                <Card className="border border-[#A78BFA]/35 bg-white/55 shadow-xl shadow-[#A78BFA]/10 backdrop-blur-md dark:bg-card/70" data-animate="stagger">
+                <Card className="border border-white/25 bg-white/10 shadow-xl shadow-black/10 backdrop-blur-2xl" data-animate="stagger">
   <CardHeader className="pb-3">
     <CardTitle className="text-lg font-semibold">
       Handwritten Text Recognition Accuracy
@@ -2317,34 +2276,36 @@ export default function Home() {
         ]}
         margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
       >
-        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+        <CartesianGrid stroke="rgba(255,255,255,0.18)" strokeDasharray="3 3" vertical={false} />
         <XAxis
           dataKey="provider"
           tickLine={false}
-          axisLine={true}
+          axisLine={{ stroke: "rgba(255,255,255,0.35)" }}
+          tick={{ fill: "rgba(255,255,255,0.78)" }}
           tickMargin={10}
           angle={0}
           textAnchor="middle"
         />
         <YAxis
           tickLine={false}
-          axisLine={true}
+          axisLine={{ stroke: "rgba(255,255,255,0.35)" }}
+          tick={{ fill: "rgba(255,255,255,0.78)" }}
           tickMargin={10}
           domain={[0, 100]}
           ticks={[0, 20, 40, 60, 80, 100]}
-          label={{ value: 'Accuracy (%)', angle: -90, position: 'insideLeft' }}
+          label={{ value: 'Accuracy (%)', angle: -90, position: 'insideLeft', fill: "rgba(255,255,255,0.78)" }}
         />
         <ChartTooltip content={<ChartTooltipContent />} />
         <Bar
           dataKey="accuracy"
-          fill="#441F84"
+          fill="#A78BFA"
           radius={[8, 8, 0, 0]}
         />
       </BarChart>
     </ChartContainer>
 
     {/* Footer */}
-    <div className="mt-6 pt-4 border-t border-border/50">
+    <div className="mt-6 pt-4 border-t border-white/15">
       <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
         <SiteIcon src={siteIcons.table} className="h-5 w-5" />
         <span>Tested on IAM Handwriting Database v3.0</span>
@@ -2355,43 +2316,43 @@ export default function Home() {
 
 
                 {/* Performance Metrics Table */}
-                <Card className="border border-[#A78BFA]/35 bg-white/55 shadow-xl shadow-[#A78BFA]/10 backdrop-blur-md dark:bg-card/70" data-animate="stagger">
+                <Card className="border border-white/25 bg-white/10 shadow-xl shadow-black/10 backdrop-blur-2xl" data-animate="stagger">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg font-semibold">Comprehensive Performance Metrics</CardTitle>
                     <p className="text-sm text-muted-foreground">Average across all test scenarios</p>
                   </CardHeader>
                   <CardContent>
-                      <div className="overflow-hidden rounded-lg border border-[#A78BFA]/45 bg-white/45 backdrop-blur-md">
+                      <div className="overflow-hidden rounded-lg border border-white/20 bg-white/10 backdrop-blur-md">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="border-b border-border/50 bg-muted/30">
+                          <tr className="border-b border-white/15 bg-white/10">
                             <th className="text-left p-3 font-medium">Metric</th>
                             <th className="text-right p-3 font-medium text-primary">AxLiner</th>
                             <th className="text-right p-3 font-medium text-muted-foreground">Industry Avg</th>
                           </tr>
                         </thead>
                         <tbody>
-                          <tr className="border-b border-border/50">
+                          <tr className="border-b border-white/15">
                             <td className="p-3 text-muted-foreground">Character Error Rate</td>
                             <td className="p-3 text-right font-semibold text-primary">3.2%</td>
                             <td className="p-3 text-right text-muted-foreground">5.8%</td>
                           </tr>
-                          <tr className="border-b border-border/50">
+                          <tr className="border-b border-white/15">
                             <td className="p-3 text-muted-foreground">Word Recognition</td>
-                            <td className="p-3 text-right font-semibold text-[#441F84]">99.5%</td>
+                            <td className="p-3 text-right font-semibold text-white">99.5%</td>
                             <td className="p-3 text-right text-muted-foreground">95.1%</td>
                           </tr>
-                          <tr className="border-b border-border/50">
+                          <tr className="border-b border-white/15">
                             <td className="p-3 text-muted-foreground">Table Structure</td>
                             <td className="p-3 text-right font-semibold text-primary">99.1%</td>
                             <td className="p-3 text-right text-muted-foreground">92.3%</td>
                           </tr>
-                          <tr className="border-b border-border/50">
+                          <tr className="border-b border-white/15">
                             <td className="p-3 text-muted-foreground">Noisy Image Handling</td>
                             <td className="p-3 text-right font-semibold text-primary">94.7%</td>
                             <td className="p-3 text-right text-muted-foreground">87.2%</td>
                           </tr>
-                          <tr className="border-b border-border/50">
+                          <tr className="border-b border-white/15">
                             <td className="p-3 text-muted-foreground">Mixed Font Recognition</td>
                             <td className="p-3 text-right font-semibold text-primary">97.9%</td>
                             <td className="p-3 text-right text-muted-foreground">94.6%</td>
@@ -2416,7 +2377,7 @@ export default function Home() {
         <ScrollAnimatedSection id="trusted" className="w-full overflow-hidden py-6">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-5" data-animate="headline">
-              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
                 <h2 className="text-base font-semibold text-foreground sm:text-lg">
                   Chosen by experts at top organizations
                 </h2>
