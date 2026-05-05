@@ -183,7 +183,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
   return (
     <>
       <div
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-[#eadfff] bg-[#FCF2FF]/95 shadow-[0_-18px_45px_rgba(68,31,132,0.12)] backdrop-blur-xl lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-[#eadfff] bg-[#E9ECE4]/95 shadow-[0_-18px_45px_rgba(68,31,132,0.12)] backdrop-blur-xl lg:hidden"
         style={{ paddingBottom: "max(0.35rem, env(safe-area-inset-bottom))" }}
       >
         <div className="mx-auto grid h-16 max-w-md grid-cols-4 items-center gap-1 px-2 pt-1">
@@ -226,9 +226,9 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
             
             <SheetContent 
               side="right" 
-              className="flex h-dvh w-[88vw] max-w-[390px] flex-col border-l border-[#eadfff] bg-[#EFFFFD]/95 p-0 backdrop-blur-xl sm:w-[380px]"
+              className="flex h-dvh w-[88vw] max-w-[390px] flex-col border-l border-[#eadfff] bg-white/95 p-0 backdrop-blur-xl sm:w-[380px]"
             >
-              <SheetHeader className="border-b border-[#eadfff] bg-[#FCF2FF]/75 px-4 py-4">
+              <SheetHeader className="border-b border-[#eadfff] bg-[#E9ECE4]/75 px-4 py-4">
                 <div className="flex items-center gap-2">
                   <AppIcon size={32} />
                   <SheetTitle className="text-base md:text-lg font-bold">AxLiner</SheetTitle>
@@ -383,7 +383,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
               </div>
 
               {/* Footer Actions */}
-              <div className="mt-auto space-y-2 border-t border-[#eadfff] bg-[#FCF2FF]/60 p-3">
+              <div className="mt-auto space-y-2 border-t border-[#eadfff] bg-[#E9ECE4]/60 p-3">
                 {isAuthenticated ? (
                   <Button
                     variant="ghost"

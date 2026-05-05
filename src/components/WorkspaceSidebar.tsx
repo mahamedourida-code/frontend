@@ -35,7 +35,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
 
   return (
     <aside className="relative z-10 hidden lg:flex lg:w-[290px] lg:flex-col">
-      <div className="sticky top-4 flex h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-[30px] border border-[#ebe2ff] bg-[#FCF2FF]/90 shadow-[0_24px_80px_rgba(68,31,132,0.10)] backdrop-blur-xl">
+      <div className="sticky top-4 flex h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-[30px] border border-[#ebe2ff] bg-[#E9ECE4]/90 shadow-[0_24px_80px_rgba(68,31,132,0.10)] backdrop-blur-xl">
         <div className="border-b border-[#efe7ff] px-5 pb-5 pt-6">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/60">

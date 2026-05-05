@@ -367,7 +367,7 @@ export default function DashboardPage() {
       {/* Main Content */}
       <div className="flex-1 overflow-auto relative z-10">
         <div className="container max-w-7xl mx-auto p-4 sm:p-6 lg:px-8 lg:py-4">
-          <div className="mb-6 rounded-[30px] border border-[#ebe2ff] bg-[#FCF2FF]/90 p-4 shadow-[0_24px_80px_rgba(68,31,132,0.08)] backdrop-blur-xl sm:p-5 lg:mb-8 lg:p-6">
+          <div className="mb-6 rounded-[30px] border border-[#ebe2ff] bg-[#E9ECE4]/90 p-4 shadow-[0_24px_80px_rgba(68,31,132,0.08)] backdrop-blur-xl sm:p-5 lg:mb-8 lg:p-6">
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
               <div className="flex items-start gap-4">
                 <Button

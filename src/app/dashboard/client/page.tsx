@@ -78,7 +78,7 @@ import { buildDownloadUrl, buildMessengerShareUrl, buildOfficeViewerUrl } from "
 
 function ProcessImagesFallback() {
   return (
-    <div className="min-h-screen bg-[#EFFFFD] p-3 sm:p-4">
+    <div className="min-h-screen bg-white p-3 sm:p-4">
       <div className="flex min-h-[calc(100vh-2rem)] items-center justify-center rounded-[30px] border border-[#eadfff] bg-white/55 backdrop-blur-xl">
         <div className="h-12 w-12 rounded-full border-4 border-[#d9c9fb] border-t-[#2f165e] animate-spin" />
       </div>
@@ -1090,7 +1090,7 @@ Best regards`
         </div>
       </header>
 
-      <div className="sticky top-0 z-40 border-b bg-[#FCF2FF]/95 backdrop-blur lg:hidden">
+      <div className="sticky top-0 z-40 border-b bg-[#E9ECE4]/95 backdrop-blur lg:hidden">
         <div className="container max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-3">
             <Button
@@ -1119,7 +1119,7 @@ Best regards`
 
       <main className="container max-w-7xl mx-auto px-4 py-6 pb-24 lg:py-8 relative z-10">
         {latestRecoverableJob && !isProcessing && (
-          <Card className="mb-5 overflow-hidden rounded-[28px] border-[#eadfff] bg-[#FCF2FF]/85 shadow-[0_18px_55px_rgba(68,31,132,0.10)] backdrop-blur-xl">
+          <Card className="mb-5 overflow-hidden rounded-[28px] border-[#eadfff] bg-[#E9ECE4]/85 shadow-[0_18px_55px_rgba(68,31,132,0.10)] backdrop-blur-xl">
             <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/65">

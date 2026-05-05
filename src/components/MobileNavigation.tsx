@@ -45,9 +45,9 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
             <span className="sr-only">Open navigation menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="right" className="w-[88vw] max-w-[390px] border-l border-[#eadfff] bg-[#EFFFFD]/95 p-0 backdrop-blur-xl sm:w-96">
+        <SheetContent side="right" className="w-[88vw] max-w-[390px] border-l border-[#eadfff] bg-white/95 p-0 backdrop-blur-xl sm:w-96">
           {/* Header */}
-          <div className="border-b border-[#eadfff] bg-[#FCF2FF]/75 px-6 py-4">
+          <div className="border-b border-[#eadfff] bg-[#E9ECE4]/75 px-6 py-4">
             <SheetTitle className="text-xl font-bold">AxLiner</SheetTitle>
             <SheetDescription className="mt-1 text-sm text-muted-foreground">
               Convert images and handwritten tables into Excel.
@@ -150,7 +150,7 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
             </div>
 
             {/* CTA Section */}
-            <div className="space-y-3 border-t border-[#eadfff] bg-[#FCF2FF]/60 px-6 py-4">
+            <div className="space-y-3 border-t border-[#eadfff] bg-[#E9ECE4]/60 px-6 py-4">
               <SheetClose asChild>
                 <Button
                   variant="outline"

@@ -321,45 +321,94 @@ export default function Home() {
   useEffect(() => {
     if (heroFlowRef.current) {
       const ctx = gsap.context(() => {
-        gsap.set(".hero-flow-line", { scaleX: 0, opacity: 0 });
-        gsap.set(".hero-flow-signal", { opacity: 0 });
+        gsap.set(".hero-input-card", { opacity: 1, x: 0, y: 0, scale: 1, rotate: 0 });
+        gsap.set(".hero-output-card", { opacity: 0, x: -165, y: 0, scale: 0.48, rotate: 0 });
+        gsap.set(".hero-feed-line", { scaleX: 0, opacity: 0 });
+        gsap.set(".hero-output-spark", { opacity: 0, scale: 0.4 });
+        gsap.set(".hero-processor-glow", { opacity: 0.18, scale: 0.86 });
+        const inputTravel = window.innerWidth < 640 ? 92 : window.innerWidth < 1024 ? 170 : 248;
 
-        const flow = gsap.timeline({ repeat: -1, repeatDelay: 1.1, delay: 1.05 });
+        gsap.to(".hero-processor", {
+          scale: 1.025,
+          duration: 1.8,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1
+        });
+
+        const flow = gsap.timeline({
+          repeat: -1,
+          repeatDelay: 1.25,
+          delay: 0.55,
+          defaults: { ease: "power2.inOut" }
+        });
+
         flow
-          .to(".hero-flow-line-left", {
+          .to(".hero-feed-line-left", {
             scaleX: 1,
-            opacity: 1,
-            duration: 0.7,
-            ease: "power2.out"
+            opacity: 0.85,
+            duration: 0.45
           })
-          .fromTo(
-            ".hero-flow-signal-left",
-            { left: "0%", opacity: 0 },
-            { left: "82%", opacity: 1, duration: 0.95, ease: "power2.inOut" },
-            "<"
-          )
-          .to(".hero-flow-signal-left", { opacity: 0, duration: 0.2 })
-          .to(".hero-flow-core", {
-            scale: 1.06,
-            duration: 0.24,
+          .to(".hero-input-card", {
+            x: (index) => (index === 0 ? inputTravel : inputTravel * 0.88),
+            y: (index) => (index === 0 ? 22 : -20),
+            scale: 0.58,
+            rotate: (index) => (index === 0 ? 4 : -4),
+            opacity: 0,
+            duration: 1.05,
+            stagger: 0.16
+          }, "-=0.1")
+          .to(".hero-processor-glow", {
+            opacity: 0.42,
+            scale: 1.08,
+            duration: 0.26,
+            yoyo: true,
+            repeat: 1
+          }, "-=0.35")
+          .to(".hero-processor", {
+            scale: 1.08,
+            duration: 0.22,
+            yoyo: true,
+            repeat: 1
+          }, "<")
+          .to(".hero-feed-line-right", {
+            scaleX: 1,
+            opacity: 0.8,
+            duration: 0.42
+          }, "-=0.1")
+          .to(".hero-output-spark", {
+            opacity: 0.7,
+            scale: 1,
+            duration: 0.25,
+            stagger: 0.05
+          }, "-=0.2")
+          .to(".hero-output-card", {
+            opacity: 1,
+            x: 0,
+            y: 0,
+            scale: 1,
+            duration: 0.72,
+            ease: "back.out(1.9)",
+            stagger: 0.11
+          }, "-=0.12")
+          .to(".hero-output-card", {
+            y: (index) => (index % 2 === 0 ? -8 : 8),
+            duration: 1.3,
             yoyo: true,
             repeat: 1,
-            ease: "power2.out"
-          }, "-=0.05")
-          .to(".hero-flow-line-right", {
-            scaleX: 1,
-            opacity: 1,
-            duration: 0.7,
-            ease: "power2.out"
-          }, "-=0.05")
-          .fromTo(
-            ".hero-flow-signal-right",
-            { left: "0%", opacity: 0 },
-            { left: "82%", opacity: 1, duration: 0.95, ease: "power2.inOut" },
-            "<"
-          )
-          .to(".hero-flow-signal-right", { opacity: 0, duration: 0.2 })
-          .to(".hero-flow-line", { opacity: 0.45, duration: 0.45 });
+            stagger: 0.05,
+            ease: "sine.inOut"
+          })
+          .to(".hero-output-spark", { opacity: 0, scale: 0.5, duration: 0.28 }, "-=0.45")
+          .to([".hero-output-card", ".hero-feed-line", ".hero-input-card"], {
+            opacity: (index, target) => target.classList.contains("hero-input-card") ? 1 : 0,
+            x: 0,
+            y: 0,
+            scale: 1,
+            rotate: 0,
+            duration: 0.55,
+            ease: "power2.inOut"
+          });
       }, heroFlowRef);
 
       return () => {
@@ -1138,7 +1187,7 @@ export default function Home() {
       {/* Navigation Bar */}
       <nav className="fixed top-0 left-0 right-0 z-50 pt-3 lg:pt-4">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between rounded-[35px] border border-white/50 bg-[#FCF2FF]/80 p-2 shadow-xl shadow-[#441F84]/15 ring-1 ring-[#A78BFA]/30 backdrop-blur-2xl lg:p-3">
+          <div className="flex items-center justify-between rounded-[35px] border border-white/45 bg-transparent p-2 shadow-none ring-0 backdrop-blur-xl lg:p-3">
             {/* Logo */}
             <div className="flex-shrink-0">
               <AppLogo />
@@ -1286,13 +1335,13 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden" style={{ backgroundColor: "#FCF2FF" }}>
+        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden" style={{ backgroundColor: "#E9ECE4" }}>
           <div
             ref={topBackgroundRef}
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat will-change-transform"
             style={{
-              backgroundColor: "#EFFFFD",
+              backgroundColor: "#FFFFFF",
               clipPath:
                 "polygon(0 0, 100% 0, 100% 98.9%, 98.8% 99.15%, 96.5% 99.35%, 92% 99.45%, 8% 99.45%, 3.5% 99.35%, 1.2% 99.15%, 0 98.9%)",
             }}
@@ -1337,38 +1386,72 @@ export default function Home() {
                 </div>
               </div>
 
-              <div ref={heroFlowRef} className="relative mx-auto w-full max-w-[1500px]">
-                <div className="pointer-events-none absolute left-[24%] top-1/2 hidden h-16 w-[24%] -translate-y-1/2 sm:block">
-                  <div className="hero-flow-line hero-flow-line-left absolute top-1/2 h-0.5 w-full origin-left scale-x-0 rounded-full bg-[#A78BFA] opacity-0" />
-                  <div className="hero-flow-signal hero-flow-signal-left absolute left-0 top-1/2 h-2 w-10 -translate-y-1/2 rounded-full bg-[#A78BFA] opacity-0 blur-[1px]" />
-                </div>
-                <div className="pointer-events-none absolute right-[24%] top-1/2 hidden h-16 w-[24%] -translate-y-1/2 sm:block">
-                  <div className="hero-flow-line hero-flow-line-right absolute top-1/2 h-0.5 w-full origin-left scale-x-0 rounded-full bg-[#A78BFA] opacity-0" />
-                  <div className="hero-flow-signal hero-flow-signal-right absolute left-0 top-1/2 h-2 w-10 -translate-y-1/2 rounded-full bg-[#A78BFA] opacity-0 blur-[1px]" />
+              <div ref={heroFlowRef} className="relative mx-auto mt-1 h-[430px] w-full max-w-[1500px] sm:h-[540px] lg:h-[620px]">
+                <div className="pointer-events-none absolute left-1/2 top-[7%] z-10 flex -translate-x-1/2 items-center gap-3 sm:left-[5%] sm:top-[34%] sm:translate-x-0 sm:gap-5 lg:left-[3%]">
+                  {[
+                    { src: "/nani.svg", alt: "Document input" },
+                    { src: "/handwritten.svg", alt: "Handwritten input" }
+                  ].map((item) => (
+                    <div
+                      key={item.src}
+                      className="hero-input-card flex h-[94px] w-[108px] items-center justify-center sm:h-[190px] sm:w-[210px] lg:h-[245px] lg:w-[270px]"
+                    >
+                      <img
+                        src={item.src}
+                        alt={item.alt}
+                        className="h-full w-full object-contain drop-shadow-[0_22px_30px_rgba(34,20,60,0.16)]"
+                      />
+                    </div>
+                  ))}
                 </div>
 
-                <div className="grid grid-cols-3 items-center gap-2 sm:gap-6 lg:gap-8">
-                  <div className="hero-flow-item relative z-10 flex h-[190px] items-center justify-center sm:h-[310px] lg:h-[400px] xl:h-[460px]">
-                    <img
-                      src="/hero-flow/handwritten.svg"
-                      alt="Handwritten table input"
-                      className="h-full w-full object-contain drop-shadow-2xl"
+                <div className="pointer-events-none absolute left-[33%] top-[49%] z-0 hidden h-px w-[20%] -translate-y-1/2 overflow-hidden sm:block sm:left-[34%] lg:left-[31%] lg:w-[22%]">
+                  <div className="hero-feed-line hero-feed-line-left h-full origin-left rounded-full bg-[#7B5BBE]" />
+                </div>
+
+                <div className="hero-processor absolute left-1/2 top-[43%] z-20 flex h-[150px] w-[165px] -translate-x-1/2 -translate-y-1/2 items-center justify-center sm:top-[48%] sm:h-[255px] sm:w-[280px] lg:h-[335px] lg:w-[360px]">
+                  <div className="hero-processor-glow absolute inset-[12%] rounded-full bg-[radial-gradient(circle,rgba(123,91,190,0.34),rgba(123,91,190,0)_67%)] blur-2xl" />
+                  <img
+                    src="/axliner.svg"
+                    alt="AxLiner processor"
+                    className="relative z-10 h-full w-full object-contain drop-shadow-[0_28px_42px_rgba(34,20,60,0.2)]"
+                  />
+                </div>
+
+                <div className="pointer-events-none absolute left-[56%] top-[49%] z-0 hidden h-px w-[22%] -translate-y-1/2 overflow-hidden sm:block sm:left-[57%] lg:left-[58%]">
+                  <div className="hero-feed-line hero-feed-line-right h-full origin-left rounded-full bg-[#7B5BBE]" />
+                </div>
+
+                <div className="pointer-events-none absolute left-[59%] top-[40%] z-10 hidden gap-3 sm:flex">
+                  {[0, 1, 2].map((item) => (
+                    <span
+                      key={item}
+                      className="hero-output-spark h-2.5 w-2.5 rounded-full bg-[#7B5BBE] shadow-[0_0_18px_rgba(123,91,190,0.55)]"
                     />
-                  </div>
-                  <div className="hero-flow-item hero-flow-core relative z-20 flex h-[205px] items-center justify-center sm:h-[330px] lg:h-[430px] xl:h-[490px]">
-                    <img
-                      src="/hero-flow/axliner.svg"
-                      alt="AxLiner conversion"
-                      className="h-[92%] w-full object-contain drop-shadow-2xl sm:h-full"
-                    />
-                  </div>
-                  <div className="hero-flow-item relative z-10 flex h-[190px] items-center justify-center sm:h-[310px] lg:h-[400px] xl:h-[460px]">
-                    <img
-                      src="/hero-flow/excel.svg"
-                      alt="Excel result"
-                      className="h-full w-full object-contain drop-shadow-2xl"
-                    />
-                  </div>
+                  ))}
+                </div>
+
+                <div className="absolute left-1/2 top-[62%] z-10 grid w-[82%] max-w-[520px] -translate-x-1/2 grid-cols-4 items-center gap-2 sm:left-auto sm:right-[3%] sm:top-[22%] sm:w-[36%] sm:translate-x-0 sm:grid-cols-2 sm:gap-4 lg:right-[1%] lg:w-[38%] lg:gap-5">
+                  {[
+                    { src: "/33.svg", alt: "Excel result preview" },
+                    { src: "/44.svg", alt: "Spreadsheet result preview" },
+                    { src: "/55.svg", alt: "Clean table result preview" },
+                    { src: "/next.svg", alt: "Export result preview" }
+                  ].map((item, index) => (
+                    <div
+                      key={item.src}
+                      className={cn(
+                        "hero-output-card flex h-[70px] items-center justify-center sm:h-[145px] lg:h-[190px]",
+                        index % 2 === 1 && "sm:mt-8"
+                      )}
+                    >
+                      <img
+                        src={item.src}
+                        alt={item.alt}
+                        className="h-full w-full object-contain drop-shadow-[0_18px_28px_rgba(34,20,60,0.14)]"
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -1558,7 +1641,7 @@ export default function Home() {
                 <div className={resultFiles.length === 0 ? "grid items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(440px,0.95fr)]" : "relative w-full"}>
                 <div className="ax-glass-card relative w-full space-y-3 rounded-[1.5rem] border border-white/45 p-4 sm:p-5">
                   {latestRecoverableJob && !isProcessing && (
-                    <div className="rounded-[1.25rem] border border-[#eadfff] bg-[#FCF2FF]/85 p-4 shadow-[0_16px_45px_rgba(68,31,132,0.10)] backdrop-blur-xl">
+                    <div className="rounded-[1.25rem] border border-[#eadfff] bg-[#E9ECE4]/85 p-4 shadow-[0_16px_45px_rgba(68,31,132,0.10)] backdrop-blur-xl">
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                           <p className="text-sm font-bold text-foreground">Continue latest batch</p>
@@ -2114,11 +2197,11 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative isolate -mt-32 overflow-hidden pt-32" style={{ backgroundColor: "#FCF2FF" }}>
+        <div className="relative isolate -mt-32 overflow-hidden pt-32" style={{ backgroundColor: "#E9ECE4" }}>
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0"
-            style={{ backgroundColor: "#FCF2FF" }}
+            style={{ backgroundColor: "#E9ECE4" }}
           />
           <div className="relative z-10">
         {/* Why Choose Us Section */}
@@ -2374,7 +2457,7 @@ export default function Home() {
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
-            style={{ backgroundColor: "#EFFFFD" }}
+            style={{ backgroundColor: "#FFFFFF" }}
           />
           <div className="relative z-10">
         {/* AI Engine Section */}

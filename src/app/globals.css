@@ -154,7 +154,7 @@
 
   .ax-page-bg {
     position: relative;
-    background: #EFFFFD;
+    background: #FFFFFF;
   }
 
   .ax-page-bg::before {
@@ -170,7 +170,7 @@
   }
 
   .ax-glass-header {
-    background: rgb(252 242 255 / 0.88) !important;
+    background: rgb(233 236 228 / 0.88) !important;
     border-color: rgb(255 255 255 / 0.45) !important;
     box-shadow: 0 16px 36px rgb(68 31 132 / 0.12);
     backdrop-filter: blur(24px);
@@ -206,7 +206,7 @@
 }
 
 :root {
-  --background: hsl(173 100% 97%);
+  --background: hsl(0 0% 100%);
   --foreground: hsl(224 71% 4%);
   --card: hsl(0 0% 100%);
   --card-foreground: hsl(224 71% 4%);
@@ -214,7 +214,7 @@
   --popover-foreground: hsl(224 71% 4%);
   --primary: hsl(262 62% 32%);
   --primary-foreground: hsl(210 40% 98%);
-  --secondary: hsl(286 100% 97%);
+  --secondary: hsl(83 17% 91%);
   --secondary-foreground: hsl(222 47% 11%);
   --muted: hsl(210 40% 96%);
   --muted-foreground: hsl(215 25% 35%);
@@ -230,7 +230,7 @@
   --chart-3: hsl(199 89% 48%);
   --chart-4: hsl(263 70% 50%);
   --chart-5: hsl(199 89% 48%);
-  --sidebar: hsl(210 40% 96%);
+  --sidebar: hsl(83 17% 91%);
   --sidebar-foreground: hsl(224 71% 4%);
   --sidebar-primary: hsl(262 62% 32%);
   --sidebar-primary-foreground: hsl(210 40% 98%);
