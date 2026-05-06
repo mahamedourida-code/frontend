@@ -2511,7 +2511,8 @@ export default function Home() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0"
             style={{
-              backgroundColor: "#FCF2FF",
+              backgroundColor: "#E9ECE4",
+              boxShadow: "0 -24px 60px rgba(47, 22, 94, 0.08)",
               clipPath:
                 "polygon(0 4%, 12% 2.8%, 25% 4.6%, 40% 2.4%, 58% 4.3%, 75% 2.7%, 100% 4%, 100% 100%, 0 100%)",
             }}
@@ -2807,7 +2808,7 @@ export default function Home() {
 
                 <div className="relative min-h-[520px] overflow-hidden rounded-l-[2rem] border border-[#A78BFA]/40 shadow-xl shadow-[#A78BFA]/10 lg:min-h-[760px]" data-animate="stagger">
                   <img
-                    src="/frfr.jpg"
+                    src="/purchase.webp"
                     alt="Professionals reviewing documents"
                     className="absolute inset-0 h-full w-full object-cover object-center"
                   />
@@ -2843,7 +2844,8 @@ export default function Home() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0"
             style={{
-              backgroundColor: "#EEF1FF",
+              backgroundColor: "#E9ECE4",
+              boxShadow: "0 -24px 60px rgba(47, 22, 94, 0.08)",
               clipPath:
                 "polygon(0 4%, 12% 2.8%, 25% 4.6%, 40% 2.4%, 58% 4.3%, 75% 2.7%, 100% 4%, 100% 100%, 0 100%)",
             }}
@@ -2867,15 +2869,14 @@ export default function Home() {
 
               <div className="lg:pt-12" data-animate="stagger">
                 <p className="max-w-3xl text-2xl leading-10 text-[#11182f]">
-                  AxLiner is built for document workflows where files, downloads, and batch results need clear ownership. Uploads move through encrypted connections, processed files stay access-controlled, and sharing is designed around links that can expire.
+                  At AxLiner, your data is treated with utmost care. We build around global data protection expectations and international privacy requirements for document processing workflows.
                 </p>
 
                 <div className="mt-10 space-y-7">
                   {[
-                    "Encrypted transport for uploads, downloads, and API requests",
-                    "Access-controlled result files tied to user or session ownership",
-                    "Share links designed for controlled access and expiration",
-                    "Processing records kept durable so batch jobs can be recovered",
+                    "ISO 27001-aligned security controls",
+                    "Built for GDPR, SOC 2, CCPA and HIPAA-conscious workflows",
+                    "Secure infrastructure across Supabase, Fly.io and Vercel",
                   ].map((item) => (
                     <div key={item} className="flex items-start gap-4 text-xl text-[#11182f]">
                       <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-[#2815FF] text-[#2815FF]">
