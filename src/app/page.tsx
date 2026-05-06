@@ -1416,10 +1416,10 @@ export default function Home() {
             }}
           />
           <div className="relative z-10">
-        <section ref={heroRef} className="relative overflow-hidden pt-24 pb-12 sm:pt-32 sm:pb-16 lg:pt-32 lg:pb-20">
+        <section ref={heroRef} className="relative overflow-hidden pt-20 pb-10 sm:pt-24 sm:pb-14 lg:pt-24 lg:pb-16">
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto max-w-[1420px] px-4 sm:px-5 lg:px-9">
-            <div className="grid min-h-[650px] items-center gap-10 lg:grid-cols-[minmax(420px,0.96fr)_minmax(0,1.04fr)] lg:gap-14">
+            <div className="grid min-h-[560px] items-center gap-10 lg:min-h-[590px] lg:grid-cols-[minmax(420px,0.96fr)_minmax(0,1.04fr)] lg:gap-14">
               <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:text-left">
                 <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight text-black sm:text-5xl lg:text-6xl">
                   Handwritten images to Excel in seconds
@@ -1639,8 +1639,8 @@ export default function Home() {
         </section>
 
         {/* Conversion Section */}
-        <section id="converter" className="relative z-10 pt-4 pb-16 sm:pt-6 lg:pt-8">
-          <div className="container mx-auto px-4 sm:px-5 lg:px-9 max-w-[1400px]">
+        <section id="converter" className="relative z-10 scroll-mt-28 pt-6 pb-16 sm:pt-8 lg:pt-10">
+          <div className="container mx-auto max-w-[1540px] px-4 sm:px-5 lg:px-9">
             <div className="mb-5 text-center">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
                 <h2 className="text-lg font-bold text-foreground sm:text-xl">
@@ -1664,9 +1664,9 @@ export default function Home() {
                 </button>
               </div>
             )}
-              <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : 'w-full max-w-6xl'}`}>
-                <div className={resultFiles.length === 0 ? "grid items-stretch gap-5 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,1.08fr)]" : "relative w-full"}>
-                <div className="ax-glass-card relative w-full space-y-3 rounded-[1.35rem] border border-white/45 p-4 sm:p-5">
+              <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : 'w-full max-w-[1480px]'}`}>
+                <div className={resultFiles.length === 0 ? "grid items-stretch gap-7 lg:grid-cols-[minmax(0,0.9fr)_minmax(560px,1.1fr)]" : "relative w-full"}>
+                <div className="ax-glass-card relative w-full space-y-5 rounded-[2rem] border border-white/45 p-5 sm:p-6 lg:p-7">
                   {latestRecoverableJob && !isProcessing && (
                     <div className="rounded-[1.25rem] border border-[#eadfff] bg-[#E9ECE4]/85 p-4 shadow-[0_16px_45px_rgba(68,31,132,0.10)] backdrop-blur-xl">
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -1695,19 +1695,19 @@ export default function Home() {
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
-                        className={`relative border-2 border-dashed rounded-[1.1rem] bg-white/25 backdrop-blur-xl transition-all duration-200 cursor-pointer ${
+                        className={`relative border-2 border-dashed rounded-[1.5rem] bg-white/25 backdrop-blur-xl transition-all duration-200 cursor-pointer ${
                           isDragging
                             ? 'border-[#A78BFA] bg-[#A78BFA]/10 scale-[0.99]'
                             : uploadedFiles.length > 0
                               ? 'border-[#A78BFA] bg-[#A78BFA]/5'
                               : 'border-[#A78BFA]/50 hover:border-[#A78BFA] hover:bg-[#A78BFA]/5'
-                        } p-6 lg:p-8 min-h-[170px]`}
+                        } flex min-h-[230px] items-center justify-center p-7 lg:min-h-[270px] lg:p-10`}
                       >
                         <div className="text-center">
                           {uploadedFiles.length === 0 ? (
                             <>
-                              <SiteIcon src={siteIcons.upload} className="mx-auto mb-3 h-12 w-12" />
-                              <h3 className="text-base font-semibold mb-2">
+                              <SiteIcon src={siteIcons.upload} className="mx-auto mb-4 h-14 w-14" />
+                              <h3 className="mb-2 text-xl font-semibold">
                                 {isDragging ? 'Drop your images here' : `Upload up to ${maxUploadFiles} images`}
                               </h3>
                               <input
@@ -1718,16 +1718,16 @@ export default function Home() {
                                 onChange={handleFileInput}
                                 className="hidden"
                               />
-                              <p className="text-sm text-[#111827]/70">
+                              <p className="mx-auto max-w-sm text-base leading-7 text-[#111827]/70">
                                 Click or drag handwritten tables, notes, receipts, or forms.
                               </p>
                             </>
                           ) : (
                             <>
                               {/* Image Queue - Small thumbnails */}
-                              <div className="grid grid-cols-4 gap-2 mb-3 max-h-24 overflow-y-auto">
+                              <div className="mb-4 grid max-h-44 grid-cols-3 gap-3 overflow-y-auto sm:grid-cols-4">
                                 {uploadedFiles.map((file, index) => (
-                                  <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border bg-card">
+                                  <div key={index} className="relative group aspect-square overflow-hidden rounded-2xl border border-white/60 bg-card">
                                     <img
                                       src={filePreviewUrls[index] || ''}
                                       alt={file.name}
@@ -1749,13 +1749,13 @@ export default function Home() {
                                   </div>
                                 ))}
                               </div>
-                              <p className="text-xs text-muted-foreground mb-2">{uploadedFiles.length} image{uploadedFiles.length > 1 ? 's' : ''} ready</p>
+                              <p className="mb-3 text-sm font-semibold text-[#111827]">{uploadedFiles.length} image{uploadedFiles.length > 1 ? 's' : ''} ready to convert</p>
                               <label htmlFor="file-upload-landing-more">
                                 <Button
                                   variant="outline"
                                   size="sm"
                                   disabled={isProcessing}
-                                  className="border-2 border-[#A78BFA] text-xs"
+                                  className="rounded-full border-2 border-[#A78BFA] bg-white/60 text-sm"
                                   asChild
                                   onClick={(e) => e.stopPropagation()}
                                 >
@@ -1804,31 +1804,31 @@ export default function Home() {
 
                   {/* Progressive Results Display - Full Width as soon as we have results */}
                   {(isProcessing || resultFiles.length > 0) && (
-                    <div className={`ax-glass-card overflow-hidden rounded-[1.5rem] border border-white/45 ${resultFiles.length > 0 ? 'p-4 sm:p-5' : 'p-6'}`}>
-                      <div className={`mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between ${resultFiles.length > 0 ? 'border-b border-white/35 pb-4' : ''}`}>
+                    <div className={`ax-glass-card overflow-hidden rounded-[2rem] border border-white/45 ${resultFiles.length > 0 ? 'p-5 sm:p-6' : 'p-6 sm:p-7'}`}>
+                      <div className={`mb-5 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between ${resultFiles.length > 0 ? 'border-b border-white/35 pb-5' : ''}`}>
                         <div className="flex items-start gap-4">
-                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#441F84] text-white shadow-lg shadow-[#441F84]/20">
+                          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.35rem] bg-[#441F84] text-white shadow-lg shadow-[#441F84]/20">
                             {processingComplete ? (
-                              <SiteIcon src={siteIcons.export} className="h-5 w-5" />
+                              <SiteIcon src={siteIcons.export} className="h-6 w-6" />
                             ) : (
-                              <InlineSpinner className="h-5 w-5" />
+                              <InlineSpinner className="h-6 w-6" />
                             )}
                           </div>
-                          <div className="space-y-1">
+                          <div className="space-y-2">
                             <div className="flex flex-wrap items-center gap-2">
-                              <h3 className="text-lg font-semibold tracking-tight">
-                                {processingComplete ? 'Ready to Download' : isUploading ? 'Uploading...' : 'Processing...'}
+                              <h3 className="text-2xl font-semibold tracking-tight text-[#111827]">
+                                {processingComplete ? 'Files ready' : isUploading ? 'Uploading your batch' : 'Converting your files'}
                               </h3>
-                              <span className="rounded-full border border-[#A78BFA]/35 bg-white/45 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground backdrop-blur-md">
-                                {processingComplete ? `${resultFiles.length} file${resultFiles.length === 1 ? '' : 's'} ready` : isUploading ? 'uploading' : 'live status'}
+                              <span className="rounded-full border border-[#A78BFA]/35 bg-white/55 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#111827]/70 backdrop-blur-md">
+                                {processingComplete ? `${resultFiles.length} ready` : isUploading ? `${liveProgressPercent}% uploaded` : `${resultFiles.length}/${totalFilesToProcess || uploadedFiles.length} done`}
                               </span>
                             </div>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="max-w-3xl text-base leading-7 text-[#111827]/70">
                               {processingComplete
-                                ? 'Review the preview, download individual files, or export everything at once.'
+                                ? 'Review the preview, download individual files, share a result, or export the whole batch.'
                                 : isUploading
-                                  ? 'Your batch is uploading. You can cancel before processing starts.'
-                                  : 'Your files are being converted now. The panel will update as each result is ready.'}
+                                  ? 'Keep this page open while the images upload. You can cancel before processing starts.'
+                                  : 'AxLiner is reading the images and adding results here as soon as each file is ready.'}
                             </p>
                           </div>
                         </div>
@@ -1867,12 +1867,12 @@ export default function Home() {
                       </div>
 
                       {isProcessing && !processingComplete && (
-                        <div className="mb-4 rounded-2xl border border-[#eadfff] bg-white/45 p-3 backdrop-blur-md">
-                          <div className="mb-2 flex items-center justify-between text-xs font-semibold text-muted-foreground">
+                        <div className="mb-5 rounded-[1.35rem] border border-[#eadfff] bg-white/50 p-5 backdrop-blur-md">
+                          <div className="mb-3 flex items-center justify-between text-sm font-semibold text-[#111827]/70">
                             <span>{isUploading ? 'Upload progress' : 'Batch progress'}</span>
                             <span>{liveProgressPercent}%</span>
                           </div>
-                          <div className="h-2 overflow-hidden rounded-full bg-white/70">
+                          <div className="h-3 overflow-hidden rounded-full bg-white/80">
                             <div
                               className="h-full rounded-full bg-[#441F84] transition-all duration-300"
                               style={{ width: `${liveProgressPercent}%` }}
@@ -1885,13 +1885,13 @@ export default function Home() {
                         <div className="space-y-4">
                           {/* Preview Section - Only for first file */}
                           {resultFiles.length > 0 && tablePreviewData.length > 0 && firstImageUrl && (
-                            <div className="space-y-3">
+                            <div className="space-y-4">
                               {/* Image and Table Preview Side by Side */}
-                              <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+                              <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
                                 {/* Original Image */}
                                 <div className="flex flex-col xl:col-span-1">
-                                  <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Original Image</h4>
-                                  <div className="border-2 border-[#A78BFA]/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center max-h-[600px]">
+                                  <h4 className="mb-3 text-sm font-semibold text-[#111827]/70">Original image</h4>
+                                  <div className="flex max-h-[640px] items-center justify-center overflow-hidden rounded-[1.35rem] border border-white/60 bg-white/55">
                                     <img 
                                       src={firstImageUrl} 
                                       alt="Original" 
@@ -1902,8 +1902,8 @@ export default function Home() {
 
                                 {/* Table Preview */}
                                 <div className="flex flex-col xl:col-span-2">
-                                  <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Extracted Data Preview</h4>
-                                  <div className="border-2 border-[#A78BFA]/20 rounded-lg overflow-auto max-h-[600px] bg-white">
+                                  <h4 className="mb-3 text-sm font-semibold text-[#111827]/70">Extracted spreadsheet preview</h4>
+                                  <div className="max-h-[640px] overflow-auto rounded-[1.35rem] border border-white/60 bg-white">
                                     <table className="w-full text-base">
                                       <tbody>
                                         {tablePreviewData.map((row, rowIndex) => (
@@ -1930,16 +1930,19 @@ export default function Home() {
                               </div>
 
                               {/* First File Buttons */}
-                              <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#A78BFA]">
+                              <div className="flex flex-col gap-4 rounded-[1.35rem] border border-white/60 bg-white/55 p-4 backdrop-blur-xl lg:flex-row lg:items-center lg:justify-between">
                                 <div className="flex items-center gap-3 flex-1 min-w-0">
                                   <SiteIcon src={siteIcons.table} className="h-6 w-6" />
-                                  <span className="text-base font-medium truncate">{cleanFilename(resultFiles[0].filename)}</span>
+                                  <div className="min-w-0">
+                                    <p className="text-sm font-semibold text-[#111827]">Primary result</p>
+                                    <span className="block truncate text-base font-medium text-[#111827]/75">{cleanFilename(resultFiles[0].filename)}</span>
+                                  </div>
                                 </div>
-                                <div className="flex items-center gap-2 flex-shrink-0">
+                                <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
                                   <Button
                                     size="default"
                                     onClick={() => handleDownloadFile(resultFiles[0].file_id)}
-                                    className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#A78BFA]"
+                                    className="gap-2 rounded-full bg-primary text-white hover:bg-primary/90"
                                   >
                                     <SiteIcon src={siteIcons.export} className="h-5 w-5" />
                                     Download
@@ -1948,7 +1951,7 @@ export default function Home() {
                                     size="default"
                                     variant="outline"
                                     onClick={() => handleShareFile(resultFiles[0])}
-                                    className="gap-2 bg-white border-2 border-[#A78BFA] text-foreground hover:bg-primary/10"
+                                    className="gap-2 rounded-full border border-[#A78BFA] bg-white/70 text-foreground hover:bg-primary/10"
                                   >
                                     <SiteIcon src={siteIcons.share} className="h-5 w-5" />
                                     Share
@@ -1959,7 +1962,7 @@ export default function Home() {
                                     onClick={() => {
                                       window.open(buildOfficeViewerUrl(resultFiles[0].file_id), '_blank')
                                     }}
-                                    className="gap-2 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                                    className="gap-2 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
                                   >
                                     <SiteIcon src={siteIcons.edit} className="h-5 w-5" />
                                     Edit
@@ -1971,7 +1974,7 @@ export default function Home() {
 
                           {/* Other Files - Just buttons, starting from index 1 */}
                           {resultFiles.slice(1).map((file: any, index: number) => (
-                            <div key={file.file_id || index + 1} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#A78BFA]/20">
+                            <div key={file.file_id || index + 1} className="flex flex-col gap-3 rounded-[1.25rem] border border-white/60 bg-white/45 p-4 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <button
                                   onClick={() => handleDownloadFile(file.file_id)}
@@ -1979,13 +1982,13 @@ export default function Home() {
                                 >
                                   <SiteIcon src={siteIcons.table} className="h-6 w-6" />
                                 </button>
-                                <span className="text-sm font-medium truncate">{cleanFilename(file.filename)}</span>
+                                <span className="text-sm font-medium truncate text-[#111827]">{cleanFilename(file.filename)}</span>
                               </div>
-                              <div className="flex items-center gap-2 flex-shrink-0">
+                              <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
                                 <Button
                                   size="sm"
                                   onClick={() => handleDownloadFile(file.file_id)}
-                                  className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#A78BFA]"
+                                  className="gap-2 rounded-full bg-primary text-white hover:bg-primary/90"
                                 >
                                   <SiteIcon src={siteIcons.export} className="h-5 w-5" />
                                   Download
@@ -1994,7 +1997,7 @@ export default function Home() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleShareFile(file)}
-                                  className="gap-1.5 bg-white border-2 border-[#A78BFA] text-foreground hover:bg-primary/10"
+                                  className="gap-1.5 rounded-full border border-[#A78BFA] bg-white/70 text-foreground hover:bg-primary/10"
                                 >
                                   <SiteIcon src={siteIcons.share} className="h-5 w-5" />
                                   Share
@@ -2005,7 +2008,7 @@ export default function Home() {
                                   onClick={() => {
                                     window.open(buildOfficeViewerUrl(file.file_id), '_blank')
                                   }}
-                                  className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                                  className="gap-1.5 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
                                 >
                                   <SiteIcon src={siteIcons.edit} className="h-5 w-5" />
                                   Edit
@@ -2016,7 +2019,7 @@ export default function Home() {
 
                           {/* Show buttons without preview if no preview data available yet */}
                           {(!tablePreviewData.length || !firstImageUrl) && resultFiles.map((file: any, index: number) => (
-                            <div key={`no-preview-${file.file_id || index}`} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border-2 border-[#A78BFA]/20">
+                            <div key={`no-preview-${file.file_id || index}`} className="flex flex-col gap-3 rounded-[1.25rem] border border-white/60 bg-white/45 p-4 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <button
                                   onClick={() => handleDownloadFile(file.file_id)}
@@ -2024,13 +2027,13 @@ export default function Home() {
                                 >
                                   <SiteIcon src={siteIcons.table} className="h-6 w-6" />
                                 </button>
-                                <span className="text-sm font-medium truncate">{cleanFilename(file.filename)}</span>
+                                <span className="text-sm font-medium truncate text-[#111827]">{cleanFilename(file.filename)}</span>
                               </div>
-                              <div className="flex items-center gap-2 flex-shrink-0">
+                              <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
                                 <Button
                                   size="sm"
                                   onClick={() => handleDownloadFile(file.file_id)}
-                                  className="gap-2 bg-primary hover:bg-primary/90 text-white border-2 border-[#A78BFA]"
+                                  className="gap-2 rounded-full bg-primary text-white hover:bg-primary/90"
                                 >
                                   <SiteIcon src={siteIcons.export} className="h-5 w-5" />
                                   Download
@@ -2039,7 +2042,7 @@ export default function Home() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleShareFile(file)}
-                                  className="gap-1.5 bg-white border-2 border-[#A78BFA] text-foreground hover:bg-primary/10"
+                                  className="gap-1.5 rounded-full border border-[#A78BFA] bg-white/70 text-foreground hover:bg-primary/10"
                                 >
                                   <SiteIcon src={siteIcons.share} className="h-5 w-5" />
                                   Share
@@ -2050,7 +2053,7 @@ export default function Home() {
                                   onClick={() => {
                                     window.open(buildOfficeViewerUrl(file.file_id), '_blank')
                                   }}
-                                  className="gap-1.5 bg-white border-2 border-foreground text-foreground hover:bg-muted/50"
+                                  className="gap-1.5 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
                                 >
                                   <SiteIcon src={siteIcons.edit} className="h-5 w-5" />
                                   Edit
@@ -2063,10 +2066,10 @@ export default function Home() {
                           {isProcessing && totalFilesToProcess > resultFiles.length && (
                             <>
                               {Array.from({ length: totalFilesToProcess - resultFiles.length }).map((_, index) => (
-                                <div key={`pending-${index}`} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg border-2 border-dashed border-[#A78BFA]/30">
+                                <div key={`pending-${index}`} className="flex items-center justify-between rounded-[1.25rem] border border-dashed border-[#A78BFA]/35 bg-white/30 p-4 backdrop-blur-xl">
                                   <div className="flex items-center gap-3 flex-1 min-w-0">
                                     <InlineSpinner className="h-5 w-5 text-primary flex-shrink-0" />
-                                    <span className="text-sm font-medium text-muted-foreground">Processing file {resultFiles.length + index + 1}...</span>
+                                    <span className="text-sm font-medium text-[#111827]/70">Waiting for file {resultFiles.length + index + 1}</span>
                                   </div>
                                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                     <span>Please wait</span>
@@ -2079,7 +2082,7 @@ export default function Home() {
                       )}
 
                       {isProcessing && !processingComplete && resultFiles.length === 0 && (
-                        <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
+                        <div className="mt-5 flex items-center justify-center gap-2 rounded-[1.25rem] border border-white/55 bg-white/35 p-4 text-sm font-medium text-[#111827]/70 backdrop-blur-xl">
                           <InlineSpinner className="h-4 w-4" />
                           <span>{isUploading ? 'Uploading your images...' : 'Converting your images...'}</span>
                         </div>
@@ -2089,11 +2092,11 @@ export default function Home() {
 
                   {/* Convert Button + Options Card Row - Hide when processing or files ready */}
                   {!isProcessing && resultFiles.length === 0 && (
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
                     <Button
                      onClick={handleProcessImage}
                      disabled={uploadedFiles.length === 0 || isProcessing}
-                     className={`col-span-2 py-5 text-base font-semibold border-2 h-full transition-all duration-200 ${
+                     className={`min-h-[108px] rounded-[1.5rem] border-2 text-lg font-semibold transition-all duration-200 ${
                       uploadedFiles.length === 0
                            ? 'bg-gray-300 hover:bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'
                            : 'bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 shadow-lg shadow-primary/20'
@@ -2106,19 +2109,19 @@ export default function Home() {
                         </>
                       ) : (
                         <>
-                          Convert Image
+                          {uploadedFiles.length === 0 ? 'Add images first' : 'Convert to Excel'}
                         </>
                       )}
                     </Button>
 
                     {/* Options Card - Right Side (1 column) */}
-                    <Card className="border border-white/55 bg-white/30 shadow-none backdrop-blur-xl dark:bg-white/30">
-                      <CardContent className="p-3">
-                        <div className="space-y-2">
+                    <Card className="rounded-[1.5rem] border border-white/55 bg-white/30 shadow-none backdrop-blur-xl dark:bg-white/30">
+                      <CardContent className="p-4">
+                        <div className="space-y-4">
                           <div>
-                            <h3 className="text-xs font-semibold mb-1 text-foreground">Language</h3>
+                            <h3 className="mb-2 text-sm font-semibold text-foreground">Language</h3>
                             <select
-                              className="w-full p-1.5 rounded-lg border-2 border-muted-foreground/20 bg-muted/30 text-foreground text-xs font-medium hover:border-[#A78BFA]/50 transition-all focus:outline-none focus:border-primary cursor-pointer"
+                              className="w-full cursor-pointer rounded-xl border-2 border-muted-foreground/20 bg-white/45 p-2.5 text-sm font-medium text-foreground transition-all hover:border-[#A78BFA]/50 focus:border-primary focus:outline-none"
                               defaultValue="en"
                               onClick={(e) => e.preventDefault()}
                             >
@@ -2134,7 +2137,7 @@ export default function Home() {
                           </div>
 
                           <div>
-                            <h3 className="text-xs font-semibold mb-1 text-foreground">Auto</h3>
+                            <h3 className="mb-2 text-sm font-semibold text-foreground">Delivery</h3>
                             <button
                               onClick={(e) => {
                                 e.preventDefault();
@@ -2146,7 +2149,7 @@ export default function Home() {
                                 }
                               }}
                               className={cn(
-                                "w-full flex items-center justify-between p-1.5 rounded-lg transition-all border",
+                                "w-full flex items-center justify-between rounded-xl border p-2.5 transition-all",
                                 autoDownload
                                   ? "bg-primary/10 border-primary"
                                   : "bg-muted/30 border-muted-foreground/20 hover:border-[#A78BFA]/50"
@@ -2154,7 +2157,7 @@ export default function Home() {
                             >
                               <div className="flex items-center gap-1">
                                 <SiteIcon src={siteIcons.export} className={cn("h-4 w-4", autoDownload ? "opacity-100" : "opacity-60")} />
-                                <Label className="text-xs font-medium text-foreground cursor-pointer">
+                                <Label className="cursor-pointer text-sm font-medium text-foreground">
                                   Auto Download
                                 </Label>
                               </div>
@@ -2168,19 +2171,19 @@ export default function Home() {
                 </div>
 
                 {resultFiles.length === 0 && (
-                  <div className="ax-glass-card relative flex min-h-[430px] flex-col justify-between overflow-hidden rounded-[1.35rem] border border-white/45 p-4 sm:p-5">
+                  <div className="ax-glass-card relative flex min-h-[560px] flex-col justify-between overflow-hidden rounded-[2rem] border border-white/45 p-5 sm:p-6 lg:p-7">
                     <div className="flex items-center justify-between gap-4">
                       <div>
                         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#2f165e]">Preview</p>
-                        <h3 className="mt-2 text-xl font-semibold text-[#111827]">Before and after conversion</h3>
+                        <h3 className="mt-2 text-2xl font-semibold text-[#111827]">Before and after conversion</h3>
                       </div>
                       <span className="hidden rounded-full border border-white/60 bg-white/40 px-3 py-1 text-xs font-semibold text-[#111827]/70 backdrop-blur-xl sm:inline-flex">
                         XLSX ready
                       </span>
                     </div>
 
-                    <div className="mt-5 grid flex-1 gap-4 sm:grid-cols-2">
-                      <figure className="flex min-h-[310px] flex-col overflow-hidden rounded-[1.1rem] border border-white/60 bg-white/35">
+                    <div className="mt-6 grid flex-1 gap-5 sm:grid-cols-2">
+                      <figure className="flex min-h-[430px] flex-col overflow-hidden rounded-[1.5rem] border border-white/60 bg-white/35">
                         <div className="flex items-center justify-between border-b border-white/55 px-4 py-3">
                           <figcaption className="text-sm font-semibold text-[#111827]">Before</figcaption>
                           <span className="text-xs font-medium text-[#111827]/60">Image</span>
@@ -2189,12 +2192,12 @@ export default function Home() {
                           <img
                             src="/b.jpeg"
                             alt="Handwritten table before conversion"
-                            className="max-h-[300px] w-full rounded-xl object-contain shadow-[0_18px_45px_rgba(42,35,64,0.10)]"
+                            className="max-h-[390px] w-full rounded-xl object-contain shadow-[0_18px_45px_rgba(42,35,64,0.10)]"
                           />
                         </div>
                       </figure>
 
-                      <figure className="flex min-h-[310px] flex-col overflow-hidden rounded-[1.1rem] border border-white/60 bg-white/35">
+                      <figure className="flex min-h-[430px] flex-col overflow-hidden rounded-[1.5rem] border border-white/60 bg-white/35">
                         <div className="flex items-center justify-between border-b border-white/55 px-4 py-3">
                           <figcaption className="text-sm font-semibold text-[#111827]">After</figcaption>
                           <span className="text-xs font-medium text-[#111827]/60">Spreadsheet</span>
@@ -2203,7 +2206,7 @@ export default function Home() {
                           <img
                             src="/bb.png"
                             alt="Spreadsheet output after conversion"
-                            className="max-h-[300px] w-full rounded-xl object-contain shadow-[0_18px_45px_rgba(42,35,64,0.10)]"
+                            className="max-h-[390px] w-full rounded-xl object-contain shadow-[0_18px_45px_rgba(42,35,64,0.10)]"
                           />
                         </div>
                       </figure>
