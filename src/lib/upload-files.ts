@@ -48,3 +48,54 @@ export function createPdfPreviewDataUrl(filename: string): string {
 
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
+
+let pdfWorkerConfigured = false;
+
+export async function createPdfFirstPageScreenshot(file: File): Promise<string> {
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return createPdfPreviewDataUrl(file.name);
+  }
+
+  try {
+    const pdfjsLib = await import("pdfjs-dist");
+
+    if (!pdfWorkerConfigured) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+        "pdfjs-dist/build/pdf.worker.mjs",
+        import.meta.url
+      ).toString();
+      pdfWorkerConfigured = true;
+    }
+
+    const data = new Uint8Array(await file.arrayBuffer());
+    const loadingTask = pdfjsLib.getDocument({ data });
+    const pdf = await loadingTask.promise;
+    const page = await pdf.getPage(1);
+    const viewport = page.getViewport({ scale: 1.65 });
+    const outputScale = Math.min(window.devicePixelRatio || 1, 2);
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+
+    if (!context) {
+      await pdf.destroy();
+      return createPdfPreviewDataUrl(file.name);
+    }
+
+    canvas.width = Math.floor(viewport.width * outputScale);
+    canvas.height = Math.floor(viewport.height * outputScale);
+    canvas.style.width = `${Math.floor(viewport.width)}px`;
+    canvas.style.height = `${Math.floor(viewport.height)}px`;
+
+    await page.render({
+      canvasContext: context,
+      viewport,
+      transform: outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : undefined,
+    } as any).promise;
+
+    const screenshot = canvas.toDataURL("image/png");
+    await pdf.destroy();
+    return screenshot;
+  } catch {
+    return createPdfPreviewDataUrl(file.name);
+  }
+}

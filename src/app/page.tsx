@@ -53,12 +53,12 @@ import NextLink from "next/link";
 import { compressImages, formatFileSize } from "@/lib/image-compression";
 import {
   acceptedUploadMimeTypes,
-  createPdfPreviewDataUrl,
+  createPdfFirstPageScreenshot,
   isAcceptedUploadFile,
   isPdfFile,
 } from "@/lib/upload-files";
 import { IndustrySolutionsMenuGrid } from "@/components/IndustrySolutionsMenuGrid";
-import { Download, FileSpreadsheet, Pencil, RotateCcw, Share2, X } from "lucide-react";
+import { Download, FileSpreadsheet, FileText, Pencil, RotateCcw, Share2, X } from "lucide-react";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -188,11 +188,14 @@ export default function Home() {
   const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null);
   const [copySuccess, setCopySuccess] = useState(false);
   const [tablePreviewData, setTablePreviewData] = useState<any[][]>([]);
+  const [textPreview, setTextPreview] = useState('');
   const [firstImageUrl, setFirstImageUrl] = useState<string>('');
+  const [outputMode, setOutputMode] = useState<'table' | 'text'>('table');
   const [totalFilesToProcess, setTotalFilesToProcess] = useState(0);
   const wsRef = useRef<OCRWebSocket | null>(null);
   const pollingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const uploadAbortRef = useRef<AbortController | null>(null);
+  const pendingAutoUploadRef = useRef(false);
   const currentJobIdRef = useRef<string | null>(null);
   const [shareSession, setShareSession] = useState<any>(null);
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([]);
@@ -607,7 +610,7 @@ export default function Home() {
   // Helper function to create preview URL for file (converts HEIC if needed)
   const createFilePreviewUrl = useCallback(async (file: File): Promise<string> => {
     if (isPdfFile(file)) {
-      return createPdfPreviewDataUrl(file.name);
+      return createPdfFirstPageScreenshot(file);
     }
 
     const fileName = file.name.toLowerCase();
@@ -688,6 +691,7 @@ export default function Home() {
       if (files.length > maxUploadFiles) {
         showBatchLimitToast(maxUploadFiles);
       }
+      pendingAutoUploadRef.current = true;
       setUploadedFiles(filesToUse);
     }
   }, [maxUploadFiles]);
@@ -700,44 +704,16 @@ export default function Home() {
       if (fileArray.length > maxUploadFiles) {
         showBatchLimitToast(maxUploadFiles);
       }
+      pendingAutoUploadRef.current = true;
       setUploadedFiles(filesToUse);
     }
   }, [maxUploadFiles]);
 
-  const handleProcessImage = useCallback(async () => {
-    if (!uploadedFiles || uploadedFiles.length === 0) {
-      toast.error('Please select files to process');
-      return;
-    }
+  const processImages = useCallback(async (filesOverride?: File[]) => {
+    const filesForProcessing = filesOverride ?? uploadedFiles;
 
-    if (uploadedFiles.length > maxUploadFiles) {
-      showBatchLimitToast(maxUploadFiles);
-      setUploadedFiles(prev => prev.slice(0, maxUploadFiles));
-      return;
-    }
-
-    // COMMENTED OUT: Check if user has free trials remaining (silently)
-    // if (!trialInfo.hasRemaining) {
-    //   setShowLimitDialog(true);
-    //   return;
-    // }
-
-    // Check if first time converting (show confirmation)
-    if (typeof window !== 'undefined') {
-      const hasConvertedBefore = localStorage.getItem('hasConvertedBefore');
-      if (!hasConvertedBefore) {
-        setShowFirstConvertConfirm(true);
-        return;
-      }
-    }
-
-    // Proceed with processing
-    await processImages();
-  }, [uploadedFiles, trialInfo, maxUploadFiles]);
-
-  const processImages = useCallback(async () => {
     try {
-      if (uploadedFiles.length > maxUploadFiles) {
+      if (filesForProcessing.length > maxUploadFiles) {
         showBatchLimitToast(maxUploadFiles);
         setUploadedFiles(prev => prev.slice(0, maxUploadFiles));
         return;
@@ -748,13 +724,17 @@ export default function Home() {
       setUploadProgress(0);
       currentJobIdRef.current = null;
       setProcessingComplete(false);
-      setTotalFilesToProcess(uploadedFiles.length);
+      setResultFiles([]);
+      setTablePreviewData([]);
+      setTextPreview('');
+      setFirstImageUrl('');
+      setTotalFilesToProcess(filesForProcessing.length);
       const uploadController = new AbortController();
       uploadAbortRef.current = uploadController;
 
 
       // Compress images if needed
-      const compressionResults = await compressImages(uploadedFiles);
+      const compressionResults = await compressImages(filesForProcessing);
       
       // Log compression summary
       const compressedCount = compressionResults.filter(r => r.compressed).length;
@@ -775,7 +755,7 @@ export default function Home() {
       }
 
       const response = await ocrApi.uploadBatchMultipart(filesToUpload, {
-        output_format: 'xlsx',
+        output_format: outputMode === 'text' ? 'txt' : 'xlsx',
         consolidation_strategy: 'separate',
         signal: uploadController.signal,
         onUploadProgress: setUploadProgress
@@ -799,17 +779,8 @@ export default function Home() {
       }
 
       // Store the first uploaded image for preview immediately
-      if (uploadedFiles.length > 0) {
-        const firstFile = uploadedFiles[0];
-        if (isPdfFile(firstFile)) {
-          setFirstImageUrl(createPdfPreviewDataUrl(firstFile.name));
-        } else {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            setFirstImageUrl(e.target?.result as string);
-          };
-          reader.readAsDataURL(firstFile);
-        }
+      if (filesForProcessing.length > 0) {
+        setFirstImageUrl(await createFilePreviewUrl(filesForProcessing[0]));
       }
 
       startJobMonitoring(response.job_id, response.session_id);
@@ -844,14 +815,46 @@ export default function Home() {
         billingHref: "/dashboard/settings?section=billing",
         onSignIn: () => openSignInModal("/pricing?from=quota"),
         onRetry: () => {
-          void processImages();
+          void processImages(filesForProcessing);
         },
       });
     } finally {
       uploadAbortRef.current = null;
       setIsUploading(false);
     }
-  }, [uploadedFiles, updateState, maxUploadFiles, isAuthenticated, openSignInModal]);
+  }, [uploadedFiles, maxUploadFiles, isAuthenticated, openSignInModal, outputMode, createFilePreviewUrl]);
+
+  const handleProcessImage = useCallback(async () => {
+    if (!uploadedFiles || uploadedFiles.length === 0) {
+      toast.error('Please select files to process');
+      return;
+    }
+
+    if (uploadedFiles.length > maxUploadFiles) {
+      showBatchLimitToast(maxUploadFiles);
+      setUploadedFiles(prev => prev.slice(0, maxUploadFiles));
+      return;
+    }
+
+    if (typeof window !== 'undefined') {
+      const hasConvertedBefore = localStorage.getItem('hasConvertedBefore');
+      if (!hasConvertedBefore) {
+        setShowFirstConvertConfirm(true);
+        return;
+      }
+    }
+
+    await processImages(uploadedFiles);
+  }, [uploadedFiles, maxUploadFiles, processImages]);
+
+  useEffect(() => {
+    if (!pendingAutoUploadRef.current || uploadedFiles.length === 0 || isProcessing || resultFiles.length > 0) {
+      return;
+    }
+
+    pendingAutoUploadRef.current = false;
+    void processImages(uploadedFiles);
+  }, [uploadedFiles, isProcessing, resultFiles.length, processImages]);
 
   const handleDownloadFile = async (fileId: string) => {
 
@@ -871,7 +874,7 @@ export default function Home() {
       const link = document.createElement('a');
       link.href = url;
       // Use a simple filename without _processed
-      link.download = `result-${fileId.substring(0, 8)}.xlsx`;
+      link.download = `result-${fileId.substring(0, 8)}.${outputMode === 'text' ? 'txt' : 'xlsx'}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -888,6 +891,14 @@ export default function Home() {
   const fetchTablePreview = async (fileId: string) => {
     try {
       const blob = await ocrApi.downloadFile(fileId);
+
+      if (outputMode === 'text' || blob.type.startsWith('text/')) {
+        const text = await blob.text();
+        setTextPreview(text.slice(0, 6000));
+        setTablePreviewData([]);
+        return;
+      }
+
       const arrayBuffer = await blob.arrayBuffer();
       const workbook = XLSX.read(arrayBuffer, { type: 'array' });
       const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -896,6 +907,7 @@ export default function Home() {
       // Limit to first 10 rows for preview
       const previewData = data.slice(0, Math.min(10, data.length));
       setTablePreviewData(previewData);
+      setTextPreview('');
     } catch (error) {
       // Don't show error toast - just silently fail to show preview
     }
@@ -919,7 +931,7 @@ export default function Home() {
 
     if (status.results?.files?.length) {
       setResultFiles(status.results.files);
-      if (tablePreviewData.length === 0) {
+      if (tablePreviewData.length === 0 && !textPreview) {
         fetchTablePreview(status.results.files[0].file_id);
       }
     }
@@ -996,7 +1008,7 @@ export default function Home() {
             const existing = prev || [];
             if (existing.some(f => f.file_id === data.file_info.file_id)) return existing;
             const newFiles = [...existing, data.file_info];
-            if (newFiles.length === 1 && tablePreviewData.length === 0) {
+            if (newFiles.length === 1 && tablePreviewData.length === 0 && !textPreview) {
               fetchTablePreview(data.file_info.file_id);
             }
             return newFiles;
@@ -1084,9 +1096,11 @@ export default function Home() {
     setIsUploading(false);
     setUploadProgress(0);
     setTablePreviewData([]);
+    setTextPreview('');
     setFirstImageUrl('');
     setTotalFilesToProcess(0);
     setCurrentSessionId(null);
+    pendingAutoUploadRef.current = false;
     stopJobMonitoring();
     isExecutingAutoActionsRef.current = false;
     
@@ -1633,19 +1647,31 @@ export default function Home() {
                 </h2>
               </div>
             </div>
-            {resultFiles.length === 0 && (
+            {resultFiles.length === 0 && !isProcessing && (
               <div className="mx-auto mb-5 flex w-fit items-center rounded-full border border-white/55 bg-white/40 p-1 shadow-[0_16px_40px_rgba(42,35,64,0.08)] backdrop-blur-2xl">
                 <button
                   type="button"
-                  className="rounded-full bg-[#2f165e] px-4 py-2 text-sm font-semibold text-white shadow-sm"
+                  onClick={() => setOutputMode('table')}
+                  className={cn(
+                    "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+                    outputMode === 'table'
+                      ? "bg-[#2f165e] text-white shadow-sm"
+                      : "text-[#111827] hover:bg-white/45"
+                  )}
                 >
                   Table output
                 </button>
                 <button
                   type="button"
-                  className="rounded-full px-4 py-2 text-sm font-semibold text-[#111827] transition-colors hover:bg-white/45"
+                  onClick={() => setOutputMode('text')}
+                  className={cn(
+                    "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+                    outputMode === 'text'
+                      ? "bg-[#2f165e] text-white shadow-sm"
+                      : "text-[#111827] hover:bg-white/45"
+                  )}
                 >
-                  Metadata output
+                  Text output
                 </button>
               </div>
             )}
@@ -1756,6 +1782,7 @@ export default function Home() {
                                   const newFiles = e.target.files;
                                   if (newFiles && newFiles.length > 0) {
                                     const fileArray = Array.from(newFiles).filter(isAcceptedUploadFile);
+                                    pendingAutoUploadRef.current = true;
                                     setUploadedFiles(prev => {
                                       const remainingSlots = maxUploadFiles - prev.length;
                                       const filesToAdd = fileArray.slice(0, Math.max(0, remainingSlots));
@@ -1851,7 +1878,7 @@ export default function Home() {
                       {resultFiles.length > 0 && (
                         <div className="space-y-4">
                           {/* Preview Section - Only for first file */}
-                          {resultFiles.length > 0 && tablePreviewData.length > 0 && firstImageUrl && (
+                          {resultFiles.length > 0 && (tablePreviewData.length > 0 || textPreview) && firstImageUrl && (
                             <div className="space-y-4">
                               {/* Image and Table Preview Side by Side */}
                               <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
@@ -1867,30 +1894,40 @@ export default function Home() {
                                   </div>
                                 </div>
 
-                                {/* Table Preview */}
+                                {/* Output Preview */}
                                 <div className="flex flex-col xl:col-span-2">
-                                  <h4 className="mb-3 text-sm font-semibold text-[#111827]/70">Extracted spreadsheet preview</h4>
+                                  <h4 className="mb-3 text-sm font-semibold text-[#111827]/70">
+                                    {outputMode === 'text' ? 'Extracted text preview' : 'Extracted spreadsheet preview'}
+                                  </h4>
                                   <div className="max-h-[640px] overflow-auto rounded-[1.35rem] border border-white/60 bg-white">
-                                    <table className="w-full text-base">
-                                      <tbody>
-                                        {tablePreviewData.map((row, rowIndex) => (
-                                          <tr key={rowIndex} className={rowIndex === 0 ? 'bg-primary/10 font-semibold' : 'border-t border-gray-200'}>
-                                            {row.map((cell, cellIndex) => (
-                                              <td 
-                                                key={cellIndex} 
-                                                className="px-2 py-1.5 text-left border-r border-gray-200 last:border-r-0"
-                                              >
-                                                {cell || ''}
-                                              </td>
+                                    {outputMode === 'text' || textPreview ? (
+                                      <pre className="min-h-[360px] whitespace-pre-wrap p-5 text-left text-sm leading-7 text-[#111827]">
+                                        {textPreview}
+                                      </pre>
+                                    ) : (
+                                      <>
+                                        <table className="w-full text-base">
+                                          <tbody>
+                                            {tablePreviewData.map((row, rowIndex) => (
+                                              <tr key={rowIndex} className={rowIndex === 0 ? 'bg-primary/10 font-semibold' : 'border-t border-gray-200'}>
+                                                {row.map((cell, cellIndex) => (
+                                                  <td 
+                                                    key={cellIndex} 
+                                                    className="px-2 py-1.5 text-left border-r border-gray-200 last:border-r-0"
+                                                  >
+                                                    {cell || ''}
+                                                  </td>
+                                                ))}
+                                              </tr>
                                             ))}
-                                          </tr>
-                                        ))}
-                                      </tbody>
-                                    </table>
-                                    {tablePreviewData.length >= 10 && (
-                                      <div className="px-3 py-2 bg-muted/50 text-xs text-muted-foreground text-center border-t">
-                                        Showing first 10 rows
-                                      </div>
+                                          </tbody>
+                                        </table>
+                                        {tablePreviewData.length >= 10 && (
+                                          <div className="px-3 py-2 bg-muted/50 text-xs text-muted-foreground text-center border-t">
+                                            Showing first 10 rows
+                                          </div>
+                                        )}
+                                      </>
                                     )}
                                   </div>
                                 </div>
@@ -1899,7 +1936,11 @@ export default function Home() {
                               {/* First File Buttons */}
                               <div className="flex flex-col gap-4 rounded-[1.35rem] border border-white/60 bg-white/55 p-4 backdrop-blur-xl lg:flex-row lg:items-center lg:justify-between">
                                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                                  <FileSpreadsheet className="h-6 w-6 text-[#2f165e]" />
+                                  {outputMode === 'text' ? (
+                                    <FileText className="h-6 w-6 text-[#2f165e]" />
+                                  ) : (
+                                    <FileSpreadsheet className="h-6 w-6 text-[#2f165e]" />
+                                  )}
                                   <div className="min-w-0">
                                     <p className="text-sm font-semibold text-[#111827]">Primary result</p>
                                     <span className="block truncate text-base font-medium text-[#111827]/75">{cleanFilename(resultFiles[0].filename)}</span>
@@ -1923,17 +1964,19 @@ export default function Home() {
                                     <Share2 className="h-5 w-5" />
                                     Share
                                   </Button>
-                                  <Button
-                                    size="default"
-                                    variant="outline"
-                                    onClick={() => {
-                                      window.open(buildOfficeViewerUrl(resultFiles[0].file_id), '_blank')
-                                    }}
-                                    className="gap-2 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
-                                  >
-                                    <Pencil className="h-5 w-5" />
-                                    Edit
-                                  </Button>
+                                  {outputMode !== 'text' && (
+                                    <Button
+                                      size="default"
+                                      variant="outline"
+                                      onClick={() => {
+                                        window.open(buildOfficeViewerUrl(resultFiles[0].file_id), '_blank')
+                                      }}
+                                      className="gap-2 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
+                                    >
+                                      <Pencil className="h-5 w-5" />
+                                      Edit
+                                    </Button>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -1947,7 +1990,11 @@ export default function Home() {
                                   onClick={() => handleDownloadFile(file.file_id)}
                                   className="flex-shrink-0 hover:scale-110 transition-transform"
                                 >
-                                  <FileSpreadsheet className="h-6 w-6 text-[#2f165e]" />
+                                  {outputMode === 'text' ? (
+                                    <FileText className="h-6 w-6 text-[#2f165e]" />
+                                  ) : (
+                                    <FileSpreadsheet className="h-6 w-6 text-[#2f165e]" />
+                                  )}
                                 </button>
                                 <span className="text-sm font-medium truncate text-[#111827]">{cleanFilename(file.filename)}</span>
                               </div>
@@ -1969,30 +2016,36 @@ export default function Home() {
                                   <Share2 className="h-5 w-5" />
                                   Share
                                 </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => {
-                                    window.open(buildOfficeViewerUrl(file.file_id), '_blank')
-                                  }}
-                                  className="gap-1.5 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
-                                >
-                                  <Pencil className="h-5 w-5" />
-                                  Edit
-                                </Button>
+                                {outputMode !== 'text' && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      window.open(buildOfficeViewerUrl(file.file_id), '_blank')
+                                    }}
+                                    className="gap-1.5 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
+                                  >
+                                    <Pencil className="h-5 w-5" />
+                                    Edit
+                                  </Button>
+                                )}
                               </div>
                             </div>
                           ))}
 
                           {/* Show buttons without preview if no preview data available yet */}
-                          {(!tablePreviewData.length || !firstImageUrl) && resultFiles.map((file: any, index: number) => (
+                          {((!tablePreviewData.length && !textPreview) || !firstImageUrl) && resultFiles.map((file: any, index: number) => (
                             <div key={`no-preview-${file.file_id || index}`} className="flex flex-col gap-3 rounded-[1.25rem] border border-white/60 bg-white/45 p-4 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <button
                                   onClick={() => handleDownloadFile(file.file_id)}
                                   className="flex-shrink-0 hover:scale-110 transition-transform"
                                 >
-                                  <FileSpreadsheet className="h-6 w-6 text-[#2f165e]" />
+                                  {outputMode === 'text' ? (
+                                    <FileText className="h-6 w-6 text-[#2f165e]" />
+                                  ) : (
+                                    <FileSpreadsheet className="h-6 w-6 text-[#2f165e]" />
+                                  )}
                                 </button>
                                 <span className="text-sm font-medium truncate text-[#111827]">{cleanFilename(file.filename)}</span>
                               </div>
@@ -2014,17 +2067,19 @@ export default function Home() {
                                   <Share2 className="h-5 w-5" />
                                   Share
                                 </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => {
-                                    window.open(buildOfficeViewerUrl(file.file_id), '_blank')
-                                  }}
-                                  className="gap-1.5 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
-                                >
-                                  <Pencil className="h-5 w-5" />
-                                  Edit
-                                </Button>
+                                {outputMode !== 'text' && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      window.open(buildOfficeViewerUrl(file.file_id), '_blank')
+                                    }}
+                                    className="gap-1.5 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
+                                  >
+                                    <Pencil className="h-5 w-5" />
+                                    Edit
+                                  </Button>
+                                )}
                               </div>
                             </div>
                           ))}
@@ -2073,7 +2128,7 @@ export default function Home() {
                         </>
                       ) : (
                         <>
-                          {uploadedFiles.length === 0 ? 'Add files first' : 'Convert to Excel'}
+                          {uploadedFiles.length === 0 ? 'Add files first' : outputMode === 'text' ? 'Extract Text' : 'Convert to Excel'}
                         </>
                       )}
                     </Button>
