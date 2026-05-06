@@ -322,8 +322,8 @@ export default function Home() {
   useEffect(() => {
     if (heroFlowRef.current) {
       const ctx = gsap.context(() => {
-        const outputStartY = (index: number) => (index === 0 ? 12 : index === 1 ? -24 : 26);
-        const outputEndY = (index: number) => (index === 0 ? -10 : index === 1 ? 22 : -18);
+        const outputStartY = (index: number) => (index === 0 ? -12 : index === 1 ? -48 : 28);
+        const outputEndY = (index: number) => (index === 0 ? -38 : index === 1 ? 16 : -8);
 
         gsap.fromTo(
           ".hero-input-card",
@@ -357,9 +357,9 @@ export default function Home() {
           .to(".hero-output-card", {
             opacity: 1,
             x: 0,
-            y: (index: number) => (index === 0 ? 0 : index === 1 ? -34 : 24),
+            y: (index: number) => (index === 0 ? -18 : index === 1 ? 34 : index === 2 ? -36 : 0),
             scale: 1,
-            rotation: (index: number) => (index === 1 ? -2 : index === 2 ? 3 : 0),
+            rotation: (index: number) => (index === 0 ? -2 : index === 1 ? 2.5 : -3),
             duration: 0.68,
             ease: "back.out(1.7)",
             stagger: { each: 0.13, from: "start" },
@@ -1434,7 +1434,7 @@ export default function Home() {
               </div>
 
               <div ref={heroFlowRef} className="relative mx-auto mt-0 h-[460px] w-full max-w-[1560px] sm:h-[560px] lg:h-[660px]">
-                <div className="pointer-events-none absolute left-[5%] top-[9%] z-10 flex items-center sm:left-[5%] sm:top-[31%] lg:left-[4%]">
+                <div className="pointer-events-none absolute left-[5%] top-[36%] z-10 flex -translate-y-1/2 items-center sm:left-[5%] sm:top-[37%] lg:left-[4%] lg:top-[36%]">
                   <div className="hero-input-card flex h-[140px] w-[165px] items-center justify-center sm:h-[230px] sm:w-[270px] lg:h-[300px] lg:w-[350px]">
                     <img
                       src="/handwritten.svg"
@@ -1444,11 +1444,11 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="pointer-events-none absolute left-[27%] top-[44%] z-0 hidden h-px w-[25%] -translate-y-1/2 overflow-hidden sm:block sm:left-[28%] lg:left-[27%]">
+                <div className="pointer-events-none absolute left-[27%] top-[36%] z-0 hidden h-px w-[25%] -translate-y-1/2 overflow-hidden sm:block sm:left-[28%] sm:top-[37%] lg:left-[27%] lg:top-[36%]">
                   <div className="hero-feed-line hero-feed-line-left h-full origin-left rounded-full bg-[#7B5BBE]" />
                 </div>
 
-                <div className="hero-processor absolute left-1/2 top-[39%] z-20 flex h-[190px] w-[210px] -translate-x-1/2 -translate-y-1/2 items-center justify-center sm:top-[44%] sm:h-[315px] sm:w-[345px] lg:h-[430px] lg:w-[465px]">
+                <div className="hero-processor absolute left-1/2 top-[36%] z-20 flex h-[190px] w-[210px] -translate-x-1/2 -translate-y-1/2 items-center justify-center sm:top-[37%] sm:h-[315px] sm:w-[345px] lg:top-[36%] lg:h-[430px] lg:w-[465px]">
                   <div className="hero-processor-glow absolute inset-[12%] rounded-full bg-[radial-gradient(circle,rgba(123,91,190,0.34),rgba(123,91,190,0)_67%)] blur-2xl" />
                   <img
                     src="/axliner.svg"
@@ -1457,11 +1457,11 @@ export default function Home() {
                   />
                 </div>
 
-                <div className="pointer-events-none absolute left-[61%] top-[44%] z-0 hidden h-px w-[12%] -translate-y-1/2 overflow-hidden sm:block lg:left-[61%]">
+                <div className="pointer-events-none absolute left-[61%] top-[36%] z-0 hidden h-px w-[12%] -translate-y-1/2 overflow-hidden sm:block sm:top-[37%] lg:left-[61%] lg:top-[36%]">
                   <div className="hero-feed-line hero-feed-line-right h-full origin-left rounded-full bg-[#7B5BBE]" />
                 </div>
 
-                <div className="absolute left-1/2 top-[55%] z-10 grid w-[88%] max-w-[660px] -translate-x-1/2 grid-cols-3 items-center gap-1 overflow-visible pl-3 sm:left-[63%] sm:top-[26%] sm:w-[38%] sm:translate-x-0 sm:gap-2 sm:pl-0 lg:left-[63%] lg:w-[36%] lg:gap-3">
+                <div className="absolute left-1/2 top-[64%] z-10 grid w-[88%] max-w-[660px] -translate-x-1/2 -translate-y-1/2 grid-cols-3 items-center gap-1 overflow-visible pl-3 sm:left-[63%] sm:top-[37%] sm:w-[38%] sm:translate-x-0 sm:gap-2 sm:pl-0 lg:left-[63%] lg:top-[36%] lg:w-[36%] lg:gap-3">
                   {[
                     { src: "/33.svg", alt: "Excel result preview" },
                     { src: "/44.svg", alt: "Spreadsheet result preview" },
@@ -1470,8 +1470,7 @@ export default function Home() {
                     <div
                       key={item.src}
                       className={cn(
-                        "hero-output-card flex h-[110px] items-center justify-center sm:h-[215px] lg:h-[285px]",
-                        index % 2 === 1 && "sm:mt-8"
+                        "hero-output-card flex h-[110px] items-center justify-center sm:h-[215px] lg:h-[285px]"
                       )}
                     >
                       <img
@@ -2224,7 +2223,7 @@ export default function Home() {
                 >
                   <path
                     className="what-story-path"
-                    d="M74 15 L26 50 L74 85 Z"
+                    d="M74 15 L26 50 L74 85"
                     fill="none"
                     stroke="rgba(255,255,255,0.42)"
                     strokeWidth="0.34"
