@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import dynamic from "next/dynamic";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -14,66 +14,60 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { MobileNav } from "@/components/MobileNav";
 import ScrollAnimatedSection from "@/components/ScrollAnimatedSection";
 import { cn } from "@/lib/utils";
 import { AppLogo } from "@/components/AppIcon";
-import ParticlesBackground from "@/components/ParticlesBackground";
 
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Label } from "@/components/ui/label";
-import { ActiveUsersCounter } from "@/components/ActiveUsersCounter";
-import { wakeUpBackendSilently } from "@/lib/backend-health";
-import { getTrialInfo, incrementTrialUploadCount } from "@/lib/free-trial";
-import { ocrApi, OCRWebSocket } from "@/lib/api-client";
-import type { AppLimits, JobStatusResponse, RecoverableJobSummary } from "@/lib/api-client";
-import { buildDownloadUrl, buildMessengerShareUrl, buildOfficeViewerUrl } from "@/lib/public-config";
-import { showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui";
-import { toast } from "sonner";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
-import { useProcessingState } from "@/contexts/ProcessingStateContext";
-import * as XLSX from 'xlsx';
-import { GoogleSignInModal } from "@/components/GoogleSignInModal";
 import NextLink from "next/link";
-import { compressImages, formatFileSize } from "@/lib/image-compression";
-import {
-  acceptedUploadMimeTypes,
-  createPdfFirstPageScreenshot,
-  isAcceptedUploadFile,
-  isPdfFile,
-} from "@/lib/upload-files";
 import { IndustrySolutionsMenuGrid } from "@/components/IndustrySolutionsMenuGrid";
-import { Download, FileSpreadsheet, FileText, Pencil, RotateCcw, Share2, X } from "lucide-react";
 
-// Register GSAP plugins
-gsap.registerPlugin(ScrollTrigger);
+const BenchmarkAccuracyChart = dynamic(
+  () => import("@/components/landing/BenchmarkAccuracyChart"),
+  {
+    ssr: false,
+    loading: () => (
+      <Card className="h-full min-h-[430px] border border-[#A78BFA]/35 bg-white/45 shadow-xl shadow-[#A78BFA]/10 backdrop-blur-md" />
+    ),
+  }
+);
+
+const LandingConverter = dynamic(
+  () => import("@/components/landing/LandingConverter"),
+  { ssr: false }
+);
+
+const TestimonialsMarquee = dynamic(
+  () => import("@/components/landing/TestimonialsMarquee"),
+  { ssr: false }
+);
+
+const GoogleSignInModal = dynamic(
+  () => import("@/components/GoogleSignInModal").then((mod) => mod.GoogleSignInModal),
+  { ssr: false }
+);
+
+let gsapLoadPromise: Promise<any> | null = null;
+
+function loadGsap() {
+  if (!gsapLoadPromise) {
+    gsapLoadPromise = Promise.all([
+      import("gsap"),
+      import("gsap/ScrollTrigger"),
+    ]).then(([gsapModule, scrollTriggerModule]) => {
+      const gsap = gsapModule.gsap;
+      const ScrollTrigger = scrollTriggerModule.ScrollTrigger;
+      gsap.registerPlugin(ScrollTrigger);
+      return { gsap, ScrollTrigger };
+    });
+  }
+
+  return gsapLoadPromise;
+}
 
 const siteIcons = {
   arrow: "/site-icons/io/arrow.svg",
-  copy: "/site-icons/io/copy.svg",
-  database: "/site-icons/io/database.svg",
-  document: "/site-icons/io/document.svg",
-  edit: "/site-icons/io/edit.svg",
-  export: "/site-icons/io/export.svg",
-  link: "/site-icons/io/link.svg",
-  share: "/site-icons/io/share.svg",
-  table: "/site-icons/io/table.svg",
-  upload: "/site-icons/io/upload.svg",
 };
 
 const solutionCards = [
@@ -146,22 +140,9 @@ function SiteIcon({ src, className, alt = "" }: { src: string; className?: strin
   );
 }
 
-function InlineSpinner({ className }: { className?: string }) {
-  return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        "inline-block rounded-full border-2 border-current border-r-transparent animate-spin",
-        className
-      )}
-    />
-  );
-}
-
 export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
-  const heroFlowRef = useRef<HTMLDivElement>(null);
-  const heroImageRef = useRef<HTMLDivElement>(null);
+  const converterMountRef = useRef<HTMLDivElement>(null);
   const topBackgroundSectionRef = useRef<HTMLDivElement>(null);
   const topBackgroundRef = useRef<HTMLDivElement>(null);
   const purpleSectionRef = useRef<HTMLDivElement>(null);
@@ -169,117 +150,17 @@ export default function Home() {
   const benchmarkBandRef = useRef<HTMLDivElement>(null);
   const securityBandRef = useRef<HTMLDivElement>(null);
 
-  // Get state management from context
-  const contextValue = useProcessingState()
-  const processingState = contextValue?.state
-  const updateState = contextValue?.updateState
-  const clearState = contextValue?.clearState;
-
-  // Free trial state
-  const [trialInfo, setTrialInfo] = useState({ uuid: '', used: 0, remaining: 5, hasRemaining: true, limit: 5 });
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [filePreviewUrls, setFilePreviewUrls] = useState<{[key: number]: string}>({});
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [processingComplete, setProcessingComplete] = useState(false);
-  const [resultFiles, setResultFiles] = useState<any[]>([]);
-  const [showLimitDialog, setShowLimitDialog] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [shareDialogOpen, setShareDialogOpen] = useState(false);
-  const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null);
-  const [copySuccess, setCopySuccess] = useState(false);
-  const [tablePreviewData, setTablePreviewData] = useState<any[][]>([]);
-  const [textPreview, setTextPreview] = useState('');
-  const [firstImageUrl, setFirstImageUrl] = useState<string>('');
-  const [outputMode, setOutputMode] = useState<'table' | 'text'>('table');
-  const [totalFilesToProcess, setTotalFilesToProcess] = useState(0);
-  const wsRef = useRef<OCRWebSocket | null>(null);
-  const pollingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const uploadAbortRef = useRef<AbortController | null>(null);
-  const pendingAutoUploadRef = useRef(false);
-  const currentJobIdRef = useRef<string | null>(null);
-  const [shareSession, setShareSession] = useState<any>(null);
-  const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([]);
-  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [limits, setLimits] = useState<AppLimits | null>(null);
-  const [latestRecoverableJob, setLatestRecoverableJob] = useState<RecoverableJobSummary | null>(null);
-  const [recoveryLoading, setRecoveryLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [signInRedirectPath, setSignInRedirectPath] = useState("/dashboard/client");
+  const [shouldLoadConverter, setShouldLoadConverter] = useState(false);
   const supabase = createClient();
-  const maxUploadFiles = limits?.max_files_per_batch ?? 5;
-
-  // Helper function to remove _processed from filename
-  const cleanFilename = (filename: string | undefined): string => {
-    if (!filename) return 'result.xlsx';
-    return filename.replace('_processed', '');
-  };
-
-  useEffect(() => {
-    let mounted = true;
-    ocrApi.getLimits()
-      .then((data) => {
-        if (mounted) setLimits(data);
-      })
-      .catch(() => undefined);
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    setUploadedFiles(prev => prev.length > maxUploadFiles ? prev.slice(0, maxUploadFiles) : prev);
-  }, [maxUploadFiles]);
-
-  useEffect(() => {
-    let mounted = true;
-
-    ocrApi.getLatestRecoverableJob()
-      .then((data) => {
-        if (!mounted) return;
-        const job = data.job;
-        setLatestRecoverableJob(job?.active ? job : null);
-      })
-      .catch(() => undefined);
-
-    return () => {
-      mounted = false;
-    };
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    return () => {
-      if (uploadAbortRef.current) {
-        uploadAbortRef.current.abort();
-        uploadAbortRef.current = null;
-      }
-      stopJobMonitoring();
-    };
-  }, []);
-
-  // Auto download state
-  const [autoDownload, setAutoDownload] = useState(() => {
-  if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('autoDownload')
-    return saved === 'true'
-  }
-  return false
-   });
-  const [showAutoDownloadConfirm, setShowAutoDownloadConfirm] = useState(false);
-  const isExecutingAutoActionsRef = useRef(false);
-
-  // First-time convert confirmation
-  const [showFirstConvertConfirm, setShowFirstConvertConfirm] = useState(false);
 
   const openSignInModal = useCallback((redirectPath = "/dashboard/client") => {
     setSignInRedirectPath(redirectPath);
     setShowSignInModal(true);
   }, []);
 
-  // Check authentication status on mount
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -288,7 +169,6 @@ export default function Home() {
 
     checkAuth();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(!!session);
     });
@@ -296,199 +176,64 @@ export default function Home() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Restore state from context on mount
   useEffect(() => {
-    // Only restore if we don't already have result files
-    if (!resultFiles.length && processingState && processingState.processedFiles && processingState.processedFiles.length > 0) {
-      
-      // Restore processed files
-      setResultFiles(processingState.processedFiles);
-      
-      // Fetch table preview for the first file if available
-      if (processingState.processedFiles.length > 0) {
-        fetchTablePreview(processingState.processedFiles[0].file_id);
-      }
-      
-      // Restore status
-      if (processingState.status === 'completed' || processingState.processingComplete) {
-        setProcessingComplete(true);
-        setIsProcessing(false);
-      } else if (processingState.status === 'processing') {
-        setIsProcessing(true);
-        setProcessingComplete(false);
-      }
+    if (shouldLoadConverter) return;
+
+    const mountTarget = converterMountRef.current;
+    if (!mountTarget) return;
+
+    if (typeof IntersectionObserver === "undefined") {
+      setShouldLoadConverter(true);
+      return;
     }
-  }, []); // Only run once on mount
 
-  // Save state to context when it changes
-  useEffect(() => {
-    // Only update if we have updateState function available
-    if (!updateState) return;
-    
-    if (resultFiles.length > 0 || isProcessing) {
-      try {
-        updateState({
-          processedFiles: resultFiles,
-          status: processingComplete ? 'completed' : isProcessing ? 'processing' : 'idle',
-          processingComplete: processingComplete,
-          uploadedFiles: [] // Don't save File objects
-        });
-      } catch (error) {
-      }
-    }
-  }, [resultFiles, isProcessing, processingComplete, updateState]);
-
-  // Silently wake up backend when page loads
-  useEffect(() => {
-    wakeUpBackendSilently()
-    
-    // Cleanup WebSocket on unmount
-    return () => {
-      if (wsRef.current) {
-        wsRef.current.disconnect();
-        wsRef.current = null;
-      }
-    };
-  }, [])
-
-  // Initialize trial info on mount
-  useEffect(() => {
-    const info = getTrialInfo();
-    setTrialInfo(info);
-  }, [])
-
-  // Persist auto download setting
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('autoDownload', autoDownload.toString())
-    }
-  }, [autoDownload])
-
-  // Auto-download when files ready
-  useEffect(() => {
-    if (!autoDownload) return;
-
-    if (processingComplete && resultFiles.length > 0 && !isExecutingAutoActionsRef.current) {
-      isExecutingAutoActionsRef.current = true
-
-      const handleAutoDownload = async () => {
-        // toast.info(`Auto-downloading ${resultFiles.length} file(s)...`)
-        const downloadedIds = new Set<string>()
-
-        for (const file of resultFiles) {
-          if (file.file_id && !downloadedIds.has(file.file_id)) {
-            try {
-              await handleDownloadFile(file.file_id)
-              downloadedIds.add(file.file_id)
-              await new Promise(resolve => setTimeout(resolve, 500))
-            } catch (error) {
-            }
-          }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoadConverter(true);
+          observer.disconnect();
         }
-        // toast.success(`Auto-downloaded ${downloadedIds.size} file(s)`)
-      }
-      handleAutoDownload()
-    }
-  }, [processingComplete, resultFiles, autoDownload])
+      },
+      { rootMargin: "720px 0px" }
+    );
 
-  useEffect(() => {
-    if (heroFlowRef.current) {
-      const ctx = gsap.context(() => {
-        const outputStartY = (index: number) => (index === 0 ? -12 : index === 1 ? -48 : 28);
-        const outputEndY = (index: number) => (index === 0 ? -38 : index === 1 ? 16 : -8);
-
-        gsap.set([".hero-input-card", ".hero-output-card", ".hero-processor"], {
-          force3D: true,
-          transformOrigin: "50% 50%",
-        });
-
-        gsap.fromTo(
-          ".hero-input-card",
-          { x: -24, opacity: 0, scale: 0.94 },
-          { x: 0, opacity: 1, scale: 1, duration: 0.55, delay: 0.15, ease: "power2.out" }
-        );
-
-        const heroTimeline = gsap.timeline({ repeat: -1, repeatDelay: 0.95, delay: 0.2 });
-
-        heroTimeline
-          .set(".hero-feed-line-left", { scaleX: 0, opacity: 0.68 })
-          .set(".hero-feed-line-right", { scaleX: 0, opacity: 0.68 })
-          .set(".hero-processor-glow", { opacity: 0.18, scale: 0.92 })
-          .set(".hero-processor", { scale: 1 })
-          .set(".hero-output-card", {
-            opacity: 0,
-            x: -38,
-            y: outputStartY,
-            scale: 0.72,
-            rotation: (index: number) => (index === 1 ? -5 : index === 2 ? 5 : -2),
-          })
-          .to(".hero-feed-line-left", { scaleX: 1, duration: 0.52, ease: "power2.inOut" }, "-=0.05")
-          .to(".hero-processor-glow", { opacity: 0.42, scale: 1.04, duration: 0.48, ease: "sine.inOut" }, "-=0.12")
-          .to(".hero-processor-glow", { opacity: 0.2, scale: 0.95, duration: 0.42, ease: "sine.inOut" }, "-=0.1")
-          .to(".hero-feed-line-right", { scaleX: 1, duration: 0.46, ease: "power2.inOut" }, "-=0.05")
-          .to(".hero-output-card", {
-            opacity: 1,
-            x: 0,
-            y: (index: number) => (index === 0 ? -18 : index === 1 ? 34 : index === 2 ? -36 : 0),
-            scale: 1,
-            rotation: (index: number) => (index === 0 ? -2 : index === 1 ? 2.5 : -3),
-            duration: 0.74,
-            ease: "power3.out",
-            stagger: { each: 0.15, from: "start" },
-          }, "-=0.04")
-          .to(".hero-output-card", { opacity: 1, duration: 1.12 })
-          .to(".hero-output-card", {
-            opacity: 0,
-            x: 48,
-            y: outputEndY,
-            scale: 0.86,
-            rotation: (index: number) => (index === 1 ? 3 : index === 2 ? -5 : 4),
-            duration: 0.46,
-            ease: "power2.in",
-            stagger: { each: 0.08, from: "end" },
-          })
-          .to([".hero-feed-line-left", ".hero-feed-line-right"], { scaleX: 0, opacity: 0.35, duration: 0.28 }, "-=0.2");
-      }, heroFlowRef);
-
-      return () => {
-        ctx.revert();
-        ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-      };
-    }
-
-    // Removed section animations per user request
-    // Removed comparison section animation per user request
-
-
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, []);
+    observer.observe(mountTarget);
+    return () => observer.disconnect();
+  }, [shouldLoadConverter]);
 
   useEffect(() => {
     const topSection = topBackgroundSectionRef.current;
     const topBackground = topBackgroundRef.current;
     if (!topSection || !topBackground) return;
 
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        topBackground,
-        { y: 0 },
-        {
-          y: -180,
-          ease: "none",
-          scrollTrigger: {
-            trigger: topSection,
-            start: "top top",
-            end: "bottom top",
-            scrub: 1.2,
-          },
-        }
-      );
-    }, topSection);
+    let ctx: any;
+    let cancelled = false;
 
-    return () => ctx.revert();
+    void loadGsap().then(({ gsap }) => {
+      if (cancelled) return;
+
+      ctx = gsap.context(() => {
+        gsap.fromTo(
+          topBackground,
+          { y: 0 },
+          {
+            y: -180,
+            ease: "none",
+            scrollTrigger: {
+              trigger: topSection,
+              start: "top top",
+              end: "bottom top",
+              scrub: 1.2,
+            },
+          }
+        );
+      }, topSection);
+    });
+
+    return () => {
+      cancelled = true;
+      ctx?.revert();
+    };
   }, []);
 
   useEffect(() => {
@@ -501,103 +246,117 @@ export default function Home() {
     const topClipEnd =
       "polygon(0 9%, 8% 5.8%, 19% 9.8%, 35% 4.2%, 51% 8.4%, 68% 4.8%, 84% 8.1%, 100% 5.3%, 100% 100%, 0 100%)";
 
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        purpleSection,
-        { clipPath: topClipStart },
-        {
-          clipPath: topClipEnd,
-          ease: "none",
-          scrollTrigger: {
-            trigger: purpleSection,
-            start: "top 85%",
-            end: "top 20%",
-            scrub: 1.1,
-          },
-        }
-      );
+    let ctx: any;
+    let cancelled = false;
 
-      gsap.fromTo(
-        ".what-story-row",
-        { opacity: 0, y: 76 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.9,
-          ease: "power3.out",
-          stagger: 0.18,
-          scrollTrigger: {
-            trigger: whatSection,
-            start: "top 70%",
-            end: "bottom 72%",
-            toggleActions: "play none none reverse",
-          },
-        }
-      );
+    void loadGsap().then(({ gsap }) => {
+      if (cancelled) return;
 
-      gsap.fromTo(
-        ".what-story-image",
-        { opacity: 0, scale: 0.84, rotation: (index: number) => (index === 1 ? 4 : -4) },
-        {
-          opacity: 1,
-          scale: 1,
-          rotation: 0,
-          duration: 1,
-          ease: "power3.out",
-          stagger: 0.2,
-          scrollTrigger: {
-            trigger: whatSection,
-            start: "top 68%",
-            end: "bottom 72%",
-            toggleActions: "play none none reverse",
-          },
-        }
-      );
-
-      gsap.fromTo(
-        ".what-story-path",
-        { strokeDasharray: 520, strokeDashoffset: 520 },
-        {
-          strokeDashoffset: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: whatSection,
-            start: "top 60%",
-            end: "bottom 62%",
-            scrub: 1,
-          },
-        }
-      );
-
-      [benchmarkBandRef.current, securityBandRef.current].forEach((band) => {
-        if (!band) return;
-
+      ctx = gsap.context(() => {
         gsap.fromTo(
-          band,
+          purpleSection,
+          { clipPath: topClipStart },
           {
-            clipPath:
-              "polygon(0 4%, 12% 2.8%, 25% 4.6%, 40% 2.4%, 58% 4.3%, 75% 2.7%, 100% 4%, 100% 100%, 0 100%)",
-          },
-          {
-            clipPath:
-              "polygon(0 10%, 10% 6.2%, 24% 10.8%, 42% 4.8%, 58% 9.7%, 76% 5.6%, 100% 9%, 100% 100%, 0 100%)",
+            clipPath: topClipEnd,
             ease: "none",
             scrollTrigger: {
-              trigger: band.parentElement || band,
-              start: "top 82%",
-              end: "top 24%",
-              scrub: 1.15,
+              trigger: purpleSection,
+              start: "top 85%",
+              end: "top 20%",
+              scrub: 1.1,
             },
           }
         );
-      });
-    }, purpleSection);
 
-    return () => ctx.revert();
+        gsap.fromTo(
+          ".what-story-row",
+          { opacity: 0, y: 76 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.9,
+            ease: "power3.out",
+            stagger: 0.18,
+            scrollTrigger: {
+              trigger: whatSection,
+              start: "top 70%",
+              end: "bottom 72%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+
+        gsap.fromTo(
+          ".what-story-image",
+          { opacity: 0, scale: 0.84, rotation: (index: number) => (index === 1 ? 4 : -4) },
+          {
+            opacity: 1,
+            scale: 1,
+            rotation: 0,
+            duration: 1,
+            ease: "power3.out",
+            stagger: 0.2,
+            scrollTrigger: {
+              trigger: whatSection,
+              start: "top 68%",
+              end: "bottom 72%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+
+        gsap.fromTo(
+          ".what-story-path",
+          { strokeDasharray: 520, strokeDashoffset: 520 },
+          {
+            strokeDashoffset: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: whatSection,
+              start: "top 60%",
+              end: "bottom 62%",
+              scrub: 1,
+            },
+          }
+        );
+
+        [benchmarkBandRef.current, securityBandRef.current].forEach((band) => {
+          if (!band) return;
+
+          gsap.fromTo(
+            band,
+            {
+              clipPath:
+                "polygon(0 4%, 12% 2.8%, 25% 4.6%, 40% 2.4%, 58% 4.3%, 75% 2.7%, 100% 4%, 100% 100%, 0 100%)",
+            },
+            {
+              clipPath:
+                "polygon(0 10%, 10% 6.2%, 24% 10.8%, 42% 4.8%, 58% 9.7%, 76% 5.6%, 100% 9%, 100% 100%, 0 100%)",
+              ease: "none",
+              scrollTrigger: {
+                trigger: band.parentElement || band,
+                start: "top 82%",
+                end: "top 24%",
+                scrub: 1.15,
+              },
+            }
+          );
+        });
+      }, purpleSection);
+    });
+
+    return () => {
+      cancelled = true;
+      ctx?.revert();
+    };
   }, []);
 
   // Smooth scroll function
   const scrollToSection = (sectionId: string) => {
+    if (sectionId === "converter") {
+      setShouldLoadConverter(true);
+    }
+
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({
@@ -606,722 +365,6 @@ export default function Home() {
       });
     }
   };
-
-  // Helper function to create preview URL for file (converts HEIC if needed)
-  const createFilePreviewUrl = useCallback(async (file: File): Promise<string> => {
-    if (isPdfFile(file)) {
-      return createPdfFirstPageScreenshot(file);
-    }
-
-    const fileName = file.name.toLowerCase();
-    const isHeic = fileName.endsWith('.heic') || fileName.endsWith('.heif');
-    
-    if (isHeic) {
-      try {
-        const { default: heic2any } = await import("heic2any");
-        // Convert HEIC to JPEG blob for preview
-        const convertedBlob = await heic2any({
-          blob: file,
-          toType: 'image/jpeg',
-          quality: 0.8
-        });
-        
-        // heic2any might return an array of blobs, so handle both cases
-        const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
-        return URL.createObjectURL(blob);
-      } catch (error) {
-        // Return a placeholder or try original
-        return URL.createObjectURL(file);
-      }
-    }
-    
-    // For non-HEIC files, use normal blob URL
-    return URL.createObjectURL(file);
-  }, []);
-
-  // Update preview URLs when files change
-  useEffect(() => {
-    const generatePreviews = async () => {
-      const newPreviewUrls: {[key: number]: string} = {};
-      
-      for (let i = 0; i < uploadedFiles.length; i++) {
-        const file = uploadedFiles[i];
-        if (!filePreviewUrls[i]) {
-          const url = await createFilePreviewUrl(file);
-          newPreviewUrls[i] = url;
-        } else {
-          newPreviewUrls[i] = filePreviewUrls[i];
-        }
-      }
-      
-      setFilePreviewUrls(newPreviewUrls);
-    };
-    
-    if (uploadedFiles.length > 0) {
-      generatePreviews();
-    } else {
-      // Clean up old URLs
-      Object.values(filePreviewUrls).forEach(url => URL.revokeObjectURL(url));
-      setFilePreviewUrls({});
-    }
-  }, [uploadedFiles.length]);
-
-  // File upload handlers
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-
-    const files = Array.from(e.dataTransfer.files).filter(isAcceptedUploadFile);
-
-    if (files.length > 0) {
-      const filesToUse = files.slice(0, maxUploadFiles);
-      if (files.length > maxUploadFiles) {
-        showBatchLimitToast(maxUploadFiles);
-      }
-      pendingAutoUploadRef.current = true;
-      setUploadedFiles(filesToUse);
-    }
-  }, [maxUploadFiles]);
-
-  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const fileArray = Array.from(files).filter(isAcceptedUploadFile);
-      const filesToUse = fileArray.slice(0, maxUploadFiles);
-      if (fileArray.length > maxUploadFiles) {
-        showBatchLimitToast(maxUploadFiles);
-      }
-      pendingAutoUploadRef.current = true;
-      setUploadedFiles(filesToUse);
-    }
-  }, [maxUploadFiles]);
-
-  const processImages = useCallback(async (filesOverride?: File[]) => {
-    const filesForProcessing = filesOverride ?? uploadedFiles;
-
-    try {
-      if (filesForProcessing.length > maxUploadFiles) {
-        showBatchLimitToast(maxUploadFiles);
-        setUploadedFiles(prev => prev.slice(0, maxUploadFiles));
-        return;
-      }
-
-      setIsProcessing(true);
-      setIsUploading(true);
-      setUploadProgress(0);
-      currentJobIdRef.current = null;
-      setProcessingComplete(false);
-      setResultFiles([]);
-      setTablePreviewData([]);
-      setTextPreview('');
-      setFirstImageUrl('');
-      setTotalFilesToProcess(filesForProcessing.length);
-      const uploadController = new AbortController();
-      uploadAbortRef.current = uploadController;
-
-
-      // Compress images if needed
-      const compressionResults = await compressImages(filesForProcessing);
-      
-      // Log compression summary
-      const compressedCount = compressionResults.filter(r => r.compressed).length;
-      if (compressedCount > 0) {
-        const totalOriginal = compressionResults.reduce((sum, r) => sum + r.originalSize, 0);
-        const totalCompressed = compressionResults.reduce((sum, r) => sum + r.compressedSize, 0);
-        const totalReduction = Math.round(((totalOriginal - totalCompressed) / totalOriginal) * 100);
-        toast.info(`Compressed ${compressedCount} image(s) (${totalReduction}% smaller)`);
-      }
-
-      // Extract compressed files for upload
-      const filesToUpload = compressionResults.map(r => r.file);
-
-      if (uploadController.signal.aborted) {
-        const cancelledError = new Error('Upload cancelled') as Error & { code?: string };
-        cancelledError.code = 'ERR_CANCELED';
-        throw cancelledError;
-      }
-
-      const response = await ocrApi.uploadBatchMultipart(filesToUpload, {
-        output_format: outputMode === 'text' ? 'txt' : 'xlsx',
-        consolidation_strategy: 'separate',
-        signal: uploadController.signal,
-        onUploadProgress: setUploadProgress
-      });
-
-      currentJobIdRef.current = response.job_id;
-      setUploadProgress(100);
-      setIsUploading(false);
-
-      // Store session ID for downloads
-      if (response.session_id) {
-        setCurrentSessionId(response.session_id);
-      }
-
-      if (!isAuthenticated) {
-        incrementTrialUploadCount(filesToUpload.length);
-        setTrialInfo(getTrialInfo());
-        ocrApi.getLimits()
-          .then(setLimits)
-          .catch(() => undefined);
-      }
-
-      // Store the first uploaded image for preview immediately
-      if (filesForProcessing.length > 0) {
-        setFirstImageUrl(await createFilePreviewUrl(filesForProcessing[0]));
-      }
-
-      startJobMonitoring(response.job_id, response.session_id);
-
-    } catch (error: any) {
-      if (error?.code === 'ERR_CANCELED' || error?.name === 'CanceledError') {
-        setIsUploading(false);
-        setUploadProgress(0);
-        setIsProcessing(false);
-        setProcessingComplete(false);
-        return;
-      }
-
-      setIsProcessing(false);
-      setProcessingComplete(false);
-
-      const code = error?.code || '';
-      const quotaError =
-        error?.status_code === 402 ||
-        code === 'ANONYMOUS_FREE_TRIAL_LIMIT_REACHED' ||
-        code === 'INSUFFICIENT_CREDITS' ||
-        code === 'DAILY_IMAGE_LIMIT_EXCEEDED';
-
-      if (quotaError && !isAuthenticated) {
-        setShowLimitDialog(true);
-        return;
-      }
-
-      showApiErrorToast(error, {
-        isAuthenticated,
-        upgradeHref: "/pricing?from=quota",
-        billingHref: "/dashboard/settings?section=billing",
-        onSignIn: () => openSignInModal("/pricing?from=quota"),
-        onRetry: () => {
-          void processImages(filesForProcessing);
-        },
-      });
-    } finally {
-      uploadAbortRef.current = null;
-      setIsUploading(false);
-    }
-  }, [uploadedFiles, maxUploadFiles, isAuthenticated, openSignInModal, outputMode, createFilePreviewUrl]);
-
-  const handleProcessImage = useCallback(async () => {
-    if (!uploadedFiles || uploadedFiles.length === 0) {
-      toast.error('Please select files to process');
-      return;
-    }
-
-    if (uploadedFiles.length > maxUploadFiles) {
-      showBatchLimitToast(maxUploadFiles);
-      setUploadedFiles(prev => prev.slice(0, maxUploadFiles));
-      return;
-    }
-
-    if (typeof window !== 'undefined') {
-      const hasConvertedBefore = localStorage.getItem('hasConvertedBefore');
-      if (!hasConvertedBefore) {
-        setShowFirstConvertConfirm(true);
-        return;
-      }
-    }
-
-    await processImages(uploadedFiles);
-  }, [uploadedFiles, maxUploadFiles, processImages]);
-
-  useEffect(() => {
-    if (!pendingAutoUploadRef.current || uploadedFiles.length === 0 || isProcessing || resultFiles.length > 0) {
-      return;
-    }
-
-    pendingAutoUploadRef.current = false;
-    void processImages(uploadedFiles);
-  }, [uploadedFiles, isProcessing, resultFiles.length, processImages]);
-
-  const handleDownloadFile = async (fileId: string) => {
-
-    if (!fileId) {
-      toast.error('Unable to download: File ID is missing');
-      return;
-    }
-
-    try {
-
-      // Pass session_id to download endpoint
-      const blob = await ocrApi.downloadFile(fileId, currentSessionId || undefined);
-
-
-      // Create download link
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      // Use a simple filename without _processed
-      link.download = `result-${fileId.substring(0, 8)}.${outputMode === 'text' ? 'txt' : 'xlsx'}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-
-      // toast.success('File downloaded successfully');
-    } catch (error: any) {
-      const errorMessage = error?.detail || error?.message || 'Failed to download file';
-      toast.error(errorMessage);
-    }
-  };
-
-  // Fetch and parse Excel file for preview
-  const fetchTablePreview = async (fileId: string) => {
-    try {
-      const blob = await ocrApi.downloadFile(fileId);
-
-      if (outputMode === 'text' || blob.type.startsWith('text/')) {
-        const text = await blob.text();
-        setTextPreview(text.slice(0, 6000));
-        setTablePreviewData([]);
-        return;
-      }
-
-      const arrayBuffer = await blob.arrayBuffer();
-      const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-      const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-      const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as any[][];
-      
-      // Limit to first 10 rows for preview
-      const previewData = data.slice(0, Math.min(10, data.length));
-      setTablePreviewData(previewData);
-      setTextPreview('');
-    } catch (error) {
-      // Don't show error toast - just silently fail to show preview
-    }
-  };
-
-  function stopJobMonitoring() {
-    if (pollingRef.current) {
-      clearTimeout(pollingRef.current);
-      pollingRef.current = null;
-    }
-    if (wsRef.current) {
-      wsRef.current.disconnect();
-      wsRef.current = null;
-    }
-  }
-
-  function applyRecoveredStatus(status: JobStatusResponse): boolean {
-    if (status.progress?.total_images) {
-      setTotalFilesToProcess(status.progress.total_images);
-    }
-
-    if (status.results?.files?.length) {
-      setResultFiles(status.results.files);
-      if (tablePreviewData.length === 0 && !textPreview) {
-        fetchTablePreview(status.results.files[0].file_id);
-      }
-    }
-
-    if (status.status === 'completed' || status.status === 'partially_completed') {
-      setProcessingComplete(true);
-      setIsProcessing(false);
-      if (updateState) {
-        updateState({
-          processedFiles: status.results?.files || [],
-          status: 'completed',
-          processingComplete: true,
-          uploadedFiles: []
-        });
-      }
-      stopJobMonitoring();
-      return true;
-    }
-
-    if (status.status === 'failed') {
-      setProcessingComplete(false);
-      setIsProcessing(false);
-      stopJobMonitoring();
-      toast.error(status.errors?.[0] || 'Processing failed');
-      return true;
-    }
-
-    setIsProcessing(true);
-    setProcessingComplete(false);
-    return false;
-  }
-
-  function startStatusPolling(jobId: string) {
-    if (pollingRef.current) {
-      clearTimeout(pollingRef.current);
-      pollingRef.current = null;
-    }
-
-    const checkStatus = async () => {
-      try {
-        const status = await ocrApi.getStatus(jobId);
-        const terminal = applyRecoveredStatus(status);
-        if (!terminal) {
-          pollingRef.current = setTimeout(checkStatus, 3000);
-        }
-      } catch {
-        pollingRef.current = setTimeout(checkStatus, 5000);
-      }
-    };
-
-    pollingRef.current = setTimeout(checkStatus, 800);
-  }
-
-  function startJobMonitoring(jobId: string, sessionId?: string) {
-    if (!jobId) return;
-
-    stopJobMonitoring();
-    currentJobIdRef.current = jobId;
-    setCurrentSessionId(sessionId || null);
-    setIsProcessing(true);
-    setProcessingComplete(false);
-    setLatestRecoverableJob(null);
-    startStatusPolling(jobId);
-
-    if (!sessionId) return;
-
-    const websocket = new OCRWebSocket(
-      sessionId,
-      (data) => {
-        const messageType = data.type || '';
-
-        if (messageType === 'file_ready' && data.file_info?.file_id) {
-          setResultFiles(prev => {
-            const existing = prev || [];
-            if (existing.some(f => f.file_id === data.file_info.file_id)) return existing;
-            const newFiles = [...existing, data.file_info];
-            if (newFiles.length === 1 && tablePreviewData.length === 0 && !textPreview) {
-              fetchTablePreview(data.file_info.file_id);
-            }
-            return newFiles;
-          });
-        }
-
-        if (messageType === 'job_completed' || data.status === 'completed') {
-          setProcessingComplete(true);
-          setIsProcessing(false);
-          if (data.files && data.files.length > 0) {
-            setResultFiles(data.files);
-          }
-          stopJobMonitoring();
-        }
-
-        if (messageType === 'job_error' || data.status === 'failed') {
-          const errorMsg = data.error || data.errors?.[0] || 'Processing failed';
-          setIsProcessing(false);
-          stopJobMonitoring();
-          toast.error(errorMsg);
-        }
-      },
-      () => {
-        startStatusPolling(jobId);
-      }
-    );
-
-    websocket.connect();
-    wsRef.current = websocket;
-  }
-
-  async function cancelCurrentBatch() {
-    const activeJobId = currentJobIdRef.current;
-
-    if (uploadAbortRef.current) {
-      uploadAbortRef.current.abort();
-      uploadAbortRef.current = null;
-    }
-
-    stopJobMonitoring();
-
-    if (activeJobId) {
-      try {
-        await ocrApi.cancelJob(activeJobId);
-      } catch {
-      }
-    }
-
-    currentJobIdRef.current = null;
-    setIsUploading(false);
-    setUploadProgress(0);
-    setIsProcessing(false);
-    setProcessingComplete(false);
-    setLatestRecoverableJob(null);
-    toast.info('Batch cancelled.');
-  }
-
-  async function continueLatestJob() {
-    if (!latestRecoverableJob?.job_id) return;
-
-    setRecoveryLoading(true);
-    try {
-      setUploadedFiles([]);
-      setResultFiles([]);
-      setTotalFilesToProcess(latestRecoverableJob.total_images || 0);
-      startJobMonitoring(latestRecoverableJob.job_id, latestRecoverableJob.session_id);
-      toast.success('Latest batch resumed.');
-    } catch (error: any) {
-      toast.error(error?.detail || 'Could not resume the latest batch.');
-    } finally {
-      setRecoveryLoading(false);
-    }
-  }
-
-  const handleReset = () => {
-    if (uploadAbortRef.current) {
-      uploadAbortRef.current.abort();
-      uploadAbortRef.current = null;
-    }
-    currentJobIdRef.current = null;
-    setUploadedFiles([]);
-    setResultFiles([]);
-    setProcessingComplete(false);
-    setIsProcessing(false);
-    setIsUploading(false);
-    setUploadProgress(0);
-    setTablePreviewData([]);
-    setTextPreview('');
-    setFirstImageUrl('');
-    setTotalFilesToProcess(0);
-    setCurrentSessionId(null);
-    pendingAutoUploadRef.current = false;
-    stopJobMonitoring();
-    isExecutingAutoActionsRef.current = false;
-    
-    // Clear context state
-    clearState();
-  };
-
-  const handleShareFile = (file: any) => {
-    setSelectedFileToShare(file);
-    setShareDialogOpen(true);
-    setCopySuccess(false);
-  };
-
-  const handleCopyLink = async () => {
-    if (!selectedFileToShare?.file_id) {
-      toast.error('Unable to copy link: File information is missing');
-      return;
-    }
-    
-    let shareContent = '';
-    
-    // Check if this is a session-based batch share
-    if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
-      shareContent = shareSession.share_url;
-    } else {
-      // Single file share
-      shareContent = buildDownloadUrl(selectedFileToShare.file_id);
-    }
-    
-    
-    try {
-      await navigator.clipboard.writeText(shareContent);
-      setCopySuccess(true);
-      // toast.success('Download link copied to clipboard');
-      setTimeout(() => setCopySuccess(false), 2000);
-    } catch (error) {
-      toast.error('Failed to copy link to clipboard');
-    }
-  };
-
-  // Share handlers for social platforms
-  const handleMessengerShare = () => {
-    if (!selectedFileToShare?.file_id) return;
-    
-    let shareUrl = '';
-    
-    // Check if session-based share
-    if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
-      shareUrl = shareSession.share_url.replace(/\s/g, '');
-    } else {
-      shareUrl = buildDownloadUrl(selectedFileToShare.file_id);
-    }
-    
-    const currentUrl = window.location.origin;
-    const messengerUrl = buildMessengerShareUrl(shareUrl, currentUrl);
-    if (!messengerUrl) {
-      navigator.clipboard.writeText(shareUrl).catch(() => undefined);
-      toast.error('Messenger sharing is not configured. Link copied instead.');
-      return;
-    }
-    
-    const popup = window.open(messengerUrl, 'messenger-share-dialog', 'width=600,height=500');
-    if (!popup || popup.closed || typeof popup.closed == 'undefined') {
-      window.open(messengerUrl, '_blank');
-    }
-  };
-  
-  const handleEmailShare = () => {
-    if (!selectedFileToShare?.file_id) return;
-    
-    let subject = '';
-    let body = '';
-    
-    // Check if session-based share
-    if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
-      subject = `${selectedFilesForBatch.length} Excel files processed with AxLiner`;
-      const sessionUrl = shareSession.share_url.replace(/\s/g, '');
-      body = `Hi,\n\nI've processed ${selectedFilesForBatch.length} files with AxLiner. You can download all files from this link:\n\n${sessionUrl}\n\nBest regards`;
-    } else {
-      const shareUrl = buildDownloadUrl(selectedFileToShare.file_id);
-      subject = `Excel file: ${selectedFileToShare.filename || 'Processed with AxLiner'}`;
-      body = `Hi,\n\nI've processed this file with AxLiner. You can download it here:\n\n${shareUrl}\n\nBest regards`;
-    }
-    
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    const gmailWindow = window.open(gmailUrl, '_blank');
-    
-    if (!gmailWindow) {
-      const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.location.href = mailtoUrl;
-    }
-  };
-  
-  const handleLinkedInMessage = () => {
-    if (!selectedFileToShare?.file_id) return;
-    
-    let shareContent = '';
-    
-    // Check if session-based share
-    if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
-      shareContent = shareSession.share_url.replace(/\s/g, '');
-    } else {
-      shareContent = buildDownloadUrl(selectedFileToShare.file_id);
-    }
-    
-    navigator.clipboard.writeText(shareContent)
-      .then(() => {
-        // toast.success('Link copied to clipboard!', {
-        //   duration: 8000,
-        //   description: 'Opening LinkedIn... Click "New message" → Choose recipient → Paste the link (Ctrl+V or Cmd+V)'
-        // });
-        window.open('https://www.linkedin.com/messaging/compose/', '_blank');
-      })
-      .catch((err) => {
-        const fallbackInput = document.createElement('input');
-        fallbackInput.value = shareContent;
-        document.body.appendChild(fallbackInput);
-        fallbackInput.select();
-        document.execCommand('copy');
-        document.body.removeChild(fallbackInput);
-        
-        // toast.success('Link copied! Opening LinkedIn...', { duration: 6000 });
-        window.open('https://www.linkedin.com/messaging/compose/', '_blank');
-      });
-  };
-
-  const handleXShare = () => {
-    if (!selectedFileToShare?.file_id) return;
-    
-    let tweetText = '';
-    let shareUrl = '';
-    
-    // Check if session-based share
-    if (selectedFileToShare.file_id === '__SESSION__' && shareSession) {
-      shareUrl = shareSession.share_url.replace(/\s/g, '');
-      tweetText = `Check out these ${selectedFilesForBatch.length} Excel files I processed with AxLiner! 📊✨`;
-    } else {
-      shareUrl = buildDownloadUrl(selectedFileToShare.file_id);
-      tweetText = `Check out this Excel file I processed with AxLiner! 📊✨`;
-    }
-    
-    const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(shareUrl)}`;
-    
-    window.open(xUrl, '_blank', 'width=550,height=420');
-    // toast.success('X share window opened!', {
-    //   description: 'Customize your tweet and share with your followers'
-    // });
-  };
-
-  const handleDownloadAll = async () => {
-    if (resultFiles.length === 0) return;
-
-    // toast.info(`Downloading ${resultFiles.length} file(s)...`);
-
-    for (const file of resultFiles) {
-      if (file.file_id) {
-        try {
-          await handleDownloadFile(file.file_id);
-          await new Promise(resolve => setTimeout(resolve, 500));
-        } catch (error) {
-        }
-      }
-    }
-
-    // toast.success(`Downloaded ${resultFiles.length} file(s)`);
-  };
-
-  const handleShareAll = async () => {
-    
-    if (!resultFiles || resultFiles.length === 0) {
-      toast.error('Unable to share batch: No files available');
-      return;
-    }
-    
-    // Get all valid file IDs
-    const allFileIds = resultFiles.map(f => f.file_id).filter(Boolean);
-    
-    if (allFileIds.length === 0) {
-      toast.error('Unable to share: No valid files found');
-      return;
-    }
-    
-    try {
-      // Create a share session for all files
-      
-      const sessionResponse = await ocrApi.createShareSession({
-        file_ids: allFileIds,
-        title: `Batch of ${resultFiles.length} Excel files`,
-        description: `Processed on ${new Date().toLocaleDateString()}`,
-        expires_in_days: 7
-      });
-      
-      
-      // Store session info
-      setShareSession(sessionResponse);
-      setSelectedFilesForBatch(resultFiles);
-      
-      // Open share dialog with session info
-      setSelectedFileToShare({
-        file_id: '__SESSION__',
-        filename: `Batch of ${resultFiles.length} Excel files`,
-        isBatch: true,
-        sessionId: sessionResponse.session_id
-      });
-      
-      setShareDialogOpen(true);
-      setCopySuccess(false);
-      
-      // toast.success('Share link created successfully!')
-      
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.detail || error.message || 'Failed to create share link';
-      toast.error(`Error: ${errorMessage}`);
-    }
-  };
-
-  const liveProgressPercent = isUploading
-    ? uploadProgress
-    : totalFilesToProcess > 0
-      ? Math.min(100, Math.round((resultFiles.length / totalFilesToProcess) * 100))
-      : 0;
 
   return (
     <div className="min-h-screen relative bg-transparent">
@@ -1424,7 +467,6 @@ export default function Home() {
           />
           <div className="relative z-10">
         <section ref={heroRef} className="relative overflow-hidden pt-10 pb-16 sm:pt-12 sm:pb-[4.5rem] lg:pt-12 lg:pb-24">
-          <ParticlesBackground />
           <div className="relative z-10 container mx-auto max-w-[1500px] px-4 sm:px-5 lg:px-9">
             <div className="grid min-h-[500px] items-center gap-14 lg:min-h-[535px] lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)] lg:gap-16">
               <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:translate-x-8 lg:text-left xl:translate-x-10">
@@ -1447,10 +489,12 @@ export default function Home() {
                   <div className="flex items-center gap-3">
                     <div className="flex -space-x-2">
                       {[0, 1, 2, 3, 4].map((i) => (
-                        <img
+                        <Image
                           key={i}
                           src={`/avatars/${i}.webp`}
                           alt={`User ${i + 1}`}
+                          width={40}
+                          height={40}
                           className="h-10 w-10 rounded-full border-2 border-white object-cover shadow-sm"
                         />
                       ))}
@@ -1478,764 +522,22 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Testimonials Section */}
-        <section className="relative z-10 -mt-6 overflow-hidden pb-10 pt-0 sm:-mt-8 lg:-mt-10">
-          <div className="w-full">
-            {/* First Row - Animates to the left */}
-            <div className="relative mb-6 overflow-hidden">
-              <div
-                className="flex gap-6 items-start"
-                style={{
-                  animation: 'scroll-left 90s linear infinite',
-                  width: 'max-content',
-                  willChange: 'transform'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.animationPlayState = 'paused'}
-                onMouseLeave={(e) => e.currentTarget.style.animationPlayState = 'running'}
-              >
-                {Array.from({ length: 3 }, (_, setIndex) =>
-                  [
-                    {
-                      name: "Sarah Mitchell",
-                      handle: "@sarahmitchell",
-                      avatar: "/testimonials/avi_schiffmann.jpg",
-                      text: "AxLiner has completely transformed how we process invoices. What used to take hours now takes minutes. The accuracy is incredible!"
-                    },
-                    {
-                      name: "David Chen",
-                      handle: "@davidchen",
-                      avatar: "/testimonials/alex_finn.jpg",
-                      text: "Best OCR tool I've ever used. The handwritten table recognition is mind-blowing. We've processed thousands of documents with near-perfect accuracy."
-                    },
-                    {
-                      name: "Emily Rodriguez",
-                      handle: "@emilyrodriguez",
-                      avatar: "/testimonials/alvaro_cintas.jpg",
-                      text: "Game changer for our data entry team."
-                    },
-                    {
-                      name: "Michael Thompson",
-                      handle: "@mikethompson",
-                      avatar: "/testimonials/tom_blomfield.jpg",
-                      text: "I was skeptical at first, but AxLiner exceeded all expectations. The table structure preservation is phenomenal. We've saved thousands of hours in manual data entry."
-                    },
-                    {
-                      name: "Jessica Park",
-                      handle: "@jessicapark",
-                      avatar: "/testimonials/catalin.jpg",
-                      text: "AxLiner has become an essential tool in our workflow. The accuracy on complex forms is outstanding."
-                    }
-                  ].map((testimonial, idx) => (
-                    <div
-                      key={`${setIndex}-${idx}`}
-                      className="flex-shrink-0 bg-white dark:bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 w-[450px]"
-                    >
-                      {/* Person Details at Top */}
-                      <div className="flex items-center gap-3 mb-4">
-                        <img
-                          src={testimonial.avatar}
-                          alt={testimonial.name}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                        <div className="flex-1">
-                          <p className="font-semibold text-base text-foreground">{testimonial.name}</p>
-                          <p className="text-sm text-muted-foreground">{testimonial.handle}</p>
-                        </div>
-                        {/* X Logo */}
-                        <svg className="w-5 h-5 text-foreground opacity-60" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                        </svg>
-                      </div>
-
-                      {/* Dashed Line Separator */}
-                      <div className="border-t border-dashed border-border mb-4"></div>
-
-                      {/* Review Text at Bottom */}
-                      <p className="text-base text-black dark:text-foreground leading-relaxed">{testimonial.text}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-
-            {/* Second Row - Animates to the right */}
-            <div className="relative overflow-hidden">
-              <div
-                className="flex gap-6 items-start"
-                style={{
-                  animation: 'scroll-right 90s linear infinite',
-                  width: 'max-content',
-                  willChange: 'transform'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.animationPlayState = 'paused'}
-                onMouseLeave={(e) => e.currentTarget.style.animationPlayState = 'running'}
-              >
-                {Array.from({ length: 3 }, (_, setIndex) =>
-                  [
-                    {
-                      name: "Robert Williams",
-                      handle: "@robertwilliams",
-                      avatar: "/testimonials/bodega_man.jpg",
-                      text: "The reason I chose AxLiner is the consistent accuracy and speed. Processing handwritten documents has never been easier. This tool has revolutionized our data extraction workflow and saved us countless hours of manual work."
-                    },
-                    {
-                      name: "Amanda Foster",
-                      handle: "@amandafoster",
-                      avatar: "/testimonials/luca.jpg",
-                      text: "AxLiner makes document digitization insanely fast and accurate. Our team productivity has doubled."
-                    },
-                    {
-                      name: "Chris Anderson",
-                      handle: "@chrisanderson",
-                      avatar: "/testimonials/jon_myers.jpg",
-                      text: "The UX is incredibly intuitive. Just upload your images and get perfect Excel files in seconds."
-                    },
-                    {
-                      name: "Rachel Martinez",
-                      handle: "@rachelmartinez",
-                      avatar: "/testimonials/tom_dorr.jpg",
-                      text: "I've been using AxLiner exclusively for the past month. The results speak for themselves. Outstanding tool that delivers on its promises every single time."
-                    },
-                    {
-                      name: "James Wilson",
-                      handle: "@jameswilson",
-                      avatar: "/testimonials/alexander_wilczek.jpg",
-                      text: "AxLiner's OCR accuracy beats everything else I've tried."
-                    }
-                  ].map((testimonial, idx) => (
-                    <div
-                      key={`${setIndex}-${idx}`}
-                      className="flex-shrink-0 bg-white dark:bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 w-[450px]"
-                    >
-                      {/* Person Details at Top */}
-                      <div className="flex items-center gap-3 mb-4">
-                        <img
-                          src={testimonial.avatar}
-                          alt={testimonial.name}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                        <div className="flex-1">
-                          <p className="font-semibold text-base text-foreground">{testimonial.name}</p>
-                          <p className="text-sm text-muted-foreground">{testimonial.handle}</p>
-                        </div>
-                        {/* X Logo */}
-                        <svg className="w-5 h-5 text-foreground opacity-60" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                        </svg>
-                      </div>
-
-                      {/* Dashed Line Separator */}
-                      <div className="border-t border-dashed border-border mb-4"></div>
-
-                      {/* Review Text at Bottom */}
-                      <p className="text-base text-black dark:text-foreground leading-relaxed">{testimonial.text}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Conversion Section */}
-        <section id="converter" className="relative z-10 scroll-mt-28 pt-6 pb-16 sm:pt-8 lg:pt-10">
-          <div className="container mx-auto max-w-[1540px] px-4 sm:px-5 lg:px-9">
-            <div className="mb-5 text-center">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
-                <h2 className="text-lg font-bold text-foreground sm:text-xl">
-                  Try It
-                </h2>
-              </div>
-            </div>
-            {resultFiles.length === 0 && !isProcessing && (
-              <div className="mx-auto mb-5 flex w-fit items-center rounded-full border border-white/55 bg-white/40 p-1 shadow-[0_16px_40px_rgba(42,35,64,0.08)] backdrop-blur-2xl">
-                <button
-                  type="button"
-                  onClick={() => setOutputMode('table')}
-                  className={cn(
-                    "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
-                    outputMode === 'table'
-                      ? "bg-[#2f165e] text-white shadow-sm"
-                      : "text-[#111827] hover:bg-white/45"
-                  )}
-                >
-                  Table output
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setOutputMode('text')}
-                  className={cn(
-                    "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
-                    outputMode === 'text'
-                      ? "bg-[#2f165e] text-white shadow-sm"
-                      : "text-[#111827] hover:bg-white/45"
-                  )}
-                >
-                  Text output
-                </button>
-              </div>
-            )}
-              <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : 'w-full max-w-[1480px]'}`}>
-                <div className={resultFiles.length === 0 ? "grid items-stretch gap-7 lg:grid-cols-[minmax(0,0.9fr)_minmax(560px,1.1fr)]" : "relative w-full"}>
-                <div className="ax-glass-card relative w-full space-y-5 rounded-[2rem] border border-white/45 p-5 sm:p-6 lg:p-7">
-                  {latestRecoverableJob && !isProcessing && (
-                    <div className="rounded-[1.25rem] border border-[#eadfff] bg-[#E9ECE4]/85 p-4 shadow-[0_16px_45px_rgba(68,31,132,0.10)] backdrop-blur-xl">
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <p className="text-sm font-bold text-foreground">Continue latest batch</p>
-                          <p className="text-xs text-muted-foreground">
-                            {latestRecoverableJob.processed_images || 0} of {latestRecoverableJob.total_images || 0} images processed
-                          </p>
-                        </div>
-                        <Button
-                          size="sm"
-                          onClick={continueLatestJob}
-                          disabled={recoveryLoading}
-                          className="rounded-2xl bg-[#2f165e] text-white hover:bg-[#441f84]"
-                        >
-                          {recoveryLoading ? 'Resuming...' : 'Continue latest job'}
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                  {/* Upload Dropzone - Hide when showing results */}
-                  {!processingComplete && resultFiles.length === 0 && (
-                    <div className="space-y-3">
-                      <div
-                        onClick={() => document.getElementById('file-upload-landing')?.click()}
-                        onDragOver={handleDragOver}
-                        onDragLeave={handleDragLeave}
-                        onDrop={handleDrop}
-                        className={`relative border-2 border-dashed rounded-[1.5rem] bg-white/25 backdrop-blur-xl transition-all duration-200 cursor-pointer ${
-                          isDragging
-                            ? 'border-[#A78BFA] bg-[#A78BFA]/10 scale-[0.99]'
-                            : uploadedFiles.length > 0
-                              ? 'border-[#A78BFA] bg-[#A78BFA]/5'
-                              : 'border-[#A78BFA]/50 hover:border-[#A78BFA] hover:bg-[#A78BFA]/5'
-                        } flex min-h-[230px] items-center justify-center p-7 lg:min-h-[270px] lg:p-10`}
-                      >
-                        <div className="text-center">
-                          {uploadedFiles.length === 0 ? (
-                            <>
-                              <SiteIcon src={siteIcons.upload} className="mx-auto mb-4 h-14 w-14" />
-                              <h3 className="mb-2 text-xl font-semibold">
-                                {isDragging ? 'Drop your files here' : `Upload up to ${maxUploadFiles} files`}
-                              </h3>
-                              <input
-                                id="file-upload-landing"
-                                type="file"
-                                accept={acceptedUploadMimeTypes}
-                                multiple
-                                onChange={handleFileInput}
-                                className="hidden"
-                              />
-                              <p className="mx-auto max-w-sm text-base leading-7 text-[#111827]/70">
-                                Click or drag handwritten images, PDFs, notes, receipts, or forms.
-                              </p>
-                            </>
-                          ) : (
-                            <>
-                              {/* Image Queue - Small thumbnails */}
-                              <div className="mb-4 grid max-h-44 grid-cols-3 gap-3 overflow-y-auto sm:grid-cols-4">
-                                {uploadedFiles.map((file, index) => (
-                                  <div key={index} className="relative group aspect-square overflow-hidden rounded-2xl border border-white/60 bg-card">
-                                    <img
-                                      src={filePreviewUrls[index] || ''}
-                                      alt={file.name}
-                                      className="w-full h-full object-cover"
-                                    />
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setUploadedFiles(prev => prev.filter((_, i) => i !== index));
-                                      }}
-                                      disabled={isProcessing}
-                                      className="absolute top-1 right-1 h-5 w-5 rounded-full bg-background/80 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
-                                      <span className="relative h-3 w-3" aria-hidden="true">
-                                        <span className="absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 rotate-45 bg-foreground" />
-                                        <span className="absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 -rotate-45 bg-foreground" />
-                                      </span>
-                                    </button>
-                                  </div>
-                                ))}
-                              </div>
-                              <p className="mb-3 text-sm font-semibold text-[#111827]">{uploadedFiles.length} file{uploadedFiles.length > 1 ? 's' : ''} ready to convert</p>
-                              <label htmlFor="file-upload-landing-more">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  disabled={isProcessing}
-                                  className="rounded-full border-2 border-[#A78BFA] bg-white/60 text-sm"
-                                  asChild
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <span>Add More</span>
-                                </Button>
-                              </label>
-                              <input
-                                id="file-upload-landing-more"
-                                type="file"
-                                accept={acceptedUploadMimeTypes}
-                                multiple
-                                onChange={(e) => {
-                                  const newFiles = e.target.files;
-                                  if (newFiles && newFiles.length > 0) {
-                                    const fileArray = Array.from(newFiles).filter(isAcceptedUploadFile);
-                                    pendingAutoUploadRef.current = true;
-                                    setUploadedFiles(prev => {
-                                      const remainingSlots = maxUploadFiles - prev.length;
-                                      const filesToAdd = fileArray.slice(0, Math.max(0, remainingSlots));
-                                      if (fileArray.length > filesToAdd.length) {
-                                        showBatchLimitToast(maxUploadFiles);
-                                      }
-                                      return [...prev, ...filesToAdd];
-                                    });
-                                  }
-                                }}
-                                className="hidden"
-                              />
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                    </div>
-                  )}
-
-                  {/* Progressive Results Display - Full Width as soon as we have results */}
-                  {(isProcessing || resultFiles.length > 0) && (
-                    <div className={`ax-glass-card overflow-hidden rounded-[2rem] border border-white/45 ${resultFiles.length > 0 ? 'p-5 sm:p-6' : 'p-6 sm:p-7'}`}>
-                      <div className={`mb-5 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between ${resultFiles.length > 0 ? 'border-b border-white/35 pb-5' : ''}`}>
-                        <div className="flex items-start gap-4">
-                          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.35rem] bg-[#441F84] text-white shadow-lg shadow-[#441F84]/20">
-                            {processingComplete ? (
-                              <FileSpreadsheet className="h-6 w-6" />
-                            ) : (
-                              <InlineSpinner className="h-6 w-6" />
-                            )}
-                          </div>
-                          <div className="space-y-2">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <h3 className="text-2xl font-semibold tracking-tight text-[#111827]">
-                                {processingComplete ? 'Files ready' : isUploading ? 'Uploading your batch' : 'Converting your files'}
-                              </h3>
-                              <span className="rounded-full border border-[#A78BFA]/35 bg-white/55 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#111827]/70 backdrop-blur-md">
-                                {processingComplete ? `${resultFiles.length} ready` : isUploading ? 'uploading' : 'converting'}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2 lg:justify-end">
-                          {processingComplete && resultFiles.length > 1 && (
-                            <>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={handleDownloadAll}
-                                className="border-2 border-[#A78BFA] bg-white/55 backdrop-blur-md"
-                              >
-                                <Download className="mr-1 h-5 w-5" />
-                                Download All
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={handleShareAll}
-                                className="gap-2 bg-white/55 border-2 border-foreground text-foreground backdrop-blur-md hover:bg-muted/50"
-                              >
-                                <Share2 className="h-5 w-5" />
-                                Share All
-                              </Button>
-                            </>
-                          )}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={isProcessing && !processingComplete ? cancelCurrentBatch : handleReset}
-                            className="border-2 border-[#A78BFA] bg-white/55 backdrop-blur-md"
-                          >
-                            {isProcessing && !processingComplete ? <X className="mr-1 h-4 w-4" /> : <RotateCcw className="mr-1 h-4 w-4" />}
-                            {isProcessing && !processingComplete ? 'Cancel' : 'Convert Again'}
-                          </Button>
-                        </div>
-                      </div>
-
-                      {isProcessing && !processingComplete && (
-                        <div className="mb-5 rounded-[1.35rem] border border-[#eadfff] bg-white/50 p-5 backdrop-blur-md">
-                          <div className="mb-3 flex items-center justify-between text-sm font-semibold text-[#111827]/70">
-                            <span>{isUploading ? 'Upload progress' : 'Batch progress'}</span>
-                          </div>
-                          <div className="h-3 overflow-hidden rounded-full bg-white/80">
-                            <div
-                              className="h-full rounded-full bg-[#441F84] transition-all duration-300"
-                              style={{ width: `${liveProgressPercent}%` }}
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      {resultFiles.length > 0 && (
-                        <div className="space-y-4">
-                          {/* Preview Section - Only for first file */}
-                          {resultFiles.length > 0 && (tablePreviewData.length > 0 || textPreview) && firstImageUrl && (
-                            <div className="space-y-4">
-                              {/* Image and Table Preview Side by Side */}
-                              <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
-                                {/* Original Image */}
-                                <div className="flex flex-col xl:col-span-1">
-                                  <h4 className="mb-3 text-sm font-semibold text-[#111827]/70">Original image</h4>
-                                  <div className="flex max-h-[640px] items-center justify-center overflow-hidden rounded-[1.35rem] border border-white/60 bg-white/55">
-                                    <img 
-                                      src={firstImageUrl} 
-                                      alt="Original" 
-                                      className="max-w-full h-auto max-h-[600px] object-contain"
-                                    />
-                                  </div>
-                                </div>
-
-                                {/* Output Preview */}
-                                <div className="flex flex-col xl:col-span-2">
-                                  <h4 className="mb-3 text-sm font-semibold text-[#111827]/70">
-                                    {outputMode === 'text' ? 'Extracted text preview' : 'Extracted spreadsheet preview'}
-                                  </h4>
-                                  <div className="max-h-[640px] overflow-auto rounded-[1.35rem] border border-white/60 bg-white">
-                                    {outputMode === 'text' || textPreview ? (
-                                      <pre className="min-h-[360px] whitespace-pre-wrap p-5 text-left text-sm leading-7 text-[#111827]">
-                                        {textPreview}
-                                      </pre>
-                                    ) : (
-                                      <>
-                                        <table className="w-full text-base">
-                                          <tbody>
-                                            {tablePreviewData.map((row, rowIndex) => (
-                                              <tr key={rowIndex} className={rowIndex === 0 ? 'bg-primary/10 font-semibold' : 'border-t border-gray-200'}>
-                                                {row.map((cell, cellIndex) => (
-                                                  <td 
-                                                    key={cellIndex} 
-                                                    className="px-2 py-1.5 text-left border-r border-gray-200 last:border-r-0"
-                                                  >
-                                                    {cell || ''}
-                                                  </td>
-                                                ))}
-                                              </tr>
-                                            ))}
-                                          </tbody>
-                                        </table>
-                                        {tablePreviewData.length >= 10 && (
-                                          <div className="px-3 py-2 bg-muted/50 text-xs text-muted-foreground text-center border-t">
-                                            Showing first 10 rows
-                                          </div>
-                                        )}
-                                      </>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* First File Buttons */}
-                              <div className="flex flex-col gap-4 rounded-[1.35rem] border border-white/60 bg-white/55 p-4 backdrop-blur-xl lg:flex-row lg:items-center lg:justify-between">
-                                <div className="flex items-center gap-3 flex-1 min-w-0">
-                                  {outputMode === 'text' ? (
-                                    <FileText className="h-6 w-6 text-[#2f165e]" />
-                                  ) : (
-                                    <FileSpreadsheet className="h-6 w-6 text-[#2f165e]" />
-                                  )}
-                                  <div className="min-w-0">
-                                    <p className="text-sm font-semibold text-[#111827]">Primary result</p>
-                                    <span className="block truncate text-base font-medium text-[#111827]/75">{cleanFilename(resultFiles[0].filename)}</span>
-                                  </div>
-                                </div>
-                                <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
-                                  <Button
-                                    size="default"
-                                    onClick={() => handleDownloadFile(resultFiles[0].file_id)}
-                                    className="gap-2 rounded-full bg-primary text-white hover:bg-primary/90"
-                                  >
-                                    <Download className="h-5 w-5" />
-                                    Download
-                                  </Button>
-                                  <Button
-                                    size="default"
-                                    variant="outline"
-                                    onClick={() => handleShareFile(resultFiles[0])}
-                                    className="gap-2 rounded-full border border-[#A78BFA] bg-white/70 text-foreground hover:bg-primary/10"
-                                  >
-                                    <Share2 className="h-5 w-5" />
-                                    Share
-                                  </Button>
-                                  {outputMode !== 'text' && (
-                                    <Button
-                                      size="default"
-                                      variant="outline"
-                                      onClick={() => {
-                                        window.open(buildOfficeViewerUrl(resultFiles[0].file_id), '_blank')
-                                      }}
-                                      className="gap-2 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
-                                    >
-                                      <Pencil className="h-5 w-5" />
-                                      Edit
-                                    </Button>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Other Files - Just buttons, starting from index 1 */}
-                          {resultFiles.slice(1).map((file: any, index: number) => (
-                            <div key={file.file_id || index + 1} className="flex flex-col gap-3 rounded-[1.25rem] border border-white/60 bg-white/45 p-4 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
-                              <div className="flex items-center gap-3 flex-1 min-w-0">
-                                <button
-                                  onClick={() => handleDownloadFile(file.file_id)}
-                                  className="flex-shrink-0 hover:scale-110 transition-transform"
-                                >
-                                  {outputMode === 'text' ? (
-                                    <FileText className="h-6 w-6 text-[#2f165e]" />
-                                  ) : (
-                                    <FileSpreadsheet className="h-6 w-6 text-[#2f165e]" />
-                                  )}
-                                </button>
-                                <span className="text-sm font-medium truncate text-[#111827]">{cleanFilename(file.filename)}</span>
-                              </div>
-                              <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleDownloadFile(file.file_id)}
-                                  className="gap-2 rounded-full bg-primary text-white hover:bg-primary/90"
-                                >
-                                  <Download className="h-5 w-5" />
-                                  Download
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleShareFile(file)}
-                                  className="gap-1.5 rounded-full border border-[#A78BFA] bg-white/70 text-foreground hover:bg-primary/10"
-                                >
-                                  <Share2 className="h-5 w-5" />
-                                  Share
-                                </Button>
-                                {outputMode !== 'text' && (
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => {
-                                      window.open(buildOfficeViewerUrl(file.file_id), '_blank')
-                                    }}
-                                    className="gap-1.5 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
-                                  >
-                                    <Pencil className="h-5 w-5" />
-                                    Edit
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-
-                          {/* Show buttons without preview if no preview data available yet */}
-                          {((!tablePreviewData.length && !textPreview) || !firstImageUrl) && resultFiles.map((file: any, index: number) => (
-                            <div key={`no-preview-${file.file_id || index}`} className="flex flex-col gap-3 rounded-[1.25rem] border border-white/60 bg-white/45 p-4 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
-                              <div className="flex items-center gap-3 flex-1 min-w-0">
-                                <button
-                                  onClick={() => handleDownloadFile(file.file_id)}
-                                  className="flex-shrink-0 hover:scale-110 transition-transform"
-                                >
-                                  {outputMode === 'text' ? (
-                                    <FileText className="h-6 w-6 text-[#2f165e]" />
-                                  ) : (
-                                    <FileSpreadsheet className="h-6 w-6 text-[#2f165e]" />
-                                  )}
-                                </button>
-                                <span className="text-sm font-medium truncate text-[#111827]">{cleanFilename(file.filename)}</span>
-                              </div>
-                              <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleDownloadFile(file.file_id)}
-                                  className="gap-2 rounded-full bg-primary text-white hover:bg-primary/90"
-                                >
-                                  <Download className="h-5 w-5" />
-                                  Download
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleShareFile(file)}
-                                  className="gap-1.5 rounded-full border border-[#A78BFA] bg-white/70 text-foreground hover:bg-primary/10"
-                                >
-                                  <Share2 className="h-5 w-5" />
-                                  Share
-                                </Button>
-                                {outputMode !== 'text' && (
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => {
-                                      window.open(buildOfficeViewerUrl(file.file_id), '_blank')
-                                    }}
-                                    className="gap-1.5 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
-                                  >
-                                    <Pencil className="h-5 w-5" />
-                                    Edit
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-
-                          {/* Pending Files - Show processing indicators */}
-                          {isProcessing && totalFilesToProcess > resultFiles.length && (
-                            <>
-                              {Array.from({ length: totalFilesToProcess - resultFiles.length }).map((_, index) => (
-                                <div key={`pending-${index}`} className="flex items-center justify-between rounded-[1.25rem] border border-dashed border-[#A78BFA]/35 bg-white/30 p-4 backdrop-blur-xl">
-                                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                                    <InlineSpinner className="h-5 w-5 text-primary flex-shrink-0" />
-                                    <span className="text-sm font-medium text-[#111827]/70">Waiting for file {resultFiles.length + index + 1}</span>
-                                  </div>
-                                </div>
-                              ))}
-                            </>
-                          )}
-                        </div>
-                      )}
-
-                      {isProcessing && !processingComplete && resultFiles.length === 0 && (
-                        <div className="mt-5 flex items-center justify-center gap-2 rounded-[1.25rem] border border-white/55 bg-white/35 p-4 text-sm font-medium text-[#111827]/70 backdrop-blur-xl">
-                          <InlineSpinner className="h-4 w-4" />
-                          <span>{isUploading ? 'Uploading' : 'Converting'}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Convert Button + Options Card Row - Hide when processing or files ready */}
-                  {!isProcessing && resultFiles.length === 0 && (
-                  <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
-                    <Button
-                     onClick={handleProcessImage}
-                     disabled={uploadedFiles.length === 0 || isProcessing}
-                     className={`min-h-[108px] rounded-[1.5rem] border-2 text-lg font-semibold transition-all duration-200 ${
-                      uploadedFiles.length === 0
-                           ? 'bg-gray-300 hover:bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'
-                           : 'bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 shadow-lg shadow-primary/20'
-                      }`}
-                    >
-                      {isProcessing ? (
-                        <>
-                          <InlineSpinner className="h-6 w-6 mr-2" />
-                          Converting...
-                        </>
-                      ) : (
-                        <>
-                          {uploadedFiles.length === 0 ? 'Add files first' : outputMode === 'text' ? 'Extract Text' : 'Convert to Excel'}
-                        </>
-                      )}
-                    </Button>
-
-                    {/* Options Card - Right Side (1 column) */}
-                    <Card className="rounded-[1.5rem] border border-white/55 bg-white/30 shadow-none backdrop-blur-xl dark:bg-white/30">
-                      <CardContent className="p-4">
-                        <div className="space-y-4">
-                          <div>
-                            <h3 className="mb-2 text-sm font-semibold text-foreground">Language</h3>
-                            <select
-                              className="w-full cursor-pointer rounded-xl border-2 border-muted-foreground/20 bg-white/45 p-2.5 text-sm font-medium text-foreground transition-all hover:border-[#A78BFA]/50 focus:border-primary focus:outline-none"
-                              defaultValue="en"
-                              onClick={(e) => e.preventDefault()}
-                            >
-                              <option value="en">English</option>
-                              <option value="de">Deutsch</option>
-                              <option value="fr">Français</option>
-                              <option value="ar">العربية</option>
-                              <option value="es">Español</option>
-                              <option value="it">Italiano</option>
-                              <option value="pt">Português</option>
-                              <option value="zh">中文</option>
-                            </select>
-                          </div>
-
-                          <div>
-                            <h3 className="mb-2 text-sm font-semibold text-foreground">Delivery</h3>
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                if (!autoDownload) {
-                                  setShowAutoDownloadConfirm(true)
-                                } else {
-                                  setAutoDownload(false)
-                                  // toast.info('Auto-download disabled')
-                                }
-                              }}
-                              className={cn(
-                                "w-full flex items-center justify-between rounded-xl border p-2.5 transition-all",
-                                autoDownload
-                                  ? "bg-primary/10 border-primary"
-                                  : "bg-muted/30 border-muted-foreground/20 hover:border-[#A78BFA]/50"
-                              )}
-                            >
-                              <div className="flex items-center gap-1">
-                                <SiteIcon src={siteIcons.export} className={cn("h-4 w-4", autoDownload ? "opacity-100" : "opacity-60")} />
-                                <Label className="cursor-pointer text-sm font-medium text-foreground">
-                                  Auto Download
-                                </Label>
-                              </div>
-                            </button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+        <TestimonialsMarquee />
+        <div id="converter" ref={converterMountRef} className="scroll-mt-28">
+          {shouldLoadConverter ? (
+            <LandingConverter />
+          ) : (
+            <section className="relative z-10 pt-6 pb-16 sm:pt-8 lg:pt-10">
+              <div className="container mx-auto max-w-[1540px] px-4 sm:px-5 lg:px-9">
+                <div className="mx-auto rounded-[2rem] border border-white/45 bg-white/35 p-8 text-center shadow-[0_24px_70px_rgba(42,35,64,0.08)] backdrop-blur-2xl">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/50 px-4 py-2 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
+                    <h2 className="text-lg font-bold text-foreground sm:text-xl">Try It</h2>
                   </div>
-                  )}
-                </div>
-
-                {resultFiles.length === 0 && (
-                  <div className="ax-glass-card relative flex min-h-[560px] flex-col justify-between overflow-hidden rounded-[2rem] border border-white/45 p-5 sm:p-6 lg:p-7">
-                    <div className="flex items-center justify-between gap-4">
-                      <div>
-                        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#2f165e]">Preview</p>
-                        <h3 className="mt-2 text-2xl font-semibold text-[#111827]">Before and after conversion</h3>
-                      </div>
-                      <span className="hidden rounded-full border border-white/60 bg-white/40 px-3 py-1 text-xs font-semibold text-[#111827]/70 backdrop-blur-xl sm:inline-flex">
-                        XLSX ready
-                      </span>
-                    </div>
-
-                    <div className="mt-6 grid flex-1 gap-5 sm:grid-cols-2">
-                      <figure className="flex min-h-[430px] flex-col overflow-hidden rounded-[1.5rem] border border-white/60 bg-white/35">
-                        <div className="flex items-center justify-between border-b border-white/55 px-4 py-3">
-                          <figcaption className="text-sm font-semibold text-[#111827]">Before</figcaption>
-                          <span className="text-xs font-medium text-[#111827]/60">Image</span>
-                        </div>
-                        <div className="relative flex flex-1 items-center justify-center bg-white/30 p-3">
-                          <img
-                            src="/b.jpeg"
-                            alt="Handwritten table before conversion"
-                            className="max-h-[390px] w-full rounded-xl object-contain shadow-[0_18px_45px_rgba(42,35,64,0.10)]"
-                          />
-                        </div>
-                      </figure>
-
-                      <figure className="flex min-h-[430px] flex-col overflow-hidden rounded-[1.5rem] border border-white/60 bg-white/35">
-                        <div className="flex items-center justify-between border-b border-white/55 px-4 py-3">
-                          <figcaption className="text-sm font-semibold text-[#111827]">After</figcaption>
-                          <span className="text-xs font-medium text-[#111827]/60">Spreadsheet</span>
-                        </div>
-                        <div className="relative flex flex-1 items-center justify-center bg-white/30 p-3">
-                          <img
-                            src="/bb.png"
-                            alt="Spreadsheet output after conversion"
-                            className="max-h-[390px] w-full rounded-xl object-contain shadow-[0_18px_45px_rgba(42,35,64,0.10)]"
-                          />
-                        </div>
-                      </figure>
-                    </div>
-                  </div>
-                )}
                 </div>
               </div>
-          </div>
-        </section>
+            </section>
+          )}
+        </div>
 
           </div>
         </div>
@@ -2399,9 +701,11 @@ export default function Home() {
                       className="flex-shrink-0 bg-white dark:bg-white border border-border/50 hover:border-[#A78BFA]/30 transition-all duration-300 hover:shadow-md w-[120px] h-[80px]"
                     >
                       <CardContent className="p-2 flex items-center justify-center w-full h-full">
-                        <img
+                        <Image
                           src={`/${imgNum}.jpeg`}
                           alt={`Company ${imgNum}`}
+                          width={100}
+                          height={60}
                           className="w-[100px] h-[60px] object-contain opacity-60 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
@@ -2510,72 +814,7 @@ export default function Home() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-                {/* Accuracy Chart */}
-                <Card className="border border-[#A78BFA]/35 bg-white/55 shadow-xl shadow-[#A78BFA]/10 backdrop-blur-md dark:bg-card/70" data-animate="stagger">
-  <CardHeader className="pb-3">
-    <CardTitle className="text-lg font-semibold">
-      Handwritten Text Recognition Accuracy
-    </CardTitle>
-    <p className="text-sm text-muted-foreground">
-      Based on 10,000+ real-world samples
-    </p>
-  </CardHeader>
-
-  <CardContent>
-    <ChartContainer
-      config={{
-        accuracy: {
-          label: "Accuracy",
-          color: "var(--primary)",
-        },
-      }}
-      className="h-[300px] w-full"
-    >
-      <BarChart
-        data={[
-          { provider: "AxLiner", accuracy: 96.8 },
-          { provider: "AWS Textract", accuracy: 77.2 },
-          { provider: "Google Vision", accuracy: 54.5 },
-          { provider: "Azure Vision", accuracy: 51.7 },
-        ]}
-        margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-        <XAxis
-          dataKey="provider"
-          tickLine={false}
-          axisLine={true}
-          tickMargin={10}
-          angle={0}
-          textAnchor="middle"
-        />
-        <YAxis
-          tickLine={false}
-          axisLine={true}
-          tickMargin={10}
-          domain={[0, 100]}
-          ticks={[0, 20, 40, 60, 80, 100]}
-          label={{ value: 'Accuracy (%)', angle: -90, position: 'insideLeft' }}
-        />
-        <ChartTooltip content={<ChartTooltipContent />} />
-        <Bar
-          dataKey="accuracy"
-          fill="#441F84"
-          radius={[8, 8, 0, 0]}
-        />
-      </BarChart>
-    </ChartContainer>
-
-    {/* Footer */}
-    <div className="mt-6 pt-4 border-t border-border/50">
-      <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-        <SiteIcon src={siteIcons.table} className="h-5 w-5" />
-        <span>Tested on IAM Handwriting Database v3.0</span>
-      </div>
-    </div>
-  </CardContent>
-</Card>
-
+                <BenchmarkAccuracyChart />
 
                 {/* Performance Metrics Table */}
                 <Card className="border border-[#A78BFA]/35 bg-white/55 shadow-xl shadow-[#A78BFA]/10 backdrop-blur-md dark:bg-card/70" data-animate="stagger">
@@ -2785,9 +1024,11 @@ export default function Home() {
                 </div>
 
                 <div className="relative min-h-[520px] overflow-hidden rounded-l-[2rem] border border-[#A78BFA]/40 shadow-xl shadow-[#A78BFA]/10 lg:min-h-[760px]" data-animate="stagger">
-                  <img
+                  <Image
                     src="/purchase.webp"
                     alt="Professionals reviewing documents"
+                    fill
+                    sizes="(min-width: 1024px) 50vw, 100vw"
                     className="absolute inset-0 h-full w-full object-cover object-center"
                   />
                 </div>
@@ -2823,9 +1064,12 @@ export default function Home() {
                 </h2>
 
                 <div className="mt-10 overflow-hidden rounded-[10px] shadow-[0_28px_70px_rgba(17,24,47,0.14)]">
-                  <img
-                    src="/secu.jpeg"
+                  <Image
+                    src="/secu.webp"
                     alt="Secure digital document processing"
+                    width={900}
+                    height={500}
+                    sizes="(min-width: 1024px) 45vw, 100vw"
                     className="h-[300px] w-full object-cover sm:h-[360px] lg:h-[380px]"
                   />
                 </div>
@@ -2865,9 +1109,11 @@ export default function Home() {
         <section className="relative z-10 overflow-hidden py-24">
           <div className="grid w-full items-start gap-10 pr-4 sm:pr-6 lg:grid-cols-[minmax(620px,1.18fr)_minmax(420px,0.82fr)] lg:gap-14 lg:pr-12 xl:pr-20">
             <div className="relative min-h-[340px] w-full overflow-hidden sm:min-h-[430px] lg:min-h-[560px]">
-              <img
-                src="/cta-team.jpg"
+              <Image
+                src="/cta-team.webp"
                 alt="Team collaborating around laptops"
+                fill
+                sizes="(min-width: 1024px) 60vw, 100vw"
                 className="absolute inset-0 h-full w-full object-cover object-center lg:rounded-r-[2rem]"
               />
             </div>
@@ -2955,235 +1201,12 @@ export default function Home() {
         isAuthenticated={isAuthenticated}
       />
 
-      {/* Share Dialog */}
-      <Dialog open={shareDialogOpen} onOpenChange={(open) => {
-        if (!open) {
-          setCopySuccess(false);
-        }
-        setShareDialogOpen(open);
-      }}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-base font-semibold">Share File</DialogTitle>
-            <DialogDescription className="text-sm">
-              {selectedFileToShare?.filename || 'Excel file'}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            {/* Direct Message Share Options */}
-            <div className="space-y-3">
-              <p className="text-xs text-center text-muted-foreground">Share your download link:</p>
-              <div className="flex justify-center gap-4">
-                {/* Gmail */}
-                <button
-                  onClick={handleEmailShare}
-                  className="group flex flex-col items-center gap-1.5 cursor-pointer"
-                  title="Compose email in Gmail"
-                >
-                  <svg className="h-10 w-10 text-[#EA4335] group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
-                  </svg>
-                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Gmail</span>
-                </button>
-
-                {/* LinkedIn Message */}
-                <button
-                  onClick={handleLinkedInMessage}
-                  className="group flex flex-col items-center gap-1.5 cursor-pointer"
-                  title="Copy link and compose LinkedIn message"
-                >
-                  <svg className="h-10 w-10 text-[#0077B5] group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
-                  </svg>
-                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">LinkedIn</span>
-                </button>
-
-                {/* X (Twitter) */}
-                <button
-                  onClick={handleXShare}
-                  className="group flex flex-col items-center gap-1.5 cursor-pointer"
-                  title="Share on X (Twitter)"
-                >
-                  <svg className="h-10 w-10 text-foreground group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                  </svg>
-                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">X</span>
-                </button>
-
-                {/* Facebook Messenger */}
-                <button
-                  onClick={handleMessengerShare}
-                  className="group flex flex-col items-center gap-1.5 cursor-pointer"
-                  title="Send via Facebook Messenger"
-                >
-                  <SiteIcon src={siteIcons.share} className="h-10 w-10 transition-transform group-hover:scale-110" />
-                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Messenger</span>
-                </button>
-              </div>
-              <p className="text-[10px] text-muted-foreground/70 text-center">
-                {selectedFileToShare?.filename || 'Excel file'} ready to share
-              </p>
-              <p className="text-[9px] text-muted-foreground/50 text-center">
-                Gmail: Compose email • LinkedIn: Copy & paste • X: Tweet • Messenger: Direct message
-              </p>
-            </div>
-            
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">or</span>
-              </div>
-            </div>
-            
-            {/* Direct Download Link */}
-            <div className="space-y-2.5">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <SiteIcon src={siteIcons.link} className="h-4 w-4" />
-                <span className="font-medium">Direct download link</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Input
-                  readOnly
-                  value={selectedFileToShare?.file_id ? buildDownloadUrl(selectedFileToShare.file_id) : ''}
-                  className="text-xs h-9 bg-muted/50 border-muted-foreground/20"
-                />
-                <Button
-                  size="sm"
-                  variant={copySuccess ? "default" : "outline"}
-                  onClick={handleCopyLink}
-                  className="h-9 px-3"
-                >
-                  {copySuccess ? (
-                    <>
-                      <SiteIcon src={siteIcons.table} className="mr-1.5 h-4 w-4" />
-                      <span className="text-xs">Copied</span>
-                    </>
-                  ) : (
-                    <>
-                      <SiteIcon src={siteIcons.copy} className="mr-1.5 h-4 w-4" />
-                      <span className="text-xs">Copy</span>
-                    </>
-                  )}
-                </Button>
-              </div>
-              <p className="text-[11px] text-muted-foreground">
-                Anyone with this link can download the Excel file directly
-              </p>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Free Trial Limit Dialog */}
-      <Dialog open={showLimitDialog} onOpenChange={setShowLimitDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Free trial limit reached</DialogTitle>
-            <DialogDescription className="text-base">
-              You can convert 5 images without an account. Create an account to keep using AxLiner, or choose a paid plan if you need more pages.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex gap-3 mt-6">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowLimitDialog(false);
-                window.location.href = "/pricing?from=trial-limit";
-              }}
-              className="flex-1 border-2 border-[#A78BFA]"
-            >
-              See Plans
-            </Button>
-            <Button
-              onClick={() => {
-                setShowLimitDialog(false);
-                openSignInModal("/dashboard/client");
-              }}
-              className="flex-1 bg-primary hover:bg-primary/90 border-2 border-[#A78BFA]"
-            >
-              Create Account
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Auto Download Confirmation Dialog */}
-      <Dialog open={showAutoDownloadConfirm} onOpenChange={setShowAutoDownloadConfirm}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Enable Auto-Download?</DialogTitle>
-            <DialogDescription>
-              All processed files will be automatically downloaded to your device as soon as they're ready.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex gap-3 mt-4">
-            <Button
-              variant="outline"
-              onClick={() => setShowAutoDownloadConfirm(false)}
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                setAutoDownload(true)
-                setShowAutoDownloadConfirm(false)
-                // toast.success('Auto-download enabled')
-              }}
-              className="flex-1 bg-primary hover:bg-primary/90"
-            >
-              Enable Auto-Download
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* First-Time Convert Confirmation Dialog */}
-      <Dialog open={showFirstConvertConfirm} onOpenChange={setShowFirstConvertConfirm}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <div className="flex items-center gap-3 mb-2">
-              <SiteIcon src={siteIcons.document} className="h-7 w-7" />
-              <DialogTitle>You can add up to {maxUploadFiles} files!</DialogTitle>
-            </div>
-            <DialogDescription className="text-sm text-muted-foreground">
-              Process up to {maxUploadFiles} table images or PDFs in one click.
-              <br /><br />
-              You can add more files now or proceed to convert your current selection.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex gap-3 mt-4">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowFirstConvertConfirm(false);
-                // Trigger file input to add more
-                document.getElementById('file-upload-landing')?.click();
-              }}
-              className="flex-1"
-            >
-              Add More
-            </Button>
-            <Button
-              onClick={async () => {
-                if (typeof window !== 'undefined') {
-                  localStorage.setItem('hasConvertedBefore', 'true');
-                }
-                setShowFirstConvertConfirm(false);
-                await processImages();
-              }}
-              className="flex-1 bg-primary hover:bg-primary/90"
-            >
-              Convert This
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Google Sign In Modal */}
-      <GoogleSignInModal open={showSignInModal} onOpenChange={setShowSignInModal} redirectPath={signInRedirectPath} />
+      {showSignInModal && (
+        <GoogleSignInModal
+          open={showSignInModal}
+          onOpenChange={setShowSignInModal}
+          redirectPath={signInRedirectPath}
+        />
+      )}
     </div>
   )}
