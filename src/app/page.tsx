@@ -68,6 +68,57 @@ const siteIcons = {
   upload: "/site-icons/io/upload.svg",
 };
 
+const solutionCards = [
+  {
+    title: "Accounting",
+    asset: "/solution/accounting.svg",
+    description:
+      "Automate the most time-consuming parts of accounting workflows. Extract clean spreadsheet data from receipts, invoices, bank statements, and expense reports so teams can reduce manual entry and focus on review.",
+  },
+  {
+    title: "Banking",
+    asset: "/solution/banking.svg",
+    description:
+      "Modernize document-heavy financial operations with structured extraction for checks, loan applications, statements, onboarding packets, and KYC documents while keeping every row ready for downstream review.",
+  },
+  {
+    title: "Backoffice Automation",
+    asset: "/solution/Backoffice%20Automation.svg",
+    description:
+      "Remove repetitive data entry from internal operations. Turn invoices, forms, receipts, and handwritten tables into usable Excel files that can feed finance, admin, and operations workflows.",
+  },
+  {
+    title: "Construction",
+    asset: "/solution/Construction.svg",
+    description:
+      "Convert site notes, delivery forms, checklists, material logs, and handwritten field tables into clean spreadsheets so project teams can keep records current without retyping paperwork.",
+  },
+  {
+    title: "CPG Brands",
+    asset: "/solution/CPG%20Brands.svg",
+    description:
+      "Process retail forms, inventory sheets, distributor paperwork, purchase records, and field reports into structured data that merchandising and operations teams can compare quickly.",
+  },
+  {
+    title: "FinTech",
+    asset: "/solution/FinTech.svg",
+    description:
+      "Build document intake flows for financial products without asking users or operators to key in every table manually. Extract page-level data into spreadsheets that are easy to validate.",
+  },
+  {
+    title: "Healthcare",
+    asset: "/solution/Healthcare.svg",
+    description:
+      "Digitize handwritten logs, intake forms, lab sheets, inventory notes, and administrative records while preserving the table structure needed for review, reporting, and internal handoff.",
+  },
+  {
+    title: "Real Estate",
+    asset: "/solution/Real%20Estate.svg",
+    description:
+      "Turn lease packets, inspection forms, closing checklists, rent rolls, and property records into organized spreadsheets for brokers, managers, and operations teams.",
+  },
+];
+
 function SiteIcon({ src, className, alt = "" }: { src: string; className?: string; alt?: string }) {
   return (
     <img
@@ -2386,48 +2437,45 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto justify-center">
-              <Card data-animate="stagger" className="flex-1 border border-white/45 !bg-white/30 shadow-xl shadow-[#441F84]/15 ring-1 ring-[#A78BFA]/30 backdrop-blur-2xl transition-all duration-300 hover:scale-105 hover:border-[#A78BFA]/70 hover:!bg-white/45">
-                <CardHeader className="text-center">
-                  <img
-                    src="/New%20folder/handwritten.svg"
-                    alt=""
-                    className="mx-auto mb-4 h-32 w-full object-contain"
-                  />
-                  <CardTitle className="text-xl mb-2">Handwritten Tables</CardTitle>
-                  <CardDescription className="text-base">
-                    <span className="font-semibold text-amber-700">99.5% accuracy</span> on handwritten tables - industry-leading performance with our specialized model
-                  </CardDescription>
-                </CardHeader>
-              </Card>
+            <div className="mx-auto grid max-w-[1540px] grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {solutionCards.map((solution) => (
+                <Card
+                  key={solution.title}
+                  data-animate="stagger"
+                  className="group flex min-h-[560px] overflow-hidden rounded-[6px] border border-white/70 bg-[#f2f5ee]/78 shadow-[0_26px_70px_rgba(42,35,64,0.08)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-white hover:bg-[#f7f9f3]/90 hover:shadow-[0_32px_85px_rgba(42,35,64,0.13)]"
+                >
+                  <CardContent className="flex h-full w-full flex-col p-7 sm:p-8">
+                    <div className="flex h-56 items-center justify-center sm:h-64">
+                      <img
+                        src={solution.asset}
+                        alt=""
+                        className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.04]"
+                      />
+                    </div>
 
-              <Card data-animate="stagger" className="flex-1 border border-white/45 !bg-white/30 shadow-xl shadow-[#441F84]/15 ring-1 ring-[#A78BFA]/30 backdrop-blur-2xl transition-all duration-300 hover:scale-105 hover:border-[#A78BFA]/70 hover:!bg-white/45">
-                <CardHeader className="text-center">
-                  <img
-                    src="/New%20folder/aa.svg"
-                    alt=""
-                    className="mx-auto mb-4 h-32 w-full object-contain"
-                  />
-                  <CardTitle className="text-xl mb-2">Paper Forms tables</CardTitle>
-                  <CardDescription className="text-base">
-                    Digitize secretary paperwork and manual forms to CSV with intelligent field recognition
-                  </CardDescription>
-                </CardHeader>
-              </Card>
+                    <div className="mt-10 flex flex-1 flex-col">
+                      <CardTitle className="text-2xl font-semibold tracking-normal text-[#141b35]">
+                        {solution.title}
+                      </CardTitle>
+                      <CardDescription className="mt-5 text-[15px] leading-7 text-[#24304a]">
+                        {solution.description}
+                      </CardDescription>
 
-              <Card data-animate="stagger" className="flex-1 border border-white/45 !bg-white/30 shadow-xl shadow-[#441F84]/15 ring-1 ring-[#A78BFA]/30 backdrop-blur-2xl transition-all duration-300 hover:scale-105 hover:border-[#A78BFA]/70 hover:!bg-white/45">
-                <CardHeader className="text-center">
-                  <img
-                    src="/New%20folder/fina.svg"
-                    alt=""
-                    className="mx-auto mb-4 h-32 w-full object-contain"
-                  />
-                  <CardTitle className="text-xl mb-2">Financial Documents tables</CardTitle>
-                  <CardDescription className="text-base">
-                    Process invoices, receipts, and expense reports to XLSX with accurate financial data extraction
-                  </CardDescription>
-                </CardHeader>
-              </Card>
+                      <button
+                        type="button"
+                        onClick={() => scrollToSection("converter")}
+                        className="mt-auto flex items-end justify-between gap-4 pt-12 text-left text-sm font-medium text-[#24304a] transition-colors hover:text-[#151827]"
+                      >
+                        <span>Discover More</span>
+                        <span className="relative block h-10 w-10 text-[#00a51a] transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
+                          <span className="absolute bottom-2 right-1 h-[4px] w-9 origin-right rotate-[-45deg] rounded-full bg-current" />
+                          <span className="absolute right-1 top-1 h-8 w-8 border-r-[4px] border-t-[4px] border-current" />
+                        </span>
+                      </button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         </ScrollAnimatedSection>
