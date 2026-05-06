@@ -51,7 +51,6 @@ import * as XLSX from 'xlsx';
 import { GoogleSignInModal } from "@/components/GoogleSignInModal";
 import NextLink from "next/link";
 import { compressImages, formatFileSize } from "@/lib/image-compression";
-import { ProcessVisualizer } from "@/components/ProcessVisualizer";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -98,6 +97,8 @@ export default function Home() {
   const heroImageRef = useRef<HTMLDivElement>(null);
   const topBackgroundSectionRef = useRef<HTMLDivElement>(null);
   const topBackgroundRef = useRef<HTMLDivElement>(null);
+  const purpleSectionRef = useRef<HTMLDivElement>(null);
+  const whatSectionRef = useRef<HTMLDivElement>(null);
 
   // Get state management from context
   const contextValue = useProcessingState()
@@ -321,17 +322,28 @@ export default function Home() {
   useEffect(() => {
     if (heroFlowRef.current) {
       const ctx = gsap.context(() => {
-        gsap.set(".hero-feed-line-left", { scaleX: 0, opacity: 0.65 });
-        gsap.set(".hero-feed-line-right", { scaleX: 0, opacity: 0.65 });
-        gsap.set(".hero-processor-glow", { opacity: 0.18, scale: 0.92 });
-        gsap.set(".hero-output-card", { opacity: 0, x: -30, scale: 0.78 });
+        const outputStartY = (index: number) => (index === 0 ? 12 : index === 1 ? -24 : 26);
+        const outputEndY = (index: number) => (index === 0 ? -10 : index === 1 ? 22 : -18);
 
-        gsap.timeline({ delay: 0.25 })
-          .fromTo(
-            ".hero-input-card",
-            { x: -24, opacity: 0, scale: 0.94 },
-            { x: 0, opacity: 1, scale: 1, duration: 0.45, ease: "power2.out" }
-          )
+        gsap.fromTo(
+          ".hero-input-card",
+          { x: -24, opacity: 0, scale: 0.94 },
+          { x: 0, opacity: 1, scale: 1, duration: 0.55, delay: 0.15, ease: "power2.out" }
+        );
+
+        const heroTimeline = gsap.timeline({ repeat: -1, repeatDelay: 0.85, delay: 0.2 });
+
+        heroTimeline
+          .set(".hero-feed-line-left", { scaleX: 0, opacity: 0.68 })
+          .set(".hero-feed-line-right", { scaleX: 0, opacity: 0.68 })
+          .set(".hero-processor-glow", { opacity: 0.18, scale: 0.92 })
+          .set(".hero-output-card", {
+            opacity: 0,
+            x: -46,
+            y: outputStartY,
+            scale: 0.66,
+            rotation: (index: number) => (index === 1 ? -5 : index === 2 ? 5 : -2),
+          })
           .to(".hero-feed-line-left", { scaleX: 1, duration: 0.52, ease: "power2.inOut" }, "-=0.05")
           .to(".hero-processor-glow", { opacity: 0.46, scale: 1.12, duration: 0.32, ease: "sine.inOut" }, "-=0.12")
           .to(".hero-processor", {
@@ -345,11 +357,25 @@ export default function Home() {
           .to(".hero-output-card", {
             opacity: 1,
             x: 0,
+            y: (index: number) => (index === 0 ? 0 : index === 1 ? -34 : 24),
             scale: 1,
-            duration: 0.55,
-            ease: "back.out(1.35)",
-            stagger: 0.12,
-          }, "-=0.04");
+            rotation: (index: number) => (index === 1 ? -2 : index === 2 ? 3 : 0),
+            duration: 0.68,
+            ease: "back.out(1.7)",
+            stagger: { each: 0.13, from: "start" },
+          }, "-=0.04")
+          .to(".hero-output-card", { opacity: 1, duration: 1.05 })
+          .to(".hero-output-card", {
+            opacity: 0,
+            x: 54,
+            y: outputEndY,
+            scale: 0.82,
+            rotation: (index: number) => (index === 1 ? 3 : index === 2 ? -5 : 4),
+            duration: 0.42,
+            ease: "power2.in",
+            stagger: { each: 0.08, from: "end" },
+          })
+          .to([".hero-feed-line-left", ".hero-feed-line-right"], { scaleX: 0, opacity: 0.35, duration: 0.28 }, "-=0.2");
       }, heroFlowRef);
 
       return () => {
@@ -389,6 +415,88 @@ export default function Home() {
         }
       );
     }, topSection);
+
+    return () => ctx.revert();
+  }, []);
+
+  useEffect(() => {
+    const purpleSection = purpleSectionRef.current;
+    const whatSection = whatSectionRef.current;
+    if (!purpleSection || !whatSection) return;
+
+    const topClipStart =
+      "polygon(0 3.8%, 9% 2.7%, 20% 4.4%, 35% 2.1%, 50% 4.2%, 66% 2.5%, 82% 4.1%, 100% 2.8%, 100% 100%, 0 100%)";
+    const topClipEnd =
+      "polygon(0 9%, 8% 5.8%, 19% 9.8%, 35% 4.2%, 51% 8.4%, 68% 4.8%, 84% 8.1%, 100% 5.3%, 100% 100%, 0 100%)";
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        purpleSection,
+        { clipPath: topClipStart },
+        {
+          clipPath: topClipEnd,
+          ease: "none",
+          scrollTrigger: {
+            trigger: purpleSection,
+            start: "top 85%",
+            end: "top 20%",
+            scrub: 1.1,
+          },
+        }
+      );
+
+      gsap.fromTo(
+        ".what-story-row",
+        { opacity: 0, y: 76 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+          ease: "power3.out",
+          stagger: 0.18,
+          scrollTrigger: {
+            trigger: whatSection,
+            start: "top 70%",
+            end: "bottom 72%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+
+      gsap.fromTo(
+        ".what-story-image",
+        { opacity: 0, scale: 0.84, rotation: (index: number) => (index === 1 ? 4 : -4) },
+        {
+          opacity: 1,
+          scale: 1,
+          rotation: 0,
+          duration: 1,
+          ease: "power3.out",
+          stagger: 0.2,
+          scrollTrigger: {
+            trigger: whatSection,
+            start: "top 68%",
+            end: "bottom 72%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+
+      gsap.fromTo(
+        ".what-story-path",
+        { strokeDasharray: 520, strokeDashoffset: 520 },
+        {
+          strokeDashoffset: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: whatSection,
+            start: "top 60%",
+            end: "bottom 62%",
+            scrub: 1,
+          },
+        }
+      );
+    }, purpleSection);
 
     return () => ctx.revert();
   }, []);
@@ -1291,7 +1399,7 @@ export default function Home() {
           <div className="relative z-10 container mx-auto px-4 sm:px-5 lg:px-9 max-w-[1400px]">
             <div className="relative flex min-h-[680px] flex-col items-center justify-start gap-5 pt-4 sm:min-h-[calc(100vh-6rem)] sm:justify-start sm:gap-7 sm:pt-6 lg:pt-8">
               <div className="mx-auto w-full max-w-7xl text-center">
-                <h1 className="text-4xl font-extrabold leading-[1.04] tracking-tight text-black dark:text-white sm:text-5xl lg:text-7xl">
+                <h1 className="text-4xl font-bold leading-[1.05] tracking-tight text-black dark:text-white sm:text-5xl lg:text-6xl">
                   Handwritten images to Excel in seconds
                 </h1>
                 <p className="mx-auto mt-10 w-full max-w-7xl text-sm sm:text-base lg:text-lg text-muted-foreground leading-relaxed lg:mt-12">
@@ -1325,9 +1433,9 @@ export default function Home() {
                 </div>
               </div>
 
-              <div ref={heroFlowRef} className="relative mx-auto mt-1 h-[430px] w-full max-w-[1500px] sm:h-[540px] lg:h-[620px]">
-                <div className="pointer-events-none absolute left-[8%] top-[12%] z-10 flex items-center sm:left-[8%] sm:top-[36%] lg:left-[7%]">
-                  <div className="hero-input-card flex h-[110px] w-[128px] items-center justify-center sm:h-[185px] sm:w-[215px] lg:h-[230px] lg:w-[270px]">
+              <div ref={heroFlowRef} className="relative mx-auto mt-0 h-[460px] w-full max-w-[1560px] sm:h-[560px] lg:h-[660px]">
+                <div className="pointer-events-none absolute left-[5%] top-[9%] z-10 flex items-center sm:left-[5%] sm:top-[31%] lg:left-[4%]">
+                  <div className="hero-input-card flex h-[140px] w-[165px] items-center justify-center sm:h-[230px] sm:w-[270px] lg:h-[300px] lg:w-[350px]">
                     <img
                       src="/handwritten.svg"
                       alt="Handwritten input"
@@ -1336,11 +1444,11 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="pointer-events-none absolute left-[27%] top-[49%] z-0 hidden h-px w-[25%] -translate-y-1/2 overflow-hidden sm:block sm:left-[28%] lg:left-[27%]">
+                <div className="pointer-events-none absolute left-[27%] top-[44%] z-0 hidden h-px w-[25%] -translate-y-1/2 overflow-hidden sm:block sm:left-[28%] lg:left-[27%]">
                   <div className="hero-feed-line hero-feed-line-left h-full origin-left rounded-full bg-[#7B5BBE]" />
                 </div>
 
-                <div className="hero-processor absolute left-1/2 top-[43%] z-20 flex h-[150px] w-[165px] -translate-x-1/2 -translate-y-1/2 items-center justify-center sm:top-[49%] sm:h-[255px] sm:w-[280px] lg:h-[335px] lg:w-[360px]">
+                <div className="hero-processor absolute left-1/2 top-[39%] z-20 flex h-[190px] w-[210px] -translate-x-1/2 -translate-y-1/2 items-center justify-center sm:top-[44%] sm:h-[315px] sm:w-[345px] lg:h-[430px] lg:w-[465px]">
                   <div className="hero-processor-glow absolute inset-[12%] rounded-full bg-[radial-gradient(circle,rgba(123,91,190,0.34),rgba(123,91,190,0)_67%)] blur-2xl" />
                   <img
                     src="/axliner.svg"
@@ -1349,11 +1457,11 @@ export default function Home() {
                   />
                 </div>
 
-                <div className="pointer-events-none absolute left-[60%] top-[49%] z-0 hidden h-px w-[14%] -translate-y-1/2 overflow-hidden sm:block lg:left-[61%]">
+                <div className="pointer-events-none absolute left-[61%] top-[44%] z-0 hidden h-px w-[12%] -translate-y-1/2 overflow-hidden sm:block lg:left-[61%]">
                   <div className="hero-feed-line hero-feed-line-right h-full origin-left rounded-full bg-[#7B5BBE]" />
                 </div>
 
-                <div className="absolute left-1/2 top-[62%] z-10 grid w-[76%] max-w-[500px] -translate-x-1/2 grid-cols-3 items-center gap-2 overflow-hidden pl-3 sm:left-[64%] sm:top-[31%] sm:w-[33%] sm:translate-x-0 sm:gap-4 sm:pl-0 lg:left-[64%] lg:w-[32%] lg:gap-5">
+                <div className="absolute left-1/2 top-[55%] z-10 grid w-[88%] max-w-[660px] -translate-x-1/2 grid-cols-3 items-center gap-1 overflow-visible pl-3 sm:left-[63%] sm:top-[26%] sm:w-[38%] sm:translate-x-0 sm:gap-2 sm:pl-0 lg:left-[63%] lg:w-[36%] lg:gap-3">
                   {[
                     { src: "/33.svg", alt: "Excel result preview" },
                     { src: "/44.svg", alt: "Spreadsheet result preview" },
@@ -1362,7 +1470,7 @@ export default function Home() {
                     <div
                       key={item.src}
                       className={cn(
-                        "hero-output-card flex h-[78px] items-center justify-center sm:h-[155px] lg:h-[210px]",
+                        "hero-output-card flex h-[110px] items-center justify-center sm:h-[215px] lg:h-[285px]",
                         index % 2 === 1 && "sm:mt-8"
                       )}
                     >
@@ -2079,11 +2187,12 @@ export default function Home() {
         </div>
 
         <div
-          className="relative isolate -mt-8 overflow-hidden pt-24 pb-8 text-white [&_.text-card-foreground]:!text-white [&_.text-foreground]:!text-white [&_.text-muted-foreground]:!text-white/85 [&_.text-primary]:!text-white"
+          ref={purpleSectionRef}
+          className="relative isolate -mt-10 overflow-hidden pt-36 pb-12 text-white [&_.text-card-foreground]:!text-white [&_.text-foreground]:!text-white [&_.text-muted-foreground]:!text-white/85 [&_.text-primary]:!text-white"
           style={{
             backgroundColor: "#2f165e",
             clipPath:
-              "polygon(0 1.45%, 1.2% 1.1%, 3.5% 0.9%, 8% 0.8%, 92% 0.8%, 96.5% 0.9%, 98.8% 1.1%, 100% 1.45%, 100% 100%, 0 100%)",
+              "polygon(0 3.8%, 9% 2.7%, 20% 4.4%, 35% 2.1%, 50% 4.2%, 66% 2.5%, 82% 4.1%, 100% 2.8%, 100% 100%, 0 100%)",
           }}
         >
           <div
@@ -2093,12 +2202,12 @@ export default function Home() {
           />
           <div className="relative z-10">
         {/* What is Axliner Section */}
-        <section className="py-16 relative z-10">
+        <section ref={whatSectionRef} className="relative z-10 py-16 lg:py-24">
           <div className="container mx-auto max-w-[1860px] px-4 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-[1780px]">
               {/* Section Header */}
               <div className="text-center mb-12">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 mb-4 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 mb-4 shadow-lg shadow-black/10 backdrop-blur-2xl">
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     What is Axliner?
                   </h2>
@@ -2106,7 +2215,83 @@ export default function Home() {
               </div>
 
               {/* Main Content */}
-              <div className="grid items-start gap-3 xl:grid-cols-[minmax(680px,0.98fr)_minmax(820px,1.02fr)]">
+              <div className="relative mx-auto max-w-[1540px]">
+                <svg
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full lg:block"
+                  viewBox="0 0 100 100"
+                  preserveAspectRatio="none"
+                >
+                  <path
+                    className="what-story-path"
+                    d="M74 15 L26 50 L74 85 Z"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.42)"
+                    strokeWidth="0.34"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeDasharray="1.4 1.15"
+                  />
+                </svg>
+
+                <div className="relative z-10 space-y-12 lg:space-y-20">
+                  <div className="what-story-row grid items-center gap-8 lg:grid-cols-[minmax(0,0.94fr)_minmax(520px,1.06fr)]">
+                    <Card className="rounded-[2rem] border border-white/20 bg-white/10 shadow-2xl shadow-black/10 backdrop-blur-2xl">
+                      <CardContent className="p-6 sm:p-8 lg:p-10">
+                        <p className="text-xl leading-9 text-foreground lg:text-2xl lg:leading-10">
+                          Axliner is a <span className="font-bold">7-billion parameter vision-language model</span> fine-tuned from Meta's Llama 3 family for handwritten tables, forms, and spreadsheet-like documents. It understands document structure first, so the result is usable rows, columns, headers, and values.
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <div className="what-story-image relative flex min-h-[280px] items-center justify-center lg:min-h-[430px]">
+                      <img
+                        src="/what-is/chaos-invoices.svg"
+                        alt=""
+                        className="h-[300px] w-full object-contain drop-shadow-[0_28px_45px_rgba(0,0,0,0.2)] sm:h-[380px] lg:h-[520px]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="what-story-row grid items-center gap-8 lg:grid-cols-[minmax(520px,1.05fr)_minmax(0,0.95fr)]">
+                    <div className="what-story-image relative order-2 flex min-h-[300px] items-center justify-center lg:order-1 lg:min-h-[460px]">
+                      <img
+                        src="/what-is/axliner-cpu.svg"
+                        alt=""
+                        className="h-[320px] w-full object-contain drop-shadow-[0_30px_50px_rgba(0,0,0,0.22)] sm:h-[410px] lg:h-[560px]"
+                      />
+                    </div>
+
+                    <Card className="order-1 rounded-[2rem] border border-white/20 bg-white/10 shadow-2xl shadow-black/10 backdrop-blur-2xl lg:order-2">
+                      <CardContent className="p-6 sm:p-8 lg:p-10">
+                        <p className="text-xl leading-9 text-foreground lg:text-2xl lg:leading-10">
+                          During conversion, Axliner cleans the image, detects table regions, reads handwriting, and keeps cell relationships intact. It was trained on diverse handwritten datasets, table extraction data, and augmented noisy documents, so dense notes and phone photos can still become structured spreadsheets.
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <div className="what-story-row grid items-center gap-8 lg:grid-cols-[minmax(0,0.94fr)_minmax(520px,1.06fr)]">
+                    <Card className="rounded-[2rem] border border-white/20 bg-white/10 shadow-2xl shadow-black/10 backdrop-blur-2xl">
+                      <CardContent className="p-6 sm:p-8 lg:p-10">
+                        <p className="text-xl leading-9 text-foreground lg:text-2xl lg:leading-10">
+                          The workflow is designed for batch processing. Upload several images, watch progress as each page finishes, then download clean Excel files ready for review, reporting, editing, or sharing without losing the table logic people need in the final workbook.
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <div className="what-story-image relative flex min-h-[280px] items-center justify-center lg:min-h-[430px]">
+                      <img
+                        src="/what-is/chill-output.svg"
+                        alt=""
+                        className="h-[300px] w-full object-contain drop-shadow-[0_28px_45px_rgba(0,0,0,0.2)] sm:h-[380px] lg:h-[520px]"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="hidden">
                 <Card className="ax-glass-card overflow-hidden rounded-[1.75rem] border border-white/45 shadow-xl shadow-[#441F84]/15">
                   <CardContent className="space-y-8 p-6 sm:p-8 lg:p-10">
                     <p className="text-xl text-foreground leading-relaxed">
@@ -2127,7 +2312,7 @@ export default function Home() {
                   </CardContent>
                 </Card>
 
-                <ProcessVisualizer />
+                <div />
               </div>
             </div>
           </div>
