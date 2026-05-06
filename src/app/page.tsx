@@ -1416,97 +1416,61 @@ export default function Home() {
             }}
           />
           <div className="relative z-10">
-        <section ref={heroRef} className="relative overflow-hidden pt-20 sm:pt-28 lg:pt-24 pb-8 sm:pb-10">
+        <section ref={heroRef} className="relative overflow-hidden pt-24 pb-12 sm:pt-32 sm:pb-16 lg:pt-32 lg:pb-20">
           <ParticlesBackground />
-          <div className="relative z-10 container mx-auto px-4 sm:px-5 lg:px-9 max-w-[1400px]">
-            <div className="relative flex min-h-[680px] flex-col items-center justify-start gap-5 pt-4 sm:min-h-[calc(100vh-6rem)] sm:justify-start sm:gap-7 sm:pt-6 lg:pt-8">
-              <div className="mx-auto w-full max-w-7xl text-center">
-                <h1 className="text-4xl font-bold leading-[1.05] tracking-tight text-black dark:text-white sm:text-5xl lg:text-6xl">
-                  Handwritten images to Excel in seconds
-                </h1>
-                <p className="mx-auto mt-10 w-full max-w-7xl text-sm sm:text-base lg:text-lg text-muted-foreground leading-relaxed lg:mt-12">
-                  Upload handwritten tables, class notes, invoices, receipts, paper forms, and screenshots from any workflow. AxLiner reads the structure, preserves the rows and columns, and gives you clean Excel files you can review, edit, share, or use in reporting without retyping everything by hand.
-                </p>
-                <div className="mt-5 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="relative z-10 container mx-auto max-w-[1420px] px-4 sm:px-5 lg:px-9">
+            <div className="grid min-h-[650px] items-center gap-10 lg:grid-cols-[minmax(0,1.04fr)_minmax(420px,0.96fr)] lg:gap-14">
+              <div className="order-2 flex flex-col items-center lg:order-1 lg:items-start">
+                <div className="relative w-full max-w-[680px]">
+                  <div className="absolute inset-x-8 bottom-5 h-20 rounded-full bg-[#2f165e]/18 blur-3xl" aria-hidden="true" />
+                  <img
+                    src="/header.svg"
+                    alt="AxLiner document conversion illustration"
+                    className="relative z-10 mx-auto h-auto w-full max-w-[640px] object-contain drop-shadow-[0_30px_70px_rgba(42,35,64,0.16)]"
+                  />
+                </div>
+
+                <div className="mt-6 flex w-full max-w-[650px] flex-col items-center justify-between gap-4 rounded-[28px] border border-white/55 bg-white/38 p-3 shadow-[0_22px_60px_rgba(42,35,64,0.10)] backdrop-blur-2xl sm:flex-row sm:p-4">
                   <Button
                     onClick={() => scrollToSection('converter')}
-                    className="h-11 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+                    className="h-12 w-full rounded-full bg-[#2f165e] px-6 text-sm font-semibold text-white shadow-[0_18px_35px_rgba(47,22,94,0.22)] hover:bg-[#24104b] sm:w-auto"
                   >
                     Try it
                     <SiteIcon src={siteIcons.arrow} className="ml-2 h-5 w-5" />
                   </Button>
-                  <div className="flex items-center gap-3 rounded-full border border-white/45 bg-white/35 px-3 py-2 shadow-lg shadow-[#441F84]/10 backdrop-blur-2xl">
+
+                  <div className="flex items-center gap-3">
                     <div className="flex -space-x-2">
                       {[0, 1, 2, 3, 4].map((i) => (
                         <img
                           key={i}
                           src={`/avatars/${i}.webp`}
                           alt={`User ${i + 1}`}
-                          className="h-9 w-9 rounded-full border-2 border-white object-cover shadow-sm"
+                          className="h-10 w-10 rounded-full border-2 border-white object-cover shadow-sm"
                         />
                       ))}
                     </div>
-                    <div className="h-8 w-px bg-[#A78BFA]/25" />
+                    <div className="h-9 w-px bg-[#2f165e]/18" />
                     <div className="text-left">
-                      <p className="text-sm font-bold leading-none text-foreground">5,000+</p>
-                      <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">active teams</p>
+                      <p className="text-sm font-bold leading-none text-[#111827]">5,000+</p>
+                      <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#111827]/60">active teams</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div ref={heroFlowRef} className="relative mx-auto mt-0 h-[460px] w-full max-w-[1560px] sm:h-[560px] lg:h-[660px]">
-                <div className="pointer-events-none absolute left-[3%] top-[36%] z-10 flex -translate-y-1/2 items-center sm:left-[3%] sm:top-[37%] lg:left-[2%] lg:top-[36%]">
-                  <div className="hero-input-card flex h-[140px] w-[165px] items-center justify-center sm:h-[230px] sm:w-[270px] lg:h-[300px] lg:w-[350px]">
-                    <img
-                      src="/handwritten.svg"
-                      alt="Handwritten input"
-                      className="h-full w-full object-contain drop-shadow-[0_22px_30px_rgba(34,20,60,0.16)]"
-                    />
-                  </div>
+              <div className="order-1 mx-auto max-w-2xl text-center lg:order-2 lg:mx-0 lg:text-left">
+                <div className="mb-6 inline-flex rounded-full border border-white/55 bg-white/38 px-4 py-2 text-sm font-semibold text-[#2f165e] shadow-[0_14px_35px_rgba(42,35,64,0.08)] backdrop-blur-2xl">
+                  Free image to spreadsheet conversion
                 </div>
-
-                <div className="pointer-events-none absolute left-[25%] top-[36%] z-0 hidden h-px w-[27%] -translate-y-1/2 overflow-hidden sm:block sm:left-[25%] sm:top-[37%] lg:left-[25%] lg:top-[36%]">
-                  <div className="hero-feed-line hero-feed-line-left h-full origin-left rounded-full bg-[#7B5BBE]" />
-                </div>
-
-                <div className="hero-processor absolute left-1/2 top-[36%] z-20 flex h-[190px] w-[210px] -translate-x-1/2 -translate-y-1/2 items-center justify-center sm:top-[37%] sm:h-[315px] sm:w-[345px] lg:top-[36%] lg:h-[430px] lg:w-[465px]">
-                  <div className="hero-processor-glow absolute inset-[12%] rounded-full bg-[radial-gradient(circle,rgba(123,91,190,0.34),rgba(123,91,190,0)_67%)] blur-2xl" />
-                  <img
-                    src="/axliner.svg"
-                    alt="AxLiner processor"
-                    className="relative z-10 h-full w-full object-contain drop-shadow-[0_28px_42px_rgba(34,20,60,0.2)]"
-                  />
-                </div>
-
-                <div className="pointer-events-none absolute left-[62%] top-[36%] z-0 hidden h-px w-[13%] -translate-y-1/2 overflow-hidden sm:block sm:top-[37%] lg:left-[62%] lg:top-[36%]">
-                  <div className="hero-feed-line hero-feed-line-right h-full origin-left rounded-full bg-[#7B5BBE]" />
-                </div>
-
-                <div className="absolute left-1/2 top-[64%] z-10 grid w-[88%] max-w-[660px] -translate-x-1/2 -translate-y-1/2 grid-cols-3 items-center gap-1 overflow-visible pl-3 sm:left-[66%] sm:top-[37%] sm:w-[34%] sm:translate-x-0 sm:gap-4 sm:pl-0 lg:left-[67%] lg:top-[36%] lg:w-[32%] lg:gap-6">
-                  {[
-                    { src: "/33.svg", alt: "Excel result preview" },
-                    { src: "/44.svg", alt: "Spreadsheet result preview" },
-                    { src: "/55.svg", alt: "Clean table result preview" }
-                  ].map((item, index) => (
-                    <div
-                      key={item.src}
-                      className={cn(
-                        "hero-output-card flex h-[110px] items-center justify-center sm:h-[215px] lg:h-[285px]"
-                      )}
-                    >
-                      <img
-                        src={item.src}
-                        alt={item.alt}
-                        className="h-full w-full object-contain drop-shadow-[0_18px_28px_rgba(34,20,60,0.14)]"
-                      />
-                    </div>
-                  ))}
-                </div>
+                <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight text-black sm:text-5xl lg:text-6xl">
+                  Handwritten images to Excel in seconds
+                </h1>
+                <p className="mt-8 text-base leading-8 text-black sm:text-lg lg:text-xl">
+                  Upload handwritten tables, class notes, invoices, receipts, paper forms, and screenshots from any workflow. AxLiner reads the structure, preserves the rows and columns, and gives you clean Excel files you can review, edit, share, or use in reporting without retyping everything by hand.
+                </p>
               </div>
-
             </div>
-
           </div>
         </section>
 
