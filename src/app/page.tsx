@@ -1419,21 +1419,19 @@ export default function Home() {
         <section ref={heroRef} className="relative overflow-hidden pt-24 pb-12 sm:pt-32 sm:pb-16 lg:pt-32 lg:pb-20">
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto max-w-[1420px] px-4 sm:px-5 lg:px-9">
-            <div className="grid min-h-[650px] items-center gap-10 lg:grid-cols-[minmax(0,1.04fr)_minmax(420px,0.96fr)] lg:gap-14">
-              <div className="order-2 flex flex-col items-center lg:order-1 lg:items-start">
-                <div className="relative w-full max-w-[680px]">
-                  <div className="absolute inset-x-8 bottom-5 h-20 rounded-full bg-[#2f165e]/18 blur-3xl" aria-hidden="true" />
-                  <img
-                    src="/header.svg"
-                    alt="AxLiner document conversion illustration"
-                    className="relative z-10 mx-auto h-auto w-full max-w-[640px] object-contain drop-shadow-[0_30px_70px_rgba(42,35,64,0.16)]"
-                  />
-                </div>
+            <div className="grid min-h-[650px] items-center gap-10 lg:grid-cols-[minmax(420px,0.96fr)_minmax(0,1.04fr)] lg:gap-14">
+              <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:text-left">
+                <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight text-black sm:text-5xl lg:text-6xl">
+                  Handwritten images to Excel in seconds
+                </h1>
+                <p className="mt-8 text-base leading-8 text-black sm:text-lg lg:text-xl">
+                  Upload handwritten tables, class notes, invoices, receipts, paper forms, and screenshots from any workflow. AxLiner reads the structure, preserves the rows and columns, and gives you clean Excel files you can review, edit, share, or use in reporting without retyping everything by hand.
+                </p>
 
-                <div className="mt-6 flex w-full max-w-[650px] flex-col items-center justify-between gap-4 rounded-[28px] border border-white/55 bg-white/38 p-3 shadow-[0_22px_60px_rgba(42,35,64,0.10)] backdrop-blur-2xl sm:flex-row sm:p-4">
+                <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row lg:items-center">
                   <Button
                     onClick={() => scrollToSection('converter')}
-                    className="h-12 w-full rounded-full bg-[#2f165e] px-6 text-sm font-semibold text-white shadow-[0_18px_35px_rgba(47,22,94,0.22)] hover:bg-[#24104b] sm:w-auto"
+                    className="h-12 rounded-full bg-[#2f165e] px-7 text-sm font-semibold text-white shadow-[0_18px_35px_rgba(47,22,94,0.22)] hover:bg-[#24104b]"
                   >
                     Try it
                     <SiteIcon src={siteIcons.arrow} className="ml-2 h-5 w-5" />
@@ -1459,16 +1457,15 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="order-1 mx-auto max-w-2xl text-center lg:order-2 lg:mx-0 lg:text-left">
-                <div className="mb-6 inline-flex rounded-full border border-white/55 bg-white/38 px-4 py-2 text-sm font-semibold text-[#2f165e] shadow-[0_14px_35px_rgba(42,35,64,0.08)] backdrop-blur-2xl">
-                  Free image to spreadsheet conversion
+              <div className="flex flex-col items-center lg:items-end">
+                <div className="relative w-full max-w-[680px]">
+                  <div className="absolute inset-x-8 bottom-5 h-20 rounded-full bg-[#2f165e]/18 blur-3xl" aria-hidden="true" />
+                  <img
+                    src="/header.svg"
+                    alt="AxLiner document conversion illustration"
+                    className="relative z-10 mx-auto h-auto w-full max-w-[640px] object-contain drop-shadow-[0_30px_70px_rgba(42,35,64,0.16)]"
+                  />
                 </div>
-                <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight text-black sm:text-5xl lg:text-6xl">
-                  Handwritten images to Excel in seconds
-                </h1>
-                <p className="mt-8 text-base leading-8 text-black sm:text-lg lg:text-xl">
-                  Upload handwritten tables, class notes, invoices, receipts, paper forms, and screenshots from any workflow. AxLiner reads the structure, preserves the rows and columns, and gives you clean Excel files you can review, edit, share, or use in reporting without retyping everything by hand.
-                </p>
               </div>
             </div>
           </div>
