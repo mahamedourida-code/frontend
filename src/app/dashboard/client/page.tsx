@@ -75,6 +75,12 @@ import { wakeUpBackendSilently } from "@/lib/backend-health"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import * as XLSX from 'xlsx'
 import { buildDownloadUrl, buildMessengerShareUrl, buildOfficeViewerUrl } from "@/lib/public-config"
+import {
+  acceptedUploadMimeTypes,
+  createPdfPreviewDataUrl,
+  isAcceptedUploadFile,
+  isPdfFile,
+} from "@/lib/upload-files"
 
 function ProcessImagesFallback() {
   return (
@@ -460,6 +466,10 @@ function ProcessImagesContent() {
 
   // Helper function to create preview URL for file (converts HEIC if needed)
   const createFilePreviewUrl = useCallback(async (file: File): Promise<string> => {
+    if (isPdfFile(file)) {
+      return createPdfPreviewDataUrl(file.name)
+    }
+
     const fileName = file.name.toLowerCase()
     const isHeic = fileName.endsWith('.heic') || fileName.endsWith('.heif')
     
@@ -525,18 +535,7 @@ function ProcessImagesContent() {
     e.stopPropagation()
     setIsDragging(false)
 
-    const files = Array.from(e.dataTransfer.files).filter(file => {
-      // Accept any file with image MIME type
-      if (file.type && file.type.startsWith('image/')) return true
-      
-      // Accept HEIC/HEIF files regardless of MIME type
-      const fileName = file.name.toLowerCase()
-      if (fileName.endsWith('.heic') || fileName.endsWith('.heif')) return true
-      
-      // Accept common image extensions even without MIME type
-      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg']
-      return imageExtensions.some(ext => fileName.endsWith(ext))
-    })
+    const files = Array.from(e.dataTransfer.files).filter(isAcceptedUploadFile)
     
     setUploadedFiles(prev => {
       const remainingSlots = Math.max(0, maxUploadFiles - prev.length)
@@ -551,18 +550,7 @@ function ProcessImagesContent() {
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files) {
-      const fileArray = Array.from(files).filter(file => {
-        // Accept any file with image MIME type
-        if (file.type && file.type.startsWith('image/')) return true
-        
-        // Accept HEIC/HEIF files regardless of MIME type
-        const fileName = file.name.toLowerCase()
-        if (fileName.endsWith('.heic') || fileName.endsWith('.heif')) return true
-        
-        // Accept common image extensions even without MIME type
-      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg']
-      return imageExtensions.some(ext => fileName.endsWith(ext))
-      })
+      const fileArray = Array.from(files).filter(isAcceptedUploadFile)
       setUploadedFiles(prev => {
         const remainingSlots = Math.max(0, maxUploadFiles - prev.length)
         const filesToAdd = fileArray.slice(0, remainingSlots)
@@ -588,11 +576,15 @@ function ProcessImagesContent() {
       // Store the first uploaded image for preview immediately
       if (uploadedFiles.length > 0) {
         const firstFile = uploadedFiles[0]
-        const reader = new FileReader()
-        reader.onload = (e) => {
-          setFirstImageUrl(e.target?.result as string)
+        if (isPdfFile(firstFile)) {
+          setFirstImageUrl(createPdfPreviewDataUrl(firstFile.name))
+        } else {
+          const reader = new FileReader()
+          reader.onload = (e) => {
+            setFirstImageUrl(e.target?.result as string)
+          }
+          reader.readAsDataURL(firstFile)
         }
-        reader.readAsDataURL(firstFile)
       }
 
       const response = await uploadBatch(uploadedFiles)
@@ -1040,8 +1032,8 @@ Best regards`
 
   const isComplete = status === 'completed' && resultFiles && resultFiles.length > 0
   const uploadedSizeMb = uploadedFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024)
-  const uploadedLabel = `${uploadedFiles.length} ${uploadedFiles.length === 1 ? 'image' : 'images'}`
-  const processLabel = uploadedFiles.length > 1 ? `Process ${uploadedFiles.length} images` : 'Process image'
+  const uploadedLabel = `${uploadedFiles.length} ${uploadedFiles.length === 1 ? 'file' : 'files'}`
+  const processLabel = uploadedFiles.length > 1 ? `Process ${uploadedFiles.length} files` : 'Process file'
   const displayedProgress = isUploading ? uploadProgress : progress?.percentage
 
   return (
@@ -1128,7 +1120,7 @@ Best regards`
                 <div>
                   <p className="text-sm font-black text-foreground">Continue latest batch</p>
                   <p className="text-xs text-muted-foreground">
-                    {latestRecoverableJob.processed_images || 0} of {latestRecoverableJob.total_images || 0} images processed
+                    {latestRecoverableJob.processed_images || 0} of {latestRecoverableJob.total_images || 0} files processed
                   </p>
                 </div>
               </div>
@@ -1230,16 +1222,16 @@ Best regards`
                           <FolderUp className="h-8 w-8 text-primary" />
                         </div>
                         <h3 className="text-xl font-semibold text-foreground">
-                          {isDragging ? "Drop images here" : "Drop images to convert"}
+                          {isDragging ? "Drop files here" : "Drop files to convert"}
                         </h3>
                         <p className="mt-2 max-w-md text-sm text-muted-foreground">
-                          Add up to {maxUploadFiles} screenshots, handwritten tables, forms, or receipts in one batch.
+                          Add up to {maxUploadFiles} screenshots, PDFs, handwritten tables, forms, or receipts in one batch.
                         </p>
                         <label htmlFor="file-upload" className="mt-6">
                           <Button asChild className="h-12 rounded-2xl px-6">
                             <span>
                               <FileImage className="mr-2 h-4 w-4" />
-                              Choose images
+                              Choose files
                             </span>
                           </Button>
                         </label>
@@ -1247,7 +1239,7 @@ Best regards`
                           id="file-upload"
                           type="file"
                           multiple
-                          accept="image/*,image/heic,image/heif"
+                          accept={acceptedUploadMimeTypes}
                           onChange={handleFileInput}
                           className="hidden"
                         />
@@ -1275,14 +1267,14 @@ Best regards`
                             </Button>
                             <label htmlFor="file-upload-more">
                               <Button size="sm" variant="outline" asChild className="rounded-2xl border-[#eadfff] bg-white/65">
-                                <span>Add images</span>
+                                <span>Add files</span>
                               </Button>
                             </label>
                             <input
                               id="file-upload-more"
                               type="file"
                               multiple
-                              accept="image/*,image/heic,image/heif"
+                              accept={acceptedUploadMimeTypes}
                               onChange={handleFileInput}
                               className="hidden"
                             />

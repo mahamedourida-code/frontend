@@ -51,6 +51,12 @@ import * as XLSX from 'xlsx';
 import { GoogleSignInModal } from "@/components/GoogleSignInModal";
 import NextLink from "next/link";
 import { compressImages, formatFileSize } from "@/lib/image-compression";
+import {
+  acceptedUploadMimeTypes,
+  createPdfPreviewDataUrl,
+  isAcceptedUploadFile,
+  isPdfFile,
+} from "@/lib/upload-files";
 import { IndustrySolutionsMenuGrid } from "@/components/IndustrySolutionsMenuGrid";
 import { Download, FileSpreadsheet, Pencil, RotateCcw, Share2, X } from "lucide-react";
 
@@ -600,6 +606,10 @@ export default function Home() {
 
   // Helper function to create preview URL for file (converts HEIC if needed)
   const createFilePreviewUrl = useCallback(async (file: File): Promise<string> => {
+    if (isPdfFile(file)) {
+      return createPdfPreviewDataUrl(file.name);
+    }
+
     const fileName = file.name.toLowerCase();
     const isHeic = fileName.endsWith('.heic') || fileName.endsWith('.heif');
     
@@ -671,18 +681,7 @@ export default function Home() {
     e.stopPropagation();
     setIsDragging(false);
 
-    const files = Array.from(e.dataTransfer.files).filter(file => {
-      // Accept any file with image MIME type
-      if (file.type && file.type.startsWith('image/')) return true;
-      
-      // Accept HEIC/HEIF files regardless of MIME type
-      const fileName = file.name.toLowerCase();
-      if (fileName.endsWith('.heic') || fileName.endsWith('.heif')) return true;
-      
-      // Accept common image extensions even without MIME type
-      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
-      return imageExtensions.some(ext => fileName.endsWith(ext));
-    });
+    const files = Array.from(e.dataTransfer.files).filter(isAcceptedUploadFile);
 
     if (files.length > 0) {
       const filesToUse = files.slice(0, maxUploadFiles);
@@ -696,18 +695,7 @@ export default function Home() {
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      const fileArray = Array.from(files).filter(file => {
-        // Accept any file with image MIME type
-        if (file.type && file.type.startsWith('image/')) return true;
-        
-        // Accept HEIC/HEIF files regardless of MIME type
-        const fileName = file.name.toLowerCase();
-        if (fileName.endsWith('.heic') || fileName.endsWith('.heif')) return true;
-        
-        // Accept common image extensions even without MIME type
-        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
-        return imageExtensions.some(ext => fileName.endsWith(ext));
-      });
+      const fileArray = Array.from(files).filter(isAcceptedUploadFile);
       const filesToUse = fileArray.slice(0, maxUploadFiles);
       if (fileArray.length > maxUploadFiles) {
         showBatchLimitToast(maxUploadFiles);
@@ -813,11 +801,15 @@ export default function Home() {
       // Store the first uploaded image for preview immediately
       if (uploadedFiles.length > 0) {
         const firstFile = uploadedFiles[0];
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          setFirstImageUrl(e.target?.result as string);
-        };
-        reader.readAsDataURL(firstFile);
+        if (isPdfFile(firstFile)) {
+          setFirstImageUrl(createPdfPreviewDataUrl(firstFile.name));
+        } else {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            setFirstImageUrl(e.target?.result as string);
+          };
+          reader.readAsDataURL(firstFile);
+        }
       }
 
       startJobMonitoring(response.job_id, response.session_id);
@@ -1421,7 +1413,7 @@ export default function Home() {
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto max-w-[1500px] px-4 sm:px-5 lg:px-9">
             <div className="grid min-h-[500px] items-center gap-14 lg:min-h-[535px] lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)] lg:gap-16">
-              <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:text-left">
+              <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:translate-x-8 lg:text-left xl:translate-x-10">
                 <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight text-[#2f165e] sm:text-5xl lg:text-6xl">
                   Handwritten images to Excel in seconds
                 </h1>
@@ -1701,18 +1693,18 @@ export default function Home() {
                             <>
                               <SiteIcon src={siteIcons.upload} className="mx-auto mb-4 h-14 w-14" />
                               <h3 className="mb-2 text-xl font-semibold">
-                                {isDragging ? 'Drop your images here' : `Upload up to ${maxUploadFiles} images`}
+                                {isDragging ? 'Drop your files here' : `Upload up to ${maxUploadFiles} files`}
                               </h3>
                               <input
                                 id="file-upload-landing"
                                 type="file"
-                                accept="image/*,image/heic,image/heif"
+                                accept={acceptedUploadMimeTypes}
                                 multiple
                                 onChange={handleFileInput}
                                 className="hidden"
                               />
                               <p className="mx-auto max-w-sm text-base leading-7 text-[#111827]/70">
-                                Click or drag handwritten tables, notes, receipts, or forms.
+                                Click or drag handwritten images, PDFs, notes, receipts, or forms.
                               </p>
                             </>
                           ) : (
@@ -1742,7 +1734,7 @@ export default function Home() {
                                   </div>
                                 ))}
                               </div>
-                              <p className="mb-3 text-sm font-semibold text-[#111827]">{uploadedFiles.length} image{uploadedFiles.length > 1 ? 's' : ''} ready to convert</p>
+                              <p className="mb-3 text-sm font-semibold text-[#111827]">{uploadedFiles.length} file{uploadedFiles.length > 1 ? 's' : ''} ready to convert</p>
                               <label htmlFor="file-upload-landing-more">
                                 <Button
                                   variant="outline"
@@ -1758,23 +1750,12 @@ export default function Home() {
                               <input
                                 id="file-upload-landing-more"
                                 type="file"
-                                accept="image/*,image/heic,image/heif"
+                                accept={acceptedUploadMimeTypes}
                                 multiple
                                 onChange={(e) => {
                                   const newFiles = e.target.files;
                                   if (newFiles && newFiles.length > 0) {
-                                    const fileArray = Array.from(newFiles).filter(file => {
-                                      // Accept any file with image MIME type
-                                      if (file.type && file.type.startsWith('image/')) return true;
-                                      
-                                      // Accept HEIC/HEIF files regardless of MIME type
-                                      const fileName = file.name.toLowerCase();
-                                      if (fileName.endsWith('.heic') || fileName.endsWith('.heif')) return true;
-                                      
-                                      // Accept common image extensions even without MIME type
-                                      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
-                                      return imageExtensions.some(ext => fileName.endsWith(ext));
-                                    });
+                                    const fileArray = Array.from(newFiles).filter(isAcceptedUploadFile);
                                     setUploadedFiles(prev => {
                                       const remainingSlots = maxUploadFiles - prev.length;
                                       const filesToAdd = fileArray.slice(0, Math.max(0, remainingSlots));
@@ -2092,7 +2073,7 @@ export default function Home() {
                         </>
                       ) : (
                         <>
-                          {uploadedFiles.length === 0 ? 'Add images first' : 'Convert to Excel'}
+                          {uploadedFiles.length === 0 ? 'Add files first' : 'Convert to Excel'}
                         </>
                       )}
                     </Button>
@@ -3111,10 +3092,10 @@ export default function Home() {
           <DialogHeader>
             <div className="flex items-center gap-3 mb-2">
               <SiteIcon src={siteIcons.document} className="h-7 w-7" />
-              <DialogTitle>You can add up to {maxUploadFiles} images!</DialogTitle>
+              <DialogTitle>You can add up to {maxUploadFiles} files!</DialogTitle>
             </div>
             <DialogDescription className="text-sm text-muted-foreground">
-              Process up to {maxUploadFiles} table images in one click.
+              Process up to {maxUploadFiles} table images or PDFs in one click.
               <br /><br />
               You can add more files now or proceed to convert your current selection.
             </DialogDescription>
