@@ -51,6 +51,7 @@ import * as XLSX from 'xlsx';
 import { GoogleSignInModal } from "@/components/GoogleSignInModal";
 import NextLink from "next/link";
 import { compressImages, formatFileSize } from "@/lib/image-compression";
+import { IndustrySolutionsMenuGrid } from "@/components/IndustrySolutionsMenuGrid";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -1336,70 +1337,7 @@ export default function Home() {
                       Solutions
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <div className="grid gap-6 p-8 w-[650px] lg:w-[750px] grid-cols-2">
-                        <div className="space-y-5">
-                          <h4 className="text-sm font-semibold text-foreground mb-4 tracking-wide uppercase">BY DOCUMENT TYPE</h4>
-                          <NavigationMenuLink asChild>
-                            <a
-                              href="/solutions/handwritten-tables"
-                              className="block select-none space-y-2 rounded-lg p-4 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground border border-transparent hover:border-accent"
-                            >
-                              <div className="flex items-center gap-3">
-                                <SiteIcon src={siteIcons.document} className="h-6 w-6" />
-                                <div className="text-base font-semibold leading-none">Handwritten Tables</div>
-                              </div>
-                              <p className="text-sm leading-relaxed text-muted-foreground mt-2">
-                                Transform handwritten tables into precise Excel spreadsheets with AI-powered recognition
-                              </p>
-                            </a>
-                          </NavigationMenuLink>
-                          <NavigationMenuLink asChild>
-                            <a
-                              href="/solutions/paper-forms"
-                              className="block select-none space-y-2 rounded-lg p-4 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground border border-transparent hover:border-accent"
-                            >
-                              <div className="flex items-center gap-3">
-                                <SiteIcon src={siteIcons.upload} className="h-6 w-6" />
-                                <div className="text-base font-semibold leading-none">Paper Forms Automation</div>
-                              </div>
-                              <p className="text-sm leading-relaxed text-muted-foreground mt-2">
-                                Digitize secretary paperwork and manual forms to CSV with intelligent field recognition
-                              </p>
-                            </a>
-                          </NavigationMenuLink>
-                        </div>
-                        <div className="space-y-5">
-                          <h4 className="text-sm font-semibold text-foreground mb-4 tracking-wide uppercase">USE CASES</h4>
-                          <NavigationMenuLink asChild>
-                            <a
-                              href="/solutions/financial-documents"
-                              className="block select-none space-y-2 rounded-lg p-4 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground border border-transparent hover:border-accent"
-                            >
-                              <div className="flex items-center gap-3">
-                                <SiteIcon src={siteIcons.export} className="h-6 w-6" />
-                                <div className="text-base font-semibold leading-none">Financial Documents</div>
-                              </div>
-                              <p className="text-sm leading-relaxed text-muted-foreground mt-2">
-                                Process invoices, receipts, and expense reports to XLSX with accurate financial data extraction
-                              </p>
-                            </a>
-                          </NavigationMenuLink>
-                          <NavigationMenuLink asChild>
-                            <a
-                              href="/solutions/data-entry"
-                              className="block select-none space-y-2 rounded-lg p-4 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground border border-transparent hover:border-accent"
-                            >
-                              <div className="flex items-center gap-3">
-                                <SiteIcon src={siteIcons.database} className="h-6 w-6" />
-                                <div className="text-base font-semibold leading-none">Data Entry Automation</div>
-                              </div>
-                              <p className="text-sm leading-relaxed text-muted-foreground mt-2">
-                                Eliminate manual typing with automated Excel conversion and smart data validation
-                              </p>
-                            </a>
-                          </NavigationMenuLink>
-                        </div>
-                      </div>
+                      <IndustrySolutionsMenuGrid />
                     </NavigationMenuContent>
                   </NavigationMenuItem>
 

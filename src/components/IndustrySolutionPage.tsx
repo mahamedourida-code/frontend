@@ -4,6 +4,17 @@ import { Button } from "@/components/ui/button";
 import { AppLogo } from "@/components/AppIcon";
 import { MobileNav } from "@/components/MobileNav";
 import { IndustrySolution, POLIVALENT_SOLUTION_IMAGE } from "@/lib/industry-solutions";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import { IndustrySolutionsMenuGrid } from "@/components/IndustrySolutionsMenuGrid";
+import { cn } from "@/lib/utils";
 
 function ArrowMark({ className = "" }: { className?: string }) {
   return (
@@ -29,29 +40,76 @@ function NumberedBlock({ number, title, text }: { number: string; title: string;
 export function IndustrySolutionPage({ solution }: { solution: IndustrySolution }) {
   return (
     <main className="ax-page-bg min-h-screen overflow-hidden text-[#111827]">
-      <header className="sticky top-0 z-50 border-b border-white/50 bg-white/45 backdrop-blur-2xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" aria-label="AxLiner home">
-            <AppLogo />
-          </Link>
+      <nav className="fixed left-0 right-0 top-0 z-50 pt-3 backdrop-blur-2xl lg:pt-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between rounded-[35px] border border-black/10 bg-neutral-100/55 p-2 shadow-[0_18px_45px_rgba(20,20,20,0.08)] ring-1 ring-white/35 backdrop-blur-2xl lg:p-3">
+            <div className="flex-shrink-0">
+              <Link href="/" aria-label="AxLiner home">
+                <AppLogo />
+              </Link>
+            </div>
 
-          <nav className="hidden items-center gap-2 lg:flex">
-            <Button variant="ghost" asChild className="rounded-full text-[#111827] hover:bg-white/55">
-              <Link href="/#features">Solutions</Link>
-            </Button>
-            <Button variant="ghost" asChild className="rounded-full text-[#111827] hover:bg-white/55">
-              <Link href="/pricing">Pricing</Link>
-            </Button>
-            <Button asChild className="rounded-full bg-[#2f165e] px-5 text-white hover:bg-[#24104b]">
-              <Link href="/#converter">Try It</Link>
-            </Button>
-          </nav>
+            <div className="hidden flex-1 items-center justify-center lg:flex">
+              <NavigationMenu>
+                <NavigationMenuList className="gap-1">
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger className="bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-white">
+                      Solutions
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <IndustrySolutionsMenuGrid />
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
 
-          <MobileNav />
+                  <NavigationMenuItem>
+                    <NavigationMenuLink
+                      href="/pricing"
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-white")}
+                    >
+                      Pricing
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+
+                  <NavigationMenuItem>
+                    <NavigationMenuLink
+                      href="/#ai-engine"
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-white")}
+                    >
+                      How AxLiner's Built
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+
+                  <NavigationMenuItem>
+                    <NavigationMenuLink
+                      href="/#benchmarks"
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-white")}
+                    >
+                      Benchmarks
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+            </div>
+
+            <div className="hidden items-center gap-3 lg:flex">
+              <Button asChild className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-lg transition-colors hover:bg-primary/90 hover:shadow-xl">
+                <Link href="/sign-up">Sign Up</Link>
+              </Button>
+              <Button
+                variant="outline"
+                asChild
+                className="rounded-full border-[1.6px] border-foreground/30 bg-white/90 px-4 py-2 text-sm font-medium text-foreground backdrop-blur-sm transition-colors hover:bg-white dark:bg-white/20 dark:hover:bg-white/30"
+              >
+                <Link href="/sign-in">Sign in</Link>
+              </Button>
+            </div>
+
+            <MobileNav />
+          </div>
         </div>
-      </header>
+      </nav>
 
-      <section className="relative mx-auto grid max-w-7xl gap-10 px-4 pb-14 pt-12 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:pb-20 lg:pt-20">
+      <section className="relative mx-auto grid max-w-7xl gap-10 px-4 pb-14 pt-32 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:pb-20 lg:pt-40">
         <div className="flex flex-col justify-center">
           <div className="w-fit rounded-full border border-white/60 bg-white/35 px-4 py-2 text-sm font-semibold text-[#2f165e] backdrop-blur-xl">
             {solution.eyebrow}
@@ -113,6 +171,32 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
               <p className="text-base font-semibold text-[#111827]">{item}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid gap-6 lg:grid-cols-[0.86fr_1.14fr] lg:items-start">
+          <div className="rounded-[32px] border border-white/55 bg-white/28 p-7 shadow-[0_24px_70px_rgba(42,35,64,0.08)] backdrop-blur-xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#2f165e]">
+              Where it fits
+            </p>
+            <h2 className="mt-5 text-3xl font-semibold leading-tight text-[#111827]">
+              Built for the gap between scanned documents and usable operations data.
+            </h2>
+          </div>
+
+          <div className="grid gap-4">
+            <div className="rounded-[32px] border border-white/55 bg-white/32 p-7 shadow-[0_20px_55px_rgba(42,35,64,0.08)] backdrop-blur-xl">
+              <p className="text-base leading-8 text-[#111827]">
+                Most {solution.title.toLowerCase()} teams already know what has to happen after extraction: check the numbers, correct edge cases, and send the file into a spreadsheet, reporting tool, or internal workflow. AxLiner is shaped around that review step instead of producing a raw text dump that still needs to be rebuilt by hand.
+              </p>
+            </div>
+            <div className="rounded-[32px] border border-white/55 bg-white/32 p-7 shadow-[0_20px_55px_rgba(42,35,64,0.08)] backdrop-blur-xl">
+              <p className="text-base leading-8 text-[#111827]">
+                The product keeps batches simple: upload the documents, let the system preserve the table structure, then download a file your team can open immediately. That makes it useful for daily paperwork, backlog cleanup, and repeatable document intake without forcing a custom engineering project for every new format.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 

@@ -20,12 +20,11 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { AppIcon } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
+import { industrySolutions } from "@/lib/industry-solutions"
 import { 
   Menu, 
   ChevronRight,
   Home,
-  PenTool, 
-  FileInput, 
   Target, 
   LogIn,
   Activity,
@@ -56,7 +55,8 @@ type MobileNavItem = {
   children?: Array<{
     label: string
     href: string
-    icon: NavIcon
+    icon?: NavIcon
+    iconSrc?: string
     description?: string
   }>
 }
@@ -140,26 +140,12 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       label: "Solutions",
       icon: FileSpreadsheet,
       show: !isAuthenticated,
-      children: [
-        {
-          label: "Handwritten Tables",
-          href: "/solutions/handwritten-tables",
-          icon: PenTool,
-          description: "Convert handwritten tables"
-        },
-        {
-          label: "Paper Forms",
-          href: "/solutions/paper-forms",
-          icon: FileInput,
-          description: "Digitize paper forms"
-        },
-        {
-          label: "Data Entry Automation",
-          href: "/solutions/data-entry",
-          icon: Target,
-          description: "Structure repetitive data entry"
-        }
-      ]
+      children: industrySolutions.map((solution) => ({
+        label: solution.title,
+        href: `/solutions/${solution.slug}`,
+        iconSrc: solution.cardAsset,
+        description: solution.eyebrow
+      }))
     }
   ]
 
@@ -311,6 +297,11 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                   <div className="flex items-start gap-2 w-full">
                                     {child.icon && (
                                       <child.icon className="h-4 w-4 mt-0.5 text-muted-foreground" />
+                                    )}
+                                    {child.iconSrc && (
+                                      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/60 bg-white/55 p-1">
+                                        <img src={child.iconSrc} alt="" className="h-full w-full object-contain" />
+                                      </span>
                                     )}
                                     <div className="flex-1 text-left">
                                       <p className="text-sm font-medium leading-none">
