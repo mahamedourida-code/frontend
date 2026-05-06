@@ -1687,9 +1687,25 @@ export default function Home() {
                 </h2>
               </div>
             </div>
-              <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : 'w-full max-w-7xl'}`}>
-                <div className={resultFiles.length === 0 ? "grid items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(440px,0.95fr)]" : "relative w-full"}>
-                <div className="ax-glass-card relative w-full space-y-3 rounded-[1.5rem] border border-white/45 p-4 sm:p-5">
+            {resultFiles.length === 0 && (
+              <div className="mx-auto mb-5 flex w-fit items-center rounded-full border border-white/55 bg-white/40 p-1 shadow-[0_16px_40px_rgba(42,35,64,0.08)] backdrop-blur-2xl">
+                <button
+                  type="button"
+                  className="rounded-full bg-[#2f165e] px-4 py-2 text-sm font-semibold text-white shadow-sm"
+                >
+                  Table output
+                </button>
+                <button
+                  type="button"
+                  className="rounded-full px-4 py-2 text-sm font-semibold text-[#111827] transition-colors hover:bg-white/45"
+                >
+                  Metadata output
+                </button>
+              </div>
+            )}
+              <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : 'w-full max-w-6xl'}`}>
+                <div className={resultFiles.length === 0 ? "grid items-stretch gap-5 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,1.08fr)]" : "relative w-full"}>
+                <div className="ax-glass-card relative w-full space-y-3 rounded-[1.35rem] border border-white/45 p-4 sm:p-5">
                   {latestRecoverableJob && !isProcessing && (
                     <div className="rounded-[1.25rem] border border-[#eadfff] bg-[#E9ECE4]/85 p-4 shadow-[0_16px_45px_rgba(68,31,132,0.10)] backdrop-blur-xl">
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -1718,20 +1734,20 @@ export default function Home() {
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
-                        className={`relative border-2 border-dashed rounded-[1.25rem] bg-white/25 backdrop-blur-xl transition-all duration-200 cursor-pointer ${
+                        className={`relative border-2 border-dashed rounded-[1.1rem] bg-white/25 backdrop-blur-xl transition-all duration-200 cursor-pointer ${
                           isDragging
                             ? 'border-[#A78BFA] bg-[#A78BFA]/10 scale-[0.99]'
                             : uploadedFiles.length > 0
                               ? 'border-[#A78BFA] bg-[#A78BFA]/5'
                               : 'border-[#A78BFA]/50 hover:border-[#A78BFA] hover:bg-[#A78BFA]/5'
-                        } p-7 lg:p-10 min-h-[190px]`}
+                        } p-6 lg:p-8 min-h-[170px]`}
                       >
                         <div className="text-center">
                           {uploadedFiles.length === 0 ? (
                             <>
-                              <SiteIcon src={siteIcons.upload} className="mx-auto mb-4 h-16 w-16" />
-                              <h3 className="text-lg font-medium mb-2">
-                                {isDragging ? 'Drop your images here' : `Upload up to ${maxUploadFiles} table images now`}
+                              <SiteIcon src={siteIcons.upload} className="mx-auto mb-3 h-12 w-12" />
+                              <h3 className="text-base font-semibold mb-2">
+                                {isDragging ? 'Drop your images here' : `Upload up to ${maxUploadFiles} images`}
                               </h3>
                               <input
                                 id="file-upload-landing"
@@ -1741,8 +1757,8 @@ export default function Home() {
                                 onChange={handleFileInput}
                                 className="hidden"
                               />
-                              <p className="text-xs text-muted-foreground">
-                                Click or drag to select
+                              <p className="text-sm text-[#111827]/70">
+                                Click or drag handwritten tables, notes, receipts, or forms.
                               </p>
                             </>
                           ) : (
@@ -2135,7 +2151,7 @@ export default function Home() {
                     </Button>
 
                     {/* Options Card - Right Side (1 column) */}
-                    <Card className="bg-[#fbfdfc] dark:bg-[#fbfdfc] border-2 border-[#A78BFA] shadow-lg shadow-[#A78BFA]/10">
+                    <Card className="border border-white/55 bg-white/30 shadow-none backdrop-blur-xl dark:bg-white/30">
                       <CardContent className="p-3">
                         <div className="space-y-2">
                           <div>
@@ -2169,7 +2185,7 @@ export default function Home() {
                                 }
                               }}
                               className={cn(
-                                "w-full flex items-center justify-between p-1.5 rounded-lg transition-all border-2",
+                                "w-full flex items-center justify-between p-1.5 rounded-lg transition-all border",
                                 autoDownload
                                   ? "bg-primary/10 border-primary"
                                   : "bg-muted/30 border-muted-foreground/20 hover:border-[#A78BFA]/50"
@@ -2191,12 +2207,46 @@ export default function Home() {
                 </div>
 
                 {resultFiles.length === 0 && (
-                  <div className="relative flex min-h-[360px] items-center justify-center sm:min-h-[480px] lg:min-h-[520px]" aria-hidden="true">
-                    <img
-                      src="/what-is/b.svg"
-                      alt=""
-                      className="h-[360px] w-full max-w-[720px] object-contain drop-shadow-xl sm:h-[500px] lg:h-[620px]"
-                    />
+                  <div className="ax-glass-card relative flex min-h-[430px] flex-col justify-between overflow-hidden rounded-[1.35rem] border border-white/45 p-4 sm:p-5">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#2f165e]">Preview</p>
+                        <h3 className="mt-2 text-xl font-semibold text-[#111827]">Before and after conversion</h3>
+                      </div>
+                      <span className="hidden rounded-full border border-white/60 bg-white/40 px-3 py-1 text-xs font-semibold text-[#111827]/70 backdrop-blur-xl sm:inline-flex">
+                        XLSX ready
+                      </span>
+                    </div>
+
+                    <div className="mt-5 grid flex-1 gap-4 sm:grid-cols-2">
+                      <figure className="flex min-h-[310px] flex-col overflow-hidden rounded-[1.1rem] border border-white/60 bg-white/35">
+                        <div className="flex items-center justify-between border-b border-white/55 px-4 py-3">
+                          <figcaption className="text-sm font-semibold text-[#111827]">Before</figcaption>
+                          <span className="text-xs font-medium text-[#111827]/60">Image</span>
+                        </div>
+                        <div className="relative flex flex-1 items-center justify-center bg-white/30 p-3">
+                          <img
+                            src="/b.jpeg"
+                            alt="Handwritten table before conversion"
+                            className="max-h-[300px] w-full rounded-xl object-contain shadow-[0_18px_45px_rgba(42,35,64,0.10)]"
+                          />
+                        </div>
+                      </figure>
+
+                      <figure className="flex min-h-[310px] flex-col overflow-hidden rounded-[1.1rem] border border-white/60 bg-white/35">
+                        <div className="flex items-center justify-between border-b border-white/55 px-4 py-3">
+                          <figcaption className="text-sm font-semibold text-[#111827]">After</figcaption>
+                          <span className="text-xs font-medium text-[#111827]/60">Spreadsheet</span>
+                        </div>
+                        <div className="relative flex flex-1 items-center justify-center bg-white/30 p-3">
+                          <img
+                            src="/bb.png"
+                            alt="Spreadsheet output after conversion"
+                            className="max-h-[300px] w-full rounded-xl object-contain shadow-[0_18px_45px_rgba(42,35,64,0.10)]"
+                          />
+                        </div>
+                      </figure>
+                    </div>
                   </div>
                 )}
                 </div>
