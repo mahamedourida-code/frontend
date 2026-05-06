@@ -71,48 +71,56 @@ const siteIcons = {
 const solutionCards = [
   {
     title: "Accounting",
+    href: "/solutions/accounting",
     asset: "/solution/accounting.svg",
     description:
       "Automate the most time-consuming parts of accounting workflows. Extract clean spreadsheet data from receipts, invoices, bank statements, and expense reports so teams can reduce manual entry and focus on review.",
   },
   {
     title: "Banking",
+    href: "/solutions/banking",
     asset: "/solution/banking.svg",
     description:
       "Modernize document-heavy financial operations with structured extraction for checks, loan applications, statements, onboarding packets, and KYC documents while keeping every row ready for downstream review.",
   },
   {
     title: "Backoffice Automation",
+    href: "/solutions/backoffice-automation",
     asset: "/solution/Backoffice%20Automation.svg",
     description:
       "Remove repetitive data entry from internal operations. Turn invoices, forms, receipts, and handwritten tables into usable Excel files that can feed finance, admin, and operations workflows.",
   },
   {
     title: "Construction",
+    href: "/solutions/construction",
     asset: "/solution/Construction.svg",
     description:
       "Convert site notes, delivery forms, checklists, material logs, and handwritten field tables into clean spreadsheets so project teams can keep records current without retyping paperwork.",
   },
   {
     title: "CPG Brands",
+    href: "/solutions/cpg-brands",
     asset: "/solution/CPG%20Brands.svg",
     description:
       "Process retail forms, inventory sheets, distributor paperwork, purchase records, and field reports into structured data that merchandising and operations teams can compare quickly.",
   },
   {
     title: "FinTech",
+    href: "/solutions/fintech",
     asset: "/solution/FinTech.svg",
     description:
       "Build document intake flows for financial products without asking users or operators to key in every table manually. Extract page-level data into spreadsheets that are easy to validate.",
   },
   {
     title: "Healthcare",
+    href: "/solutions/healthcare",
     asset: "/solution/Healthcare.svg",
     description:
       "Digitize handwritten logs, intake forms, lab sheets, inventory notes, and administrative records while preserving the table structure needed for review, reporting, and internal handoff.",
   },
   {
     title: "Real Estate",
+    href: "/solutions/real-estate",
     asset: "/solution/Real%20Estate.svg",
     description:
       "Turn lease packets, inspection forms, closing checklists, rent rolls, and property records into organized spreadsheets for brokers, managers, and operations teams.",
@@ -2486,9 +2494,8 @@ export default function Home() {
                         {solution.description}
                       </CardDescription>
 
-                      <button
-                        type="button"
-                        onClick={() => scrollToSection("converter")}
+                      <NextLink
+                        href={solution.href}
                         className="mt-auto flex items-end justify-between gap-4 pt-12 text-left text-sm font-medium text-[#24304a] transition-colors hover:text-[#151827]"
                       >
                         <span>Discover More</span>
@@ -2496,7 +2503,7 @@ export default function Home() {
                           <span className="absolute bottom-2 right-1 h-[4px] w-9 origin-right rotate-[-45deg] rounded-full bg-current" />
                           <span className="absolute right-1 top-1 h-8 w-8 border-r-[4px] border-t-[4px] border-current" />
                         </span>
-                      </button>
+                      </NextLink>
                     </div>
                   </CardContent>
                 </Card>
