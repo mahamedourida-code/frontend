@@ -150,6 +150,8 @@ export default function Home() {
   const topBackgroundRef = useRef<HTMLDivElement>(null);
   const purpleSectionRef = useRef<HTMLDivElement>(null);
   const whatSectionRef = useRef<HTMLDivElement>(null);
+  const benchmarkBandRef = useRef<HTMLDivElement>(null);
+  const securityBandRef = useRef<HTMLDivElement>(null);
 
   // Get state management from context
   const contextValue = useProcessingState()
@@ -547,6 +549,29 @@ export default function Home() {
           },
         }
       );
+
+      [benchmarkBandRef.current, securityBandRef.current].forEach((band) => {
+        if (!band) return;
+
+        gsap.fromTo(
+          band,
+          {
+            clipPath:
+              "polygon(0 4%, 12% 2.8%, 25% 4.6%, 40% 2.4%, 58% 4.3%, 75% 2.7%, 100% 4%, 100% 100%, 0 100%)",
+          },
+          {
+            clipPath:
+              "polygon(0 10%, 10% 6.2%, 24% 10.8%, 42% 4.8%, 58% 9.7%, 76% 5.6%, 100% 9%, 100% 100%, 0 100%)",
+            ease: "none",
+            scrollTrigger: {
+              trigger: band.parentElement || band,
+              start: "top 82%",
+              end: "top 24%",
+              scrub: 1.15,
+            },
+          }
+        );
+      });
     }, purpleSection);
 
     return () => ctx.revert();
@@ -2480,8 +2505,18 @@ export default function Home() {
           </div>
         </ScrollAnimatedSection>
         {/* Benchmark Section */}
-        <ScrollAnimatedSection id="benchmarks" className="pt-8 pb-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <ScrollAnimatedSection id="benchmarks" className="relative z-20 -mt-6 overflow-hidden pt-28 pb-16">
+          <div
+            ref={benchmarkBandRef}
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-0"
+            style={{
+              backgroundColor: "#FCF2FF",
+              clipPath:
+                "polygon(0 4%, 12% 2.8%, 25% 4.6%, 40% 2.4%, 58% 4.3%, 75% 2.7%, 100% 4%, 100% 100%, 0 100%)",
+            }}
+          />
+          <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 mb-4 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
@@ -2798,6 +2833,65 @@ export default function Home() {
                 <p className="text-sm text-muted-foreground max-w-4xl mx-auto leading-relaxed">
                   <span className="font-semibold text-foreground">Designed for operators:</span> every step is shaped around the spreadsheet people need after the upload, from invoices and paper forms to handwritten class notes and archive tables.
                 </p>
+              </div>
+            </div>
+          </div>
+        </ScrollAnimatedSection>
+        <ScrollAnimatedSection id="security" className="relative z-10 overflow-hidden py-20 lg:py-24">
+          <div
+            ref={securityBandRef}
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-0"
+            style={{
+              backgroundColor: "#EEF1FF",
+              clipPath:
+                "polygon(0 4%, 12% 2.8%, 25% 4.6%, 40% 2.4%, 58% 4.3%, 75% 2.7%, 100% 4%, 100% 100%, 0 100%)",
+            }}
+          />
+          <div className="container relative z-10 mx-auto max-w-[1540px] px-4 sm:px-6 lg:px-8">
+            <div className="grid gap-12 lg:grid-cols-[minmax(420px,0.88fr)_minmax(520px,1.12fr)] lg:items-center">
+              <div data-animate="headline">
+                <p className="text-xl font-medium text-black">Security & Compliance</p>
+                <h2 className="mt-6 max-w-2xl text-4xl font-bold leading-tight text-[#11182f] sm:text-5xl lg:text-6xl">
+                  Your Data Security Guaranteed
+                </h2>
+
+                <div className="mt-10 overflow-hidden rounded-[10px] shadow-[0_28px_70px_rgba(17,24,47,0.14)]">
+                  <img
+                    src="/secu.jpeg"
+                    alt="Secure digital document processing"
+                    className="h-[300px] w-full object-cover sm:h-[360px] lg:h-[380px]"
+                  />
+                </div>
+              </div>
+
+              <div className="lg:pt-12" data-animate="stagger">
+                <p className="max-w-3xl text-2xl leading-10 text-[#11182f]">
+                  AxLiner is built for document workflows where files, downloads, and batch results need clear ownership. Uploads move through encrypted connections, processed files stay access-controlled, and sharing is designed around links that can expire.
+                </p>
+
+                <div className="mt-10 space-y-7">
+                  {[
+                    "Encrypted transport for uploads, downloads, and API requests",
+                    "Access-controlled result files tied to user or session ownership",
+                    "Share links designed for controlled access and expiration",
+                    "Processing records kept durable so batch jobs can be recovered",
+                  ].map((item) => (
+                    <div key={item} className="flex items-start gap-4 text-xl text-[#11182f]">
+                      <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-[#2815FF] text-[#2815FF]">
+                        <span className="h-2.5 w-1.5 rotate-45 border-b-2 border-r-2 border-current" />
+                      </span>
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <Button
+                  className="mt-12 rounded-full bg-[#E4E8FA] px-8 py-6 text-lg font-bold text-[#11182f] shadow-none hover:bg-[#d9def4]"
+                  asChild
+                >
+                  <NextLink href="/privacy-policy">More Information</NextLink>
+                </Button>
               </div>
             </div>
           </div>
