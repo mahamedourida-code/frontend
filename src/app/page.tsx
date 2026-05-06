@@ -1417,10 +1417,10 @@ export default function Home() {
             }}
           />
           <div className="relative z-10">
-        <section ref={heroRef} className="relative overflow-hidden pt-16 pb-8 sm:pt-20 sm:pb-10 lg:pt-20 lg:pb-12">
+        <section ref={heroRef} className="relative overflow-hidden pt-10 pb-16 sm:pt-12 sm:pb-[4.5rem] lg:pt-12 lg:pb-24">
           <ParticlesBackground />
-          <div className="relative z-10 container mx-auto max-w-[1420px] px-4 sm:px-5 lg:px-9">
-            <div className="grid min-h-[520px] items-center gap-10 lg:min-h-[560px] lg:grid-cols-[minmax(0,1.16fr)_minmax(380px,0.84fr)] lg:gap-10">
+          <div className="relative z-10 container mx-auto max-w-[1500px] px-4 sm:px-5 lg:px-9">
+            <div className="grid min-h-[500px] items-center gap-14 lg:min-h-[535px] lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)] lg:gap-16">
               <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:text-left">
                 <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight text-[#2f165e] sm:text-5xl lg:text-6xl">
                   Handwritten images to Excel in seconds
@@ -1458,13 +1458,13 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex flex-col items-center lg:translate-x-10 lg:items-end xl:translate-x-14">
-                <div className="relative w-full max-w-[680px]">
+              <div className="flex flex-col items-center lg:translate-x-14 lg:items-end xl:translate-x-20">
+                <div className="relative w-full max-w-[800px]">
                   <div className="absolute inset-x-8 bottom-5 h-20 rounded-full bg-[#2f165e]/18 blur-3xl" aria-hidden="true" />
                   <img
                     src="/header.svg"
                     alt="AxLiner document conversion illustration"
-                    className="relative z-10 mx-auto h-auto w-full max-w-[640px] object-contain drop-shadow-[0_30px_70px_rgba(42,35,64,0.16)]"
+                    className="relative z-10 mx-auto h-auto w-full max-w-[760px] object-contain drop-shadow-[0_30px_70px_rgba(42,35,64,0.16)]"
                   />
                 </div>
               </div>
@@ -1473,7 +1473,7 @@ export default function Home() {
         </section>
 
         {/* Testimonials Section */}
-        <section className="relative z-10 -mt-24 overflow-hidden pb-10 pt-0 sm:-mt-28 lg:-mt-32">
+        <section className="relative z-10 -mt-6 overflow-hidden pb-10 pt-0 sm:-mt-8 lg:-mt-10">
           <div className="w-full">
             {/* First Row - Animates to the left */}
             <div className="relative mb-6 overflow-hidden">
