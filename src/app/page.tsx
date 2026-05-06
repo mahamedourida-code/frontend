@@ -52,6 +52,7 @@ import { GoogleSignInModal } from "@/components/GoogleSignInModal";
 import NextLink from "next/link";
 import { compressImages, formatFileSize } from "@/lib/image-compression";
 import { IndustrySolutionsMenuGrid } from "@/components/IndustrySolutionsMenuGrid";
+import { Download, FileSpreadsheet, Pencil, RotateCcw, Share2, X } from "lucide-react";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -1416,12 +1417,12 @@ export default function Home() {
             }}
           />
           <div className="relative z-10">
-        <section ref={heroRef} className="relative overflow-hidden pt-20 pb-10 sm:pt-24 sm:pb-14 lg:pt-24 lg:pb-16">
+        <section ref={heroRef} className="relative overflow-hidden pt-16 pb-8 sm:pt-20 sm:pb-10 lg:pt-20 lg:pb-12">
           <ParticlesBackground />
           <div className="relative z-10 container mx-auto max-w-[1420px] px-4 sm:px-5 lg:px-9">
-            <div className="grid min-h-[560px] items-center gap-10 lg:min-h-[590px] lg:grid-cols-[minmax(420px,0.96fr)_minmax(0,1.04fr)] lg:gap-14">
-              <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:text-left">
-                <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight text-black sm:text-5xl lg:text-6xl">
+            <div className="grid min-h-[520px] items-center gap-10 lg:min-h-[560px] lg:grid-cols-[minmax(0,1.16fr)_minmax(380px,0.84fr)] lg:gap-10">
+              <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:text-left">
+                <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight text-[#2f165e] sm:text-5xl lg:text-6xl">
                   Handwritten images to Excel in seconds
                 </h1>
                 <p className="mt-8 text-base leading-8 text-black sm:text-lg lg:text-xl">
@@ -1457,7 +1458,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex flex-col items-center lg:items-end">
+              <div className="flex flex-col items-center lg:translate-x-10 lg:items-end xl:translate-x-14">
                 <div className="relative w-full max-w-[680px]">
                   <div className="absolute inset-x-8 bottom-5 h-20 rounded-full bg-[#2f165e]/18 blur-3xl" aria-hidden="true" />
                   <img
@@ -1472,16 +1473,8 @@ export default function Home() {
         </section>
 
         {/* Testimonials Section */}
-        <section className="relative z-10 -mt-12 overflow-hidden py-12 sm:-mt-16">
+        <section className="relative z-10 -mt-24 overflow-hidden pb-10 pt-0 sm:-mt-28 lg:-mt-32">
           <div className="w-full">
-            <div className="text-center mb-12 px-4">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 mb-4 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
-                <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                  Trusted by Professionals
-                </h2>
-              </div>
-            </div>
-
             {/* First Row - Animates to the left */}
             <div className="relative mb-6 overflow-hidden">
               <div
@@ -1809,7 +1802,7 @@ export default function Home() {
                         <div className="flex items-start gap-4">
                           <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.35rem] bg-[#441F84] text-white shadow-lg shadow-[#441F84]/20">
                             {processingComplete ? (
-                              <SiteIcon src={siteIcons.export} className="h-6 w-6" />
+                              <FileSpreadsheet className="h-6 w-6" />
                             ) : (
                               <InlineSpinner className="h-6 w-6" />
                             )}
@@ -1820,16 +1813,9 @@ export default function Home() {
                                 {processingComplete ? 'Files ready' : isUploading ? 'Uploading your batch' : 'Converting your files'}
                               </h3>
                               <span className="rounded-full border border-[#A78BFA]/35 bg-white/55 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#111827]/70 backdrop-blur-md">
-                                {processingComplete ? `${resultFiles.length} ready` : isUploading ? `${liveProgressPercent}% uploaded` : `${resultFiles.length}/${totalFilesToProcess || uploadedFiles.length} done`}
+                                {processingComplete ? `${resultFiles.length} ready` : isUploading ? 'uploading' : 'converting'}
                               </span>
                             </div>
-                            <p className="max-w-3xl text-base leading-7 text-[#111827]/70">
-                              {processingComplete
-                                ? 'Review the preview, download individual files, share a result, or export the whole batch.'
-                                : isUploading
-                                  ? 'Keep this page open while the images upload. You can cancel before processing starts.'
-                                  : 'AxLiner is reading the images and adding results here as soon as each file is ready.'}
-                            </p>
                           </div>
                         </div>
                         <div className="flex flex-wrap gap-2 lg:justify-end">
@@ -1841,7 +1827,7 @@ export default function Home() {
                                 onClick={handleDownloadAll}
                                 className="border-2 border-[#A78BFA] bg-white/55 backdrop-blur-md"
                               >
-                                <SiteIcon src={siteIcons.export} className="mr-1 h-5 w-5" />
+                                <Download className="mr-1 h-5 w-5" />
                                 Download All
                               </Button>
                               <Button
@@ -1850,7 +1836,7 @@ export default function Home() {
                                 onClick={handleShareAll}
                                 className="gap-2 bg-white/55 border-2 border-foreground text-foreground backdrop-blur-md hover:bg-muted/50"
                               >
-                                <SiteIcon src={siteIcons.share} className="h-5 w-5" />
+                                <Share2 className="h-5 w-5" />
                                 Share All
                               </Button>
                             </>
@@ -1861,6 +1847,7 @@ export default function Home() {
                             onClick={isProcessing && !processingComplete ? cancelCurrentBatch : handleReset}
                             className="border-2 border-[#A78BFA] bg-white/55 backdrop-blur-md"
                           >
+                            {isProcessing && !processingComplete ? <X className="mr-1 h-4 w-4" /> : <RotateCcw className="mr-1 h-4 w-4" />}
                             {isProcessing && !processingComplete ? 'Cancel' : 'Convert Again'}
                           </Button>
                         </div>
@@ -1870,7 +1857,6 @@ export default function Home() {
                         <div className="mb-5 rounded-[1.35rem] border border-[#eadfff] bg-white/50 p-5 backdrop-blur-md">
                           <div className="mb-3 flex items-center justify-between text-sm font-semibold text-[#111827]/70">
                             <span>{isUploading ? 'Upload progress' : 'Batch progress'}</span>
-                            <span>{liveProgressPercent}%</span>
                           </div>
                           <div className="h-3 overflow-hidden rounded-full bg-white/80">
                             <div
@@ -1932,7 +1918,7 @@ export default function Home() {
                               {/* First File Buttons */}
                               <div className="flex flex-col gap-4 rounded-[1.35rem] border border-white/60 bg-white/55 p-4 backdrop-blur-xl lg:flex-row lg:items-center lg:justify-between">
                                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                                  <SiteIcon src={siteIcons.table} className="h-6 w-6" />
+                                  <FileSpreadsheet className="h-6 w-6 text-[#2f165e]" />
                                   <div className="min-w-0">
                                     <p className="text-sm font-semibold text-[#111827]">Primary result</p>
                                     <span className="block truncate text-base font-medium text-[#111827]/75">{cleanFilename(resultFiles[0].filename)}</span>
@@ -1944,7 +1930,7 @@ export default function Home() {
                                     onClick={() => handleDownloadFile(resultFiles[0].file_id)}
                                     className="gap-2 rounded-full bg-primary text-white hover:bg-primary/90"
                                   >
-                                    <SiteIcon src={siteIcons.export} className="h-5 w-5" />
+                                    <Download className="h-5 w-5" />
                                     Download
                                   </Button>
                                   <Button
@@ -1953,7 +1939,7 @@ export default function Home() {
                                     onClick={() => handleShareFile(resultFiles[0])}
                                     className="gap-2 rounded-full border border-[#A78BFA] bg-white/70 text-foreground hover:bg-primary/10"
                                   >
-                                    <SiteIcon src={siteIcons.share} className="h-5 w-5" />
+                                    <Share2 className="h-5 w-5" />
                                     Share
                                   </Button>
                                   <Button
@@ -1964,7 +1950,7 @@ export default function Home() {
                                     }}
                                     className="gap-2 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
                                   >
-                                    <SiteIcon src={siteIcons.edit} className="h-5 w-5" />
+                                    <Pencil className="h-5 w-5" />
                                     Edit
                                   </Button>
                                 </div>
@@ -1980,7 +1966,7 @@ export default function Home() {
                                   onClick={() => handleDownloadFile(file.file_id)}
                                   className="flex-shrink-0 hover:scale-110 transition-transform"
                                 >
-                                  <SiteIcon src={siteIcons.table} className="h-6 w-6" />
+                                  <FileSpreadsheet className="h-6 w-6 text-[#2f165e]" />
                                 </button>
                                 <span className="text-sm font-medium truncate text-[#111827]">{cleanFilename(file.filename)}</span>
                               </div>
@@ -1990,7 +1976,7 @@ export default function Home() {
                                   onClick={() => handleDownloadFile(file.file_id)}
                                   className="gap-2 rounded-full bg-primary text-white hover:bg-primary/90"
                                 >
-                                  <SiteIcon src={siteIcons.export} className="h-5 w-5" />
+                                  <Download className="h-5 w-5" />
                                   Download
                                 </Button>
                                 <Button
@@ -1999,7 +1985,7 @@ export default function Home() {
                                   onClick={() => handleShareFile(file)}
                                   className="gap-1.5 rounded-full border border-[#A78BFA] bg-white/70 text-foreground hover:bg-primary/10"
                                 >
-                                  <SiteIcon src={siteIcons.share} className="h-5 w-5" />
+                                  <Share2 className="h-5 w-5" />
                                   Share
                                 </Button>
                                 <Button
@@ -2010,7 +1996,7 @@ export default function Home() {
                                   }}
                                   className="gap-1.5 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
                                 >
-                                  <SiteIcon src={siteIcons.edit} className="h-5 w-5" />
+                                  <Pencil className="h-5 w-5" />
                                   Edit
                                 </Button>
                               </div>
@@ -2025,7 +2011,7 @@ export default function Home() {
                                   onClick={() => handleDownloadFile(file.file_id)}
                                   className="flex-shrink-0 hover:scale-110 transition-transform"
                                 >
-                                  <SiteIcon src={siteIcons.table} className="h-6 w-6" />
+                                  <FileSpreadsheet className="h-6 w-6 text-[#2f165e]" />
                                 </button>
                                 <span className="text-sm font-medium truncate text-[#111827]">{cleanFilename(file.filename)}</span>
                               </div>
@@ -2035,7 +2021,7 @@ export default function Home() {
                                   onClick={() => handleDownloadFile(file.file_id)}
                                   className="gap-2 rounded-full bg-primary text-white hover:bg-primary/90"
                                 >
-                                  <SiteIcon src={siteIcons.export} className="h-5 w-5" />
+                                  <Download className="h-5 w-5" />
                                   Download
                                 </Button>
                                 <Button
@@ -2044,7 +2030,7 @@ export default function Home() {
                                   onClick={() => handleShareFile(file)}
                                   className="gap-1.5 rounded-full border border-[#A78BFA] bg-white/70 text-foreground hover:bg-primary/10"
                                 >
-                                  <SiteIcon src={siteIcons.share} className="h-5 w-5" />
+                                  <Share2 className="h-5 w-5" />
                                   Share
                                 </Button>
                                 <Button
@@ -2055,7 +2041,7 @@ export default function Home() {
                                   }}
                                   className="gap-1.5 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
                                 >
-                                  <SiteIcon src={siteIcons.edit} className="h-5 w-5" />
+                                  <Pencil className="h-5 w-5" />
                                   Edit
                                 </Button>
                               </div>
@@ -2071,9 +2057,6 @@ export default function Home() {
                                     <InlineSpinner className="h-5 w-5 text-primary flex-shrink-0" />
                                     <span className="text-sm font-medium text-[#111827]/70">Waiting for file {resultFiles.length + index + 1}</span>
                                   </div>
-                                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <span>Please wait</span>
-                                  </div>
                                 </div>
                               ))}
                             </>
@@ -2084,7 +2067,7 @@ export default function Home() {
                       {isProcessing && !processingComplete && resultFiles.length === 0 && (
                         <div className="mt-5 flex items-center justify-center gap-2 rounded-[1.25rem] border border-white/55 bg-white/35 p-4 text-sm font-medium text-[#111827]/70 backdrop-blur-xl">
                           <InlineSpinner className="h-4 w-4" />
-                          <span>{isUploading ? 'Uploading your images...' : 'Converting your images...'}</span>
+                          <span>{isUploading ? 'Uploading' : 'Converting'}</span>
                         </div>
                       )}
                     </div>
