@@ -378,34 +378,34 @@ export default function Home() {
         const outputStartY = (index: number) => (index === 0 ? -12 : index === 1 ? -48 : 28);
         const outputEndY = (index: number) => (index === 0 ? -38 : index === 1 ? 16 : -8);
 
+        gsap.set([".hero-input-card", ".hero-output-card", ".hero-processor"], {
+          force3D: true,
+          transformOrigin: "50% 50%",
+        });
+
         gsap.fromTo(
           ".hero-input-card",
           { x: -24, opacity: 0, scale: 0.94 },
           { x: 0, opacity: 1, scale: 1, duration: 0.55, delay: 0.15, ease: "power2.out" }
         );
 
-        const heroTimeline = gsap.timeline({ repeat: -1, repeatDelay: 0.85, delay: 0.2 });
+        const heroTimeline = gsap.timeline({ repeat: -1, repeatDelay: 0.95, delay: 0.2 });
 
         heroTimeline
           .set(".hero-feed-line-left", { scaleX: 0, opacity: 0.68 })
           .set(".hero-feed-line-right", { scaleX: 0, opacity: 0.68 })
           .set(".hero-processor-glow", { opacity: 0.18, scale: 0.92 })
+          .set(".hero-processor", { scale: 1 })
           .set(".hero-output-card", {
             opacity: 0,
-            x: -46,
+            x: -38,
             y: outputStartY,
-            scale: 0.66,
+            scale: 0.72,
             rotation: (index: number) => (index === 1 ? -5 : index === 2 ? 5 : -2),
           })
           .to(".hero-feed-line-left", { scaleX: 1, duration: 0.52, ease: "power2.inOut" }, "-=0.05")
-          .to(".hero-processor-glow", { opacity: 0.46, scale: 1.12, duration: 0.32, ease: "sine.inOut" }, "-=0.12")
-          .to(".hero-processor", {
-            scale: 1.085,
-            duration: 0.22,
-            yoyo: true,
-            repeat: 1,
-            ease: "power2.out"
-          }, "<")
+          .to(".hero-processor-glow", { opacity: 0.42, scale: 1.04, duration: 0.48, ease: "sine.inOut" }, "-=0.12")
+          .to(".hero-processor-glow", { opacity: 0.2, scale: 0.95, duration: 0.42, ease: "sine.inOut" }, "-=0.1")
           .to(".hero-feed-line-right", { scaleX: 1, duration: 0.46, ease: "power2.inOut" }, "-=0.05")
           .to(".hero-output-card", {
             opacity: 1,
@@ -413,18 +413,18 @@ export default function Home() {
             y: (index: number) => (index === 0 ? -18 : index === 1 ? 34 : index === 2 ? -36 : 0),
             scale: 1,
             rotation: (index: number) => (index === 0 ? -2 : index === 1 ? 2.5 : -3),
-            duration: 0.68,
-            ease: "back.out(1.7)",
-            stagger: { each: 0.13, from: "start" },
+            duration: 0.74,
+            ease: "power3.out",
+            stagger: { each: 0.15, from: "start" },
           }, "-=0.04")
-          .to(".hero-output-card", { opacity: 1, duration: 1.05 })
+          .to(".hero-output-card", { opacity: 1, duration: 1.12 })
           .to(".hero-output-card", {
             opacity: 0,
-            x: 54,
+            x: 48,
             y: outputEndY,
-            scale: 0.82,
+            scale: 0.86,
             rotation: (index: number) => (index === 1 ? 3 : index === 2 ? -5 : 4),
-            duration: 0.42,
+            duration: 0.46,
             ease: "power2.in",
             stagger: { each: 0.08, from: "end" },
           })
@@ -1510,7 +1510,7 @@ export default function Home() {
               </div>
 
               <div ref={heroFlowRef} className="relative mx-auto mt-0 h-[460px] w-full max-w-[1560px] sm:h-[560px] lg:h-[660px]">
-                <div className="pointer-events-none absolute left-[5%] top-[36%] z-10 flex -translate-y-1/2 items-center sm:left-[5%] sm:top-[37%] lg:left-[4%] lg:top-[36%]">
+                <div className="pointer-events-none absolute left-[3%] top-[36%] z-10 flex -translate-y-1/2 items-center sm:left-[3%] sm:top-[37%] lg:left-[2%] lg:top-[36%]">
                   <div className="hero-input-card flex h-[140px] w-[165px] items-center justify-center sm:h-[230px] sm:w-[270px] lg:h-[300px] lg:w-[350px]">
                     <img
                       src="/handwritten.svg"
@@ -1520,7 +1520,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="pointer-events-none absolute left-[27%] top-[36%] z-0 hidden h-px w-[25%] -translate-y-1/2 overflow-hidden sm:block sm:left-[28%] sm:top-[37%] lg:left-[27%] lg:top-[36%]">
+                <div className="pointer-events-none absolute left-[25%] top-[36%] z-0 hidden h-px w-[27%] -translate-y-1/2 overflow-hidden sm:block sm:left-[25%] sm:top-[37%] lg:left-[25%] lg:top-[36%]">
                   <div className="hero-feed-line hero-feed-line-left h-full origin-left rounded-full bg-[#7B5BBE]" />
                 </div>
 
@@ -1533,11 +1533,11 @@ export default function Home() {
                   />
                 </div>
 
-                <div className="pointer-events-none absolute left-[61%] top-[36%] z-0 hidden h-px w-[12%] -translate-y-1/2 overflow-hidden sm:block sm:top-[37%] lg:left-[61%] lg:top-[36%]">
+                <div className="pointer-events-none absolute left-[62%] top-[36%] z-0 hidden h-px w-[13%] -translate-y-1/2 overflow-hidden sm:block sm:top-[37%] lg:left-[62%] lg:top-[36%]">
                   <div className="hero-feed-line hero-feed-line-right h-full origin-left rounded-full bg-[#7B5BBE]" />
                 </div>
 
-                <div className="absolute left-1/2 top-[64%] z-10 grid w-[88%] max-w-[660px] -translate-x-1/2 -translate-y-1/2 grid-cols-3 items-center gap-1 overflow-visible pl-3 sm:left-[63%] sm:top-[37%] sm:w-[38%] sm:translate-x-0 sm:gap-2 sm:pl-0 lg:left-[63%] lg:top-[36%] lg:w-[36%] lg:gap-3">
+                <div className="absolute left-1/2 top-[64%] z-10 grid w-[88%] max-w-[660px] -translate-x-1/2 -translate-y-1/2 grid-cols-3 items-center gap-1 overflow-visible pl-3 sm:left-[66%] sm:top-[37%] sm:w-[34%] sm:translate-x-0 sm:gap-4 sm:pl-0 lg:left-[67%] lg:top-[36%] lg:w-[32%] lg:gap-6">
                   {[
                     { src: "/33.svg", alt: "Excel result preview" },
                     { src: "/44.svg", alt: "Spreadsheet result preview" },
@@ -1565,7 +1565,7 @@ export default function Home() {
         </section>
 
         {/* Testimonials Section */}
-        <section className="py-16 overflow-hidden relative z-10">
+        <section className="relative z-10 -mt-12 overflow-hidden py-12 sm:-mt-16">
           <div className="w-full">
             <div className="text-center mb-12 px-4">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 mb-4 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
@@ -2812,20 +2812,6 @@ export default function Home() {
                     alt="Professionals reviewing documents"
                     className="absolute inset-0 h-full w-full object-cover object-center"
                   />
-                  <div className="absolute inset-x-6 bottom-6 rounded-3xl border border-white/35 bg-white/75 p-5 shadow-2xl backdrop-blur-md sm:inset-x-8 sm:bottom-8">
-                    <div className="grid gap-4 sm:grid-cols-3">
-                      {[
-                        ["96.8%", "handwriting accuracy"],
-                        ["XLSX", "ready export"],
-                        ["Batch", "multi-file runs"],
-                      ].map(([value, label]) => (
-                        <div key={value} className="rounded-2xl border border-[#A78BFA]/30 bg-white/70 p-4">
-                          <p className="text-2xl font-black text-primary">{value}</p>
-                          <p className="mt-1 text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
                 </div>
               </div>
 
