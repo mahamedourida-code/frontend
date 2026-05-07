@@ -6,6 +6,18 @@ import { Button } from "@/components/ui/button";
 import { MobileNav } from "@/components/MobileNav";
 import { blogPosts } from "@/lib/blogs";
 
+function dateParts(date: string) {
+  const [month = "", rest = ""] = date.split(" ");
+  const day = rest.replace(",", "");
+  const year = date.split(", ")[1] || "";
+
+  return {
+    month: month.slice(0, 5).toUpperCase(),
+    day,
+    year,
+  };
+}
+
 export const metadata: Metadata = {
   title: "AxLiner Blog | Handwritten Images, Paper Tables, and Excel OCR",
   description:
@@ -59,15 +71,15 @@ export default function BlogsPage() {
         </div>
       </nav>
 
-      <section className="mx-auto max-w-5xl px-4 pb-7 pt-28 sm:px-6 lg:px-8 lg:pt-32">
+      <section className="mx-auto max-w-6xl px-4 pb-8 pt-28 sm:px-6 lg:px-8 lg:pt-32">
         <div className="border-b border-black/10 pb-8">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#2f165e]">
             AxLiner Blog
           </p>
-          <h1 className="mt-4 text-4xl font-semibold leading-tight tracking-normal sm:text-5xl">
-            Handwritten OCR notes for real paper workflows.
+          <h1 className="mt-4 text-3xl font-light leading-tight tracking-normal sm:text-4xl">
+            AxLiner Blogs - handwritten OCR, data entry, and document workflow notes.
           </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-black">
+          <p className="mt-5 max-w-3xl text-base leading-7 text-black">
             Practical notes for teams turning paper tables, pen-written forms, scanned PDFs, receipts, and messy document photos into spreadsheets that are easy to review.
           </p>
           <div className="mt-7 flex gap-7 overflow-x-auto border-t border-black/10 pt-4 text-sm font-semibold text-black">
@@ -79,55 +91,70 @@ export default function BlogsPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-5xl px-4 pb-20 sm:px-6 lg:px-8">
-        <div className="divide-y divide-black/10 border-b border-black/10">
-          {blogPosts.map((post) => (
-            <article
-              key={post.slug}
-              className="grid min-h-[168px] grid-cols-[minmax(0,1fr)_112px] gap-5 py-6 sm:grid-cols-[minmax(0,1fr)_168px] sm:gap-8"
-            >
-              <div className="min-w-0">
-                <div className="flex items-center gap-3">
-                  <Image
-                    src={post.authorImage}
-                    alt={post.authorImageAlt}
-                    width={28}
-                    height={28}
-                    className="h-7 w-7 rounded-full object-cover"
-                  />
-                  <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-sm text-black">
-                    <span className="font-medium">{post.authorName}</span>
-                    <span className="text-black/50">/</span>
-                    <span>{post.date}</span>
-                    <span className="text-black/50">/</span>
-                    <span>{post.readTime}</span>
+      <section className="mx-auto max-w-6xl px-4 pb-24 sm:px-6 lg:px-8">
+        <div className="space-y-16">
+          {blogPosts.map((post) => {
+            const parts = dateParts(post.date);
+
+            return (
+              <article
+                key={post.slug}
+                className="grid gap-5 md:grid-cols-[76px_minmax(0,1fr)]"
+              >
+                <div className="flex h-[76px] w-[76px] flex-col items-center justify-center bg-[#2f165e] text-white shadow-[0_16px_36px_rgba(47,22,94,0.18)]">
+                  <span className="text-[11px] font-bold uppercase leading-none">{parts.month}</span>
+                  <span className="mt-1 text-3xl font-semibold leading-none">{parts.day}</span>
+                  <span className="mt-1 text-[10px] font-bold leading-none">{parts.year}</span>
+                </div>
+
+                <div className="min-w-0">
+                  <h2 className="text-2xl font-light leading-tight tracking-normal text-black sm:text-3xl">
+                    <Link href={`/blogs/${post.slug}`} className="hover:text-[#2f165e]">
+                      {post.title}
+                    </Link>
+                  </h2>
+
+                  <div className="mt-5 border-t border-black/10 pt-6">
+                    <div className="grid gap-6 lg:grid-cols-[330px_minmax(0,1fr)]">
+                      <Link href={`/blogs/${post.slug}`} className="group relative h-[190px] w-full overflow-hidden bg-white lg:w-[330px]">
+                        <Image
+                          src={post.image}
+                          alt={post.imageAlt}
+                          fill
+                          sizes="(min-width: 1024px) 330px, 100vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                        />
+                      </Link>
+
+                      <div className="flex min-h-[190px] flex-col justify-between">
+                        <div>
+                          <div className="flex items-center gap-3 text-sm text-black">
+                            <Image
+                              src={post.authorImage}
+                              alt={post.authorImageAlt}
+                              width={28}
+                              height={28}
+                              className="h-7 w-7 rounded-full object-cover"
+                            />
+                            <span className="font-medium">{post.authorName}</span>
+                            <span className="text-black/50">/</span>
+                            <span>{post.readTime}</span>
+                          </div>
+                          <p className="mt-4 line-clamp-4 text-base leading-7 text-black/80">
+                            {post.description}
+                          </p>
+                        </div>
+
+                        <Link href={`/blogs/${post.slug}`} className="mt-4 text-base font-semibold text-[#2f165e] underline-offset-4 hover:underline">
+                          Read More
+                        </Link>
+                      </div>
+                    </div>
                   </div>
                 </div>
-
-                <h2 className="mt-4 text-xl font-semibold leading-snug tracking-normal sm:text-2xl">
-                  <Link href={`/blogs/${post.slug}`} className="hover:text-[#2f165e]">
-                    {post.title}
-                  </Link>
-                </h2>
-                <p className="mt-2 line-clamp-2 text-sm leading-6 text-black/80 sm:text-base sm:leading-7">
-                  {post.description}
-                </p>
-                <div className="mt-4 text-sm font-semibold text-[#2f165e]">
-                  {post.eyebrow}
-                </div>
-              </div>
-
-              <Link href={`/blogs/${post.slug}`} className="group relative h-[112px] overflow-hidden bg-white sm:h-[118px]">
-                <Image
-                  src={post.image}
-                  alt={post.imageAlt}
-                  fill
-                  sizes="(min-width: 640px) 168px, 112px"
-                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                />
-              </Link>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
       </section>
     </main>

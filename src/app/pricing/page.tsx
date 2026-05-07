@@ -191,14 +191,8 @@ function planPresentation(plan: BillingPlan) {
     plan.checkout_key
       ? `${imagesLabel(monthlyAllowance)} / month`
       : imagesLabel(plan.credits)
-  const includedNote =
-    plan.interval === "year"
-      ? `${imagesLabel(plan.credits)} total per year`
-      : plan.interval === "month"
-        ? "Credits renew every month"
-        : "Create an account when the trial ends"
 
-  return { name, cadence, included, includedNote }
+  return { name, cadence, included }
 }
 
 function PricingFallback() {
@@ -441,12 +435,12 @@ function PricingContent() {
                       ? "per month"
                       : "forever"
                 const features = [
-                  `${plan.max_files_per_batch} files per batch`,
-                  `${plan.max_file_size_mb}MB max file size`,
+                  { value: presentation.included, label: "included credits" },
+                  { value: `${plan.max_files_per_batch}`, label: "files per batch" },
+                  { value: `${plan.max_file_size_mb}MB`, label: "max file size" },
                   plan.plan === "anonymous"
-                    ? "No account needed for the first conversion"
-                    : "Credits charge on completed images",
-                  isPaid ? "Manage billing from the dashboard" : "Upgrade when you need more volume",
+                    ? { value: "Free", label: "first conversion without an account" }
+                    : { value: "Completed", label: "images charge credits only after success" },
                 ]
 
                 return (
@@ -479,13 +473,12 @@ function PricingContent() {
                           {plan.plan === "mega" ? <PlanSwitch className="h-7 w-7 text-[#2f165e]" /> : <CreditStack className="h-7 w-7 text-[#2f165e]" />}
                         </div>
                         <div className="mt-5 flex items-end gap-2">
-                          <span className="text-4xl font-semibold tracking-normal text-foreground">{plan.price_formatted}</span>
+                          <span className="text-4xl font-semibold tracking-normal text-[#2f165e]">{plan.price_formatted}</span>
                           <span className="pb-1.5 text-sm font-semibold text-muted-foreground">{intervalLabel}</span>
                         </div>
-                        <div className="mt-5 rounded-[18px] bg-[#FCF2FF]/70 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] backdrop-blur">
-                          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7c62b1]">Included credits</span>
-                          <p className="mt-1 text-2xl font-semibold text-[#2f165e]">{presentation.included}</p>
-                          <p className="mt-1 text-sm leading-6 text-black/70">{presentation.includedNote}</p>
+                        <div className="mt-5 rounded-[18px] bg-[#2f165e] p-4 text-white shadow-[0_16px_40px_rgba(47,22,94,0.18)]">
+                          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-white/70">Included credits</span>
+                          <p className="mt-1 text-2xl font-semibold">{presentation.included}</p>
                         </div>
                         <Button
                           className={cn(
@@ -508,17 +501,11 @@ function PricingContent() {
                       </div>
 
                       <div className="border-t border-[#ece5fb] p-5">
-                        <div className="mb-4 flex items-center gap-2">
-                          {isPaid ? <CreditStack className="h-5 w-5 text-[#2f165e]" /> : <BillingSeal className="h-5 w-5 text-[#2f165e]" />}
-                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground">Plan limits</p>
-                        </div>
                         <ul className="space-y-3">
                           {features.map((feature) => (
-                            <li key={feature} className="flex items-center gap-3 text-sm">
-                              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#151216] text-[11px] font-black text-white">
-                                <span className="h-2 w-2 rounded-full bg-white" />
-                              </span>
-                              <span>{feature}</span>
+                            <li key={`${feature.value}-${feature.label}`} className="flex items-baseline gap-2 text-sm">
+                              <span className="font-semibold text-[#2f165e]">{feature.value}</span>
+                              <span className="text-muted-foreground">{feature.label}</span>
                             </li>
                           ))}
                         </ul>
