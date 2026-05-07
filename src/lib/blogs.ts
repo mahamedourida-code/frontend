@@ -9,6 +9,10 @@ export type BlogPost = {
   imageAlt: string;
   supportingImage: string;
   supportingImageAlt: string;
+  authorName: string;
+  authorRole: string;
+  authorImage: string;
+  authorImageAlt: string;
   keywords: string[];
   intro: string;
   sections: Array<{
@@ -31,6 +35,10 @@ export const blogPosts: BlogPost[] = [
     imageAlt: "Accounting paperwork prepared for handwritten table extraction",
     supportingImage: "/subsolution/backoffice-automation.webp",
     supportingImageAlt: "Backoffice documents ready for spreadsheet automation",
+    authorName: "Anna Kowalska",
+    authorRole: "Handwritten document workflow specialist",
+    authorImage: "/testimonials/alex_finn.jpg",
+    authorImageAlt: "Anna Kowalska, handwritten document workflow specialist",
     keywords: [
       "handwritten paper to Excel",
       "handwritten table OCR",
@@ -77,6 +85,10 @@ export const blogPosts: BlogPost[] = [
     imageAlt: "Construction field paperwork used for handwritten form processing",
     supportingImage: "/subsolution/healthcare.jpg",
     supportingImageAlt: "Healthcare administrative forms prepared for structured extraction",
+    authorName: "Tomasz Nowak",
+    authorRole: "Batch OCR operations analyst",
+    authorImage: "/testimonials/tom_blomfield.jpg",
+    authorImageAlt: "Tomasz Nowak, batch OCR operations analyst",
     keywords: [
       "batch handwritten forms",
       "scan handwritten notes to Excel",

@@ -59,29 +59,29 @@ export default function BlogsPage() {
         </div>
       </nav>
 
-      <section className="mx-auto max-w-7xl px-4 pb-12 pt-32 sm:px-6 lg:px-8 lg:pb-16 lg:pt-40">
-        <div className="max-w-3xl">
+      <section className="mx-auto max-w-6xl px-4 pb-10 pt-28 sm:px-6 lg:px-8 lg:pb-12 lg:pt-32">
+        <div className="max-w-2xl">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#2f165e]">
             AxLiner blog
           </p>
-          <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-normal sm:text-5xl lg:text-6xl">
+          <h1 className="mt-4 text-3xl font-semibold leading-tight tracking-normal sm:text-4xl lg:text-5xl">
             Clear writing about handwritten paper, OCR, and Excel workflows.
           </h1>
-          <p className="mt-6 text-lg leading-8 text-black">
+          <p className="mt-5 max-w-xl text-base leading-7 text-black">
             Practical notes for teams turning paper tables, pen-written forms, scanned PDFs, receipts, and messy document photos into spreadsheets that are easy to review.
           </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
-        <div className="grid gap-7 md:grid-cols-2">
+      <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 lg:px-8">
+        <div className="grid gap-5 md:grid-cols-2">
           {blogPosts.map((post) => (
             <article
               key={post.slug}
-              className="overflow-hidden rounded-[34px] border border-white/60 bg-white/35 shadow-[0_24px_70px_rgba(42,35,64,0.08)] backdrop-blur-xl"
+              className="overflow-hidden rounded-[26px] border border-white/60 bg-white/35 shadow-[0_18px_55px_rgba(42,35,64,0.07)] backdrop-blur-xl"
             >
               <Link href={`/blogs/${post.slug}`} className="group block">
-                <div className="relative aspect-[1.42] overflow-hidden">
+                <div className="relative aspect-[1.75] overflow-hidden">
                   <Image
                     src={post.image}
                     alt={post.imageAlt}
@@ -91,21 +91,36 @@ export default function BlogsPage() {
                   />
                 </div>
               </Link>
-              <div className="p-6 sm:p-7">
+              <div className="p-5 sm:p-6">
                 <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#2f165e]">
                   <span>{post.eyebrow}</span>
                   <span className="h-1 w-1 rounded-full bg-[#2f165e]/55" />
                   <span>{post.readTime}</span>
                 </div>
-                <h2 className="mt-4 text-2xl font-semibold leading-tight tracking-normal sm:text-3xl">
+                <h2 className="mt-3 text-xl font-semibold leading-snug tracking-normal sm:text-2xl">
                   <Link href={`/blogs/${post.slug}`} className="hover:text-[#2f165e]">
                     {post.title}
                   </Link>
                 </h2>
-                <p className="mt-4 text-base leading-7 text-black">
+                <p className="mt-3 text-sm leading-6 text-black">
                   {post.description}
                 </p>
-                <Button asChild className="mt-6 rounded-full bg-[#2f165e] px-5 text-white hover:bg-[#24104b]">
+                <div className="mt-5 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src={post.authorImage}
+                      alt={post.authorImageAlt}
+                      width={34}
+                      height={34}
+                      className="h-8 w-8 rounded-full object-cover"
+                    />
+                    <div>
+                      <p className="text-sm font-semibold text-black">{post.authorName}</p>
+                      <p className="text-xs text-black/70">{post.authorRole}</p>
+                    </div>
+                  </div>
+                </div>
+                <Button asChild className="mt-5 rounded-full bg-[#2f165e] px-5 text-white hover:bg-[#24104b]">
                   <Link href={`/blogs/${post.slug}`}>Read article</Link>
                 </Button>
               </div>

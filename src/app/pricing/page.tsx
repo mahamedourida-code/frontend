@@ -19,6 +19,45 @@ type BillingMode = "month" | "year"
 const companyLogos = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 const paidPlanKeys: BillingPlanKey[] = ["pro_monthly", "pro_yearly", "max_monthly", "max_yearly", "mega_monthly", "mega_yearly"]
 
+const planBaseNames: Record<string, string> = {
+  anonymous: "Free Trial",
+  free: "Free Trial",
+  pro: "Pro Plan",
+  max: "Max Plan",
+  mega: "Mega Plan",
+}
+
+function imagesLabel(count: number) {
+  return `${count.toLocaleString()} image${count === 1 ? "" : "s"}`
+}
+
+function planPresentation(plan: BillingPlan) {
+  const monthlyAllowance =
+    plan.interval === "year" && plan.credits > 0
+      ? Math.round(plan.credits / 12)
+      : plan.credits
+  const baseName = planBaseNames[plan.plan] || `${plan.name.replace(/\s+Plan$/i, "")} Plan`
+  const name = plan.interval === "year" && plan.checkout_key ? `${baseName} (Yearly)` : baseName
+  const cadence =
+    plan.interval === "year"
+      ? "Annual billing"
+      : plan.interval === "month"
+        ? "Monthly billing"
+        : "Free trial"
+  const included =
+    plan.checkout_key
+      ? `${imagesLabel(monthlyAllowance)} / month`
+      : imagesLabel(plan.credits)
+  const includedNote =
+    plan.interval === "year"
+      ? `${imagesLabel(plan.credits)} total per year`
+      : plan.interval === "month"
+        ? "Credits renew every month"
+        : "Create an account when the trial ends"
+
+  return { name, cadence, included, includedNote }
+}
+
 function PricingFallback() {
   return (
     <main className="min-h-screen bg-[#E9ECE4]">
@@ -249,6 +288,7 @@ function PricingContent() {
                 const isPaid = Boolean(plan.checkout_key)
                 const isLoading = checkoutLoading === plan.checkout_key
                 const isPopular = plan.plan === "max"
+                const presentation = planPresentation(plan)
                 const intervalLabel =
                   plan.interval === "year"
                     ? "per year"
@@ -256,12 +296,12 @@ function PricingContent() {
                       ? "per month"
                       : "forever"
                 const features = [
-                  plan.included_volume,
                   `${plan.max_files_per_batch} files per batch`,
                   `${plan.max_file_size_mb}MB max file size`,
                   plan.plan === "anonymous"
-                    ? "No account needed for the trial"
-                    : `${plan.daily_image_limit.toLocaleString()} daily image limit`,
+                    ? "No account needed for the first conversion"
+                    : "Credits charge on completed images",
+                  isPaid ? "Manage billing from the dashboard" : "Upgrade when you need more volume",
                 ]
 
                 return (
@@ -286,9 +326,9 @@ function PricingContent() {
                       <div className="p-5">
                         <div className="flex items-start justify-between gap-4">
                           <div>
-                            <p className="text-lg font-semibold text-foreground">{plan.name}</p>
+                            <p className="text-lg font-semibold text-foreground">{presentation.name}</p>
                             <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#7c62b1]">
-                              {plan.interval === "year" ? "Annual plan" : plan.interval === "month" ? "Monthly plan" : "Trial"}
+                              {presentation.cadence}
                             </p>
                           </div>
                           {plan.plan === "mega" ? <PlanSwitch className="h-7 w-7 text-[#2f165e]" /> : <CreditStack className="h-7 w-7 text-[#2f165e]" />}
@@ -297,9 +337,10 @@ function PricingContent() {
                           <span className="text-4xl font-semibold tracking-normal text-foreground">{plan.price_formatted}</span>
                           <span className="pb-1.5 text-sm font-semibold text-muted-foreground">{intervalLabel}</span>
                         </div>
-                        <div className="mt-5 rounded-[18px] border border-[#eadfff] bg-white/50 p-4 backdrop-blur">
-                          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7c62b1]">Included</span>
-                          <p className="mt-1 text-2xl font-semibold text-[#2f165e]">{plan.included_volume}</p>
+                        <div className="mt-5 rounded-[18px] bg-[#FCF2FF]/70 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] backdrop-blur">
+                          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7c62b1]">Included credits</span>
+                          <p className="mt-1 text-2xl font-semibold text-[#2f165e]">{presentation.included}</p>
+                          <p className="mt-1 text-sm leading-6 text-black/70">{presentation.includedNote}</p>
                         </div>
                         <Button
                           className={cn(
