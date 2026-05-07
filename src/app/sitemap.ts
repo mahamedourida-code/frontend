@@ -1,91 +1,81 @@
 import { MetadataRoute } from 'next'
+import { industrySolutions } from '@/lib/industry-solutions'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://axliner.com'
+  const baseUrl = 'https://www.axliner.com'
+  const lastModified = new Date()
+  const legacySolutionRoutes = [
+    '/solutions/handwritten-tables',
+    '/solutions/paper-forms',
+    '/solutions/financial-documents',
+    '/solutions/data-entry',
+  ]
+  const industrySolutionRoutes = industrySolutions.map((solution) => `/solutions/${solution.slug}`)
   
   return [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified,
       changeFrequency: 'daily',
       priority: 1,
     },
     {
-      url: `${baseUrl}/dashboard`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/dashboard/client`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.8,
+      url: `${baseUrl}/pricing`,
+      lastModified,
+      changeFrequency: 'weekly',
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/handwritten-to-excel`,
-      lastModified: new Date(),
+      lastModified,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/image-to-excel`,
-      lastModified: new Date(),
+      lastModified,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/screenshot-to-excel`,
-      lastModified: new Date(),
+      lastModified,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/jpg-to-excel`,
-      lastModified: new Date(),
+      lastModified,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
-    {
-      url: `${baseUrl}/solutions/handwritten-tables`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
+    ...legacySolutionRoutes.map((route) => ({
+      url: `${baseUrl}${route}`,
+      lastModified,
+      changeFrequency: 'weekly' as const,
       priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/solutions/paper-forms`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/solutions/financial-documents`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/solutions/data-entry`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    },
-    
+    })),
+    ...industrySolutionRoutes.map((route) => ({
+      url: `${baseUrl}${route}`,
+      lastModified,
+      changeFrequency: 'weekly' as const,
+      priority: 0.75,
+    })),
     {
       url: `${baseUrl}/privacy-policy`,
-      lastModified: new Date(),
+      lastModified,
       changeFrequency: 'yearly',
       priority: 0.3,
     },
     {
       url: `${baseUrl}/terms-of-service`,
-      lastModified: new Date(),
+      lastModified,
       changeFrequency: 'yearly',
       priority: 0.3,
     },
     {
       url: `${baseUrl}/products`,
-      lastModified: new Date(),
+      lastModified,
       changeFrequency: 'monthly',
       priority: 0.6,
     },
