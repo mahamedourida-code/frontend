@@ -157,6 +157,18 @@ const faqItems = [
   },
 ];
 
+const ownedPipelineImages = [
+  { src: "/sex.png", alt: "AxLiner document intake interface" },
+  { src: "/sex1.png", alt: "AxLiner extraction workflow" },
+  { src: "/sex2.png", alt: "AxLiner structured output review" },
+];
+
+const ownedPipelinePoints = [
+  "Own the job queue, file metadata, download permissions, and recovery flow.",
+  "Keep every batch tied to a durable owner instead of browser-only state.",
+  "Shape outputs for Excel review, not generic text extraction.",
+];
+
 function SiteIcon({ src, className, alt = "" }: { src: string; className?: string; alt?: string }) {
   return (
     <img
@@ -901,6 +913,70 @@ export default function Home() {
             </div>
           </div>
         </ScrollAnimatedSection>
+
+        <ScrollAnimatedSection id="owned-ai" className="relative z-20 overflow-hidden px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+          <div className="mx-auto max-w-[1540px]">
+            <div className="grid gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(520px,1.05fr)] lg:items-end">
+              <div data-animate="headline">
+                <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#4C287F]">
+                  Not a third-party wrapper
+                </p>
+                <h2 className="mt-6 max-w-4xl text-5xl font-black leading-[0.95] tracking-normal text-[#11182f] sm:text-6xl lg:text-[6.4rem]">
+                  Document AI built before the hype cycle.
+                </h2>
+              </div>
+
+              <div className="grid gap-6 text-[#11182f]" data-animate="stagger">
+                <p className="text-lg font-medium leading-9">
+                  AxLiner is built around a controlled document pipeline, not a loose chain of generic upload tools. The batch queue, file ownership, storage metadata, download permissions, and Excel export layer are part of the product itself.
+                </p>
+                <p className="text-lg font-medium leading-9">
+                  That means the workflow is shaped for messy handwritten tables from the first upload to the final spreadsheet. External infrastructure can sit behind the system, but it does not define the user experience or the security model.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-14 grid gap-5 lg:grid-cols-3" data-animate="stagger">
+              {ownedPipelineImages.map((image, index) => (
+                <div
+                  key={image.src}
+                  className="group relative min-h-[360px] overflow-hidden rounded-[28px] border border-white/70 bg-white/45 shadow-[0_26px_76px_rgba(42,35,64,0.10)] backdrop-blur-xl lg:min-h-[460px]"
+                >
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    fill
+                    sizes="(min-width: 1024px) 31vw, 100vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#11182f]/78 via-[#11182f]/18 to-transparent p-6 text-white">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">0{index + 1}</p>
+                    <p className="mt-2 text-xl font-semibold">{ownedPipelinePoints[index]}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-12 overflow-hidden rounded-full border border-[#4C287F]/20 bg-[#4C287F] py-4 text-white shadow-[0_22px_60px_rgba(76,40,127,0.24)]">
+              <div
+                className="flex w-max items-center gap-8 whitespace-nowrap text-sm font-semibold uppercase tracking-[0.22em] text-white/82"
+                style={{ animation: "scroll-left 38s linear infinite" }}
+              >
+                {[...Array(2)].map((_, repeat) => (
+                  <div key={repeat} className="flex items-center gap-8">
+                    <span>Owned workflow</span>
+                    <span>0101001110</span>
+                    <span>Durable files</span>
+                    <span>Structured Excel</span>
+                    <span>No generic wrapper</span>
+                    <span>Batch recovery</span>
+                    <span>Secure downloads</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </ScrollAnimatedSection>
           </div>
         </div>
 
@@ -1160,91 +1236,105 @@ export default function Home() {
             </div>
           </div>
         </ScrollAnimatedSection>
-        {/* Final CTA Section */}
-        <section className="relative z-10 overflow-hidden py-24">
-          <div className="grid w-full items-start gap-10 pr-4 sm:pr-6 lg:grid-cols-[minmax(620px,1.18fr)_minmax(420px,0.82fr)] lg:gap-14 lg:pr-12 xl:pr-20">
-            <div className="relative min-h-[340px] w-full overflow-hidden sm:min-h-[430px] lg:min-h-[560px]">
-              <Image
-                src="/cta-team.webp"
-                alt="Team collaborating around laptops"
-                fill
-                sizes="(min-width: 1024px) 60vw, 100vw"
-                className="absolute inset-0 h-full w-full object-cover object-center lg:rounded-r-[2rem]"
-              />
-            </div>
-
-            {/* CTA Content */}
-            <div className="flex min-h-[560px] max-w-3xl flex-col text-center lg:text-left">
-              <div className="inline-flex w-fit items-center gap-2 self-center rounded-full border border-white/45 bg-white/45 px-4 py-2 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl lg:self-start mb-14">
-                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
-                  Ready to Transform Your Workflow?
-                </h2>
-              </div>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
-                Join thousands of professionals who have already revolutionized their data extraction process with AxLiner.
-              </p>
-              
-              {/* Single Primary CTA */}
-              <div className="mt-24 flex justify-center">
-                {isAuthenticated ? (
-                  <Button
-                    size="lg"
-                    className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 transition-all duration-200 shadow-lg shadow-primary/20"
-                    asChild
-                  >
-                    <NextLink href="/dashboard">Go to Dashboard</NextLink>
-                  </Button>
-                ) : (
-                  <Button
-                    size="lg"
-                    className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 transition-all duration-200 shadow-lg shadow-primary/20"
-                    onClick={() => openSignInModal("/pricing?from=signup")}
-                  >
-                    Try for free
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="backdrop-blur-md relative z-10">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <footer className="relative z-10 overflow-hidden bg-[#2f165e] text-white">
+        <div className="pointer-events-none absolute inset-0 opacity-35">
+          <div className="absolute -left-32 top-10 h-72 w-72 rounded-full bg-white/12 blur-3xl" />
+          <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#7f55c7]/35 blur-3xl" />
+        </div>
+
+        <div className="relative border-y border-white/10 py-4">
+          <div
+            className="flex w-max items-center gap-10 whitespace-nowrap text-xs font-semibold uppercase tracking-[0.28em] text-white/70"
+            style={{ animation: "scroll-left 42s linear infinite" }}
+          >
+            {[...Array(2)].map((_, repeat) => (
+              <div key={repeat} className="flex items-center gap-10">
+                <span>0101001110</span>
+                <span>handwritten tables</span>
+                <span>secure exports</span>
+                <span>batch recovery</span>
+                <span>structured xlsx</span>
+                <span>0100100001</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative mx-auto max-w-[1540px] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(640px,1fr)]">
             <div>
-              <div className="text-2xl font-bold text-foreground mb-4">AxLiner</div>
-              <p className="text-muted-foreground mb-4">
-                Transform screenshots to spreadsheets effortlessly with AI-powered OCR technology.
+              <div className="text-4xl font-black tracking-normal">AxLiner</div>
+              <p className="mt-6 max-w-xl text-lg leading-8 text-white/76">
+                Upload handwritten documents, recover the table structure, and move clean Excel files into your workflow without rebuilding the spreadsheet by hand.
               </p>
+              <p className="mt-7 text-sm font-semibold uppercase tracking-[0.24em] text-white/62">
+                Made with love in Alaska.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button asChild className="rounded-full bg-white px-7 py-5 font-bold text-[#2f165e] hover:bg-white/90">
+                  <NextLink href="/dashboard/client">Try It</NextLink>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="rounded-full border-white/25 bg-white/8 px-7 py-5 font-bold text-white hover:bg-white/14 hover:text-white"
+                >
+                  <NextLink href="/pricing">See Pricing</NextLink>
+                </Button>
+              </div>
             </div>
-            
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Product</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#features" className="hover:text-foreground hover:text-primary transition-colors">Why Choose Us</a></li>
-                <li><a href="#trusted" className="hover:text-foreground hover:text-primary transition-colors">Trusted By</a></li>
-                <li><a href="/pricing" className="hover:text-foreground hover:text-primary transition-colors">Pricing</a></li>
-                <li><a href="#benchmarks" className="hover:text-foreground hover:text-primary transition-colors">Performance Benchmarks</a></li>
-                <li><a href="#how-it-works" className="hover:text-foreground hover:text-primary transition-colors">How It Works</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Contact</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><a href="mailto:axliner.excel@gmail.com" className="hover:text-foreground hover:text-primary transition-colors">axliner.excel@gmail.com</a></li>
-              </ul>
+
+            <div className="grid gap-8 sm:grid-cols-4">
+              <div>
+                <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-white/55">Discover</h4>
+                <ul className="mt-5 space-y-3 text-sm font-medium text-white/78">
+                  <li><a href="#features" className="transition-colors hover:text-white">Solutions</a></li>
+                  <li><a href="#benchmarks" className="transition-colors hover:text-white">Benchmarks</a></li>
+                  <li><a href="#how-it-works" className="transition-colors hover:text-white">How it works</a></li>
+                  <li><NextLink href="/pricing" className="transition-colors hover:text-white">Pricing</NextLink></li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-white/55">Product</h4>
+                <ul className="mt-5 space-y-3 text-sm font-medium text-white/78">
+                  <li><NextLink href="/dashboard/client" className="transition-colors hover:text-white">Process images</NextLink></li>
+                  <li><NextLink href="/history" className="transition-colors hover:text-white">History</NextLink></li>
+                  <li><NextLink href="/dashboard/settings" className="transition-colors hover:text-white">Billing</NextLink></li>
+                  <li><a href="#security" className="transition-colors hover:text-white">Security</a></li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-white/55">Support</h4>
+                <ul className="mt-5 space-y-3 text-sm font-medium text-white/78">
+                  <li><a href="mailto:axliner.excel@gmail.com" className="transition-colors hover:text-white">Contact</a></li>
+                  <li><NextLink href="/privacy-policy" className="transition-colors hover:text-white">Privacy</NextLink></li>
+                  <li><NextLink href="/terms-of-service" className="transition-colors hover:text-white">Terms</NextLink></li>
+                  <li><NextLink href="/data-deletion" className="transition-colors hover:text-white">Data deletion</NextLink></li>
+                </ul>
+              </div>
+
+              <div className="rounded-[26px] border border-white/14 bg-white/8 p-5 backdrop-blur-md">
+                <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-white/55">Create</h4>
+                <p className="mt-5 text-sm leading-7 text-white/76">
+                  Start with a small batch, then upgrade when your document volume grows.
+                </p>
+                <NextLink href="/sign-up" className="mt-5 inline-flex text-sm font-bold text-white underline underline-offset-4">
+                  Create free account
+                </NextLink>
+              </div>
             </div>
           </div>
           
-          <div className="flex flex-col sm:flex-row justify-center items-center mt-8">
-            <p className="text-muted-foreground text-sm">
-              © 2025 AxLiner. All rights reserved.
-            </p>
+          <div className="mt-14 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs font-medium text-white/52 sm:flex-row sm:items-center sm:justify-between">
+            <p>© 2026 AxLiner. All rights reserved.</p>
+            <p>Secure document processing for teams that live in spreadsheets.</p>
           </div>
         </div>
       </footer>
