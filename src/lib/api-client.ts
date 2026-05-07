@@ -300,7 +300,7 @@ export interface UploadBatchMultipartOptions {
 }
 
 export interface AppLimits {
-  plan: 'anonymous' | 'free' | 'pro' | 'enterprise'
+  plan: 'anonymous' | 'free' | 'pro' | 'max' | 'mega'
   max_files_per_batch: number
   absolute_max_files_per_batch: number
   max_file_size_mb: number
@@ -321,13 +321,13 @@ export interface AppLimits {
   } | null
 }
 
-export type BillingPlanKey = 'pro_monthly' | 'pro_yearly' | 'business_monthly' | 'business_yearly'
+export type BillingPlanKey = 'pro_monthly' | 'pro_yearly' | 'max_monthly' | 'max_yearly' | 'mega_monthly' | 'mega_yearly'
 
 export interface BillingPlan {
   key: 'free' | BillingPlanKey
   checkout_key?: BillingPlanKey | null
   name: string
-  plan: 'anonymous' | 'free' | 'pro' | 'enterprise'
+  plan: 'anonymous' | 'free' | 'pro' | 'max' | 'mega'
   interval: 'forever' | 'month' | 'year'
   price_cents: number
   price_formatted: string
@@ -351,12 +351,12 @@ export interface BillingCheckoutResponse {
   checkout_id?: string
   checkout_url: string
   plan_key: BillingPlanKey
-  plan: 'pro' | 'enterprise'
+  plan: 'pro' | 'max' | 'mega'
   credits: number
 }
 
 export interface BillingSubscription {
-  plan?: 'free' | 'pro' | 'enterprise'
+  plan?: 'free' | 'pro' | 'max' | 'mega' | 'business' | 'enterprise'
   status?: string
   renews_at?: string | null
   ends_at?: string | null
@@ -369,7 +369,7 @@ export interface BillingSubscription {
 }
 
 export interface BillingStatusResponse {
-  plan: 'free' | 'pro' | 'enterprise'
+  plan: 'free' | 'pro' | 'max' | 'mega' | 'business' | 'enterprise'
   credits: {
     total_credits: number
     used_credits: number
@@ -623,11 +623,14 @@ export const ocrApi = {
       filename: string
       size_bytes?: number
       created_at?: string
+      download_url?: string
+      office_viewer_url?: string
     }>
     created_at: string
     expires_at?: string
     access_count: number
     is_active?: boolean
+    download_all_url?: string
   }> => {
     const response = await apiClient.get(`/api/v1/sessions/${sessionId}`)
     return response.data

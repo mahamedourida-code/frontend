@@ -62,6 +62,7 @@ function SettingsContent() {
   const supabase = createClient()
 
   const languageParam = searchParams.get('language') || (typeof window !== 'undefined' ? localStorage.getItem('ocrLanguage') || 'en' : 'en')
+  const checkoutStatus = searchParams.get('checkout_status') || searchParams.get('billing')
 
   const [activeSection, setActiveSection] = useState<SettingsSection>('account')
   const [loading, setLoading] = useState(false)
@@ -161,6 +162,16 @@ function SettingsContent() {
     }
   }, [user?.id])
 
+  useEffect(() => {
+    if (checkoutStatus === "success") {
+      toast.success("Payment complete. Credits will appear here when Lemon Squeezy confirms the webhook.")
+    } else if (checkoutStatus === "pending") {
+      toast.message("Billing is being confirmed. Refresh this page in a moment if credits are not visible yet.")
+    } else if (checkoutStatus === "cancelled" || checkoutStatus === "canceled") {
+      toast.message("Checkout cancelled. No charge was made.")
+    }
+  }, [checkoutStatus])
+
   // Update user profile
   const handleUpdateProfile = async () => {
     setLoading(true)
@@ -206,7 +217,9 @@ function SettingsContent() {
 
   const formatPlan = (plan?: string | null) => {
     if (!plan) return "Free"
-    return plan === "enterprise" ? "Business" : plan.charAt(0).toUpperCase() + plan.slice(1)
+    if (plan === "enterprise") return "Mega"
+    if (plan === "business") return "Max"
+    return plan.charAt(0).toUpperCase() + plan.slice(1)
   }
 
   const formatDate = (dateValue?: string | null) => {
@@ -246,6 +259,7 @@ function SettingsContent() {
   const creditUsed = billingStatus?.credits?.used_credits ?? 0
   const creditAvailable = billingStatus?.credits?.available_credits ?? 0
   const creditPercent = creditTotal > 0 ? Math.min(100, Math.round((creditUsed / creditTotal) * 100)) : 0
+  const noCredits = !billingLoading && creditAvailable <= 0
   const currentSubscription = billingStatus?.subscription
   const hasBillingPortal = Boolean(currentSubscription?.customer_portal_url || billingStatus?.customer?.portal_url)
 
@@ -458,6 +472,15 @@ function SettingsContent() {
                           </div>
                         </div>
 
+                        {noCredits && (
+                          <div className="mt-4 rounded-[24px] border border-[#2f165e]/20 bg-white/58 p-4 backdrop-blur">
+                            <p className="text-sm font-black text-[#2f165e]">No credits left</p>
+                            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                              Pick a Lemon Squeezy plan to keep converting handwritten images and PDF pages.
+                            </p>
+                          </div>
+                        )}
+
                         <div className="mt-5 flex flex-col gap-2 sm:flex-row">
                           <Button
                             className="h-11 rounded-2xl bg-[#2f165e] text-white hover:bg-[#42207c]"
@@ -471,7 +494,7 @@ function SettingsContent() {
                             className="h-11 rounded-2xl border-[#d9c9fb] bg-white/55"
                             onClick={() => window.location.assign("/pricing")}
                           >
-                            Compare plans
+                            {noCredits ? "Buy credits" : "Compare plans"}
                           </Button>
                         </div>
                       </div>

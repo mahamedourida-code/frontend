@@ -1,6 +1,6 @@
 // User-related types
 
-export type UserRole = 'free' | 'professional' | 'enterprise';
+export type UserRole = 'free' | 'professional' | 'max' | 'mega';
 
 export interface User {
   id: string;

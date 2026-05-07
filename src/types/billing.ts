@@ -1,6 +1,6 @@
 // Billing and subscription types
 
-export type PlanType = 'starter' | 'professional' | 'enterprise';
+export type PlanType = 'starter' | 'professional' | 'max' | 'mega';
 
 export type BillingInterval = 'monthly' | 'annual';
 

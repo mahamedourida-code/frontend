@@ -7,7 +7,7 @@ export interface Database {
           username: string | null
           full_name: string | null
           avatar_url: string | null
-          plan_type: 'free' | 'pro' | 'enterprise'
+          plan_type: 'free' | 'pro' | 'max' | 'mega'
           usage_credits: number
           created_at: string
           updated_at: string
@@ -17,7 +17,7 @@ export interface Database {
           username?: string | null
           full_name?: string | null
           avatar_url?: string | null
-          plan_type?: 'free' | 'pro' | 'enterprise'
+          plan_type?: 'free' | 'pro' | 'max' | 'mega'
           usage_credits?: number
           created_at?: string
           updated_at?: string
@@ -27,7 +27,7 @@ export interface Database {
           username?: string | null
           full_name?: string | null
           avatar_url?: string | null
-          plan_type?: 'free' | 'pro' | 'enterprise'
+          plan_type?: 'free' | 'pro' | 'max' | 'mega'
           usage_credits?: number
           created_at?: string
           updated_at?: string
@@ -191,7 +191,7 @@ export type ExportUpdate = Database['public']['Tables']['exports']['Update']
 
 // Status enums
 export type ProjectStatus = 'pending' | 'processing' | 'completed' | 'failed'
-export type PlanType = 'free' | 'pro' | 'enterprise'
+export type PlanType = 'free' | 'pro' | 'max' | 'mega'
 export type ActionType = 'ocr_process' | 'export_excel' | 'export_csv' | 'export_json'
 export type ExportFormat = 'excel' | 'csv' | 'json'
 

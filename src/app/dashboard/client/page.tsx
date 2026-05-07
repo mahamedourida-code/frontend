@@ -21,6 +21,7 @@ import type { AppLimits, RecoverableJobSummary } from "@/lib/api-client"
 import { showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
+import { CreditStack } from "@/components/BillingGlyphs"
 import Image from "next/image"
 import {
   Upload,
@@ -192,9 +193,13 @@ function ProcessImagesContent() {
     }
 
     try {
-      const credits = await ocrApi.getUserCredits()
+      const [credits, liveLimits] = await Promise.all([
+        ocrApi.getUserCredits(),
+        ocrApi.getLimits().catch(() => null),
+      ])
       const totalProcessed = credits.used_credits || 0
       setProcessedCount(totalProcessed)
+      if (liveLimits) setLimits(liveLimits)
       
       
     } catch (error) {
@@ -1043,6 +1048,11 @@ Best regards`
   const isTextOutput = outputMode === 'text'
   const uploadedSizeMb = uploadedFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024)
   const uploadedLabel = `${uploadedFiles.length} ${uploadedFiles.length === 1 ? 'file' : 'files'}`
+  const creditTotal = limits?.credits?.total_credits ?? 0
+  const creditAvailable = limits?.credits?.available_credits ?? 0
+  const creditUsed = limits?.credits?.used_credits ?? 0
+  const creditPercent = creditTotal > 0 ? Math.min(100, Math.round((creditUsed / creditTotal) * 100)) : 0
+  const noCredits = Boolean(limits?.credits && creditAvailable <= 0)
   const processLabel = isTextOutput
     ? uploadedFiles.length > 1 ? `Extract text from ${uploadedFiles.length} files` : 'Extract text'
     : uploadedFiles.length > 1 ? `Convert ${uploadedFiles.length} files` : 'Convert file'
@@ -1149,6 +1159,28 @@ Best regards`
           </Card>
         )}
 
+        {noCredits && !isProcessing && (
+          <Card className="mb-4 overflow-hidden rounded-[24px] border-[#2f165e]/25 bg-white/58 shadow-[0_16px_42px_rgba(47,22,94,0.10)] backdrop-blur-xl">
+            <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3">
+                <CreditStack className="h-8 w-8 shrink-0 text-[#2f165e]" />
+                <div>
+                  <p className="text-base font-bold text-[#111827]">No credits left</p>
+                  <p className="text-sm text-muted-foreground">
+                    Upgrade to keep converting handwritten images, scanned PDFs, and paper tables.
+                  </p>
+                </div>
+              </div>
+              <Button
+                onClick={() => router.push("/pricing?from=no-credits")}
+                className="h-11 rounded-2xl bg-[#2f165e] px-5 text-white hover:bg-[#24104b]"
+              >
+                Buy credits
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {isProcessing && !isComplete && (
           <Card className="mb-4 overflow-hidden rounded-[22px] border-[#2f165e] bg-[#2f165e] text-white shadow-[0_16px_42px_rgba(47,22,94,0.18)]">
             <CardContent className="p-3">
@@ -1219,6 +1251,30 @@ Best regards`
                       <span className="text-muted-foreground">/ {maxUploadFiles}</span>
                     </div>
                   </div>
+
+                  {limits?.credits && (
+                    <div className="mb-5 rounded-[22px] border border-[#eadfff] bg-white/45 p-3 backdrop-blur">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <CreditStack className="h-5 w-5 text-[#2f165e]" />
+                          <span className="text-sm font-semibold text-[#111827]">
+                            {creditAvailable.toLocaleString()} credits left
+                          </span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => router.push("/pricing")}
+                          className="h-8 rounded-xl px-3 text-[#2f165e] hover:bg-white/55"
+                        >
+                          Add credits
+                        </Button>
+                      </div>
+                      <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#eee7ff]">
+                        <div className="h-full rounded-full bg-[#2f165e]" style={{ width: `${creditPercent}%` }} />
+                      </div>
+                    </div>
+                  )}
 
                   <div className="mb-5 flex w-fit rounded-full border border-white/55 bg-white/40 p-1 shadow-[0_16px_40px_rgba(42,35,64,0.08)] backdrop-blur-2xl">
                     <button
@@ -1365,7 +1421,7 @@ Best regards`
                     <Button
                       size="lg"
                       onClick={handleProcessImages}
-                      disabled={isProcessing}
+                      disabled={isProcessing || noCredits}
                       className="h-12 gap-2 rounded-2xl px-6"
                     >
                       {isProcessing ? (

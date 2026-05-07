@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils"
 type BillingMode = "month" | "year"
 
 const companyLogos = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-const paidPlanKeys: BillingPlanKey[] = ["pro_monthly", "pro_yearly", "business_monthly", "business_yearly"]
+const paidPlanKeys: BillingPlanKey[] = ["pro_monthly", "pro_yearly", "max_monthly", "max_yearly", "mega_monthly", "mega_yearly"]
 
 function PricingFallback() {
   return (
@@ -90,8 +90,9 @@ function PricingContent() {
   const visiblePlans = useMemo(() => {
     const free = plans.find((plan) => plan.key === "free")
     const pro = plans.find((plan) => plan.plan === "pro" && plan.interval === billingMode)
-    const business = plans.find((plan) => plan.plan === "enterprise" && plan.interval === billingMode)
-    return [free, pro, business].filter(Boolean) as BillingPlan[]
+    const max = plans.find((plan) => plan.plan === "max" && plan.interval === billingMode)
+    const mega = plans.find((plan) => plan.plan === "mega" && plan.interval === billingMode)
+    return [free, pro, max, mega].filter(Boolean) as BillingPlan[]
   }, [plans, billingMode])
 
   const findCheckoutPlan = (planKey: BillingPlanKey) => {
@@ -194,14 +195,17 @@ function PricingContent() {
           </Button>
         </nav>
 
-        <div className="mx-auto mt-10 max-w-4xl text-center">
-          <div className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-[#eadfff] bg-white/60 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#5d3d91] backdrop-blur">
+        <div className="mx-auto mt-10 max-w-3xl text-center">
+          <div className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-[#eadfff] bg-white/60 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#5d3d91] backdrop-blur">
             <BillingSeal className="h-4 w-4" />
             Pricing
           </div>
-          <h1 className="mx-auto max-w-3xl text-4xl font-black leading-[1.04] tracking-tight text-foreground sm:text-5xl">
-            Pick the page volume that matches your batch workflow.
+          <h1 className="mx-auto max-w-3xl text-4xl font-semibold leading-[1.04] tracking-normal text-foreground sm:text-5xl">
+            Simple image credits for handwritten OCR.
           </h1>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-black">
+            Choose the amount of handwritten images, scanned paper, and PDF pages you want to convert into spreadsheet-ready output.
+          </p>
 
           <div className="mt-7 inline-flex rounded-[18px] border border-[#e6dbff] bg-white/58 p-1 shadow-[0_16px_45px_rgba(68,31,132,0.10)] backdrop-blur">
             {(["month", "year"] as BillingMode[]).map((mode) => (
@@ -229,7 +233,7 @@ function PricingContent() {
           </div>
         )}
 
-        <div className="mx-auto mt-12 grid max-w-6xl gap-5 lg:grid-cols-3">
+        <div className="mx-auto mt-12 grid max-w-7xl gap-4 md:grid-cols-2 xl:grid-cols-4">
           {plansLoading
             ? Array.from({ length: 3 }).map((_, index) => (
                 <Card key={index} className="h-[520px] rounded-[28px] border-[#ded3f4] bg-white/48 shadow-[0_24px_70px_rgba(30,18,57,0.08)] backdrop-blur-xl">
@@ -244,7 +248,7 @@ function PricingContent() {
             : visiblePlans.map((plan) => {
                 const isPaid = Boolean(plan.checkout_key)
                 const isLoading = checkoutLoading === plan.checkout_key
-                const isPopular = plan.plan === "pro"
+                const isPopular = plan.plan === "max"
                 const intervalLabel =
                   plan.interval === "year"
                     ? "per year"
@@ -264,8 +268,8 @@ function PricingContent() {
                   <Card
                     key={plan.key}
                     className={cn(
-                      "relative overflow-visible rounded-[28px] border-[#ded3f4] bg-white/72 shadow-[0_24px_70px_rgba(30,18,57,0.08)] backdrop-blur-xl",
-                      isPopular && "border-[#2f165e] shadow-[0_30px_90px_rgba(68,31,132,0.16)]"
+                      "relative overflow-visible rounded-[26px] border-[#ded3f4] bg-white/70 shadow-[0_18px_55px_rgba(30,18,57,0.07)] backdrop-blur-xl",
+                      isPopular && "border-[#2f165e] bg-white/82 shadow-[0_24px_70px_rgba(68,31,132,0.14)]"
                     )}
                   >
                     {isPopular && (
@@ -279,35 +283,30 @@ function PricingContent() {
                       </div>
                     )}
                     <CardContent className="p-0">
-                      <div className="border-b border-[#ece5fb] p-6">
+                      <div className="p-5">
                         <div className="flex items-start justify-between gap-4">
                           <div>
-                            <p className="text-sm font-black text-foreground">{plan.name}</p>
-                            <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#7c62b1]">
+                            <p className="text-lg font-semibold text-foreground">{plan.name}</p>
+                            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#7c62b1]">
                               {plan.interval === "year" ? "Annual plan" : plan.interval === "month" ? "Monthly plan" : "Trial"}
                             </p>
                           </div>
-                          <div className="flex h-11 w-11 items-center justify-center rounded-[18px] border border-[#e6dbff] bg-white/70 text-[#2f165e]">
-                            {plan.plan === "enterprise" ? <PlanSwitch className="h-5 w-5" /> : <CreditStack className="h-5 w-5" />}
-                          </div>
+                          {plan.plan === "mega" ? <PlanSwitch className="h-7 w-7 text-[#2f165e]" /> : <CreditStack className="h-7 w-7 text-[#2f165e]" />}
                         </div>
                         <div className="mt-5 flex items-end gap-2">
-                          <span className="text-5xl font-black tracking-tight text-foreground">{plan.price_formatted}</span>
-                          <span className="pb-2 text-sm font-bold text-muted-foreground">{intervalLabel}</span>
+                          <span className="text-4xl font-semibold tracking-normal text-foreground">{plan.price_formatted}</span>
+                          <span className="pb-1.5 text-sm font-semibold text-muted-foreground">{intervalLabel}</span>
                         </div>
-                        <div className="mt-5 rounded-[22px] bg-white/55 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_14px_34px_rgba(68,31,132,0.07)] backdrop-blur">
-                          <div className="flex items-center justify-between gap-3">
-                            <span className="text-xs font-black uppercase tracking-[0.16em] text-[#7c62b1]">Included volume</span>
-                            <span className="h-2.5 w-2.5 rounded-full bg-[#2f165e]" />
-                          </div>
-                          <p className="mt-2 text-2xl font-black text-[#2f165e]">{plan.included_volume}</p>
+                        <div className="mt-5 rounded-[18px] border border-[#eadfff] bg-white/50 p-4 backdrop-blur">
+                          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7c62b1]">Included</span>
+                          <p className="mt-1 text-2xl font-semibold text-[#2f165e]">{plan.included_volume}</p>
                         </div>
                         <Button
                           className={cn(
                             "mt-6 h-12 w-full rounded-[16px] font-bold",
                             isPopular
-                              ? "bg-[#151216] text-white hover:bg-[#2f165e]"
-                              : "bg-[#f1eee9] text-[#151216] hover:bg-[#e7e1d9]"
+                              ? "bg-[#2f165e] text-white hover:bg-[#24104b]"
+                              : "bg-[#151216] text-white hover:bg-[#2f165e]"
                           )}
                           disabled={Boolean(isLoading || (isPaid && !plan.checkout_available))}
                           onClick={() => startCheckout(plan)}
@@ -322,10 +321,10 @@ function PricingContent() {
                         </Button>
                       </div>
 
-                      <div className="p-6">
+                      <div className="border-t border-[#ece5fb] p-5">
                         <div className="mb-4 flex items-center gap-2">
                           {isPaid ? <CreditStack className="h-5 w-5 text-[#2f165e]" /> : <BillingSeal className="h-5 w-5 text-[#2f165e]" />}
-                          <p className="text-xs font-black uppercase tracking-[0.16em] text-foreground">Plan limits</p>
+                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground">Plan limits</p>
                         </div>
                         <ul className="space-y-3">
                           {features.map((feature) => (
