@@ -163,10 +163,10 @@ const ownedPipelineImages = [
   { src: "/sex2.png", alt: "AxLiner structured output review" },
 ];
 
-const ownedPipelinePoints = [
-  "Own the job queue, file metadata, download permissions, and recovery flow.",
-  "Keep every batch tied to a durable owner instead of browser-only state.",
-  "Shape outputs for Excel review, not generic text extraction.",
+const ownedPipelineCopy = [
+  "AxLiner owns the job queue, file metadata, download permissions, export layer, and recovery flow around every batch.",
+  "The product is shaped for handwritten tables and spreadsheet review, not a generic OCR wrapper stitched into a landing page.",
+  "External infrastructure can sit behind the pipeline, but the workflow, storage model, and user experience stay controlled by AxLiner.",
 ];
 
 function SiteIcon({ src, className, alt = "" }: { src: string; className?: string; alt?: string }) {
@@ -916,44 +916,37 @@ export default function Home() {
 
         <ScrollAnimatedSection id="owned-ai" className="relative z-20 overflow-hidden px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <div className="mx-auto max-w-[1540px]">
-            <div className="grid gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(520px,1.05fr)] lg:items-end">
-              <div data-animate="headline">
-                <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#4C287F]">
-                  Not a third-party wrapper
-                </p>
-                <h2 className="mt-6 max-w-4xl text-5xl font-black leading-[0.95] tracking-normal text-[#11182f] sm:text-6xl lg:text-[6.4rem]">
-                  Document AI built before the hype cycle.
-                </h2>
-              </div>
+            <div data-animate="headline">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#4C287F]">
+                Not a third-party wrapper
+              </p>
+              <h2 className="mt-5 max-w-[1180px] text-5xl font-semibold leading-[0.98] tracking-normal text-[#11182f] sm:text-6xl lg:text-[5.8rem]">
+                Document AI built before the hype cycle.
+              </h2>
+            </div>
 
-              <div className="grid gap-6 text-[#11182f]" data-animate="stagger">
-                <p className="text-lg font-medium leading-9">
-                  AxLiner is built around a controlled document pipeline, not a loose chain of generic upload tools. The batch queue, file ownership, storage metadata, download permissions, and Excel export layer are part of the product itself.
-                </p>
-                <p className="text-lg font-medium leading-9">
-                  That means the workflow is shaped for messy handwritten tables from the first upload to the final spreadsheet. External infrastructure can sit behind the system, but it does not define the user experience or the security model.
-                </p>
+            <div className="mt-10 overflow-hidden rounded-[22px] shadow-[0_28px_85px_rgba(42,35,64,0.12)]" data-animate="stagger">
+              <div className="grid min-h-[320px] sm:grid-cols-3 lg:min-h-[440px]">
+                {ownedPipelineImages.map((image) => (
+                  <div key={image.src} className="relative min-h-[300px] border-white/85 sm:border-l sm:first:border-l-0">
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      fill
+                      sizes="(min-width: 1024px) 31vw, 100vw"
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="mt-14 grid gap-5 lg:grid-cols-3" data-animate="stagger">
-              {ownedPipelineImages.map((image, index) => (
-                <div
-                  key={image.src}
-                  className="group relative min-h-[360px] overflow-hidden rounded-[28px] border border-white/70 bg-white/45 shadow-[0_26px_76px_rgba(42,35,64,0.10)] backdrop-blur-xl lg:min-h-[460px]"
-                >
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    fill
-                    sizes="(min-width: 1024px) 31vw, 100vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#11182f]/78 via-[#11182f]/18 to-transparent p-6 text-white">
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">0{index + 1}</p>
-                    <p className="mt-2 text-xl font-semibold">{ownedPipelinePoints[index]}</p>
-                  </div>
-                </div>
+            <div className="mt-10 grid gap-8 text-[#11182f] md:grid-cols-3" data-animate="stagger">
+              {ownedPipelineCopy.map((item, index) => (
+                <p key={item} className="border-t border-[#11182f]/18 pt-5 text-base font-medium leading-8">
+                  <span className="mr-3 text-sm font-bold text-[#4C287F]">0{index + 1}</span>
+                  {item}
+                </p>
               ))}
             </div>
 

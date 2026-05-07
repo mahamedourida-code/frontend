@@ -37,12 +37,14 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
     <aside className="relative z-10 hidden lg:flex lg:w-[290px] lg:flex-col">
       <div className="sticky top-4 flex h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-[30px] border border-[#ebe2ff] bg-[#E9ECE4]/90 shadow-[0_24px_80px_rgba(68,31,132,0.10)] backdrop-blur-xl">
         <div className="border-b border-[#efe7ff] px-5 pb-5 pt-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/60">
-              <AppIcon size={30} />
-            </div>
+          <Link
+            href="/"
+            className="group flex w-fit items-center gap-3 rounded-full px-1 py-1 transition-opacity hover:opacity-80"
+            aria-label="Go to AxLiner homepage"
+          >
+            <AppIcon size={34} />
             <span className="text-xl font-bold text-black dark:text-white">AxLiner</span>
-          </div>
+          </Link>
 
           <div className="mt-5 rounded-[24px] border border-[#efe7ff] bg-white/50 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
             <div className="flex items-center gap-3">
@@ -76,16 +78,12 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                     : "text-muted-foreground hover:bg-white/55 hover:text-foreground"
                 )}
               >
-                <div
+                <item.icon
                   className={cn(
-                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border transition-colors",
-                    activeItem === item.key
-                      ? "border-white/10 bg-white/10 text-white"
-                      : "border-[#eadfff] bg-white/70 text-[#65479f] group-hover:border-[#dccbff]"
+                    "h-5 w-5 shrink-0 transition-colors",
+                    activeItem === item.key ? "text-white" : "text-[#65479f] group-hover:text-[#2f165e]"
                   )}
-                >
-                  <item.icon className="h-4 w-4" />
-                </div>
+                />
                 <p className={cn("truncate font-semibold", activeItem === item.key ? "text-white" : "text-foreground")}>
                   {item.label}
                 </p>
@@ -96,9 +94,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
               href="/signout"
               className="mt-4 flex w-full items-center gap-3 rounded-[22px] border border-[#f1e9ff] px-3 py-3 text-sm text-muted-foreground transition-colors hover:bg-white/55 hover:text-foreground"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/70 text-[#65479f]">
-                <LogOut className="h-4 w-4" />
-              </div>
+              <LogOut className="h-5 w-5 shrink-0 text-[#65479f]" />
               <p className="font-semibold text-foreground">Sign Out</p>
             </Link>
           </div>

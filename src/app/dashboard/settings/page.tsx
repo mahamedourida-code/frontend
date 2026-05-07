@@ -27,14 +27,11 @@ import {
   Sun,
   Laptop,
   Languages,
-  KeyRound,
   Check,
-  ShieldCheck,
   FileSpreadsheet,
   DownloadCloud,
   Save
 } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 
 type SettingsSection = 'account' | 'billing' | 'preferences'
 type Theme = 'dark' | 'light' | 'system'
@@ -77,12 +74,6 @@ function SettingsContent() {
   // Account state
   const [fullName, setFullName] = useState("")
   const [email, setEmail] = useState("")
-
-  // Password state
-  const [showPasswordChange, setShowPasswordChange] = useState(false)
-  const [oldPassword, setOldPassword] = useState("")
-  const [newPassword, setNewPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
 
   // Preferences state
   const [language, setLanguage] = useState(languageParam)
@@ -183,54 +174,6 @@ function SettingsContent() {
       toast.success("Profile updated successfully")
     } catch (error: any) {
       toast.error(error.message || "Failed to update profile")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Update password
-  const handleUpdatePassword = async () => {
-    if (!oldPassword || !newPassword || !confirmPassword) {
-      toast.error("Please fill in all password fields")
-      return
-    }
-
-    if (newPassword !== confirmPassword) {
-      toast.error("New passwords don't match")
-      return
-    }
-
-    if (newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters")
-      return
-    }
-
-    setLoading(true)
-    try {
-      // First verify the old password by attempting to sign in
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: user?.email || "",
-        password: oldPassword
-      })
-
-      if (signInError) {
-        throw new Error("Current password is incorrect")
-      }
-
-      // Now update to the new password
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      })
-
-      if (error) throw error
-
-      toast.success("Password updated successfully")
-      setOldPassword("")
-      setNewPassword("")
-      setConfirmPassword("")
-      setShowPasswordChange(false)
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update password")
     } finally {
       setLoading(false)
     }
@@ -412,9 +355,7 @@ function SettingsContent() {
                 <Card className="ax-glass-card">
                   <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 lg:h-10 lg:w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <User className="h-4 w-4 lg:h-5 lg:w-5 text-primary" />
-                      </div>
+                      <User className="h-5 w-5 text-primary" />
                       <div>
                         <CardTitle className="text-base lg:text-lg">Profile Information</CardTitle>
                         <CardDescription className="text-xs lg:text-sm">Update your personal details</CardDescription>
@@ -464,104 +405,6 @@ function SettingsContent() {
                     </div>
                   </CardContent>
                 </Card>
-
-                {/* Security Settings */}
-                <Card className="ax-glass-card">
-                  <CardHeader className="p-3 lg:p-4">
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 lg:h-10 lg:w-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                        <ShieldCheck className="h-4 w-4 lg:h-5 lg:w-5 text-orange-600" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-base lg:text-lg">Security</CardTitle>
-                        <CardDescription className="text-xs lg:text-sm">Manage your password and security settings</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3 lg:space-y-4 p-3 lg:p-4">
-                    {!showPasswordChange ? (
-                      <div className="flex items-center justify-between p-3 lg:p-4 rounded-lg border bg-muted/50">
-                        <div className="flex items-center gap-2 lg:gap-3">
-                          <KeyRound className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />
-                          <div>
-                            <p className="text-xs lg:text-sm font-medium">Password</p>
-                            <p className="text-[10px] lg:text-xs text-muted-foreground">••••••••••••</p>
-                          </div>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setShowPasswordChange(true)}
-                          className="h-8 lg:h-9 text-xs"
-                        >
-                          Change
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        <Alert>
-                          <ShieldCheck className="h-4 w-4" />
-                          <AlertDescription>
-                            Enter your current password and choose a new one. Password must be at least 6 characters.
-                          </AlertDescription>
-                        </Alert>
-
-                        <div className="space-y-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="old-password">Current Password</Label>
-                            <Input
-                              id="old-password"
-                              type="password"
-                              placeholder="Enter current password"
-                              value={oldPassword}
-                              onChange={(e) => setOldPassword(e.target.value)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="new-password">New Password</Label>
-                            <Input
-                              id="new-password"
-                              type="password"
-                              placeholder="Enter new password"
-                              value={newPassword}
-                              onChange={(e) => setNewPassword(e.target.value)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="confirm-password">Confirm New Password</Label>
-                            <Input
-                              id="confirm-password"
-                              type="password"
-                              placeholder="Confirm new password"
-                              value={confirmPassword}
-                              onChange={(e) => setConfirmPassword(e.target.value)}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="flex justify-end gap-3 pt-4 border-t">
-                          <Button
-                            variant="outline"
-                            onClick={() => {
-                              setShowPasswordChange(false)
-                              setOldPassword("")
-                              setNewPassword("")
-                              setConfirmPassword("")
-                            }}
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            onClick={handleUpdatePassword}
-                            disabled={loading || !oldPassword || !newPassword || !confirmPassword}
-                          >
-                            {loading ? "Updating..." : "Update Password"}
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
               </div>
             )}
 
@@ -578,9 +421,7 @@ function SettingsContent() {
                               {billingLoading ? "Loading plan" : `${formatPlan(billingStatus?.plan)} workspace`}
                             </h2>
                           </div>
-                          <div className="flex h-12 w-12 items-center justify-center rounded-[20px] border border-[#eadfff] bg-white/55 text-[#4b2d82]">
-                            <BillingSeal className="h-7 w-7" />
-                          </div>
+                          <BillingSeal className="h-9 w-9 shrink-0 text-[#4b2d82]" />
                         </div>
 
                         <div className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -637,9 +478,7 @@ function SettingsContent() {
 
                       <div className="border-t border-[#eadfff] bg-white/25 p-5 backdrop-blur lg:border-l lg:border-t-0 sm:p-6">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-11 w-11 items-center justify-center rounded-[18px] border border-[#eadfff] bg-white/60 text-[#4b2d82]">
-                            <PlanSwitch className="h-6 w-6" />
-                          </div>
+                          <PlanSwitch className="h-7 w-7 shrink-0 text-[#4b2d82]" />
                           <div>
                             <h3 className="font-black text-foreground">Upgrade path</h3>
                             <p className="text-sm text-muted-foreground">Checkout opens in Lemon Squeezy.</p>
@@ -688,9 +527,7 @@ function SettingsContent() {
                 <Card className="ax-glass-card">
                   <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
-                      <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                        <Settings2 className="h-5 w-5 text-blue-600" />
-                      </div>
+                      <Settings2 className="h-5 w-5 text-[#4b2d82]" />
                       <div>
                         <CardTitle>Processing Settings</CardTitle>
                         <CardDescription>Configure automatic actions</CardDescription>
@@ -740,9 +577,7 @@ function SettingsContent() {
                 <Card className="ax-glass-card">
                   <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
-                      <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                        <Languages className="h-5 w-5 text-blue-600" />
-                      </div>
+                      <Languages className="h-5 w-5 text-[#4b2d82]" />
                       <div>
                         <CardTitle>OCR Detection Language</CardTitle>
                         <CardDescription>Set the language for text recognition</CardDescription>

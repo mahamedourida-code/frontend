@@ -141,7 +141,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
           </div>
         </div>
 
-        <div className="relative min-h-[440px] overflow-hidden rounded-[34px] border border-white/60 bg-white/25 shadow-[0_28px_85px_rgba(42,35,64,0.12)] backdrop-blur-xl lg:min-h-[640px]">
+        <div className="relative min-h-[440px] overflow-hidden rounded-[26px] shadow-[0_26px_70px_rgba(42,35,64,0.10)] lg:min-h-[640px]">
           <Image
             src={solution.detailImage}
             alt={`${solution.title} document workflow`}
@@ -150,13 +150,6 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
             sizes="(min-width: 1024px) 54vw, 100vw"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#111827]/35 via-transparent to-transparent" />
-          <div className="absolute bottom-6 left-6 right-6 rounded-[26px] border border-white/45 bg-white/55 p-5 shadow-[0_20px_55px_rgba(42,35,64,0.14)] backdrop-blur-xl">
-            <p className="text-sm font-semibold text-[#2f165e]">{solution.title}</p>
-            <p className="mt-2 text-xl font-semibold leading-7 text-[#111827]">
-              From uploaded images to review-ready spreadsheets.
-            </p>
-          </div>
         </div>
       </section>
 
@@ -201,7 +194,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 lg:grid-cols-[1.08fr_0.92fr] lg:px-8 lg:py-20">
-        <div className="relative min-h-[420px] overflow-hidden rounded-[34px] border border-white/60 bg-white/25 shadow-[0_28px_85px_rgba(42,35,64,0.11)] backdrop-blur-xl lg:min-h-[560px]">
+        <div className="relative min-h-[420px] overflow-hidden rounded-[26px] shadow-[0_24px_65px_rgba(42,35,64,0.09)] lg:min-h-[560px]">
           <Image
             src={POLIVALENT_SOLUTION_IMAGE}
             alt="AxLiner workspace overview"
