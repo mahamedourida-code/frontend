@@ -67,10 +67,6 @@ function loadGsap() {
   return gsapLoadPromise;
 }
 
-const siteIcons = {
-  arrow: "/site-icons/io/arrow.svg",
-};
-
 const solutionCards = [
   {
     title: "Accounting",
@@ -169,17 +165,6 @@ const ownedPipelineCopy = [
   "The product is shaped for handwritten tables and spreadsheet review, not a generic OCR wrapper stitched into a landing page. Every result is prepared for rows, columns, review, and clean export instead of loose extracted text.",
   "External infrastructure can sit behind the pipeline, but the workflow, storage model, and user experience stay controlled by AxLiner. That keeps retries, batch recovery, and output delivery predictable for real users.",
 ];
-
-function SiteIcon({ src, className, alt = "" }: { src: string; className?: string; alt?: string }) {
-  return (
-    <img
-      src={src}
-      alt={alt}
-      aria-hidden={alt ? undefined : true}
-      className={cn("inline-block object-contain", className)}
-    />
-  );
-}
 
 export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
@@ -530,10 +515,9 @@ export default function Home() {
                 <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row lg:items-center">
                   <Button
                     onClick={() => scrollToSection('converter')}
-                    className="h-12 rounded-full bg-[#2f165e] px-7 text-sm font-semibold text-white shadow-[0_18px_35px_rgba(47,22,94,0.22)] hover:bg-[#24104b]"
+                    className="h-14 rounded-full bg-[#2f165e] px-10 text-base font-semibold text-white shadow-[0_18px_35px_rgba(47,22,94,0.22)] hover:bg-[#24104b]"
                   >
-                    Try it
-                    <SiteIcon src={siteIcons.arrow} className="ml-2 h-5 w-5" />
+                    Try It
                   </Button>
 
                   <div className="flex items-center gap-3">
@@ -926,20 +910,20 @@ export default function Home() {
 
         <ScrollAnimatedSection id="owned-ai" className="relative z-20 overflow-hidden px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <div className="mx-auto max-w-[1540px]">
-            <div data-animate="headline">
+            <div className="mx-auto max-w-[980px] text-center" data-animate="headline">
               <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#4C287F]">
                 Not a third-party wrapper
               </p>
-              <h2 className="mt-5 max-w-[980px] text-4xl font-semibold leading-[1.02] tracking-normal text-[#11182f] sm:text-5xl lg:text-[4.2rem]">
+              <h2 className="mt-5 text-4xl font-semibold leading-[1.02] tracking-normal text-[#11182f] sm:text-5xl lg:text-[4.2rem]">
                 Document AI built before the hype cycle.
               </h2>
             </div>
 
-            <div className="mt-10 max-w-[1120px]" data-animate="stagger">
-              <div className="overflow-hidden rounded-[18px] shadow-[0_22px_60px_rgba(42,35,64,0.10)]">
-                <div className="grid min-h-[220px] sm:grid-cols-3 lg:min-h-[320px]">
+            <div className="mx-auto mt-10 max-w-[1120px]" data-animate="stagger">
+              <div className="mx-auto overflow-hidden rounded-[18px] shadow-[0_22px_60px_rgba(42,35,64,0.10)]">
+                <div className="grid min-h-[190px] sm:grid-cols-3 lg:min-h-[260px]">
                   {ownedPipelineImages.map((image) => (
-                    <div key={image.src} className="relative min-h-[220px] border-white/85 sm:border-l sm:first:border-l-0">
+                    <div key={image.src} className="relative min-h-[190px] border-white/85 sm:border-l sm:first:border-l-0 lg:min-h-[260px]">
                       <Image
                         src={image.src}
                         alt={image.alt}
@@ -952,12 +936,12 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="mt-8 grid gap-8 text-[#11182f] md:grid-cols-3">
+              <div className="mx-auto mt-8 grid max-w-[1040px] gap-7 text-center text-[#11182f] md:grid-cols-3">
                 {ownedPipelineCopy.map((item, index) => (
-                  <p key={item} className="border-t border-[#11182f]/18 pt-5 text-base font-medium leading-8">
-                    <span className="mr-3 text-sm font-bold text-[#4C287F]">0{index + 1}</span>
-                    {item}
-                  </p>
+                  <div key={item} className="border-t border-[#11182f]/18 pt-5">
+                    <p className="text-sm font-bold text-[#4C287F]">0{index + 1}</p>
+                    <p className="mt-3 text-base font-medium leading-8 text-[#11182f]/80">{item}</p>
+                  </div>
                 ))}
               </div>
             </div>

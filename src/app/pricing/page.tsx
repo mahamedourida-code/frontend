@@ -5,9 +5,10 @@ import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 
-import { AppIcon } from "@/components/AppIcon"
+import { AppLogo } from "@/components/AppIcon"
 import { BillingSeal, CreditStack, PlanSwitch } from "@/components/BillingGlyphs"
 import { GoogleSignInModal } from "@/components/GoogleSignInModal"
+import { MobileNav } from "@/components/MobileNav"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useAuth } from "@/hooks/useAuth"
@@ -356,21 +357,35 @@ function PricingContent() {
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#E9ECE4]">
-      <section className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between rounded-[28px] border border-[#eadfff] bg-[#E9ECE4]/90 px-4 py-3 shadow-[0_18px_55px_rgba(68,31,132,0.10)] backdrop-blur-xl">
-          <Link href="/" className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/65">
-              <AppIcon size={28} />
-            </span>
-            <span className="text-lg font-black text-foreground">AxLiner</span>
+      <section className="mx-auto max-w-7xl px-4 pb-16 pt-4 sm:px-6 lg:px-8">
+        <nav className="mx-auto flex max-w-6xl items-center justify-between rounded-[35px] border border-black/10 bg-neutral-100/55 p-2 shadow-[0_18px_45px_rgba(20,20,20,0.08)] ring-1 ring-white/35 backdrop-blur-2xl lg:p-3">
+          <Link href="/" aria-label="AxLiner home">
+            <AppLogo />
           </Link>
+
+          <div className="hidden items-center gap-2 lg:flex">
+            <Link className="rounded-full px-4 py-2 text-sm font-semibold text-black hover:bg-white/50" href="/#features">
+              Solutions
+            </Link>
+            <Link className="rounded-full bg-white/60 px-4 py-2 text-sm font-semibold text-[#2f165e]" href="/pricing">
+              Pricing
+            </Link>
+            <Link className="rounded-full px-4 py-2 text-sm font-semibold text-black hover:bg-white/50" href="/blogs">
+              Blogs
+            </Link>
+            <Link className="rounded-full px-4 py-2 text-sm font-semibold text-black hover:bg-white/50" href="/#benchmarks">
+              Benchmarks
+            </Link>
+          </div>
+
           <Button
             variant="outline"
-            className="rounded-2xl border-[#d9c9fb] bg-white/65"
+            className="hidden rounded-full border-[#d9c9fb] bg-white/65 px-5 font-semibold lg:inline-flex"
             onClick={() => router.push(user ? "/dashboard/settings?section=billing" : "/")}
           >
-            {user ? "Billing settings" : "Try it"}
+            {user ? "Billing" : "Try It"}
           </Button>
+          <MobileNav />
         </nav>
 
         <div className="mx-auto mt-10 max-w-3xl text-center">
@@ -435,7 +450,7 @@ function PricingContent() {
                       ? "per month"
                       : "forever"
                 const features = [
-                  { value: presentation.included, label: "included credits" },
+                  { value: presentation.included, label: "available in this plan" },
                   { value: `${plan.max_files_per_batch}`, label: "files per batch" },
                   { value: `${plan.max_file_size_mb}MB`, label: "max file size" },
                   plan.plan === "anonymous"
@@ -466,7 +481,7 @@ function PricingContent() {
                         <div className="flex items-start justify-between gap-4">
                           <div>
                             <p className="text-lg font-semibold text-foreground">{presentation.name}</p>
-                            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#7c62b1]">
+                            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#6b7280]">
                               {presentation.cadence}
                             </p>
                           </div>
@@ -474,11 +489,10 @@ function PricingContent() {
                         </div>
                         <div className="mt-5 flex items-end gap-2">
                           <span className="text-4xl font-semibold tracking-normal text-[#2f165e]">{plan.price_formatted}</span>
-                          <span className="pb-1.5 text-sm font-semibold text-muted-foreground">{intervalLabel}</span>
+                          <span className="pb-1.5 text-sm font-semibold text-[#6b7280]">{intervalLabel}</span>
                         </div>
                         <div className="mt-5 rounded-[18px] bg-[#2f165e] p-4 text-white shadow-[0_16px_40px_rgba(47,22,94,0.18)]">
-                          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-white/70">Included credits</span>
-                          <p className="mt-1 text-2xl font-semibold">{presentation.included}</p>
+                          <p className="text-2xl font-semibold">{presentation.included}</p>
                         </div>
                         <Button
                           className={cn(
@@ -503,9 +517,10 @@ function PricingContent() {
                       <div className="border-t border-[#ece5fb] p-5">
                         <ul className="space-y-3">
                           {features.map((feature) => (
-                            <li key={`${feature.value}-${feature.label}`} className="flex items-baseline gap-2 text-sm">
+                            <li key={`${feature.value}-${feature.label}`} className="flex items-baseline gap-3 text-sm">
+                              <span className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-[#2f165e]" />
                               <span className="font-semibold text-[#2f165e]">{feature.value}</span>
-                              <span className="text-muted-foreground">{feature.label}</span>
+                              <span className="text-[#6b7280]">{feature.label}</span>
                             </li>
                           ))}
                         </ul>
