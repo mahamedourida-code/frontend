@@ -164,9 +164,9 @@ const ownedPipelineImages = [
 ];
 
 const ownedPipelineCopy = [
-  "AxLiner owns the job queue, file metadata, download permissions, export layer, and recovery flow around every batch.",
-  "The product is shaped for handwritten tables and spreadsheet review, not a generic OCR wrapper stitched into a landing page.",
-  "External infrastructure can sit behind the pipeline, but the workflow, storage model, and user experience stay controlled by AxLiner.",
+  "AxLiner owns the job queue, file metadata, download permissions, export layer, and recovery flow around every batch. Each file stays tied to a durable owner so status, sharing, and downloads follow the same access model.",
+  "The product is shaped for handwritten tables and spreadsheet review, not a generic OCR wrapper stitched into a landing page. Every result is prepared for rows, columns, review, and clean export instead of loose extracted text.",
+  "External infrastructure can sit behind the pipeline, but the workflow, storage model, and user experience stay controlled by AxLiner. That keeps retries, batch recovery, and output delivery predictable for real users.",
 ];
 
 function SiteIcon({ src, className, alt = "" }: { src: string; className?: string; alt?: string }) {
@@ -920,34 +920,36 @@ export default function Home() {
               <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#4C287F]">
                 Not a third-party wrapper
               </p>
-              <h2 className="mt-5 max-w-[1180px] text-5xl font-semibold leading-[0.98] tracking-normal text-[#11182f] sm:text-6xl lg:text-[5.8rem]">
+              <h2 className="mt-5 max-w-[980px] text-4xl font-semibold leading-[1.02] tracking-normal text-[#11182f] sm:text-5xl lg:text-[4.2rem]">
                 Document AI built before the hype cycle.
               </h2>
             </div>
 
-            <div className="mt-10 max-w-[1120px] overflow-hidden rounded-[18px] shadow-[0_22px_60px_rgba(42,35,64,0.10)]" data-animate="stagger">
-              <div className="grid min-h-[220px] sm:grid-cols-3 lg:min-h-[320px]">
-                {ownedPipelineImages.map((image) => (
-                  <div key={image.src} className="relative min-h-[220px] border-white/85 sm:border-l sm:first:border-l-0">
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      sizes="(min-width: 1024px) 31vw, 100vw"
-                      className="object-cover"
-                    />
-                  </div>
+            <div className="mt-10 max-w-[1120px]" data-animate="stagger">
+              <div className="overflow-hidden rounded-[18px] shadow-[0_22px_60px_rgba(42,35,64,0.10)]">
+                <div className="grid min-h-[220px] sm:grid-cols-3 lg:min-h-[320px]">
+                  {ownedPipelineImages.map((image) => (
+                    <div key={image.src} className="relative min-h-[220px] border-white/85 sm:border-l sm:first:border-l-0">
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        fill
+                        sizes="(min-width: 1024px) 31vw, 100vw"
+                        className="object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-8 grid gap-8 text-[#11182f] md:grid-cols-3">
+                {ownedPipelineCopy.map((item, index) => (
+                  <p key={item} className="border-t border-[#11182f]/18 pt-5 text-base font-medium leading-8">
+                    <span className="mr-3 text-sm font-bold text-[#4C287F]">0{index + 1}</span>
+                    {item}
+                  </p>
                 ))}
               </div>
-            </div>
-
-            <div className="mt-10 grid gap-8 text-[#11182f] md:grid-cols-3" data-animate="stagger">
-              {ownedPipelineCopy.map((item, index) => (
-                <p key={item} className="border-t border-[#11182f]/18 pt-5 text-base font-medium leading-8">
-                  <span className="mr-3 text-sm font-bold text-[#4C287F]">0{index + 1}</span>
-                  {item}
-                </p>
-              ))}
             </div>
           </div>
         </ScrollAnimatedSection>
