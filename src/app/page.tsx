@@ -129,21 +129,6 @@ const solutionCards = [
   },
 ];
 
-const securityControls = [
-  {
-    title: "Controlled file access",
-    text: "Downloads and shared files are checked against job ownership before a result is returned.",
-  },
-  {
-    title: "Private processing flow",
-    text: "Uploads, generated files, and job metadata are kept in the durable project storage layer, not browser-only state.",
-  },
-  {
-    title: "Operational safeguards",
-    text: "Queue limits, rate limits, and worker controls are designed to keep batch processing predictable under load.",
-  },
-];
-
 const faqItems = [
   {
     question: "Can I convert PDFs and images in the same batch?",
@@ -1098,88 +1083,80 @@ export default function Home() {
                 "polygon(0 4%, 12% 2.8%, 25% 4.6%, 40% 2.4%, 58% 4.3%, 75% 2.7%, 100% 4%, 100% 100%, 0 100%)",
             }}
           />
-          <div className="container relative z-10 mx-auto max-w-[1420px] px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-10 lg:grid-cols-[minmax(0,1.08fr)_minmax(420px,0.92fr)] lg:items-center xl:gap-16">
+          <div className="container relative z-10 mx-auto max-w-[1540px] px-4 sm:px-6 lg:px-8">
+            <div className="grid gap-12 lg:grid-cols-[minmax(420px,0.88fr)_minmax(520px,1.12fr)] lg:items-center">
               <div data-animate="headline">
-                <p className="text-base font-semibold uppercase tracking-[0.16em] text-[#4C287F]">
-                  Security & Compliance
-                </p>
-                <h2 className="mt-5 max-w-3xl text-4xl font-semibold leading-tight text-black sm:text-5xl lg:text-[3.65rem]">
+                <p className="text-xl font-medium text-black">Security & Compliance</p>
+                <h2 className="mt-6 max-w-2xl text-4xl font-bold leading-tight text-[#11182f] sm:text-5xl lg:text-6xl">
                   Your Data Security Guaranteed
                 </h2>
-                <p className="mt-7 max-w-3xl text-lg leading-8 text-black">
+
+                <div className="mt-10 max-w-[620px] overflow-hidden rounded-[10px] shadow-[0_24px_56px_rgba(17,24,47,0.12)]">
+                    <Image
+                      src="/secu.webp"
+                      alt="Secure digital document processing"
+                      width={760}
+                      height={420}
+                      sizes="(min-width: 1024px) 40vw, 100vw"
+                      className="h-[240px] w-full object-cover object-center sm:h-[280px] lg:h-[300px]"
+                    />
+                </div>
+              </div>
+
+              <div className="lg:pt-12" data-animate="stagger">
+                <p className="max-w-3xl text-2xl leading-10 text-[#11182f]">
                   At AxLiner, your data is treated with utmost care. We build around global data protection expectations and international privacy requirements for document processing workflows.
                 </p>
 
-                <div className="mt-8 grid gap-4 sm:grid-cols-3" data-animate="stagger">
-                  {securityControls.map((item) => (
-                    <div
-                      key={item.title}
-                      className="min-h-[168px] rounded-[18px] border border-white/60 bg-white/50 p-5 shadow-[0_18px_48px_rgba(76,40,127,0.08)] backdrop-blur-xl"
-                    >
-                      <span className="mb-5 block h-[3px] w-12 rounded-full bg-[#4C287F]" />
-                      <h3 className="text-base font-semibold text-black">{item.title}</h3>
-                      <p className="mt-3 text-sm leading-6 text-black/75">{item.text}</p>
+                <div className="mt-10 space-y-7">
+                  {[
+                    "ISO 27001-aligned security controls",
+                    "Built for GDPR, SOC 2, CCPA and HIPAA-conscious workflows",
+                    "Secure infrastructure across Supabase, Fly.io and Vercel",
+                  ].map((item) => (
+                    <div key={item} className="flex items-start gap-4 text-xl text-[#11182f]">
+                      <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-[#2815FF] text-[#2815FF]">
+                        <span className="h-2.5 w-1.5 rotate-45 border-b-2 border-r-2 border-current" />
+                      </span>
+                      <span>{item}</span>
                     </div>
                   ))}
                 </div>
 
                 <Button
-                  className="mt-9 rounded-full bg-[#4C287F] px-7 py-6 text-base font-semibold text-white shadow-[0_16px_42px_rgba(76,40,127,0.24)] hover:bg-[#3e2168]"
+                  className="mt-12 rounded-full bg-[#E4E8FA] px-8 py-6 text-lg font-bold text-[#11182f] shadow-none hover:bg-[#d9def4]"
                   asChild
                 >
                   <NextLink href="/privacy-policy">More Information</NextLink>
                 </Button>
               </div>
-
-              <div className="mx-auto w-full max-w-[560px] lg:justify-self-end" data-animate="stagger">
-                <div className="rounded-[24px] border border-white/60 bg-white/40 p-3 shadow-[0_28px_72px_rgba(17,24,47,0.12)] backdrop-blur-xl">
-                  <div className="overflow-hidden rounded-[18px] bg-white">
-                    <Image
-                      src="/secu.webp"
-                      alt="Secure digital document processing"
-                      width={840}
-                      height={560}
-                      sizes="(min-width: 1024px) 38vw, 100vw"
-                      className="h-[280px] w-full object-cover object-center sm:h-[340px] lg:h-[380px]"
-                    />
-                  </div>
-                </div>
-              </div>
             </div>
 
-            <div className="mt-20 border-t border-black/10 pt-14 lg:mt-24" data-animate="stagger">
-              <div className="grid gap-8 lg:grid-cols-[minmax(280px,0.8fr)_minmax(0,1.2fr)] lg:items-start">
-                <div>
-                  <p className="text-base font-semibold uppercase tracking-[0.16em] text-[#4C287F]">
-                    FAQ
-                  </p>
-                  <h3 className="mt-4 max-w-lg text-3xl font-semibold leading-tight text-black sm:text-4xl">
-                    Most frequent questions
-                  </h3>
-                  <p className="mt-5 max-w-md text-base leading-7 text-black/75">
-                    Short answers for upload limits, billing behavior, result recovery, and secure downloads.
-                  </p>
-                </div>
+            <div className="mx-auto mt-24 max-w-[1160px] text-center lg:mt-28" data-animate="headline">
+              <h3 className="text-4xl font-bold leading-tight text-[#11182f] sm:text-5xl lg:text-[4.25rem]">
+                Frequently Asked Questions
+              </h3>
+            </div>
 
-                <div className="space-y-3">
-                  {faqItems.map((item) => (
-                    <details
-                      key={item.question}
-                      className="group rounded-[18px] border border-white/60 bg-white/50 px-5 py-4 shadow-[0_16px_46px_rgba(76,40,127,0.08)] backdrop-blur-xl open:bg-white/70"
-                    >
-                      <summary className="flex cursor-pointer list-none items-center justify-between gap-5 text-left text-base font-semibold text-black [&::-webkit-details-marker]:hidden">
-                        <span>{item.question}</span>
-                        <span className="relative h-5 w-5 shrink-0 rounded-full border border-[#4C287F]/40">
-                          <span className="absolute left-1/2 top-1/2 h-[2px] w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4C287F]" />
-                          <span className="absolute left-1/2 top-1/2 h-2.5 w-[2px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4C287F] transition-transform duration-200 group-open:rotate-90 group-open:opacity-0" />
-                        </span>
-                      </summary>
-                      <p className="mt-4 max-w-3xl text-sm leading-7 text-black/70">{item.answer}</p>
-                    </details>
-                  ))}
-                </div>
-              </div>
+            <div className="mx-auto mt-14 max-w-[928px] border-y border-[#11182f]/20 text-left" data-animate="stagger">
+              {faqItems.map((item, index) => (
+                <details
+                  key={item.question}
+                  className="group border-b border-[#11182f]/20 last:border-b-0"
+                  open={index === 0}
+                >
+                  <summary className="flex min-h-[78px] cursor-pointer list-none items-center justify-between gap-6 py-5 text-xl font-semibold text-[#11182f] [&::-webkit-details-marker]:hidden">
+                    <span>{item.question}</span>
+                    <span className="relative h-6 w-6 shrink-0">
+                      <span className="absolute left-1/2 top-1/2 h-[2px] w-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#11182f]" />
+                      <span className="absolute left-1/2 top-1/2 h-5 w-[2px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#11182f] transition-opacity duration-200 group-open:opacity-0" />
+                    </span>
+                  </summary>
+                  <div className="pb-9 pr-10">
+                    <p className="text-base leading-8 text-[#11182f]/78">{item.answer}</p>
+                  </div>
+                </details>
+              ))}
             </div>
           </div>
         </ScrollAnimatedSection>

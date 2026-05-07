@@ -1054,20 +1054,20 @@ Best regards`
       <div className="relative z-10 flex-1">
       <header className="relative z-10 hidden lg:block">
         <div className="container max-w-7xl mx-auto px-4 pt-4">
-          <div className="ax-glass-header rounded-[28px] px-5 py-4">
+          <div className="rounded-[28px] border border-[#2f165e] bg-[#2f165e] px-5 py-4 text-white shadow-[0_24px_70px_rgba(47,22,94,0.24)]">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => router.back()}
-                  className="h-10 rounded-2xl border border-[#eadfff] bg-white/60 px-3 text-[#5b3f92] hover:bg-white hover:text-[#2f165e]"
+                  className="h-10 rounded-2xl border border-white/20 bg-white/10 px-3 text-white hover:bg-white/15 hover:text-white"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7c62b1]">Batch workspace</p>
-                  <h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground">Process Images</h1>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">Batch workspace</p>
+                  <h1 className="mt-1 text-3xl font-bold tracking-tight text-white">Process Images</h1>
                 </div>
               </div>
 
@@ -1076,7 +1076,7 @@ Best regards`
                   variant="outline"
                   size="sm"
                   onClick={() => router.push('/history')}
-                  className="h-10 rounded-2xl border-[#eadfff] bg-white/60 px-4 text-foreground hover:bg-white"
+                  className="h-10 rounded-2xl border-white/20 bg-white/10 px-4 text-white hover:bg-white/15 hover:text-white"
                 >
                   History
                 </Button>
@@ -1084,7 +1084,7 @@ Best regards`
                   variant="outline"
                   size="sm"
                   onClick={() => router.push('/dashboard')}
-                  className="h-10 rounded-2xl border-[#eadfff] bg-white/60 px-4 text-foreground hover:bg-white"
+                  className="h-10 rounded-2xl border-white/20 bg-white/10 px-4 text-white hover:bg-white/15 hover:text-white"
                 >
                   Dashboard
                 </Button>
@@ -1094,26 +1094,26 @@ Best regards`
         </div>
       </header>
 
-      <div className="sticky top-0 z-40 border-b bg-[#E9ECE4]/95 backdrop-blur lg:hidden">
+      <div className="sticky top-0 z-40 border-b border-[#2f165e] bg-[#2f165e]/95 text-white backdrop-blur lg:hidden">
         <div className="container max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => router.back()}
-              className="h-10 rounded-2xl border border-[#eadfff] bg-white/60 px-3 text-[#5b3f92]"
+              className="h-10 rounded-2xl border border-white/20 bg-white/10 px-3 text-white hover:bg-white/15 hover:text-white"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <div className="flex items-center gap-2">
               <AppIcon size={28} />
-              <span className="text-sm font-semibold text-foreground">Process Images</span>
+              <span className="text-sm font-semibold text-white">Process Images</span>
             </div>
             <Button
               variant="outline"
               size="sm"
               onClick={() => router.push('/dashboard')}
-              className="h-10 rounded-2xl border-[#eadfff] bg-white/60 px-3"
+              className="h-10 rounded-2xl border-white/20 bg-white/10 px-3 text-white hover:bg-white/15 hover:text-white"
             >
               Dashboard
             </Button>
@@ -1123,15 +1123,15 @@ Best regards`
 
       <main className="container max-w-7xl mx-auto px-4 py-6 pb-24 lg:py-8 relative z-10">
         {latestRecoverableJob && !isProcessing && (
-          <Card className="mb-5 overflow-hidden rounded-[28px] border-[#eadfff] bg-[#E9ECE4]/85 shadow-[0_18px_55px_rgba(68,31,132,0.10)] backdrop-blur-xl">
+          <Card className="mb-5 overflow-hidden rounded-[28px] border-[#2f165e] bg-[#2f165e] text-white shadow-[0_18px_55px_rgba(47,22,94,0.22)]">
             <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/65">
-                  <Loader2 className="h-5 w-5 text-primary" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-white/10">
+                  <Loader2 className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-black text-foreground">Continue latest batch</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm font-black text-white">Continue latest batch</p>
+                  <p className="text-xs text-white/70">
                     {latestRecoverableJob.processed_images || 0} of {latestRecoverableJob.total_images || 0} files processed
                   </p>
                 </div>
@@ -1139,7 +1139,7 @@ Best regards`
               <Button
                 onClick={continueLatestJob}
                 disabled={recoveryLoading}
-                className="h-11 rounded-2xl bg-[#2f165e] px-5 text-white hover:bg-[#441f84]"
+                className="h-11 rounded-2xl border border-white/20 bg-white px-5 text-[#2f165e] hover:bg-white/90"
               >
                 {recoveryLoading ? "Resuming..." : "Continue latest job"}
               </Button>
@@ -1148,39 +1148,39 @@ Best regards`
         )}
 
         {isProcessing && !isComplete && (
-          <Card className="ax-glass-card mb-5 overflow-hidden rounded-[28px]">
+          <Card className="mb-5 overflow-hidden rounded-[28px] border-[#2f165e] bg-[#2f165e] text-white shadow-[0_18px_55px_rgba(47,22,94,0.22)]">
             <CardContent className="p-4">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#eadfff] bg-white/55">
-                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-white/10">
+                    <Loader2 className="h-5 w-5 animate-spin text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">{isUploading ? "Uploading batch" : "Processing batch"}</p>
+                    <p className="text-sm font-semibold text-white">{isUploading ? "Uploading batch" : "Processing batch"}</p>
                     {isUploading ? (
-                      <p className="text-xs text-muted-foreground">{uploadProgress}% uploaded</p>
+                      <p className="text-xs text-white/70">{uploadProgress}% uploaded</p>
                     ) : progress && (
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-white/70">
                         {progress.processed_images} of {progress.total_images} ready
                       </p>
                     )}
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3 sm:flex sm:items-center">
-                  <div className="rounded-2xl border border-[#eadfff] bg-white/50 px-4 py-2">
-                    <p className="text-xl font-bold text-primary">{processingTime}s</p>
-                    <p className="text-[11px] text-muted-foreground">elapsed</p>
+                  <div className="rounded-2xl border border-white/20 bg-white/10 px-4 py-2">
+                    <p className="text-xl font-bold text-white">{processingTime}s</p>
+                    <p className="text-[11px] text-white/65">elapsed</p>
                   </div>
                   {typeof displayedProgress === "number" && (
-                    <div className="rounded-2xl border border-[#eadfff] bg-white/50 px-4 py-2">
-                      <p className="text-xl font-bold text-primary">{displayedProgress}%</p>
-                      <p className="text-[11px] text-muted-foreground">{isUploading ? "uploaded" : "complete"}</p>
+                    <div className="rounded-2xl border border-white/20 bg-white/10 px-4 py-2">
+                      <p className="text-xl font-bold text-white">{displayedProgress}%</p>
+                      <p className="text-[11px] text-white/65">{isUploading ? "uploaded" : "complete"}</p>
                     </div>
                   )}
                   <Button
                     variant="outline"
                     onClick={handleCancelProcessing}
-                    className="h-full min-h-14 rounded-2xl border-[#eadfff] bg-white/55 px-4 text-[#5b3f92] hover:bg-white"
+                    className="h-full min-h-14 rounded-2xl border-white/20 bg-white/10 px-4 text-white hover:bg-white/15 hover:text-white"
                   >
                     <X className="mr-2 h-4 w-4" />
                     Cancel
