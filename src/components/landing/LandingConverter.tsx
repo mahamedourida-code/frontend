@@ -86,7 +86,6 @@ export default function LandingConverter() {
   const wsRef = useRef<OCRWebSocket | null>(null);
   const pollingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const uploadAbortRef = useRef<AbortController | null>(null);
-  const pendingAutoUploadRef = useRef(false);
   const currentJobIdRef = useRef<string | null>(null);
   const [shareSession, setShareSession] = useState<any>(null);
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([]);
@@ -366,7 +365,6 @@ export default function LandingConverter() {
       if (files.length > maxUploadFiles) {
         showBatchLimitToast(maxUploadFiles);
       }
-      pendingAutoUploadRef.current = true;
       setUploadedFiles(filesToUse);
     }
   }, [maxUploadFiles]);
@@ -379,7 +377,6 @@ export default function LandingConverter() {
       if (fileArray.length > maxUploadFiles) {
         showBatchLimitToast(maxUploadFiles);
       }
-      pendingAutoUploadRef.current = true;
       setUploadedFiles(filesToUse);
     }
   }, [maxUploadFiles]);
@@ -511,25 +508,8 @@ export default function LandingConverter() {
       return;
     }
 
-    if (typeof window !== 'undefined') {
-      const hasConvertedBefore = localStorage.getItem('hasConvertedBefore');
-      if (!hasConvertedBefore) {
-        setShowFirstConvertConfirm(true);
-        return;
-      }
-    }
-
     await processImages(uploadedFiles);
   }, [uploadedFiles, maxUploadFiles, processImages]);
-
-  useEffect(() => {
-    if (!pendingAutoUploadRef.current || uploadedFiles.length === 0 || isProcessing || resultFiles.length > 0) {
-      return;
-    }
-
-    pendingAutoUploadRef.current = false;
-    void processImages(uploadedFiles);
-  }, [uploadedFiles, isProcessing, resultFiles.length, processImages]);
 
   const handleDownloadFile = async (fileId: string) => {
 
@@ -776,7 +756,6 @@ export default function LandingConverter() {
     setFirstImageUrl('');
     setTotalFilesToProcess(0);
     setCurrentSessionId(null);
-    pendingAutoUploadRef.current = false;
     stopJobMonitoring();
     isExecutingAutoActionsRef.current = false;
 
@@ -1145,7 +1124,6 @@ export default function LandingConverter() {
                                   const newFiles = e.target.files;
                                   if (newFiles && newFiles.length > 0) {
                                     const fileArray = Array.from(newFiles).filter(isAcceptedUploadFile);
-                                    pendingAutoUploadRef.current = true;
                                     setUploadedFiles(prev => {
                                       const remainingSlots = maxUploadFiles - prev.length;
                                       const filesToAdd = fileArray.slice(0, Math.max(0, remainingSlots));

@@ -5,6 +5,12 @@ import { ocrApi, OCRWebSocket, BatchConvertResponse, JobStatusResponse } from '@
 import { toast } from 'sonner'
 import { compressImages } from '@/lib/image-compression' 
 
+type UploadOutputFormat = 'xlsx' | 'txt'
+
+interface UploadBatchOptions {
+  outputFormat?: UploadOutputFormat
+}
+
 interface UseOCRReturn {
   // State
   isUploading: boolean
@@ -20,7 +26,7 @@ interface UseOCRReturn {
 
   // Actions
   uploadImage: (file: File) => Promise<BatchConvertResponse | null>
-  uploadBatch: (files: File[]) => Promise<BatchConvertResponse | null>
+  uploadBatch: (files: File[], options?: UploadBatchOptions) => Promise<BatchConvertResponse | null>
   getStatus: (jobId: string) => Promise<void>
   downloadFile: (fileId: string) => Promise<void>
   saveToHistory: () => Promise<void>
@@ -43,6 +49,7 @@ export function useOCR(): UseOCRReturn {
   const [error, setError] = useState<string | null>(null)
   const [isSaved, setIsSaved] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const outputFormatRef = useRef<UploadOutputFormat>('xlsx')
   const wsRef = useRef<OCRWebSocket | null>(null) // Use ref instead of state for WebSocket
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const uploadAbortRef = useRef<AbortController | null>(null)
@@ -72,7 +79,8 @@ export function useOCR(): UseOCRReturn {
   }, [])
 
   // Upload multiple images
-  const uploadBatch = useCallback(async (files: File[]): Promise<BatchConvertResponse | null> => {
+  const uploadBatch = useCallback(async (files: File[], options?: UploadBatchOptions): Promise<BatchConvertResponse | null> => {
+    const nextOutputFormat = options?.outputFormat || 'xlsx'
 
     // Set processing state immediately for better UX
     setIsProcessing(true)
@@ -80,6 +88,10 @@ export function useOCR(): UseOCRReturn {
     setError(null)
     setUploadProgress(0)
     setStatus('processing')
+    setProgress(null)
+    setFiles(null)
+    setIsSaved(false)
+    outputFormatRef.current = nextOutputFormat
     setHasShownCompletion(false) // Reset completion flag for new batch
     const uploadController = new AbortController()
     uploadAbortRef.current = uploadController
@@ -106,7 +118,7 @@ export function useOCR(): UseOCRReturn {
       }
 
       const response = await ocrApi.uploadBatchMultipart(filesToUpload, {
-        output_format: 'xlsx',
+        output_format: nextOutputFormat,
         consolidation_strategy: 'separate',
         signal: uploadController.signal,
         onUploadProgress: setUploadProgress,
@@ -228,7 +240,8 @@ export function useOCR(): UseOCRReturn {
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `excel-result-${fileId}.xlsx`
+      const extension = blob.type.startsWith('text/') || outputFormatRef.current === 'txt' ? 'txt' : 'xlsx'
+      link.download = `result-${fileId}.${extension}`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -341,7 +354,7 @@ export function useOCR(): UseOCRReturn {
             const fileList = data.files || (data.download_urls || []).map((url: string, idx: number) => ({
               file_id: url.split('/').pop(),
               download_url: url,
-              filename: `result-${idx + 1}.xlsx`
+              filename: `result-${idx + 1}.${outputFormatRef.current === 'txt' ? 'txt' : 'xlsx'}`
             }))
             
             setFiles(fileList)

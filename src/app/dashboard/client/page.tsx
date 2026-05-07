@@ -25,6 +25,7 @@ import Image from "next/image"
 import {
   Upload,
   FileSpreadsheet,
+  FileText,
   Image as ImageIcon,
   Sparkles,
   Download,
@@ -73,11 +74,10 @@ import { useSearchParams } from "next/navigation"
 import { PenTool, Monitor, Edit3 } from "lucide-react"
 import { wakeUpBackendSilently } from "@/lib/backend-health"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
-import * as XLSX from 'xlsx'
 import { buildDownloadUrl, buildMessengerShareUrl, buildOfficeViewerUrl } from "@/lib/public-config"
 import {
   acceptedUploadMimeTypes,
-  createPdfPreviewDataUrl,
+  createPdfFirstPageScreenshot,
   isAcceptedUploadFile,
   isPdfFile,
 } from "@/lib/upload-files"
@@ -169,7 +169,9 @@ function ProcessImagesContent() {
   const [newFileName, setNewFileName] = useState<string>("")
   const [renamedFiles, setRenamedFiles] = useState<{[key: string]: string}>({})
   const [tablePreviewData, setTablePreviewData] = useState<any[][]>([])
+  const [textPreview, setTextPreview] = useState('')
   const [firstImageUrl, setFirstImageUrl] = useState<string>('')
+  const [outputMode, setOutputMode] = useState<'table' | 'text'>('table')
 
   // Track if auto-actions have been executed for current job to prevent duplicates
   const autoActionsExecutedRef = useRef<string | null>(null)
@@ -362,7 +364,7 @@ function ProcessImagesContent() {
 
         try {
           // Fetch table preview for the first file
-          if (resultFiles.length > 0 && resultFiles[0].file_id && tablePreviewData.length === 0) {
+          if (resultFiles.length > 0 && resultFiles[0].file_id && tablePreviewData.length === 0 && !textPreview) {
             fetchTablePreview(resultFiles[0].file_id)
           }
 
@@ -467,7 +469,7 @@ function ProcessImagesContent() {
   // Helper function to create preview URL for file (converts HEIC if needed)
   const createFilePreviewUrl = useCallback(async (file: File): Promise<string> => {
     if (isPdfFile(file)) {
-      return createPdfPreviewDataUrl(file.name)
+      return createPdfFirstPageScreenshot(file)
     }
 
     const fileName = file.name.toLowerCase()
@@ -573,21 +575,17 @@ function ProcessImagesContent() {
     const imagesCount = uploadedFiles.length
 
     try {
-      // Store the first uploaded image for preview immediately
+      setTablePreviewData([])
+      setTextPreview('')
+      setFirstImageUrl('')
+
       if (uploadedFiles.length > 0) {
-        const firstFile = uploadedFiles[0]
-        if (isPdfFile(firstFile)) {
-          setFirstImageUrl(createPdfPreviewDataUrl(firstFile.name))
-        } else {
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            setFirstImageUrl(e.target?.result as string)
-          }
-          reader.readAsDataURL(firstFile)
-        }
+        setFirstImageUrl(await createFilePreviewUrl(uploadedFiles[0]))
       }
 
-      const response = await uploadBatch(uploadedFiles)
+      const response = await uploadBatch(uploadedFiles, {
+        outputFormat: outputMode === 'text' ? 'txt' : 'xlsx',
+      })
       if (response && response.session_id) {
         connectWebSocket(response.session_id, response.job_id)
         setLatestRecoverableJob(null)
@@ -613,7 +611,7 @@ function ProcessImagesContent() {
         },
       })
     }
-  }, [uploadedFiles, uploadBatch, connectWebSocket, resultFiles, reset, maxUploadFiles, router])
+  }, [uploadedFiles, uploadBatch, connectWebSocket, maxUploadFiles, router, outputMode, createFilePreviewUrl])
 
   const handleCancelProcessing = useCallback(async () => {
     await cancelProcessing()
@@ -631,6 +629,7 @@ function ProcessImagesContent() {
     
     // Clear preview data
     setTablePreviewData([])
+    setTextPreview('')
     setFirstImageUrl('')
     
     // Clear context state
@@ -645,7 +644,15 @@ function ProcessImagesContent() {
   const fetchTablePreview = useCallback(async (fileId: string) => {
     try {
       const blob = await ocrApi.downloadFile(fileId)
+
+      if (outputMode === 'text' || blob.type.startsWith('text/')) {
+        const text = await blob.text()
+        setTextPreview(text.slice(0, 6000))
+        setTablePreviewData([])
+        return
+      }
       
+      const XLSX = await import('xlsx')
       const arrayBuffer = await blob.arrayBuffer()
       const workbook = XLSX.read(arrayBuffer, { type: 'array' })
       const firstSheet = workbook.Sheets[workbook.SheetNames[0]]
@@ -655,19 +662,20 @@ function ProcessImagesContent() {
       // Limit to first 10 rows for preview
       const previewData = data.slice(0, Math.min(10, data.length))
       setTablePreviewData(previewData)
+      setTextPreview('')
     } catch (error) {
       // Don't show error toast - just silently fail to show preview
     }
-  }, [])
+  }, [outputMode])
 
   // Fetch table preview when first result file is ready
   useEffect(() => {
     if (resultFiles && resultFiles.length > 0) {
-      if (resultFiles[0].file_id && tablePreviewData.length === 0) {
+      if (resultFiles[0].file_id && tablePreviewData.length === 0 && !textPreview) {
         fetchTablePreview(resultFiles[0].file_id)
       }
     }
-  }, [resultFiles, tablePreviewData.length, fetchTablePreview])
+  }, [resultFiles, tablePreviewData.length, textPreview, fetchTablePreview])
 
   const handleRenameFile = async (file: any) => {
     if (!newFileName.trim()) {
@@ -676,8 +684,9 @@ function ProcessImagesContent() {
     }
 
     try {
-      // Add .xlsx extension if not present
-      const finalName = newFileName.trim().endsWith('.xlsx') ? newFileName.trim() : newFileName.trim() + '.xlsx'
+      const extension = outputMode === 'text' ? '.txt' : '.xlsx'
+      const trimmedName = newFileName.trim()
+      const finalName = trimmedName.endsWith(extension) ? trimmedName : trimmedName + extension
       
       // Update renamed files mapping
       setRenamedFiles(prev => ({
@@ -1031,9 +1040,12 @@ Best regards`
   }
 
   const isComplete = status === 'completed' && resultFiles && resultFiles.length > 0
+  const isTextOutput = outputMode === 'text'
   const uploadedSizeMb = uploadedFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024)
   const uploadedLabel = `${uploadedFiles.length} ${uploadedFiles.length === 1 ? 'file' : 'files'}`
-  const processLabel = uploadedFiles.length > 1 ? `Process ${uploadedFiles.length} files` : 'Process file'
+  const processLabel = isTextOutput
+    ? uploadedFiles.length > 1 ? `Extract text from ${uploadedFiles.length} files` : 'Extract text'
+    : uploadedFiles.length > 1 ? `Convert ${uploadedFiles.length} files` : 'Convert file'
   const displayedProgress = isUploading ? uploadProgress : progress?.percentage
 
   return (
@@ -1203,6 +1215,37 @@ Best regards`
                       <span>{uploadedFiles.length}</span>
                       <span className="text-muted-foreground">/ {maxUploadFiles}</span>
                     </div>
+                  </div>
+
+                  <div className="mb-5 flex w-fit rounded-full border border-white/55 bg-white/40 p-1 shadow-[0_16px_40px_rgba(42,35,64,0.08)] backdrop-blur-2xl">
+                    <button
+                      type="button"
+                      onClick={() => setOutputMode('table')}
+                      disabled={isProcessing}
+                      className={cn(
+                        "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+                        outputMode === 'table'
+                          ? "bg-[#2f165e] text-white shadow-sm"
+                          : "text-[#111827] hover:bg-white/45",
+                        isProcessing && "cursor-not-allowed opacity-60"
+                      )}
+                    >
+                      Table output
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOutputMode('text')}
+                      disabled={isProcessing}
+                      className={cn(
+                        "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+                        outputMode === 'text'
+                          ? "bg-[#2f165e] text-white shadow-sm"
+                          : "text-[#111827] hover:bg-white/45",
+                        isProcessing && "cursor-not-allowed opacity-60"
+                      )}
+                    >
+                      Text output
+                    </button>
                   </div>
 
                   <div
@@ -1423,7 +1466,7 @@ Best regards`
                 <div className="space-y-3">
                   {resultFiles.length > 0 && (
                     <div className="space-y-2">
-                      {tablePreviewData.length > 0 && firstImageUrl && (
+                      {(tablePreviewData.length > 0 || textPreview) && firstImageUrl && (
                         <Card className="overflow-hidden rounded-[24px] border-[#eadfff] bg-white/55">
                           <CardContent className="p-3">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
@@ -1440,28 +1483,38 @@ Best regards`
                               </div>
 
                               <div className="flex flex-col">
-                                <h4 className="text-sm font-semibold mb-0.5 text-muted-foreground">Extracted Data Preview</h4>
+                                <h4 className="text-sm font-semibold mb-0.5 text-muted-foreground">
+                                  {outputMode === 'text' || textPreview ? 'Extracted Text Preview' : 'Extracted Data Preview'}
+                                </h4>
                                 <div className="border-2 border-[#A78BFA]/20 rounded-lg overflow-auto bg-white" style={{ maxHeight: '450px' }}>
-                                  <table className="w-full text-base">
-                                    <tbody>
-                                      {tablePreviewData.map((row, rowIndex) => (
-                                        <tr key={rowIndex} className={rowIndex === 0 ? 'bg-primary/10 font-semibold' : 'border-t border-gray-200'}>
-                                          {row.map((cell, cellIndex) => (
-                                            <td 
-                                              key={cellIndex} 
-                                              className="px-3 py-2 text-left border-r border-gray-200 last:border-r-0"
-                                            >
-                                              {cell || ''}
-                                            </td>
+                                  {outputMode === 'text' || textPreview ? (
+                                    <pre className="min-h-[300px] whitespace-pre-wrap p-4 text-sm leading-6 text-[#111827]">
+                                      {textPreview || 'Text preview is loading...'}
+                                    </pre>
+                                  ) : (
+                                    <>
+                                      <table className="w-full text-base">
+                                        <tbody>
+                                          {tablePreviewData.map((row, rowIndex) => (
+                                            <tr key={rowIndex} className={rowIndex === 0 ? 'bg-primary/10 font-semibold' : 'border-t border-gray-200'}>
+                                              {row.map((cell, cellIndex) => (
+                                                <td
+                                                  key={cellIndex}
+                                                  className="px-3 py-2 text-left border-r border-gray-200 last:border-r-0"
+                                                >
+                                                  {cell || ''}
+                                                </td>
+                                              ))}
+                                            </tr>
                                           ))}
-                                        </tr>
-                                      ))}
-                                    </tbody>
-                                  </table>
-                                  {tablePreviewData.length >= 10 && (
-                                    <div className="px-3 py-2 bg-muted/50 text-xs text-muted-foreground text-center border-t">
-                                      Showing first 10 rows
-                                    </div>
+                                        </tbody>
+                                      </table>
+                                      {tablePreviewData.length >= 10 && (
+                                        <div className="px-3 py-2 bg-muted/50 text-xs text-muted-foreground text-center border-t">
+                                          Showing first 10 rows
+                                        </div>
+                                      )}
+                                    </>
                                   )}
                                 </div>
                               </div>
@@ -1481,7 +1534,11 @@ Best regards`
                               1
                             </div>
                             <div className="flex items-center justify-center flex-shrink-0">
-                              <FileSpreadsheet className="h-5 w-5 text-primary" />
+                              {isTextOutput ? (
+                                <FileText className="h-5 w-5 text-primary" />
+                              ) : (
+                                <FileSpreadsheet className="h-5 w-5 text-primary" />
+                              )}
                             </div>
                             <div className="flex-1 min-w-0">
                               {editingFileId === resultFiles[0].file_id ? (
@@ -1507,9 +1564,9 @@ Best regards`
                                     <p 
                                       className="font-medium text-sm truncate cursor-pointer hover:text-primary transition-colors"
                                       onDoubleClick={() => {
-                                        const currentName = renamedFiles[resultFiles[0].file_id] || resultFiles[0].filename || `Image 1 Result.xlsx`
+                                        const currentName = renamedFiles[resultFiles[0].file_id] || resultFiles[0].filename || `Image 1 Result${isTextOutput ? '.txt' : '.xlsx'}`
                                         setEditingFileId(resultFiles[0].file_id)
-                                        setNewFileName(currentName.replace('.xlsx', ''))
+                                        setNewFileName(currentName.replace(/\.(xlsx|txt)$/i, ''))
                                       }}
                                     >
                                       {renamedFiles[resultFiles[0].file_id] || resultFiles[0].filename || `Image 1 Result`}
@@ -1532,17 +1589,19 @@ Best regards`
                               <Share2 className="h-4 w-4" />
                               Share
                             </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                window.open(buildOfficeViewerUrl(resultFiles[0].file_id), '_blank')
-                              }}
-                              className="h-9 gap-1.5 rounded-xl border-[#eadfff] bg-white/70 text-foreground hover:bg-white"
-                            >
-                              <Edit3 className="h-4 w-4" />
-                              Edit
-                            </Button>
+                            {!isTextOutput && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  window.open(buildOfficeViewerUrl(resultFiles[0].file_id), '_blank')
+                                }}
+                                className="h-9 gap-1.5 rounded-xl border-[#eadfff] bg-white/70 text-foreground hover:bg-white"
+                              >
+                                <Edit3 className="h-4 w-4" />
+                                Edit
+                              </Button>
+                            )}
                             <Button
                               size="sm"
                               onClick={() => {
@@ -1577,7 +1636,11 @@ Best regards`
                               {index + 2}
                             </div>
                             <div className="flex items-center justify-center flex-shrink-0">
-                              <FileSpreadsheet className="h-5 w-5 text-primary" />
+                              {isTextOutput ? (
+                                <FileText className="h-5 w-5 text-primary" />
+                              ) : (
+                                <FileSpreadsheet className="h-5 w-5 text-primary" />
+                              )}
                             </div>
                             <div className="flex-1 min-w-0">
                               {editingFileId === file.file_id ? (
@@ -1603,9 +1666,9 @@ Best regards`
                                     <p 
                                       className="font-medium text-sm truncate cursor-pointer hover:text-primary transition-colors"
                                       onDoubleClick={() => {
-                                        const currentName = renamedFiles[file.file_id] || file.filename || `Image ${index + 2} Result.xlsx`
+                                        const currentName = renamedFiles[file.file_id] || file.filename || `Image ${index + 2} Result${isTextOutput ? '.txt' : '.xlsx'}`
                                         setEditingFileId(file.file_id)
-                                        setNewFileName(currentName.replace('.xlsx', ''))
+                                        setNewFileName(currentName.replace(/\.(xlsx|txt)$/i, ''))
                                       }}
                                     >
                                       {renamedFiles[file.file_id] || file.filename || `Image ${index + 2} Result`}
@@ -1628,17 +1691,19 @@ Best regards`
                               <Share2 className="h-4 w-4" />
                               Share
                             </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                window.open(buildOfficeViewerUrl(file.file_id), '_blank')
-                              }}
-                              className="h-9 gap-1.5 rounded-xl border-[#eadfff] bg-white/70 text-foreground hover:bg-white"
-                            >
-                              <Edit3 className="h-4 w-4" />
-                              Edit
-                            </Button>
+                            {!isTextOutput && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  window.open(buildOfficeViewerUrl(file.file_id), '_blank')
+                                }}
+                                className="h-9 gap-1.5 rounded-xl border-[#eadfff] bg-white/70 text-foreground hover:bg-white"
+                              >
+                                <Edit3 className="h-4 w-4" />
+                                Edit
+                              </Button>
+                            )}
                             <Button
                               size="sm"
                               onClick={() => {
