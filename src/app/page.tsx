@@ -925,10 +925,10 @@ export default function Home() {
               </h2>
             </div>
 
-            <div className="mt-10 overflow-hidden rounded-[22px] shadow-[0_28px_85px_rgba(42,35,64,0.12)]" data-animate="stagger">
-              <div className="grid min-h-[320px] sm:grid-cols-3 lg:min-h-[440px]">
+            <div className="mt-10 max-w-[1120px] overflow-hidden rounded-[18px] shadow-[0_22px_60px_rgba(42,35,64,0.10)]" data-animate="stagger">
+              <div className="grid min-h-[220px] sm:grid-cols-3 lg:min-h-[320px]">
                 {ownedPipelineImages.map((image) => (
-                  <div key={image.src} className="relative min-h-[300px] border-white/85 sm:border-l sm:first:border-l-0">
+                  <div key={image.src} className="relative min-h-[220px] border-white/85 sm:border-l sm:first:border-l-0">
                     <Image
                       src={image.src}
                       alt={image.alt}
@@ -948,25 +948,6 @@ export default function Home() {
                   {item}
                 </p>
               ))}
-            </div>
-
-            <div className="mt-12 overflow-hidden rounded-full border border-[#4C287F]/20 bg-[#4C287F] py-4 text-white shadow-[0_22px_60px_rgba(76,40,127,0.24)]">
-              <div
-                className="flex w-max items-center gap-8 whitespace-nowrap text-sm font-semibold uppercase tracking-[0.22em] text-white/82"
-                style={{ animation: "scroll-left 38s linear infinite" }}
-              >
-                {[...Array(2)].map((_, repeat) => (
-                  <div key={repeat} className="flex items-center gap-8">
-                    <span>Owned workflow</span>
-                    <span>0101001110</span>
-                    <span>Durable files</span>
-                    <span>Structured Excel</span>
-                    <span>No generic wrapper</span>
-                    <span>Batch recovery</span>
-                    <span>Secure downloads</span>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </ScrollAnimatedSection>

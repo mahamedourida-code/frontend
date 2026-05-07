@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { ocrApi } from "@/lib/api-client"
 import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
 import { BillingSeal } from "@/components/BillingGlyphs"
@@ -367,20 +367,19 @@ export default function DashboardPage() {
       {/* Main Content */}
       <div className="flex-1 overflow-auto relative z-10">
         <div className="container max-w-7xl mx-auto p-4 sm:p-6 lg:px-8 lg:py-4">
-          <div className="mb-6 rounded-[30px] border border-[#ebe2ff] bg-[#E9ECE4]/90 p-4 shadow-[0_24px_80px_rgba(68,31,132,0.08)] backdrop-blur-xl sm:p-5 lg:mb-8 lg:p-6">
+          <div className="mb-5 rounded-[22px] border border-[#ebe2ff] bg-[#E9ECE4]/90 p-3 shadow-[0_18px_48px_rgba(68,31,132,0.07)] backdrop-blur-xl sm:p-4 lg:mb-6">
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
               <div className="flex items-start gap-4">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => router.back()}
-                  className="mt-1 h-11 rounded-2xl border border-[#eadfff] bg-white/55 px-4 text-[#5b3f92] hover:bg-white hover:text-[#2f165e]"
+                  className="h-9 rounded-xl border border-[#eadfff] bg-white/55 px-3 text-[#5b3f92] hover:bg-white hover:text-[#2f165e]"
                 >
-                  <ChevronLeft className="mr-1 h-4 w-4" />
-                  Back
+                  <ChevronLeft className="h-4 w-4" />
                 </Button>
                 <div>
-                  <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground lg:text-4xl">Dashboard</h1>
+                  <h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">Dashboard</h1>
                 </div>
               </div>
 
@@ -389,7 +388,7 @@ export default function DashboardPage() {
                   size="lg"
                   variant="outline"
                   asChild
-                  className="h-12 rounded-[22px] border-[#d9c9fb] bg-white/55 px-5 text-[#2f165e] shadow-[0_14px_35px_rgba(68,31,132,0.10)] hover:bg-white w-full sm:w-auto"
+                  className="h-10 rounded-xl border-[#d9c9fb] bg-white/55 px-4 text-[#2f165e] shadow-none hover:bg-white w-full sm:w-auto"
                 >
                   <Link href="/pricing">
                     <BillingSeal className="h-5 w-5" />
@@ -399,7 +398,7 @@ export default function DashboardPage() {
                 <Button
                   size="lg"
                   asChild
-                  className="h-12 rounded-[22px] bg-[#2f165e] px-5 text-white shadow-[0_18px_40px_rgba(68,31,132,0.22)] transition-all hover:bg-[#3a1d72] hover:shadow-[0_22px_44px_rgba(68,31,132,0.26)] w-full sm:w-auto"
+                  className="h-10 rounded-xl bg-[#2f165e] px-4 text-white shadow-[0_14px_32px_rgba(68,31,132,0.18)] transition-all hover:bg-[#3a1d72] w-full sm:w-auto"
                 >
                   <Link href="/dashboard/client">
                     <Upload className="h-5 w-5" />
@@ -480,7 +479,6 @@ export default function DashboardPage() {
                   <TrendingUp className="h-4 w-4 lg:h-5 lg:w-5" />
                   Processing Activity
                 </CardTitle>
-                <CardDescription className="text-xs lg:text-sm mt-1">Number of images processed over time</CardDescription>
               </div>
               <div className="flex items-center gap-1 lg:gap-2 w-full sm:w-auto">
                 {(["1d", "7d", "30d", "3m"] as TimeRange[]).map((range) => (

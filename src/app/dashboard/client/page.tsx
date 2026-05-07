@@ -1054,20 +1054,20 @@ Best regards`
       <div className="relative z-10 flex-1">
       <header className="relative z-10 hidden lg:block">
         <div className="container max-w-7xl mx-auto px-4 pt-4">
-          <div className="rounded-[28px] border border-[#2f165e] bg-[#2f165e] px-5 py-4 text-white shadow-[0_24px_70px_rgba(47,22,94,0.24)]">
+          <div className="rounded-[22px] border border-[#2f165e] bg-[#2f165e] px-4 py-3 text-white shadow-[0_18px_44px_rgba(47,22,94,0.20)]">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => router.back()}
-                  className="h-10 rounded-2xl border border-white/20 bg-white/10 px-3 text-white hover:bg-white/15 hover:text-white"
+                  className="h-9 rounded-xl border border-white/16 bg-white/8 px-3 text-white hover:bg-white/15 hover:text-white"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">Batch workspace</p>
-                  <h1 className="mt-1 text-3xl font-bold tracking-tight text-white">Process Images</h1>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/62">Batch</p>
+                  <h1 className="text-xl font-bold tracking-tight text-white">Process Images</h1>
                 </div>
               </div>
 
@@ -1076,16 +1076,18 @@ Best regards`
                   variant="outline"
                   size="sm"
                   onClick={() => router.push('/history')}
-                  className="h-10 rounded-2xl border-white/20 bg-white/10 px-4 text-white hover:bg-white/15 hover:text-white"
+                  className="h-9 gap-2 rounded-xl border-white/16 bg-white/8 px-3 text-white hover:bg-white/15 hover:text-white"
                 >
+                  <History className="h-4 w-4" />
                   History
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => router.push('/dashboard')}
-                  className="h-10 rounded-2xl border-white/20 bg-white/10 px-4 text-white hover:bg-white/15 hover:text-white"
+                  className="h-9 gap-2 rounded-xl border-white/16 bg-white/8 px-3 text-white hover:bg-white/15 hover:text-white"
                 >
+                  <BarChart3 className="h-4 w-4" />
                   Dashboard
                 </Button>
               </div>
@@ -1121,10 +1123,10 @@ Best regards`
         </div>
       </div>
 
-      <main className="container max-w-7xl mx-auto px-4 py-6 pb-24 lg:py-8 relative z-10">
+      <main className="container max-w-7xl mx-auto px-4 py-5 pb-24 lg:py-6 relative z-10">
         {latestRecoverableJob && !isProcessing && (
-          <Card className="mb-5 overflow-hidden rounded-[28px] border-[#2f165e] bg-[#2f165e] text-white shadow-[0_18px_55px_rgba(47,22,94,0.22)]">
-            <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <Card className="mb-4 overflow-hidden rounded-[22px] border-[#2f165e] bg-[#2f165e] text-white shadow-[0_16px_42px_rgba(47,22,94,0.18)]">
+            <CardContent className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-white/10">
                   <Loader2 className="h-5 w-5 text-white" />
@@ -1139,7 +1141,7 @@ Best regards`
               <Button
                 onClick={continueLatestJob}
                 disabled={recoveryLoading}
-                className="h-11 rounded-2xl border border-white/20 bg-white px-5 text-[#2f165e] hover:bg-white/90"
+                className="h-10 rounded-xl border border-white/20 bg-white px-4 text-[#2f165e] hover:bg-white/90"
               >
                 {recoveryLoading ? "Resuming..." : "Continue latest job"}
               </Button>
@@ -1148,8 +1150,8 @@ Best regards`
         )}
 
         {isProcessing && !isComplete && (
-          <Card className="mb-5 overflow-hidden rounded-[28px] border-[#2f165e] bg-[#2f165e] text-white shadow-[0_18px_55px_rgba(47,22,94,0.22)]">
-            <CardContent className="p-4">
+          <Card className="mb-4 overflow-hidden rounded-[22px] border-[#2f165e] bg-[#2f165e] text-white shadow-[0_16px_42px_rgba(47,22,94,0.18)]">
+            <CardContent className="p-3">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex items-center gap-3">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-white/10">
@@ -1166,21 +1168,21 @@ Best regards`
                     )}
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3 sm:flex sm:items-center">
-                  <div className="rounded-2xl border border-white/20 bg-white/10 px-4 py-2">
+                <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+                  <div className="rounded-xl border border-white/16 bg-white/8 px-3 py-2">
                     <p className="text-xl font-bold text-white">{processingTime}s</p>
-                    <p className="text-[11px] text-white/65">elapsed</p>
+                    <p className="text-[11px] text-white/65">time</p>
                   </div>
                   {typeof displayedProgress === "number" && (
-                    <div className="rounded-2xl border border-white/20 bg-white/10 px-4 py-2">
+                    <div className="rounded-xl border border-white/16 bg-white/8 px-3 py-2">
                       <p className="text-xl font-bold text-white">{displayedProgress}%</p>
-                      <p className="text-[11px] text-white/65">{isUploading ? "uploaded" : "complete"}</p>
+                      <p className="text-[11px] text-white/65">{isUploading ? "upload" : "done"}</p>
                     </div>
                   )}
                   <Button
                     variant="outline"
                     onClick={handleCancelProcessing}
-                    className="h-full min-h-14 rounded-2xl border-white/20 bg-white/10 px-4 text-white hover:bg-white/15 hover:text-white"
+                    className="h-full min-h-12 rounded-xl border-white/16 bg-white/8 px-4 text-white hover:bg-white/15 hover:text-white"
                   >
                     <X className="mr-2 h-4 w-4" />
                     Cancel
@@ -1206,12 +1208,13 @@ Best regards`
             {!isComplete ? (
               <Card className="ax-glass-card overflow-hidden rounded-[32px]">
                 <CardContent className="p-4 sm:p-5 lg:p-6">
-                  <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                  <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7c62b1]">Upload</p>
-                      <h2 className="mt-1 text-2xl font-bold tracking-tight text-foreground">Build a batch</h2>
+                      <h2 className="mt-1 text-2xl font-bold tracking-tight text-foreground">Batch</h2>
                     </div>
-                    <div className="flex items-center gap-2 rounded-2xl border border-[#eadfff] bg-white/45 px-3 py-2 text-sm font-semibold text-[#4b2d82]">
+                    <div className="flex items-center gap-2 rounded-xl border border-[#eadfff] bg-white/45 px-3 py-2 text-sm font-semibold text-[#4b2d82]">
+                      <FileImage className="h-4 w-4" />
                       <span>{uploadedFiles.length}</span>
                       <span className="text-muted-foreground">/ {maxUploadFiles}</span>
                     </div>
@@ -1265,16 +1268,16 @@ Best regards`
                           <FolderUp className="h-8 w-8 text-primary" />
                         </div>
                         <h3 className="text-xl font-semibold text-foreground">
-                          {isDragging ? "Drop files here" : "Drop files to convert"}
+                          {isDragging ? "Drop" : "Drop files"}
                         </h3>
-                        <p className="mt-2 max-w-md text-sm text-muted-foreground">
-                          Add up to {maxUploadFiles} screenshots, PDFs, handwritten tables, forms, or receipts in one batch.
+                        <p className="mt-2 max-w-md text-sm font-medium text-muted-foreground">
+                          Images or PDF
                         </p>
                         <label htmlFor="file-upload" className="mt-6">
                           <Button asChild className="h-12 rounded-2xl px-6">
                             <span>
                               <FileImage className="mr-2 h-4 w-4" />
-                              Choose files
+                              Browse
                             </span>
                           </Button>
                         </label>
@@ -1293,7 +1296,7 @@ Best regards`
                           <div className="flex flex-wrap items-center gap-2">
                             <Badge variant="secondary" className="gap-1 rounded-full border border-[#eadfff] bg-white/70 px-3 py-1">
                               <ImageIcon className="h-3 w-3" />
-                              {uploadedLabel}
+                              {uploadedFiles.length} files
                             </Badge>
                             <span className="text-xs font-medium text-muted-foreground">
                               {uploadedSizeMb.toFixed(1)} MB selected
@@ -1310,7 +1313,7 @@ Best regards`
                             </Button>
                             <label htmlFor="file-upload-more">
                               <Button size="sm" variant="outline" asChild className="rounded-2xl border-[#eadfff] bg-white/65">
-                                <span>Add files</span>
+                                <span>Add</span>
                               </Button>
                             </label>
                             <input

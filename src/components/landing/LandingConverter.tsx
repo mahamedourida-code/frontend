@@ -4,8 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { wakeUpBackendSilently } from "@/lib/backend-health";
 import { getTrialInfo, incrementTrialUploadCount } from "@/lib/free-trial";
@@ -1018,7 +1016,7 @@ export default function LandingConverter() {
               </div>
             )}
               <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : 'w-full max-w-[1480px]'}`}>
-                <div className={resultFiles.length === 0 ? "grid items-stretch gap-7 lg:grid-cols-[minmax(0,0.9fr)_minmax(560px,1.1fr)]" : "relative w-full"}>
+                <div className={resultFiles.length === 0 ? "grid items-stretch gap-10 lg:grid-cols-[minmax(0,0.82fr)_minmax(620px,1.18fr)]" : "relative w-full"}>
                 <div className="ax-glass-card relative w-full space-y-5 rounded-[2rem] border border-white/45 p-5 sm:p-6 lg:p-7">
                   {latestRecoverableJob && !isProcessing && (
                     <div className="rounded-[1.25rem] border border-[#eadfff] bg-[#E9ECE4]/85 p-4 shadow-[0_16px_45px_rgba(68,31,132,0.10)] backdrop-blur-xl">
@@ -1450,13 +1448,13 @@ export default function LandingConverter() {
                     </div>
                   )}
 
-                  {/* Convert Button + Options Card Row - Hide when processing or files ready */}
+                  {/* Convert button - Hide when processing or files ready */}
                   {!isProcessing && resultFiles.length === 0 && (
-                  <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
+                  <div className="grid gap-4">
                     <Button
                      onClick={handleProcessImage}
                      disabled={uploadedFiles.length === 0 || isProcessing}
-                     className={`min-h-[108px] rounded-[1.5rem] border-2 text-lg font-semibold transition-all duration-200 ${
+                     className={`min-h-[76px] rounded-[1.25rem] border-2 text-base font-semibold transition-all duration-200 ${
                       uploadedFiles.length === 0
                            ? 'bg-gray-300 hover:bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'
                            : 'bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 shadow-lg shadow-primary/20'
@@ -1473,106 +1471,47 @@ export default function LandingConverter() {
                         </>
                       )}
                     </Button>
-
-                    {/* Options Card - Right Side (1 column) */}
-                    <Card className="rounded-[1.5rem] border border-white/55 bg-white/30 shadow-none backdrop-blur-xl dark:bg-white/30">
-                      <CardContent className="p-4">
-                        <div className="space-y-4">
-                          <div>
-                            <h3 className="mb-2 text-sm font-semibold text-foreground">Language</h3>
-                            <select
-                              className="w-full cursor-pointer rounded-xl border-2 border-muted-foreground/20 bg-white/45 p-2.5 text-sm font-medium text-foreground transition-all hover:border-[#A78BFA]/50 focus:border-primary focus:outline-none"
-                              defaultValue="en"
-                              onClick={(e) => e.preventDefault()}
-                            >
-                              <option value="en">English</option>
-                              <option value="de">Deutsch</option>
-                              <option value="fr">Français</option>
-                              <option value="ar">العربية</option>
-                              <option value="es">Español</option>
-                              <option value="it">Italiano</option>
-                              <option value="pt">Português</option>
-                              <option value="zh">中文</option>
-                            </select>
-                          </div>
-
-                          <div>
-                            <h3 className="mb-2 text-sm font-semibold text-foreground">Delivery</h3>
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                if (!autoDownload) {
-                                  setShowAutoDownloadConfirm(true)
-                                } else {
-                                  setAutoDownload(false)
-                                  // toast.info('Auto-download disabled')
-                                }
-                              }}
-                              className={cn(
-                                "w-full flex items-center justify-between rounded-xl border p-2.5 transition-all",
-                                autoDownload
-                                  ? "bg-primary/10 border-primary"
-                                  : "bg-muted/30 border-muted-foreground/20 hover:border-[#A78BFA]/50"
-                              )}
-                            >
-                              <div className="flex items-center gap-1">
-                                <SiteIcon src={siteIcons.export} className={cn("h-4 w-4", autoDownload ? "opacity-100" : "opacity-60")} />
-                                <Label className="cursor-pointer text-sm font-medium text-foreground">
-                                  Auto Download
-                                </Label>
-                              </div>
-                            </button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
                   </div>
                   )}
                 </div>
 
                 {resultFiles.length === 0 && (
-                  <div className="ax-glass-card relative flex min-h-[560px] flex-col justify-between overflow-hidden rounded-[2rem] border border-white/45 p-5 sm:p-6 lg:p-7">
-                    <div className="flex items-center justify-between gap-4">
+                  <div className="relative flex min-h-[560px] flex-col justify-between overflow-hidden">
+                    <div className="flex items-center justify-between gap-4 px-1">
                       <div>
                         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#2f165e]">Preview</p>
-                        <h3 className="mt-2 text-2xl font-semibold text-[#111827]">Before and after conversion</h3>
+                        <h3 className="mt-2 text-2xl font-semibold text-[#111827]">Before and after</h3>
                       </div>
-                      <span className="hidden rounded-full border border-white/60 bg-white/40 px-3 py-1 text-xs font-semibold text-[#111827]/70 backdrop-blur-xl sm:inline-flex">
+                      <span className="hidden rounded-full bg-[#2f165e] px-3 py-1 text-xs font-semibold text-white sm:inline-flex">
                         XLSX ready
                       </span>
                     </div>
 
-                    <div className="mt-6 grid flex-1 gap-5 sm:grid-cols-2">
-                      <figure className="flex min-h-[430px] flex-col overflow-hidden rounded-[1.5rem] border border-white/60 bg-white/35">
-                        <div className="flex items-center justify-between border-b border-white/55 px-4 py-3">
-                          <figcaption className="text-sm font-semibold text-[#111827]">Before</figcaption>
-                          <span className="text-xs font-medium text-[#111827]/60">Image</span>
-                        </div>
-                        <div className="relative flex flex-1 items-center justify-center bg-white/30 p-3">
+                    <div className="mt-6 grid flex-1 gap-6 sm:grid-cols-2">
+                      <figure className="flex min-h-[470px] flex-col">
+                        <figcaption className="mb-3 px-1 text-sm font-semibold text-[#111827]">Before</figcaption>
+                        <div className="relative flex flex-1 items-center justify-center">
                           <Image
                             src="/b.webp"
                             alt="Handwritten table before conversion"
                             width={640}
                             height={720}
                             sizes="(min-width: 640px) 45vw, 100vw"
-                            className="max-h-[390px] w-full rounded-xl object-contain shadow-[0_18px_45px_rgba(42,35,64,0.10)]"
+                            className="max-h-[450px] w-full object-contain"
                           />
                         </div>
                       </figure>
 
-                      <figure className="flex min-h-[430px] flex-col overflow-hidden rounded-[1.5rem] border border-white/60 bg-white/35">
-                        <div className="flex items-center justify-between border-b border-white/55 px-4 py-3">
-                          <figcaption className="text-sm font-semibold text-[#111827]">After</figcaption>
-                          <span className="text-xs font-medium text-[#111827]/60">Spreadsheet</span>
-                        </div>
-                        <div className="relative flex flex-1 items-center justify-center bg-white/30 p-3">
+                      <figure className="flex min-h-[470px] flex-col">
+                        <figcaption className="mb-3 px-1 text-sm font-semibold text-[#111827]">After</figcaption>
+                        <div className="relative flex flex-1 items-center justify-center">
                           <Image
                             src="/bb.png"
                             alt="Spreadsheet output after conversion"
                             width={640}
                             height={720}
                             sizes="(min-width: 640px) 45vw, 100vw"
-                            className="max-h-[390px] w-full rounded-xl object-contain shadow-[0_18px_45px_rgba(42,35,64,0.10)]"
+                            className="max-h-[450px] w-full object-contain"
                           />
                         </div>
                       </figure>
