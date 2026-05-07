@@ -351,7 +351,7 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#A78BFA] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-[#2f165e] border-t-transparent" />
           <p className="text-muted-foreground">Loading Dashboard...</p>
         </div>
       </div>
@@ -472,7 +472,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Chart Section */}
-          <Card className="bg-transparent border-2 border-[#A78BFA] shadow-lg shadow-[#A78BFA]/10">
+          <Card className="border border-[#2f165e]/20 bg-white/28 shadow-[0_18px_50px_rgba(47,22,94,0.08)] backdrop-blur-xl">
             <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 lg:p-4">
               <div>
                 <CardTitle className="text-base lg:text-lg flex items-center gap-2">

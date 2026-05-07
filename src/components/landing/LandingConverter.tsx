@@ -978,25 +978,23 @@ export default function LandingConverter() {
   return (
     <>
         {/* Conversion Section */}
-        <section className="relative z-10 scroll-mt-28 pt-6 pb-16 sm:pt-8 lg:pt-10">
-          <div className="container mx-auto max-w-[1540px] px-4 sm:px-5 lg:px-9">
-            <div className="mb-5 text-center">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
-                <h2 className="text-lg font-bold text-foreground sm:text-xl">
-                  Try It
-                </h2>
-              </div>
+        <section className="relative z-10 scroll-mt-28 py-16 sm:py-20">
+          <div className="container mx-auto max-w-[1400px] px-4 sm:px-5 lg:px-9">
+            <div className="mb-8 text-center">
+              <h2 className="text-5xl font-semibold tracking-normal text-[#111827] sm:text-6xl">
+                Try It
+              </h2>
             </div>
             {resultFiles.length === 0 && !isProcessing && (
-              <div className="mx-auto mb-5 flex w-fit items-center rounded-full border border-white/55 bg-white/40 p-1 shadow-[0_16px_40px_rgba(42,35,64,0.08)] backdrop-blur-2xl">
+              <div className="mx-auto mb-8 flex w-full max-w-[1120px] items-center rounded-full border border-[#2f165e]/25 bg-[#2f165e] p-2 shadow-[0_18px_50px_rgba(47,22,94,0.20)]">
                 <button
                   type="button"
                   onClick={() => setOutputMode('table')}
                   className={cn(
-                    "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+                    "flex-1 rounded-full px-4 py-3 text-sm font-semibold transition-colors",
                     outputMode === 'table'
-                      ? "bg-[#2f165e] text-white shadow-sm"
-                      : "text-[#111827] hover:bg-white/45"
+                      ? "bg-[#E9ECE4] text-[#2f165e] shadow-sm"
+                      : "text-white/78 hover:bg-white/10 hover:text-white"
                   )}
                 >
                   Table output
@@ -1005,19 +1003,19 @@ export default function LandingConverter() {
                   type="button"
                   onClick={() => setOutputMode('text')}
                   className={cn(
-                    "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+                    "flex-1 rounded-full px-4 py-3 text-sm font-semibold transition-colors",
                     outputMode === 'text'
-                      ? "bg-[#2f165e] text-white shadow-sm"
-                      : "text-[#111827] hover:bg-white/45"
+                      ? "bg-[#E9ECE4] text-[#2f165e] shadow-sm"
+                      : "text-white/78 hover:bg-white/10 hover:text-white"
                   )}
                 >
                   Text output
                 </button>
               </div>
             )}
-              <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : 'w-full max-w-[1480px]'}`}>
-                <div className={resultFiles.length === 0 ? "grid items-stretch gap-10 lg:grid-cols-[minmax(0,0.82fr)_minmax(620px,1.18fr)]" : "relative w-full"}>
-                <div className="ax-glass-card relative w-full space-y-5 rounded-[2rem] border border-white/45 p-5 sm:p-6 lg:p-7">
+              <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : 'w-full max-w-[1260px]'}`}>
+                <div className={resultFiles.length === 0 ? "grid items-stretch gap-8" : "relative w-full"}>
+                <div className="relative w-full space-y-5 rounded-[2.25rem] border border-white/18 bg-[#626979] p-5 text-white shadow-[0_28px_80px_rgba(47,22,94,0.18)] sm:p-6 lg:p-7">
                   {latestRecoverableJob && !isProcessing && (
                     <div className="rounded-[1.25rem] border border-[#eadfff] bg-[#E9ECE4]/85 p-4 shadow-[0_16px_45px_rgba(68,31,132,0.10)] backdrop-blur-xl">
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -1046,20 +1044,20 @@ export default function LandingConverter() {
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
-                        className={`relative border-2 border-dashed rounded-[1.5rem] bg-white/25 backdrop-blur-xl transition-all duration-200 cursor-pointer ${
+                        className={`relative rounded-[1.75rem] border border-dashed bg-[#eef0ea]/92 text-[#111827] transition-all duration-200 cursor-pointer ${
                           isDragging
-                            ? 'border-[#A78BFA] bg-[#A78BFA]/10 scale-[0.99]'
+                            ? 'border-[#2f165e] bg-white scale-[0.99]'
                             : uploadedFiles.length > 0
-                              ? 'border-[#A78BFA] bg-[#A78BFA]/5'
-                              : 'border-[#A78BFA]/50 hover:border-[#A78BFA] hover:bg-[#A78BFA]/5'
-                        } flex min-h-[230px] items-center justify-center p-7 lg:min-h-[270px] lg:p-10`}
+                              ? 'border-[#2f165e]/55 bg-[#eef0ea]'
+                              : 'border-white/80 hover:border-[#2f165e]/70 hover:bg-white'
+                        } flex min-h-[170px] items-center justify-center p-6 lg:min-h-[190px] lg:p-8`}
                       >
                         <div className="text-center">
                           {uploadedFiles.length === 0 ? (
                             <>
-                              <SiteIcon src={siteIcons.upload} className="mx-auto mb-4 h-14 w-14" />
-                              <h3 className="mb-2 text-xl font-semibold">
-                                {isDragging ? 'Drop your files here' : `Upload up to ${maxUploadFiles} files`}
+                              <SiteIcon src={siteIcons.upload} className="mx-auto mb-4 h-10 w-10" />
+                              <h3 className="mb-1 text-xl font-semibold">
+                                {isDragging ? 'Drop files here' : 'Drag or upload your files here'}
                               </h3>
                               <input
                                 id="file-upload-landing"
@@ -1069,8 +1067,8 @@ export default function LandingConverter() {
                                 onChange={handleFileInput}
                                 className="hidden"
                               />
-                              <p className="mx-auto max-w-sm text-base leading-7 text-[#111827]/70">
-                                Click or drag handwritten images, PDFs, notes, receipts, or forms.
+                              <p className="mx-auto max-w-sm text-sm font-semibold uppercase tracking-[0.14em] text-[#111827]/58">
+                                PNG, JPEG, WebP, PDF
                               </p>
                             </>
                           ) : (
@@ -1100,13 +1098,13 @@ export default function LandingConverter() {
                                   </div>
                                 ))}
                               </div>
-                              <p className="mb-3 text-sm font-semibold text-[#111827]">{uploadedFiles.length} file{uploadedFiles.length > 1 ? 's' : ''} ready to convert</p>
+                              <p className="mb-3 text-sm font-semibold text-[#111827]">{uploadedFiles.length} file{uploadedFiles.length > 1 ? 's' : ''} ready</p>
                               <label htmlFor="file-upload-landing-more">
                                 <Button
                                   variant="outline"
                                   size="sm"
                                   disabled={isProcessing}
-                                  className="rounded-full border-2 border-[#A78BFA] bg-white/60 text-sm"
+                                  className="rounded-full border border-[#2f165e]/25 bg-white/70 text-sm text-[#2f165e]"
                                   asChild
                                   onClick={(e) => e.stopPropagation()}
                                 >
@@ -1159,7 +1157,7 @@ export default function LandingConverter() {
                               <h3 className="text-2xl font-semibold tracking-tight text-[#111827]">
                                 {processingComplete ? 'Files ready' : isUploading ? 'Uploading your batch' : 'Converting your files'}
                               </h3>
-                              <span className="rounded-full border border-[#A78BFA]/35 bg-white/55 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#111827]/70 backdrop-blur-md">
+                              <span className="rounded-full border border-[#2f165e]/18 bg-white/55 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#111827]/70 backdrop-blur-md">
                                 {processingComplete ? `${resultFiles.length} ready` : isUploading ? 'uploading' : 'converting'}
                               </span>
                             </div>
@@ -1172,7 +1170,7 @@ export default function LandingConverter() {
                                 size="sm"
                                 variant="outline"
                                 onClick={handleDownloadAll}
-                                className="border-2 border-[#A78BFA] bg-white/55 backdrop-blur-md"
+                                className="border border-[#2f165e]/25 bg-white/55 backdrop-blur-md"
                               >
                                 <Download className="mr-1 h-5 w-5" />
                                 Download All
@@ -1192,7 +1190,7 @@ export default function LandingConverter() {
                             variant="outline"
                             size="sm"
                             onClick={isProcessing && !processingComplete ? cancelCurrentBatch : handleReset}
-                            className="border-2 border-[#A78BFA] bg-white/55 backdrop-blur-md"
+                            className="border border-[#2f165e]/25 bg-white/55 backdrop-blur-md"
                           >
                             {isProcessing && !processingComplete ? <X className="mr-1 h-4 w-4" /> : <RotateCcw className="mr-1 h-4 w-4" />}
                             {isProcessing && !processingComplete ? 'Cancel' : 'Convert Again'}
@@ -1298,7 +1296,7 @@ export default function LandingConverter() {
                                     size="default"
                                     variant="outline"
                                     onClick={() => handleShareFile(resultFiles[0])}
-                                    className="gap-2 rounded-full border border-[#A78BFA] bg-white/70 text-foreground hover:bg-primary/10"
+                                    className="gap-2 rounded-full border border-[#2f165e]/25 bg-white/70 text-foreground hover:bg-primary/10"
                                   >
                                     <Share2 className="h-5 w-5" />
                                     Share
@@ -1350,7 +1348,7 @@ export default function LandingConverter() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleShareFile(file)}
-                                  className="gap-1.5 rounded-full border border-[#A78BFA] bg-white/70 text-foreground hover:bg-primary/10"
+                                  className="gap-1.5 rounded-full border border-[#2f165e]/25 bg-white/70 text-foreground hover:bg-primary/10"
                                 >
                                   <Share2 className="h-5 w-5" />
                                   Share
@@ -1401,7 +1399,7 @@ export default function LandingConverter() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleShareFile(file)}
-                                  className="gap-1.5 rounded-full border border-[#A78BFA] bg-white/70 text-foreground hover:bg-primary/10"
+                                  className="gap-1.5 rounded-full border border-[#2f165e]/25 bg-white/70 text-foreground hover:bg-primary/10"
                                 >
                                   <Share2 className="h-5 w-5" />
                                   Share
@@ -1427,7 +1425,7 @@ export default function LandingConverter() {
                           {isProcessing && totalFilesToProcess > resultFiles.length && (
                             <>
                               {Array.from({ length: totalFilesToProcess - resultFiles.length }).map((_, index) => (
-                                <div key={`pending-${index}`} className="flex items-center justify-between rounded-[1.25rem] border border-dashed border-[#A78BFA]/35 bg-white/30 p-4 backdrop-blur-xl">
+                                <div key={`pending-${index}`} className="flex items-center justify-between rounded-[1.25rem] border border-dashed border-[#2f165e]/22 bg-white/30 p-4 backdrop-blur-xl">
                                   <div className="flex items-center gap-3 flex-1 min-w-0">
                                     <InlineSpinner className="h-5 w-5 text-primary flex-shrink-0" />
                                     <span className="text-sm font-medium text-[#111827]/70">Waiting for file {resultFiles.length + index + 1}</span>
@@ -1454,10 +1452,10 @@ export default function LandingConverter() {
                     <Button
                      onClick={handleProcessImage}
                      disabled={uploadedFiles.length === 0 || isProcessing}
-                     className={`min-h-[76px] rounded-[1.25rem] border-2 text-base font-semibold transition-all duration-200 ${
+                     className={`min-h-[58px] rounded-[1.25rem] border text-base font-semibold transition-all duration-200 ${
                       uploadedFiles.length === 0
-                           ? 'bg-gray-300 hover:bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed'
-                           : 'bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-105 shadow-lg shadow-primary/20'
+                           ? 'border-white/20 bg-white/18 text-white/50 hover:bg-white/18 cursor-not-allowed'
+                           : 'border-[#E9ECE4] bg-[#E9ECE4] text-[#2f165e] hover:bg-white hover:scale-[1.01] shadow-lg shadow-black/10'
                       }`}
                     >
                       {isProcessing ? (
@@ -1476,20 +1474,20 @@ export default function LandingConverter() {
                 </div>
 
                 {resultFiles.length === 0 && (
-                  <div className="relative flex min-h-[560px] flex-col justify-between overflow-hidden">
+                  <div className="relative flex min-h-[560px] flex-col justify-between overflow-hidden rounded-[2.25rem] bg-[#626979] p-5 text-white shadow-[0_28px_80px_rgba(47,22,94,0.16)] sm:p-6 lg:p-7">
                     <div className="flex items-center justify-between gap-4 px-1">
                       <div>
-                        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#2f165e]">Preview</p>
-                        <h3 className="mt-2 text-2xl font-semibold text-[#111827]">Before and after</h3>
+                        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/62">Preview</p>
+                        <h3 className="mt-2 text-2xl font-semibold text-white">Before and after</h3>
                       </div>
-                      <span className="hidden rounded-full bg-[#2f165e] px-3 py-1 text-xs font-semibold text-white sm:inline-flex">
+                      <span className="hidden rounded-full bg-[#E9ECE4] px-3 py-1 text-xs font-semibold text-[#2f165e] sm:inline-flex">
                         XLSX ready
                       </span>
                     </div>
 
                     <div className="mt-6 grid flex-1 gap-6 sm:grid-cols-2">
                       <figure className="flex min-h-[470px] flex-col">
-                        <figcaption className="mb-3 px-1 text-sm font-semibold text-[#111827]">Before</figcaption>
+                        <figcaption className="mb-3 px-1 text-sm font-semibold text-white/82">Before</figcaption>
                         <div className="relative flex flex-1 items-center justify-center">
                           <Image
                             src="/b.webp"
@@ -1503,7 +1501,7 @@ export default function LandingConverter() {
                       </figure>
 
                       <figure className="flex min-h-[470px] flex-col">
-                        <figcaption className="mb-3 px-1 text-sm font-semibold text-[#111827]">After</figcaption>
+                        <figcaption className="mb-3 px-1 text-sm font-semibold text-white/82">After</figcaption>
                         <div className="relative flex flex-1 items-center justify-center">
                           <Image
                             src="/bb.png"

@@ -1034,7 +1034,7 @@ Best regards`
   if (authLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-[#A78BFA] border-t-transparent rounded-full animate-spin" />
+        <div className="h-16 w-16 animate-spin rounded-full border-4 border-[#2f165e] border-t-transparent" />
       </div>
     )
   }
@@ -1475,7 +1475,7 @@ Best regards`
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                               <div className="flex flex-col">
                                 <h4 className="text-sm font-semibold mb-0.5 text-muted-foreground">Original Image</h4>
-                                <div className="border-2 border-[#A78BFA]/20 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center" style={{ maxHeight: '450px' }}>
+                                <div className="flex items-center justify-center overflow-hidden rounded-[18px] border border-[#2f165e]/15 bg-white/50" style={{ maxHeight: '450px' }}>
                                   <img 
                                     src={firstImageUrl} 
                                     alt="Original" 
@@ -1489,7 +1489,7 @@ Best regards`
                                 <h4 className="text-sm font-semibold mb-0.5 text-muted-foreground">
                                   {outputMode === 'text' || textPreview ? 'Extracted Text Preview' : 'Extracted Data Preview'}
                                 </h4>
-                                <div className="border-2 border-[#A78BFA]/20 rounded-lg overflow-auto bg-white" style={{ maxHeight: '450px' }}>
+                                <div className="overflow-auto rounded-[18px] border border-[#2f165e]/15 bg-white" style={{ maxHeight: '450px' }}>
                                   {outputMode === 'text' || textPreview ? (
                                     <pre className="min-h-[300px] whitespace-pre-wrap p-4 text-sm leading-6 text-[#111827]">
                                       {textPreview || 'Text preview is loading...'}
@@ -1745,7 +1745,7 @@ Best regards`
                 <div>
                 <Label className="mb-2 block text-xs font-semibold text-muted-foreground">Language</Label>
                 <select
-                  className="w-full rounded-2xl border border-[#eadfff] bg-white/60 p-3 text-sm font-medium text-foreground transition-all hover:border-[#A78BFA]/70 focus:border-[#A78BFA] focus:outline-none"
+                  className="w-full rounded-2xl border border-[#eadfff] bg-white/60 p-3 text-sm font-medium text-foreground transition-all hover:border-[#2f165e]/45 focus:border-[#2f165e] focus:outline-none"
                   value={selectedLanguage}
                   onChange={(e) => {
                     const newLanguage = e.target.value
@@ -1777,9 +1777,9 @@ Best regards`
                       }
                     }}
                     className={cn(
-                      "flex w-full items-center justify-between rounded-2xl border p-3 transition-all hover:border-[#A78BFA]/70",
+                      "flex w-full items-center justify-between rounded-2xl border p-3 transition-all hover:border-[#2f165e]/45",
                       autoDownload
-                        ? "border-[#A78BFA] bg-primary/10"
+                        ? "border-[#2f165e] bg-primary/10"
                         : "border-[#eadfff] bg-white/45"
                     )}
                   >
@@ -1810,9 +1810,9 @@ Best regards`
                   <button
                     onClick={() => setAutoSave(!autoSave)}
                     className={cn(
-                      "flex w-full items-center justify-between rounded-2xl border p-3 transition-all hover:border-[#A78BFA]/70",
+                      "flex w-full items-center justify-between rounded-2xl border p-3 transition-all hover:border-[#2f165e]/45",
                       autoSave
-                        ? "border-[#A78BFA] bg-primary/10"
+                        ? "border-[#2f165e] bg-primary/10"
                         : "border-[#eadfff] bg-white/45"
                     )}
                   >

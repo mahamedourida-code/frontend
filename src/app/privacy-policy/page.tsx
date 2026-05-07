@@ -1,218 +1,158 @@
 "use client"
 
 import { AppIcon } from "@/components/AppIcon"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
 import { ChevronLeft } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+
+const highlights = [
+  {
+    title: "Documents",
+    text: "Uploaded images and PDFs are used to run conversion, create previews, and generate output files.",
+  },
+  {
+    title: "Account",
+    text: "We keep basic account, billing, usage, and job metadata so your history, limits, and downloads work.",
+  },
+  {
+    title: "Control",
+    text: "You can request deletion, avoid sharing links, and keep permanent copies in your own workspace.",
+  },
+]
+
+const sections = [
+  {
+    title: "Data We Collect",
+    items: [
+      "Account details such as email, display name, provider profile data, and authentication state.",
+      "Uploaded files, generated Excel or text outputs, file metadata, job status, and download/share metadata.",
+      "Usage events such as batch size, processing time, credits, plan limits, and error states.",
+      "Technical data such as browser, device, IP-derived request information, and security logs.",
+    ],
+  },
+  {
+    title: "How We Use Data",
+    items: [
+      "Convert documents into structured spreadsheets or text output.",
+      "Recover active jobs, keep history available, and protect downloads from unauthorized access.",
+      "Manage free quotas, paid plans, billing status, credits, and abuse prevention.",
+      "Improve reliability, queue performance, OCR quality, and support investigations.",
+    ],
+  },
+  {
+    title: "Storage And Processors",
+    items: [
+      "Supabase is used for authentication, database records, and durable file metadata.",
+      "Supabase Storage is used for generated files and upload/output storage.",
+      "Fly.io and Vercel host backend and frontend infrastructure.",
+      "OCR processing may use external model infrastructure where needed to perform the conversion.",
+    ],
+  },
+  {
+    title: "Retention",
+    items: [
+      "Generated files are kept for a limited download and share window unless the product plan says otherwise.",
+      "Job and billing metadata may be retained longer for account history, fraud prevention, tax, and audit needs.",
+      "Temporary processing files are treated as scratch data and are not meant for permanent storage.",
+    ],
+  },
+  {
+    title: "Sharing",
+    items: [
+      "We do not sell personal data.",
+      "Shared links are created only when a user requests sharing.",
+      "Service providers receive only the data needed to operate the product.",
+      "We may disclose information if required by law or to protect the service from abuse.",
+    ],
+  },
+  {
+    title: "Your Rights",
+    items: [
+      "Request access to personal data connected to your account.",
+      "Ask us to correct or delete account data where legally possible.",
+      "Delete generated files from your workspace when the product provides that control.",
+      "Contact us about privacy, data deletion, or account questions.",
+    ],
+  },
+]
 
 export default function PrivacyPolicyPage() {
   const router = useRouter()
 
   return (
-    <div className="ax-page-bg min-h-screen">
-      {/* Header */}
-      <header className="ax-glass-header relative z-10 border-b">
-        <div className="container max-w-4xl mx-auto px-4 py-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.back()}
-              className="gap-1"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Back
-            </Button>
-          </div>
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <AppIcon size={40} />
-            <span className="text-xl font-bold">AxLiner</span>
+    <main className="min-h-screen bg-[#E9ECE4] text-[#111827]">
+      <nav className="sticky top-0 z-40 border-b border-black/10 bg-[#E9ECE4]/76 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-3 font-bold" aria-label="AxLiner home">
+            <AppIcon size={34} />
+            <span>AxLiner</span>
           </Link>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.back()}
+            className="rounded-full text-[#2f165e] hover:bg-white/45"
+          >
+            <ChevronLeft className="mr-1 h-4 w-4" />
+            Back
+          </Button>
         </div>
-      </header>
+      </nav>
 
-      {/* Content */}
-      <main className="ax-glass-card relative z-10 rounded-3xl container max-w-4xl mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold mb-4">Privacy Policy</h1>
-        <p className="text-muted-foreground mb-8">Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+      <section className="mx-auto max-w-6xl px-4 pb-12 pt-16 sm:px-6 lg:px-8 lg:pb-16 lg:pt-24">
+        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#2f165e]">
+          Privacy
+        </p>
+        <h1 className="mt-5 max-w-4xl text-5xl font-semibold leading-tight tracking-normal sm:text-6xl">
+          Clear rules for your documents and account data.
+        </h1>
+        <p className="mt-6 max-w-3xl text-lg font-medium leading-8 text-[#111827]/78">
+          AxLiner processes documents to create spreadsheet and text outputs. This page explains what data is handled, why it is needed, and how users can control it.
+        </p>
+        <p className="mt-4 text-sm font-semibold text-[#111827]/58">Last updated: May 7, 2026</p>
 
-        <div className="prose prose-slate dark:prose-invert max-w-none space-y-8">
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">1. Introduction</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              Welcome to AxLiner. We respect your privacy and are committed to protecting your personal data. 
-              This privacy policy explains how we collect, use, and safeguard your information when you use our 
-              OCR (Optical Character Recognition) service to convert images of tables into Excel files.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">2. Information We Collect</h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-xl font-medium mb-2">2.1 Account Information</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  When you create an account, we collect:
-                </p>
-                <ul className="list-disc list-inside text-muted-foreground ml-4 space-y-1 mt-2">
-                  <li>Email address</li>
-                  <li>Full name</li>
-                  <li>Password (encrypted)</li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-medium mb-2">2.2 Usage Data</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  We collect information about how you use our service:
-                </p>
-                <ul className="list-disc list-inside text-muted-foreground ml-4 space-y-1 mt-2">
-                  <li>Images uploaded for processing</li>
-                  <li>Processing history and statistics</li>
-                  <li>Credits usage</li>
-                  <li>Device and browser information</li>
-                </ul>
-              </div>
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
+          {highlights.map((item) => (
+            <div key={item.title} className="rounded-[24px] border border-white/55 bg-white/38 p-5 shadow-[0_18px_45px_rgba(42,35,64,0.07)] backdrop-blur-xl">
+              <h2 className="text-lg font-semibold">{item.title}</h2>
+              <p className="mt-3 text-sm font-medium leading-7 text-[#111827]/72">{item.text}</p>
             </div>
-          </section>
+          ))}
+        </div>
+      </section>
 
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">3. How We Use Your Information</h2>
-            <p className="text-muted-foreground leading-relaxed mb-3">
-              We use your information to:
-            </p>
-            <ul className="list-disc list-inside text-muted-foreground ml-4 space-y-2">
-              <li>Provide and maintain our OCR service</li>
-              <li>Process your images and generate Excel files</li>
-              <li>Manage your account and subscription</li>
-              <li>Send you service-related notifications</li>
-              <li>Improve our service and develop new features</li>
-              <li>Prevent fraud and abuse</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">4. Data Storage and Security</h2>
-            <div className="space-y-4">
-              <p className="text-muted-foreground leading-relaxed">
-                We take data security seriously:
-              </p>
-              <ul className="list-disc list-inside text-muted-foreground ml-4 space-y-2">
-                <li>Your data is stored securely using Supabase (PostgreSQL database)</li>
-                <li>Images and files are stored in encrypted cloud storage</li>
-                <li>We use industry-standard encryption for data transmission (HTTPS/TLS)</li>
-                <li>Passwords are hashed and never stored in plain text</li>
-                <li>Processed files are automatically deleted after 30 days</li>
+      <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 lg:px-8">
+        <div className="divide-y divide-[#111827]/12 rounded-[34px] border border-white/55 bg-white/34 shadow-[0_24px_70px_rgba(42,35,64,0.08)] backdrop-blur-xl">
+          {sections.map((section) => (
+            <div key={section.title} className="grid gap-6 p-6 lg:grid-cols-[300px_1fr] lg:p-8">
+              <h2 className="text-2xl font-semibold tracking-normal">{section.title}</h2>
+              <ul className="space-y-3">
+                {section.items.map((item) => (
+                  <li key={item} className="flex gap-3 text-base font-medium leading-8 text-[#111827]/78">
+                    <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-[#2f165e]" />
+                    <span>{item}</span>
+                  </li>
+                ))}
               </ul>
             </div>
-          </section>
+          ))}
+        </div>
 
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">5. Data Retention</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              We retain your data as follows:
-            </p>
-            <ul className="list-disc list-inside text-muted-foreground ml-4 space-y-2 mt-3">
-              <li><strong>Account data:</strong> Until you delete your account</li>
-              <li><strong>Uploaded images:</strong> Deleted immediately after processing</li>
-              <li><strong>Generated Excel files:</strong> Stored for 30 days, then automatically deleted</li>
-              <li><strong>Processing history:</strong> Retained for analytics purposes (anonymized after 90 days)</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">6. Sharing Your Information</h2>
-            <p className="text-muted-foreground leading-relaxed mb-3">
-              We do not sell your personal information. We may share your data only in the following circumstances:
-            </p>
-            <ul className="list-disc list-inside text-muted-foreground ml-4 space-y-2">
-              <li><strong>Service Providers:</strong> We use third-party services (Supabase for database, Fly.io for hosting, DeepInfra for OCR processing)</li>
-              <li><strong>Legal Requirements:</strong> When required by law or to protect our rights</li>
-              <li><strong>With Your Consent:</strong> When you explicitly share files using our sharing features</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">7. Your Rights</h2>
-            <p className="text-muted-foreground leading-relaxed mb-3">
-              You have the right to:
-            </p>
-            <ul className="list-disc list-inside text-muted-foreground ml-4 space-y-2">
-              <li>Access your personal data</li>
-              <li>Correct inaccurate data</li>
-              <li>Request deletion of your data</li>
-              <li>Export your data</li>
-              <li>Opt-out of marketing communications</li>
-              <li>Delete your account at any time</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">8. Cookies</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              We use essential cookies to maintain your session and authenticate your account. 
-              We do not use tracking or advertising cookies. You can manage cookie preferences in your browser settings.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">9. Children's Privacy</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              Our service is not intended for users under 13 years of age. We do not knowingly collect 
-              personal information from children under 13.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">10. Changes to This Policy</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              We may update this privacy policy from time to time. We will notify you of any changes by 
-              posting the new policy on this page and updating the "Last updated" date.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">11. Contact Us</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              If you have questions about this privacy policy or how we handle your data, please contact us at:
-            </p>
-            <div className="mt-3 p-4 bg-muted/50 rounded-lg">
-              <p className="text-muted-foreground">
-                <strong>Email:</strong> privacy@AxLiner.com<br />
-                <strong>Address:</strong> [Your Business Address]
+        <div className="mt-10 rounded-[30px] bg-[#2f165e] p-6 text-white shadow-[0_24px_70px_rgba(47,22,94,0.22)] sm:p-8">
+          <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <h2 className="text-2xl font-semibold">Questions or deletion requests</h2>
+              <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-white/72">
+                Contact us for privacy questions, account deletion, or file deletion support.
               </p>
             </div>
-          </section>
-        </div>
-
-        {/* Back to Home */}
-        <div className="mt-12 pt-8 border-t">
-          <Link 
-            href="/" 
-            className="inline-flex items-center text-primary hover:underline"
-          >
-            ← Back to Home
-          </Link>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t mt-20">
-        <div className="container max-w-4xl mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} AxLiner. All rights reserved.</p>
-            <div className="flex gap-6">
-              <Link href="/privacy-policy" className="hover:text-foreground transition-colors">
-                Privacy Policy
-              </Link>
-              <Link href="/terms-of-service" className="hover:text-foreground transition-colors">
-                Terms of Service
-              </Link>
-            </div>
+            <Button asChild className="rounded-full bg-white px-6 text-[#2f165e] hover:bg-white/90">
+              <a href="mailto:axliner.excel@gmail.com">Contact privacy</a>
+            </Button>
           </div>
         </div>
-      </footer>
-    </div>
+      </section>
+    </main>
   )
 }
