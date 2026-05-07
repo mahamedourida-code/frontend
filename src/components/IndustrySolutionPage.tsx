@@ -72,6 +72,15 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
 
                   <NavigationMenuItem>
                     <NavigationMenuLink
+                      href="/blogs"
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-white")}
+                    >
+                      Blogs
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+
+                  <NavigationMenuItem>
+                    <NavigationMenuLink
                       href="/#ai-engine"
                       className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-white")}
                     >

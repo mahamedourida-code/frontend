@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { industrySolutions } from '@/lib/industry-solutions'
+import { blogPosts } from '@/lib/blogs'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.axliner.com'
@@ -11,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/solutions/data-entry',
   ]
   const industrySolutionRoutes = industrySolutions.map((solution) => `/solutions/${solution.slug}`)
+  const blogRoutes = blogPosts.map((post) => `/blogs/${post.slug}`)
   
   return [
     {
@@ -25,6 +27,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
+    {
+      url: `${baseUrl}/blogs`,
+      lastModified,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    ...blogRoutes.map((route) => ({
+      url: `${baseUrl}${route}`,
+      lastModified,
+      changeFrequency: 'monthly' as const,
+      priority: 0.78,
+    })),
     {
       url: `${baseUrl}/handwritten-to-excel`,
       lastModified,

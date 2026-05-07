@@ -33,6 +33,7 @@ import {
   Settings,
   LogOut,
   HelpCircle,
+  FileText,
   FileSpreadsheet,
   LayoutDashboard
 } from "lucide-react"
@@ -134,6 +135,12 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       label: "Pricing",
       href: "/pricing",
       icon: BillingSeal,
+      show: !isAuthenticated
+    },
+    {
+      label: "Blogs",
+      href: "/blogs",
+      icon: FileText,
       show: !isAuthenticated
     },
     {

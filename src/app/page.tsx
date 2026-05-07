@@ -440,6 +440,15 @@ export default function Home() {
                     </NavigationMenuLink>
                   </NavigationMenuItem>
 
+                  <NavigationMenuItem>
+                    <NavigationMenuLink
+                      href="/blogs"
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-accent/50 transition-colors text-black dark:text-white")}
+                    >
+                      Blogs
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+
                   {/* How AxLiner's Built */}
                   <NavigationMenuItem>
                     <button
@@ -1273,6 +1282,7 @@ export default function Home() {
                   <li><a href="#benchmarks" className="transition-colors hover:text-white">Benchmarks</a></li>
                   <li><a href="#how-it-works" className="transition-colors hover:text-white">How it works</a></li>
                   <li><NextLink href="/pricing" className="transition-colors hover:text-white">Pricing</NextLink></li>
+                  <li><NextLink href="/blogs" className="transition-colors hover:text-white">Blogs</NextLink></li>
                 </ul>
               </div>
 
