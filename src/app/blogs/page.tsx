@@ -59,71 +59,73 @@ export default function BlogsPage() {
         </div>
       </nav>
 
-      <section className="mx-auto max-w-6xl px-4 pb-10 pt-28 sm:px-6 lg:px-8 lg:pb-12 lg:pt-32">
-        <div className="max-w-2xl">
+      <section className="mx-auto max-w-5xl px-4 pb-7 pt-28 sm:px-6 lg:px-8 lg:pt-32">
+        <div className="border-b border-black/10 pb-8">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#2f165e]">
-            AxLiner blog
+            AxLiner Blog
           </p>
-          <h1 className="mt-4 text-3xl font-semibold leading-tight tracking-normal sm:text-4xl lg:text-5xl">
-            Clear writing about handwritten paper, OCR, and Excel workflows.
+          <h1 className="mt-4 text-4xl font-semibold leading-tight tracking-normal sm:text-5xl">
+            Handwritten OCR notes for real paper workflows.
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-7 text-black">
+          <p className="mt-4 max-w-2xl text-base leading-7 text-black">
             Practical notes for teams turning paper tables, pen-written forms, scanned PDFs, receipts, and messy document photos into spreadsheets that are easy to review.
           </p>
+          <div className="mt-7 flex gap-7 overflow-x-auto border-t border-black/10 pt-4 text-sm font-semibold text-black">
+            <span className="whitespace-nowrap text-[#2f165e]">Latest</span>
+            <span className="whitespace-nowrap">Handwritten OCR</span>
+            <span className="whitespace-nowrap">Batch workflows</span>
+            <span className="whitespace-nowrap">Excel output</span>
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 lg:px-8">
-        <div className="grid gap-5 md:grid-cols-2">
+      <section className="mx-auto max-w-5xl px-4 pb-20 sm:px-6 lg:px-8">
+        <div className="divide-y divide-black/10 border-b border-black/10">
           {blogPosts.map((post) => (
             <article
               key={post.slug}
-              className="overflow-hidden rounded-[26px] border border-white/60 bg-white/35 shadow-[0_18px_55px_rgba(42,35,64,0.07)] backdrop-blur-xl"
+              className="grid min-h-[168px] grid-cols-[minmax(0,1fr)_112px] gap-5 py-6 sm:grid-cols-[minmax(0,1fr)_168px] sm:gap-8"
             >
-              <Link href={`/blogs/${post.slug}`} className="group block">
-                <div className="relative aspect-[1.75] overflow-hidden">
+              <div className="min-w-0">
+                <div className="flex items-center gap-3">
                   <Image
-                    src={post.image}
-                    alt={post.imageAlt}
-                    fill
-                    sizes="(min-width: 768px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-[1.035]"
+                    src={post.authorImage}
+                    alt={post.authorImageAlt}
+                    width={28}
+                    height={28}
+                    className="h-7 w-7 rounded-full object-cover"
                   />
+                  <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-sm text-black">
+                    <span className="font-medium">{post.authorName}</span>
+                    <span className="text-black/50">/</span>
+                    <span>{post.date}</span>
+                    <span className="text-black/50">/</span>
+                    <span>{post.readTime}</span>
+                  </div>
                 </div>
-              </Link>
-              <div className="p-5 sm:p-6">
-                <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#2f165e]">
-                  <span>{post.eyebrow}</span>
-                  <span className="h-1 w-1 rounded-full bg-[#2f165e]/55" />
-                  <span>{post.readTime}</span>
-                </div>
-                <h2 className="mt-3 text-xl font-semibold leading-snug tracking-normal sm:text-2xl">
+
+                <h2 className="mt-4 text-xl font-semibold leading-snug tracking-normal sm:text-2xl">
                   <Link href={`/blogs/${post.slug}`} className="hover:text-[#2f165e]">
                     {post.title}
                   </Link>
                 </h2>
-                <p className="mt-3 text-sm leading-6 text-black">
+                <p className="mt-2 line-clamp-2 text-sm leading-6 text-black/80 sm:text-base sm:leading-7">
                   {post.description}
                 </p>
-                <div className="mt-5 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <Image
-                      src={post.authorImage}
-                      alt={post.authorImageAlt}
-                      width={34}
-                      height={34}
-                      className="h-8 w-8 rounded-full object-cover"
-                    />
-                    <div>
-                      <p className="text-sm font-semibold text-black">{post.authorName}</p>
-                      <p className="text-xs text-black/70">{post.authorRole}</p>
-                    </div>
-                  </div>
+                <div className="mt-4 text-sm font-semibold text-[#2f165e]">
+                  {post.eyebrow}
                 </div>
-                <Button asChild className="mt-5 rounded-full bg-[#2f165e] px-5 text-white hover:bg-[#24104b]">
-                  <Link href={`/blogs/${post.slug}`}>Read article</Link>
-                </Button>
               </div>
+
+              <Link href={`/blogs/${post.slug}`} className="group relative h-[112px] overflow-hidden bg-white sm:h-[118px]">
+                <Image
+                  src={post.image}
+                  alt={post.imageAlt}
+                  fill
+                  sizes="(min-width: 640px) 168px, 112px"
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+              </Link>
             </article>
           ))}
         </div>

@@ -122,113 +122,94 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
         </div>
       </nav>
 
-      <article>
-        <header className="mx-auto max-w-6xl px-4 pb-9 pt-28 sm:px-6 lg:px-8 lg:pb-12 lg:pt-32">
-          <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
-            <div>
-              <Link href="/blogs" className="text-sm font-semibold uppercase tracking-[0.18em] text-[#2f165e] hover:text-[#24104b]">
-                Blog
-              </Link>
-              <h1 className="mt-4 text-3xl font-semibold leading-tight tracking-normal sm:text-4xl lg:text-5xl">
-                {post.title}
-              </h1>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-black">
-                {post.description}
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3 text-sm font-semibold text-black">
-                <span>{post.date}</span>
-                <span className="text-[#2f165e]">/</span>
-                <span>{post.readTime}</span>
-              </div>
-            </div>
+      <article className="mx-auto max-w-[760px] px-4 pb-20 pt-28 sm:px-6 lg:px-8 lg:pt-32">
+        <header>
+          <Link href="/blogs" className="text-sm font-semibold text-[#2f165e] hover:text-[#24104b]">
+            AxLiner Blog
+          </Link>
+          <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-normal text-black sm:text-5xl">
+            {post.title}
+          </h1>
+          <p className="mt-4 text-xl leading-8 text-black/70">
+            {post.description}
+          </p>
 
-            <div className="relative min-h-[260px] overflow-hidden rounded-[24px] shadow-[0_18px_55px_rgba(42,35,64,0.09)] sm:min-h-[320px] lg:min-h-[380px]">
-              <Image
-                src={post.image}
-                alt={post.imageAlt}
-                fill
-                priority
-                sizes="(min-width: 1024px) 54vw, 100vw"
-                className="object-cover"
-              />
+          <div className="mt-6 flex items-center gap-3">
+            <Image
+              src={post.authorImage}
+              alt={post.authorImageAlt}
+              width={42}
+              height={42}
+              className="h-10 w-10 rounded-full object-cover"
+            />
+            <div>
+              <p className="text-sm font-medium text-black">{post.authorName}</p>
+              <p className="text-sm leading-5 text-black/60">
+                {post.readTime} / {post.date}
+              </p>
             </div>
           </div>
+
+          <div className="relative mt-8 aspect-[16/9] overflow-hidden bg-white">
+            <Image
+              src={post.image}
+              alt={post.imageAlt}
+              fill
+              priority
+              sizes="760px"
+              className="object-cover"
+            />
+          </div>
+          <p className="mt-3 text-sm leading-6 text-black/60">{post.imageAlt}</p>
         </header>
 
-        <section className="mx-auto grid max-w-6xl gap-8 px-4 pb-20 sm:px-6 lg:grid-cols-[minmax(0,0.7fr)_minmax(280px,0.3fr)] lg:px-8">
-          <div className="rounded-[26px] border border-white/60 bg-white/36 p-5 shadow-[0_18px_55px_rgba(42,35,64,0.07)] backdrop-blur-xl sm:p-7 lg:p-8">
-            <p className="text-base leading-8 text-black">
-              {post.intro}
-            </p>
+        <section className="mt-9 border-t border-black/10 pt-8">
+          <p className="text-[20px] leading-[32px] text-black">
+            {post.intro}
+          </p>
 
-            <div className="mt-9 space-y-9">
-              {post.sections.map((section) => (
-                <section key={section.title}>
-                  <h2 className="text-2xl font-semibold leading-tight tracking-normal text-[#111827]">
-                    {section.title}
-                  </h2>
-                  <div className="mt-4 space-y-4">
-                    {section.body.map((paragraph) => (
-                      <p key={paragraph} className="text-base leading-8 text-black">
-                        {paragraph}
-                      </p>
-                    ))}
-                  </div>
-                </section>
-              ))}
-            </div>
-
-            <div className="mt-10 rounded-[22px] bg-[#2f165e] p-5 text-white sm:p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/65">
-                Takeaway
-              </p>
-              <p className="mt-4 text-base leading-7">
-                {post.takeaway}
-              </p>
-            </div>
-
-            <div className="mt-8 flex items-center gap-4 border-t border-white/65 pt-6">
-              <Image
-                src={post.authorImage}
-                alt={post.authorImageAlt}
-                width={52}
-                height={52}
-                className="h-12 w-12 rounded-full object-cover"
-              />
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#2f165e]">
-                  Written by
-                </p>
-                <p className="mt-1 text-base font-semibold text-black">{post.authorName}</p>
-                <p className="text-sm leading-6 text-black/70">{post.authorRole}</p>
-              </div>
-            </div>
+          <div className="mt-10 space-y-10">
+            {post.sections.map((section) => (
+              <section key={section.title}>
+                <h2 className="text-2xl font-semibold leading-tight tracking-normal text-black">
+                  {section.title}
+                </h2>
+                <div className="mt-4 space-y-5">
+                  {section.body.map((paragraph) => (
+                    <p key={paragraph} className="text-[20px] leading-[32px] text-black">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </section>
+            ))}
           </div>
 
-          <aside className="lg:sticky lg:top-32 lg:self-start">
-            <div className="overflow-hidden rounded-[24px] border border-white/60 bg-white/32 shadow-[0_18px_50px_rgba(42,35,64,0.07)] backdrop-blur-xl">
-              <div className="relative aspect-[1.18]">
-                <Image
-                  src={post.supportingImage}
-                  alt={post.supportingImageAlt}
-                  fill
-                  sizes="(min-width: 1024px) 28vw, 100vw"
-                  className="object-cover"
-                />
-              </div>
-              <div className="p-5">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#2f165e]">
-                  Related workflow
-                </p>
-                <p className="mt-3 text-base leading-7 text-black">
-                  Try a real handwritten image, scanned paper table, or PDF page and review the extracted spreadsheet output before download.
-                </p>
-                <Button asChild className="mt-5 rounded-full bg-[#2f165e] px-5 text-white hover:bg-[#24104b]">
-                  <Link href="/#converter">Try AxLiner</Link>
-                </Button>
-              </div>
+          <div className="mt-10 border-l-4 border-[#2f165e] pl-5">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#2f165e]">
+              Takeaway
+            </p>
+            <p className="mt-3 text-[20px] leading-[32px] text-black">
+              {post.takeaway}
+            </p>
+          </div>
+
+          <div className="mt-12 flex items-center gap-4 border-t border-black/10 pt-6">
+            <Image
+              src={post.authorImage}
+              alt={post.authorImageAlt}
+              width={52}
+              height={52}
+              className="h-12 w-12 rounded-full object-cover"
+            />
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#2f165e]">
+                Written by
+              </p>
+              <p className="mt-1 text-base font-semibold text-black">{post.authorName}</p>
+              <p className="text-sm leading-6 text-black/70">{post.authorRole}</p>
             </div>
-          </aside>
+          </div>
         </section>
       </article>
     </main>

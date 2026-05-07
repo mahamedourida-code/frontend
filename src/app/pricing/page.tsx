@@ -27,8 +27,151 @@ const planBaseNames: Record<string, string> = {
   mega: "Mega Plan",
 }
 
+const launchFreePlan: BillingPlan = {
+  key: "free",
+  checkout_key: null,
+  name: "Free",
+  plan: "anonymous",
+  interval: "forever",
+  price_cents: 0,
+  price_formatted: "$0",
+  currency: "USD",
+  credits: 5,
+  included_volume: "5 images",
+  max_files_per_batch: 5,
+  daily_image_limit: 5,
+  max_file_size_mb: 10,
+  annual_discount_percent: 0,
+  checkout_available: false,
+}
+
+const launchPaidPlans: Record<BillingPlanKey, BillingPlan> = {
+  pro_monthly: {
+    key: "pro_monthly",
+    checkout_key: "pro_monthly",
+    name: "Pro",
+    plan: "pro",
+    interval: "month",
+    price_cents: 700,
+    price_formatted: "$7",
+    currency: "USD",
+    credits: 500,
+    included_volume: "500 images",
+    max_files_per_batch: 25,
+    daily_image_limit: 500,
+    max_file_size_mb: 10,
+    annual_discount_percent: 0,
+    checkout_available: false,
+  },
+  pro_yearly: {
+    key: "pro_yearly",
+    checkout_key: "pro_yearly",
+    name: "Pro",
+    plan: "pro",
+    interval: "year",
+    price_cents: 7000,
+    price_formatted: "$70",
+    currency: "USD",
+    credits: 6000,
+    included_volume: "6,000 images/year",
+    max_files_per_batch: 25,
+    daily_image_limit: 500,
+    max_file_size_mb: 10,
+    annual_discount_percent: 17,
+    checkout_available: false,
+  },
+  max_monthly: {
+    key: "max_monthly",
+    checkout_key: "max_monthly",
+    name: "Max",
+    plan: "max",
+    interval: "month",
+    price_cents: 2000,
+    price_formatted: "$20",
+    currency: "USD",
+    credits: 2000,
+    included_volume: "2,000 images",
+    max_files_per_batch: 50,
+    daily_image_limit: 2000,
+    max_file_size_mb: 10,
+    annual_discount_percent: 0,
+    checkout_available: false,
+  },
+  max_yearly: {
+    key: "max_yearly",
+    checkout_key: "max_yearly",
+    name: "Max",
+    plan: "max",
+    interval: "year",
+    price_cents: 19000,
+    price_formatted: "$190",
+    currency: "USD",
+    credits: 24000,
+    included_volume: "24,000 images/year",
+    max_files_per_batch: 50,
+    daily_image_limit: 2000,
+    max_file_size_mb: 10,
+    annual_discount_percent: 21,
+    checkout_available: false,
+  },
+  mega_monthly: {
+    key: "mega_monthly",
+    checkout_key: "mega_monthly",
+    name: "Mega",
+    plan: "mega",
+    interval: "month",
+    price_cents: 5000,
+    price_formatted: "$50",
+    currency: "USD",
+    credits: 7000,
+    included_volume: "7,000 images",
+    max_files_per_batch: 100,
+    daily_image_limit: 7000,
+    max_file_size_mb: 10,
+    annual_discount_percent: 0,
+    checkout_available: false,
+  },
+  mega_yearly: {
+    key: "mega_yearly",
+    checkout_key: "mega_yearly",
+    name: "Mega",
+    plan: "mega",
+    interval: "year",
+    price_cents: 53000,
+    price_formatted: "$530",
+    currency: "USD",
+    credits: 84000,
+    included_volume: "84,000 images/year",
+    max_files_per_batch: 100,
+    daily_image_limit: 7000,
+    max_file_size_mb: 10,
+    annual_discount_percent: 12,
+    checkout_available: false,
+  },
+}
+
 function imagesLabel(count: number) {
   return `${count.toLocaleString()} image${count === 1 ? "" : "s"}`
+}
+
+function normalizePlanCatalog(plans: BillingPlan[]) {
+  const backendByKey = new Map(plans.map((plan) => [plan.key, plan]))
+  const backendFree = backendByKey.get("free")
+  const freePlan: BillingPlan = {
+    ...launchFreePlan,
+    checkout_available: false,
+    max_file_size_mb: backendFree?.max_file_size_mb || launchFreePlan.max_file_size_mb,
+  }
+
+  const paidPlans = paidPlanKeys.map((key) => {
+    const backendPlan = backendByKey.get(key)
+    return {
+      ...launchPaidPlans[key],
+      checkout_available: Boolean(backendPlan?.checkout_available),
+    }
+  })
+
+  return [freePlan, ...paidPlans]
 }
 
 function planPresentation(plan: BillingPlan) {
@@ -126,16 +269,18 @@ function PricingContent() {
     }
   }, [checkoutStatus])
 
+  const normalizedPlans = useMemo(() => normalizePlanCatalog(plans), [plans])
+
   const visiblePlans = useMemo(() => {
-    const free = plans.find((plan) => plan.key === "free")
-    const pro = plans.find((plan) => plan.plan === "pro" && plan.interval === billingMode)
-    const max = plans.find((plan) => plan.plan === "max" && plan.interval === billingMode)
-    const mega = plans.find((plan) => plan.plan === "mega" && plan.interval === billingMode)
+    const free = normalizedPlans.find((plan) => plan.key === "free")
+    const pro = normalizedPlans.find((plan) => plan.plan === "pro" && plan.interval === billingMode)
+    const max = normalizedPlans.find((plan) => plan.plan === "max" && plan.interval === billingMode)
+    const mega = normalizedPlans.find((plan) => plan.plan === "mega" && plan.interval === billingMode)
     return [free, pro, max, mega].filter(Boolean) as BillingPlan[]
-  }, [plans, billingMode])
+  }, [normalizedPlans, billingMode])
 
   const findCheckoutPlan = (planKey: BillingPlanKey) => {
-    return plans.find((plan) => plan.checkout_key === planKey)
+    return normalizedPlans.find((plan) => plan.checkout_key === planKey)
   }
 
   const startCheckout = async (plan: BillingPlan) => {
@@ -182,7 +327,7 @@ function PricingContent() {
       setAutoCheckoutStarted(true)
       startCheckout(plan)
     }
-  }, [plans, searchParams, user?.id, loading, autoCheckoutStarted])
+  }, [normalizedPlans, searchParams, user?.id, loading, autoCheckoutStarted])
 
   const statusPanel = (() => {
     if (checkoutStatus === "success") {
@@ -274,7 +419,7 @@ function PricingContent() {
 
         <div className="mx-auto mt-12 grid max-w-7xl gap-4 md:grid-cols-2 xl:grid-cols-4">
           {plansLoading
-            ? Array.from({ length: 3 }).map((_, index) => (
+            ? Array.from({ length: 4 }).map((_, index) => (
                 <Card key={index} className="h-[520px] rounded-[28px] border-[#ded3f4] bg-white/48 shadow-[0_24px_70px_rgba(30,18,57,0.08)] backdrop-blur-xl">
                   <CardContent className="h-full animate-pulse p-6">
                     <div className="h-5 w-24 rounded-full bg-[#eadfff]" />
@@ -286,7 +431,7 @@ function PricingContent() {
               ))
             : visiblePlans.map((plan) => {
                 const isPaid = Boolean(plan.checkout_key)
-                const isLoading = checkoutLoading === plan.checkout_key
+                const isLoading = Boolean(plan.checkout_key && checkoutLoading === plan.checkout_key)
                 const isPopular = plan.plan === "max"
                 const presentation = planPresentation(plan)
                 const intervalLabel =
