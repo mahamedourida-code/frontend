@@ -22,6 +22,7 @@ import { AppLogo } from "@/components/AppIcon";
 import { createClient } from "@/utils/supabase/client";
 import NextLink from "next/link";
 import { IndustrySolutionsMenuGrid } from "@/components/IndustrySolutionsMenuGrid";
+import { GoogleOneTap } from "@/components/GoogleOneTap";
 
 const BenchmarkAccuracyChart = dynamic(
   () => import("@/components/landing/BenchmarkAccuracyChart"),
@@ -1339,5 +1340,7 @@ export default function Home() {
           redirectPath={signInRedirectPath}
         />
       )}
+
+      <GoogleOneTap enabled={!isAuthenticated && !showSignInModal} redirectPath="/dashboard/client" />
     </div>
   )}
