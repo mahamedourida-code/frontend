@@ -4,10 +4,34 @@
  * The backend is the source of truth for quota enforcement.
  */
 
-const FREE_TRIAL_LIMIT = 5
+const FREE_TRIAL_LIMIT = 10
 const STORAGE_KEY_UUID = 'AxLiner_trial_uuid'
 const STORAGE_KEY_COUNT = 'AxLiner_trial_count'
 const STORAGE_KEY_TIMESTAMP = 'AxLiner_trial_timestamp'
+const COOKIE_KEY_UUID = 'AxLiner_trial_uuid'
+const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365
+
+function readTrialCookie(): string | null {
+  if (typeof document === 'undefined') return null
+
+  return document.cookie
+    .split('; ')
+    .find((row) => row.startsWith(`${COOKIE_KEY_UUID}=`))
+    ?.split('=')[1] || null
+}
+
+function writeTrialCookie(uuid: string): void {
+  if (typeof document === 'undefined') return
+
+  const secure = window.location.protocol === 'https:' ? '; Secure' : ''
+  document.cookie = `${COOKIE_KEY_UUID}=${uuid}; Max-Age=${COOKIE_MAX_AGE_SECONDS}; Path=/; SameSite=Lax${secure}`
+}
+
+function clearTrialCookie(): void {
+  if (typeof document === 'undefined') return
+
+  document.cookie = `${COOKIE_KEY_UUID}=; Max-Age=0; Path=/; SameSite=Lax`
+}
 
 /**
  * Generate a unique user identifier
@@ -26,14 +50,16 @@ function generateUUID(): string {
 export function getOrCreateTrialUUID(): string {
   if (typeof window === 'undefined') return ''
 
-  let uuid = localStorage.getItem(STORAGE_KEY_UUID)
+  let uuid = localStorage.getItem(STORAGE_KEY_UUID) || readTrialCookie()
 
   if (!uuid) {
     uuid = generateUUID()
-    localStorage.setItem(STORAGE_KEY_UUID, uuid)
     localStorage.setItem(STORAGE_KEY_COUNT, '0')
     localStorage.setItem(STORAGE_KEY_TIMESTAMP, Date.now().toString())
   }
+
+  localStorage.setItem(STORAGE_KEY_UUID, uuid)
+  writeTrialCookie(uuid)
 
   return uuid
 }
@@ -88,6 +114,7 @@ export function resetTrialData(): void {
   localStorage.removeItem(STORAGE_KEY_UUID)
   localStorage.removeItem(STORAGE_KEY_COUNT)
   localStorage.removeItem(STORAGE_KEY_TIMESTAMP)
+  clearTrialCookie()
 }
 
 /**

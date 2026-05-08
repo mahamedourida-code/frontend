@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 
 import { AppLogo } from "@/components/AppIcon"
-import { BillingSeal, CreditStack, PlanSwitch } from "@/components/BillingGlyphs"
+import { CreditStack, PlanSwitch } from "@/components/BillingGlyphs"
 import { GoogleSignInModal } from "@/components/GoogleSignInModal"
 import { MobileNav } from "@/components/MobileNav"
 import { Button } from "@/components/ui/button"
@@ -17,7 +17,6 @@ import { cn } from "@/lib/utils"
 
 type BillingMode = "month" | "year"
 
-const companyLogos = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 const paidPlanKeys: BillingPlanKey[] = ["pro_monthly", "pro_yearly", "max_monthly", "max_yearly", "mega_monthly", "mega_yearly"]
 
 const planBaseNames: Record<string, string> = {
@@ -37,10 +36,10 @@ const launchFreePlan: BillingPlan = {
   price_cents: 0,
   price_formatted: "$0",
   currency: "USD",
-  credits: 5,
-  included_volume: "5 images",
-  max_files_per_batch: 5,
-  daily_image_limit: 5,
+  credits: 10,
+  included_volume: "10 images",
+  max_files_per_batch: 10,
+  daily_image_limit: 10,
   max_file_size_mb: 10,
   annual_discount_percent: 0,
   checkout_available: false,
@@ -161,6 +160,10 @@ function normalizePlanCatalog(plans: BillingPlan[]) {
   const freePlan: BillingPlan = {
     ...launchFreePlan,
     checkout_available: false,
+    credits: backendFree?.credits || launchFreePlan.credits,
+    included_volume: backendFree?.included_volume || launchFreePlan.included_volume,
+    max_files_per_batch: backendFree?.max_files_per_batch || launchFreePlan.max_files_per_batch,
+    daily_image_limit: backendFree?.daily_image_limit || launchFreePlan.daily_image_limit,
     max_file_size_mb: backendFree?.max_file_size_mb || launchFreePlan.max_file_size_mb,
   }
 
@@ -168,6 +171,7 @@ function normalizePlanCatalog(plans: BillingPlan[]) {
     const backendPlan = backendByKey.get(key)
     return {
       ...launchPaidPlans[key],
+      ...(backendPlan || {}),
       checkout_available: Boolean(backendPlan?.checkout_available),
     }
   })
@@ -182,18 +186,12 @@ function planPresentation(plan: BillingPlan) {
       : plan.credits
   const baseName = planBaseNames[plan.plan] || `${plan.name.replace(/\s+Plan$/i, "")} Plan`
   const name = plan.interval === "year" && plan.checkout_key ? `${baseName} (Yearly)` : baseName
-  const cadence =
-    plan.interval === "year"
-      ? "Annual billing"
-      : plan.interval === "month"
-        ? "Monthly billing"
-        : "Free trial"
   const included =
     plan.checkout_key
       ? `${imagesLabel(monthlyAllowance)} / month`
       : imagesLabel(plan.credits)
 
-  return { name, cadence, included }
+  return { name, included }
 }
 
 function PricingFallback() {
@@ -354,6 +352,8 @@ function PricingContent() {
 
     return null
   })()
+  const isFreeAccount = Boolean(user && billingStatus?.plan === "free")
+  const accountCredits = billingStatus?.credits?.available_credits ?? 0
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#E9ECE4]">
@@ -388,17 +388,42 @@ function PricingContent() {
           <MobileNav />
         </nav>
 
-        <div className="mx-auto mt-10 max-w-3xl text-center">
-          <div className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-[#eadfff] bg-white/60 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#5d3d91] backdrop-blur">
-            <BillingSeal className="h-4 w-4" />
+        <div className="mx-auto mt-14 max-w-4xl text-center">
+          <h1 className="mx-auto text-6xl font-semibold leading-none tracking-normal text-foreground sm:text-7xl lg:text-8xl">
             Pricing
-          </div>
-          <h1 className="mx-auto max-w-3xl text-4xl font-semibold leading-[1.04] tracking-normal text-foreground sm:text-5xl">
-            Simple image credits for handwritten OCR.
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-black">
-            Choose the amount of handwritten images, scanned paper, and PDF pages you want to convert into spreadsheet-ready output.
-          </p>
+
+          {!user && !loading && (
+            <div className="mx-auto mt-8 inline-flex flex-wrap items-center justify-center gap-3 rounded-[24px] border border-[#e5d9fb] bg-white/64 px-5 py-3 text-sm font-semibold text-black shadow-[0_18px_45px_rgba(47,22,94,0.08)] backdrop-blur-xl">
+              <span>Create a free account to get <span className="text-[#2f165e]">10 credits</span>.</span>
+              <Button
+                size="sm"
+                className="rounded-full bg-[#2f165e] px-5 text-white hover:bg-[#24104b]"
+                onClick={() => {
+                  setSignInRedirectPath("/dashboard/client")
+                  setSignInOpen(true)
+                }}
+              >
+                Create account
+              </Button>
+            </div>
+          )}
+
+          {isFreeAccount && (
+            <div className="mx-auto mt-8 flex max-w-xl flex-wrap items-center justify-center gap-4 rounded-[28px] border border-[#e5d9fb] bg-white/68 px-5 py-4 shadow-[0_20px_55px_rgba(47,22,94,0.10)] backdrop-blur-xl">
+              <CreditStack className="h-8 w-8 text-[#2f165e]" />
+              <div className="text-left">
+                <p className="text-2xl font-semibold text-[#2f165e]">{accountCredits.toLocaleString()}</p>
+                <p className="text-sm font-semibold text-[#6b7280]">credits left</p>
+              </div>
+              <Button
+                className="rounded-full bg-[#2f165e] px-6 text-white hover:bg-[#24104b]"
+                onClick={() => document.getElementById("plans")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+              >
+                Upgrade
+              </Button>
+            </div>
+          )}
 
           <div className="mt-7 inline-flex rounded-[18px] border border-[#e6dbff] bg-white/58 p-1 shadow-[0_16px_45px_rgba(68,31,132,0.10)] backdrop-blur">
             {(["month", "year"] as BillingMode[]).map((mode) => (
@@ -426,11 +451,11 @@ function PricingContent() {
           </div>
         )}
 
-        <div className="mx-auto mt-12 grid max-w-7xl gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div id="plans" className="mx-auto mt-14 grid max-w-[1500px] gap-6 md:grid-cols-2 xl:grid-cols-4">
           {plansLoading
             ? Array.from({ length: 4 }).map((_, index) => (
-                <Card key={index} className="h-[520px] rounded-[28px] border-[#ded3f4] bg-white/48 shadow-[0_24px_70px_rgba(30,18,57,0.08)] backdrop-blur-xl">
-                  <CardContent className="h-full animate-pulse p-6">
+                <Card key={index} className="h-[570px] rounded-[30px] border-[#ded3f4] bg-white/48 shadow-[0_24px_70px_rgba(30,18,57,0.08)] backdrop-blur-xl">
+                  <CardContent className="h-full animate-pulse p-7">
                     <div className="h-5 w-24 rounded-full bg-[#eadfff]" />
                     <div className="mt-10 h-12 w-36 rounded-2xl bg-[#eadfff]" />
                     <div className="mt-8 h-24 rounded-[22px] bg-[#eadfff]/70" />
@@ -450,11 +475,13 @@ function PricingContent() {
                       ? "per month"
                       : "forever"
                 const features = [
-                  { value: presentation.included, label: "available in this plan" },
+                  plan.plan === "anonymous"
+                    ? { value: "10", label: "credits after account creation" }
+                    : { value: presentation.included, label: "available in this plan" },
                   { value: `${plan.max_files_per_batch}`, label: "files per batch" },
                   { value: `${plan.max_file_size_mb}MB`, label: "max file size" },
                   plan.plan === "anonymous"
-                    ? { value: "Free", label: "first conversion without an account" }
+                    ? { value: "Free", label: "trial access before upgrade" }
                     : { value: "Completed", label: "images charge credits only after success" },
                 ]
 
@@ -462,7 +489,7 @@ function PricingContent() {
                   <Card
                     key={plan.key}
                     className={cn(
-                      "relative overflow-visible rounded-[26px] border-[#ded3f4] bg-white/70 shadow-[0_18px_55px_rgba(30,18,57,0.07)] backdrop-blur-xl",
+                      "relative overflow-visible rounded-[30px] border-[#ded3f4] bg-white/70 shadow-[0_18px_55px_rgba(30,18,57,0.07)] backdrop-blur-xl",
                       isPopular && "border-[#2f165e] bg-white/82 shadow-[0_24px_70px_rgba(68,31,132,0.14)]"
                     )}
                   >
@@ -477,26 +504,23 @@ function PricingContent() {
                       </div>
                     )}
                     <CardContent className="p-0">
-                      <div className="p-5">
+                      <div className="p-7">
                         <div className="flex items-start justify-between gap-4">
                           <div>
-                            <p className="text-lg font-semibold text-foreground">{presentation.name}</p>
-                            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#6b7280]">
-                              {presentation.cadence}
-                            </p>
+                            <p className="text-xl font-semibold text-foreground">{presentation.name}</p>
                           </div>
                           {plan.plan === "mega" ? <PlanSwitch className="h-7 w-7 text-[#2f165e]" /> : <CreditStack className="h-7 w-7 text-[#2f165e]" />}
                         </div>
-                        <div className="mt-5 flex items-end gap-2">
-                          <span className="text-4xl font-semibold tracking-normal text-[#2f165e]">{plan.price_formatted}</span>
+                        <div className="mt-10 flex items-end gap-3">
+                          <span className="text-5xl font-semibold tracking-normal text-[#2f165e]">{plan.price_formatted}</span>
                           <span className="pb-1.5 text-sm font-semibold text-[#6b7280]">{intervalLabel}</span>
                         </div>
-                        <div className="mt-5 rounded-[18px] bg-[#2f165e] p-4 text-white shadow-[0_16px_40px_rgba(47,22,94,0.18)]">
-                          <p className="text-2xl font-semibold">{presentation.included}</p>
+                        <div className="mt-8 rounded-[22px] bg-[#2f165e] p-5 text-white shadow-[0_16px_40px_rgba(47,22,94,0.18)]">
+                          <p className="text-3xl font-semibold">{presentation.included}</p>
                         </div>
                         <Button
                           className={cn(
-                            "mt-6 h-12 w-full rounded-[16px] font-bold",
+                            "mt-8 h-14 w-full rounded-[18px] text-base font-bold",
                             isPopular
                               ? "bg-[#2f165e] text-white hover:bg-[#24104b]"
                               : "bg-[#151216] text-white hover:bg-[#2f165e]"
@@ -514,10 +538,10 @@ function PricingContent() {
                         </Button>
                       </div>
 
-                      <div className="border-t border-[#ece5fb] p-5">
-                        <ul className="space-y-3">
+                      <div className="border-t border-[#ece5fb] p-7">
+                        <ul className="space-y-4">
                           {features.map((feature) => (
-                            <li key={`${feature.value}-${feature.label}`} className="flex items-baseline gap-3 text-sm">
+                            <li key={`${feature.value}-${feature.label}`} className="flex items-baseline gap-3 text-[15px] leading-6">
                               <span className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-[#2f165e]" />
                               <span className="font-semibold text-[#2f165e]">{feature.value}</span>
                               <span className="text-[#6b7280]">{feature.label}</span>
@@ -530,39 +554,6 @@ function PricingContent() {
                 )
               })}
         </div>
-
-        <section className="mx-auto mt-14 max-w-6xl overflow-hidden">
-          <div className="mb-6 text-center">
-            <p className="text-sm font-semibold text-muted-foreground">Chosen by experts at top organizations</p>
-          </div>
-          <div className="relative z-10 overflow-hidden">
-            <div
-              className="flex items-center gap-8"
-              style={{
-                animation: "scroll-left 60s linear infinite",
-                width: "max-content",
-                willChange: "transform",
-              }}
-            >
-              {Array.from({ length: 10 }, (_, setIndex) =>
-                companyLogos.map((imgNum) => (
-                  <Card
-                    key={`${setIndex}-${imgNum}`}
-                    className="h-[80px] w-[120px] flex-shrink-0 border border-[#ded3f4] bg-white/78 shadow-[0_14px_35px_rgba(68,31,132,0.08)] transition-all duration-300 hover:border-[#A78BFA]/50 hover:shadow-md"
-                  >
-                    <CardContent className="flex h-full w-full items-center justify-center p-2">
-                      <img
-                        src={`/${imgNum}.jpeg`}
-                        alt={`Company ${imgNum}`}
-                        className="h-[60px] w-[100px] object-contain opacity-60 grayscale transition-opacity duration-300 hover:opacity-100 hover:grayscale-0"
-                      />
-                    </CardContent>
-                  </Card>
-                ))
-              ).flat()}
-            </div>
-          </div>
-        </section>
       </section>
 
       <GoogleSignInModal open={signInOpen} onOpenChange={setSignInOpen} redirectPath={signInRedirectPath} />

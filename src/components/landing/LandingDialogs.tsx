@@ -34,7 +34,6 @@ type LandingDialogsProps = {
   showSignInModal: boolean;
   setShowSignInModal: (open: boolean) => void;
   signInRedirectPath: string;
-  maxUploadFiles: number;
   setAutoDownload: (enabled: boolean) => void;
   openSignInModal: (redirectPath?: string) => void;
   processImages: () => Promise<void>;
@@ -60,7 +59,6 @@ export default function LandingDialogs({
   showSignInModal,
   setShowSignInModal,
   signInRedirectPath,
-  maxUploadFiles,
   setAutoDownload,
   openSignInModal,
   processImages,
@@ -165,7 +163,7 @@ export default function LandingDialogs({
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Free trial limit reached</DialogTitle>
             <DialogDescription className="text-base">
-              You can convert 5 images without an account. Create an account to keep using AxLiner, or choose a paid plan if you need more pages.
+              Create a free account to get 10 credits, or choose a paid plan if you need more pages.
             </DialogDescription>
           </DialogHeader>
           <div className="mt-6 flex gap-3">
@@ -212,11 +210,9 @@ export default function LandingDialogs({
           <DialogHeader>
             <div className="mb-2 flex items-center gap-3">
               <DialogIcon src={dialogIcons.document} className="h-7 w-7" />
-              <DialogTitle>You can add up to {maxUploadFiles} files!</DialogTitle>
+              <DialogTitle>Ready to convert your files?</DialogTitle>
             </div>
             <DialogDescription className="text-sm text-muted-foreground">
-              Process up to {maxUploadFiles} table images or PDFs in one click.
-              <br /><br />
               You can add more files now or proceed to convert your current selection.
             </DialogDescription>
           </DialogHeader>

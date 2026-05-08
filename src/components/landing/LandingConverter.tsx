@@ -65,7 +65,7 @@ export default function LandingConverter() {
   const clearState = contextValue?.clearState;
 
   // Free trial state
-  const [trialInfo, setTrialInfo] = useState({ uuid: '', used: 0, remaining: 5, hasRemaining: true, limit: 5 });
+  const [trialInfo, setTrialInfo] = useState({ uuid: '', used: 0, remaining: 10, hasRemaining: true, limit: 10 });
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [filePreviewUrls, setFilePreviewUrls] = useState<{[key: number]: string}>({});
   const [isProcessing, setIsProcessing] = useState(false);
@@ -97,7 +97,7 @@ export default function LandingConverter() {
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [signInRedirectPath, setSignInRedirectPath] = useState("/dashboard/client");
   const supabase = createClient();
-  const maxUploadFiles = limits?.max_files_per_batch ?? 5;
+  const maxUploadFiles = limits?.max_files_per_batch ?? 10;
 
   // Helper function to remove _processed from filename
   const cleanFilename = (filename: string | undefined): string => {
@@ -239,11 +239,15 @@ export default function LandingConverter() {
     };
   }, [])
 
-  // Initialize trial info on mount
+  // Local trial state is only a UI hint. Authenticated users use account credits.
   useEffect(() => {
+    if (isAuthenticated) {
+      setTrialInfo({ uuid: '', used: 0, remaining: 0, hasRemaining: false, limit: 0 });
+      return;
+    }
     const info = getTrialInfo();
     setTrialInfo(info);
-  }, [])
+  }, [isAuthenticated])
 
   // Persist auto download setting
   useEffect(() => {
@@ -1537,7 +1541,6 @@ export default function LandingConverter() {
           showSignInModal={showSignInModal}
           setShowSignInModal={setShowSignInModal}
           signInRedirectPath={signInRedirectPath}
-          maxUploadFiles={maxUploadFiles}
           setAutoDownload={setAutoDownload}
           openSignInModal={openSignInModal}
           processImages={() => processImages()}

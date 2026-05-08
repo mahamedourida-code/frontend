@@ -79,7 +79,7 @@ export function getApiErrorUi(error: any, context: ErrorActionContext = {}): Err
     if (!context.isAuthenticated) {
       return {
         title: "Free trial limit reached",
-        description: "Create an account, then choose a Lemon Squeezy plan when you need more pages.",
+        description: "Create a free account to get 10 credits, then choose a Lemon Squeezy plan when you need more pages.",
         action: context.onSignIn
           ? { label: "Create account", onClick: context.onSignIn }
           : { label: "Create account", onClick: () => goTo(`/sign-up?next=${encodeURIComponent(upgradeHref)}`) },
