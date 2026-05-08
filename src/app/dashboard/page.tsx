@@ -253,7 +253,6 @@ export default function DashboardPage() {
         averageTime: 0,
         successRate: 0
       })
-      setAvailableCredits(null)
     } finally {
       setLoading(false)
     }
