@@ -14,15 +14,13 @@ import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { MobileNav } from "@/components/MobileNav"
-import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
-import { DashboardCreditsPill } from "@/components/DashboardCreditsPill"
+import { DashboardShell } from "@/components/DashboardShell"
 import { BillingSeal, CreditStack, PlanSwitch } from "@/components/BillingGlyphs"
-import { billingApi, ocrApi, type AppLimits, type BillingPlan, type BillingPlanKey, type BillingStatusResponse } from "@/lib/api-client"
+import { useBillingStatus } from "@/hooks/useBillingStatus"
+import { billingApi, type BillingPlanKey } from "@/lib/api-client"
 import {
   User,
   Globe,
-  ChevronLeft,
   Settings2,
   Moon,
   Sun,
@@ -67,11 +65,22 @@ function SettingsContent() {
 
   const [activeSection, setActiveSection] = useState<SettingsSection>('account')
   const [loading, setLoading] = useState(false)
-  const [billingStatus, setBillingStatus] = useState<BillingStatusResponse | null>(null)
-  const [limits, setLimits] = useState<AppLimits | null>(null)
-  const [billingPlans, setBillingPlans] = useState<BillingPlan[]>([])
-  const [billingLoading, setBillingLoading] = useState(false)
   const [billingAction, setBillingAction] = useState<string | null>(null)
+  const {
+    billingStatus,
+    limits,
+    plans: billingPlans,
+    isLoading: billingLoading,
+    checkoutSyncState,
+    setCheckoutSyncState,
+    refresh: refreshBilling,
+    pollBillingStatus,
+  } = useBillingStatus({
+    enabled: Boolean(user),
+    loadStatus: true,
+    loadPlans: true,
+    loadLimits: true,
+  })
 
   // Account state
   const [fullName, setFullName] = useState("")
@@ -139,39 +148,27 @@ function SettingsContent() {
   }, [user])
 
   useEffect(() => {
-    if (!user) return
-
-    let mounted = true
-    setBillingLoading(true)
-
-    Promise.all([billingApi.getStatus(), ocrApi.getLimits(), billingApi.getPlans()])
-      .then(([status, liveLimits, planCatalog]) => {
-        if (!mounted) return
-        setBillingStatus(status)
-        setLimits(liveLimits)
-        setBillingPlans(planCatalog.plans || [])
-      })
-      .catch(() => {
-        if (mounted) toast.error("Billing details are not available right now")
-      })
-      .finally(() => {
-        if (mounted) setBillingLoading(false)
-      })
-
-    return () => {
-      mounted = false
-    }
-  }, [user?.id])
-
-  useEffect(() => {
     if (checkoutStatus === "success") {
-      toast.success("Payment complete. Credits will appear here when Lemon Squeezy confirms the webhook.")
+      setCheckoutSyncState("pending")
+      toast.message("Payment received. Confirming credits...")
+      pollBillingStatus().then(({ state }) => {
+        if (state === "active") {
+          toast.success("Plan active. Credits are ready.")
+        } else if (state === "failed") {
+          toast.error("Payment needs attention. Open billing or contact support.")
+        } else {
+          toast.message("Payment is still confirming. Credits will update shortly.")
+        }
+      })
     } else if (checkoutStatus === "pending") {
-      toast.message("Billing is being confirmed. Refresh this page in a moment if credits are not visible yet.")
+      setCheckoutSyncState("pending")
+      void refreshBilling({ includeStatus: true, includeLimits: true })
+      toast.message("Billing is being confirmed.")
     } else if (checkoutStatus === "cancelled" || checkoutStatus === "canceled") {
+      setCheckoutSyncState("cancelled")
       toast.message("Checkout cancelled. No charge was made.")
     }
-  }, [checkoutStatus])
+  }, [checkoutStatus, pollBillingStatus, refreshBilling, setCheckoutSyncState])
 
   // Update user profile
   const handleUpdateProfile = async () => {
@@ -276,36 +273,7 @@ function SettingsContent() {
   ]
 
   return (
-    <div className="ax-page-bg min-h-screen relative lg:flex lg:gap-4 lg:p-4">
-      <WorkspaceSidebar activeItem="settings" user={user} />
-      <div className="relative z-10 flex-1">
-      {/* Header */}
-      <header className="ax-glass-header sticky top-0 z-10 border-b">
-        <div className="container max-w-7xl mx-auto px-3 lg:px-4 py-3 lg:py-4">
-          <div className="flex items-center gap-2 lg:gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => router.push('/dashboard')}
-              className="shrink-0 h-8 w-8 lg:h-10 lg:w-10"
-            >
-              <ChevronLeft className="h-4 w-4 lg:h-5 lg:w-5" />
-            </Button>
-            <div className="flex items-center gap-2 lg:gap-3">
-              <div>
-                <h1 className="text-base lg:text-lg font-semibold flex items-center gap-2">
-                  <Settings2 className="h-4 w-4 lg:hidden" />
-                  Settings
-                </h1>
-                <p className="text-xs text-muted-foreground hidden sm:block">Manage your account and preferences</p>
-              </div>
-            </div>
-            <DashboardCreditsPill credits={creditAvailable} className="ml-auto" />
-          </div>
-        </div>
-      </header>
-
-      <div className="container max-w-7xl mx-auto px-3 lg:px-4 py-4 lg:py-8 relative z-10">
+    <DashboardShell activeItem="settings" title="Settings" user={user}>
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
           {/* Mobile Section Selector */}
           <div className="lg:hidden">
@@ -444,7 +412,9 @@ function SettingsContent() {
                           <div className="rounded-[24px] border border-[#eadfff] bg-white/45 p-4 backdrop-blur">
                             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#7c62b1]">Status</p>
                             <p className="mt-2 text-xl font-black text-foreground">
-                              {currentSubscription?.status || (billingStatus?.plan === "free" ? "free" : "active")}
+                              {checkoutSyncState === "pending"
+                                ? "confirming"
+                                : currentSubscription?.status || (billingStatus?.plan === "free" ? "free" : "active")}
                             </p>
                           </div>
                           <div className="rounded-[24px] border border-[#eadfff] bg-white/45 p-4 backdrop-blur">
@@ -677,17 +647,6 @@ function SettingsContent() {
             )}
           </div>
         </div>
-      </div>
-      </div>
-
-      {/* Mobile Navigation */}
-      <MobileNav
-        isAuthenticated={true}
-        user={{
-          email: user?.email,
-          name: user?.user_metadata?.full_name
-        }}
-      />
-    </div>
+    </DashboardShell>
   )
 }

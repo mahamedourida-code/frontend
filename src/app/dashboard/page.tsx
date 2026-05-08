@@ -2,26 +2,20 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import { useAuth } from "@/hooks/useAuth"
 import { ocrApi } from "@/lib/api-client"
 import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { MobileNav } from "@/components/MobileNav"
-import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
-import { DashboardCreditsPill } from "@/components/DashboardCreditsPill"
-import { BillingSeal } from "@/components/BillingGlyphs"
+import { DashboardShell } from "@/components/DashboardShell"
+import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { cn } from "@/lib/utils"
 import {
   Activity,
-  Upload,
-  ArrowRight,
   Image,
   Clock,
   BarChart3,
-  TrendingUp,
-  ChevronLeft
+  TrendingUp
 } from "lucide-react"
 
 // Dynamic import for the Chart component to avoid SSR issues
@@ -83,8 +77,11 @@ export default function DashboardPage() {
     averageTime: 0,
     successRate: 0
   })
-  const [availableCredits, setAvailableCredits] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
+  const { refresh: refreshBilling } = useBillingStatus({
+    enabled: Boolean(user && !authLoading),
+    loadStatus: true,
+  })
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -127,10 +124,15 @@ export default function DashboardPage() {
           fromDate = subDays(now, 7)
       }
 
-      const [historyResponse, creditsResponse] = await Promise.all([
+      const [historyResponse, billingSnapshot] = await Promise.all([
         ocrApi.getHistory(500, 0),
-        ocrApi.getUserCredits().catch(() => null),
+        refreshBilling({
+          includeStatus: true,
+          includePlans: false,
+          includeLimits: false,
+        }),
       ])
+      const creditsResponse = billingSnapshot?.status?.credits || null
       const allJobs = normalizeHistoryJobs(historyResponse)
       const typedJobs = allJobs
         .filter(job => new Date(job.created_at) >= fromDate)
@@ -196,8 +198,6 @@ export default function DashboardPage() {
       const successRate = totalJobs > 0 ? (successfulJobs / totalJobs) * 100 : 0
 
       const userTotalProcessed = creditsResponse?.used_credits ?? 0
-      setAvailableCredits(creditsResponse?.available_credits ?? 0)
-
       const monthStart = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1))
       const monthJobs = allJobs.filter(job => new Date(job.created_at) >= monthStart)
       const thisMonthProcessed = monthJobs.reduce((sum, job) => {
@@ -362,61 +362,8 @@ export default function DashboardPage() {
     )
   }
 
-  // Remove credits logic - just track processed images
-
   return (
-    <div className="ax-page-bg min-h-screen lg:flex lg:gap-4 lg:p-4">
-      <WorkspaceSidebar activeItem="overview" user={user} />
-
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto relative z-10">
-        <div className="container max-w-7xl mx-auto p-4 sm:p-6 lg:px-8 lg:py-4">
-          <div className="mb-5 rounded-[22px] border border-[#ebe2ff] bg-[#E9ECE4]/90 p-3 shadow-[0_18px_48px_rgba(68,31,132,0.07)] backdrop-blur-xl sm:p-4 lg:mb-6">
-            <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-              <div className="flex items-start gap-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => router.back()}
-                  className="h-9 rounded-xl border border-[#eadfff] bg-white/55 px-3 text-[#5b3f92] hover:bg-white hover:text-[#2f165e]"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <div>
-                  <h1 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">Dashboard</h1>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <DashboardCreditsPill credits={availableCredits} />
-                <Button
-                  size="lg"
-                  variant="outline"
-                  asChild
-                  className="h-10 rounded-xl border-[#d9c9fb] bg-white/55 px-4 text-[#2f165e] shadow-none hover:bg-white w-full sm:w-auto"
-                >
-                  <Link href="/pricing">
-                    <BillingSeal className="h-5 w-5" />
-                    <span className="ml-2">Plans</span>
-                  </Link>
-                </Button>
-                <Button
-                  size="lg"
-                  asChild
-                  className="h-10 rounded-xl bg-[#2f165e] px-4 text-white shadow-[0_14px_32px_rgba(68,31,132,0.18)] transition-all hover:bg-[#3a1d72] w-full sm:w-auto"
-                >
-                  <Link href="/dashboard/client">
-                    <Upload className="h-5 w-5" />
-                    <span className="ml-2">Process Images</span>
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-
-
-
+    <DashboardShell activeItem="overview" title="Dashboard" user={user} showBack={false}>
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6 lg:mb-8">
             <Card className="ax-glass-card">
@@ -508,11 +455,6 @@ export default function DashboardPage() {
               />
             </CardContent>
           </Card>
-        </div>
-      </div>
-
-      {/* Mobile Navigation */}
-      <MobileNav isAuthenticated={true} user={user} />
-    </div>
+    </DashboardShell>
   )
 }

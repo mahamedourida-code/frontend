@@ -14,7 +14,7 @@ import {
   useReactTable,
   RowSelectionState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Download, ArrowLeft, RefreshCw, FileSpreadsheet, Calendar, DownloadCloud, Trash2, AlertTriangle, CalendarIcon, History } from "lucide-react"
+import { ArrowUpDown, Download, RefreshCw, FileSpreadsheet, Calendar, DownloadCloud, Trash2, AlertTriangle, CalendarIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -36,12 +36,9 @@ import type { HistoryJob } from "@/hooks/useHistory"
 import { ocrApi } from "@/lib/api-client"
 import { toast } from "sonner"
 import { useAuth } from "@/hooks/useAuth"
-import { MobileNav } from "@/components/MobileNav"
-import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
-import { DashboardCreditsPill } from "@/components/DashboardCreditsPill"
+import { DashboardShell } from "@/components/DashboardShell"
 
 function HistoryContent() {
-  const router = useRouter()
   const { user } = useAuth()
   const { jobs, isLoading, error, refresh } = useHistory()
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -406,44 +403,22 @@ function HistoryContent() {
   }
 
   return (
-    <div className="ax-page-bg min-h-screen relative lg:flex lg:gap-4 lg:p-4">
-      <WorkspaceSidebar activeItem="history" user={user} />
-      <div className="relative z-10 flex-1">
-      {/* Compact Header */}
-      <header className="ax-glass-header sticky top-0 z-50 border-b">
-        <div className="container mx-auto px-3 lg:px-4 py-2 lg:py-3">
-          <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 lg:gap-4">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                onClick={() => router.push('/dashboard')}
-                className="h-8 w-8 lg:h-9 lg:w-9"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <h1 className="text-base lg:text-lg font-semibold flex items-center gap-2">
-                <History className="h-4 w-4 lg:hidden" />
-                Saved Files
-              </h1>
-            </div>
-            <div className="flex items-center gap-2">
-              <DashboardCreditsPill className="hidden sm:inline-flex" />
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={refresh}
-                disabled={isLoading}
-                className="h-8 w-8 lg:h-9 lg:w-9"
-              >
-                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-3 lg:px-4 py-4 lg:py-6 relative z-10">
+    <DashboardShell
+      activeItem="history"
+      title="Saved Files"
+      user={user}
+      actions={
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={refresh}
+          disabled={isLoading}
+          className="h-10 w-10 rounded-full border-[#d9c9fb] bg-white/65 text-[#2f165e] hover:bg-white"
+        >
+          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+        </Button>
+      }
+    >
         {/* Error State */}
         {error && (
           <div className="mb-3 lg:mb-4 p-2 lg:p-3 rounded-md border border-destructive/50 bg-destructive/10">
@@ -675,18 +650,7 @@ function HistoryContent() {
             </Button>
           </div>
         )}
-      </main>
-      </div>
-      
-      {/* Mobile Navigation */}
-      <MobileNav 
-        isAuthenticated={true}
-        user={{
-          email: user?.email,
-          name: user?.user_metadata?.full_name
-        }}
-      />
-    </div>
+    </DashboardShell>
   )
 }
 

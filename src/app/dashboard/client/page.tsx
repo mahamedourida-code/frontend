@@ -14,14 +14,12 @@ import { cn } from "@/lib/utils"
 import { useOCR } from "@/hooks/useOCR"
 import { useAuth } from "@/hooks/useAuth"
 import { toast } from "sonner"
-import { AppIcon } from "@/components/AppIcon"
 import { ocrApi } from "@/lib/api-client"
 import type { AppLimits, RecoverableJobSummary } from "@/lib/api-client"
 import { showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui"
-import { MobileNav } from "@/components/MobileNav"
-import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
-import { DashboardCreditsPill } from "@/components/DashboardCreditsPill"
+import { DashboardShell } from "@/components/DashboardShell"
 import { CreditStack } from "@/components/BillingGlyphs"
+import { useBillingStatus } from "@/hooks/useBillingStatus"
 import Image from "next/image"
 import {
   Upload,
@@ -37,7 +35,6 @@ import {
   Grid3x3,
   FileImage,
   Zap,
-  BarChart3,
   ArrowRight,
   Clock,
   CheckCircle2,
@@ -49,10 +46,8 @@ import {
   Copy,
   Facebook,
   MessageCircle,
-  ChevronLeft,
   FolderUp,
-  Activity,
-  History
+  Activity
 } from "lucide-react"
 import {
   Dialog,
@@ -172,10 +167,20 @@ function ProcessImagesContent() {
   const [textPreview, setTextPreview] = useState('')
   const [firstImageUrl, setFirstImageUrl] = useState<string>('')
   const [outputMode, setOutputMode] = useState<'table' | 'text'>('table')
+  const {
+    limits: entitlementLimits,
+    credits: entitlementCredits,
+    refresh: refreshBilling,
+  } = useBillingStatus({
+    enabled: Boolean(user && !authLoading),
+    loadStatus: true,
+    loadLimits: true,
+  })
 
   // Track if auto-actions have been executed for current job to prevent duplicates
   const autoActionsExecutedRef = useRef<string | null>(null)
   const isExecutingAutoActionsRef = useRef(false)
+  const lastCreditRefreshRef = useRef<string | null>(null)
 
   // Helper function to remove _processed from filename
   const cleanFilename = (filename: string | undefined): string => {
@@ -192,13 +197,15 @@ function ProcessImagesContent() {
     }
 
     try {
-      const [credits, liveLimits] = await Promise.all([
-        ocrApi.getUserCredits(),
-        ocrApi.getLimits().catch(() => null),
-      ])
-      const totalProcessed = credits.used_credits || 0
+      const snapshot = await refreshBilling({
+        includeStatus: true,
+        includePlans: false,
+        includeLimits: true,
+      })
+      const credits = snapshot?.status?.credits || snapshot?.limits?.credits || entitlementCredits
+      const totalProcessed = credits?.used_credits || 0
       setProcessedCount(totalProcessed)
-      if (liveLimits) setLimits(liveLimits)
+      if (snapshot?.limits) setLimits(snapshot.limits)
       
       
     } catch (error) {
@@ -234,19 +241,8 @@ function ProcessImagesContent() {
   }, [])
 
   useEffect(() => {
-    if (authLoading) return
-
-    let mounted = true
-    ocrApi.getLimits()
-      .then((data) => {
-        if (mounted) setLimits(data)
-      })
-      .catch(() => undefined)
-
-    return () => {
-      mounted = false
-    }
-  }, [authLoading, user?.id])
+    if (entitlementLimits) setLimits(entitlementLimits)
+  }, [entitlementLimits])
 
   useEffect(() => {
     setUploadedFiles(prev => prev.length > maxUploadFiles ? prev.slice(0, maxUploadFiles) : prev)
@@ -301,11 +297,13 @@ function ProcessImagesContent() {
       updateState({
         processedFiles: resultFiles,
         status: status === 'completed' ? 'completed' : isProcessing ? 'processing' : 'idle',
+        jobId,
+        progress: typeof progress?.percentage === "number" ? progress.percentage : isUploading ? uploadProgress : status === 'completed' ? 100 : 0,
         processingComplete: status === 'completed',
         uploadedFiles: [] // Don't save File objects
       })
     }
-  }, [resultFiles, isProcessing, status, updateState])
+  }, [resultFiles, isProcessing, status, jobId, progress?.percentage, isUploading, uploadProgress, updateState])
 
   // Persist auto-download setting to localStorage
   useEffect(() => {
@@ -327,7 +325,7 @@ function ProcessImagesContent() {
     }
   }, [user, authLoading, router])
 
-  // Fetch user's credit status on mount and periodically refresh
+  // Fetch user's credit status on mount
   useEffect(() => {
     // Only fetch once when user is loaded
     if (!authLoading && user?.id) {
@@ -338,9 +336,16 @@ function ProcessImagesContent() {
     }
   }, [user?.id, authLoading])
 
-  // Don't refetch credits after completion - they were already deducted at start
-  // Remove this useEffect that was causing the revert issue
-  // Credits are deducted when processing starts, not when it completes
+  useEffect(() => {
+    if (!jobId || !status) return
+    const terminal = status === "completed" || status === "partially_completed" || status === "failed" || status === "cancelled"
+    if (!terminal) return
+
+    const refreshKey = `${jobId}:${status}`
+    if (lastCreditRefreshRef.current === refreshKey) return
+    lastCreditRefreshRef.current = refreshKey
+    void fetchUserStats()
+  }, [jobId, status])
 
   // Auto-download and auto-save when files are ready
   useEffect(() => {
@@ -576,8 +581,6 @@ function ProcessImagesContent() {
       return
     }
 
-    const imagesCount = uploadedFiles.length
-
     try {
       setTablePreviewData([])
       setTextPreview('')
@@ -593,9 +596,6 @@ function ProcessImagesContent() {
       if (response && response.session_id) {
         connectWebSocket(response.session_id, response.job_id)
         setLatestRecoverableJob(null)
-        
-        // Update counts optimistically
-        setProcessedCount(prev => prev + imagesCount)
         
         // Refresh stats after a delay
         setTimeout(() => {
@@ -620,6 +620,7 @@ function ProcessImagesContent() {
   const handleCancelProcessing = useCallback(async () => {
     await cancelProcessing()
     setLatestRecoverableJob(null)
+    void fetchUserStats()
     toast.info("Batch cancelled.")
   }, [cancelProcessing])
 
@@ -1047,88 +1048,13 @@ Best regards`
   const isTextOutput = outputMode === 'text'
   const uploadedSizeMb = uploadedFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024)
   const uploadedLabel = `${uploadedFiles.length} ${uploadedFiles.length === 1 ? 'file' : 'files'}`
-  const creditAvailable = limits?.credits?.available_credits ?? 0
-  const noCredits = Boolean(limits?.credits && creditAvailable <= 0)
+  const creditAvailable = entitlementCredits?.available_credits ?? limits?.credits?.available_credits ?? 0
+  const noCredits = Boolean((entitlementCredits || limits?.credits) && creditAvailable <= 0)
   const processLabel = isTextOutput ? 'Extract text' : 'Convert to Excel'
   const displayedProgress = isUploading ? uploadProgress : progress?.percentage
 
   return (
-    <div className="ax-page-bg min-h-screen relative lg:flex lg:gap-4 lg:p-4">
-      <WorkspaceSidebar activeItem="process" user={user} />
-      <div className="relative z-10 flex-1">
-      <header className="relative z-10 hidden lg:block">
-        <div className="container max-w-7xl mx-auto px-4 pt-4">
-          <div className="rounded-[22px] border border-[#2f165e] bg-[#2f165e] px-4 py-3 text-white shadow-[0_18px_44px_rgba(47,22,94,0.20)]">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => router.back()}
-                  className="h-9 rounded-xl border border-white/16 bg-white/8 px-3 text-white hover:bg-white/15 hover:text-white"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/62">Batch</p>
-                  <h1 className="text-xl font-bold tracking-tight text-white">Process Images</h1>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <DashboardCreditsPill credits={creditAvailable} />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => router.push('/history')}
-                  className="h-9 gap-2 rounded-xl border-white/16 bg-white/8 px-3 text-white hover:bg-white/15 hover:text-white"
-                >
-                  <History className="h-4 w-4" />
-                  History
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => router.push('/dashboard')}
-                  className="h-9 gap-2 rounded-xl border-white/16 bg-white/8 px-3 text-white hover:bg-white/15 hover:text-white"
-                >
-                  <BarChart3 className="h-4 w-4" />
-                  Dashboard
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="sticky top-0 z-40 border-b border-[#2f165e] bg-[#2f165e]/95 text-white backdrop-blur lg:hidden">
-        <div className="container max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.back()}
-              className="h-10 rounded-2xl border border-white/20 bg-white/10 px-3 text-white hover:bg-white/15 hover:text-white"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <div className="flex items-center gap-2">
-              <AppIcon size={28} />
-              <span className="text-sm font-semibold text-white">Process Images</span>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => router.push('/dashboard')}
-              className="h-10 rounded-2xl border-white/20 bg-white/10 px-3 text-white hover:bg-white/15 hover:text-white"
-            >
-              Dashboard
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <main className="container max-w-7xl mx-auto px-4 py-4 pb-24 lg:py-4 relative z-10">
+    <DashboardShell activeItem="process" title="Process Images" eyebrow="Batch" user={user}>
         {latestRecoverableJob && !isProcessing && (
           <Card className="mb-4 overflow-hidden rounded-[22px] border-[#2f165e] bg-[#2f165e] text-white shadow-[0_16px_42px_rgba(47,22,94,0.18)]">
             <CardContent className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
@@ -1857,9 +1783,6 @@ Best regards`
           </div>
           )}
         </div>
-      </main>
-      </div>
-      
       <Dialog open={shareDialogOpen} onOpenChange={(open) => {
         if (!open) {
           setSelectedFilesForBatch([])
@@ -2019,13 +1942,6 @@ Best regards`
         </DialogContent>
       </Dialog>
 
-      <MobileNav
-        isAuthenticated={true}
-        user={{
-          email: user?.email,
-          name: user?.user_metadata?.full_name
-        }}
-      />
-    </div>
+    </DashboardShell>
   )
 }

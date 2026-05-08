@@ -1,9 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import Link from "next/link"
 import { CreditStack } from "@/components/BillingGlyphs"
-import { ocrApi } from "@/lib/api-client"
+import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { cn } from "@/lib/utils"
 
 type DashboardCreditsPillProps = {
@@ -12,27 +11,11 @@ type DashboardCreditsPillProps = {
 }
 
 export function DashboardCreditsPill({ credits, className }: DashboardCreditsPillProps) {
-  const [availableCredits, setAvailableCredits] = useState<number | null>(credits ?? null)
-
-  useEffect(() => {
-    if (typeof credits === "number") {
-      setAvailableCredits(credits)
-      return
-    }
-
-    let mounted = true
-    ocrApi.getUserCredits()
-      .then((data) => {
-        if (mounted) setAvailableCredits(data.available_credits ?? 0)
-      })
-      .catch(() => {
-        if (mounted) setAvailableCredits(null)
-      })
-
-    return () => {
-      mounted = false
-    }
-  }, [credits])
+  const { credits: liveCredits, isLoading } = useBillingStatus({
+    enabled: typeof credits !== "number",
+    loadStatus: true,
+  })
+  const availableCredits = typeof credits === "number" ? credits : liveCredits?.available_credits ?? null
 
   return (
     <Link
@@ -44,7 +27,7 @@ export function DashboardCreditsPill({ credits, className }: DashboardCreditsPil
     >
       <CreditStack className="h-5 w-5 shrink-0 text-[#2f165e]" />
       <span className="text-base font-black text-[#2f165e]">
-        {typeof availableCredits === "number" ? availableCredits.toLocaleString() : "-"}
+        {typeof availableCredits === "number" ? availableCredits.toLocaleString() : isLoading ? "..." : "-"}
       </span>
       <span className="text-xs font-bold text-[#6b7280]">credits</span>
     </Link>
