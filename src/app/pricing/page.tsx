@@ -46,10 +46,9 @@ function planPresentation(plan: BillingPlan) {
     plan.interval === "year" && plan.checkout_key && !/year|annual/i.test(baseName)
       ? `${baseName} (Yearly)`
       : baseName
-  const included =
-    plan.checkout_key
-      ? `${imagesLabel(monthlyAllowance)} / month`
-      : imagesLabel(plan.credits)
+  const included = !plan.checkout_key
+    ? plan.included_volume || `${plan.credits.toLocaleString()} credits`
+    : `${imagesLabel(monthlyAllowance)} / month`
 
   return { name, included }
 }
