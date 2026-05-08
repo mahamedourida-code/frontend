@@ -1,3 +1,44 @@
+## Dashboard/Product UX Priorities
+
+This is the current priority list for making the dashboard and app flow feel production-ready. The biggest weakness is not backend queueing right now; it is that the dashboard pages do not yet feel like one polished SaaS workspace.
+
+### Priority 1: Make the dashboard feel like one product
+
+- Use one shared dashboard shell for Overview, Process Images, History, and Settings.
+- Keep the same top bar, spacing, credit pill, page title style, and actions everywhere.
+- Remove repeated explanatory text. The dashboard should be mostly labels, numbers, tables, and clear actions.
+
+### Priority 2: Make Process Images fit above the fold
+
+- Keep credits in the top bar, not inside the upload card.
+- Keep the upload card compact until files are selected.
+- Show the selected file count only near the selected files and convert action.
+- Keep output type, upload, and convert controls visible without scrolling on common laptop screens.
+
+### Priority 3: Improve paid-user confidence
+
+- Always show credits with a small symbol in the top bar.
+- If credits are low or zero, show one clear upgrade action near the credit pill.
+- Make pricing, billing, and process limits use the same backend values so users never see different promises.
+
+### Priority 4: Simplify History
+
+- Replace dense table controls with a compact filter row.
+- Make download, share, delete, and retry actions visually consistent.
+- Add better empty states: upload CTA, no saved files, no matching filters.
+
+### Priority 5: Polish Settings
+
+- Remove settings that do not apply, especially password settings when Google sign-in is the only auth path.
+- Put billing status, renewal date, credits, and portal access in one clean billing block.
+- Keep account preferences separate from billing so users do not have to scan too much.
+
+### Priority 6: Add lifecycle states
+
+- Add clear states for uploading, queued, processing, finished, failed, cancelled, and low credits.
+- Make every state explain the next action in one short line or with one obvious button.
+- Avoid long paragraphs in dashboard pages.
+
 ## Lemon Squeezy Payment Integration Plan
 
 - Goal:
@@ -44,42 +85,3 @@
   - `LEMONSQUEEZY_PRO_MONTHLY_VARIANT_ID`
   - `LEMONSQUEEZY_PRO_YEARLY_VARIANT_ID`
   - `LEMONSQUEEZY_BUSINESS_MONTHLY_VARIANT_ID`
-
-## Dashboard and UX Gaps - Priority Order
-
-### Priority 1: Make the dashboard feel like one product
-
-- Use one shared dashboard shell for Overview, Process Images, History, and Settings.
-- Keep the same top bar, spacing, credit pill, page title style, and actions everywhere.
-- Remove repeated explanatory text. The dashboard should be mostly labels, numbers, tables, and clear actions.
-
-### Priority 2: Make Process Images fit above the fold
-
-- Keep credits in the top bar, not inside the upload card.
-- Keep the upload card compact until files are selected.
-- Show the selected file count only near the selected files and convert action.
-- Keep output type, upload, and convert controls visible without scrolling on common laptop screens.
-
-### Priority 3: Improve paid-user confidence
-
-- Always show credits with a small symbol in the top bar.
-- If credits are low or zero, show one clear upgrade action near the credit pill.
-- Make pricing, billing, and process limits use the same backend values so users never see different promises.
-
-### Priority 4: Simplify History
-
-- Replace dense table controls with a compact filter row.
-- Make download, share, delete, and retry actions visually consistent.
-- Add better empty states: upload CTA, no saved files, no matching filters.
-
-### Priority 5: Polish Settings
-
-- Remove settings that do not apply, especially password settings when Google sign-in is the only auth path.
-- Put billing status, renewal date, credits, and portal access in one clean billing block.
-- Keep account preferences separate from billing so users do not have to scan too much.
-
-### Priority 6: Add lifecycle states
-
-- Add clear states for uploading, queued, processing, finished, failed, cancelled, and low credits.
-- Make every state explain the next action in one short line or with one obvious button.
-- Avoid long paragraphs in dashboard pages.
