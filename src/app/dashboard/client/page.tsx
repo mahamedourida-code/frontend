@@ -4,7 +4,6 @@ import { Suspense, useState, useCallback, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -21,13 +20,13 @@ import type { AppLimits, RecoverableJobSummary } from "@/lib/api-client"
 import { showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
+import { DashboardCreditsPill } from "@/components/DashboardCreditsPill"
 import { CreditStack } from "@/components/BillingGlyphs"
 import Image from "next/image"
 import {
   Upload,
   FileSpreadsheet,
   FileText,
-  Image as ImageIcon,
   Sparkles,
   Download,
   Loader2,
@@ -1048,14 +1047,9 @@ Best regards`
   const isTextOutput = outputMode === 'text'
   const uploadedSizeMb = uploadedFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024)
   const uploadedLabel = `${uploadedFiles.length} ${uploadedFiles.length === 1 ? 'file' : 'files'}`
-  const creditTotal = limits?.credits?.total_credits ?? 0
   const creditAvailable = limits?.credits?.available_credits ?? 0
-  const creditUsed = limits?.credits?.used_credits ?? 0
-  const creditPercent = creditTotal > 0 ? Math.min(100, Math.round((creditUsed / creditTotal) * 100)) : 0
   const noCredits = Boolean(limits?.credits && creditAvailable <= 0)
-  const processLabel = isTextOutput
-    ? uploadedFiles.length > 1 ? `Extract text from ${uploadedFiles.length} files` : 'Extract text'
-    : uploadedFiles.length > 1 ? `Convert ${uploadedFiles.length} files` : 'Convert file'
+  const processLabel = isTextOutput ? 'Extract text' : 'Convert to Excel'
   const displayedProgress = isUploading ? uploadProgress : progress?.percentage
 
   return (
@@ -1082,6 +1076,7 @@ Best regards`
               </div>
 
               <div className="flex items-center gap-3">
+                <DashboardCreditsPill credits={creditAvailable} />
                 <Button
                   variant="outline"
                   size="sm"
@@ -1133,7 +1128,7 @@ Best regards`
         </div>
       </div>
 
-      <main className="container max-w-7xl mx-auto px-4 py-5 pb-24 lg:py-6 relative z-10">
+      <main className="container max-w-7xl mx-auto px-4 py-4 pb-24 lg:py-4 relative z-10">
         {latestRecoverableJob && !isProcessing && (
           <Card className="mb-4 overflow-hidden rounded-[22px] border-[#2f165e] bg-[#2f165e] text-white shadow-[0_16px_42px_rgba(47,22,94,0.18)]">
             <CardContent className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
@@ -1230,7 +1225,7 @@ Best regards`
 
 
         <div className={cn(
-          "grid grid-cols-1 gap-4 lg:gap-6",
+          "grid grid-cols-1 gap-4 lg:gap-5",
           isComplete ? "lg:grid-cols-1" : "lg:grid-cols-4"
         )}>
           <div className={cn(
@@ -1238,45 +1233,16 @@ Best regards`
             isComplete ? "lg:col-span-1" : "lg:col-span-3"
           )}>
             {!isComplete ? (
-              <Card className="ax-glass-card overflow-hidden rounded-[32px]">
-                <CardContent className="p-4 sm:p-5 lg:p-6">
-                  <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <Card className="ax-glass-card overflow-hidden rounded-[30px]">
+                <CardContent className="p-4 lg:p-5">
+                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7c62b1]">Upload</p>
                       <h2 className="mt-1 text-2xl font-bold tracking-tight text-foreground">Batch</h2>
                     </div>
-                    <div className="flex items-center gap-2 rounded-xl border border-[#eadfff] bg-white/45 px-3 py-2 text-sm font-semibold text-[#4b2d82]">
-                      <FileImage className="h-4 w-4" />
-                      <span>{uploadedFiles.length}</span>
-                      <span className="text-muted-foreground">/ {maxUploadFiles}</span>
-                    </div>
                   </div>
 
-                  {limits?.credits && (
-                    <div className="mb-5 rounded-[22px] border border-[#eadfff] bg-white/45 p-3 backdrop-blur">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                          <CreditStack className="h-5 w-5 text-[#2f165e]" />
-                          <span className="text-sm font-semibold text-[#111827]">
-                            {creditAvailable.toLocaleString()} credits left
-                          </span>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => router.push("/pricing")}
-                          className="h-8 rounded-xl px-3 text-[#2f165e] hover:bg-white/55"
-                        >
-                          Add credits
-                        </Button>
-                      </div>
-                      <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#eee7ff]">
-                        <div className="h-full rounded-full bg-[#2f165e]" style={{ width: `${creditPercent}%` }} />
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="mb-5 flex w-fit rounded-full border border-white/55 bg-white/40 p-1 shadow-[0_16px_40px_rgba(42,35,64,0.08)] backdrop-blur-2xl">
+                  <div className="mb-4 flex w-fit rounded-full border border-white/55 bg-white/40 p-1 shadow-[0_16px_40px_rgba(42,35,64,0.08)] backdrop-blur-2xl">
                     <button
                       type="button"
                       onClick={() => setOutputMode('table')}
@@ -1319,9 +1285,9 @@ Best regards`
                     )}
                   >
                     {uploadedFiles.length === 0 ? (
-                      <div className="flex min-h-[360px] flex-col items-center justify-center px-6 py-12 text-center">
-                        <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-[24px] border border-[#eadfff] bg-white/65 shadow-[0_18px_45px_rgba(68,31,132,0.10)]">
-                          <FolderUp className="h-8 w-8 text-primary" />
+                      <div className="flex min-h-[290px] flex-col items-center justify-center px-6 py-9 text-center">
+                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-[22px] border border-[#eadfff] bg-white/65 shadow-[0_18px_45px_rgba(68,31,132,0.10)]">
+                          <FolderUp className="h-7 w-7 text-primary" />
                         </div>
                         <h3 className="text-xl font-semibold text-foreground">
                           {isDragging ? "Drop" : "Drop files"}
@@ -1329,7 +1295,7 @@ Best regards`
                         <p className="mt-2 max-w-md text-sm font-medium text-muted-foreground">
                           Images or PDF
                         </p>
-                        <label htmlFor="file-upload" className="mt-6">
+                        <label htmlFor="file-upload" className="mt-5">
                           <Button asChild className="h-12 rounded-2xl px-6">
                             <span>
                               <FileImage className="mr-2 h-4 w-4" />
@@ -1348,12 +1314,8 @@ Best regards`
                       </div>
                     ) : (
                       <div className="p-3 sm:p-4">
-                        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                           <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="secondary" className="gap-1 rounded-full border border-[#eadfff] bg-white/70 px-3 py-1">
-                              <ImageIcon className="h-3 w-3" />
-                              {uploadedFiles.length} files
-                            </Badge>
                             <span className="text-xs font-medium text-muted-foreground">
                               {uploadedSizeMb.toFixed(1)} MB selected
                             </span>
@@ -1383,7 +1345,7 @@ Best regards`
                           </div>
                         </div>
 
-                        <div className="grid max-h-[430px] grid-cols-3 gap-2 overflow-y-auto pr-1 sm:grid-cols-4 md:grid-cols-5">
+                        <div className="grid max-h-[320px] grid-cols-3 gap-2 overflow-y-auto pr-1 sm:grid-cols-4 md:grid-cols-5">
                           {uploadedFiles.map((file, index) => (
                             <div
                               key={index}
@@ -1413,7 +1375,7 @@ Best regards`
                   </div>
 
                 {uploadedFiles.length > 0 && (
-                  <div className="mt-5 flex flex-col gap-3 rounded-[24px] border border-[#eadfff] bg-white/45 p-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="mt-4 flex flex-col gap-3 rounded-[24px] border border-[#eadfff] bg-white/45 p-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="text-sm font-semibold text-foreground">{uploadedLabel} ready</p>
                       <p className="text-xs text-muted-foreground">Each file becomes downloadable as soon as it finishes.</p>

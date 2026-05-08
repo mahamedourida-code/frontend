@@ -38,6 +38,7 @@ import { toast } from "sonner"
 import { useAuth } from "@/hooks/useAuth"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
+import { DashboardCreditsPill } from "@/components/DashboardCreditsPill"
 
 function HistoryContent() {
   const router = useRouter()
@@ -426,15 +427,18 @@ function HistoryContent() {
                 Saved Files
               </h1>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={refresh}
-              disabled={isLoading}
-              className="h-8 w-8 lg:h-9 lg:w-9"
-            >
-              <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-            </Button>
+            <div className="flex items-center gap-2">
+              <DashboardCreditsPill className="hidden sm:inline-flex" />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={refresh}
+                disabled={isLoading}
+                className="h-8 w-8 lg:h-9 lg:w-9"
+              >
+                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+              </Button>
+            </div>
           </div>
         </div>
       </header>

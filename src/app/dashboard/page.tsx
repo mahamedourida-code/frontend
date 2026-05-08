@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
+import { DashboardCreditsPill } from "@/components/DashboardCreditsPill"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { cn } from "@/lib/utils"
 import {
@@ -82,6 +83,7 @@ export default function DashboardPage() {
     averageTime: 0,
     successRate: 0
   })
+  const [availableCredits, setAvailableCredits] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -194,6 +196,7 @@ export default function DashboardPage() {
       const successRate = totalJobs > 0 ? (successfulJobs / totalJobs) * 100 : 0
 
       const userTotalProcessed = creditsResponse?.used_credits ?? 0
+      setAvailableCredits(creditsResponse?.available_credits ?? 0)
 
       const monthStart = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1))
       const monthJobs = allJobs.filter(job => new Date(job.created_at) >= monthStart)
@@ -250,6 +253,7 @@ export default function DashboardPage() {
         averageTime: 0,
         successRate: 0
       })
+      setAvailableCredits(null)
     } finally {
       setLoading(false)
     }
@@ -384,6 +388,7 @@ export default function DashboardPage() {
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <DashboardCreditsPill credits={availableCredits} />
                 <Button
                   size="lg"
                   variant="outline"

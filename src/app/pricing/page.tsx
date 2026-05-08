@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils"
 
 type BillingMode = "month" | "year"
 
+const companyLogos = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 const paidPlanKeys: BillingPlanKey[] = ["pro_monthly", "pro_yearly", "max_monthly", "max_yearly", "mega_monthly", "mega_yearly"]
 
 const planBaseNames: Record<string, string> = {
@@ -378,13 +379,38 @@ function PricingContent() {
             </Link>
           </div>
 
-          <Button
-            variant="outline"
-            className="hidden rounded-full border-[#d9c9fb] bg-white/65 px-5 font-semibold lg:inline-flex"
-            onClick={() => router.push(user ? "/dashboard/settings?section=billing" : "/")}
-          >
-            {user ? "Billing" : "Try It"}
-          </Button>
+          <div className="hidden items-center gap-2 lg:flex">
+            {user ? (
+              <Button
+                className="rounded-full bg-[#2f165e] px-5 font-semibold text-white hover:bg-[#24104b]"
+                onClick={() => router.push("/dashboard")}
+              >
+                Dashboard
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  className="rounded-full border-[#d9c9fb] bg-white/65 px-5 font-semibold"
+                  onClick={() => {
+                    setSignInRedirectPath("/dashboard")
+                    setSignInOpen(true)
+                  }}
+                >
+                  Sign in
+                </Button>
+                <Button
+                  className="rounded-full bg-[#2f165e] px-5 font-semibold text-white hover:bg-[#24104b]"
+                  onClick={() => {
+                    setSignInRedirectPath("/dashboard/client")
+                    setSignInOpen(true)
+                  }}
+                >
+                  Sign up
+                </Button>
+              </>
+            )}
+          </div>
           <MobileNav />
         </nav>
 
@@ -451,7 +477,7 @@ function PricingContent() {
           </div>
         )}
 
-        <div id="plans" className="mx-auto mt-14 grid max-w-[1500px] gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div id="plans" className="mx-auto mt-20 grid max-w-[1500px] gap-6 md:grid-cols-2 xl:grid-cols-4">
           {plansLoading
             ? Array.from({ length: 4 }).map((_, index) => (
                 <Card key={index} className="h-[570px] rounded-[30px] border-[#ded3f4] bg-white/48 shadow-[0_24px_70px_rgba(30,18,57,0.08)] backdrop-blur-xl">
@@ -554,6 +580,36 @@ function PricingContent() {
                 )
               })}
         </div>
+
+        <section className="mx-auto mt-16 max-w-6xl overflow-hidden">
+          <div className="relative z-10 overflow-hidden">
+            <div
+              className="flex items-center gap-8"
+              style={{
+                animation: "scroll-left 60s linear infinite",
+                width: "max-content",
+                willChange: "transform",
+              }}
+            >
+              {Array.from({ length: 10 }, (_, setIndex) =>
+                companyLogos.map((imgNum) => (
+                  <Card
+                    key={`${setIndex}-${imgNum}`}
+                    className="h-[80px] w-[120px] flex-shrink-0 border border-[#ded3f4] bg-white shadow-[0_14px_35px_rgba(68,31,132,0.08)] transition-all duration-300 hover:border-[#A78BFA]/50 hover:shadow-md"
+                  >
+                    <CardContent className="flex h-full w-full items-center justify-center p-2">
+                      <img
+                        src={`/${imgNum}.jpeg`}
+                        alt={`Company ${imgNum}`}
+                        className="h-[60px] w-[100px] object-contain opacity-70 grayscale transition-opacity duration-300 hover:opacity-100 hover:grayscale-0"
+                      />
+                    </CardContent>
+                  </Card>
+                ))
+              ).flat()}
+            </div>
+          </div>
+        </section>
       </section>
 
       <GoogleSignInModal open={signInOpen} onOpenChange={setSignInOpen} redirectPath={signInRedirectPath} />

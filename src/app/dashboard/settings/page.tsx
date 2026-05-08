@@ -16,6 +16,7 @@ import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { MobileNav } from "@/components/MobileNav"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
+import { DashboardCreditsPill } from "@/components/DashboardCreditsPill"
 import { BillingSeal, CreditStack, PlanSwitch } from "@/components/BillingGlyphs"
 import { billingApi, ocrApi, type AppLimits, type BillingPlan, type BillingPlanKey, type BillingStatusResponse } from "@/lib/api-client"
 import {
@@ -299,6 +300,7 @@ function SettingsContent() {
                 <p className="text-xs text-muted-foreground hidden sm:block">Manage your account and preferences</p>
               </div>
             </div>
+            <DashboardCreditsPill credits={creditAvailable} className="ml-auto" />
           </div>
         </div>
       </header>
