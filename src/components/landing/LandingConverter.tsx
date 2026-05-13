@@ -75,6 +75,7 @@ export default function LandingConverter() {
   const [trialInfo, setTrialInfo] = useState({ uuid: '', used: 0, remaining: 3, hasRemaining: true, limit: 3 });
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [filePreviewUrls, setFilePreviewUrls] = useState<{[key: number]: string}>({});
+  const [selectedUploadPreview, setSelectedUploadPreview] = useState<{ url: string; name: string } | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingComplete, setProcessingComplete] = useState(false);
   const [resultFiles, setResultFiles] = useState<any[]>([]);
@@ -415,6 +416,7 @@ export default function LandingConverter() {
       setSelectedResultIndex(0);
       setComparisonOpen(false);
       setEditingCell(null);
+      setSelectedUploadPreview(null);
       setFirstImageUrl('');
       setTotalFilesToProcess(filesForProcessing.length);
       const uploadController = new AbortController();
@@ -821,6 +823,7 @@ export default function LandingConverter() {
     setSelectedResultIndex(0);
     setComparisonOpen(false);
     setEditingCell(null);
+    setSelectedUploadPreview(null);
     setFirstImageUrl('');
     setTotalFilesToProcess(0);
     setCurrentSessionId(null);
@@ -1269,9 +1272,27 @@ export default function LandingConverter() {
                           ) : (
                             <>
                               {/* Image Queue - Small thumbnails */}
-                              <div className="mb-4 grid max-h-44 grid-cols-3 gap-3 overflow-y-auto sm:grid-cols-4">
+                              <div className="mb-4 grid grid-cols-4 gap-2 sm:grid-cols-5 lg:grid-cols-6">
                                 {uploadedFiles.map((file, index) => (
-                                  <div key={index} className="relative group aspect-square overflow-hidden rounded-2xl border border-white/60 bg-card">
+                                  <div
+                                    key={index}
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      const url = filePreviewUrls[index];
+                                      if (url) setSelectedUploadPreview({ url, name: file.name });
+                                    }}
+                                    onKeyDown={(event) => {
+                                      if (event.key === 'Enter' || event.key === ' ') {
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                        const url = filePreviewUrls[index];
+                                        if (url) setSelectedUploadPreview({ url, name: file.name });
+                                      }
+                                    }}
+                                    className="relative group aspect-square cursor-pointer overflow-hidden rounded-xl border border-white/60 bg-card outline-none ring-offset-2 transition hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-[#2f165e]"
+                                  >
                                     <img
                                       src={filePreviewUrls[index] || ''}
                                       alt={file.name}
@@ -1281,9 +1302,10 @@ export default function LandingConverter() {
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+                                        setSelectedUploadPreview(null);
                                       }}
                                       disabled={isProcessing}
-                                      className="absolute top-1 right-1 h-5 w-5 rounded-full bg-background/80 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                      className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-background/85 opacity-0 shadow-sm backdrop-blur transition-opacity group-hover:opacity-100"
                                     >
                                       <span className="relative h-3 w-3" aria-hidden="true">
                                         <span className="absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 rotate-45 bg-foreground" />
@@ -1694,6 +1716,37 @@ export default function LandingConverter() {
           </div>
         </section>
 
+      {selectedUploadPreview && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center bg-[#111827]/45 p-4 backdrop-blur-xl"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setSelectedUploadPreview(null);
+          }}
+        >
+          <div className="relative w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/60 bg-white/85 p-4 shadow-[0_36px_110px_rgba(17,24,39,0.34)] backdrop-blur-2xl">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <p className="truncate text-sm font-semibold text-[#111827]">{selectedUploadPreview.name}</p>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setSelectedUploadPreview(null)}
+                className="h-9 rounded-full border-[#2f165e]/20 bg-white/75 px-3 text-[#2f165e]"
+                aria-label="Close preview"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex max-h-[78vh] items-center justify-center overflow-hidden rounded-[1.35rem] bg-white">
+              <img
+                src={selectedUploadPreview.url}
+                alt={selectedUploadPreview.name}
+                className="max-h-[78vh] w-full object-contain"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {comparisonOpen && selectedResult && (
         <div
           className="fixed inset-0 z-[80] flex items-center justify-center bg-[#111827]/45 p-3 backdrop-blur-xl sm:p-5"
@@ -1790,8 +1843,8 @@ export default function LandingConverter() {
                             {Array.from({ length: selectedColumnCount }).map((_, cellIndex) => {
                               const isEditing =
                                 editingCell?.fileId === selectedResult.file_id &&
-                                editingCell.row === rowIndex &&
-                                editingCell.col === cellIndex;
+                                editingCell?.row === rowIndex &&
+                                editingCell?.col === cellIndex;
                               const value = row[cellIndex] || '';
 
                               return (

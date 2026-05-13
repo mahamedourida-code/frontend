@@ -1,6 +1,6 @@
 "use client"
 
-import type { ChangeEvent, DragEvent } from "react"
+import { useState, type ChangeEvent, type DragEvent } from "react"
 import {
   AlertCircle,
   ArrowRight,
@@ -269,9 +269,12 @@ export function SelectedFilesTray({
   ConversionWorkspaceProps,
   "uploadedFiles" | "filePreviewUrls" | "pdfPageCounts" | "isProcessing" | "onRemoveFile" | "onClearFiles"
 >) {
+  const [selectedPreview, setSelectedPreview] = useState<{ url: string; name: string } | null>(null)
+
   if (!uploadedFiles.length) return null
 
   return (
+    <>
     <div className="rounded-[24px] border border-[#eadfff] bg-white/50 p-3 backdrop-blur-xl">
       <div className="mb-3 flex items-center justify-between gap-3">
         <p className="text-sm font-black text-black">Selected files</p>
@@ -285,41 +288,87 @@ export function SelectedFilesTray({
           Clear
         </Button>
       </div>
-      <div className="max-h-[250px] space-y-2 overflow-y-auto pr-1">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
         {uploadedFiles.map((file, index) => {
           const pdf = isPdfFile(file)
           const pageCount = pdfPageCounts[index]
+          const previewUrl = filePreviewUrls[index]
           return (
-            <div key={`${file.name}-${file.size}-${index}`} className="grid grid-cols-[54px_1fr_auto] items-center gap-3 rounded-[18px] border border-[#eadfff] bg-white/68 p-2">
-              <div className="h-14 w-14 overflow-hidden rounded-2xl border border-[#eadfff] bg-white">
-                {filePreviewUrls[index] ? (
-                  <img src={filePreviewUrls[index]} alt="" className="h-full w-full object-cover" />
+            <div
+              key={`${file.name}-${file.size}-${index}`}
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                if (previewUrl) setSelectedPreview({ url: previewUrl, name: file.name })
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault()
+                  if (previewUrl) setSelectedPreview({ url: previewUrl, name: file.name })
+                }
+              }}
+              className="group cursor-pointer rounded-[18px] border border-[#eadfff] bg-white/68 p-2 outline-none transition hover:-translate-y-0.5 hover:bg-white focus-visible:ring-2 focus-visible:ring-[#2f165e]"
+            >
+              <div className="relative mb-2 aspect-[4/3] overflow-hidden rounded-2xl border border-[#eadfff] bg-white">
+                {previewUrl ? (
+                  <img src={previewUrl} alt="" className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center">
                     {pdf ? <FileText className="h-5 w-5 text-[#2f165e]" /> : <FileImage className="h-5 w-5 text-[#2f165e]" />}
                   </div>
                 )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    onRemoveFile(index)
+                    setSelectedPreview(null)
+                  }}
+                  disabled={isProcessing}
+                  className="absolute right-1 top-1 h-7 w-7 rounded-full bg-white/88 text-[#5b3f92] opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-white group-hover:opacity-100"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-bold text-black">{file.name}</p>
-                <p className="mt-1 text-xs font-semibold text-[#6b6277]">
+                <p className="truncate text-xs font-bold text-black">{file.name}</p>
+                <p className="mt-0.5 truncate text-[11px] font-semibold text-[#6b6277]">
                   {pdf ? `${pageCount ? `${pageCount} page${pageCount === 1 ? "" : "s"}` : "PDF"}` : "Image"} · {formatBytes(file.size)}
                 </p>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onRemoveFile(index)}
-                disabled={isProcessing}
-                className="h-9 w-9 rounded-full text-[#5b3f92] hover:bg-[#f2e9ff]"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
             </div>
           )
         })}
       </div>
     </div>
+      {selectedPreview ? (
+        <div
+          className="fixed inset-0 z-[90] flex items-center justify-center bg-[#111827]/45 p-4 backdrop-blur-xl"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setSelectedPreview(null)
+          }}
+        >
+          <div className="w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/60 bg-white/88 p-4 shadow-[0_36px_110px_rgba(17,24,39,0.34)] backdrop-blur-2xl">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <p className="truncate text-sm font-black text-black">{selectedPreview.name}</p>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setSelectedPreview(null)}
+                className="h-9 rounded-full border-[#2f165e]/20 bg-white/75 px-3 text-[#2f165e]"
+                aria-label="Close preview"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex max-h-[78vh] items-center justify-center overflow-hidden rounded-[1.35rem] bg-white">
+              <img src={selectedPreview.url} alt={selectedPreview.name} className="max-h-[78vh] w-full object-contain" />
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   )
 }
 
