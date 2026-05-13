@@ -1050,13 +1050,31 @@ export default function LandingConverter() {
       ? `up to ${Math.ceil(estimatedSeconds / 60)} min`
       : `up to ${estimatedSeconds}s`;
   const getResultInputIndex = (file: any, fallbackIndex: number) => {
-    const originalName = String(file?.original_filename || file?.source_filename || file?.input_filename || '').toLowerCase();
-    if (!originalName) return fallbackIndex;
+    const normalizeName = (value: string) =>
+      value
+        .toLowerCase()
+        .replace(/\.[^.]+$/, '')
+        .replace(/_processed$/i, '')
+        .replace(/[-_\s]+/g, '');
+    const candidates = [
+      file?.original_filename,
+      file?.source_filename,
+      file?.input_filename,
+      file?.filename,
+    ]
+      .filter(Boolean)
+      .map((value: string) => normalizeName(String(value)))
+      .filter(Boolean);
+
+    if (!candidates.length) return fallbackIndex;
 
     const matchIndex = uploadedFiles.findIndex(uploadedFile => {
-      const uploadedName = uploadedFile.name.toLowerCase();
-      const uploadedBase = uploadedName.replace(/\.[^.]+$/, '');
-      return originalName === uploadedName || originalName.includes(uploadedName) || originalName.includes(uploadedBase);
+      const uploadedBase = normalizeName(uploadedFile.name);
+      return candidates.some(candidate => (
+        candidate === uploadedBase ||
+        candidate.includes(uploadedBase) ||
+        uploadedBase.includes(candidate)
+      ));
     });
 
     return matchIndex >= 0 ? matchIndex : fallbackIndex;
@@ -1067,12 +1085,8 @@ export default function LandingConverter() {
   };
   const selectedResult = resultFiles[selectedResultIndex] || resultFiles[0];
   const selectedPreview = selectedResult?.file_id ? resultPreviews[selectedResult.file_id] : undefined;
-  const selectedTablePreview = selectedPreview?.table?.length
-    ? selectedPreview.table
-    : selectedResultIndex === 0
-      ? tablePreviewData
-      : [];
-  const selectedTextPreview = selectedPreview?.text || (selectedResultIndex === 0 ? textPreview : '');
+  const selectedTablePreview = selectedPreview?.table || [];
+  const selectedTextPreview = selectedPreview?.text || '';
   const selectedImageUrl = getResultPreviewUrl(selectedResultIndex, selectedResult);
   const selectedColumnCount = Math.max(1, ...selectedTablePreview.map(row => row.length));
 
@@ -1392,18 +1406,18 @@ export default function LandingConverter() {
                                 size="sm"
                                 variant="outline"
                                 onClick={handleDownloadAll}
-                                className="border border-[#2f165e]/25 bg-white/55 backdrop-blur-md"
+                                className="h-10 rounded-full border-[#2f165e]/18 bg-white/72 px-4 text-[#2f165e] shadow-sm backdrop-blur-md hover:bg-white"
                               >
-                                <Download className="mr-1 h-5 w-5" />
+                                <Download className="mr-1.5 h-4 w-4" />
                                 Download All
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={handleShareAll}
-                                className="gap-2 bg-white/55 border-2 border-foreground text-foreground backdrop-blur-md hover:bg-muted/50"
+                                className="h-10 rounded-full border-[#2f165e]/18 bg-white/72 px-4 text-[#2f165e] shadow-sm backdrop-blur-md hover:bg-white"
                               >
-                                <Share2 className="h-5 w-5" />
+                                <Share2 className="h-4 w-4" />
                                 Share All
                               </Button>
                             </>
@@ -1412,7 +1426,12 @@ export default function LandingConverter() {
                             variant="outline"
                             size="sm"
                             onClick={isProcessing && !processingComplete ? cancelCurrentBatch : handleReset}
-                            className="border border-[#2f165e]/25 bg-white/55 backdrop-blur-md"
+                            className={cn(
+                              "h-10 rounded-full px-4 shadow-sm backdrop-blur-md",
+                              isProcessing && !processingComplete
+                                ? "border-[#2f165e]/18 bg-white/72 text-[#2f165e] hover:bg-white"
+                                : "border-[#2f165e] bg-[#2f165e] text-white hover:bg-[#24104b]"
+                            )}
                           >
                             {isProcessing && !processingComplete ? <X className="mr-1 h-4 w-4" /> : <RotateCcw className="mr-1 h-4 w-4" />}
                             {isProcessing && !processingComplete ? 'Cancel' : 'Convert Again'}
@@ -1444,7 +1463,18 @@ export default function LandingConverter() {
                                 {/* Original Image */}
                                 <div className="flex flex-col xl:col-span-1">
                                   <h4 className="mb-3 text-sm font-semibold text-[#111827]/70">Selected input</h4>
-                                  <div className="flex max-h-[640px] items-center justify-center overflow-hidden rounded-[1.35rem] border border-white/60 bg-white/55">
+                                  <div
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={() => setSelectedUploadPreview({ url: selectedImageUrl, name: selectedResult?.filename || 'Input preview' })}
+                                    onKeyDown={(event) => {
+                                      if (event.key === 'Enter' || event.key === ' ') {
+                                        event.preventDefault();
+                                        setSelectedUploadPreview({ url: selectedImageUrl, name: selectedResult?.filename || 'Input preview' });
+                                      }
+                                    }}
+                                    className="flex max-h-[640px] cursor-zoom-in items-center justify-center overflow-hidden rounded-[1.35rem] border border-white/60 bg-white/55 outline-none transition hover:bg-white/75 focus-visible:ring-2 focus-visible:ring-[#2f165e]"
+                                  >
                                     <img
                                       src={selectedImageUrl}
                                       alt="Original"
@@ -1511,10 +1541,6 @@ export default function LandingConverter() {
                                 <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#111827]/55">Batch output</p>
                                 <p className="mt-1 text-lg font-semibold text-[#111827]">
                                   {resultFiles.length} file{resultFiles.length > 1 ? 's' : ''} ready
-                                </p>
-                                <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#2f165e]/8 px-3 py-1 text-xs font-semibold text-[#2f165e]">
-                                  <span className="h-2 w-2 rounded-full bg-[#2f165e] animate-pulse" />
-                                  Click any result to compare and fix cells
                                 </p>
                               </div>
                               <Button
@@ -1749,7 +1775,7 @@ export default function LandingConverter() {
 
       {comparisonOpen && selectedResult && (
         <div
-          className="fixed inset-0 z-[80] flex items-center justify-center bg-[#111827]/45 p-3 backdrop-blur-xl sm:p-5"
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-[#111827]/50 p-3 backdrop-blur-xl sm:p-5"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
               setComparisonOpen(false);
@@ -1757,142 +1783,122 @@ export default function LandingConverter() {
             }
           }}
         >
-          <div className="w-full max-w-[1220px] overflow-hidden rounded-[2rem] border border-white/60 bg-[#f8f4ff]/92 shadow-[0_36px_110px_rgba(17,24,39,0.34)] backdrop-blur-2xl">
-            <div className="flex flex-col gap-3 border-b border-white/60 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-              <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#2f165e]/70">
-                  Compare and fix
-                </p>
-                <h3 className="mt-1 truncate text-xl font-semibold text-[#111827]">
-                  {cleanFilename(selectedResult.filename)}
-                </h3>
-              </div>
-              <div className="flex items-center gap-2">
-                <p className="hidden text-sm font-medium text-[#111827]/58 sm:block">
-                  Double-click a cell. Click outside to save.
-                </p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    setComparisonOpen(false);
-                    setEditingCell(null);
-                  }}
-                  className="h-9 rounded-full border-[#2f165e]/20 bg-white/75 px-3 text-[#2f165e]"
-                  aria-label="Close comparison"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+          <div className="relative w-full max-w-[1240px] rounded-[1.5rem] bg-[#f8f4ff]/88 p-3 shadow-[0_36px_110px_rgba(17,24,39,0.34)] backdrop-blur-2xl sm:p-4">
+            <p className="absolute left-5 top-4 z-10 max-w-[70%] truncate text-sm font-semibold text-[#111827]">
+              {cleanFilename(selectedResult.filename)}
+            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setComparisonOpen(false);
+                setEditingCell(null);
+              }}
+              className="absolute right-4 top-3 z-10 h-9 rounded-full border-[#2f165e]/16 bg-white/70 px-3 text-[#2f165e]"
+              aria-label="Close comparison"
+            >
+              <X className="h-4 w-4" />
+            </Button>
 
-            <div className="grid max-h-[82vh] gap-4 overflow-auto p-4 lg:grid-cols-[0.92fr_1.08fr] lg:p-6">
-              <div className="rounded-[1.5rem] border border-white/65 bg-white/50 p-3 backdrop-blur-md">
-                <div className="mb-3 flex items-center justify-between px-1">
-                  <p className="text-sm font-semibold text-[#111827]/70">Input</p>
-                  <span className="rounded-full bg-[#2f165e]/8 px-2.5 py-1 text-[11px] font-semibold text-[#2f165e]">
-                    File {selectedResultIndex + 1}
-                  </span>
-                </div>
-                <div className="flex min-h-[420px] items-center justify-center overflow-hidden rounded-[1.2rem] bg-white">
-                  {selectedImageUrl ? (
-                    <img
-                      src={selectedImageUrl}
-                      alt="Selected input preview"
-                      className="max-h-[68vh] w-full object-contain"
-                    />
-                  ) : (
-                    <div className="flex h-full min-h-[420px] items-center justify-center text-sm font-semibold text-[#111827]/48">
-                      Input preview unavailable
-                    </div>
-                  )}
-                </div>
+            <div className="grid max-h-[84vh] gap-3 overflow-auto pt-10 lg:grid-cols-[0.92fr_1.08fr]">
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => selectedImageUrl && setSelectedUploadPreview({ url: selectedImageUrl, name: selectedResult?.filename || 'Input preview' })}
+                onKeyDown={(event) => {
+                  if ((event.key === 'Enter' || event.key === ' ') && selectedImageUrl) {
+                    event.preventDefault();
+                    setSelectedUploadPreview({ url: selectedImageUrl, name: selectedResult?.filename || 'Input preview' });
+                  }
+                }}
+                className="flex min-h-[420px] cursor-zoom-in items-center justify-center overflow-hidden rounded-[1.15rem] bg-white/72 outline-none focus-visible:ring-2 focus-visible:ring-[#2f165e]"
+              >
+                {selectedImageUrl ? (
+                  <img
+                    src={selectedImageUrl}
+                    alt="Selected input preview"
+                    className="max-h-[74vh] w-full object-contain"
+                  />
+                ) : (
+                  <div className="flex h-full min-h-[420px] items-center justify-center text-sm font-semibold text-[#111827]/48">
+                    Input preview unavailable
+                  </div>
+                )}
               </div>
 
-              <div className="rounded-[1.5rem] border border-white/65 bg-white/72 p-3 backdrop-blur-md">
-                <div className="mb-3 flex items-center justify-between px-1">
-                  <p className="text-sm font-semibold text-[#111827]/70">
-                    {outputMode === 'text' ? 'Text output' : 'Excel table'}
-                  </p>
-                  <span className="rounded-full bg-[#2f165e] px-2.5 py-1 text-[11px] font-semibold text-white">
-                    Editable preview
-                  </span>
-                </div>
+              <div className="max-h-[74vh] min-h-[420px] overflow-auto rounded-[1.15rem] bg-white">
+                {selectedPreview?.loading ? (
+                  <div className="flex min-h-[420px] items-center justify-center gap-2 text-sm font-semibold text-[#111827]/58">
+                    <InlineSpinner className="h-4 w-4 text-[#2f165e]" />
+                    Preparing preview
+                  </div>
+                ) : outputMode === 'text' || selectedTextPreview ? (
+                  <pre className="min-h-[420px] whitespace-pre-wrap p-5 text-left text-sm leading-7 text-[#111827]">
+                    {selectedTextPreview || 'Text preview unavailable.'}
+                  </pre>
+                ) : selectedTablePreview.length > 0 ? (
+                  <table className="w-full min-w-[680px] border-collapse text-sm text-[#111827]">
+                    <tbody>
+                      {selectedTablePreview.map((row, rowIndex) => (
+                        <tr
+                          key={rowIndex}
+                          className={cn(
+                            "border-b border-[#d8cde7]",
+                            rowIndex === 0 ? "bg-[#2f165e] text-white" : rowIndex % 2 === 0 ? "bg-[#fbf8ff]" : "bg-white"
+                          )}
+                        >
+                          {Array.from({ length: selectedColumnCount }).map((_, cellIndex) => {
+                            const isEditing =
+                              editingCell?.fileId === selectedResult.file_id &&
+                              editingCell?.row === rowIndex &&
+                              editingCell?.col === cellIndex;
+                            const value = row[cellIndex] || '';
 
-                <div className="max-h-[68vh] overflow-auto rounded-[1.2rem] border border-[#d8cde7] bg-white">
-                  {selectedPreview?.loading ? (
-                    <div className="flex min-h-[420px] items-center justify-center gap-2 text-sm font-semibold text-[#111827]/58">
-                      <InlineSpinner className="h-4 w-4 text-[#2f165e]" />
-                      Preparing table preview
-                    </div>
-                  ) : outputMode === 'text' || selectedTextPreview ? (
-                    <pre className="min-h-[420px] whitespace-pre-wrap p-5 text-left text-sm leading-7 text-[#111827]">
-                      {selectedTextPreview || 'Text preview unavailable.'}
-                    </pre>
-                  ) : selectedTablePreview.length > 0 ? (
-                    <table className="w-full min-w-[680px] border-collapse text-sm text-[#111827]">
-                      <tbody>
-                        {selectedTablePreview.map((row, rowIndex) => (
-                          <tr
-                            key={rowIndex}
-                            className={cn(
-                              "border-b border-[#d8cde7]",
-                              rowIndex === 0 ? "bg-[#2f165e] text-white" : rowIndex % 2 === 0 ? "bg-[#fbf8ff]" : "bg-white"
-                            )}
-                          >
-                            {Array.from({ length: selectedColumnCount }).map((_, cellIndex) => {
-                              const isEditing =
-                                editingCell?.fileId === selectedResult.file_id &&
-                                editingCell?.row === rowIndex &&
-                                editingCell?.col === cellIndex;
-                              const value = row[cellIndex] || '';
-
-                              return (
-                                <td
-                                  key={cellIndex}
-                                  onDoubleClick={() => {
-                                    if (selectedResult.file_id) {
-                                      setEditingCell({ fileId: selectedResult.file_id, row: rowIndex, col: cellIndex });
-                                    }
-                                  }}
-                                  className={cn(
-                                    "min-w-[120px] border-r border-[#d8cde7] px-3 py-2 text-left font-medium last:border-r-0",
-                                    rowIndex === 0 ? "border-white/20" : "hover:bg-[#f2e9ff]"
-                                  )}
-                                >
-                                  {isEditing ? (
-                                    <input
-                                      autoFocus
-                                      defaultValue={value}
-                                      onBlur={(event) => {
-                                        updatePreviewCell(selectedResult.file_id, rowIndex, cellIndex, event.target.value);
-                                        setEditingCell(null);
-                                      }}
-                                      onKeyDown={(event) => {
-                                        if (event.key === 'Enter' || event.key === 'Escape') {
-                                          event.currentTarget.blur();
-                                        }
-                                      }}
-                                      className="w-full rounded-md border border-[#2f165e]/30 bg-white px-2 py-1 text-sm text-[#111827] outline-none ring-2 ring-[#2f165e]/12"
-                                    />
-                                  ) : (
-                                    <span className={cn(!value && "text-[#111827]/30")}>
-                                      {value || ' '}
-                                    </span>
-                                  )}
-                                </td>
-                              );
-                            })}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  ) : (
-                    <div className="flex min-h-[420px] items-center justify-center text-sm font-semibold text-[#111827]/48">
-                      Table preview unavailable
-                    </div>
-                  )}
-                </div>
+                            return (
+                              <td
+                                key={cellIndex}
+                                onDoubleClick={() => {
+                                  if (selectedResult.file_id) {
+                                    setEditingCell({ fileId: selectedResult.file_id, row: rowIndex, col: cellIndex });
+                                  }
+                                }}
+                                className={cn(
+                                  "min-w-[120px] border-r border-[#d8cde7] px-3 py-2 text-left font-medium last:border-r-0",
+                                  rowIndex === 0 ? "border-white/20" : "hover:bg-[#f2e9ff]"
+                                )}
+                              >
+                                {isEditing ? (
+                                  <input
+                                    autoFocus
+                                    defaultValue={value}
+                                    onBlur={(event) => {
+                                      updatePreviewCell(selectedResult.file_id, rowIndex, cellIndex, event.target.value);
+                                      setEditingCell(null);
+                                    }}
+                                    onKeyDown={(event) => {
+                                      if (event.key === 'Enter' || event.key === 'Escape') {
+                                        event.currentTarget.blur();
+                                      }
+                                    }}
+                                    className="w-full rounded-md border border-[#2f165e]/30 bg-white px-2 py-1 text-sm text-[#111827] outline-none ring-2 ring-[#2f165e]/12"
+                                  />
+                                ) : (
+                                  <span className={cn(!value && "text-[#111827]/30")}>
+                                    {value || ' '}
+                                  </span>
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="flex min-h-[420px] items-center justify-center text-sm font-semibold text-[#111827]/48">
+                    Table preview unavailable
+                  </div>
+                )}
               </div>
             </div>
           </div>

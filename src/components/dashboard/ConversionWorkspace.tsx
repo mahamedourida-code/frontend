@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   Clock3,
   Download,
-  Edit3,
   FileImage,
   FileSpreadsheet,
   FileText,
@@ -427,6 +426,8 @@ export function ResultPreviewPanel({
   ConversionWorkspaceProps,
   "isComplete" | "resultFiles" | "tablePreviewData" | "textPreview" | "firstImageUrl" | "isTextOutput"
 >) {
+  const [imagePreviewOpen, setImagePreviewOpen] = useState(false)
+
   if (!isComplete || !resultFiles?.length) {
     return (
       <div className="flex min-h-[300px] flex-col justify-between rounded-[24px] border border-[#eadfff] bg-white/45 p-4 backdrop-blur-xl">
@@ -444,12 +445,24 @@ export function ResultPreviewPanel({
   }
 
   return (
+    <>
     <div className="rounded-[24px] border border-[#eadfff] bg-white/52 p-3 backdrop-blur-xl">
       <div className="grid gap-3 xl:grid-cols-2">
         {firstImageUrl ? (
           <div>
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-[#6d579f]">Before</p>
-            <div className="flex min-h-[260px] items-center justify-center overflow-hidden rounded-[18px] border border-[#d9c9fb] bg-white/70">
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => setImagePreviewOpen(true)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault()
+                  setImagePreviewOpen(true)
+                }
+              }}
+              className="flex min-h-[260px] cursor-zoom-in items-center justify-center overflow-hidden rounded-[18px] border border-[#d9c9fb] bg-white/70 outline-none transition hover:bg-white focus-visible:ring-2 focus-visible:ring-[#2f165e]"
+            >
               <img src={firstImageUrl} alt="Original uploaded file" className="max-h-[420px] w-full object-contain" />
             </div>
           </div>
@@ -485,6 +498,33 @@ export function ResultPreviewPanel({
         </div>
       </div>
     </div>
+      {imagePreviewOpen && firstImageUrl ? (
+        <div
+          className="fixed inset-0 z-[90] flex items-center justify-center bg-[#111827]/45 p-4 backdrop-blur-xl"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setImagePreviewOpen(false)
+          }}
+        >
+          <div className="w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/60 bg-white/88 p-4 shadow-[0_36px_110px_rgba(17,24,39,0.34)] backdrop-blur-2xl">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <p className="truncate text-sm font-black text-black">{resultFiles[0]?.filename || "Input preview"}</p>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setImagePreviewOpen(false)}
+                className="h-9 rounded-full border-[#2f165e]/20 bg-white/75 px-3 text-[#2f165e]"
+                aria-label="Close preview"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex max-h-[78vh] items-center justify-center overflow-hidden rounded-[1.35rem] bg-white">
+              <img src={firstImageUrl} alt="Original uploaded file" className="max-h-[78vh] w-full object-contain" />
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   )
 }
 
@@ -522,7 +562,7 @@ export function ResultActions({
     <div className="space-y-3">
       {isComplete ? (
         <div className="flex flex-wrap items-center gap-2">
-          <Button onClick={onReset} className="h-10 gap-2 rounded-full bg-[#2f165e] text-white hover:bg-[#24104b]">
+          <Button onClick={onReset} className="h-10 gap-2 rounded-full bg-[#2f165e] px-4 text-white shadow-sm hover:bg-[#24104b]">
             <RotateCcw className="h-4 w-4" />
             New batch
           </Button>
@@ -531,7 +571,7 @@ export function ResultActions({
               onClick={onSaveToHistory}
               disabled={isSaving}
               variant="outline"
-              className="h-10 gap-2 rounded-full border-[#d9c9fb] bg-white/70 text-[#2f165e] hover:bg-white"
+              className="h-10 gap-2 rounded-full border-[#2f165e]/18 bg-white/72 px-4 text-[#2f165e] shadow-sm hover:bg-white"
             >
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               Save
@@ -540,7 +580,7 @@ export function ResultActions({
           <Button
             variant="outline"
             onClick={resultFiles.length > 1 ? onShareAll : () => onShareFile(resultFiles[0])}
-            className="h-10 gap-2 rounded-full border-[#d9c9fb] bg-white/70 text-[#2f165e] hover:bg-white"
+            className="h-10 gap-2 rounded-full border-[#2f165e]/18 bg-white/72 px-4 text-[#2f165e] shadow-sm hover:bg-white"
           >
             <Share2 className="h-4 w-4" />
             Share
@@ -548,7 +588,7 @@ export function ResultActions({
           <Button
             variant="outline"
             onClick={onDownloadAll}
-            className="h-10 gap-2 rounded-full border-[#d9c9fb] bg-white/70 text-[#2f165e] hover:bg-white"
+            className="h-10 gap-2 rounded-full border-[#2f165e]/18 bg-white/72 px-4 text-[#2f165e] shadow-sm hover:bg-white"
           >
             <Download className="h-4 w-4" />
             Download all
@@ -574,23 +614,12 @@ export function ResultActions({
                 size="sm"
                 variant="outline"
                 onClick={() => onShareFile(file)}
-                className="h-9 rounded-full border-[#d9c9fb] bg-white/70 text-[#2f165e] hover:bg-white"
+                className="h-9 rounded-full border-[#2f165e]/18 bg-white/72 text-[#2f165e] shadow-sm hover:bg-white"
               >
                 <Share2 className="mr-1.5 h-4 w-4" />
                 Share
               </Button>
-              {!isTextOutput ? (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => onEditFile(file)}
-                  className="h-9 rounded-full border-[#d9c9fb] bg-white/70 text-[#2f165e] hover:bg-white"
-                >
-                  <Edit3 className="mr-1.5 h-4 w-4" />
-                  Edit
-                </Button>
-              ) : null}
-              <Button size="sm" onClick={() => onDownloadFile(file)} className="h-9 rounded-full bg-[#2f165e] text-white hover:bg-[#24104b]">
+              <Button size="sm" onClick={() => onDownloadFile(file)} className="h-9 rounded-full bg-[#2f165e] text-white shadow-sm hover:bg-[#24104b]">
                 <Download className="mr-1.5 h-4 w-4" />
                 Download
               </Button>

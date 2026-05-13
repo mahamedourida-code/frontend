@@ -461,6 +461,46 @@ function ProcessImagesContent() {
     }
   }, [uploadedFiles.length])
 
+  const getResultInputPreviewUrl = useCallback((file: any, fallbackIndex = 0) => {
+    const normalizeName = (value: string) =>
+      value
+        .toLowerCase()
+        .replace(/\.[^.]+$/, '')
+        .replace(/_processed$/i, '')
+        .replace(/[-_\s]+/g, '')
+
+    const candidates = [
+      file?.original_filename,
+      file?.source_filename,
+      file?.input_filename,
+      file?.filename,
+    ]
+      .filter(Boolean)
+      .map((value: string) => normalizeName(String(value)))
+      .filter(Boolean)
+
+    const matchIndex = uploadedFiles.findIndex(uploadedFile => {
+      const uploadedBase = normalizeName(uploadedFile.name)
+      return candidates.some(candidate => (
+        candidate === uploadedBase ||
+        candidate.includes(uploadedBase) ||
+        uploadedBase.includes(candidate)
+      ))
+    })
+
+    const inputIndex = matchIndex >= 0 ? matchIndex : fallbackIndex
+    return filePreviewUrls[inputIndex] || ''
+  }, [filePreviewUrls, uploadedFiles])
+
+  useEffect(() => {
+    if (!resultFiles?.length) return
+
+    const matchedPreview = getResultInputPreviewUrl(resultFiles[0], 0)
+    if (matchedPreview && matchedPreview !== firstImageUrl) {
+      setFirstImageUrl(matchedPreview)
+    }
+  }, [firstImageUrl, getResultInputPreviewUrl, resultFiles])
+
   useEffect(() => {
     let cancelled = false
 
