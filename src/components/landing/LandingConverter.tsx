@@ -9,7 +9,7 @@ import { wakeUpBackendSilently } from "@/lib/backend-health";
 import { getTrialInfo, incrementTrialUploadCount } from "@/lib/free-trial";
 import { ocrApi, OCRWebSocket } from "@/lib/api-client";
 import type { AppLimits, JobStatusResponse, RecoverableJobSummary } from "@/lib/api-client";
-import { buildDownloadUrl, buildMessengerShareUrl, buildOfficeViewerUrl } from "@/lib/public-config";
+import { buildDownloadUrl, buildMessengerShareUrl } from "@/lib/public-config";
 import { showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui";
 import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
@@ -22,7 +22,7 @@ import {
   isAcceptedUploadFile,
   isPdfFile,
 } from "@/lib/upload-files";
-import { Download, FileSpreadsheet, FileText, Pencil, RotateCcw, Share2, X } from "lucide-react";
+import { Download, FileSpreadsheet, FileText, RotateCcw, Share2, X } from "lucide-react";
 
 const LandingDialogs = dynamic(
   () => import("@/components/landing/LandingDialogs"),
@@ -32,6 +32,12 @@ const LandingDialogs = dynamic(
 const siteIcons = {
   export: "/site-icons/io/export.svg",
   upload: "/site-icons/io/upload.svg",
+};
+
+type ResultPreview = {
+  table: any[][];
+  text: string;
+  loading?: boolean;
 };
 
 function SiteIcon({ src, className, alt = "" }: { src: string; className?: string; alt?: string }) {
@@ -79,6 +85,10 @@ export default function LandingConverter() {
   const [copySuccess, setCopySuccess] = useState(false);
   const [tablePreviewData, setTablePreviewData] = useState<any[][]>([]);
   const [textPreview, setTextPreview] = useState('');
+  const [resultPreviews, setResultPreviews] = useState<Record<string, ResultPreview>>({});
+  const [selectedResultIndex, setSelectedResultIndex] = useState(0);
+  const [comparisonOpen, setComparisonOpen] = useState(false);
+  const [editingCell, setEditingCell] = useState<{ fileId: string; row: number; col: number } | null>(null);
   const [firstImageUrl, setFirstImageUrl] = useState<string>('');
   const [outputMode, setOutputMode] = useState<'table' | 'text'>('table');
   const [totalFilesToProcess, setTotalFilesToProcess] = useState(0);
@@ -401,6 +411,10 @@ export default function LandingConverter() {
       setResultFiles([]);
       setTablePreviewData([]);
       setTextPreview('');
+      setResultPreviews({});
+      setSelectedResultIndex(0);
+      setComparisonOpen(false);
+      setEditingCell(null);
       setFirstImageUrl('');
       setTotalFilesToProcess(filesForProcessing.length);
       const uploadController = new AbortController();
@@ -543,15 +557,39 @@ export default function LandingConverter() {
   };
 
   // Fetch and parse Excel file for preview
-  const fetchTablePreview = async (fileId: string) => {
+  const fetchTablePreview = async (fileId: string, syncActivePreview = true) => {
+    if (!fileId) return null;
+
+    const existing = resultPreviews[fileId];
+    if (existing && (existing.table.length > 0 || existing.text)) {
+      if (syncActivePreview) {
+        setTablePreviewData(existing.table);
+        setTextPreview(existing.text);
+      }
+      return existing;
+    }
+
+    setResultPreviews(prev => ({
+      ...prev,
+      [fileId]: {
+        table: prev[fileId]?.table || [],
+        text: prev[fileId]?.text || '',
+        loading: true,
+      },
+    }));
+
     try {
-      const blob = await ocrApi.downloadFile(fileId);
+      const blob = await ocrApi.downloadFile(fileId, currentSessionId || undefined);
 
       if (outputMode === 'text' || blob.type.startsWith('text/')) {
         const text = await blob.text();
-        setTextPreview(text.slice(0, 6000));
-        setTablePreviewData([]);
-        return;
+        const preview = { table: [], text: text.slice(0, 6000), loading: false };
+        setResultPreviews(prev => ({ ...prev, [fileId]: preview }));
+        if (syncActivePreview) {
+          setTablePreviewData([]);
+          setTextPreview(preview.text);
+        }
+        return preview;
       }
 
       const XLSX = await import('xlsx');
@@ -560,12 +598,25 @@ export default function LandingConverter() {
       const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
       const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as any[][];
 
-      // Limit to first 10 rows for preview
-      const previewData = data.slice(0, Math.min(10, data.length));
-      setTablePreviewData(previewData);
-      setTextPreview('');
+      const previewData = data.slice(0, Math.min(24, data.length));
+      const preview = { table: previewData, text: '', loading: false };
+      setResultPreviews(prev => ({ ...prev, [fileId]: preview }));
+      if (syncActivePreview) {
+        setTablePreviewData(previewData);
+        setTextPreview('');
+      }
+      return preview;
     } catch (error) {
+      setResultPreviews(prev => ({
+        ...prev,
+        [fileId]: {
+          table: prev[fileId]?.table || [],
+          text: prev[fileId]?.text || '',
+          loading: false,
+        },
+      }));
       // Don't show error toast - just silently fail to show preview
+      return null;
     }
   };
 
@@ -587,9 +638,10 @@ export default function LandingConverter() {
 
     if (status.results?.files?.length) {
       setResultFiles(status.results.files);
-      if (tablePreviewData.length === 0 && !textPreview) {
-        fetchTablePreview(status.results.files[0].file_id);
-      }
+      setSelectedResultIndex(0);
+      status.results.files.slice(0, 12).forEach((file: any, index: number) => {
+        if (file.file_id) void fetchTablePreview(file.file_id, index === 0);
+      });
     }
 
     if (status.status === 'completed' || status.status === 'partially_completed') {
@@ -666,8 +718,11 @@ export default function LandingConverter() {
             const existing = prev || [];
             if (existing.some(f => f.file_id === data.file_info.file_id)) return existing;
             const newFiles = [...existing, data.file_info];
-            if (newFiles.length === 1 && tablePreviewData.length === 0 && !textPreview) {
-              fetchTablePreview(data.file_info.file_id);
+            if (newFiles.length === 1) {
+              setSelectedResultIndex(0);
+              void fetchTablePreview(data.file_info.file_id, true);
+            } else {
+              void fetchTablePreview(data.file_info.file_id, false);
             }
             return newFiles;
           });
@@ -678,6 +733,10 @@ export default function LandingConverter() {
           setIsProcessing(false);
           if (data.files && data.files.length > 0) {
             setResultFiles(data.files);
+            setSelectedResultIndex(0);
+            data.files.slice(0, 12).forEach((file: any, index: number) => {
+              if (file.file_id) void fetchTablePreview(file.file_id, index === 0);
+            });
           }
           stopJobMonitoring();
           void refreshBilling({ includeStatus: isAuthenticated, includeLimits: true });
@@ -758,6 +817,10 @@ export default function LandingConverter() {
     setUploadProgress(0);
     setTablePreviewData([]);
     setTextPreview('');
+    setResultPreviews({});
+    setSelectedResultIndex(0);
+    setComparisonOpen(false);
+    setEditingCell(null);
     setFirstImageUrl('');
     setTotalFilesToProcess(0);
     setCurrentSessionId(null);
@@ -983,7 +1046,130 @@ export default function LandingConverter() {
     estimatedSeconds >= 60
       ? `up to ${Math.ceil(estimatedSeconds / 60)} min`
       : `up to ${estimatedSeconds}s`;
-  const getResultPreviewUrl = (index: number) => filePreviewUrls[index] || (index === 0 ? firstImageUrl : "");
+  const getResultInputIndex = (file: any, fallbackIndex: number) => {
+    const originalName = String(file?.original_filename || file?.source_filename || file?.input_filename || '').toLowerCase();
+    if (!originalName) return fallbackIndex;
+
+    const matchIndex = uploadedFiles.findIndex(uploadedFile => {
+      const uploadedName = uploadedFile.name.toLowerCase();
+      const uploadedBase = uploadedName.replace(/\.[^.]+$/, '');
+      return originalName === uploadedName || originalName.includes(uploadedName) || originalName.includes(uploadedBase);
+    });
+
+    return matchIndex >= 0 ? matchIndex : fallbackIndex;
+  };
+  const getResultPreviewUrl = (index: number, file?: any) => {
+    const inputIndex = file ? getResultInputIndex(file, index) : index;
+    return filePreviewUrls[inputIndex] || (inputIndex === 0 ? firstImageUrl : "");
+  };
+  const selectedResult = resultFiles[selectedResultIndex] || resultFiles[0];
+  const selectedPreview = selectedResult?.file_id ? resultPreviews[selectedResult.file_id] : undefined;
+  const selectedTablePreview = selectedPreview?.table?.length
+    ? selectedPreview.table
+    : selectedResultIndex === 0
+      ? tablePreviewData
+      : [];
+  const selectedTextPreview = selectedPreview?.text || (selectedResultIndex === 0 ? textPreview : '');
+  const selectedImageUrl = getResultPreviewUrl(selectedResultIndex, selectedResult);
+  const selectedColumnCount = Math.max(1, ...selectedTablePreview.map(row => row.length));
+
+  const openResultComparison = (index: number) => {
+    const file = resultFiles[index];
+    if (!file) return;
+    setSelectedResultIndex(index);
+    setComparisonOpen(true);
+    setEditingCell(null);
+    if (file.file_id) void fetchTablePreview(file.file_id);
+  };
+
+  const updatePreviewCell = (fileId: string, rowIndex: number, cellIndex: number, value: string) => {
+    const currentPreview = resultPreviews[fileId] || { table: [], text: '' };
+    const nextTable = currentPreview.table.map(row => [...row]);
+    if (!nextTable[rowIndex]) nextTable[rowIndex] = [];
+    nextTable[rowIndex][cellIndex] = value;
+
+    setResultPreviews(prev => ({
+      ...prev,
+      [fileId]: {
+        table: nextTable,
+        text: currentPreview.text,
+        loading: false,
+      },
+    }));
+
+    if (selectedResult?.file_id === fileId) {
+      setTablePreviewData(nextTable);
+    }
+  };
+
+  const renderResultPreviewThumb = (preview?: ResultPreview) => {
+    if (preview?.text) {
+      const lines = preview.text.split(/\r?\n/).filter(Boolean).slice(0, 5);
+      return (
+        <div className="flex h-full min-h-[96px] flex-col gap-1.5 overflow-hidden rounded-[0.95rem] border border-[#2f165e]/10 bg-white p-3">
+          {lines.length > 0 ? lines.map((line, index) => (
+            <span key={index} className="truncate text-[10px] font-semibold text-[#111827]/62">
+              {line}
+            </span>
+          )) : (
+            <span className="text-[10px] font-semibold text-[#111827]/45">Text output</span>
+          )}
+        </div>
+      );
+    }
+
+    const rows = preview?.table?.length ? preview.table.slice(0, 5) : [];
+
+    return (
+      <div className="h-full min-h-[96px] overflow-hidden rounded-[0.95rem] border border-[#2f165e]/10 bg-white">
+        <div className="grid grid-cols-4 bg-[#2f165e]">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <span key={index} className="h-3 border-r border-white/20 last:border-r-0" />
+          ))}
+        </div>
+        {rows.length > 0 ? rows.map((row, rowIndex) => (
+          <div key={rowIndex} className="grid grid-cols-4 border-b border-[#eadfff] last:border-b-0">
+            {Array.from({ length: 4 }).map((_, cellIndex) => (
+              <span
+                key={cellIndex}
+                className="truncate border-r border-[#eadfff] px-1.5 py-1 text-[9px] font-semibold text-[#111827]/58 last:border-r-0"
+              >
+                {row[cellIndex] || ''}
+              </span>
+            ))}
+          </div>
+        )) : Array.from({ length: 5 }).map((_, rowIndex) => (
+          <div key={rowIndex} className="grid grid-cols-4 border-b border-[#eadfff] last:border-b-0">
+            {Array.from({ length: 4 }).map((__, cellIndex) => (
+              <span key={cellIndex} className="h-4 border-r border-[#eadfff] last:border-r-0">
+                <span className="mx-1 mt-1 block h-1.5 rounded-full bg-[#d8cde7]" />
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    if (!comparisonOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setComparisonOpen(false);
+        setEditingCell(null);
+      }
+    };
+
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [comparisonOpen]);
   return (
     <>
         {/* Conversion Section */}
@@ -1229,16 +1415,16 @@ export default function LandingConverter() {
                       {resultFiles.length > 0 && (
                         <div className="space-y-4">
                           {/* Preview Section - Only for first file */}
-                          {resultFiles.length > 0 && (tablePreviewData.length > 0 || textPreview) && firstImageUrl && (
+                          {resultFiles.length > 0 && (selectedTablePreview.length > 0 || selectedTextPreview) && selectedImageUrl && (
                             <div className="space-y-4">
                               {/* Image and Table Preview Side by Side */}
                               <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
                                 {/* Original Image */}
                                 <div className="flex flex-col xl:col-span-1">
-                                  <h4 className="mb-3 text-sm font-semibold text-[#111827]/70">Original image</h4>
+                                  <h4 className="mb-3 text-sm font-semibold text-[#111827]/70">Selected input</h4>
                                   <div className="flex max-h-[640px] items-center justify-center overflow-hidden rounded-[1.35rem] border border-white/60 bg-white/55">
                                     <img
-                                      src={firstImageUrl}
+                                      src={selectedImageUrl}
                                       alt="Original"
                                       className="max-w-full h-auto max-h-[600px] object-contain"
                                     />
@@ -1251,15 +1437,15 @@ export default function LandingConverter() {
                                     {outputMode === 'text' ? 'Extracted text preview' : 'Extracted spreadsheet preview'}
                                   </h4>
                                   <div className="max-h-[640px] overflow-auto rounded-[1.35rem] border border-white/60 bg-white">
-                                    {outputMode === 'text' || textPreview ? (
+                                    {outputMode === 'text' || selectedTextPreview ? (
                                       <pre className="min-h-[360px] whitespace-pre-wrap p-5 text-left text-sm leading-7 text-[#111827]">
-                                        {textPreview}
+                                        {selectedTextPreview}
                                       </pre>
                                     ) : (
                                       <>
                                         <table className="w-full border-collapse text-base text-[#111827]">
                                           <tbody>
-                                            {tablePreviewData.map((row, rowIndex) => (
+                                            {selectedTablePreview.map((row, rowIndex) => (
                                               <tr
                                                 key={rowIndex}
                                                 className={cn(
@@ -1283,9 +1469,9 @@ export default function LandingConverter() {
                                             ))}
                                           </tbody>
                                         </table>
-                                        {tablePreviewData.length >= 10 && (
+                                        {selectedTablePreview.length >= 24 && (
                                           <div className="border-t border-[#d8cde7] bg-[#f8f4ff] px-3 py-2 text-center text-xs font-semibold text-[#4b2d82]">
-                                            Showing first 10 rows
+                                            Showing first 24 rows
                                           </div>
                                         )}
                                       </>
@@ -1303,6 +1489,10 @@ export default function LandingConverter() {
                                 <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#111827]/55">Batch output</p>
                                 <p className="mt-1 text-lg font-semibold text-[#111827]">
                                   {resultFiles.length} file{resultFiles.length > 1 ? 's' : ''} ready
+                                </p>
+                                <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#2f165e]/8 px-3 py-1 text-xs font-semibold text-[#2f165e]">
+                                  <span className="h-2 w-2 rounded-full bg-[#2f165e] animate-pulse" />
+                                  Click any result to compare and fix cells
                                 </p>
                               </div>
                               <Button
@@ -1322,33 +1512,46 @@ export default function LandingConverter() {
                                 : "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
                             )}>
                               {resultFiles.map((file: any, index: number) => {
-                                const previewUrl = getResultPreviewUrl(index);
+                                const previewUrl = getResultPreviewUrl(index, file);
                                 const compact = resultFiles.length > 8;
+                                const filePreview = file.file_id ? resultPreviews[file.file_id] : undefined;
 
                                 return (
                                   <div
                                     key={file.file_id || index}
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={() => openResultComparison(index)}
+                                    onKeyDown={(event) => {
+                                      if (event.key === 'Enter' || event.key === ' ') {
+                                        event.preventDefault();
+                                        openResultComparison(index);
+                                      }
+                                    }}
                                     className={cn(
-                                      "grid grid-cols-[minmax(72px,0.95fr)_minmax(0,1.05fr)] gap-3 rounded-[1.2rem] border border-white/70 bg-white/58 p-3 shadow-sm backdrop-blur-md",
-                                      compact ? "min-h-[112px]" : "min-h-[132px]"
+                                      "group cursor-pointer rounded-[1.2rem] border border-white/70 bg-white/58 p-3 shadow-sm outline-none backdrop-blur-md transition duration-200 hover:-translate-y-0.5 hover:border-[#2f165e]/28 hover:shadow-[0_18px_44px_rgba(47,22,94,0.14)] focus-visible:ring-2 focus-visible:ring-[#2f165e]",
+                                      compact ? "min-h-[150px]" : "min-h-[178px]"
                                     )}
                                   >
-                                    <div className="overflow-hidden rounded-[0.95rem] border border-[#2f165e]/10 bg-white">
-                                      {previewUrl ? (
-                                        <img
-                                          src={previewUrl}
-                                          alt={`Input file ${index + 1}`}
-                                          className="h-full min-h-[96px] w-full object-cover"
-                                        />
-                                      ) : (
-                                        <div className="flex h-full min-h-[96px] items-center justify-center bg-[#f7f2ff]">
-                                          <FileText className="h-7 w-7 text-[#2f165e]/65" />
-                                        </div>
-                                      )}
+                                    <div className="grid grid-cols-[minmax(72px,0.9fr)_minmax(0,1.1fr)] gap-3">
+                                      <div className="overflow-hidden rounded-[0.95rem] border border-[#2f165e]/10 bg-white">
+                                        {previewUrl ? (
+                                          <img
+                                            src={previewUrl}
+                                            alt={`Input file ${index + 1}`}
+                                            className="h-full min-h-[96px] w-full object-cover"
+                                          />
+                                        ) : (
+                                          <div className="flex h-full min-h-[96px] items-center justify-center bg-[#f7f2ff]">
+                                            <FileText className="h-7 w-7 text-[#2f165e]/65" />
+                                          </div>
+                                        )}
+                                      </div>
+                                      {renderResultPreviewThumb(filePreview)}
                                     </div>
-                                    <div className="flex min-w-0 flex-col justify-between gap-3 py-1">
-                                      <div className="min-w-0">
-                                        <div className="mb-1 flex items-center gap-2">
+
+                                    <div className="mt-3 flex min-w-0 items-center justify-between gap-3">
+                                      <div className="flex min-w-0 items-center gap-2">
                                           <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#2f165e] text-[11px] font-bold text-white">
                                             {index + 1}
                                           </span>
@@ -1357,7 +1560,6 @@ export default function LandingConverter() {
                                           ) : (
                                             <FileSpreadsheet className="h-5 w-5 shrink-0 text-[#2f165e]" />
                                           )}
-                                        </div>
                                         <p className="truncate text-sm font-semibold text-[#111827]">
                                           {cleanFilename(file.filename)}
                                         </p>
@@ -1365,7 +1567,10 @@ export default function LandingConverter() {
                                       <div className="flex flex-wrap items-center gap-1.5">
                                         <Button
                                           size="sm"
-                                          onClick={() => handleDownloadFile(file.file_id)}
+                                          onClick={(event) => {
+                                            event.stopPropagation();
+                                            handleDownloadFile(file.file_id);
+                                          }}
                                           className="h-8 rounded-full bg-primary px-3 text-xs text-white hover:bg-primary/90"
                                         >
                                           Download
@@ -1373,23 +1578,15 @@ export default function LandingConverter() {
                                         <Button
                                           size="sm"
                                           variant="outline"
-                                          onClick={() => handleShareFile(file)}
+                                          onClick={(event) => {
+                                            event.stopPropagation();
+                                            handleShareFile(file);
+                                          }}
                                           className="h-8 rounded-full border border-[#2f165e]/20 bg-white/70 px-2.5 text-[#2f165e] hover:bg-primary/10"
                                           aria-label={`Share ${cleanFilename(file.filename)}`}
                                         >
                                           <Share2 className="h-4 w-4" />
                                         </Button>
-                                        {outputMode !== 'text' && (
-                                          <Button
-                                            size="sm"
-                                            variant="outline"
-                                            onClick={() => window.open(buildOfficeViewerUrl(file.file_id), '_blank')}
-                                            className="h-8 rounded-full border border-[#2f165e]/20 bg-white/70 px-2.5 text-[#2f165e] hover:bg-primary/10"
-                                            aria-label={`Edit ${cleanFilename(file.filename)}`}
-                                          >
-                                            <Pencil className="h-4 w-4" />
-                                          </Button>
-                                        )}
                                       </div>
                                     </div>
                                   </div>
@@ -1496,6 +1693,158 @@ export default function LandingConverter() {
               </div>
           </div>
         </section>
+
+      {comparisonOpen && selectedResult && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-[#111827]/45 p-3 backdrop-blur-xl sm:p-5"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setComparisonOpen(false);
+              setEditingCell(null);
+            }
+          }}
+        >
+          <div className="w-full max-w-[1220px] overflow-hidden rounded-[2rem] border border-white/60 bg-[#f8f4ff]/92 shadow-[0_36px_110px_rgba(17,24,39,0.34)] backdrop-blur-2xl">
+            <div className="flex flex-col gap-3 border-b border-white/60 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#2f165e]/70">
+                  Compare and fix
+                </p>
+                <h3 className="mt-1 truncate text-xl font-semibold text-[#111827]">
+                  {cleanFilename(selectedResult.filename)}
+                </h3>
+              </div>
+              <div className="flex items-center gap-2">
+                <p className="hidden text-sm font-medium text-[#111827]/58 sm:block">
+                  Double-click a cell. Click outside to save.
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setComparisonOpen(false);
+                    setEditingCell(null);
+                  }}
+                  className="h-9 rounded-full border-[#2f165e]/20 bg-white/75 px-3 text-[#2f165e]"
+                  aria-label="Close comparison"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid max-h-[82vh] gap-4 overflow-auto p-4 lg:grid-cols-[0.92fr_1.08fr] lg:p-6">
+              <div className="rounded-[1.5rem] border border-white/65 bg-white/50 p-3 backdrop-blur-md">
+                <div className="mb-3 flex items-center justify-between px-1">
+                  <p className="text-sm font-semibold text-[#111827]/70">Input</p>
+                  <span className="rounded-full bg-[#2f165e]/8 px-2.5 py-1 text-[11px] font-semibold text-[#2f165e]">
+                    File {selectedResultIndex + 1}
+                  </span>
+                </div>
+                <div className="flex min-h-[420px] items-center justify-center overflow-hidden rounded-[1.2rem] bg-white">
+                  {selectedImageUrl ? (
+                    <img
+                      src={selectedImageUrl}
+                      alt="Selected input preview"
+                      className="max-h-[68vh] w-full object-contain"
+                    />
+                  ) : (
+                    <div className="flex h-full min-h-[420px] items-center justify-center text-sm font-semibold text-[#111827]/48">
+                      Input preview unavailable
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-[1.5rem] border border-white/65 bg-white/72 p-3 backdrop-blur-md">
+                <div className="mb-3 flex items-center justify-between px-1">
+                  <p className="text-sm font-semibold text-[#111827]/70">
+                    {outputMode === 'text' ? 'Text output' : 'Excel table'}
+                  </p>
+                  <span className="rounded-full bg-[#2f165e] px-2.5 py-1 text-[11px] font-semibold text-white">
+                    Editable preview
+                  </span>
+                </div>
+
+                <div className="max-h-[68vh] overflow-auto rounded-[1.2rem] border border-[#d8cde7] bg-white">
+                  {selectedPreview?.loading ? (
+                    <div className="flex min-h-[420px] items-center justify-center gap-2 text-sm font-semibold text-[#111827]/58">
+                      <InlineSpinner className="h-4 w-4 text-[#2f165e]" />
+                      Preparing table preview
+                    </div>
+                  ) : outputMode === 'text' || selectedTextPreview ? (
+                    <pre className="min-h-[420px] whitespace-pre-wrap p-5 text-left text-sm leading-7 text-[#111827]">
+                      {selectedTextPreview || 'Text preview unavailable.'}
+                    </pre>
+                  ) : selectedTablePreview.length > 0 ? (
+                    <table className="w-full min-w-[680px] border-collapse text-sm text-[#111827]">
+                      <tbody>
+                        {selectedTablePreview.map((row, rowIndex) => (
+                          <tr
+                            key={rowIndex}
+                            className={cn(
+                              "border-b border-[#d8cde7]",
+                              rowIndex === 0 ? "bg-[#2f165e] text-white" : rowIndex % 2 === 0 ? "bg-[#fbf8ff]" : "bg-white"
+                            )}
+                          >
+                            {Array.from({ length: selectedColumnCount }).map((_, cellIndex) => {
+                              const isEditing =
+                                editingCell?.fileId === selectedResult.file_id &&
+                                editingCell.row === rowIndex &&
+                                editingCell.col === cellIndex;
+                              const value = row[cellIndex] || '';
+
+                              return (
+                                <td
+                                  key={cellIndex}
+                                  onDoubleClick={() => {
+                                    if (selectedResult.file_id) {
+                                      setEditingCell({ fileId: selectedResult.file_id, row: rowIndex, col: cellIndex });
+                                    }
+                                  }}
+                                  className={cn(
+                                    "min-w-[120px] border-r border-[#d8cde7] px-3 py-2 text-left font-medium last:border-r-0",
+                                    rowIndex === 0 ? "border-white/20" : "hover:bg-[#f2e9ff]"
+                                  )}
+                                >
+                                  {isEditing ? (
+                                    <input
+                                      autoFocus
+                                      defaultValue={value}
+                                      onBlur={(event) => {
+                                        updatePreviewCell(selectedResult.file_id, rowIndex, cellIndex, event.target.value);
+                                        setEditingCell(null);
+                                      }}
+                                      onKeyDown={(event) => {
+                                        if (event.key === 'Enter' || event.key === 'Escape') {
+                                          event.currentTarget.blur();
+                                        }
+                                      }}
+                                      className="w-full rounded-md border border-[#2f165e]/30 bg-white px-2 py-1 text-sm text-[#111827] outline-none ring-2 ring-[#2f165e]/12"
+                                    />
+                                  ) : (
+                                    <span className={cn(!value && "text-[#111827]/30")}>
+                                      {value || ' '}
+                                    </span>
+                                  )}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="flex min-h-[420px] items-center justify-center text-sm font-semibold text-[#111827]/48">
+                      Table preview unavailable
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {(shareDialogOpen || showLimitDialog || showAutoDownloadConfirm || showFirstConvertConfirm || showSignInModal) && (
         <LandingDialogs
