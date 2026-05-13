@@ -977,11 +977,13 @@ export default function LandingConverter() {
     }
   };
 
-  const liveProgressPercent = isUploading
-    ? uploadProgress
-    : totalFilesToProcess > 0
-      ? Math.min(100, Math.round((resultFiles.length / totalFilesToProcess) * 100))
-      : 0;
+  const activeFileCount = totalFilesToProcess || uploadedFiles.length || resultFiles.length || 1;
+  const estimatedSeconds = Math.max(25, Math.ceil(activeFileCount / 3) * 25);
+  const conversionEstimateLabel =
+    estimatedSeconds >= 60
+      ? `up to ${Math.ceil(estimatedSeconds / 60)} min`
+      : `up to ${estimatedSeconds}s`;
+  const getResultPreviewUrl = (index: number) => filePreviewUrls[index] || (index === 0 ? firstImageUrl : "");
   return (
     <>
         {/* Conversion Section */}
@@ -1162,12 +1164,17 @@ export default function LandingConverter() {
                           <div className="space-y-2">
                             <div className="flex flex-wrap items-center gap-2">
                               <h3 className="text-2xl font-semibold tracking-tight text-[#111827]">
-                                {processingComplete ? 'Files ready' : isUploading ? 'Uploading your batch' : 'Converting your files'}
+                                {processingComplete ? 'Files ready' : 'Converting your files'}
                               </h3>
                               <span className="rounded-full border border-[#2f165e]/18 bg-white/55 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#111827]/70 backdrop-blur-md">
-                                {processingComplete ? `${resultFiles.length} ready` : isUploading ? 'uploading' : 'converting'}
+                                {processingComplete ? `${resultFiles.length} ready` : 'converting'}
                               </span>
                             </div>
+                            {!processingComplete && (
+                              <p className="max-w-xl text-sm font-medium leading-6 text-[#111827]/68">
+                                Converting {activeFileCount} file{activeFileCount > 1 ? 's' : ''}. This may take {conversionEstimateLabel}.
+                              </p>
+                            )}
                           </div>
                         </div>
                         <div className="flex flex-wrap gap-2 lg:justify-end">
@@ -1207,14 +1214,14 @@ export default function LandingConverter() {
 
                       {isProcessing && !processingComplete && (
                         <div className="mb-5 rounded-[1.35rem] border border-[#eadfff] bg-white/50 p-5 backdrop-blur-md">
-                          <div className="mb-3 flex items-center justify-between text-sm font-semibold text-[#111827]/70">
-                            <span>{isUploading ? 'Upload progress' : 'Batch progress'}</span>
-                          </div>
-                          <div className="h-3 overflow-hidden rounded-full bg-white/80">
-                            <div
-                              className="h-full rounded-full bg-[#441F84] transition-all duration-300"
-                              style={{ width: `${liveProgressPercent}%` }}
-                            />
+                          <div className="flex items-start gap-3">
+                            <InlineSpinner className="mt-1 h-5 w-5 shrink-0 text-[#441F84]" />
+                            <div>
+                              <p className="text-sm font-semibold text-[#111827]">Converting your batch</p>
+                              <p className="mt-1 text-sm font-medium leading-6 text-[#111827]/68">
+                                This may take {conversionEstimateLabel} based on {activeFileCount} file{activeFileCount > 1 ? 's' : ''}.
+                              </p>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -1287,177 +1294,129 @@ export default function LandingConverter() {
                                 </div>
                               </div>
 
-                              {/* First File Buttons */}
-                              <div className="flex flex-col gap-4 rounded-[1.35rem] border border-white/60 bg-white/55 p-4 backdrop-blur-xl lg:flex-row lg:items-center lg:justify-between">
-                                <div className="flex items-center gap-3 flex-1 min-w-0">
-                                  {outputMode === 'text' ? (
-                                    <FileText className="h-6 w-6 text-[#2f165e]" />
-                                  ) : (
-                                    <FileSpreadsheet className="h-6 w-6 text-[#2f165e]" />
-                                  )}
-                                  <div className="min-w-0">
-                                    <p className="text-sm font-semibold text-[#111827]">Primary result</p>
-                                    <span className="block truncate text-base font-medium text-[#111827]/75">{cleanFilename(resultFiles[0].filename)}</span>
-                                  </div>
-                                </div>
-                                <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
-                                  <Button
-                                    size="default"
-                                    onClick={() => handleDownloadFile(resultFiles[0].file_id)}
-                                    className="gap-2 rounded-full bg-primary text-white hover:bg-primary/90"
-                                  >
-                                    <Download className="h-5 w-5" />
-                                    Download
-                                  </Button>
-                                  <Button
-                                    size="default"
-                                    variant="outline"
-                                    onClick={() => handleShareFile(resultFiles[0])}
-                                    className="gap-2 rounded-full border border-[#2f165e]/25 bg-white/70 text-foreground hover:bg-primary/10"
-                                  >
-                                    <Share2 className="h-5 w-5" />
-                                    Share
-                                  </Button>
-                                  {outputMode !== 'text' && (
-                                    <Button
-                                      size="default"
-                                      variant="outline"
-                                      onClick={() => {
-                                        window.open(buildOfficeViewerUrl(resultFiles[0].file_id), '_blank')
-                                      }}
-                                      className="gap-2 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
-                                    >
-                                      <Pencil className="h-5 w-5" />
-                                      Edit
-                                    </Button>
-                                  )}
-                                </div>
-                              </div>
                             </div>
                           )}
 
-                          {/* Other Files - Just buttons, starting from index 1 */}
-                          {resultFiles.slice(1).map((file: any, index: number) => (
-                            <div key={file.file_id || index + 1} className="flex flex-col gap-3 rounded-[1.25rem] border border-white/60 bg-white/45 p-4 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
-                              <div className="flex items-center gap-3 flex-1 min-w-0">
-                                <button
-                                  onClick={() => handleDownloadFile(file.file_id)}
-                                  className="flex-shrink-0 hover:scale-110 transition-transform"
-                                >
-                                  {outputMode === 'text' ? (
-                                    <FileText className="h-6 w-6 text-[#2f165e]" />
-                                  ) : (
-                                    <FileSpreadsheet className="h-6 w-6 text-[#2f165e]" />
-                                  )}
-                                </button>
-                                <span className="text-sm font-medium truncate text-[#111827]">{cleanFilename(file.filename)}</span>
+                          <div className="rounded-[1.6rem] border border-white/60 bg-white/45 p-4 shadow-[0_18px_50px_rgba(47,22,94,0.10)] backdrop-blur-xl sm:p-5">
+                            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                              <div>
+                                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#111827]/55">Batch output</p>
+                                <p className="mt-1 text-lg font-semibold text-[#111827]">
+                                  {resultFiles.length} file{resultFiles.length > 1 ? 's' : ''} ready
+                                </p>
                               </div>
-                              <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleDownloadFile(file.file_id)}
-                                  className="gap-2 rounded-full bg-primary text-white hover:bg-primary/90"
-                                >
-                                  <Download className="h-5 w-5" />
-                                  Download
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleShareFile(file)}
-                                  className="gap-1.5 rounded-full border border-[#2f165e]/25 bg-white/70 text-foreground hover:bg-primary/10"
-                                >
-                                  <Share2 className="h-5 w-5" />
-                                  Share
-                                </Button>
-                                {outputMode !== 'text' && (
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => {
-                                      window.open(buildOfficeViewerUrl(file.file_id), '_blank')
-                                    }}
-                                    className="gap-1.5 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
-                                  >
-                                    <Pencil className="h-5 w-5" />
-                                    Edit
-                                  </Button>
-                                )}
-                              </div>
+                              <Button
+                                size="sm"
+                                onClick={handleDownloadAll}
+                                className="w-full gap-2 rounded-full bg-primary text-white hover:bg-primary/90 sm:w-auto"
+                              >
+                                <Download className="h-4 w-4" />
+                                Download All
+                              </Button>
                             </div>
-                          ))}
 
-                          {/* Show buttons without preview if no preview data available yet */}
-                          {((!tablePreviewData.length && !textPreview) || !firstImageUrl) && resultFiles.map((file: any, index: number) => (
-                            <div key={`no-preview-${file.file_id || index}`} className="flex flex-col gap-3 rounded-[1.25rem] border border-white/60 bg-white/45 p-4 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
-                              <div className="flex items-center gap-3 flex-1 min-w-0">
-                                <button
-                                  onClick={() => handleDownloadFile(file.file_id)}
-                                  className="flex-shrink-0 hover:scale-110 transition-transform"
-                                >
-                                  {outputMode === 'text' ? (
-                                    <FileText className="h-6 w-6 text-[#2f165e]" />
-                                  ) : (
-                                    <FileSpreadsheet className="h-6 w-6 text-[#2f165e]" />
-                                  )}
-                                </button>
-                                <span className="text-sm font-medium truncate text-[#111827]">{cleanFilename(file.filename)}</span>
-                              </div>
-                              <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleDownloadFile(file.file_id)}
-                                  className="gap-2 rounded-full bg-primary text-white hover:bg-primary/90"
-                                >
-                                  <Download className="h-5 w-5" />
-                                  Download
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleShareFile(file)}
-                                  className="gap-1.5 rounded-full border border-[#2f165e]/25 bg-white/70 text-foreground hover:bg-primary/10"
-                                >
-                                  <Share2 className="h-5 w-5" />
-                                  Share
-                                </Button>
-                                {outputMode !== 'text' && (
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => {
-                                      window.open(buildOfficeViewerUrl(file.file_id), '_blank')
-                                    }}
-                                    className="gap-1.5 rounded-full border border-foreground/40 bg-white/70 text-foreground hover:bg-muted/50"
+                            <div className={cn(
+                              "grid gap-3",
+                              resultFiles.length > 8
+                                ? "grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4"
+                                : "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+                            )}>
+                              {resultFiles.map((file: any, index: number) => {
+                                const previewUrl = getResultPreviewUrl(index);
+                                const compact = resultFiles.length > 8;
+
+                                return (
+                                  <div
+                                    key={file.file_id || index}
+                                    className={cn(
+                                      "grid grid-cols-[minmax(72px,0.95fr)_minmax(0,1.05fr)] gap-3 rounded-[1.2rem] border border-white/70 bg-white/58 p-3 shadow-sm backdrop-blur-md",
+                                      compact ? "min-h-[112px]" : "min-h-[132px]"
+                                    )}
                                   >
-                                    <Pencil className="h-5 w-5" />
-                                    Edit
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-
-                          {/* Pending Files - Show processing indicators */}
-                          {isProcessing && totalFilesToProcess > resultFiles.length && (
-                            <>
-                              {Array.from({ length: totalFilesToProcess - resultFiles.length }).map((_, index) => (
-                                <div key={`pending-${index}`} className="flex items-center justify-between rounded-[1.25rem] border border-dashed border-[#2f165e]/22 bg-white/30 p-4 backdrop-blur-xl">
-                                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                                    <InlineSpinner className="h-5 w-5 text-primary flex-shrink-0" />
-                                    <span className="text-sm font-medium text-[#111827]/70">Waiting for file {resultFiles.length + index + 1}</span>
+                                    <div className="overflow-hidden rounded-[0.95rem] border border-[#2f165e]/10 bg-white">
+                                      {previewUrl ? (
+                                        <img
+                                          src={previewUrl}
+                                          alt={`Input file ${index + 1}`}
+                                          className="h-full min-h-[96px] w-full object-cover"
+                                        />
+                                      ) : (
+                                        <div className="flex h-full min-h-[96px] items-center justify-center bg-[#f7f2ff]">
+                                          <FileText className="h-7 w-7 text-[#2f165e]/65" />
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="flex min-w-0 flex-col justify-between gap-3 py-1">
+                                      <div className="min-w-0">
+                                        <div className="mb-1 flex items-center gap-2">
+                                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#2f165e] text-[11px] font-bold text-white">
+                                            {index + 1}
+                                          </span>
+                                          {outputMode === 'text' ? (
+                                            <FileText className="h-5 w-5 shrink-0 text-[#2f165e]" />
+                                          ) : (
+                                            <FileSpreadsheet className="h-5 w-5 shrink-0 text-[#2f165e]" />
+                                          )}
+                                        </div>
+                                        <p className="truncate text-sm font-semibold text-[#111827]">
+                                          {cleanFilename(file.filename)}
+                                        </p>
+                                      </div>
+                                      <div className="flex flex-wrap items-center gap-1.5">
+                                        <Button
+                                          size="sm"
+                                          onClick={() => handleDownloadFile(file.file_id)}
+                                          className="h-8 rounded-full bg-primary px-3 text-xs text-white hover:bg-primary/90"
+                                        >
+                                          Download
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          onClick={() => handleShareFile(file)}
+                                          className="h-8 rounded-full border border-[#2f165e]/20 bg-white/70 px-2.5 text-[#2f165e] hover:bg-primary/10"
+                                          aria-label={`Share ${cleanFilename(file.filename)}`}
+                                        >
+                                          <Share2 className="h-4 w-4" />
+                                        </Button>
+                                        {outputMode !== 'text' && (
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => window.open(buildOfficeViewerUrl(file.file_id), '_blank')}
+                                            className="h-8 rounded-full border border-[#2f165e]/20 bg-white/70 px-2.5 text-[#2f165e] hover:bg-primary/10"
+                                            aria-label={`Edit ${cleanFilename(file.filename)}`}
+                                          >
+                                            <Pencil className="h-4 w-4" />
+                                          </Button>
+                                        )}
+                                      </div>
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
-                            </>
-                          )}
+                                );
+                              })}
+
+                              {isProcessing && totalFilesToProcess > resultFiles.length && (
+                                <>
+                                  {Array.from({ length: totalFilesToProcess - resultFiles.length }).map((_, index) => (
+                                    <div key={`pending-${index}`} className="flex min-h-[112px] items-center gap-3 rounded-[1.2rem] border border-dashed border-[#2f165e]/22 bg-white/30 p-4 backdrop-blur-xl">
+                                      <InlineSpinner className="h-5 w-5 shrink-0 text-primary" />
+                                      <span className="text-sm font-medium text-[#111827]/70">
+                                        Converting file {resultFiles.length + index + 1}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       )}
 
                       {isProcessing && !processingComplete && resultFiles.length === 0 && (
                         <div className="mt-5 flex items-center justify-center gap-2 rounded-[1.25rem] border border-white/55 bg-white/35 p-4 text-sm font-medium text-[#111827]/70 backdrop-blur-xl">
                           <InlineSpinner className="h-4 w-4" />
-                          <span>{isUploading ? 'Uploading' : 'Converting'}</span>
+                          <span>Converting. This may take {conversionEstimateLabel}.</span>
                         </div>
                       )}
                     </div>
