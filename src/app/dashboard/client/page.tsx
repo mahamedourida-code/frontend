@@ -3,51 +3,25 @@
 import { Suspense, useState, useCallback, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { cn } from "@/lib/utils"
 import { useOCR } from "@/hooks/useOCR"
 import { useAuth } from "@/hooks/useAuth"
 import { toast } from "sonner"
 import { ocrApi } from "@/lib/api-client"
 import type { AppLimits, RecoverableJobSummary } from "@/lib/api-client"
-import { showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui"
+import { getApiErrorUi, showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui"
 import { DashboardShell } from "@/components/DashboardShell"
-import { CreditStack } from "@/components/BillingGlyphs"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
-import Image from "next/image"
 import {
-  Upload,
-  FileSpreadsheet,
-  FileText,
-  Sparkles,
-  Download,
-  Loader2,
+  ConversionWorkspace,
+  type WorkspaceBanner,
+  type WorkspaceStage,
+} from "@/components/dashboard/ConversionWorkspace"
+import {
   CheckCircle,
-  AlertCircle,
-  AlertTriangle,
-  X,
-  Grid3x3,
-  FileImage,
-  Zap,
-  ArrowRight,
-  Clock,
-  CheckCircle2,
-  Save,
-  DownloadCloud,
-  CheckSquare,
-  Share2,
   Link,
   Copy,
-  Facebook,
   MessageCircle,
-  FolderUp,
-  Activity
 } from "lucide-react"
 import {
   Dialog,
@@ -55,24 +29,15 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 // Removed react-share imports as we're using custom implementations for direct messaging
 import { Input } from "@/components/ui/input"
-import { useSearchParams } from "next/navigation"
-import { PenTool, Monitor, Edit3 } from "lucide-react"
 import { wakeUpBackendSilently } from "@/lib/backend-health"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { buildDownloadUrl, buildMessengerShareUrl, buildOfficeViewerUrl } from "@/lib/public-config"
 import {
-  acceptedUploadMimeTypes,
   createPdfFirstPageScreenshot,
+  getPdfPageCount,
   isAcceptedUploadFile,
   isPdfFile,
 } from "@/lib/upload-files"
@@ -98,44 +63,16 @@ export default function ProcessImagesPage() {
 function ProcessImagesContent() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const documentType = searchParams.get('type') || 'auto'
-  const languageParam = searchParams.get('language') || (typeof window !== 'undefined' ? localStorage.getItem('ocrLanguage') || 'en' : 'en')
   
   // Get state management from context
   const { state: processingState, updateState, clearState } = useProcessingState()
-
-  const [selectedLanguage, setSelectedLanguage] = useState(languageParam)
-
-  // Sync language with localStorage and listen for changes
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedLanguage = localStorage.getItem('ocrLanguage')
-      if (savedLanguage && savedLanguage !== selectedLanguage) {
-        setSelectedLanguage(savedLanguage)
-      }
-    }
-  }, [])
-
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'ocrLanguage' && e.newValue) {
-        setSelectedLanguage(e.newValue)
-        const params = new URLSearchParams(searchParams.toString())
-        params.set('language', e.newValue)
-        router.push(`/dashboard/client?${params.toString()}`)
-      }
-    }
-    window.addEventListener('storage', handleStorageChange)
-    return () => window.removeEventListener('storage', handleStorageChange)
-  }, [searchParams, router])
   const [isDragging, setIsDragging] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [limits, setLimits] = useState<AppLimits | null>(null)
   const maxUploadFiles = limits?.max_files_per_batch ?? 10
   const [filePreviewUrls, setFilePreviewUrls] = useState<{[key: number]: string}>({})
-  const [selectedView, setSelectedView] = useState<"grid" | "list">("grid")
-  const [processedCount, setProcessedCount] = useState(0)
+  const [pdfPageCounts, setPdfPageCounts] = useState<{[key: number]: number}>({})
+  const [workspaceBanner, setWorkspaceBanner] = useState<WorkspaceBanner | null>(null)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null)
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([])
@@ -156,13 +93,9 @@ function ProcessImagesContent() {
     }
     return false
   })
-  const [showAutoDownloadConfirm, setShowAutoDownloadConfirm] = useState(false)
 
   const [processingTime, setProcessingTime] = useState(0)
   const processingTimerRef = useRef<NodeJS.Timeout | null>(null)
-  const [editingFileId, setEditingFileId] = useState<string | null>(null)
-  const [newFileName, setNewFileName] = useState<string>("")
-  const [renamedFiles, setRenamedFiles] = useState<{[key: string]: string}>({})
   const [tablePreviewData, setTablePreviewData] = useState<any[][]>([])
   const [textPreview, setTextPreview] = useState('')
   const [firstImageUrl, setFirstImageUrl] = useState<string>('')
@@ -182,14 +115,6 @@ function ProcessImagesContent() {
   const isExecutingAutoActionsRef = useRef(false)
   const lastCreditRefreshRef = useRef<string | null>(null)
 
-  // Helper function to remove _processed from filename
-  const cleanFilename = (filename: string | undefined): string => {
-    if (!filename) return 'result.xlsx';
-    return filename.replace('_processed', '');
-  };
-
-  // Document type removed from UI
-
   const fetchUserStats = async () => {
     if (!user?.id) {
       setCreditLoading(false)
@@ -202,9 +127,6 @@ function ProcessImagesContent() {
         includePlans: false,
         includeLimits: true,
       })
-      const credits = snapshot?.status?.credits || snapshot?.limits?.credits || entitlementCredits
-      const totalProcessed = credits?.used_credits || 0
-      setProcessedCount(totalProcessed)
       if (snapshot?.limits) setLimits(snapshot.limits)
       
       
@@ -221,6 +143,7 @@ function ProcessImagesContent() {
     status,
     progress,
     files: resultFiles,
+    error: ocrError,
     uploadBatch,
     downloadFile,
     saveToHistory,
@@ -234,6 +157,15 @@ function ProcessImagesContent() {
   } = useOCR()
   const [latestRecoverableJob, setLatestRecoverableJob] = useState<RecoverableJobSummary | null>(null)
   const [recoveryLoading, setRecoveryLoading] = useState(false)
+
+  useEffect(() => {
+    if (!ocrError) return
+    setWorkspaceBanner({
+      title: "Processing failed",
+      description: ocrError,
+      tone: "error",
+    })
+  }, [ocrError])
 
   // Silently wake up backend when page loads
   useEffect(() => {
@@ -529,6 +461,33 @@ function ProcessImagesContent() {
     }
   }, [uploadedFiles.length])
 
+  useEffect(() => {
+    let cancelled = false
+
+    const loadPdfPageCounts = async () => {
+      const counts: {[key: number]: number} = {}
+
+      await Promise.all(uploadedFiles.map(async (file, index) => {
+        if (!isPdfFile(file)) return
+        counts[index] = await getPdfPageCount(file)
+      }))
+
+      if (!cancelled) {
+        setPdfPageCounts(counts)
+      }
+    }
+
+    if (uploadedFiles.length > 0) {
+      loadPdfPageCounts()
+    } else {
+      setPdfPageCounts({})
+    }
+
+    return () => {
+      cancelled = true
+    }
+  }, [uploadedFiles])
+
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -547,6 +506,16 @@ function ProcessImagesContent() {
     setIsDragging(false)
 
     const files = Array.from(e.dataTransfer.files).filter(isAcceptedUploadFile)
+    if (files.length === 0) {
+      setWorkspaceBanner({
+        title: "Unsupported file type",
+        description: "Upload PNG, JPEG, WebP, HEIC, HEIF, or PDF files.",
+        tone: "warning",
+      })
+      return
+    }
+
+    setWorkspaceBanner(null)
     
     setUploadedFiles(prev => {
       const remainingSlots = Math.max(0, maxUploadFiles - prev.length)
@@ -562,6 +531,17 @@ function ProcessImagesContent() {
     const files = e.target.files
     if (files) {
       const fileArray = Array.from(files).filter(isAcceptedUploadFile)
+      if (fileArray.length === 0) {
+        setWorkspaceBanner({
+          title: "Unsupported file type",
+          description: "Upload PNG, JPEG, WebP, HEIC, HEIF, or PDF files.",
+          tone: "warning",
+        })
+        e.target.value = ''
+        return
+      }
+
+      setWorkspaceBanner(null)
       setUploadedFiles(prev => {
         const remainingSlots = Math.max(0, maxUploadFiles - prev.length)
         const filesToAdd = fileArray.slice(0, remainingSlots)
@@ -570,12 +550,40 @@ function ProcessImagesContent() {
         }
         return [...prev, ...filesToAdd]
       })
+      e.target.value = ''
     }
   }, [maxUploadFiles])
 
+  const creditAvailable = entitlementCredits?.available_credits ?? limits?.credits?.available_credits ?? 0
+  const noCredits = Boolean((entitlementCredits || limits?.credits) && creditAvailable <= 0)
+
   const handleProcessImages = useCallback(async () => {
-    if (uploadedFiles.length === 0) return
+    if (uploadedFiles.length === 0) {
+      setWorkspaceBanner({
+        title: "Add files first",
+        description: "Choose images or PDFs before starting the conversion.",
+        tone: "info",
+      })
+      return
+    }
+    if (noCredits) {
+      setWorkspaceBanner({
+        title: "No credits left",
+        description: "Upgrade to keep converting handwritten images, scanned PDFs, and paper tables.",
+        actionLabel: "Buy credits",
+        onAction: () => router.push("/pricing?from=no-credits"),
+        tone: "warning",
+      })
+      return
+    }
     if (uploadedFiles.length > maxUploadFiles) {
+      setWorkspaceBanner({
+        title: "Reduce batch size",
+        description: `Your current plan allows up to ${maxUploadFiles} files per batch.`,
+        actionLabel: "See plans",
+        onAction: () => router.push("/pricing?from=batch-limit"),
+        tone: "warning",
+      })
       showBatchLimitToast(maxUploadFiles)
       setUploadedFiles(prev => prev.slice(0, maxUploadFiles))
       return
@@ -585,6 +593,7 @@ function ProcessImagesContent() {
       setTablePreviewData([])
       setTextPreview('')
       setFirstImageUrl('')
+      setWorkspaceBanner(null)
 
       if (uploadedFiles.length > 0) {
         setFirstImageUrl(await createFilePreviewUrl(uploadedFiles[0]))
@@ -605,7 +614,7 @@ function ProcessImagesContent() {
         // toast.success(`Processing ${imagesCount} image${imagesCount > 1 ? 's' : ''}...`)
       }
     } catch (error: any) {
-      showApiErrorToast(error, {
+      const errorContext = {
         isAuthenticated: true,
         upgradeHref: "/pricing?from=quota",
         billingHref: "/dashboard/settings?section=billing",
@@ -613,23 +622,44 @@ function ProcessImagesContent() {
         onRetry: () => {
           void handleProcessImages()
         },
+      }
+      const ui = getApiErrorUi(error, errorContext)
+      setWorkspaceBanner({
+        title: ui.title,
+        description: ui.description,
+        actionLabel: ui.action?.label,
+        onAction: ui.action?.onClick,
+        tone: "error",
       })
+      showApiErrorToast(error, errorContext)
     }
-  }, [uploadedFiles, uploadBatch, connectWebSocket, maxUploadFiles, router, outputMode, createFilePreviewUrl])
+  }, [uploadedFiles, uploadBatch, connectWebSocket, maxUploadFiles, router, outputMode, createFilePreviewUrl, noCredits])
 
   const handleCancelProcessing = useCallback(async () => {
     await cancelProcessing()
     setLatestRecoverableJob(null)
+    setWorkspaceBanner({
+      title: "Batch cancelled",
+      description: "You can adjust the selected files and start again.",
+      tone: "info",
+    })
     void fetchUserStats()
     toast.info("Batch cancelled.")
   }, [cancelProcessing])
 
   const handleRemoveFile = (index: number) => {
+    setWorkspaceBanner(null)
+    Object.values(filePreviewUrls).forEach(url => {
+      if (url.startsWith('blob:')) URL.revokeObjectURL(url)
+    })
+    setFilePreviewUrls({})
     setUploadedFiles(prev => prev.filter((_, i) => i !== index))
   }
 
   const handleReset = () => {
     setUploadedFiles([])
+    setPdfPageCounts({})
+    setWorkspaceBanner(null)
     reset() // This resets status to 'idle' and clears resultFiles
     
     // Clear preview data
@@ -681,31 +711,6 @@ function ProcessImagesContent() {
       }
     }
   }, [resultFiles, tablePreviewData.length, textPreview, fetchTablePreview])
-
-  const handleRenameFile = async (file: any) => {
-    if (!newFileName.trim()) {
-      setEditingFileId(null)
-      return
-    }
-
-    try {
-      const extension = outputMode === 'text' ? '.txt' : '.xlsx'
-      const trimmedName = newFileName.trim()
-      const finalName = trimmedName.endsWith(extension) ? trimmedName : trimmedName + extension
-      
-      // Update renamed files mapping
-      setRenamedFiles(prev => ({
-        ...prev,
-        [file.file_id]: finalName
-      }))
-      
-      // toast.success('File renamed successfully')
-      setEditingFileId(null)
-      setNewFileName('')
-    } catch (error) {
-      toast.error('Failed to rename file')
-    }
-  }
 
   const handleShareFile = async (file: any) => {
     
@@ -1034,6 +1039,47 @@ Best regards`
     }
   }
 
+  const handleDownloadAll = async () => {
+    if (!resultFiles || resultFiles.length === 0) return
+
+    let downloadCount = 0
+    for (const file of resultFiles) {
+      if (!file.file_id) {
+        continue
+      }
+
+      try {
+        await downloadFile(file.file_id)
+        downloadCount++
+        await new Promise(resolve => setTimeout(resolve, 500))
+      } catch (error) {
+        toast.error(`Failed to download ${file.filename || 'file'}`)
+      }
+    }
+
+    if (downloadCount > 0 && downloadCount < resultFiles.length) {
+      toast.warning(`Downloaded ${downloadCount} of ${resultFiles.length} files`)
+    } else if (downloadCount === 0) {
+      toast.error('Failed to download any files')
+    }
+  }
+
+  const handleDownloadResultFile = (file: any) => {
+    if (!file?.file_id) {
+      toast.error('Unable to download: File ID is missing')
+      return
+    }
+    downloadFile(file.file_id)
+  }
+
+  const handleEditResultFile = (file: any) => {
+    if (!file?.file_id) {
+      toast.error('Unable to edit: File ID is missing')
+      return
+    }
+    window.open(buildOfficeViewerUrl(file.file_id), '_blank')
+  }
+
   
 
   if (authLoading || !user) {
@@ -1047,742 +1093,86 @@ Best regards`
   const isComplete = status === 'completed' && resultFiles && resultFiles.length > 0
   const isTextOutput = outputMode === 'text'
   const uploadedSizeMb = uploadedFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024)
-  const uploadedLabel = `${uploadedFiles.length} ${uploadedFiles.length === 1 ? 'file' : 'files'}`
-  const creditAvailable = entitlementCredits?.available_credits ?? limits?.credits?.available_credits ?? 0
-  const noCredits = Boolean((entitlementCredits || limits?.credits) && creditAvailable <= 0)
   const processLabel = isTextOutput ? 'Extract text' : 'Convert to Excel'
-  const displayedProgress = isUploading ? uploadProgress : progress?.percentage
+  const creditEstimate = uploadedFiles.reduce((total, file, index) => {
+    return total + (isPdfFile(file) ? (pdfPageCounts[index] || 1) : 1)
+  }, 0)
+  const workspaceStage: WorkspaceStage = status === 'failed' || Boolean(ocrError)
+    ? 'Failed'
+    : isComplete
+      ? 'Ready'
+      : isUploading
+        ? 'Uploading'
+        : status === 'queued'
+          ? 'Queued'
+          : isProcessing
+            ? 'Processing'
+            : 'Added'
+  const creditBanner: WorkspaceBanner | null = noCredits && !isProcessing
+    ? {
+        title: "No credits left",
+        description: "Upgrade to keep converting handwritten images, scanned PDFs, and paper tables.",
+        actionLabel: "Buy credits",
+        onAction: () => router.push("/pricing?from=no-credits"),
+        tone: "warning",
+      }
+    : null
 
   return (
     <DashboardShell activeItem="process" title="Process Images" eyebrow="Batch" user={user}>
-        {latestRecoverableJob && !isProcessing && (
-          <Card className="mb-4 overflow-hidden rounded-[22px] border-[#2f165e] bg-[#2f165e] text-white shadow-[0_16px_42px_rgba(47,22,94,0.18)]">
-            <CardContent className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-white/10">
-                  <Loader2 className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-black text-white">Continue latest batch</p>
-                  <p className="text-xs text-white/70">
-                    {latestRecoverableJob.processed_images || 0} of {latestRecoverableJob.total_images || 0} files processed
-                  </p>
-                </div>
-              </div>
-              <Button
-                onClick={continueLatestJob}
-                disabled={recoveryLoading}
-                className="h-10 rounded-xl border border-white/20 bg-white px-4 text-[#2f165e] hover:bg-white/90"
-              >
-                {recoveryLoading ? "Resuming..." : "Continue latest job"}
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+      <ConversionWorkspace
+        stage={workspaceStage}
+        banner={workspaceBanner ?? creditBanner}
+        onDismissBanner={workspaceBanner ? () => setWorkspaceBanner(null) : undefined}
+        latestRecoverableJob={!isProcessing ? latestRecoverableJob : null}
+        recoveryLoading={recoveryLoading}
+        onContinueLatestJob={continueLatestJob}
+        uploadedFiles={uploadedFiles}
+        filePreviewUrls={filePreviewUrls}
+        pdfPageCounts={pdfPageCounts}
+        isDragging={isDragging}
+        outputMode={outputMode}
+        onOutputModeChange={setOutputMode}
+        isUploading={isUploading}
+        isProcessing={isProcessing}
+        isComplete={Boolean(isComplete)}
+        uploadProgress={uploadProgress}
+        progress={progress}
+        processingTime={processingTime}
+        uploadedSizeMb={uploadedSizeMb}
+        creditAvailable={creditAvailable}
+        creditEstimate={creditEstimate}
+        maxUploadFiles={maxUploadFiles}
+        processLabel={processLabel}
+        noCredits={noCredits}
+        resultFiles={resultFiles}
+        tablePreviewData={tablePreviewData}
+        textPreview={textPreview}
+        firstImageUrl={firstImageUrl}
+        isTextOutput={isTextOutput}
+        isSaving={isSaving}
+        isSaved={isSaved}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onFileInput={handleFileInput}
+        onRemoveFile={handleRemoveFile}
+        onClearFiles={() => {
+          setUploadedFiles([])
+          setPdfPageCounts({})
+          setWorkspaceBanner(null)
+        }}
+        onConvert={handleProcessImages}
+        onCancel={handleCancelProcessing}
+        onReset={handleReset}
+        onSaveToHistory={saveToHistory}
+        onShareFile={handleShareFile}
+        onShareAll={handleShareAll}
+        onDownloadFile={handleDownloadResultFile}
+        onDownloadAll={handleDownloadAll}
+        onEditFile={handleEditResultFile}
+      />
 
-        {noCredits && !isProcessing && (
-          <Card className="mb-4 overflow-hidden rounded-[24px] border-[#2f165e]/25 bg-white/58 shadow-[0_16px_42px_rgba(47,22,94,0.10)] backdrop-blur-xl">
-            <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-3">
-                <CreditStack className="h-8 w-8 shrink-0 text-[#2f165e]" />
-                <div>
-                  <p className="text-base font-bold text-[#111827]">No credits left</p>
-                  <p className="text-sm text-muted-foreground">
-                    Upgrade to keep converting handwritten images, scanned PDFs, and paper tables.
-                  </p>
-                </div>
-              </div>
-              <Button
-                onClick={() => router.push("/pricing?from=no-credits")}
-                className="h-11 rounded-2xl bg-[#2f165e] px-5 text-white hover:bg-[#24104b]"
-              >
-                Buy credits
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
-        {isProcessing && !isComplete && (
-          <Card className="mb-4 overflow-hidden rounded-[22px] border-[#2f165e] bg-[#2f165e] text-white shadow-[0_16px_42px_rgba(47,22,94,0.18)]">
-            <CardContent className="p-3">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-white/10">
-                    <Loader2 className="h-5 w-5 animate-spin text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white">{isUploading ? "Uploading batch" : "Processing batch"}</p>
-                    {isUploading ? (
-                      <p className="text-xs text-white/70">{uploadProgress}% uploaded</p>
-                    ) : progress && (
-                      <p className="text-xs text-white/70">
-                        {progress.processed_images} of {progress.total_images} ready
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
-                  <div className="rounded-xl border border-white/16 bg-white/8 px-3 py-2">
-                    <p className="text-xl font-bold text-white">{processingTime}s</p>
-                    <p className="text-[11px] text-white/65">time</p>
-                  </div>
-                  {typeof displayedProgress === "number" && (
-                    <div className="rounded-xl border border-white/16 bg-white/8 px-3 py-2">
-                      <p className="text-xl font-bold text-white">{displayedProgress}%</p>
-                      <p className="text-[11px] text-white/65">{isUploading ? "upload" : "done"}</p>
-                    </div>
-                  )}
-                  <Button
-                    variant="outline"
-                    onClick={handleCancelProcessing}
-                    className="h-full min-h-12 rounded-xl border-white/16 bg-white/8 px-4 text-white hover:bg-white/15 hover:text-white"
-                  >
-                    <X className="mr-2 h-4 w-4" />
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-              {typeof displayedProgress === "number" && (
-                <Progress value={displayedProgress} className="mt-4 h-2" />
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-
-        <div className={cn(
-          "grid grid-cols-1 gap-4 lg:gap-5",
-          isComplete ? "lg:grid-cols-1" : "lg:grid-cols-4"
-        )}>
-          <div className={cn(
-            "order-2 lg:order-1",
-            isComplete ? "lg:col-span-1" : "lg:col-span-3"
-          )}>
-            {!isComplete ? (
-              <Card className="ax-glass-card overflow-hidden rounded-[30px]">
-                <CardContent className="p-4 lg:p-5">
-                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7c62b1]">Upload</p>
-                      <h2 className="mt-1 text-2xl font-bold tracking-tight text-foreground">Batch</h2>
-                    </div>
-                  </div>
-
-                  <div className="mb-4 flex w-fit rounded-full border border-white/55 bg-white/40 p-1 shadow-[0_16px_40px_rgba(42,35,64,0.08)] backdrop-blur-2xl">
-                    <button
-                      type="button"
-                      onClick={() => setOutputMode('table')}
-                      disabled={isProcessing}
-                      className={cn(
-                        "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
-                        outputMode === 'table'
-                          ? "bg-[#2f165e] text-white shadow-sm"
-                          : "text-[#111827] hover:bg-white/45",
-                        isProcessing && "cursor-not-allowed opacity-60"
-                      )}
-                    >
-                      Table output
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setOutputMode('text')}
-                      disabled={isProcessing}
-                      className={cn(
-                        "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
-                        outputMode === 'text'
-                          ? "bg-[#2f165e] text-white shadow-sm"
-                          : "text-[#111827] hover:bg-white/45",
-                        isProcessing && "cursor-not-allowed opacity-60"
-                      )}
-                    >
-                      Text output
-                    </button>
-                  </div>
-
-                  <div
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    className={cn(
-                      "relative overflow-hidden rounded-[28px] border border-dashed transition-all duration-200",
-                      isDragging
-                        ? "border-[#7c3aed] bg-[#f5efff]/80 scale-[0.995]"
-                        : "border-[#d9c9fb] bg-white/45 hover:border-[#a78bfa]"
-                    )}
-                  >
-                    {uploadedFiles.length === 0 ? (
-                      <div className="flex min-h-[290px] flex-col items-center justify-center px-6 py-9 text-center">
-                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-[22px] border border-[#eadfff] bg-white/65 shadow-[0_18px_45px_rgba(68,31,132,0.10)]">
-                          <FolderUp className="h-7 w-7 text-primary" />
-                        </div>
-                        <h3 className="text-xl font-semibold text-foreground">
-                          {isDragging ? "Drop" : "Drop files"}
-                        </h3>
-                        <p className="mt-2 max-w-md text-sm font-medium text-muted-foreground">
-                          Images or PDF
-                        </p>
-                        <label htmlFor="file-upload" className="mt-5">
-                          <Button asChild className="h-12 rounded-2xl px-6">
-                            <span>
-                              <FileImage className="mr-2 h-4 w-4" />
-                              Browse
-                            </span>
-                          </Button>
-                        </label>
-                        <input
-                          id="file-upload"
-                          type="file"
-                          multiple
-                          accept={acceptedUploadMimeTypes}
-                          onChange={handleFileInput}
-                          className="hidden"
-                        />
-                      </div>
-                    ) : (
-                      <div className="p-3 sm:p-4">
-                        <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-xs font-medium text-muted-foreground">
-                              {uploadedSizeMb.toFixed(1)} MB selected
-                            </span>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => setUploadedFiles([])}
-                              className="rounded-2xl"
-                            >
-                              Clear
-                            </Button>
-                            <label htmlFor="file-upload-more">
-                              <Button size="sm" variant="outline" asChild className="rounded-2xl border-[#eadfff] bg-white/65">
-                                <span>Add</span>
-                              </Button>
-                            </label>
-                            <input
-                              id="file-upload-more"
-                              type="file"
-                              multiple
-                              accept={acceptedUploadMimeTypes}
-                              onChange={handleFileInput}
-                              className="hidden"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="grid max-h-[320px] grid-cols-3 gap-2 overflow-y-auto pr-1 sm:grid-cols-4 md:grid-cols-5">
-                          {uploadedFiles.map((file, index) => (
-                            <div
-                              key={index}
-                              className="group relative aspect-square overflow-hidden rounded-2xl border border-[#eadfff] bg-white/70 shadow-sm"
-                            >
-                              <img
-                                src={filePreviewUrls[index] || ''}
-                                alt={file.name}
-                                className="h-full w-full object-cover"
-                              />
-                              <button
-                                onClick={() => handleRemoveFile(index)}
-                                className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/85 text-foreground opacity-0 shadow-sm backdrop-blur transition-opacity group-hover:opacity-100"
-                              >
-                                <X className="h-3.5 w-3.5" />
-                              </button>
-                              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 to-transparent p-2">
-                                <p className="truncate text-[10px] font-medium text-white">
-                                  {file.name}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                {uploadedFiles.length > 0 && (
-                  <div className="mt-4 flex flex-col gap-3 rounded-[24px] border border-[#eadfff] bg-white/45 p-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">{uploadedLabel} ready</p>
-                      <p className="text-xs text-muted-foreground">Each file becomes downloadable as soon as it finishes.</p>
-                    </div>
-                    <Button
-                      size="lg"
-                      onClick={handleProcessImages}
-                      disabled={isProcessing || noCredits}
-                      className="h-12 gap-2 rounded-2xl px-6"
-                    >
-                      {isProcessing ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          <Zap className="h-4 w-4" />
-                          {processLabel}
-                          <ArrowRight className="h-4 w-4 ml-1" />
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                )}
-                </CardContent>
-              </Card>
-            ) : null}
-
-            {(isProcessing || isComplete) && resultFiles && resultFiles.length > 0 && (
-              <TooltipProvider>
-              <Card className="ax-glass-card mt-5 overflow-hidden rounded-[32px]">
-                <CardContent className="p-4 sm:p-5">
-                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7c62b1]">Results</p>
-                      <h2 className="mt-1 text-2xl font-bold tracking-tight text-foreground">
-                        {isComplete ? "Batch ready" : "Ready files"}
-                      </h2>
-                    </div>
-                {isComplete && (
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Button
-                      size="sm"
-                      onClick={handleReset}
-                      className="h-10 gap-2 rounded-2xl bg-primary text-white hover:bg-primary/90"
-                    >
-                      <ArrowRight className="h-4 w-4" />
-                      New batch
-                    </Button>
-                    {!isSaved && (
-                      <Button
-                        size="sm"
-                        onClick={saveToHistory}
-                        disabled={isSaving}
-                        className="h-10 gap-2 rounded-2xl border border-[#eadfff] bg-white/65 text-foreground hover:bg-white"
-                      >
-                        {isSaving ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Save className="h-4 w-4" />
-                        )}
-                        Save to History
-                      </Button>
-                    )}
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={resultFiles.length > 1 ? handleShareAll : () => handleShareFile(resultFiles[0])}
-                      className="h-10 gap-2 rounded-2xl border-[#eadfff] bg-white/65 text-foreground hover:bg-white"
-                    >
-                      <Share2 className="h-4 w-4" />
-                      Share
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={async () => {
-                        let downloadCount = 0
-                        for (const file of resultFiles) {
-                          if (!file.file_id) {
-                            continue
-                          }
-
-                          try {
-                            await downloadFile(file.file_id)
-                            downloadCount++
-                            await new Promise(resolve => setTimeout(resolve, 500))
-                          } catch (error) {
-                            toast.error(`Failed to download ${file.filename || 'file'}`)
-                          }
-                        }
-
-                        if (downloadCount > 0 && downloadCount < resultFiles.length) {
-                          toast.warning(`Downloaded ${downloadCount} of ${resultFiles.length} files`)
-                        } else if (downloadCount === 0) {
-                          toast.error('Failed to download any files')
-                        }
-                      }}
-                      className="h-10 gap-2 rounded-2xl border-[#eadfff] bg-white/65 text-foreground hover:bg-white"
-                    >
-                      <DownloadCloud className="h-4 w-4" />
-                      Download all
-                    </Button>
-                  </div>
-                )}
-                  </div>
-
-                <div className="space-y-3">
-                  {resultFiles.length > 0 && (
-                    <div className="space-y-2">
-                      {(tablePreviewData.length > 0 || textPreview) && firstImageUrl && (
-                        <Card className="overflow-hidden rounded-[24px] border-[#eadfff] bg-white/55">
-                          <CardContent className="p-3">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                              <div className="flex flex-col">
-                                <h4 className="text-sm font-semibold mb-0.5 text-muted-foreground">Original Image</h4>
-                                <div className="flex items-center justify-center overflow-hidden rounded-[18px] border border-[#2f165e]/15 bg-white/50" style={{ maxHeight: '450px' }}>
-                                  <img 
-                                    src={firstImageUrl} 
-                                    alt="Original" 
-                                    className="max-w-full h-auto object-contain"
-                                    style={{ maxHeight: '430px' }}
-                                  />
-                                </div>
-                              </div>
-
-                              <div className="flex flex-col">
-                                <h4 className="text-sm font-semibold mb-0.5 text-muted-foreground">
-                                  {outputMode === 'text' || textPreview ? 'Extracted Text Preview' : 'Extracted Data Preview'}
-                                </h4>
-                                <div className="overflow-auto rounded-[18px] border border-[#2f165e]/15 bg-white" style={{ maxHeight: '450px' }}>
-                                  {outputMode === 'text' || textPreview ? (
-                                    <pre className="min-h-[300px] whitespace-pre-wrap p-4 text-sm leading-6 text-[#111827]">
-                                      {textPreview || 'Text preview is loading...'}
-                                    </pre>
-                                  ) : (
-                                    <>
-                                      <table className="w-full text-base">
-                                        <tbody>
-                                          {tablePreviewData.map((row, rowIndex) => (
-                                            <tr key={rowIndex} className={rowIndex === 0 ? 'bg-primary/10 font-semibold' : 'border-t border-gray-200'}>
-                                              {row.map((cell, cellIndex) => (
-                                                <td
-                                                  key={cellIndex}
-                                                  className="px-3 py-2 text-left border-r border-gray-200 last:border-r-0"
-                                                >
-                                                  {cell || ''}
-                                                </td>
-                                              ))}
-                                            </tr>
-                                          ))}
-                                        </tbody>
-                                      </table>
-                                      {tablePreviewData.length >= 10 && (
-                                        <div className="px-3 py-2 bg-muted/50 text-xs text-muted-foreground text-center border-t">
-                                          Showing first 10 rows
-                                        </div>
-                                      )}
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      )}
-
-                      {resultFiles[0] && (
-                        <Card
-                          className="overflow-hidden rounded-[22px] border-[#eadfff] bg-white/60 animate-in slide-in-from-bottom-2 duration-300"
-                        >
-                      <CardContent className="p-3">
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                          <div className="flex min-w-0 flex-1 items-center gap-3">
-                            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-                              1
-                            </div>
-                            <div className="flex items-center justify-center flex-shrink-0">
-                              {isTextOutput ? (
-                                <FileText className="h-5 w-5 text-primary" />
-                              ) : (
-                                <FileSpreadsheet className="h-5 w-5 text-primary" />
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              {editingFileId === resultFiles[0].file_id ? (
-                                <input
-                                  type="text"
-                                  value={newFileName}
-                                  onChange={(e) => setNewFileName(e.target.value)}
-                                  onBlur={() => handleRenameFile(resultFiles[0])}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                      handleRenameFile(resultFiles[0])
-                                    } else if (e.key === 'Escape') {
-                                      setEditingFileId(null)
-                                      setNewFileName('')
-                                    }
-                                  }}
-                                  className="px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary w-full"
-                                  autoFocus
-                                />
-                              ) : (
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <p 
-                                      className="font-medium text-sm truncate cursor-pointer hover:text-primary transition-colors"
-                                      onDoubleClick={() => {
-                                        const currentName = renamedFiles[resultFiles[0].file_id] || resultFiles[0].filename || `Image 1 Result${isTextOutput ? '.txt' : '.xlsx'}`
-                                        setEditingFileId(resultFiles[0].file_id)
-                                        setNewFileName(currentName.replace(/\.(xlsx|txt)$/i, ''))
-                                      }}
-                                    >
-                                      {renamedFiles[resultFiles[0].file_id] || resultFiles[0].filename || `Image 1 Result`}
-                                    </p>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p className="max-w-xs break-all">Double-click to rename</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-2 sm:flex-shrink-0">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleShareFile(resultFiles[0])}
-                              className="h-9 gap-1.5 rounded-xl border-[#eadfff] bg-white/70 text-foreground hover:bg-white"
-                            >
-                              <Share2 className="h-4 w-4" />
-                              Share
-                            </Button>
-                            {!isTextOutput && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                  window.open(buildOfficeViewerUrl(resultFiles[0].file_id), '_blank')
-                                }}
-                                className="h-9 gap-1.5 rounded-xl border-[#eadfff] bg-white/70 text-foreground hover:bg-white"
-                              >
-                                <Edit3 className="h-4 w-4" />
-                                Edit
-                              </Button>
-                            )}
-                            <Button
-                              size="sm"
-                              onClick={() => {
-                                if (!resultFiles[0].file_id) {
-                                  toast.error('Unable to download: File ID is missing')
-                                  return
-                                }
-                                downloadFile(resultFiles[0].file_id)
-                              }}
-                              className="h-9 gap-2 rounded-xl bg-primary text-white hover:bg-primary/90"
-                            >
-                              <Download className="h-4 w-4" />
-                              Download
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                      )}
-                    </div>
-                  )}
-
-                  {resultFiles.slice(1).map((file: any, index: number) => (
-                    <Card
-                      key={file.file_id || index + 1}
-                      className="overflow-hidden rounded-[22px] border-[#eadfff] bg-white/60 animate-in slide-in-from-bottom-2 duration-300"
-                    >
-                      <CardContent className="p-3">
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                          <div className="flex min-w-0 flex-1 items-center gap-3">
-                            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-                              {index + 2}
-                            </div>
-                            <div className="flex items-center justify-center flex-shrink-0">
-                              {isTextOutput ? (
-                                <FileText className="h-5 w-5 text-primary" />
-                              ) : (
-                                <FileSpreadsheet className="h-5 w-5 text-primary" />
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              {editingFileId === file.file_id ? (
-                                <input
-                                  type="text"
-                                  value={newFileName}
-                                  onChange={(e) => setNewFileName(e.target.value)}
-                                  onBlur={() => handleRenameFile(file)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                      handleRenameFile(file)
-                                    } else if (e.key === 'Escape') {
-                                      setEditingFileId(null)
-                                      setNewFileName('')
-                                    }
-                                  }}
-                                  className="px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary w-full"
-                                  autoFocus
-                                />
-                              ) : (
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <p 
-                                      className="font-medium text-sm truncate cursor-pointer hover:text-primary transition-colors"
-                                      onDoubleClick={() => {
-                                        const currentName = renamedFiles[file.file_id] || file.filename || `Image ${index + 2} Result${isTextOutput ? '.txt' : '.xlsx'}`
-                                        setEditingFileId(file.file_id)
-                                        setNewFileName(currentName.replace(/\.(xlsx|txt)$/i, ''))
-                                      }}
-                                    >
-                                      {renamedFiles[file.file_id] || file.filename || `Image ${index + 2} Result`}
-                                    </p>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p className="max-w-xs break-all">Double-click to rename</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-2 sm:flex-shrink-0">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleShareFile(file)}
-                              className="h-9 gap-1.5 rounded-xl border-[#eadfff] bg-white/70 text-foreground hover:bg-white"
-                            >
-                              <Share2 className="h-4 w-4" />
-                              Share
-                            </Button>
-                            {!isTextOutput && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                  window.open(buildOfficeViewerUrl(file.file_id), '_blank')
-                                }}
-                                className="h-9 gap-1.5 rounded-xl border-[#eadfff] bg-white/70 text-foreground hover:bg-white"
-                              >
-                                <Edit3 className="h-4 w-4" />
-                                Edit
-                              </Button>
-                            )}
-                            <Button
-                              size="sm"
-                              onClick={() => {
-                                if (!file.file_id) {
-                                  toast.error('Unable to download: File ID is missing')
-                                  return
-                                }
-                                downloadFile(file.file_id)
-                              }}
-                              className="h-9 gap-2 rounded-xl bg-primary text-white hover:bg-primary/90"
-                            >
-                              <Download className="h-4 w-4" />
-                              Download
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-                </CardContent>
-              </Card>
-              </TooltipProvider>
-            )}
-          </div>
-
-          {!isComplete && (
-          <div className="order-3 space-y-4 lg:order-2 lg:col-span-1">
-            <Card className="ax-glass-card overflow-hidden rounded-[28px]">
-              <CardContent className="space-y-4 p-4">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7c62b1]">Preferences</p>
-                  <h3 className="mt-1 text-lg font-bold tracking-tight text-foreground">Output flow</h3>
-                </div>
-
-                <div>
-                <Label className="mb-2 block text-xs font-semibold text-muted-foreground">Language</Label>
-                <select
-                  className="w-full rounded-2xl border border-[#eadfff] bg-white/60 p-3 text-sm font-medium text-foreground transition-all hover:border-[#2f165e]/45 focus:border-[#2f165e] focus:outline-none"
-                  value={selectedLanguage}
-                  onChange={(e) => {
-                    const newLanguage = e.target.value
-                    setSelectedLanguage(newLanguage)
-                    localStorage.setItem('ocrLanguage', newLanguage)
-                    const params = new URLSearchParams(searchParams.toString())
-                    params.set('language', newLanguage)
-                    router.push(`/dashboard/client?${params.toString()}`)
-                  }}
-                >
-                  <option value="en">English</option>
-                  <option value="de">Deutsch</option>
-                  <option value="fr">Français</option>
-                  <option value="ar">العربية</option>
-                  <option value="es">Español</option>
-                  <option value="it">Italiano</option>
-                  <option value="pt">Português</option>
-                  <option value="zh">中文</option>
-                </select>
-                </div>
-
-                <div className="space-y-2">
-                  <button
-                    onClick={() => {
-                      if (!autoDownload) {
-                        setShowAutoDownloadConfirm(true)
-                      } else {
-                        setAutoDownload(false)
-                      }
-                    }}
-                    className={cn(
-                      "flex w-full items-center justify-between rounded-2xl border p-3 transition-all hover:border-[#2f165e]/45",
-                      autoDownload
-                        ? "border-[#2f165e] bg-primary/10"
-                        : "border-[#eadfff] bg-white/45"
-                    )}
-                  >
-                    <div className="flex items-center gap-2">
-                      <DownloadCloud className={cn(
-                        "h-4 w-4",
-                        autoDownload ? "text-primary" : "text-muted-foreground"
-                      )} />
-                      <Label htmlFor="auto-download" className="text-xs font-medium text-foreground cursor-pointer">
-                        Auto-download
-                      </Label>
-                    </div>
-                    <Switch
-                      id="auto-download"
-                      checked={autoDownload}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setShowAutoDownloadConfirm(true)
-                        } else {
-                          setAutoDownload(false)
-                        }
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      className="data-[state=checked]:bg-primary"
-                    />
-                  </button>
-
-                  <button
-                    onClick={() => setAutoSave(!autoSave)}
-                    className={cn(
-                      "flex w-full items-center justify-between rounded-2xl border p-3 transition-all hover:border-[#2f165e]/45",
-                      autoSave
-                        ? "border-[#2f165e] bg-primary/10"
-                        : "border-[#eadfff] bg-white/45"
-                    )}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Save className={cn(
-                        "h-4 w-4",
-                        autoSave ? "text-primary" : "text-muted-foreground"
-                      )} />
-                      <Label htmlFor="auto-save" className="text-xs font-medium text-foreground cursor-pointer">
-                        Auto-save
-                      </Label>
-                    </div>
-                    <Switch
-                      id="auto-save"
-                      checked={autoSave}
-                      onCheckedChange={setAutoSave}
-                      onClick={(e) => e.stopPropagation()}
-                      className="data-[state=checked]:bg-primary"
-                    />
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          )}
-        </div>
       <Dialog open={shareDialogOpen} onOpenChange={(open) => {
         if (!open) {
           setSelectedFilesForBatch([])
@@ -1906,38 +1296,6 @@ Best regards`
                 </Button>
               </div>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={showAutoDownloadConfirm} onOpenChange={setShowAutoDownloadConfirm}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <div className="flex items-center gap-3 mb-2">
-              <AlertTriangle className="h-6 w-6 text-amber-500" />
-              <DialogTitle>Enable Auto-Download?</DialogTitle>
-            </div>
-            <DialogDescription className="text-sm text-muted-foreground">
-              Files will download to your device as soon as they finish.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex gap-3 mt-4">
-            <Button
-              variant="outline"
-              onClick={() => setShowAutoDownloadConfirm(false)}
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                setAutoDownload(true)
-                setShowAutoDownloadConfirm(false)
-              }}
-              className="flex-1 bg-primary hover:bg-primary/90"
-            >
-              Enable Auto-Download
-            </Button>
           </div>
         </DialogContent>
       </Dialog>

@@ -99,3 +99,30 @@ export async function createPdfFirstPageScreenshot(file: File): Promise<string> 
     return createPdfPreviewDataUrl(file.name);
   }
 }
+
+export async function getPdfPageCount(file: File): Promise<number> {
+  if (!isPdfFile(file) || typeof window === "undefined") {
+    return 1;
+  }
+
+  try {
+    const pdfjsLib = await import("pdfjs-dist");
+
+    if (!pdfWorkerConfigured) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+        "pdfjs-dist/build/pdf.worker.mjs",
+        import.meta.url
+      ).toString();
+      pdfWorkerConfigured = true;
+    }
+
+    const data = new Uint8Array(await file.arrayBuffer());
+    const loadingTask = pdfjsLib.getDocument({ data });
+    const pdf = await loadingTask.promise;
+    const pageCount = pdf.numPages || 1;
+    await pdf.destroy();
+    return pageCount;
+  } catch {
+    return 1;
+  }
+}
