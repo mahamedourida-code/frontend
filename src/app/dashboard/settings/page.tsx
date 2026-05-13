@@ -215,8 +215,9 @@ function SettingsContent() {
 
   const formatPlan = (plan?: string | null) => {
     if (!plan) return "Free"
-    if (plan === "enterprise") return "Mega"
-    if (plan === "business") return "Max"
+    if (plan === "pro") return "Standard"
+    if (plan === "max" || plan === "business") return "Pro"
+    if (plan === "mega" || plan === "enterprise") return "Max"
     return plan.charAt(0).toUpperCase() + plan.slice(1)
   }
 
