@@ -306,6 +306,7 @@ export interface AppLimits {
   max_file_size_mb: number
   max_file_size_bytes: number
   daily_image_limit: number
+  daily_run_limit?: number | null
   accepted_file_types: string[]
   queue: {
     max_queued_jobs: number
@@ -336,6 +337,7 @@ export interface BillingPlan {
   included_volume: string
   max_files_per_batch: number
   daily_image_limit: number
+  daily_run_limit?: number | null
   max_file_size_mb: number
   annual_discount_percent: number
   checkout_available: boolean

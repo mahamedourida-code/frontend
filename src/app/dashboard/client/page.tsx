@@ -69,7 +69,7 @@ function ProcessImagesContent() {
   const [isDragging, setIsDragging] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [limits, setLimits] = useState<AppLimits | null>(null)
-  const maxUploadFiles = limits?.max_files_per_batch ?? 10
+  const maxUploadFiles = limits?.max_files_per_batch ?? 5
   const [filePreviewUrls, setFilePreviewUrls] = useState<{[key: number]: string}>({})
   const [pdfPageCounts, setPdfPageCounts] = useState<{[key: number]: number}>({})
   const [workspaceBanner, setWorkspaceBanner] = useState<WorkspaceBanner | null>(null)
@@ -579,7 +579,7 @@ function ProcessImagesContent() {
     if (uploadedFiles.length > maxUploadFiles) {
       setWorkspaceBanner({
         title: "Reduce batch size",
-        description: `Your current plan allows up to ${maxUploadFiles} files per batch.`,
+        description: `Your current plan allows up to ${maxUploadFiles} images per run.`,
         actionLabel: "See plans",
         onAction: () => router.push("/pricing?from=batch-limit"),
         tone: "warning",

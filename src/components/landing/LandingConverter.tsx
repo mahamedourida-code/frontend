@@ -13,6 +13,7 @@ import { buildDownloadUrl, buildMessengerShareUrl, buildOfficeViewerUrl } from "
 import { showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui";
 import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
+import { useBillingStatus } from "@/hooks/useBillingStatus";
 import { useProcessingState } from "@/contexts/ProcessingStateContext";
 import { compressImages, formatFileSize } from "@/lib/image-compression";
 import {
@@ -65,7 +66,7 @@ export default function LandingConverter() {
   const clearState = contextValue?.clearState;
 
   // Free trial state
-  const [trialInfo, setTrialInfo] = useState({ uuid: '', used: 0, remaining: 10, hasRemaining: true, limit: 10 });
+  const [trialInfo, setTrialInfo] = useState({ uuid: '', used: 0, remaining: 3, hasRemaining: true, limit: 3 });
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [filePreviewUrls, setFilePreviewUrls] = useState<{[key: number]: string}>({});
   const [isProcessing, setIsProcessing] = useState(false);
@@ -97,7 +98,15 @@ export default function LandingConverter() {
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [signInRedirectPath, setSignInRedirectPath] = useState("/dashboard/client");
   const supabase = createClient();
-  const maxUploadFiles = limits?.max_files_per_batch ?? 10;
+  const maxUploadFiles = limits?.max_files_per_batch ?? (isAuthenticated ? 5 : 3);
+  const {
+    limits: entitlementLimits,
+    refresh: refreshBilling,
+  } = useBillingStatus({
+    enabled: true,
+    loadLimits: true,
+    loadStatus: isAuthenticated,
+  });
 
   // Helper function to remove _processed from filename
   const cleanFilename = (filename: string | undefined): string => {
@@ -106,17 +115,8 @@ export default function LandingConverter() {
   };
 
   useEffect(() => {
-    let mounted = true;
-    ocrApi.getLimits()
-      .then((data) => {
-        if (mounted) setLimits(data);
-      })
-      .catch(() => undefined);
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+    if (entitlementLimits) setLimits(entitlementLimits);
+  }, [entitlementLimits]);
 
   useEffect(() => {
     setUploadedFiles(prev => prev.length > maxUploadFiles ? prev.slice(0, maxUploadFiles) : prev);
@@ -445,12 +445,10 @@ export default function LandingConverter() {
       }
 
       if (!isAuthenticated) {
-        incrementTrialUploadCount(filesToUpload.length);
+        incrementTrialUploadCount(1);
         setTrialInfo(getTrialInfo());
-        ocrApi.getLimits()
-          .then(setLimits)
-          .catch(() => undefined);
       }
+      void refreshBilling({ includeStatus: isAuthenticated, includeLimits: true });
 
       // Store the first uploaded image for preview immediately
       if (filesForProcessing.length > 0) {
@@ -496,7 +494,7 @@ export default function LandingConverter() {
       uploadAbortRef.current = null;
       setIsUploading(false);
     }
-  }, [uploadedFiles, maxUploadFiles, isAuthenticated, openSignInModal, outputMode, createFilePreviewUrl]);
+  }, [uploadedFiles, maxUploadFiles, isAuthenticated, openSignInModal, outputMode, createFilePreviewUrl, refreshBilling]);
 
   const handleProcessImage = useCallback(async () => {
     if (!uploadedFiles || uploadedFiles.length === 0) {
@@ -606,6 +604,7 @@ export default function LandingConverter() {
         });
       }
       stopJobMonitoring();
+      void refreshBilling({ includeStatus: isAuthenticated, includeLimits: true });
       return true;
     }
 
@@ -613,6 +612,7 @@ export default function LandingConverter() {
       setProcessingComplete(false);
       setIsProcessing(false);
       stopJobMonitoring();
+      void refreshBilling({ includeStatus: isAuthenticated, includeLimits: true });
       toast.error(status.errors?.[0] || 'Processing failed');
       return true;
     }
@@ -680,12 +680,14 @@ export default function LandingConverter() {
             setResultFiles(data.files);
           }
           stopJobMonitoring();
+          void refreshBilling({ includeStatus: isAuthenticated, includeLimits: true });
         }
 
         if (messageType === 'job_error' || data.status === 'failed') {
           const errorMsg = data.error || data.errors?.[0] || 'Processing failed';
           setIsProcessing(false);
           stopJobMonitoring();
+          void refreshBilling({ includeStatus: isAuthenticated, includeLimits: true });
           toast.error(errorMsg);
         }
       },
@@ -721,6 +723,7 @@ export default function LandingConverter() {
     setIsProcessing(false);
     setProcessingComplete(false);
     setLatestRecoverableJob(null);
+    void refreshBilling({ includeStatus: isAuthenticated, includeLimits: true });
     toast.info('Batch cancelled.');
   }
 
@@ -1247,14 +1250,24 @@ export default function LandingConverter() {
                                       </pre>
                                     ) : (
                                       <>
-                                        <table className="w-full text-base">
+                                        <table className="w-full border-collapse text-base text-[#111827]">
                                           <tbody>
                                             {tablePreviewData.map((row, rowIndex) => (
-                                              <tr key={rowIndex} className={rowIndex === 0 ? 'bg-primary/10 font-semibold' : 'border-t border-gray-200'}>
+                                              <tr
+                                                key={rowIndex}
+                                                className={cn(
+                                                  "border-b border-[#d8cde7]",
+                                                  rowIndex === 0
+                                                    ? "bg-[#2f165e] font-semibold text-white"
+                                                    : rowIndex % 2 === 0
+                                                      ? "bg-[#f8f4ff]"
+                                                      : "bg-white"
+                                                )}
+                                              >
                                                 {row.map((cell, cellIndex) => (
                                                   <td
                                                     key={cellIndex}
-                                                    className="px-2 py-1.5 text-left border-r border-gray-200 last:border-r-0"
+                                                    className="border-r border-[#d8cde7] px-3 py-2 text-left font-medium last:border-r-0"
                                                   >
                                                     {cell || ''}
                                                   </td>
@@ -1264,7 +1277,7 @@ export default function LandingConverter() {
                                           </tbody>
                                         </table>
                                         {tablePreviewData.length >= 10 && (
-                                          <div className="px-3 py-2 bg-muted/50 text-xs text-muted-foreground text-center border-t">
+                                          <div className="border-t border-[#d8cde7] bg-[#f8f4ff] px-3 py-2 text-center text-xs font-semibold text-[#4b2d82]">
                                             Showing first 10 rows
                                           </div>
                                         )}

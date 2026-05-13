@@ -224,9 +224,7 @@ function PricingContent() {
   const isFreeAccount = Boolean(user && billingStatus?.plan === "free")
   const accountCredits = billingStatus?.credits?.available_credits ?? 0
   const freePlan = backendByKey.get("free")
-  const freeCreditsLabel = typeof freePlan?.credits === "number"
-    ? `${freePlan.credits.toLocaleString()} credits`
-    : "free credits"
+  const freeCreditsLabel = freePlan?.included_volume || "5 free runs"
 
   const navLinkClass = cn(
     navigationMenuTriggerStyle(),
@@ -415,9 +413,9 @@ function PricingContent() {
                       : "forever"
                 const features = [
                   plan.plan === "anonymous" || plan.plan === "free"
-                    ? { value: plan.credits.toLocaleString(), label: "credits after account creation" }
+                    ? { value: plan.included_volume, label: "after account creation" }
                     : { value: presentation.included, label: "available in this plan" },
-                  { value: `${plan.max_files_per_batch}`, label: "files per batch" },
+                  { value: `${plan.max_files_per_batch}`, label: "images per run" },
                   { value: `${plan.max_file_size_mb}MB`, label: "max file size" },
                   plan.plan === "anonymous" || plan.plan === "free"
                     ? { value: "Free", label: "trial access before upgrade" }

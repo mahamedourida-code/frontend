@@ -74,12 +74,13 @@ export function getApiErrorUi(error: any, context: ErrorActionContext = {}): Err
     status === 402 ||
     code === "INSUFFICIENT_CREDITS" ||
     code === "DAILY_IMAGE_LIMIT_EXCEEDED" ||
+    code === "DAILY_RUN_LIMIT_EXCEEDED" ||
     code === "ANONYMOUS_FREE_TRIAL_LIMIT_REACHED"
   ) {
     if (!context.isAuthenticated) {
       return {
         title: "Free trial limit reached",
-        description: "Create a free account to get 30 credits, then choose a Lemon Squeezy plan when you need more pages.",
+        description: "The free trial includes 3 runs with up to 3 images each. Create a free account for 5 runs with up to 5 images each, or choose a plan when you need more.",
         action: context.onSignIn
           ? { label: "Create account", onClick: context.onSignIn }
           : { label: "Create account", onClick: () => goTo(`/sign-up?next=${encodeURIComponent(upgradeHref)}`) },
@@ -89,7 +90,7 @@ export function getApiErrorUi(error: any, context: ErrorActionContext = {}): Err
     const billingIssue = code.includes("PAST_DUE") || code.includes("PAYMENT") || code.includes("SUBSCRIPTION")
 
     return {
-      title: "Not enough credits",
+      title: code === "DAILY_RUN_LIMIT_EXCEEDED" ? "Run limit reached" : "Not enough credits",
       description: `${message} Upgrade for more pages, or manage billing if your subscription is already active.`,
       action: {
         label: billingIssue ? "Manage billing" : "Upgrade plan",
@@ -159,7 +160,7 @@ export function showApiErrorToast(error: any, context: ErrorActionContext = {}) 
 export function showBatchLimitToast(maxFiles: number, context: ErrorActionContext = {}) {
   const upgradeHref = context.upgradeHref || "/pricing?from=batch-limit"
   toast.error("Reduce batch size", {
-    description: `Your current plan allows up to ${maxFiles} images per batch.`,
+    description: `Your current plan allows up to ${maxFiles} images per run.`,
     action: {
       label: "See plans",
       onClick: () => goTo(upgradeHref),

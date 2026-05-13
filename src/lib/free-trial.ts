@@ -4,7 +4,7 @@
  * The backend is the source of truth for quota enforcement.
  */
 
-const FREE_TRIAL_LIMIT = 10
+const FREE_TRIAL_RUN_LIMIT = 3
 const STORAGE_KEY_UUID = 'AxLiner_trial_uuid'
 const STORAGE_KEY_COUNT = 'AxLiner_trial_count'
 const STORAGE_KEY_TIMESTAMP = 'AxLiner_trial_timestamp'
@@ -65,7 +65,7 @@ export function getOrCreateTrialUUID(): string {
 }
 
 /**
- * Get current upload count
+ * Get current trial run count
  */
 export function getTrialUploadCount(): number {
   if (typeof window === 'undefined') return 0
@@ -75,22 +75,22 @@ export function getTrialUploadCount(): number {
 }
 
 /**
- * Get remaining free uploads
+ * Get remaining free runs
  */
 export function getRemainingTrialUploads(): number {
   const used = getTrialUploadCount()
-  return Math.max(0, FREE_TRIAL_LIMIT - used)
+  return Math.max(0, FREE_TRIAL_RUN_LIMIT - used)
 }
 
 /**
- * Check if user has free uploads remaining
+ * Check if user has free runs remaining
  */
 export function hasTrialUploadsRemaining(): boolean {
   return getRemainingTrialUploads() > 0
 }
 
 /**
- * Increment upload count
+ * Increment run count
  * Returns the new count
  */
 export function incrementTrialUploadCount(amount: number = 1): number {
@@ -126,7 +126,7 @@ export function getTrialInfo() {
     used: getTrialUploadCount(),
     remaining: getRemainingTrialUploads(),
     hasRemaining: hasTrialUploadsRemaining(),
-    limit: FREE_TRIAL_LIMIT
+    limit: FREE_TRIAL_RUN_LIMIT
   }
 }
 
