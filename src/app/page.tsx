@@ -268,11 +268,6 @@ export default function Home() {
     const whatSection = whatSectionRef.current;
     if (!contrastSection || !whatSection) return;
 
-    const topClipStart =
-      "polygon(0 3.8%, 9% 2.7%, 20% 4.4%, 35% 2.1%, 50% 4.2%, 66% 2.5%, 82% 4.1%, 100% 2.8%, 100% 100%, 0 100%)";
-    const topClipEnd =
-      "polygon(0 9%, 8% 5.8%, 19% 9.8%, 35% 4.2%, 51% 8.4%, 68% 4.8%, 84% 8.1%, 100% 5.3%, 100% 100%, 0 100%)";
-
     let ctx: any;
     let cancelled = false;
 
@@ -280,21 +275,6 @@ export default function Home() {
       if (cancelled) return;
 
       ctx = gsap.context(() => {
-        gsap.fromTo(
-          contrastSection,
-          { clipPath: topClipStart },
-          {
-            clipPath: topClipEnd,
-            ease: "none",
-            scrollTrigger: {
-              trigger: contrastSection,
-              start: "top 85%",
-              end: "top 20%",
-              scrub: 1.1,
-            },
-          }
-        );
-
         gsap.fromTo(
           ".what-story-row",
           { opacity: 0, y: 76 },
@@ -576,36 +556,27 @@ export default function Home() {
           </div>
         </div>
 
+        <div className="relative isolate bg-background px-4 py-10 sm:px-6 lg:px-8">
         <div
           ref={contrastSectionRef}
-          className="relative isolate -mt-10 overflow-hidden pt-36 pb-12 text-primary-foreground [&_.text-card-foreground]:!text-primary-foreground [&_.text-foreground]:!text-primary-foreground [&_.text-muted-foreground]:!text-primary-foreground/80 [&_.text-primary]:!text-primary-foreground"
-          style={{
-            backgroundColor: "var(--primary)",
-            clipPath:
-              "polygon(0 3.8%, 9% 2.7%, 20% 4.4%, 35% 2.1%, 50% 4.2%, 66% 2.5%, 82% 4.1%, 100% 2.8%, 100% 100%, 0 100%)",
-          }}
+          className="relative mx-auto max-w-[1540px] overflow-hidden rounded-md bg-primary px-3 py-10 text-primary-foreground shadow-sm sm:px-5 lg:px-8 lg:py-14 [&_.text-card-foreground]:!text-primary-foreground [&_.text-foreground]:!text-primary-foreground [&_.text-muted-foreground]:!text-primary-foreground/80 [&_.text-primary]:!text-primary-foreground"
         >
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-0"
-            style={{ backgroundColor: "var(--primary)" }}
-          />
           <div className="relative z-10">
         {/* What is Axliner Section */}
-        <section ref={whatSectionRef} className="relative z-10 py-16 lg:py-24">
-          <div className="container mx-auto max-w-[1860px] px-4 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-[1780px]">
+        <section ref={whatSectionRef} className="relative z-10 py-4 lg:py-6">
+          <div className="container mx-auto max-w-[960px] px-2 sm:px-4">
+            <div className="mx-auto max-w-[900px]">
               {/* Section Header */}
-              <div className="text-center mb-12">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 mb-4 shadow-lg shadow-black/10 backdrop-blur-2xl">
-                  <h2 className="text-lg sm:text-xl font-bold text-foreground">
+              <div className="text-center mb-5">
+                <div className="inline-flex items-center gap-2 rounded-md border border-white/25 bg-white/10 px-3 py-1.5 mb-2 shadow-sm shadow-black/10 backdrop-blur-2xl">
+                  <h2 className="text-sm font-semibold text-foreground sm:text-base">
                     What is Axliner?
                   </h2>
                 </div>
               </div>
 
               {/* Main Content */}
-              <div className="relative mx-auto max-w-[1540px]">
+              <div className="relative mx-auto max-w-[840px]">
                 <svg
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full lg:block"
@@ -624,57 +595,57 @@ export default function Home() {
                   />
                 </svg>
 
-                <div className="relative z-10 space-y-12 lg:space-y-20">
-                  <div className="what-story-row grid items-center gap-8 lg:grid-cols-[minmax(0,0.94fr)_minmax(520px,1.06fr)]">
-                    <Card className="rounded-[2rem] border border-white/20 bg-white/10 shadow-2xl shadow-black/10 backdrop-blur-2xl">
-                      <CardContent className="p-6 sm:p-8 lg:p-10">
-                        <p className="text-xl leading-9 text-foreground lg:text-2xl lg:leading-10">
+                <div className="relative z-10 space-y-4 lg:space-y-5">
+                  <div className="what-story-row grid items-center gap-4 lg:grid-cols-[minmax(0,0.98fr)_minmax(260px,1.02fr)]">
+                    <Card className="rounded-md border border-white/20 bg-white/10 shadow-sm shadow-black/10 backdrop-blur-2xl">
+                      <CardContent className="p-3 sm:p-4">
+                        <p className="text-xs leading-5 text-foreground sm:text-sm sm:leading-6">
                           Axliner is a <span className="font-bold">7-billion parameter vision-language model</span> fine-tuned from Meta's Llama 3 family for handwritten tables, forms, and spreadsheet-like documents. It understands document structure first, so the result is usable rows, columns, headers, and values.
                         </p>
                       </CardContent>
                     </Card>
 
-                    <div className="what-story-image relative flex min-h-[280px] items-center justify-center lg:min-h-[430px]">
+                    <div className="what-story-image relative flex min-h-[130px] items-center justify-center lg:min-h-[190px]">
                       <img
                         src="/what-is/chaos-invoices.svg"
                         alt=""
-                        className="h-[300px] w-full object-contain drop-shadow-[0_28px_45px_rgba(0,0,0,0.2)] sm:h-[380px] lg:h-[520px]"
+                        className="h-[135px] w-full object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.15)] sm:h-[165px] lg:h-[220px]"
                       />
                     </div>
                   </div>
 
-                  <div className="what-story-row grid items-center gap-8 lg:grid-cols-[minmax(520px,1.05fr)_minmax(0,0.95fr)]">
-                    <div className="what-story-image relative order-2 flex min-h-[300px] items-center justify-center lg:order-1 lg:min-h-[460px]">
+                  <div className="what-story-row grid items-center gap-4 lg:grid-cols-[minmax(260px,1.02fr)_minmax(0,0.98fr)]">
+                    <div className="what-story-image relative order-2 flex min-h-[145px] items-center justify-center lg:order-1 lg:min-h-[205px]">
                       <img
                         src="/what-is/axliner-cpu.svg"
                         alt=""
-                        className="h-[320px] w-full object-contain drop-shadow-[0_30px_50px_rgba(0,0,0,0.22)] sm:h-[410px] lg:h-[560px]"
+                        className="h-[150px] w-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.16)] sm:h-[185px] lg:h-[245px]"
                       />
                     </div>
 
-                    <Card className="order-1 rounded-[2rem] border border-white/20 bg-white/10 shadow-2xl shadow-black/10 backdrop-blur-2xl lg:order-2">
-                      <CardContent className="p-6 sm:p-8 lg:p-10">
-                        <p className="text-xl leading-9 text-foreground lg:text-2xl lg:leading-10">
+                    <Card className="order-1 rounded-md border border-white/20 bg-white/10 shadow-sm shadow-black/10 backdrop-blur-2xl lg:order-2">
+                      <CardContent className="p-3 sm:p-4">
+                        <p className="text-xs leading-5 text-foreground sm:text-sm sm:leading-6">
                           During conversion, Axliner cleans the image, detects table regions, reads handwriting, and keeps cell relationships intact. It was trained on diverse handwritten datasets, table extraction data, and augmented noisy documents, so dense notes and phone photos can still become structured spreadsheets.
                         </p>
                       </CardContent>
                     </Card>
                   </div>
 
-                  <div className="what-story-row grid items-center gap-8 lg:grid-cols-[minmax(0,0.94fr)_minmax(520px,1.06fr)]">
-                    <Card className="rounded-[2rem] border border-white/20 bg-white/10 shadow-2xl shadow-black/10 backdrop-blur-2xl">
-                      <CardContent className="p-6 sm:p-8 lg:p-10">
-                        <p className="text-xl leading-9 text-foreground lg:text-2xl lg:leading-10">
+                  <div className="what-story-row grid items-center gap-4 lg:grid-cols-[minmax(0,0.98fr)_minmax(260px,1.02fr)]">
+                    <Card className="rounded-md border border-white/20 bg-white/10 shadow-sm shadow-black/10 backdrop-blur-2xl">
+                      <CardContent className="p-3 sm:p-4">
+                        <p className="text-xs leading-5 text-foreground sm:text-sm sm:leading-6">
                           The workflow is designed for batch processing. Upload several images, watch progress as each page finishes, then download clean Excel files ready for review, reporting, editing, or sharing without losing the table logic people need in the final workbook.
                         </p>
                       </CardContent>
                     </Card>
 
-                    <div className="what-story-image relative flex min-h-[280px] items-center justify-center lg:min-h-[430px]">
+                    <div className="what-story-image relative flex min-h-[130px] items-center justify-center lg:min-h-[190px]">
                       <img
                         src="/what-is/chill-output.svg"
                         alt=""
-                        className="h-[300px] w-full object-contain drop-shadow-[0_28px_45px_rgba(0,0,0,0.2)] sm:h-[380px] lg:h-[520px]"
+                        className="h-[135px] w-full object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.15)] sm:h-[165px] lg:h-[220px]"
                       />
                     </div>
                   </div>
@@ -709,11 +680,11 @@ export default function Home() {
         </section>
 
         {/* Companies Section - Trusted By */}
-        <ScrollAnimatedSection id="trusted" className="w-full overflow-hidden py-8">
+        <ScrollAnimatedSection id="trusted" className="w-full overflow-hidden py-5">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-5" data-animate="headline">
-              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 shadow-lg shadow-black/10 backdrop-blur-2xl">
-                <h2 className="text-base font-semibold text-foreground sm:text-lg">
+            <div className="text-center mb-4" data-animate="headline">
+              <div className="mb-2 inline-flex items-center gap-2 rounded-md border border-white/25 bg-white/10 px-3 py-2 shadow-sm shadow-black/10 backdrop-blur-2xl">
+                <h2 className="text-sm font-semibold text-foreground sm:text-base">
                   Chosen by experts at top organizations
                 </h2>
               </div>
@@ -732,7 +703,7 @@ export default function Home() {
                   [1, 2, 3, 4, 5, 6, 7, 8, 9].map((imgNum) => (
                     <Card
                       key={`${setIndex}-${imgNum}`}
-                      className="flex-shrink-0 bg-card border border-border/50 transition-all duration-300 hover:border-primary/30 hover:shadow-md w-[120px] h-[80px]"
+                      className="flex-shrink-0 border border-gray-200 bg-white transition-all duration-300 hover:border-primary/30 hover:shadow-md dark:border-gray-200 dark:bg-white w-[108px] h-[70px]"
                     >
                       <CardContent className="p-2 flex items-center justify-center w-full h-full">
                         <Image
@@ -828,7 +799,7 @@ export default function Home() {
             className="pointer-events-none absolute inset-0 z-0"
             style={{
               backgroundColor: "var(--background)",
-              boxShadow: "0 -24px 60px rgba(47, 22, 94, 0.08)",
+              boxShadow: "0 -24px 60px rgb(0 0 0 / 0.06)",
               clipPath:
                 "polygon(0 4%, 12% 2.8%, 25% 4.6%, 40% 2.4%, 58% 4.3%, 75% 2.7%, 100% 4%, 100% 100%, 0 100%)",
             }}
@@ -909,7 +880,7 @@ export default function Home() {
         </ScrollAnimatedSection>
 
         <ScrollAnimatedSection id="owned-ai" className="relative z-20 overflow-hidden px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-          <div className="mx-auto max-w-[1540px]">
+          <div className="mx-auto max-w-[1280px]">
             <div className="mx-auto max-w-[980px] text-center" data-animate="headline">
               <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
                 Not a third-party wrapper
@@ -919,11 +890,11 @@ export default function Home() {
               </h2>
             </div>
 
-            <div className="mx-auto mt-10 max-w-[1120px]" data-animate="stagger">
-              <div className="mx-auto overflow-hidden rounded-[18px] shadow-[0_22px_60px_rgba(42,35,64,0.10)]">
-                <div className="grid min-h-[190px] sm:grid-cols-3 lg:min-h-[260px]">
+            <div className="mx-auto mt-10 max-w-[980px]" data-animate="stagger">
+              <div className="mx-auto overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+                <div className="grid min-h-[170px] sm:grid-cols-3 lg:min-h-[220px]">
                   {ownedPipelineImages.map((image) => (
-                    <div key={image.src} className="relative min-h-[190px] border-primary-foreground/80 sm:border-l sm:first:border-l-0 lg:min-h-[260px]">
+                    <div key={image.src} className="relative min-h-[170px] border-border sm:border-l sm:first:border-l-0 lg:min-h-[220px]">
                       <Image
                         src={image.src}
                         alt={image.alt}
@@ -936,7 +907,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="mx-auto mt-8 grid max-w-[1040px] gap-7 text-center text-foreground md:grid-cols-3">
+              <div className="mx-auto mt-8 grid max-w-[940px] gap-6 text-center text-foreground md:grid-cols-3">
                 {ownedPipelineCopy.map((item, index) => (
                   <div key={item} className="border-t border-border pt-5">
                     <p className="text-sm font-bold text-primary">0{index + 1}</p>
@@ -971,140 +942,59 @@ export default function Home() {
               </div>
 
               {/* Main Content */}
-              <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(440px,0.9fr)] lg:items-start">
-                <div className="space-y-12">
-                {/* Engine Workflow */}
-                <Card className="overflow-hidden border-border bg-card/80 shadow-sm backdrop-blur-md" data-animate="stagger">
-                  <CardHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary ring-1 ring-primary/20">01</span>
-                      <CardTitle className="text-2xl">Built as a document workflow</CardTitle>
+              <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.72fr)] lg:items-start">
+                <Card className="overflow-hidden border-border bg-card shadow-sm" data-animate="stagger">
+                  <CardHeader className="border-b border-border">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Workflow</p>
+                        <CardTitle className="mt-1 text-2xl">From page to workbook</CardTitle>
+                      </div>
+                      <span className="rounded-md border border-border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+                        4 stage pipeline
+                      </span>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="prose prose-sm max-w-none">
-                      <p className="text-foreground font-medium leading-8 text-base sm:text-lg">
-                        AxLiner separates the work into focused stages: clean the image, locate the table, read the handwriting, rebuild the rows, then package the result as an editable workbook. That keeps the experience predictable when a file is crooked, crowded, photographed from a phone, or mixed with notes and totals.
-                      </p>
-
-                      <p className="text-foreground font-medium leading-8 text-base sm:text-lg">
-                        The engine is tuned for batch jobs where every page needs the same level of structure. Instead of returning a wall of extracted text, it preserves the relationships that matter in Excel: headers, columns, repeated rows, numeric values, and the original reading order.
-                      </p>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-4 mt-6">
-                      <div className="flex items-start gap-3 rounded-xl border border-border bg-background/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-md">
-                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-primary" />
+                  <CardContent className="p-0">
+                    {[
+                      ["01", "Image cleanup", "Rotation, contrast, shadows, and page noise are normalized before extraction."],
+                      ["02", "Table detection", "The engine finds headers, repeated rows, totals, and spreadsheet-like regions."],
+                      ["03", "Handwriting read", "Letters, numbers, and symbols stay attached to the cells where they belong."],
+                      ["04", "Workbook export", "Rows and columns are packaged into XLSX files ready for review."],
+                    ].map(([step, title, copy]) => (
+                      <div key={step} className="grid gap-4 border-b border-border p-5 last:border-b-0 sm:grid-cols-[72px_1fr_auto] sm:items-center">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border bg-background text-sm font-semibold text-primary">
+                          {step}
+                        </span>
                         <div>
-                          <p className="font-semibold text-foreground mb-1">Image cleanup</p>
-                          <p className="text-sm text-muted-foreground font-medium">Rotation, contrast, and page noise are normalized before extraction.</p>
+                          <p className="font-semibold text-foreground">{title}</p>
+                          <p className="mt-1 text-sm leading-6 text-muted-foreground">{copy}</p>
+                        </div>
+                        <div className="hidden h-12 w-28 items-end gap-1 sm:flex">
+                          {[42, 58, 48, 74, 62, 88, 72].map((height, index) => (
+                            <span
+                              key={`${step}-${index}`}
+                              className="w-full rounded-t-sm bg-primary/70"
+                              style={{ height: `${height}%` }}
+                            />
+                          ))}
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 rounded-xl border border-border bg-background/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-md">
-                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-primary" />
-                        <div>
-                          <p className="font-semibold text-foreground mb-1">Handwriting read</p>
-                          <p className="text-sm text-muted-foreground font-medium">Letters, numbers, and totals stay connected to their table context.</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3 rounded-xl border border-border bg-background/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-md">
-                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-primary" />
-                        <div>
-                          <p className="font-semibold text-foreground mb-1">Table rebuild</p>
-                          <p className="text-sm text-muted-foreground font-medium">Cells are mapped back into rows and columns instead of plain text.</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3 rounded-xl border border-border bg-background/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-md">
-                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-primary" />
-                        <div>
-                          <p className="font-semibold text-foreground mb-1">Workbook export</p>
-                          <p className="text-sm text-muted-foreground font-medium">The final XLSX is shaped for review, editing, and sharing.</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-6 rounded-xl border border-primary/20 bg-primary p-5 text-primary-foreground shadow-sm">
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground/70">Extraction plan</p>
-                      <p className="mt-2 text-lg font-bold">Messy page in, structured spreadsheet out</p>
-                      <div className="mt-5 grid gap-2 sm:grid-cols-3">
-                        {["headers", "rows", "totals"].map((item) => (
-                          <div key={item} className="rounded-xl bg-white/10 px-3 py-2 text-center text-sm font-semibold">
-                            {item}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                    ))}
                   </CardContent>
                 </Card>
 
-                {/* Export Quality */}
-                <Card className="overflow-hidden border-border bg-card/80 shadow-sm backdrop-blur-md" data-animate="stagger">
-                  <CardHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary ring-1 ring-primary/20">02</span>
-                      <CardTitle className="text-2xl">Quality control before export</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="prose prose-sm max-w-none">
-                      <p className="text-foreground font-medium leading-8 text-base sm:text-lg">
-                        AxLiner treats export quality as part of the engine, not a final download button. Before a workbook is returned, the output is checked for row continuity, empty columns, mismatched totals, and values that are likely to have been read from the wrong cell.
-                      </p>
-                    </div>
-
-                    <div className="grid gap-3">
-                      {[
-                        ["Input", "crooked invoice photo"],
-                        ["Structure", "detected columns and repeated rows"],
-                        ["Output", "editable XLSX with clean sheet names"],
-                      ].map(([label, value]) => (
-                        <div key={label} className="grid grid-cols-[110px_1fr] items-center rounded-xl border border-border bg-background/80 px-4 py-3">
-                          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{label}</span>
-                          <span className="text-sm font-semibold text-foreground">{value}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="overflow-hidden rounded-xl border border-border mt-6 bg-background/80">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-border bg-muted/70">
-                            <th className="text-left p-3 font-medium">Check</th>
-                            <th className="text-right p-3 font-medium">Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr className="border-b border-border/50">
-                            <td className="p-3 text-muted-foreground">Column count</td>
-                            <td className="p-3 text-right font-semibold text-primary">matched</td>
-                          </tr>
-                          <tr className="border-b border-border/50">
-                            <td className="p-3 text-muted-foreground">Numeric fields</td>
-                            <td className="p-3 text-right font-semibold text-primary">verified</td>
-                          </tr>
-                          <tr>
-                            <td className="p-3 text-muted-foreground">Workbook format</td>
-                            <td className="p-3 text-right font-semibold text-primary">ready</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-
-                    <p className="text-sm text-muted-foreground">
-                      The result is a file that feels closer to a finished spreadsheet than a raw OCR dump.
-                    </p>
-                  </CardContent>
-                </Card>
-                </div>
-
-                <div className="relative min-h-[520px] overflow-hidden rounded-l-xl border border-border shadow-sm lg:min-h-[760px]" data-animate="stagger">
-                  <Image
-                    src="/purchase.webp"
-                    alt="Professionals reviewing documents"
-                    fill
-                    sizes="(min-width: 1024px) 50vw, 100vw"
-                    className="absolute inset-0 h-full w-full object-cover object-center"
-                  />
+                <div className="space-y-4" data-animate="stagger">
+                  <div className="overflow-hidden rounded-xl border border-border bg-card p-3 shadow-sm">
+                    <Image
+                      src="/purchase.webp"
+                      alt="Professionals reviewing documents"
+                      width={720}
+                      height={860}
+                      sizes="(min-width: 1024px) 30vw, 100vw"
+                      className="h-[360px] w-full rounded-lg object-cover object-center lg:h-[520px]"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -1124,27 +1014,27 @@ export default function Home() {
             className="pointer-events-none absolute inset-0 z-0"
             style={{
               backgroundColor: "var(--background)",
-              boxShadow: "0 -24px 60px rgba(47, 22, 94, 0.08)",
+              boxShadow: "0 -24px 60px rgb(0 0 0 / 0.06)",
               clipPath:
                 "polygon(0 4%, 12% 2.8%, 25% 4.6%, 40% 2.4%, 58% 4.3%, 75% 2.7%, 100% 4%, 100% 100%, 0 100%)",
             }}
           />
           <div className="container relative z-10 mx-auto max-w-[1540px] px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-12 lg:grid-cols-[minmax(420px,0.88fr)_minmax(520px,1.12fr)] lg:items-center">
+            <div className="grid gap-10 lg:grid-cols-[minmax(360px,0.82fr)_minmax(520px,1.18fr)] lg:items-center">
               <div data-animate="headline">
                 <p className="text-xl font-medium text-foreground">Security & Compliance</p>
                 <h2 className="mt-6 max-w-2xl text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-6xl">
                   Your Data Security Guaranteed
                 </h2>
 
-                <div className="mt-10 max-w-[620px] overflow-hidden rounded-[10px] shadow-[0_24px_56px_rgba(17,24,47,0.12)]">
+                <div className="mt-8 max-w-[500px] overflow-hidden rounded-xl border border-border bg-card p-2 shadow-sm">
                     <Image
                       src="/secu.webp"
                       alt="Secure digital document processing"
                       width={760}
                       height={420}
                       sizes="(min-width: 1024px) 40vw, 100vw"
-                      className="h-[240px] w-full object-cover object-center sm:h-[280px] lg:h-[300px]"
+                      className="h-[210px] w-full rounded-lg object-cover object-center sm:h-[240px] lg:h-[260px]"
                     />
                 </div>
               </div>

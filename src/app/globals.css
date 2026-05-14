@@ -432,7 +432,7 @@ body {
 }
 
 .section-features {
-  background: linear-gradient(135deg, rgb(245 238 255 / 0.64) 0%, rgb(245 238 255 / 0.42) 100%);
+  background: linear-gradient(135deg, hsl(138 30% 94% / 0.64) 0%, hsl(138 24% 95% / 0.42) 100%);
 }
 
 .section-trusted {
@@ -440,11 +440,11 @@ body {
 }
 
 .section-differentiators {
-  background: linear-gradient(135deg, rgb(118 75 162 / 0.10) 0%, rgb(245 238 255 / 0.58) 50%, rgb(255 255 255 / 0.6) 100%);
+  background: linear-gradient(135deg, hsl(143 64% 26% / 0.08) 0%, hsl(138 24% 95% / 0.58) 50%, rgb(255 255 255 / 0.6) 100%);
 }
 
 .section-how-it-works {
-  background: linear-gradient(135deg, rgb(245 238 255 / 0.55) 0%, rgb(245 238 255 / 0.28) 100%);
+  background: linear-gradient(135deg, hsl(138 30% 94% / 0.55) 0%, hsl(138 24% 95% / 0.28) 100%);
 }
 
 /* Handwriting font utility */
@@ -481,8 +481,8 @@ body {
     box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
   }
   
-  .glow-purple {
-    box-shadow: 0 0 30px rgb(118 75 162 / 0.45);
+  .glow-brand {
+    box-shadow: 0 0 30px hsl(143 64% 26% / 0.35);
   }
   
   /* Smooth pulse animation */
