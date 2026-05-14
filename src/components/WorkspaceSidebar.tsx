@@ -1,8 +1,16 @@
 "use client"
 
 import Link from "next/link"
-import { Activity, History, LogOut, Settings, Upload } from "lucide-react"
+import { Activity, ChevronsUpDown, History, LogOut, Settings, Upload } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { AppIcon } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { cn } from "@/lib/utils"
@@ -34,39 +42,25 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
   const email = user?.email || ""
 
   return (
-    <aside className="relative z-10 hidden lg:flex lg:w-[280px] lg:flex-col">
-      <div className="sticky top-4 flex h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-2xl border border-[#dfe8df] bg-white shadow-sm">
-        <div className="border-b border-[#e6eee6] px-5 pb-5 pt-6">
-          <Link
-            href="/"
-            className="group flex w-fit items-center gap-3 rounded-full px-1 py-1 transition-opacity hover:opacity-80"
-            aria-label="Go to AxLiner homepage"
-          >
-            <AppIcon size={34} />
-            <span className="text-xl font-semibold tracking-tight text-[#111827]">AxLiner</span>
-          </Link>
-
-          <div className="mt-5 rounded-xl border border-[#e6eee6] bg-[#f7faf7] p-3">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10 border border-[#dfe8df]">
-                <AvatarImage src={user?.user_metadata?.avatar_url || undefined} />
-                <AvatarFallback className="bg-[#e7f3e8] text-[#166534]">
-                  {email.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-[#111827]">{displayName}</p>
-                <p className="mt-0.5 truncate text-xs text-[#667085]">{email}</p>
+    <aside className="fixed inset-y-0 start-0 z-30 hidden w-64 border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex md:flex-col">
+      <div className="flex h-full flex-col">
+        <div className="p-2">
+          <Link href="/" aria-label="Go to AxLiner homepage">
+            <div className="flex h-12 items-center gap-2 rounded-md px-2 text-start hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <AppIcon size={18} className="rounded-sm" />
+              </div>
+              <div className="grid flex-1 text-start text-sm leading-tight">
+                <span className="truncate font-semibold">AxLiner</span>
+                <span className="truncate text-xs text-muted-foreground">Excel OCR workspace</span>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
 
-        <nav className="flex-1 px-4 py-5">
-          <div className="mb-3 px-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#667085]">Navigation</p>
-          </div>
-          <div className="space-y-2">
+        <nav className="flex-1 overflow-y-auto px-2 py-2">
+          <div className="space-y-1">
+            <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">General</div>
             {sidebarItems.map((item) => {
               const Icon = item.icon
 
@@ -75,34 +69,78 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                   key={item.key}
                   href={item.href}
                   className={cn(
-                    "group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-200",
+                    "group flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm font-medium transition-colors",
                     activeItem === item.key
-                      ? "bg-[#166534] text-white shadow-sm"
-                      : "text-[#667085] hover:bg-[#f4f8f4] hover:text-[#111827]"
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   )}
                 >
                   <Icon
                     className={cn(
-                      "h-5 w-5 shrink-0 transition-colors",
-                      activeItem === item.key ? "text-white" : "text-[#15803d] group-hover:text-[#166534]"
+                      "size-4 shrink-0",
+                      activeItem === item.key ? "text-primary" : "text-muted-foreground group-hover:text-sidebar-accent-foreground"
                     )}
                   />
-                  <p className={cn("truncate font-medium", activeItem === item.key ? "text-white" : "text-[#111827]")}>
-                    {item.label}
-                  </p>
+                  <span className="truncate">{item.label}</span>
                 </Link>
               )
             })}
-
-            <Link
-              href="/signout"
-              className="mt-4 flex w-full items-center gap-3 rounded-xl border border-[#e6eee6] px-3 py-2.5 text-sm text-[#667085] transition-colors hover:bg-[#f4f8f4] hover:text-[#111827]"
-            >
-              <LogOut className="h-5 w-5 shrink-0 text-[#15803d]" />
-              <p className="font-medium text-[#111827]">Sign Out</p>
-            </Link>
           </div>
         </nav>
+
+        <div className="border-t border-sidebar-border p-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex h-12 w-full items-center gap-2 rounded-md px-2 text-start text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+                <Avatar className="size-8 rounded-lg">
+                  <AvatarImage src={user?.user_metadata?.avatar_url || undefined} />
+                  <AvatarFallback className="rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                    {email.charAt(0).toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="grid min-w-0 flex-1 text-start text-sm leading-tight">
+                  <span className="truncate font-semibold">{displayName}</span>
+                  <span className="truncate text-xs text-muted-foreground">{email}</span>
+                </div>
+                <ChevronsUpDown className="ms-auto size-4 text-muted-foreground" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56 rounded-lg" side="right" align="end" sideOffset={4}>
+              <DropdownMenuLabel className="p-0 font-normal">
+                <div className="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
+                  <Avatar className="size-8 rounded-lg">
+                    <AvatarImage src={user?.user_metadata?.avatar_url || undefined} />
+                    <AvatarFallback className="rounded-lg">{email.charAt(0).toUpperCase() || "U"}</AvatarFallback>
+                  </Avatar>
+                  <div className="grid min-w-0 flex-1 text-start text-sm leading-tight">
+                    <span className="truncate font-semibold">{displayName}</span>
+                    <span className="truncate text-xs">{email}</span>
+                  </div>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/settings">
+                  <Settings className="size-4" />
+                  Settings
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/pricing">
+                  <BillingSeal className="size-4" />
+                  Billing
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild className="text-destructive">
+                <Link href="/signout">
+                  <LogOut className="size-4" />
+                  Sign Out
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </aside>
   )

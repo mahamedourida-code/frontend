@@ -6,8 +6,8 @@ import { useAuth } from "@/hooks/useAuth"
 import { ocrApi } from "@/lib/api-client"
 import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DashboardShell } from "@/components/DashboardShell"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { cn } from "@/lib/utils"
@@ -354,10 +354,10 @@ export default function DashboardPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f7faf7]">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-[#166534] border-t-transparent" />
-          <p className="text-sm font-medium text-[#667085]">Loading dashboard</p>
+          <div className="mx-auto mb-4 size-10 animate-spin rounded-full border-2 border-muted border-t-primary" />
+          <p className="text-sm font-medium text-muted-foreground">Loading dashboard</p>
         </div>
       </div>
     )
@@ -404,125 +404,117 @@ export default function DashboardPage() {
 
   return (
     <DashboardShell activeItem="overview" title="Dashboard" user={user} showBack={false}>
-      <div className="space-y-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <Tabs value="overview" className="w-fit">
-            <TabsList className="h-9 rounded-lg bg-[#eef5ee] p-1 text-[#667085]">
-              <TabsTrigger value="overview" className="rounded-md px-3 text-sm data-[state=active]:bg-white data-[state=active]:text-[#166534]">
-                Overview
-              </TabsTrigger>
-              <TabsTrigger value="analytics" disabled className="rounded-md px-3 text-sm">
-                Analytics
-              </TabsTrigger>
-              <TabsTrigger value="reports" disabled className="rounded-md px-3 text-sm">
-                Reports
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+      <div className="mb-2 flex items-center justify-between space-y-2">
+        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+        <div className="flex items-center space-x-2">
+          <Button onClick={() => router.push("/dashboard/client")}>Process Images</Button>
+        </div>
+      </div>
+
+      <Tabs orientation="vertical" defaultValue="overview" className="space-y-4">
+        <div className="flex w-full items-center justify-between gap-3 overflow-x-auto pb-2">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="analytics" disabled>Analytics</TabsTrigger>
+            <TabsTrigger value="reports" disabled>Reports</TabsTrigger>
+            <TabsTrigger value="notifications" disabled>Notifications</TabsTrigger>
+          </TabsList>
 
           <Button
             size="sm"
             variant="outline"
             onClick={fetchDashboardData}
             disabled={loading}
-            className="h-9 w-fit rounded-lg border-[#dfe8df] bg-white px-3 text-[#166534] shadow-sm hover:bg-[#f7faf7]"
+            className="h-9 shrink-0"
           >
-            <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
+            <RefreshCw className={cn("me-2 size-4", loading && "animate-spin")} />
             Refresh
           </Button>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {metricCards.map((item) => {
-            const Icon = item.icon
+        <TabsContent value="overview" className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {metricCards.map((item) => {
+              const Icon = item.icon
 
-            return (
-              <Card key={item.title} className="rounded-xl border-[#dfe8df] bg-white shadow-sm">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-[#344054]">
-                    {item.title}
-                  </CardTitle>
-                  <Icon className="h-4 w-4 text-[#667085]" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-semibold tracking-tight text-[#111827]">
-                    {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
-                  </div>
-                  <p className="mt-1 text-xs font-medium text-[#667085]">{item.helper}</p>
-                </CardContent>
-              </Card>
-            )
-          })}
-        </div>
+              return (
+                <Card key={item.title}>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      {item.title}
+                    </CardTitle>
+                    <Icon className="size-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
+                    </div>
+                    <p className="text-xs text-muted-foreground">{item.helper}</p>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
-          <Card className="col-span-1 rounded-xl border-[#dfe8df] bg-white shadow-sm lg:col-span-4">
-            <CardHeader className="flex flex-col gap-3 space-y-0 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-2 text-base font-semibold text-[#111827]">
-                  <TrendingUp className="h-4 w-4 text-[#166534]" />
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
+            <Card className="col-span-1 lg:col-span-4">
+              <CardHeader className="flex flex-col gap-3 space-y-0 sm:flex-row sm:items-center sm:justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="size-4 text-primary" />
                   Processing Activity
                 </CardTitle>
-              </div>
-              <Tabs value={timeRange} onValueChange={(value) => setTimeRange(value as TimeRange)}>
-                <TabsList className="h-9 rounded-lg bg-[#eef5ee] p-1">
-                  {(["1d", "7d", "30d", "3m"] as TimeRange[]).map((range) => (
-                    <TabsTrigger
-                      key={range}
-                      value={range}
-                      className="rounded-md px-3 text-xs data-[state=active]:bg-white data-[state=active]:text-[#166534]"
-                    >
-                      {range === "1d" ? "24h" :
-                        range === "7d" ? "7D" :
-                          range === "30d" ? "30D" : "3M"}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </Tabs>
-            </CardHeader>
-            <CardContent className="px-4 pb-4 pt-0">
-              <DashboardChart
-                chartData={chartData}
-                timeRange={timeRange}
-              />
-            </CardContent>
-          </Card>
+                <Tabs value={timeRange} onValueChange={(value) => setTimeRange(value as TimeRange)}>
+                  <TabsList>
+                    {(["1d", "7d", "30d", "3m"] as TimeRange[]).map((range) => (
+                      <TabsTrigger key={range} value={range}>
+                        {range === "1d" ? "24h" :
+                          range === "7d" ? "7D" :
+                            range === "30d" ? "30D" : "3M"}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </Tabs>
+              </CardHeader>
+              <CardContent className="ps-2">
+                <DashboardChart chartData={chartData} timeRange={timeRange} />
+              </CardContent>
+            </Card>
 
-          <Card className="col-span-1 rounded-xl border-[#dfe8df] bg-white shadow-sm lg:col-span-3">
-            <CardHeader>
-              <CardTitle className="text-base font-semibold text-[#111827]">Run Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <div className="space-y-4">
-                {summaryRows.map((row) => (
-                  <div key={row.label} className="flex items-center justify-between gap-4">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-[#344054]">{row.label}</p>
+            <Card className="col-span-1 lg:col-span-3">
+              <CardHeader>
+                <CardTitle>Run Summary</CardTitle>
+                <CardDescription>Batch activity across your workspace.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-5">
+                <div className="space-y-4">
+                  {summaryRows.map((row) => (
+                    <div key={row.label} className="flex items-center justify-between gap-4">
+                      <p className="truncate text-sm font-medium">{row.label}</p>
+                      <p className="text-sm font-semibold tabular-nums text-primary">{row.value}</p>
                     </div>
-                    <p className="text-sm font-semibold tabular-nums text-[#166534]">{row.value}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="rounded-xl border border-[#dfe8df] bg-[#f7faf7] p-4">
-                <div className="flex items-start gap-3">
-                  <div className="mt-1 h-2.5 w-2.5 rounded-full bg-[#166534]" />
-                  <div>
-                    <p className="text-sm font-medium text-[#111827]">Batch workspace</p>
-                    <p className="mt-1 text-sm text-[#667085]">Ready for image and PDF runs.</p>
-                  </div>
+                  ))}
                 </div>
-                <Button
-                  onClick={() => router.push("/dashboard/client")}
-                  className="mt-4 h-10 rounded-lg bg-[#166534] px-4 text-white shadow-sm hover:bg-[#14532d]"
-                >
-                  Process Images
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+
+                <div className="rounded-lg border bg-muted/40 p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="mt-1 size-2.5 rounded-full bg-primary" />
+                    <div>
+                      <p className="text-sm font-medium">Batch workspace</p>
+                      <p className="mt-1 text-sm text-muted-foreground">Ready for image and PDF runs.</p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() => router.push("/dashboard/client")}
+                    className="mt-4"
+                  >
+                    Process Images
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </DashboardShell>
   )
 }

@@ -85,16 +85,16 @@ export default function DashboardChart({ chartData, timeRange }: DashboardChartP
         data={chartData} 
         margin={{ top: 5, right: 5, left: -20, bottom: 0 }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="#dfe8df" opacity={0.7} />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.7} />
         <XAxis
           dataKey={timeRange === "1d" ? "formattedTime" : "formattedDate"}
-          stroke="#888888"
+          stroke="var(--muted-foreground)"
           fontSize={10}
           tickLine={false}
           axisLine={false}
         />
         <YAxis
-          stroke="#888888"
+          stroke="var(--muted-foreground)"
           fontSize={10}
           tickLine={false}
           axisLine={false}
@@ -104,19 +104,19 @@ export default function DashboardChart({ chartData, timeRange }: DashboardChartP
         <Tooltip
           contentStyle={{
             backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            border: '1px solid #dfe8df',
+            border: '1px solid var(--border)',
             borderRadius: '8px',
             fontSize: '12px'
           }}
-          labelStyle={{ color: '#666' }}
+          labelStyle={{ color: 'var(--muted-foreground)' }}
           formatter={(value: any) => [`${value} images`, 'Processed']}
         />
         <Line
           type="linear"
           dataKey="count"
-          stroke="#166534"
+          stroke="var(--primary)"
           strokeWidth={2}
-          dot={{ fill: '#166534', r: 3 }}
+          dot={{ fill: 'var(--primary)', r: 3 }}
           activeDot={{ r: 5 }}
         />
       </LineChart>

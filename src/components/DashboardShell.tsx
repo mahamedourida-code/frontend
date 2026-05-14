@@ -5,10 +5,12 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ArrowRight, ChevronLeft, Clock3, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
 import { MobileNav } from "@/components/MobileNav"
 import { DashboardCreditsPill } from "@/components/DashboardCreditsPill"
 import { BillingSeal } from "@/components/BillingGlyphs"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { ocrApi, type RecoverableJobSummary } from "@/lib/api-client"
@@ -126,98 +128,104 @@ export function DashboardShell({
 
   const nextActionHref = activeItem === "process" ? "/history" : "/dashboard/client"
   const nextActionLabel = activeItem === "process" ? "History" : "Process Images"
+  const topNav = [
+    { label: "Overview", href: "/dashboard", active: activeItem === "overview" },
+    { label: "Process Images", href: "/dashboard/client", active: activeItem === "process" },
+    { label: "Plans", href: "/pricing", active: activeItem === "pricing" },
+  ]
 
   return (
-    <div className="min-h-screen bg-[#f7faf7] text-[#111827] lg:flex lg:gap-4 lg:p-4">
+    <div className="min-h-svh bg-background text-foreground md:grid md:grid-cols-[16rem_minmax(0,1fr)]">
       <WorkspaceSidebar activeItem={activeItem} user={user} />
 
-      <div className="relative z-10 min-w-0 flex-1">
-        <header className="sticky top-0 z-40 px-3 pt-3 lg:static lg:px-0 lg:pt-0">
-          <div className="mx-auto max-w-7xl">
-            <div className="rounded-2xl border border-[#dfe8df] bg-white px-3 py-3 shadow-sm sm:px-4">
-              <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-                <div className="flex min-w-0 items-center gap-3">
-                  {showBack && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => router.back()}
-                      className="h-9 rounded-lg border border-[#dfe8df] bg-[#f7faf7] px-3 text-[#166534] hover:bg-white hover:text-[#14532d]"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                  )}
-                  <div className="min-w-0">
-                    {eyebrow && (
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#15803d]">
-                        {eyebrow}
-                      </p>
-                    )}
-                    <h1 className="truncate text-xl font-semibold tracking-tight text-[#111827] sm:text-2xl">
-                      {title}
-                    </h1>
-                  </div>
-                </div>
+      <div className="relative z-10 min-w-0 md:col-start-2">
+        <header className="sticky top-0 z-40 h-16 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+          <div className="relative flex h-full items-center gap-3 px-4 sm:gap-4">
+            {showBack && (
+              <>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => router.back()}
+                  className="size-8"
+                >
+                  <ChevronLeft className="size-4" />
+                </Button>
+                <Separator orientation="vertical" className="h-6" />
+              </>
+            )}
 
-                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
-                  {activeJob ? (
-                    <Link
-                      href={activeJob.href}
-                      className={cn(
-                        "inline-flex h-10 items-center gap-2 rounded-full border px-4 text-sm font-medium shadow-sm transition hover:translate-y-[-1px]",
-                        activeJob.tone === "ready"
-                          ? "border-[#dfe8df] bg-white text-[#166534]"
-                          : "border-[#166534] bg-[#166534] text-white"
-                      )}
-                    >
-                      {activeJob.tone === "ready" ? (
-                        <Clock3 className="h-4 w-4" />
-                      ) : (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      )}
-                      <span>{activeJob.label}</span>
-                      <span className="rounded-full bg-white/16 px-2 py-0.5 text-xs">{activeJob.progress}</span>
-                    </Link>
+            <nav className="hidden items-center gap-1 md:flex">
+              {topNav.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "inline-flex h-9 items-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+                    item.active ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="me-auto min-w-0 md:hidden">
+              <div className="truncate text-sm font-medium">{title}</div>
+            </div>
+
+            <div className="ms-auto flex min-w-0 items-center gap-2">
+              {activeJob && (
+                <Link
+                  href={activeJob.href}
+                  className={cn(
+                    "hidden h-9 items-center gap-2 rounded-md border px-3 text-sm font-medium transition-colors sm:inline-flex",
+                    activeJob.tone === "ready"
+                      ? "border-border bg-background text-foreground hover:bg-accent"
+                      : "border-primary bg-primary text-primary-foreground hover:bg-primary/90"
+                  )}
+                >
+                  {activeJob.tone === "ready" ? (
+                    <Clock3 className="size-4" />
                   ) : (
-                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-[#dfe8df] bg-white px-4 text-sm font-medium text-[#667085] shadow-sm">
-                      <span className="h-2 w-2 rounded-full bg-[#98a2b3]" />
-                      No active job
-                    </div>
+                    <Loader2 className="size-4 animate-spin" />
                   )}
+                  <span>{activeJob.label}</span>
+                  <span className="text-xs opacity-75">{activeJob.progress}</span>
+                </Link>
+              )}
 
-                  <div className="inline-flex h-10 items-center gap-2 rounded-full border border-[#dfe8df] bg-white px-4 text-sm font-medium text-[#111827] shadow-sm">
-                    <BillingSeal className="h-5 w-5 text-[#166534]" />
-                    <span>{billingLoading && !billingStatus ? "Plan" : formatPlan(plan)}</span>
-                  </div>
-
-                  <DashboardCreditsPill credits={availableCredits} />
-
-                  <Button
-                    asChild
-                    className="h-10 rounded-full bg-[#166534] px-4 text-white shadow-sm hover:bg-[#14532d]"
-                  >
-                    <Link href={billingActionHref}>{billingActionLabel}</Link>
-                  </Button>
-
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="h-10 rounded-full border-[#dfe8df] bg-white px-4 text-[#166534] shadow-sm hover:bg-[#f7faf7]"
-                  >
-                    <Link href={nextActionHref}>
-                      {nextActionLabel}
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-
-                  {actions}
-                </div>
+              <div className="hidden h-9 items-center gap-2 rounded-md border border-border bg-background px-3 text-sm font-medium sm:inline-flex">
+                <BillingSeal className="size-4 text-primary" />
+                <span>{billingLoading && !billingStatus ? "Plan" : formatPlan(plan)}</span>
               </div>
+
+              <DashboardCreditsPill credits={availableCredits} className="hidden sm:inline-flex" />
+              <ThemeToggle />
+
+              <Button asChild size="sm" variant={isPaid ? "outline" : "default"}>
+                <Link href={billingActionHref}>{billingActionLabel}</Link>
+              </Button>
+
+              <Button asChild size="sm" variant="outline" className="hidden lg:inline-flex">
+                <Link href={nextActionHref}>
+                  {nextActionLabel}
+                  <ArrowRight className="ms-2 size-4" />
+                </Link>
+              </Button>
+
+              {actions}
             </div>
           </div>
         </header>
 
-        <main className={cn("mx-auto max-w-7xl px-3 py-4 pb-24 sm:px-4 lg:px-4 lg:py-6", contentClassName)}>
+        <main className={cn("mx-auto w-full max-w-7xl px-4 py-6 pb-24", contentClassName)}>
+          {(eyebrow || title) && (
+            <div className="sr-only">
+              {eyebrow && <span>{eyebrow}</span>}
+              <h1>{title}</h1>
+            </div>
+          )}
           {children}
         </main>
       </div>

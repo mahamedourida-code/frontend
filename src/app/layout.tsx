@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import { Nunito, Caveat } from "next/font/google";
+import { Caveat, Inter } from "next/font/google";
 import "./globals.css";
 import "../styles/mobile-nav.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ProcessingStateProvider } from "@/contexts/ProcessingStateContext";
 import { Toaster } from "sonner";
 
-const nunito = Nunito({
-  variable: "--font-nunito",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 const caveat = Caveat({
@@ -20,7 +19,7 @@ const caveat = Caveat({
 
 export const metadata: Metadata = {
   title: "Image to Excel – FREE OCR Model",
-  description: "Convert images and handwritten tables to Excel for free , up to 100 in one click , with Axliner's 7B OCR model fine-tuned on Llama 3. Fast, accurate, and built for scale.",
+  description: "Convert images and handwritten tables to Excel for free with Axliner's OCR workflow. Fast, accurate, and built for plan-based batch processing.",
   keywords: ["image to excel free", "AI OCR", "Llama 3", "7B model", "handwritten OCR", "table extractor", "screenshot to excel", "Axliner"],
   robots: {
     index: true,
@@ -47,7 +46,7 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   openGraph: {
     title: "Image to Excel - 7B finetuned Llama 3 OCR Model",
-    description: "Convert images and handwritten tables to Excel — up to 100 in one click — with Axliner's 7B OCR model fine-tuned on Llama 3. Fast, accurate, and built for scale.",
+    description: "Convert images and handwritten tables to Excel with Axliner's OCR workflow. Fast, accurate, and built for plan-based batch processing.",
     url: "https://axliner.com/",
     siteName: "Axliner",
     type: "website",
@@ -63,7 +62,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Image to Excel - 7B finetuned Llama 3 OCR Model",
-    description: "Convert images and handwritten tables to Excel — up to 100 in one click — with Axliner's 7B OCR model fine-tuned on Llama 3. Fast, accurate, and built for scale.",
+    description: "Convert images and handwritten tables to Excel with Axliner's OCR workflow. Fast, accurate, and built for plan-based batch processing.",
     images: ['https://axliner.com/crop.png'],
   },
 };
@@ -89,8 +88,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${nunito.variable} ${caveat.variable} antialiased font-sans bg-background text-foreground relative overflow-x-hidden`}
-        style={{ fontFamily: 'var(--font-nunito)' }}
+        className={`${inter.variable} ${caveat.variable} antialiased font-sans bg-background text-foreground relative overflow-x-hidden`}
       >
         <ThemeProvider defaultTheme="light" storageKey="AxLiner-theme">
           <ProcessingStateProvider>

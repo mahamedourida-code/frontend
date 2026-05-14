@@ -23,13 +23,14 @@ import { createClient } from "@/utils/supabase/client";
 import NextLink from "next/link";
 import { IndustrySolutionsMenuGrid } from "@/components/IndustrySolutionsMenuGrid";
 import { GoogleOneTap } from "@/components/GoogleOneTap";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const BenchmarkAccuracyChart = dynamic(
   () => import("@/components/landing/BenchmarkAccuracyChart"),
   {
     ssr: false,
     loading: () => (
-      <Card className="h-full min-h-[430px] border border-[#A78BFA]/35 bg-white/45 shadow-xl shadow-[#A78BFA]/10 backdrop-blur-md" />
+      <Card className="h-full min-h-[430px] border-border bg-card/80 shadow-sm backdrop-blur-md" />
     ),
   }
 );
@@ -395,21 +396,20 @@ export default function Home() {
   return (
     <div className="min-h-screen relative bg-transparent">
       {/* Navigation Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 pt-3 backdrop-blur-2xl lg:pt-4">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between rounded-[35px] border border-black/10 bg-neutral-100/55 p-2 shadow-[0_18px_45px_rgba(20,20,20,0.08)] ring-1 ring-white/35 backdrop-blur-2xl lg:p-3">
+      <nav className="fixed inset-x-0 top-0 z-50 h-16 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <div className="mx-auto flex h-full max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
             {/* Logo */}
             <div className="flex-shrink-0">
               <AppLogo />
             </div>
 
             {/* Desktop Navigation Items - Hidden on Mobile */}
-            <div className="hidden lg:flex items-center justify-center flex-1">
+            <div className="hidden flex-1 items-center justify-center lg:flex">
               <NavigationMenu>
                 <NavigationMenuList className="gap-1">
                   {/* Solutions Dropdown */}
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger className="bg-transparent hover:bg-accent/50 transition-colors text-black dark:text-white">
+                    <NavigationMenuTrigger className="bg-transparent text-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
                       Solutions
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
@@ -420,7 +420,7 @@ export default function Home() {
                   <NavigationMenuItem>
                     <NavigationMenuLink
                       href="/pricing"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-accent/50 transition-colors text-black dark:text-white")}
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-accent hover:text-accent-foreground")}
                     >
                       Pricing
                     </NavigationMenuLink>
@@ -429,7 +429,7 @@ export default function Home() {
                   <NavigationMenuItem>
                     <NavigationMenuLink
                       href="/blogs"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-accent/50 transition-colors text-black dark:text-white")}
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-accent hover:text-accent-foreground")}
                     >
                       Blogs
                     </NavigationMenuLink>
@@ -438,7 +438,7 @@ export default function Home() {
                   {/* How AxLiner's Built */}
                   <NavigationMenuItem>
                     <button
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-accent/50 transition-colors text-black dark:text-white")}
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-accent hover:text-accent-foreground")}
                       onClick={() => scrollToSection('ai-engine')}
                     >
                       How AxLiner's Built
@@ -448,7 +448,7 @@ export default function Home() {
                   {/* Benchmarks */}
                   <NavigationMenuItem>
                     <button
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent hover:bg-accent/50 transition-colors text-black dark:text-white")}
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-accent hover:text-accent-foreground")}
                       onClick={() => scrollToSection('benchmarks')}
                     >
                       Benchmarks
@@ -459,10 +459,11 @@ export default function Home() {
             </div>
 
             {/* Sign In & Try for Free Buttons - Desktop */}
-            <div className="hidden lg:flex items-center gap-3">
+            <div className="hidden items-center gap-2 lg:flex">
+              <ThemeToggle />
               {isAuthenticated ? (
                 <Button
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-4 py-2 text-sm font-medium transition-colors shadow-lg hover:shadow-xl"
+                  size="sm"
                   asChild
                 >
                   <NextLink href="/dashboard">Go to Dashboard</NextLink>
@@ -470,14 +471,14 @@ export default function Home() {
               ) : (
                 <>
                   <Button
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-4 py-2 text-sm font-medium transition-colors shadow-lg hover:shadow-xl"
+                    size="sm"
                     onClick={() => openSignInModal("/pricing?from=signup")}
                   >
                     Sign Up
                   </Button>
                   <Button
                     variant="outline"
-                    className="bg-white/90 dark:bg-white/20 text-foreground border-[1.6px] border-foreground/30 rounded-full px-4 py-2 text-sm font-medium hover:bg-white dark:hover:bg-white/30 transition-colors backdrop-blur-sm"
+                    size="sm"
                     onClick={() => openSignInModal("/dashboard/client")}
                   >
                     Sign in
@@ -485,37 +486,36 @@ export default function Home() {
                 </>
               )}
             </div>
-          </div>
         </div>
       </nav>
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden" style={{ backgroundColor: "#E9ECE4" }}>
+        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden bg-background">
           <div
             ref={topBackgroundRef}
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat will-change-transform"
             style={{
-              backgroundColor: "#E9ECE4",
+              backgroundColor: "var(--background)",
             }}
           />
           <div className="relative z-10">
-        <section ref={heroRef} className="relative overflow-hidden pt-10 pb-16 sm:pt-12 sm:pb-[4.5rem] lg:pt-12 lg:pb-24">
+        <section ref={heroRef} className="relative overflow-hidden pt-24 pb-16 sm:pt-28 sm:pb-[4.5rem] lg:pt-28 lg:pb-24">
           <div className="relative z-10 container mx-auto max-w-[1500px] px-4 sm:px-5 lg:px-9">
             <div className="grid min-h-[500px] items-center gap-14 lg:min-h-[535px] lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)] lg:gap-16">
               <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:translate-x-8 lg:text-left xl:translate-x-10">
-                <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight text-[#2f165e] sm:text-5xl lg:text-6xl">
+                <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight text-primary sm:text-5xl lg:text-6xl">
                   Handwritten images to Excel in seconds
                 </h1>
-                <p className="mt-8 text-base leading-8 text-black sm:text-lg lg:text-xl">
+                <p className="mt-8 text-base leading-8 text-foreground sm:text-lg lg:text-xl">
                   Upload handwritten tables, class notes, invoices, receipts, paper forms, and screenshots from any workflow. AxLiner reads the structure, preserves the rows and columns, and gives you clean Excel files you can review, edit, share, or use in reporting without retyping everything by hand.
                 </p>
 
                 <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row lg:items-center">
                   <Button
                     onClick={() => scrollToSection('converter')}
-                    className="h-14 rounded-full bg-[#2f165e] px-10 text-base font-semibold text-white shadow-[0_18px_35px_rgba(47,22,94,0.22)] hover:bg-[#24104b]"
+                    className="h-12 px-8 text-base font-semibold"
                   >
                     Try It
                   </Button>
@@ -533,10 +533,10 @@ export default function Home() {
                         />
                       ))}
                     </div>
-                    <div className="h-9 w-px bg-[#2f165e]/18" />
+                    <div className="h-9 w-px bg-border" />
                     <div className="text-left">
-                      <p className="text-sm font-bold leading-none text-[#111827]">5,000+</p>
-                      <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#111827]/60">active teams</p>
+                      <p className="text-sm font-bold leading-none text-foreground">5,000+</p>
+                      <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">active teams</p>
                     </div>
                   </div>
                 </div>
@@ -544,7 +544,7 @@ export default function Home() {
 
               <div className="flex flex-col items-center lg:translate-x-14 lg:items-end xl:translate-x-20">
                 <div className="relative w-full max-w-[800px]">
-                  <div className="absolute inset-x-8 bottom-5 h-20 rounded-full bg-[#2f165e]/18 blur-3xl" aria-hidden="true" />
+                  <div className="absolute inset-x-8 bottom-5 h-20 rounded-full bg-primary/15 blur-3xl" aria-hidden="true" />
                   <img
                     src="/header.svg"
                     alt="AxLiner document conversion illustration"
@@ -563,9 +563,9 @@ export default function Home() {
           ) : (
             <section className="relative z-10 pt-6 pb-16 sm:pt-8 lg:pt-10">
               <div className="container mx-auto max-w-[1540px] px-4 sm:px-5 lg:px-9">
-                <div className="mx-auto rounded-[2rem] border border-white/45 bg-white/35 p-8 text-center shadow-[0_24px_70px_rgba(42,35,64,0.08)] backdrop-blur-2xl">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/50 px-4 py-2 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
-                    <h2 className="text-lg font-bold text-foreground sm:text-xl">Try It</h2>
+                <div className="mx-auto rounded-xl border bg-card/80 p-8 text-center shadow-sm backdrop-blur">
+                  <div className="inline-flex items-center gap-2 rounded-md border bg-background px-4 py-2 shadow-sm">
+                    <h2 className="text-lg font-semibold text-foreground sm:text-xl">Try It</h2>
                   </div>
                 </div>
               </div>
@@ -578,9 +578,9 @@ export default function Home() {
 
         <div
           ref={purpleSectionRef}
-          className="relative isolate -mt-10 overflow-hidden pt-36 pb-12 text-white [&_.text-card-foreground]:!text-white [&_.text-foreground]:!text-white [&_.text-muted-foreground]:!text-white/85 [&_.text-primary]:!text-white"
+          className="relative isolate -mt-10 overflow-hidden pt-36 pb-12 text-primary-foreground [&_.text-card-foreground]:!text-primary-foreground [&_.text-foreground]:!text-primary-foreground [&_.text-muted-foreground]:!text-primary-foreground/80 [&_.text-primary]:!text-primary-foreground"
           style={{
-            backgroundColor: "#2f165e",
+            backgroundColor: "var(--primary)",
             clipPath:
               "polygon(0 3.8%, 9% 2.7%, 20% 4.4%, 35% 2.1%, 50% 4.2%, 66% 2.5%, 82% 4.1%, 100% 2.8%, 100% 100%, 0 100%)",
           }}
@@ -588,7 +588,7 @@ export default function Home() {
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0"
-            style={{ backgroundColor: "#2f165e" }}
+            style={{ backgroundColor: "var(--primary)" }}
           />
           <div className="relative z-10">
         {/* What is Axliner Section */}
@@ -682,7 +682,7 @@ export default function Home() {
               </div>
 
               <div className="hidden">
-                <Card className="ax-glass-card overflow-hidden rounded-[1.75rem] border border-white/45 shadow-xl shadow-[#441F84]/15">
+                <Card className="ax-glass-card overflow-hidden rounded-xl border-border shadow-sm">
                   <CardContent className="space-y-8 p-6 sm:p-8 lg:p-10">
                     <p className="text-xl text-foreground leading-relaxed">
                       Axliner is a <span className="font-bold">7-billion parameter vision-language model</span> a fine-tuned Meta's Llama 3 Model. The model underwent extensive instruction fine-tuning specifically optimized for <span className="font-bold">handwritten text recognition</span>, <span className="font-bold">table structure preservation</span>, and <span className="font-bold">multi-language document understanding</span>.
@@ -732,7 +732,7 @@ export default function Home() {
                   [1, 2, 3, 4, 5, 6, 7, 8, 9].map((imgNum) => (
                     <Card
                       key={`${setIndex}-${imgNum}`}
-                      className="flex-shrink-0 bg-white dark:bg-white border border-border/50 hover:border-[#A78BFA]/30 transition-all duration-300 hover:shadow-md w-[120px] h-[80px]"
+                      className="flex-shrink-0 bg-card border border-border/50 transition-all duration-300 hover:border-primary/30 hover:shadow-md w-[120px] h-[80px]"
                     >
                       <CardContent className="p-2 flex items-center justify-center w-full h-full">
                         <Image
@@ -765,14 +765,14 @@ export default function Home() {
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
-            style={{ backgroundColor: "#E9ECE4" }}
+            style={{ backgroundColor: "var(--background)" }}
           />
           <div className="relative z-10">
         {/* Why Choose Us Section */}
         <ScrollAnimatedSection id="features" className="relative z-20 pt-16 pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 mb-4 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
+              <div className="inline-flex items-center gap-2 rounded-md border bg-background px-4 py-2 mb-4 shadow-sm">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   Solutions
                 </h2>
@@ -784,7 +784,7 @@ export default function Home() {
                 <Card
                   key={solution.title}
                   data-animate="stagger"
-                  className="group flex min-h-[560px] overflow-hidden rounded-[6px] border border-white/70 bg-[#f2f5ee]/78 shadow-[0_26px_70px_rgba(42,35,64,0.08)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-white hover:bg-[#f7f9f3]/90 hover:shadow-[0_32px_85px_rgba(42,35,64,0.13)]"
+                  className="group flex min-h-[560px] overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md"
                 >
                   <CardContent className="flex h-full w-full flex-col p-7 sm:p-8">
                     <div className="flex h-56 items-center justify-center sm:h-64">
@@ -796,19 +796,19 @@ export default function Home() {
                     </div>
 
                     <div className="mt-10 flex flex-1 flex-col">
-                      <CardTitle className="text-2xl font-semibold tracking-normal text-[#141b35]">
+                      <CardTitle className="text-2xl font-semibold tracking-normal text-foreground">
                         {solution.title}
                       </CardTitle>
-                      <CardDescription className="mt-5 text-[15px] leading-7 text-[#24304a]">
+                      <CardDescription className="mt-5 text-[15px] leading-7 text-muted-foreground">
                         {solution.description}
                       </CardDescription>
 
                       <NextLink
                         href={solution.href}
-                        className="mt-auto flex items-end justify-between gap-4 pt-12 text-left text-sm font-medium text-[#24304a] transition-colors hover:text-[#151827]"
+                        className="mt-auto flex items-end justify-between gap-4 pt-12 text-left text-sm font-medium text-foreground transition-colors hover:text-primary"
                       >
                         <span>Discover More</span>
-                        <span className="relative block h-10 w-10 text-[#00a51a] transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
+                        <span className="relative block h-10 w-10 text-primary transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
                           <span className="absolute bottom-2 right-1 h-[4px] w-9 origin-right rotate-[-45deg] rounded-full bg-current" />
                           <span className="absolute right-1 top-1 h-8 w-8 border-r-[4px] border-t-[4px] border-current" />
                         </span>
@@ -827,7 +827,7 @@ export default function Home() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0"
             style={{
-              backgroundColor: "#E9ECE4",
+              backgroundColor: "var(--background)",
               boxShadow: "0 -24px 60px rgba(47, 22, 94, 0.08)",
               clipPath:
                 "polygon(0 4%, 12% 2.8%, 25% 4.6%, 40% 2.4%, 58% 4.3%, 75% 2.7%, 100% 4%, 100% 100%, 0 100%)",
@@ -836,7 +836,7 @@ export default function Home() {
           <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/45 bg-white/45 px-4 py-2 mb-4 shadow-lg shadow-[#A78BFA]/10 backdrop-blur-2xl">
+                <div className="inline-flex items-center gap-2 rounded-md border bg-background px-4 py-2 mb-4 shadow-sm">
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     Benchmarks
                   </h2>
@@ -851,13 +851,13 @@ export default function Home() {
                 <BenchmarkAccuracyChart />
 
                 {/* Performance Metrics Table */}
-                <Card className="border border-[#A78BFA]/35 bg-white/55 shadow-xl shadow-[#A78BFA]/10 backdrop-blur-md dark:bg-card/70" data-animate="stagger">
+                <Card className="border-border bg-card/80 shadow-sm backdrop-blur-md" data-animate="stagger">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg font-semibold">Comprehensive Performance Metrics</CardTitle>
                     <p className="text-sm text-muted-foreground">Average across all test scenarios</p>
                   </CardHeader>
                   <CardContent>
-                      <div className="overflow-hidden rounded-lg border border-[#A78BFA]/45 bg-white/45 backdrop-blur-md">
+                      <div className="overflow-hidden rounded-lg border border-border bg-background/80 backdrop-blur-md">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-border/50 bg-muted/30">
@@ -874,7 +874,7 @@ export default function Home() {
                           </tr>
                           <tr className="border-b border-border/50">
                             <td className="p-3 text-muted-foreground">Word Recognition</td>
-                            <td className="p-3 text-right font-semibold text-[#441F84]">99.5%</td>
+                            <td className="p-3 text-right font-semibold text-primary">99.5%</td>
                             <td className="p-3 text-right text-muted-foreground">95.1%</td>
                           </tr>
                           <tr className="border-b border-border/50">
@@ -911,10 +911,10 @@ export default function Home() {
         <ScrollAnimatedSection id="owned-ai" className="relative z-20 overflow-hidden px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <div className="mx-auto max-w-[1540px]">
             <div className="mx-auto max-w-[980px] text-center" data-animate="headline">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#4C287F]">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
                 Not a third-party wrapper
               </p>
-              <h2 className="mt-5 text-4xl font-semibold leading-[1.02] tracking-normal text-[#11182f] sm:text-5xl lg:text-[4.2rem]">
+              <h2 className="mt-5 text-4xl font-semibold leading-[1.02] tracking-normal text-foreground sm:text-5xl lg:text-[4.2rem]">
                 Document AI built before the hype cycle.
               </h2>
             </div>
@@ -923,7 +923,7 @@ export default function Home() {
               <div className="mx-auto overflow-hidden rounded-[18px] shadow-[0_22px_60px_rgba(42,35,64,0.10)]">
                 <div className="grid min-h-[190px] sm:grid-cols-3 lg:min-h-[260px]">
                   {ownedPipelineImages.map((image) => (
-                    <div key={image.src} className="relative min-h-[190px] border-white/85 sm:border-l sm:first:border-l-0 lg:min-h-[260px]">
+                    <div key={image.src} className="relative min-h-[190px] border-primary-foreground/80 sm:border-l sm:first:border-l-0 lg:min-h-[260px]">
                       <Image
                         src={image.src}
                         alt={image.alt}
@@ -936,11 +936,11 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="mx-auto mt-8 grid max-w-[1040px] gap-7 text-center text-[#11182f] md:grid-cols-3">
+              <div className="mx-auto mt-8 grid max-w-[1040px] gap-7 text-center text-foreground md:grid-cols-3">
                 {ownedPipelineCopy.map((item, index) => (
-                  <div key={item} className="border-t border-[#11182f]/18 pt-5">
-                    <p className="text-sm font-bold text-[#4C287F]">0{index + 1}</p>
-                    <p className="mt-3 text-base font-medium leading-8 text-[#11182f]/80">{item}</p>
+                  <div key={item} className="border-t border-border pt-5">
+                    <p className="text-sm font-bold text-primary">0{index + 1}</p>
+                    <p className="mt-3 text-base font-medium leading-8 text-foreground/80">{item}</p>
                   </div>
                 ))}
               </div>
@@ -954,7 +954,7 @@ export default function Home() {
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
-            style={{ backgroundColor: "#E9ECE4" }}
+            style={{ backgroundColor: "var(--background)" }}
           />
           <div className="relative z-10">
         {/* AI Engine Section */}
@@ -962,8 +962,8 @@ export default function Home() {
           <div className="container mx-auto max-w-[1640px] px-4 sm:px-6 lg:px-8">
             <div className="mx-auto">
               <div className="mx-auto mb-12 max-w-4xl text-center" data-animate="headline">
-                <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#A78BFA]/70 bg-white/55 px-4 py-2 shadow-lg shadow-[#A78BFA]/10 backdrop-blur">
-                  <span className="h-2 w-2 rounded-full bg-[#F97316]" />
+                <div className="mb-5 inline-flex items-center gap-2 rounded-md border border-border bg-background px-4 py-2 shadow-sm">
+                  <span className="h-2 w-2 rounded-full bg-primary" />
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     How AxLiner's Engine Is Built
                   </h2>
@@ -974,48 +974,48 @@ export default function Home() {
               <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(440px,0.9fr)] lg:items-start">
                 <div className="space-y-12">
                 {/* Engine Workflow */}
-                <Card className="overflow-hidden border border-[#A78BFA]/35 bg-white/55 shadow-xl shadow-[#A78BFA]/10 backdrop-blur-md" data-animate="stagger">
+                <Card className="overflow-hidden border-border bg-card/80 shadow-sm backdrop-blur-md" data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F97316]/12 text-sm font-black text-[#C2410C] ring-1 ring-[#F97316]/25">01</span>
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary ring-1 ring-primary/20">01</span>
                       <CardTitle className="text-2xl">Built as a document workflow</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="prose prose-sm max-w-none">
-                      <p className="text-[#1f2937] font-medium leading-8 text-base sm:text-lg">
+                      <p className="text-foreground font-medium leading-8 text-base sm:text-lg">
                         AxLiner separates the work into focused stages: clean the image, locate the table, read the handwriting, rebuild the rows, then package the result as an editable workbook. That keeps the experience predictable when a file is crooked, crowded, photographed from a phone, or mixed with notes and totals.
                       </p>
 
-                      <p className="text-[#1f2937] font-medium leading-8 text-base sm:text-lg">
+                      <p className="text-foreground font-medium leading-8 text-base sm:text-lg">
                         The engine is tuned for batch jobs where every page needs the same level of structure. Instead of returning a wall of extracted text, it preserves the relationships that matter in Excel: headers, columns, repeated rows, numeric values, and the original reading order.
                       </p>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4 mt-6">
-                      <div className="flex items-start gap-3 rounded-2xl border border-[#A78BFA]/35 bg-[#fbfdfc]/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-[#F97316]/50 hover:shadow-lg">
-                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-[#F97316]" />
+                      <div className="flex items-start gap-3 rounded-xl border border-border bg-background/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-md">
+                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-primary" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Image cleanup</p>
                           <p className="text-sm text-muted-foreground font-medium">Rotation, contrast, and page noise are normalized before extraction.</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 rounded-2xl border border-[#A78BFA]/35 bg-[#fbfdfc]/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-[#F97316]/50 hover:shadow-lg">
-                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-[#F97316]" />
+                      <div className="flex items-start gap-3 rounded-xl border border-border bg-background/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-md">
+                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-primary" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Handwriting read</p>
                           <p className="text-sm text-muted-foreground font-medium">Letters, numbers, and totals stay connected to their table context.</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 rounded-2xl border border-[#A78BFA]/35 bg-[#fbfdfc]/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-[#F97316]/50 hover:shadow-lg">
-                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-[#F97316]" />
+                      <div className="flex items-start gap-3 rounded-xl border border-border bg-background/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-md">
+                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-primary" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Table rebuild</p>
                           <p className="text-sm text-muted-foreground font-medium">Cells are mapped back into rows and columns instead of plain text.</p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3 rounded-2xl border border-[#A78BFA]/35 bg-[#fbfdfc]/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-[#F97316]/50 hover:shadow-lg">
-                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-[#F97316]" />
+                      <div className="flex items-start gap-3 rounded-xl border border-border bg-background/80 p-4 transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-md">
+                        <span className="mt-0.5 h-2 w-8 flex-shrink-0 rounded-full bg-primary" />
                         <div>
                           <p className="font-semibold text-foreground mb-1">Workbook export</p>
                           <p className="text-sm text-muted-foreground font-medium">The final XLSX is shaped for review, editing, and sharing.</p>
@@ -1023,8 +1023,8 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="mt-6 rounded-3xl border border-[#4C1D95]/20 bg-[#2E145F] p-5 text-white shadow-2xl shadow-[#2E145F]/20">
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#FDBA74]">Extraction plan</p>
+                    <div className="mt-6 rounded-xl border border-primary/20 bg-primary p-5 text-primary-foreground shadow-sm">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground/70">Extraction plan</p>
                       <p className="mt-2 text-lg font-bold">Messy page in, structured spreadsheet out</p>
                       <div className="mt-5 grid gap-2 sm:grid-cols-3">
                         {["headers", "rows", "totals"].map((item) => (
@@ -1038,16 +1038,16 @@ export default function Home() {
                 </Card>
 
                 {/* Export Quality */}
-                <Card className="overflow-hidden border border-[#A78BFA]/35 bg-white/55 shadow-xl shadow-[#A78BFA]/10 backdrop-blur-md" data-animate="stagger">
+                <Card className="overflow-hidden border-border bg-card/80 shadow-sm backdrop-blur-md" data-animate="stagger">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F97316]/12 text-sm font-black text-[#C2410C] ring-1 ring-[#F97316]/25">02</span>
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary ring-1 ring-primary/20">02</span>
                       <CardTitle className="text-2xl">Quality control before export</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="prose prose-sm max-w-none">
-                      <p className="text-[#1f2937] font-medium leading-8 text-base sm:text-lg">
+                      <p className="text-foreground font-medium leading-8 text-base sm:text-lg">
                         AxLiner treats export quality as part of the engine, not a final download button. Before a workbook is returned, the output is checked for row continuity, empty columns, mismatched totals, and values that are likely to have been read from the wrong cell.
                       </p>
                     </div>
@@ -1058,17 +1058,17 @@ export default function Home() {
                         ["Structure", "detected columns and repeated rows"],
                         ["Output", "editable XLSX with clean sheet names"],
                       ].map(([label, value]) => (
-                        <div key={label} className="grid grid-cols-[110px_1fr] items-center rounded-2xl border border-[#A78BFA]/25 bg-[#fbfdfc]/80 px-4 py-3">
-                          <span className="text-xs font-black uppercase tracking-[0.18em] text-[#C2410C]">{label}</span>
+                        <div key={label} className="grid grid-cols-[110px_1fr] items-center rounded-xl border border-border bg-background/80 px-4 py-3">
+                          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{label}</span>
                           <span className="text-sm font-semibold text-foreground">{value}</span>
                         </div>
                       ))}
                     </div>
 
-                    <div className="overflow-hidden rounded-2xl border border-[#A78BFA]/40 mt-6 bg-white/70">
+                    <div className="overflow-hidden rounded-xl border border-border mt-6 bg-background/80">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="border-b border-border/50 bg-[#F5EEFF]/70">
+                          <tr className="border-b border-border bg-muted/70">
                             <th className="text-left p-3 font-medium">Check</th>
                             <th className="text-right p-3 font-medium">Status</th>
                           </tr>
@@ -1097,7 +1097,7 @@ export default function Home() {
                 </Card>
                 </div>
 
-                <div className="relative min-h-[520px] overflow-hidden rounded-l-[2rem] border border-[#A78BFA]/40 shadow-xl shadow-[#A78BFA]/10 lg:min-h-[760px]" data-animate="stagger">
+                <div className="relative min-h-[520px] overflow-hidden rounded-l-xl border border-border shadow-sm lg:min-h-[760px]" data-animate="stagger">
                   <Image
                     src="/purchase.webp"
                     alt="Professionals reviewing documents"
@@ -1123,7 +1123,7 @@ export default function Home() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0"
             style={{
-              backgroundColor: "#E9ECE4",
+              backgroundColor: "var(--background)",
               boxShadow: "0 -24px 60px rgba(47, 22, 94, 0.08)",
               clipPath:
                 "polygon(0 4%, 12% 2.8%, 25% 4.6%, 40% 2.4%, 58% 4.3%, 75% 2.7%, 100% 4%, 100% 100%, 0 100%)",
@@ -1132,8 +1132,8 @@ export default function Home() {
           <div className="container relative z-10 mx-auto max-w-[1540px] px-4 sm:px-6 lg:px-8">
             <div className="grid gap-12 lg:grid-cols-[minmax(420px,0.88fr)_minmax(520px,1.12fr)] lg:items-center">
               <div data-animate="headline">
-                <p className="text-xl font-medium text-black">Security & Compliance</p>
-                <h2 className="mt-6 max-w-2xl text-4xl font-bold leading-tight text-[#11182f] sm:text-5xl lg:text-6xl">
+                <p className="text-xl font-medium text-foreground">Security & Compliance</p>
+                <h2 className="mt-6 max-w-2xl text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-6xl">
                   Your Data Security Guaranteed
                 </h2>
 
@@ -1150,7 +1150,7 @@ export default function Home() {
               </div>
 
               <div className="lg:pt-12" data-animate="stagger">
-                <p className="max-w-3xl text-2xl leading-10 text-[#11182f]">
+                <p className="max-w-3xl text-2xl leading-10 text-foreground">
                   At AxLiner, your data is treated with utmost care. We build around global data protection expectations and international privacy requirements for document processing workflows.
                 </p>
 
@@ -1160,8 +1160,8 @@ export default function Home() {
                     "Built for GDPR, SOC 2, CCPA and HIPAA-conscious workflows",
                     "Secure infrastructure across Supabase, Fly.io and Vercel",
                   ].map((item) => (
-                    <div key={item} className="flex items-start gap-4 text-xl text-[#11182f]">
-                      <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-[#2815FF] text-[#2815FF]">
+                    <div key={item} className="flex items-start gap-4 text-xl text-foreground">
+                      <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-primary text-primary">
                         <span className="h-2.5 w-1.5 rotate-45 border-b-2 border-r-2 border-current" />
                       </span>
                       <span>{item}</span>
@@ -1170,7 +1170,7 @@ export default function Home() {
                 </div>
 
                 <Button
-                  className="mt-12 rounded-full bg-[#E4E8FA] px-8 py-6 text-lg font-bold text-[#11182f] shadow-none hover:bg-[#d9def4]"
+                  className="mt-12 bg-secondary px-8 py-6 text-lg font-semibold text-secondary-foreground shadow-none hover:bg-secondary/80"
                   asChild
                 >
                   <NextLink href="/privacy-policy">More Information</NextLink>
@@ -1179,27 +1179,27 @@ export default function Home() {
             </div>
 
             <div className="mx-auto mt-24 max-w-[1160px] text-center lg:mt-28" data-animate="headline">
-              <h3 className="text-4xl font-bold leading-tight text-[#11182f] sm:text-5xl lg:text-[4.25rem]">
+              <h3 className="text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-[4.25rem]">
                 Frequently Asked Questions
               </h3>
             </div>
 
-            <div className="mx-auto mt-14 max-w-[928px] border-y border-[#11182f]/20 text-left" data-animate="stagger">
+            <div className="mx-auto mt-14 max-w-[928px] border-y border-border text-left" data-animate="stagger">
               {faqItems.map((item, index) => (
                 <details
                   key={item.question}
-                  className="group border-b border-[#11182f]/20 last:border-b-0"
+                  className="group border-b border-border last:border-b-0"
                   open={index === 0}
                 >
-                  <summary className="flex min-h-[78px] cursor-pointer list-none items-center justify-between gap-6 py-5 text-xl font-semibold text-[#11182f] [&::-webkit-details-marker]:hidden">
+                  <summary className="flex min-h-[78px] cursor-pointer list-none items-center justify-between gap-6 py-5 text-xl font-semibold text-foreground [&::-webkit-details-marker]:hidden">
                     <span>{item.question}</span>
                     <span className="relative h-6 w-6 shrink-0">
-                      <span className="absolute left-1/2 top-1/2 h-[2px] w-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#11182f]" />
-                      <span className="absolute left-1/2 top-1/2 h-5 w-[2px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#11182f] transition-opacity duration-200 group-open:opacity-0" />
+                      <span className="absolute left-1/2 top-1/2 h-[2px] w-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground" />
+                      <span className="absolute left-1/2 top-1/2 h-5 w-[2px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground transition-opacity duration-200 group-open:opacity-0" />
                     </span>
                   </summary>
                   <div className="pb-9 pr-10">
-                    <p className="text-base leading-8 text-[#11182f]/78">{item.answer}</p>
+                    <p className="text-base leading-8 text-muted-foreground">{item.answer}</p>
                   </div>
                 </details>
               ))}
@@ -1211,15 +1211,15 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 overflow-hidden bg-[#2f165e] text-white">
+      <footer className="relative z-10 overflow-hidden bg-primary text-primary-foreground">
         <div className="pointer-events-none absolute inset-0 opacity-35">
-          <div className="absolute -left-32 top-10 h-72 w-72 rounded-full bg-white/12 blur-3xl" />
-          <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#7f55c7]/35 blur-3xl" />
+          <div className="absolute -left-32 top-10 h-72 w-72 rounded-full bg-primary-foreground/10 blur-3xl" />
+          <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-primary-foreground/10 blur-3xl" />
         </div>
 
-        <div className="relative border-y border-white/10 py-4">
+        <div className="relative border-y border-primary-foreground/10 py-4">
           <div
-            className="flex w-max items-center gap-10 whitespace-nowrap text-xs font-semibold uppercase tracking-[0.28em] text-white/70"
+            className="flex w-max items-center gap-10 whitespace-nowrap text-xs font-semibold uppercase tracking-[0.28em] text-primary-foreground/70"
             style={{ animation: "scroll-left 42s linear infinite" }}
           >
             {[...Array(2)].map((_, repeat) => (
@@ -1238,21 +1238,21 @@ export default function Home() {
         <div className="relative mx-auto max-w-[1540px] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
           <div className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(640px,1fr)]">
             <div>
-              <div className="text-4xl font-black tracking-normal">AxLiner</div>
-              <p className="mt-6 max-w-xl text-lg leading-8 text-white/76">
+              <div className="text-4xl font-semibold tracking-tight">AxLiner</div>
+              <p className="mt-6 max-w-xl text-lg leading-8 text-primary-foreground/75">
                 Upload handwritten documents, recover the table structure, and move clean Excel files into your workflow without rebuilding the spreadsheet by hand.
               </p>
-              <p className="mt-7 text-sm font-semibold uppercase tracking-[0.24em] text-white/62">
+              <p className="mt-7 text-sm font-semibold uppercase tracking-[0.24em] text-primary-foreground/60">
                 Made with love in Alaska.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button asChild className="rounded-full bg-white px-7 py-5 font-bold text-[#2f165e] hover:bg-white/90">
+                <Button asChild className="bg-background px-7 py-5 font-semibold text-foreground hover:bg-background/90">
                   <NextLink href="/dashboard/client">Try It</NextLink>
                 </Button>
                 <Button
                   asChild
                   variant="outline"
-                  className="rounded-full border-white/25 bg-white/8 px-7 py-5 font-bold text-white hover:bg-white/14 hover:text-white"
+                  className="border-primary-foreground/25 bg-primary-foreground/10 px-7 py-5 font-semibold text-primary-foreground hover:bg-primary-foreground/15 hover:text-primary-foreground"
                 >
                   <NextLink href="/pricing">See Pricing</NextLink>
                 </Button>
@@ -1261,49 +1261,49 @@ export default function Home() {
 
             <div className="grid gap-8 sm:grid-cols-4">
               <div>
-                <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-white/55">Discover</h4>
-                <ul className="mt-5 space-y-3 text-sm font-medium text-white/78">
-                  <li><a href="#features" className="transition-colors hover:text-white">Solutions</a></li>
-                  <li><a href="#benchmarks" className="transition-colors hover:text-white">Benchmarks</a></li>
-                  <li><a href="#how-it-works" className="transition-colors hover:text-white">How it works</a></li>
-                  <li><NextLink href="/pricing" className="transition-colors hover:text-white">Pricing</NextLink></li>
-                  <li><NextLink href="/blogs" className="transition-colors hover:text-white">Blogs</NextLink></li>
+                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/60">Discover</h4>
+                <ul className="mt-5 space-y-3 text-sm font-medium text-primary-foreground/80">
+                  <li><a href="#features" className="transition-colors hover:text-primary-foreground">Solutions</a></li>
+                  <li><a href="#benchmarks" className="transition-colors hover:text-primary-foreground">Benchmarks</a></li>
+                  <li><a href="#how-it-works" className="transition-colors hover:text-primary-foreground">How it works</a></li>
+                  <li><NextLink href="/pricing" className="transition-colors hover:text-primary-foreground">Pricing</NextLink></li>
+                  <li><NextLink href="/blogs" className="transition-colors hover:text-primary-foreground">Blogs</NextLink></li>
                 </ul>
               </div>
 
               <div>
-                <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-white/55">Product</h4>
-                <ul className="mt-5 space-y-3 text-sm font-medium text-white/78">
-                  <li><NextLink href="/dashboard/client" className="transition-colors hover:text-white">Process images</NextLink></li>
-                  <li><NextLink href="/history" className="transition-colors hover:text-white">History</NextLink></li>
-                  <li><NextLink href="/dashboard/settings" className="transition-colors hover:text-white">Billing</NextLink></li>
-                  <li><a href="#security" className="transition-colors hover:text-white">Security</a></li>
+                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/60">Product</h4>
+                <ul className="mt-5 space-y-3 text-sm font-medium text-primary-foreground/80">
+                  <li><NextLink href="/dashboard/client" className="transition-colors hover:text-primary-foreground">Process images</NextLink></li>
+                  <li><NextLink href="/history" className="transition-colors hover:text-primary-foreground">History</NextLink></li>
+                  <li><NextLink href="/dashboard/settings" className="transition-colors hover:text-primary-foreground">Billing</NextLink></li>
+                  <li><a href="#security" className="transition-colors hover:text-primary-foreground">Security</a></li>
                 </ul>
               </div>
 
               <div>
-                <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-white/55">Support</h4>
-                <ul className="mt-5 space-y-3 text-sm font-medium text-white/78">
-                  <li><a href="mailto:axliner.excel@gmail.com" className="transition-colors hover:text-white">Contact</a></li>
-                  <li><NextLink href="/privacy-policy" className="transition-colors hover:text-white">Privacy</NextLink></li>
-                  <li><NextLink href="/terms-of-service" className="transition-colors hover:text-white">Terms</NextLink></li>
-                  <li><NextLink href="/data-deletion" className="transition-colors hover:text-white">Data deletion</NextLink></li>
+                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/60">Support</h4>
+                <ul className="mt-5 space-y-3 text-sm font-medium text-primary-foreground/80">
+                  <li><a href="mailto:axliner.excel@gmail.com" className="transition-colors hover:text-primary-foreground">Contact</a></li>
+                  <li><NextLink href="/privacy-policy" className="transition-colors hover:text-primary-foreground">Privacy</NextLink></li>
+                  <li><NextLink href="/terms-of-service" className="transition-colors hover:text-primary-foreground">Terms</NextLink></li>
+                  <li><NextLink href="/data-deletion" className="transition-colors hover:text-primary-foreground">Data deletion</NextLink></li>
                 </ul>
               </div>
 
-              <div className="rounded-[26px] border border-white/14 bg-white/8 p-5 backdrop-blur-md">
-                <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-white/55">Create</h4>
-                <p className="mt-5 text-sm leading-7 text-white/76">
+              <div className="rounded-xl border border-primary-foreground/15 bg-primary-foreground/10 p-5 backdrop-blur-md">
+                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/60">Create</h4>
+                <p className="mt-5 text-sm leading-7 text-primary-foreground/75">
                   Start with a small batch, then upgrade when your document volume grows.
                 </p>
-                <NextLink href="/sign-up" className="mt-5 inline-flex text-sm font-bold text-white underline underline-offset-4">
+                <NextLink href="/sign-up" className="mt-5 inline-flex text-sm font-semibold text-primary-foreground underline underline-offset-4">
                   Create free account
                 </NextLink>
               </div>
             </div>
           </div>
           
-          <div className="mt-14 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs font-medium text-white/52 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-14 flex flex-col gap-4 border-t border-primary-foreground/10 pt-6 text-xs font-medium text-primary-foreground/50 sm:flex-row sm:items-center sm:justify-between">
             <p>© 2026 AxLiner. All rights reserved.</p>
             <p>Secure document processing for teams that live in spreadsheets.</p>
           </div>

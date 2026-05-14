@@ -44,7 +44,7 @@ export function AppLogo({ className = '' }: { className?: string }) {
         height={32}
         priority
       />
-      <span className="text-xl font-bold text-black dark:text-white">
+      <span className="text-xl font-semibold text-foreground">
         AxLiner
       </span>
     </div>
