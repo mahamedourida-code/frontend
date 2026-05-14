@@ -128,13 +128,13 @@ export function DashboardShell({
   const nextActionLabel = activeItem === "process" ? "History" : "Process Images"
 
   return (
-    <div className="ax-page-bg min-h-screen lg:flex lg:gap-4 lg:p-4">
+    <div className="min-h-screen bg-[#f7faf7] text-[#111827] lg:flex lg:gap-4 lg:p-4">
       <WorkspaceSidebar activeItem={activeItem} user={user} />
 
       <div className="relative z-10 min-w-0 flex-1">
         <header className="sticky top-0 z-40 px-3 pt-3 lg:static lg:px-0 lg:pt-0">
           <div className="mx-auto max-w-7xl">
-            <div className="rounded-[24px] border border-[#e3d7f5] bg-[#FFFEEC]/88 px-3 py-3 shadow-[0_18px_48px_rgba(68,31,132,0.10)] backdrop-blur-xl sm:px-4">
+            <div className="rounded-2xl border border-[#dfe8df] bg-white px-3 py-3 shadow-sm sm:px-4">
               <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                 <div className="flex min-w-0 items-center gap-3">
                   {showBack && (
@@ -142,18 +142,18 @@ export function DashboardShell({
                       variant="ghost"
                       size="sm"
                       onClick={() => router.back()}
-                      className="h-9 rounded-xl border border-[#eadfff] bg-white/55 px-3 text-[#5b3f92] hover:bg-white hover:text-[#2f165e]"
+                      className="h-9 rounded-lg border border-[#dfe8df] bg-[#f7faf7] px-3 text-[#166534] hover:bg-white hover:text-[#14532d]"
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
                   )}
                   <div className="min-w-0">
                     {eyebrow && (
-                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#6d579f]">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#15803d]">
                         {eyebrow}
                       </p>
                     )}
-                    <h1 className="truncate text-xl font-black tracking-tight text-black sm:text-2xl">
+                    <h1 className="truncate text-xl font-semibold tracking-tight text-[#111827] sm:text-2xl">
                       {title}
                     </h1>
                   </div>
@@ -164,10 +164,10 @@ export function DashboardShell({
                     <Link
                       href={activeJob.href}
                       className={cn(
-                        "inline-flex h-10 items-center gap-2 rounded-full border px-4 text-sm font-bold shadow-[0_12px_30px_rgba(47,22,94,0.12)] transition hover:translate-y-[-1px]",
+                        "inline-flex h-10 items-center gap-2 rounded-full border px-4 text-sm font-medium shadow-sm transition hover:translate-y-[-1px]",
                         activeJob.tone === "ready"
-                          ? "border-[#c7b9df] bg-white text-[#2f165e]"
-                          : "border-[#2f165e] bg-[#2f165e] text-white"
+                          ? "border-[#dfe8df] bg-white text-[#166534]"
+                          : "border-[#166534] bg-[#166534] text-white"
                       )}
                     >
                       {activeJob.tone === "ready" ? (
@@ -179,14 +179,14 @@ export function DashboardShell({
                       <span className="rounded-full bg-white/16 px-2 py-0.5 text-xs">{activeJob.progress}</span>
                     </Link>
                   ) : (
-                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-[#e5daf8] bg-white/60 px-4 text-sm font-bold text-[#5f5374]">
-                      <span className="h-2 w-2 rounded-full bg-[#b8aacd]" />
+                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-[#dfe8df] bg-white px-4 text-sm font-medium text-[#667085] shadow-sm">
+                      <span className="h-2 w-2 rounded-full bg-[#98a2b3]" />
                       No active job
                     </div>
                   )}
 
-                  <div className="inline-flex h-10 items-center gap-2 rounded-full border border-[#eadfff] bg-white/70 px-4 text-sm font-bold text-black">
-                    <BillingSeal className="h-5 w-5 text-[#2f165e]" />
+                  <div className="inline-flex h-10 items-center gap-2 rounded-full border border-[#dfe8df] bg-white px-4 text-sm font-medium text-[#111827] shadow-sm">
+                    <BillingSeal className="h-5 w-5 text-[#166534]" />
                     <span>{billingLoading && !billingStatus ? "Plan" : formatPlan(plan)}</span>
                   </div>
 
@@ -194,7 +194,7 @@ export function DashboardShell({
 
                   <Button
                     asChild
-                    className="h-10 rounded-full bg-[#2f165e] px-4 text-white shadow-[0_14px_32px_rgba(68,31,132,0.18)] hover:bg-[#24104b]"
+                    className="h-10 rounded-full bg-[#166534] px-4 text-white shadow-sm hover:bg-[#14532d]"
                   >
                     <Link href={billingActionHref}>{billingActionLabel}</Link>
                   </Button>
@@ -202,7 +202,7 @@ export function DashboardShell({
                   <Button
                     asChild
                     variant="outline"
-                    className="h-10 rounded-full border-[#d9c9fb] bg-white/65 px-4 text-[#2f165e] hover:bg-white"
+                    className="h-10 rounded-full border-[#dfe8df] bg-white px-4 text-[#166534] shadow-sm hover:bg-[#f7faf7]"
                   >
                     <Link href={nextActionHref}>
                       {nextActionLabel}

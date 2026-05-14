@@ -85,7 +85,7 @@ export default function DashboardChart({ chartData, timeRange }: DashboardChartP
         data={chartData} 
         margin={{ top: 5, right: 5, left: -20, bottom: 0 }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" opacity={0.3} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#dfe8df" opacity={0.7} />
         <XAxis
           dataKey={timeRange === "1d" ? "formattedTime" : "formattedDate"}
           stroke="#888888"
@@ -104,7 +104,7 @@ export default function DashboardChart({ chartData, timeRange }: DashboardChartP
         <Tooltip
           contentStyle={{
             backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            border: '1px solid #e0e0e0',
+            border: '1px solid #dfe8df',
             borderRadius: '8px',
             fontSize: '12px'
           }}
@@ -114,9 +114,9 @@ export default function DashboardChart({ chartData, timeRange }: DashboardChartP
         <Line
           type="linear"
           dataKey="count"
-          stroke="#8b5cf6"
+          stroke="#166534"
           strokeWidth={2}
-          dot={{ fill: '#8b5cf6', r: 3 }}
+          dot={{ fill: '#166534', r: 3 }}
           activeDot={{ r: 5 }}
         />
       </LineChart>

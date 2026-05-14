@@ -7,14 +7,16 @@ import { ocrApi } from "@/lib/api-client"
 import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DashboardShell } from "@/components/DashboardShell"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { cn } from "@/lib/utils"
 import {
-  Activity,
-  Image,
-  Clock,
   BarChart3,
+  CalendarDays,
+  FileSpreadsheet,
+  RefreshCw,
+  Timer,
   TrendingUp
 } from "lucide-react"
 
@@ -352,108 +354,175 @@ export default function DashboardPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#f7faf7]">
         <div className="text-center">
-          <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-[#2f165e] border-t-transparent" />
-          <p className="text-muted-foreground">Loading Dashboard...</p>
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-[#166534] border-t-transparent" />
+          <p className="text-sm font-medium text-[#667085]">Loading dashboard</p>
         </div>
       </div>
     )
   }
 
+  const averageTimeLabel = stats.averageTime > 0
+    ? `${stats.averageTime.toFixed(1)}s`
+    : stats.monthProcessed > 0
+      ? "~5s"
+      : "-"
+
+  const metricCards = [
+    {
+      title: "Today",
+      value: stats.todayProcessed,
+      helper: "Images processed",
+      icon: CalendarDays,
+    },
+    {
+      title: "This month",
+      value: stats.thisMonthProcessed,
+      helper: "Monthly volume",
+      icon: FileSpreadsheet,
+    },
+    {
+      title: "Average time",
+      value: averageTimeLabel,
+      helper: "Per image",
+      icon: Timer,
+    },
+    {
+      title: "Total",
+      value: stats.totalProcessed,
+      helper: "All time images",
+      icon: BarChart3,
+    },
+  ]
+
+  const summaryRows = [
+    { label: "Success rate", value: stats.successRate ? `${Math.round(stats.successRate)}%` : "-" },
+    { label: "Last 7 days", value: stats.lastWeekProcessed.toLocaleString() },
+    { label: "Selected period", value: chartData.reduce((sum, item) => sum + item.count, 0).toLocaleString() },
+  ]
+
   return (
     <DashboardShell activeItem="overview" title="Dashboard" user={user} showBack={false}>
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6 lg:mb-8">
-            <Card className="ax-glass-card">
-              <CardContent className="p-3 lg:p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs lg:text-sm text-muted-foreground">Today's Images</p>
-                    <p className="text-2xl lg:text-3xl font-bold mt-1">{stats.todayProcessed}</p>
-                  </div>
-                  <div className="flex-shrink-0">
-                    <Image className="h-8 w-8 lg:h-10 lg:w-10 text-primary/60" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+      <div className="space-y-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <Tabs value="overview" className="w-fit">
+            <TabsList className="h-9 rounded-lg bg-[#eef5ee] p-1 text-[#667085]">
+              <TabsTrigger value="overview" className="rounded-md px-3 text-sm data-[state=active]:bg-white data-[state=active]:text-[#166534]">
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="analytics" disabled className="rounded-md px-3 text-sm">
+                Analytics
+              </TabsTrigger>
+              <TabsTrigger value="reports" disabled className="rounded-md px-3 text-sm">
+                Reports
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
 
-            <Card className="ax-glass-card">
-              <CardContent className="p-3 lg:p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs lg:text-sm text-muted-foreground">Average Time</p>
-                    <p className="text-2xl lg:text-3xl font-bold mt-1">
-                      {stats.monthProcessed > 0 ? '~5s' : '-'}
-                    </p>
-                    <p className="text-[10px] lg:text-xs text-muted-foreground mt-0.5">Per image</p>
-                  </div>
-                  <div className="flex-shrink-0">
-                    <Clock className="h-8 w-8 lg:h-10 lg:w-10 text-primary/60" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={fetchDashboardData}
+            disabled={loading}
+            className="h-9 w-fit rounded-lg border-[#dfe8df] bg-white px-3 text-[#166534] shadow-sm hover:bg-[#f7faf7]"
+          >
+            <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
+            Refresh
+          </Button>
+        </div>
 
-            <Card className="ax-glass-card relative">
-              <CardContent className="p-3 lg:p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs lg:text-sm text-muted-foreground">Total Processed</p>
-                    <p className="text-2xl lg:text-3xl font-bold mt-1">{stats.totalProcessed}</p>
-                    <p className="text-[10px] lg:text-xs text-muted-foreground mt-0.5">All time images</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={fetchDashboardData}
-                      disabled={loading}
-                      className="h-8 w-8 p-0"
-                      title="Refresh stats"
-                    >
-                      <Activity className={cn("h-4 w-4", loading && "animate-spin")} />
-                    </Button>
-                    <BarChart3 className="h-8 w-8 lg:h-10 lg:w-10 text-primary/60" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {metricCards.map((item) => {
+            const Icon = item.icon
 
-          {/* Chart Section */}
-          <Card className="border border-[#2f165e]/20 bg-white/28 shadow-[0_18px_50px_rgba(47,22,94,0.08)] backdrop-blur-xl">
-            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 lg:p-4">
+            return (
+              <Card key={item.title} className="rounded-xl border-[#dfe8df] bg-white shadow-sm">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-[#344054]">
+                    {item.title}
+                  </CardTitle>
+                  <Icon className="h-4 w-4 text-[#667085]" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-semibold tracking-tight text-[#111827]">
+                    {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
+                  </div>
+                  <p className="mt-1 text-xs font-medium text-[#667085]">{item.helper}</p>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
+          <Card className="col-span-1 rounded-xl border-[#dfe8df] bg-white shadow-sm lg:col-span-4">
+            <CardHeader className="flex flex-col gap-3 space-y-0 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <CardTitle className="text-base lg:text-lg flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 lg:h-5 lg:w-5" />
+                <CardTitle className="flex items-center gap-2 text-base font-semibold text-[#111827]">
+                  <TrendingUp className="h-4 w-4 text-[#166534]" />
                   Processing Activity
                 </CardTitle>
               </div>
-              <div className="flex items-center gap-1 lg:gap-2 w-full sm:w-auto">
-                {(["1d", "7d", "30d", "3m"] as TimeRange[]).map((range) => (
-                  <Button
-                    key={range}
-                    variant={timeRange === range ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setTimeRange(range)}
-                    className="flex-1 sm:flex-none min-w-0 h-8 px-2 lg:px-3 text-xs"
-                  >
-                    {range === "1d" ? "24h" :
-                     range === "7d" ? "7D" :
-                     range === "30d" ? "30D" : "3M"}
-                  </Button>
-                ))}
-              </div>
+              <Tabs value={timeRange} onValueChange={(value) => setTimeRange(value as TimeRange)}>
+                <TabsList className="h-9 rounded-lg bg-[#eef5ee] p-1">
+                  {(["1d", "7d", "30d", "3m"] as TimeRange[]).map((range) => (
+                    <TabsTrigger
+                      key={range}
+                      value={range}
+                      className="rounded-md px-3 text-xs data-[state=active]:bg-white data-[state=active]:text-[#166534]"
+                    >
+                      {range === "1d" ? "24h" :
+                        range === "7d" ? "7D" :
+                          range === "30d" ? "30D" : "3M"}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
             </CardHeader>
-            <CardContent className="p-3 lg:p-4">
-              <DashboardChart 
-                chartData={chartData} 
+            <CardContent className="px-4 pb-4 pt-0">
+              <DashboardChart
+                chartData={chartData}
                 timeRange={timeRange}
               />
             </CardContent>
           </Card>
+
+          <Card className="col-span-1 rounded-xl border-[#dfe8df] bg-white shadow-sm lg:col-span-3">
+            <CardHeader>
+              <CardTitle className="text-base font-semibold text-[#111827]">Run Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="space-y-4">
+                {summaryRows.map((row) => (
+                  <div key={row.label} className="flex items-center justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-[#344054]">{row.label}</p>
+                    </div>
+                    <p className="text-sm font-semibold tabular-nums text-[#166534]">{row.value}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="rounded-xl border border-[#dfe8df] bg-[#f7faf7] p-4">
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 h-2.5 w-2.5 rounded-full bg-[#166534]" />
+                  <div>
+                    <p className="text-sm font-medium text-[#111827]">Batch workspace</p>
+                    <p className="mt-1 text-sm text-[#667085]">Ready for image and PDF runs.</p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => router.push("/dashboard/client")}
+                  className="mt-4 h-10 rounded-lg bg-[#166534] px-4 text-white shadow-sm hover:bg-[#14532d]"
+                >
+                  Process Images
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </DashboardShell>
   )
 }

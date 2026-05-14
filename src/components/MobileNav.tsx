@@ -176,7 +176,12 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
   return (
     <>
       <div
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-[#eadfff] bg-[#E9ECE4]/95 shadow-[0_-18px_45px_rgba(68,31,132,0.12)] backdrop-blur-xl lg:hidden"
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur-xl lg:hidden",
+          isAuthenticated
+            ? "border-[#dfe8df] bg-white/95 shadow-sm"
+            : "border-[#eadfff] bg-[#E9ECE4]/95 shadow-[0_-18px_45px_rgba(68,31,132,0.12)]"
+        )}
         style={{ paddingBottom: "max(0.35rem, env(safe-area-inset-bottom))" }}
       >
         <div className="mx-auto grid h-16 max-w-md grid-cols-4 items-center gap-1 px-2 pt-1">
@@ -191,9 +196,13 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 onClick={item.onClick}
                 className={cn(
                   "h-14 min-w-0 flex-col gap-1 rounded-2xl px-1.5 text-[10px] font-semibold transition-all",
-                  item.active
-                    ? "bg-[#2f165e] text-white shadow-[0_12px_28px_rgba(68,31,132,0.22)] hover:bg-[#2f165e] hover:text-white"
-                    : "text-[#4b2d82] hover:bg-white/55 hover:text-[#2f165e]"
+                  isAuthenticated
+                    ? item.active
+                      ? "bg-[#166534] text-white shadow-sm hover:bg-[#14532d] hover:text-white"
+                      : "text-[#166534] hover:bg-[#f4f8f4] hover:text-[#14532d]"
+                    : item.active
+                      ? "bg-[#2f165e] text-white shadow-[0_12px_28px_rgba(68,31,132,0.22)] hover:bg-[#2f165e] hover:text-white"
+                      : "text-[#4b2d82] hover:bg-white/55 hover:text-[#2f165e]"
                 )}
               >
                 <Icon className="h-5 w-5 shrink-0" />
@@ -209,7 +218,13 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 size="sm" 
                 className={cn(
                   "h-14 min-w-0 flex-col gap-1 rounded-2xl px-1.5 text-[10px] font-semibold transition-all",
-                  isOpen ? "bg-[#2f165e] text-white" : "text-[#4b2d82] hover:bg-white/55 hover:text-[#2f165e]"
+                  isAuthenticated
+                    ? isOpen
+                      ? "bg-[#166534] text-white"
+                      : "text-[#166534] hover:bg-[#f4f8f4] hover:text-[#14532d]"
+                    : isOpen
+                      ? "bg-[#2f165e] text-white"
+                      : "text-[#4b2d82] hover:bg-white/55 hover:text-[#2f165e]"
                 )}
               >
                 <Menu className="h-5 w-5" />
@@ -219,9 +234,15 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
             
             <SheetContent 
               side="right" 
-              className="flex h-dvh w-[88vw] max-w-[390px] flex-col border-l border-[#eadfff] bg-white/95 p-0 backdrop-blur-xl sm:w-[380px]"
+              className={cn(
+                "flex h-dvh w-[88vw] max-w-[390px] flex-col border-l bg-white/95 p-0 backdrop-blur-xl sm:w-[380px]",
+                isAuthenticated ? "border-[#dfe8df]" : "border-[#eadfff]"
+              )}
             >
-              <SheetHeader className="border-b border-[#eadfff] bg-[#E9ECE4]/75 px-4 py-4">
+              <SheetHeader className={cn(
+                "border-b px-4 py-4",
+                isAuthenticated ? "border-[#dfe8df] bg-white" : "border-[#eadfff] bg-[#E9ECE4]/75"
+              )}>
                 <div className="flex items-center gap-2">
                   <AppIcon size={32} />
                   <SheetTitle className="text-base md:text-lg font-bold">AxLiner</SheetTitle>
@@ -230,10 +251,10 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
 
               {/* User Info - if authenticated */}
               {isAuthenticated && user && (
-                <div className="border-b border-[#eadfff] px-4 py-3">
+                <div className="border-b border-[#dfe8df] px-4 py-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-2xl bg-[#2f165e] text-white flex items-center justify-center">
+                      <div className="h-10 w-10 rounded-2xl bg-[#166534] text-white flex items-center justify-center">
                         <span className="text-sm md:text-base font-semibold text-white">
                           {user.email?.[0]?.toUpperCase() || "U"}
                         </span>
@@ -274,8 +295,9 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                 variant="ghost"
                                 className={cn(
                                   "h-11 w-full justify-start gap-3 rounded-2xl px-3",
-                                  "hover:bg-white/60 hover:text-[#2f165e]",
-                                  "transition-colors text-[#2f165e]"
+                                  isAuthenticated
+                                    ? "text-[#166534] transition-colors hover:bg-[#f4f8f4] hover:text-[#14532d]"
+                                    : "text-[#2f165e] transition-colors hover:bg-white/60 hover:text-[#2f165e]"
                                 )}
                               >
                                 {item.icon && <item.icon className="h-5 w-5" />}
@@ -335,8 +357,9 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                           onClick={() => item.sectionId ? handleSectionClick(item.sectionId) : item.href && handleNavigation(item.href)}
                           className={cn(
                             "h-11 w-full justify-start gap-3 rounded-2xl px-3",
-                            "hover:bg-white/60 hover:text-[#2f165e]",
-                            "transition-colors text-[#2f165e]",
+                            isAuthenticated
+                              ? "text-[#166534] transition-colors hover:bg-[#f4f8f4] hover:text-[#14532d]"
+                              : "text-[#2f165e] transition-colors hover:bg-white/60 hover:text-[#2f165e]",
                             pathname === item.href && "bg-white/70"
                           )}
                         >
@@ -381,7 +404,10 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
               </div>
 
               {/* Footer Actions */}
-              <div className="mt-auto space-y-2 border-t border-[#eadfff] bg-[#E9ECE4]/60 p-3">
+              <div className={cn(
+                "mt-auto space-y-2 border-t p-3",
+                isAuthenticated ? "border-[#dfe8df] bg-[#f7faf7]" : "border-[#eadfff] bg-[#E9ECE4]/60"
+              )}>
                 {isAuthenticated ? (
                   <Button
                     variant="ghost"
