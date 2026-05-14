@@ -172,7 +172,7 @@ export default function Home() {
   const converterMountRef = useRef<HTMLDivElement>(null);
   const topBackgroundSectionRef = useRef<HTMLDivElement>(null);
   const topBackgroundRef = useRef<HTMLDivElement>(null);
-  const purpleSectionRef = useRef<HTMLDivElement>(null);
+  const contrastSectionRef = useRef<HTMLDivElement>(null);
   const whatSectionRef = useRef<HTMLDivElement>(null);
   const benchmarkBandRef = useRef<HTMLDivElement>(null);
   const securityBandRef = useRef<HTMLDivElement>(null);
@@ -264,9 +264,9 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const purpleSection = purpleSectionRef.current;
+    const contrastSection = contrastSectionRef.current;
     const whatSection = whatSectionRef.current;
-    if (!purpleSection || !whatSection) return;
+    if (!contrastSection || !whatSection) return;
 
     const topClipStart =
       "polygon(0 3.8%, 9% 2.7%, 20% 4.4%, 35% 2.1%, 50% 4.2%, 66% 2.5%, 82% 4.1%, 100% 2.8%, 100% 100%, 0 100%)";
@@ -281,13 +281,13 @@ export default function Home() {
 
       ctx = gsap.context(() => {
         gsap.fromTo(
-          purpleSection,
+          contrastSection,
           { clipPath: topClipStart },
           {
             clipPath: topClipEnd,
             ease: "none",
             scrollTrigger: {
-              trigger: purpleSection,
+              trigger: contrastSection,
               start: "top 85%",
               end: "top 20%",
               scrub: 1.1,
@@ -369,7 +369,7 @@ export default function Home() {
             }
           );
         });
-      }, purpleSection);
+      }, contrastSection);
     });
 
     return () => {
@@ -577,7 +577,7 @@ export default function Home() {
         </div>
 
         <div
-          ref={purpleSectionRef}
+          ref={contrastSectionRef}
           className="relative isolate -mt-10 overflow-hidden pt-36 pb-12 text-primary-foreground [&_.text-card-foreground]:!text-primary-foreground [&_.text-foreground]:!text-primary-foreground [&_.text-muted-foreground]:!text-primary-foreground/80 [&_.text-primary]:!text-primary-foreground"
           style={{
             backgroundColor: "var(--primary)",

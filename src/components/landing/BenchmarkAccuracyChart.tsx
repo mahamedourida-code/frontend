@@ -13,7 +13,7 @@ const benchmarkData = [
 
 export default function BenchmarkAccuracyChart() {
   return (
-    <Card className="border border-[#A78BFA]/35 bg-white/55 shadow-xl shadow-[#A78BFA]/10 backdrop-blur-md dark:bg-card/70" data-animate="stagger">
+    <Card className="border border-border bg-card/80 shadow-sm backdrop-blur-md" data-animate="stagger">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-semibold">
           Handwritten Text Recognition Accuracy
@@ -57,7 +57,7 @@ export default function BenchmarkAccuracyChart() {
             <ChartTooltip content={<ChartTooltipContent />} />
             <Bar
               dataKey="accuracy"
-              fill="#441F84"
+              fill="var(--primary)"
               radius={[8, 8, 0, 0]}
             />
           </BarChart>

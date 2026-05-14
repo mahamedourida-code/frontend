@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DashboardShell } from "@/components/DashboardShell"
+import { DashboardMiniCharts } from "@/components/dashboard/DashboardMiniCharts"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { cn } from "@/lib/utils"
 import {
@@ -455,6 +456,8 @@ export default function DashboardPage() {
               )
             })}
           </div>
+
+          <DashboardMiniCharts chartData={chartData} stats={stats} />
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
             <Card className="col-span-1 lg:col-span-4">

@@ -103,9 +103,11 @@ export default function DashboardChart({ chartData, timeRange }: DashboardChartP
         />
         <Tooltip
           contentStyle={{
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            backgroundColor: 'var(--card)',
+            color: 'var(--foreground)',
             border: '1px solid var(--border)',
             borderRadius: '8px',
+            boxShadow: 'var(--shadow-md)',
             fontSize: '12px'
           }}
           labelStyle={{ color: 'var(--muted-foreground)' }}

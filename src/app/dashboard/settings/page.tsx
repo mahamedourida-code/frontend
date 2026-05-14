@@ -37,9 +37,9 @@ type Theme = 'dark' | 'light' | 'system'
 
 function SettingsFallback() {
   return (
-    <div className="min-h-screen bg-[#E9ECE4] p-3 sm:p-4">
-      <div className="flex min-h-[calc(100vh-2rem)] items-center justify-center rounded-[30px] border border-[#eadfff] bg-white/55 backdrop-blur-xl">
-        <div className="h-12 w-12 rounded-full border-4 border-[#d9c9fb] border-t-[#2f165e] animate-spin" />
+    <div className="min-h-screen bg-secondary p-3 sm:p-4">
+      <div className="flex min-h-[calc(100vh-2rem)] items-center justify-center rounded-xl border border-border bg-card/60 backdrop-blur-xl">
+        <div className="h-12 w-12 rounded-full border-4 border-border border-t-primary animate-spin" />
       </div>
     </div>
   )
@@ -395,59 +395,59 @@ function SettingsContent() {
 
             {activeSection === 'billing' && (
               <div className="space-y-5 lg:space-y-6">
-                <Card className="ax-glass-card overflow-hidden rounded-[30px]">
+                <Card className="ax-glass-card overflow-hidden rounded-xl">
                   <CardContent className="p-0">
                     <div className="grid gap-0 lg:grid-cols-[1.05fr_0.95fr]">
                       <div className="p-5 sm:p-6">
                         <div className="flex items-start justify-between gap-4">
                           <div>
-                            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#7c62b1]">Billing</p>
-                            <h2 className="mt-2 text-2xl font-black tracking-tight text-foreground">
+                            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Billing</p>
+                            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
                               {billingLoading ? "Loading plan" : `${formatPlan(billingStatus?.plan)} workspace`}
                             </h2>
                           </div>
-                          <BillingSeal className="h-9 w-9 shrink-0 text-[#4b2d82]" />
+                          <BillingSeal className="h-9 w-9 shrink-0 text-primary" />
                         </div>
 
                         <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                          <div className="rounded-[24px] border border-[#eadfff] bg-white/45 p-4 backdrop-blur">
-                            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#7c62b1]">Status</p>
-                            <p className="mt-2 text-xl font-black text-foreground">
+                          <div className="rounded-xl border border-border bg-card/50 p-4 backdrop-blur">
+                            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Status</p>
+                            <p className="mt-2 text-xl font-semibold text-foreground">
                               {checkoutSyncState === "pending"
                                 ? "confirming"
                                 : currentSubscription?.status || (billingStatus?.plan === "free" ? "free" : "active")}
                             </p>
                           </div>
-                          <div className="rounded-[24px] border border-[#eadfff] bg-white/45 p-4 backdrop-blur">
-                            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#7c62b1]">Renew date</p>
-                            <p className="mt-2 text-xl font-black text-foreground">
+                          <div className="rounded-xl border border-border bg-card/50 p-4 backdrop-blur">
+                            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Renew date</p>
+                            <p className="mt-2 text-xl font-semibold text-foreground">
                               {formatDate(currentSubscription?.renews_at || currentSubscription?.ends_at)}
                             </p>
                           </div>
                         </div>
 
-                        <div className="mt-4 rounded-[26px] border border-[#eadfff] bg-white/45 p-4 backdrop-blur">
+                        <div className="mt-4 rounded-xl border border-border bg-card/50 p-4 backdrop-blur">
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
-                              <CreditStack className="h-6 w-6 text-[#4b2d82]" />
+                              <CreditStack className="h-6 w-6 text-primary" />
                               <div>
                                 <p className="text-sm font-bold text-foreground">Credits</p>
                                 <p className="text-xs text-muted-foreground">{creditAvailable} available of {creditTotal}</p>
                               </div>
                             </div>
-                            <p className="text-sm font-bold text-[#4b2d82]">{creditUsed} used</p>
+                            <p className="text-sm font-bold text-primary">{creditUsed} used</p>
                           </div>
-                          <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#eee7ff]">
+                          <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted">
                             <div
-                              className="h-full rounded-full bg-[#2f165e] transition-all"
+                              className="h-full rounded-full bg-primary transition-all"
                               style={{ width: `${creditPercent}%` }}
                             />
                           </div>
                         </div>
 
                         {noCredits && (
-                          <div className="mt-4 rounded-[24px] border border-[#2f165e]/20 bg-white/58 p-4 backdrop-blur">
-                            <p className="text-sm font-black text-[#2f165e]">No credits left</p>
+                          <div className="mt-4 rounded-xl border border-primary/20 bg-card/60 p-4 backdrop-blur">
+                            <p className="text-sm font-semibold text-primary">No credits left</p>
                             <p className="mt-1 text-xs leading-5 text-muted-foreground">
                               Pick a Lemon Squeezy plan to keep converting handwritten images and PDF pages.
                             </p>
@@ -456,7 +456,7 @@ function SettingsContent() {
 
                         <div className="mt-5 flex flex-col gap-2 sm:flex-row">
                           <Button
-                            className="h-11 rounded-2xl bg-[#2f165e] text-white hover:bg-[#42207c]"
+                            className="h-11 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
                             onClick={openBillingPortal}
                             disabled={!hasBillingPortal || billingAction === "portal"}
                           >
@@ -464,7 +464,7 @@ function SettingsContent() {
                           </Button>
                           <Button
                             variant="outline"
-                            className="h-11 rounded-2xl border-[#d9c9fb] bg-white/55"
+                            className="h-11 rounded-lg border-border bg-card/60"
                             onClick={() => window.location.assign("/pricing")}
                           >
                             {noCredits ? "Buy credits" : "Compare plans"}
@@ -472,11 +472,11 @@ function SettingsContent() {
                         </div>
                       </div>
 
-                      <div className="border-t border-[#eadfff] bg-white/25 p-5 backdrop-blur lg:border-l lg:border-t-0 sm:p-6">
+                      <div className="border-t border-border bg-card/25 p-5 backdrop-blur lg:border-l lg:border-t-0 sm:p-6">
                         <div className="flex items-center gap-3">
-                          <PlanSwitch className="h-7 w-7 shrink-0 text-[#4b2d82]" />
+                          <PlanSwitch className="h-7 w-7 shrink-0 text-primary" />
                           <div>
-                            <h3 className="font-black text-foreground">Upgrade path</h3>
+                            <h3 className="font-semibold text-foreground">Upgrade path</h3>
                             <p className="text-sm text-muted-foreground">Checkout opens in Lemon Squeezy.</p>
                           </div>
                         </div>
@@ -490,20 +490,20 @@ function SettingsContent() {
                               type="button"
                               onClick={() => startCheckout(plan.checkout_key as BillingPlanKey)}
                               disabled={billingAction === plan.checkout_key || !plan.checkout_available}
-                              className="group flex w-full items-center justify-between gap-3 rounded-[22px] border border-[#eadfff] bg-white/48 p-4 text-left transition hover:border-[#bca7ef] hover:bg-white/65 disabled:cursor-wait disabled:opacity-70"
+                              className="group flex w-full items-center justify-between gap-3 rounded-lg border border-border bg-card/50 p-4 text-left transition hover:border-primary/40 hover:bg-card/65 disabled:cursor-wait disabled:opacity-70"
                             >
                               <span>
-                                <span className="block text-sm font-black text-foreground">
+                                <span className="block text-sm font-semibold text-foreground">
                                   {plan.name} {plan.interval === "year" ? "annual" : "monthly"} · {plan.price_formatted}
                                 </span>
                                 <span className="mt-1 block text-xs text-muted-foreground">{plan.included_volume}</span>
                               </span>
-                              <span className="h-2.5 w-2.5 rounded-full bg-[#7c3aed] shadow-[0_0_0_6px_rgba(124,58,237,0.12)] transition group-hover:scale-110" />
+                              <span className="h-2.5 w-2.5 rounded-full bg-primary shadow-[0_0_0_6px_rgb(20 83 45 / 0.12)] transition group-hover:scale-110" />
                             </button>
                           ))}
                         </div>
 
-                        <div className="mt-5 rounded-[22px] border border-[#eadfff] bg-white/42 p-4 text-sm text-muted-foreground">
+                        <div className="mt-5 rounded-lg border border-border bg-card/40 p-4 text-sm text-muted-foreground">
                           Current batch size and file limits come from the backend:
                           <span className="ml-1 font-bold text-foreground">
                             {limits ? `${limits.max_files_per_batch} files, ${limits.max_file_size_mb} MB each` : "loading live limits"}
@@ -523,7 +523,7 @@ function SettingsContent() {
                 <Card className="ax-glass-card">
                   <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
-                      <Settings2 className="h-5 w-5 text-[#4b2d82]" />
+                      <Settings2 className="h-5 w-5 text-primary" />
                       <div>
                         <CardTitle>Processing Settings</CardTitle>
                         <CardDescription>Configure automatic actions</CardDescription>
@@ -573,7 +573,7 @@ function SettingsContent() {
                 <Card className="ax-glass-card">
                   <CardHeader className="p-3 lg:p-4">
                     <div className="flex items-center gap-2">
-                      <Languages className="h-5 w-5 text-[#4b2d82]" />
+                      <Languages className="h-5 w-5 text-primary" />
                       <div>
                         <CardTitle>OCR Detection Language</CardTitle>
                         <CardDescription>Set the language for text recognition</CardDescription>

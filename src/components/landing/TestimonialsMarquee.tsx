@@ -72,7 +72,7 @@ function TestimonialCard({ testimonial, index }: { testimonial: typeof firstRowT
   return (
     <div
       key={index}
-      className="w-[450px] flex-shrink-0 rounded-lg border border-border bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-md dark:bg-card"
+      className="w-[450px] flex-shrink-0 rounded-lg border border-gray-200 bg-white p-6 text-gray-950 shadow-sm transition-all duration-300 hover:shadow-md dark:border-gray-200 dark:bg-white dark:text-gray-950"
     >
       <div className="mb-4 flex items-center gap-3">
         <Image
@@ -83,16 +83,16 @@ function TestimonialCard({ testimonial, index }: { testimonial: typeof firstRowT
           className="h-12 w-12 rounded-full object-cover"
         />
         <div className="flex-1">
-          <p className="text-base font-semibold text-foreground">{testimonial.name}</p>
-          <p className="text-sm text-muted-foreground">{testimonial.handle}</p>
+          <p className="text-base font-semibold text-gray-950">{testimonial.name}</p>
+          <p className="text-sm text-gray-500">{testimonial.handle}</p>
         </div>
-        <svg className="h-5 w-5 text-foreground opacity-60" viewBox="0 0 24 24" fill="currentColor">
+        <svg className="h-5 w-5 text-gray-950 opacity-60" viewBox="0 0 24 24" fill="currentColor">
           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
         </svg>
       </div>
 
-      <div className="mb-4 border-t border-dashed border-border" />
-      <p className="text-base leading-relaxed text-black dark:text-foreground">{testimonial.text}</p>
+      <div className="mb-4 border-t border-dashed border-gray-200" />
+      <p className="text-base leading-relaxed text-gray-900">{testimonial.text}</p>
     </div>
   );
 }

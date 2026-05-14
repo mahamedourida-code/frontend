@@ -44,9 +44,9 @@ import {
 
 function ProcessImagesFallback() {
   return (
-    <div className="min-h-screen bg-[#E9ECE4] p-3 sm:p-4">
-      <div className="flex min-h-[calc(100vh-2rem)] items-center justify-center rounded-[30px] border border-[#eadfff] bg-white/55 backdrop-blur-xl">
-        <div className="h-12 w-12 rounded-full border-4 border-[#d9c9fb] border-t-[#2f165e] animate-spin" />
+    <div className="min-h-screen bg-secondary p-3 sm:p-4">
+      <div className="flex min-h-[calc(100vh-2rem)] items-center justify-center rounded-xl border border-border bg-card/60 backdrop-blur-xl">
+        <div className="h-12 w-12 rounded-full border-4 border-border border-t-primary animate-spin" />
       </div>
     </div>
   )
@@ -1125,7 +1125,7 @@ Best regards`
   if (authLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="h-16 w-16 animate-spin rounded-full border-4 border-[#2f165e] border-t-transparent" />
+        <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     )
   }

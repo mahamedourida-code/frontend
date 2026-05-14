@@ -170,13 +170,13 @@ export default function LandingDialogs({
             <Button variant="outline" onClick={() => {
               setShowLimitDialog(false);
               window.location.href = "/pricing?from=trial-limit";
-            }} className="flex-1 border-2 border-[#A78BFA]">
+            }} className="flex-1 border-2 border-primary/35">
               See Plans
             </Button>
             <Button onClick={() => {
               setShowLimitDialog(false);
               openSignInModal("/dashboard/client");
-            }} className="flex-1 border-2 border-[#A78BFA] bg-primary hover:bg-primary/90">
+            }} className="flex-1 border-2 border-primary/35 bg-primary hover:bg-primary/90">
               Create Account
             </Button>
           </div>
