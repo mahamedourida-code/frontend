@@ -920,6 +920,7 @@ export default function Home() {
         </ScrollAnimatedSection>
           </div>
         </div>
+        </div>
 
         <div className="relative isolate overflow-hidden">
           <div
