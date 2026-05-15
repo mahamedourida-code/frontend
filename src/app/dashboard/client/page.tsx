@@ -636,7 +636,7 @@ function ProcessImagesContent() {
     if (noCredits) {
       setWorkspaceBanner({
         title: "No credits left",
-        description: "Upgrade to keep converting handwritten images, scanned PDFs, and paper tables.",
+        description: "Upgrade when batch conversion is saving more time than manual retyping.",
         actionLabel: "Buy credits",
         onAction: () => router.push("/pricing?from=no-credits"),
         tone: "warning",
@@ -1169,6 +1169,8 @@ Best regards`
   const creditEstimate = uploadedFiles.reduce((total, file, index) => {
     return total + (isPdfFile(file) ? (pdfPageCounts[index] || 1) : 1)
   }, 0)
+  const creditsKnown = Boolean(entitlementCredits || limits?.credits)
+  const batchExceedsCredits = Boolean(creditsKnown && uploadedFiles.length > 0 && creditEstimate > creditAvailable)
   const workspaceStage: WorkspaceStage = status === 'failed' || Boolean(ocrError)
     ? 'Failed'
     : isComplete
@@ -1181,11 +1183,19 @@ Best regards`
   const creditBanner: WorkspaceBanner | null = noCredits && !isProcessing
     ? {
         title: "No credits left",
-        description: "Upgrade to keep converting handwritten images, scanned PDFs, and paper tables.",
+        description: "Upgrade when batch conversion is saving more time than manual retyping.",
         actionLabel: "Buy credits",
         onAction: () => router.push("/pricing?from=no-credits"),
         tone: "warning",
       }
+    : batchExceedsCredits && !isProcessing
+      ? {
+          title: "This batch needs more credits",
+          description: `${creditEstimate} credits estimated, ${creditAvailable} available. Reduce the batch or upgrade for larger handwritten runs.`,
+          actionLabel: "See plans",
+          onAction: () => router.push("/pricing?from=credit-estimate"),
+          tone: "warning",
+        }
     : null
 
   return (
@@ -1214,7 +1224,7 @@ Best regards`
         creditEstimate={creditEstimate}
         maxUploadFiles={maxUploadFiles}
         processLabel={processLabel}
-        noCredits={noCredits}
+        noCredits={noCredits || batchExceedsCredits}
         resultFiles={resultFiles}
         tablePreviewData={tablePreviewData}
         textPreview={textPreview}

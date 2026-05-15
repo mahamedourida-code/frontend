@@ -1349,6 +1349,25 @@ export default function LandingConverter() {
                                 ))}
                               </div>
                               <p className="mb-3 text-sm font-semibold text-foreground">{uploadedFiles.length} file{uploadedFiles.length > 1 ? 's' : ''} ready</p>
+                              {!isAuthenticated && !isProcessing && !processingComplete && (
+                                <div className="mb-4 rounded-md border border-border bg-background/70 p-3 text-left shadow-sm">
+                                  <p className="text-sm font-semibold text-foreground">Want to keep bigger batches safe?</p>
+                                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                                    Create a free account for 30 credits, batch recovery, and saved downloads after reload.
+                                  </p>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="mt-3 h-8 rounded-md border-border bg-card px-3 text-xs font-semibold text-primary"
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      openSignInModal("/dashboard/client");
+                                    }}
+                                  >
+                                    Create account
+                                  </Button>
+                                </div>
+                              )}
                               <label htmlFor="file-upload-landing-more">
                                 <Button
                                   variant="outline"

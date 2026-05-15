@@ -80,7 +80,7 @@ export function getApiErrorUi(error: any, context: ErrorActionContext = {}): Err
     if (!context.isAuthenticated) {
       return {
         title: "Free trial limit reached",
-        description: "The free trial includes 3 runs with up to 3 images each. Create a free account for 5 runs with up to 5 images each, or choose a plan when you need more.",
+        description: "The free trial includes 3 runs with up to 3 images each. Create a free account for 30 credits, saved batches, and reload-safe downloads.",
         action: context.onSignIn
           ? { label: "Create account", onClick: context.onSignIn }
           : { label: "Create account", onClick: () => goTo(`/sign-up?next=${encodeURIComponent(upgradeHref)}`) },
@@ -91,7 +91,7 @@ export function getApiErrorUi(error: any, context: ErrorActionContext = {}): Err
 
     return {
       title: code === "DAILY_RUN_LIMIT_EXCEEDED" ? "Run limit reached" : "Not enough credits",
-      description: `${message} Upgrade for more pages, or manage billing if your subscription is already active.`,
+      description: `${message} Upgrade for larger handwritten batches, or manage billing if your subscription is already active.`,
       action: {
         label: billingIssue ? "Manage billing" : "Upgrade plan",
         onClick: () => goTo(billingIssue ? billingHref : upgradeHref),
@@ -160,7 +160,7 @@ export function showApiErrorToast(error: any, context: ErrorActionContext = {}) 
 export function showBatchLimitToast(maxFiles: number, context: ErrorActionContext = {}) {
   const upgradeHref = context.upgradeHref || "/pricing?from=batch-limit"
   toast.error("Reduce batch size", {
-    description: `Your current plan allows up to ${maxFiles} images per run.`,
+    description: `Your current plan allows up to ${maxFiles} files per run. Upgrade when bigger batches save more time than splitting them.`,
     action: {
       label: "See plans",
       onClick: () => goTo(upgradeHref),
