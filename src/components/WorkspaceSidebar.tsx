@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { Activity, ChevronsUpDown, History, LogOut, Settings, Upload } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { Activity, Building2, ChevronsUpDown, FileSpreadsheet, History, LogOut, Settings, Upload } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -38,6 +39,7 @@ const sidebarItems = [
 ]
 
 export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
+  const pathname = usePathname()
   const displayName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "User"
   const email = user?.email || ""
 
@@ -66,6 +68,56 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
             <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">General</div>
             {sidebarItems.map((item) => {
               const Icon = item.icon
+              const isProcess = item.key === "process"
+              const processSubItems = [
+                { label: "Table mode", href: "/dashboard/client", icon: FileSpreadsheet },
+                { label: "Bank statements", href: "/dashboard/bank-statements", icon: Building2 },
+              ]
+
+              if (isProcess) {
+                return (
+                  <div key={item.key} className="group/process">
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "group flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm font-medium transition-colors",
+                        activeItem === item.key
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      )}
+                    >
+                      <Icon
+                        className={cn(
+                          "size-4 shrink-0",
+                          activeItem === item.key ? "text-primary" : "text-muted-foreground group-hover:text-sidebar-accent-foreground"
+                        )}
+                      />
+                      <span className="truncate">{item.label}</span>
+                    </Link>
+                    <div className={cn("ms-4 mt-1 hidden space-y-1 border-s border-sidebar-border ps-2 group-hover/process:block", activeItem === "process" && "block")}>
+                      {processSubItems.map((subItem) => {
+                        const SubIcon = subItem.icon
+                        const selected = pathname === subItem.href
+                        return (
+                          <Link
+                            key={subItem.href}
+                            href={subItem.href}
+                            className={cn(
+                              "flex h-7 items-center gap-2 rounded-md px-2 text-xs font-medium transition-colors",
+                              selected
+                                ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                                : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                            )}
+                          >
+                            <SubIcon className={cn("size-3.5 shrink-0", selected ? "text-primary" : "text-muted-foreground")} />
+                            <span className="truncate">{subItem.label}</span>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              }
 
               return (
                 <Link

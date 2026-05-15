@@ -32,6 +32,7 @@ export type WorkspaceBanner = {
 }
 
 type OutputMode = "table" | "text"
+type DocumentMode = "table" | "bank_statement"
 
 type ResultFile = {
   file_id?: string
@@ -69,6 +70,7 @@ type ConversionWorkspaceProps = {
   isDragging: boolean
   outputMode: OutputMode
   onOutputModeChange: (mode: OutputMode) => void
+  documentMode?: DocumentMode
   isUploading: boolean
   isProcessing: boolean
   isComplete: boolean
@@ -1089,6 +1091,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     isDragging,
     outputMode,
     onOutputModeChange,
+    documentMode = "table",
     isUploading,
     isProcessing,
     isComplete,
@@ -1123,6 +1126,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     onEditFile,
   } = props
   const hasBatchResults = Boolean(isComplete && (resultFiles?.length || 0) > 1)
+  const isBankStatementMode = documentMode === "bank_statement"
 
   return (
     <div className="space-y-4">
@@ -1138,32 +1142,48 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
           <div className="grid gap-5">
             {!hasBatchResults ? (
               <div className="space-y-4">
-                <div className="flex w-fit rounded-md border border-border bg-muted p-1 shadow-sm">
-                  <button
-                    type="button"
-                    onClick={() => onOutputModeChange("table")}
-                    disabled={isProcessing}
-                    className={cn(
-                      "rounded-md px-4 py-2 text-sm font-semibold transition-colors",
-                      outputMode === "table" ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-card/60",
-                      isProcessing && "cursor-not-allowed opacity-60"
-                    )}
-                  >
-                    Table output
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onOutputModeChange("text")}
-                    disabled={isProcessing}
-                    className={cn(
-                      "rounded-md px-4 py-2 text-sm font-semibold transition-colors",
-                      outputMode === "text" ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-card/60",
-                      isProcessing && "cursor-not-allowed opacity-60"
-                    )}
-                  >
-                    Text output
-                  </button>
-                </div>
+                {isBankStatementMode ? (
+                  <div className="rounded-md border border-border bg-muted/55 p-4 shadow-sm">
+                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">Bank statement mode</p>
+                        <p className="mt-1 max-w-3xl text-sm font-medium leading-6 text-muted-foreground">
+                          Detect visible statement text and transaction rows only. Output keeps statement text in a large wrapped block, then places the transaction table underneath with separate summary, raw text, and review sheets.
+                        </p>
+                      </div>
+                      <span className="inline-flex w-fit rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground">
+                        XLSX workbook
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex w-fit rounded-md border border-border bg-muted p-1 shadow-sm">
+                    <button
+                      type="button"
+                      onClick={() => onOutputModeChange("table")}
+                      disabled={isProcessing}
+                      className={cn(
+                        "rounded-md px-4 py-2 text-sm font-semibold transition-colors",
+                        outputMode === "table" ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-card/60",
+                        isProcessing && "cursor-not-allowed opacity-60"
+                      )}
+                    >
+                      Table output
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onOutputModeChange("text")}
+                      disabled={isProcessing}
+                      className={cn(
+                        "rounded-md px-4 py-2 text-sm font-semibold transition-colors",
+                        outputMode === "text" ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-card/60",
+                        isProcessing && "cursor-not-allowed opacity-60"
+                      )}
+                    >
+                      Text output
+                    </button>
+                  </div>
+                )}
 
                 <UploadDropzone
                   uploadedFiles={uploadedFiles}

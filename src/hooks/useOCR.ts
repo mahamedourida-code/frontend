@@ -6,9 +6,11 @@ import { toast } from 'sonner'
 import { compressImages } from '@/lib/image-compression' 
 
 type UploadOutputFormat = 'xlsx' | 'txt'
+type UploadDocumentMode = 'table' | 'bank_statement'
 
 interface UploadBatchOptions {
   outputFormat?: UploadOutputFormat
+  documentMode?: UploadDocumentMode
 }
 
 interface UseOCRReturn {
@@ -120,6 +122,7 @@ export function useOCR(): UseOCRReturn {
       const response = await ocrApi.uploadBatchMultipart(filesToUpload, {
         output_format: nextOutputFormat,
         consolidation_strategy: 'separate',
+        document_mode: options?.documentMode || 'table',
         signal: uploadController.signal,
         onUploadProgress: setUploadProgress,
       })

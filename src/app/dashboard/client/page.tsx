@@ -93,15 +93,17 @@ type ResultPreview = {
   loading?: boolean
 }
 
+type ConversionDocumentMode = "table" | "bank_statement"
+
 export default function ProcessImagesPage() {
   return (
     <Suspense fallback={<ProcessImagesFallback />}>
-      <ProcessImagesContent />
+      <ProcessImagesContent documentMode="table" />
     </Suspense>
   )
 }
 
-function ProcessImagesContent() {
+export function ProcessImagesContent({ documentMode = "table" }: { documentMode?: ConversionDocumentMode }) {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
   
@@ -685,7 +687,8 @@ function ProcessImagesContent() {
       }
 
       const response = await uploadBatch(uploadedFiles, {
-        outputFormat: outputMode === 'text' ? 'txt' : 'xlsx',
+        outputFormat: documentMode === 'bank_statement' ? 'xlsx' : outputMode === 'text' ? 'txt' : 'xlsx',
+        documentMode,
       })
       if (response && response.session_id) {
         connectWebSocket(response.session_id, response.job_id)
@@ -718,7 +721,7 @@ function ProcessImagesContent() {
       })
       showApiErrorToast(error, errorContext)
     }
-  }, [uploadedFiles, uploadBatch, connectWebSocket, maxUploadFiles, router, outputMode, createFilePreviewUrl, noCredits])
+  }, [uploadedFiles, uploadBatch, connectWebSocket, maxUploadFiles, router, outputMode, documentMode, createFilePreviewUrl, noCredits])
 
   const handleCancelProcessing = useCallback(async () => {
     await cancelProcessing()
@@ -1306,14 +1309,16 @@ Best regards`
   }
 
   const isComplete = status === 'completed' && resultFiles && resultFiles.length > 0
-  const isTextOutput = outputMode === 'text'
+  const isBankStatementMode = documentMode === 'bank_statement'
+  const isTextOutput = !isBankStatementMode && outputMode === 'text'
+  const effectiveOutputMode = isBankStatementMode ? 'table' : outputMode
   const displayResultFiles = resultFiles?.map((file, index) => ({
     ...file,
-    filename: smartOutputFilename(file, index, uploadedFiles, outputMode),
+    filename: smartOutputFilename(file, index, uploadedFiles, effectiveOutputMode),
     input_preview_url: getResultInputPreviewUrl(file, index),
   })) || null
   const uploadedSizeMb = uploadedFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024)
-  const processLabel = isTextOutput ? 'Extract text' : 'Convert files'
+  const processLabel = isBankStatementMode ? 'Extract statement' : isTextOutput ? 'Extract text' : 'Convert files'
   const creditEstimate = uploadedFiles.reduce((total, file, index) => {
     return total + (isPdfFile(file) ? (pdfPageCounts[index] || 1) : 1)
   }, 0)
@@ -1340,8 +1345,8 @@ Best regards`
   return (
     <DashboardShell
       activeItem="process"
-      title="Convert Files"
-      eyebrow="Batch"
+      title={isBankStatementMode ? "Bank Statement Mode" : "Convert Files"}
+      eyebrow={isBankStatementMode ? "Statements" : "Batch"}
       user={user}
       contentClassName="max-w-none px-3 sm:px-5 lg:px-6"
     >
@@ -1355,8 +1360,9 @@ Best regards`
         filePreviewUrls={filePreviewUrls}
         pdfPageCounts={pdfPageCounts}
         isDragging={isDragging}
-        outputMode={outputMode}
+        outputMode={effectiveOutputMode}
         onOutputModeChange={setOutputMode}
+        documentMode={documentMode}
         isUploading={isUploading}
         isProcessing={isProcessing}
         isComplete={Boolean(isComplete)}

@@ -321,6 +321,7 @@ export interface DashboardSummaryResponse {
 export interface UploadBatchMultipartOptions {
   output_format?: string
   consolidation_strategy?: string
+  document_mode?: 'table' | 'bank_statement'
   signal?: AbortSignal
   onUploadProgress?: (percent: number, event: AxiosProgressEvent) => void
 }
@@ -465,6 +466,7 @@ export const ocrApi = {
     // Append options
     formData.append('output_format', options?.output_format || 'xlsx')
     formData.append('consolidation_strategy', options?.consolidation_strategy || 'consolidated')
+    formData.append('document_mode', options?.document_mode || 'table')
 
 
     // IMPORTANT: Override the default 'application/json' Content-Type
