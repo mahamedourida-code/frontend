@@ -55,7 +55,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
   const email = user?.email || ""
 
   return (
-    <aside className="fixed inset-y-0 start-0 z-30 hidden w-64 border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex md:flex-col">
+    <aside className="fixed inset-y-0 start-0 z-30 hidden w-56 border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex md:flex-col">
       <div className="flex h-full flex-col">
         <div className="p-2">
           <Link href="/" aria-label="Go to AxLiner homepage">

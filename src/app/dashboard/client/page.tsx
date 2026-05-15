@@ -1374,7 +1374,13 @@ Best regards`
     : null
 
   return (
-    <DashboardShell activeItem="process" title="Convert Files" eyebrow="Batch" user={user}>
+    <DashboardShell
+      activeItem="process"
+      title="Convert Files"
+      eyebrow="Batch"
+      user={user}
+      contentClassName="max-w-none px-3 sm:px-5 lg:px-6"
+    >
       <ConversionWorkspace
         stage={workspaceStage}
         banner={workspaceBanner ?? creditBanner}

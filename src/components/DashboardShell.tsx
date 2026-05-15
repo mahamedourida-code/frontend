@@ -136,7 +136,7 @@ export function DashboardShell({
   ]
 
   return (
-    <div className="min-h-svh bg-background text-foreground md:grid md:grid-cols-[16rem_minmax(0,1fr)]">
+    <div className="min-h-svh bg-background text-foreground md:grid md:grid-cols-[14rem_minmax(0,1fr)]">
       <WorkspaceSidebar activeItem={activeItem} user={user} />
 
       <div className="relative z-10 min-w-0 md:col-start-2">

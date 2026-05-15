@@ -21,7 +21,7 @@ import {
   X,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
@@ -520,6 +520,8 @@ export function JobProgressPanel({
   const progressValue = isUploading ? uploadProgress : progress?.percentage ?? (stage === "Queued" ? 12 : stage === "Processing" ? 48 : isComplete ? 100 : 0)
   const active = isUploading || isProcessing || isComplete || stage === "Failed"
 
+  if (!active) return null
+
   return (
     <div className="rounded-md border border-border bg-card/50 p-4 backdrop-blur-xl">
       <div className="flex items-center justify-between gap-3">
@@ -534,17 +536,13 @@ export function JobProgressPanel({
         ) : null}
       </div>
 
-      {active ? (
-        <div className="mt-4 space-y-3">
-          <Progress value={progressValue} className="h-2" />
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
-            <span>{isComplete ? "Ready" : stage === "Failed" ? "Failed" : "Converting"}</span>
-            {progress?.total_images ? <span>{progress.processed_images || 0}/{progress.total_images} files</span> : null}
-          </div>
+      <div className="mt-4 space-y-3">
+        <Progress value={progressValue} className="h-2" />
+        <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
+          <span>{isComplete ? "Ready" : stage === "Failed" ? "Failed" : "Converting"}</span>
+          {progress?.total_images ? <span>{progress.processed_images || 0}/{progress.total_images} files</span> : null}
         </div>
-      ) : (
-        <div className="mt-4 h-2 rounded-md bg-muted" />
-      )}
+      </div>
     </div>
   )
 }
@@ -694,7 +692,7 @@ function correctedFilename(filename?: string) {
 function ResultThumb({ preview, isTextOutput }: { preview?: ResultPreview; isTextOutput: boolean }) {
   if (preview?.loading) {
     return (
-      <div className="flex h-full min-h-[112px] items-center justify-center rounded-md border border-border bg-background">
+      <div className="flex h-full min-h-[180px] items-center justify-center rounded-md border border-border bg-background">
         <Loader2 className="h-4 w-4 animate-spin text-primary" />
       </div>
     )
@@ -703,9 +701,9 @@ function ResultThumb({ preview, isTextOutput }: { preview?: ResultPreview; isTex
   if (isTextOutput || preview?.text) {
     const lines = (preview?.text || "").split(/\r?\n/).filter(Boolean).slice(0, 5)
     return (
-      <div className="flex h-full min-h-[112px] flex-col gap-1.5 overflow-hidden rounded-md border border-border bg-white p-3">
+      <div className="flex h-full min-h-[180px] flex-col gap-2 overflow-hidden rounded-md border border-border bg-white p-4">
         {lines.length ? lines.map((line, index) => (
-          <span key={index} className="truncate text-[10px] font-semibold text-gray-700">
+          <span key={index} className="truncate text-xs font-semibold text-gray-700">
             {line}
           </span>
         )) : (
@@ -718,16 +716,16 @@ function ResultThumb({ preview, isTextOutput }: { preview?: ResultPreview; isTex
   const rows = preview?.table?.length ? preview.table.slice(0, 5) : []
 
   return (
-    <div className="h-full min-h-[112px] overflow-hidden rounded-md border border-border bg-white">
+    <div className="h-full min-h-[180px] overflow-hidden rounded-md border border-border bg-white">
       <div className="grid grid-cols-4 bg-primary">
         {Array.from({ length: 4 }).map((_, index) => (
-          <span key={index} className="h-3 border-r border-white/20 last:border-r-0" />
+          <span key={index} className="h-5 border-r border-white/20 last:border-r-0" />
         ))}
       </div>
       {rows.length ? rows.map((row, rowIndex) => (
         <div key={rowIndex} className="grid grid-cols-4 border-b border-gray-200 last:border-b-0">
           {Array.from({ length: 4 }).map((_, cellIndex) => (
-            <span key={cellIndex} className="truncate border-r border-gray-200 px-2 py-1.5 text-[10px] font-medium text-gray-800 last:border-r-0">
+            <span key={cellIndex} className="truncate border-r border-gray-200 px-3 py-2 text-xs font-medium text-gray-800 last:border-r-0">
               {row?.[cellIndex] || " "}
             </span>
           ))}
@@ -919,26 +917,26 @@ export function ResultActions({
         </div>
       ) : null}
 
-      <div className="rounded-md border border-border bg-muted p-4 shadow-sm sm:p-5">
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="rounded-md border border-border bg-muted/35 p-4 shadow-sm sm:p-5 xl:p-6">
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Batch output</p>
-            <p className="mt-1 text-lg font-semibold text-foreground">
+            <p className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
               {resultFiles.length} file{resultFiles.length > 1 ? "s" : ""} ready
             </p>
           </div>
           {resultFiles.length > 1 ? (
-            <span className="rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold text-muted-foreground">
-              Open any card to review cells
+            <span className="rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground">
+              Click a card to review and edit cells
             </span>
           ) : null}
         </div>
 
         <div className={cn(
-          "grid gap-3",
+          "grid gap-4",
           resultFiles.length > 8
-            ? "grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4"
-            : "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+            ? "grid-cols-1 md:grid-cols-2 2xl:grid-cols-3"
+            : "grid-cols-1 2xl:grid-cols-2"
         )}>
         {resultFiles.map((file, index) => {
           const fileKey = getResultKey(file, index)
@@ -962,19 +960,19 @@ export function ResultActions({
               }}
               className={cn(
                 "group cursor-pointer rounded-md border border-border bg-card p-3 shadow-sm outline-none transition duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary",
-                compact ? "min-h-[160px]" : "min-h-[188px]"
+                compact ? "min-h-[250px]" : "min-h-[300px]"
               )}
             >
-              <div className="grid grid-cols-[minmax(76px,0.9fr)_minmax(0,1.1fr)] gap-3">
-                <div className="overflow-hidden rounded-md border border-border bg-background">
+              <div className="grid gap-3 lg:grid-cols-[minmax(180px,0.95fr)_minmax(0,1.05fr)]">
+                <div className="overflow-hidden rounded-md border border-border bg-white">
                   {file.input_preview_url ? (
                     <img
                       src={file.input_preview_url}
                       alt={`Input file ${index + 1}`}
-                      className="h-full min-h-[112px] w-full object-cover"
+                      className="h-full min-h-[180px] w-full object-contain"
                     />
                   ) : (
-                    <div className="flex h-full min-h-[112px] items-center justify-center bg-muted">
+                    <div className="flex h-full min-h-[180px] items-center justify-center bg-muted">
                       <FileImage className="h-7 w-7 text-primary/65" />
                     </div>
                   )}
@@ -1215,6 +1213,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     onDownloadReviewedBatch,
     onEditFile,
   } = props
+  const hasBatchResults = Boolean(isComplete && (resultFiles?.length || 0) > 1)
 
   return (
     <div className="space-y-4">
@@ -1226,8 +1225,8 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
       <WorkspaceErrorBanner banner={banner} onDismiss={onDismissBanner} />
 
       <Card className="overflow-hidden rounded-md border-border bg-card shadow-sm">
-        <CardContent className="p-4 lg:p-5">
-          <div className="mb-4 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <CardHeader className="border-b border-border pb-4">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <StageRail stage={stage} />
             <div className="grid gap-2 sm:grid-cols-3">
               <div className="rounded-lg border border-border bg-card/60 px-3 py-2">
@@ -1244,93 +1243,102 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
               </div>
             </div>
           </div>
+        </CardHeader>
 
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,0.98fr)_minmax(420px,1fr)]">
-            <div className="space-y-4">
-              <div className="flex w-fit rounded-md border border-border bg-card p-1 shadow-sm">
-                <button
-                  type="button"
-                  onClick={() => onOutputModeChange("table")}
-                  disabled={isProcessing}
-                  className={cn(
-                    "rounded-md px-4 py-2 text-sm font-semibold transition-colors",
-                    outputMode === "table" ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-card/60",
-                    isProcessing && "cursor-not-allowed opacity-60"
-                  )}
-                >
-                  Table output
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onOutputModeChange("text")}
-                  disabled={isProcessing}
-                  className={cn(
-                    "rounded-md px-4 py-2 text-sm font-semibold transition-colors",
-                    outputMode === "text" ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-card/60",
-                    isProcessing && "cursor-not-allowed opacity-60"
-                  )}
-                >
-                  Text output
-                </button>
-              </div>
-
-              <UploadDropzone
-                uploadedFiles={uploadedFiles}
-                filePreviewUrls={filePreviewUrls}
-                pdfPageCounts={pdfPageCounts}
-                isDragging={isDragging}
-                isProcessing={isProcessing}
-                onDragOver={onDragOver}
-                onDragLeave={onDragLeave}
-                onDrop={onDrop}
-                onFileInput={onFileInput}
-                onRemoveFile={onRemoveFile}
-                onClearFiles={onClearFiles}
-              />
-
-              <div className="flex flex-col gap-3 rounded-md border border-border bg-card/50 p-3 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-foreground">
-                    {uploadedFiles.length ? `${uploadedFiles.length} selected` : "No files selected"}
-                  </p>
-                  <p className="text-xs font-semibold text-muted-foreground">
-                    {uploadedFiles.length ? `${formatBytes(uploadedSizeMb * 1024 * 1024)} - ${creditEstimate || uploadedFiles.length} estimated credits` : "Add files or PDFs to start."}
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-2 sm:justify-end">
-                  {(isUploading || isProcessing) && !isComplete ? (
-                    <Button
-                      variant="outline"
-                      onClick={onCancel}
-                      className="h-11 rounded-md border-border bg-card/70 px-5 text-primary hover:bg-accent"
-                    >
-                      <X className="mr-2 h-4 w-4" />
-                      Cancel
-                    </Button>
-                  ) : null}
-                  <Button
-                    size="lg"
-                    onClick={onConvert}
-                    disabled={!uploadedFiles.length || isProcessing || noCredits}
-                    className="h-12 gap-2 rounded-md bg-primary px-6 text-primary-foreground shadow-sm hover:bg-primary/90"
+        <CardContent className="p-4 lg:p-5">
+          <div className={cn(
+            "grid gap-5",
+            hasBatchResults ? "xl:grid-cols-1" : "xl:grid-cols-[minmax(0,0.98fr)_minmax(420px,1fr)]"
+          )}>
+            {!hasBatchResults ? (
+              <div className="space-y-4">
+                <div className="flex w-fit rounded-md border border-border bg-muted p-1 shadow-sm">
+                  <button
+                    type="button"
+                    onClick={() => onOutputModeChange("table")}
+                    disabled={isProcessing}
+                    className={cn(
+                      "rounded-md px-4 py-2 text-sm font-semibold transition-colors",
+                      outputMode === "table" ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-card/60",
+                      isProcessing && "cursor-not-allowed opacity-60"
+                    )}
                   >
-                    {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
-                    {isProcessing ? "Converting" : processLabel}
-                  </Button>
+                    Table output
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onOutputModeChange("text")}
+                    disabled={isProcessing}
+                    className={cn(
+                      "rounded-md px-4 py-2 text-sm font-semibold transition-colors",
+                      outputMode === "text" ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-card/60",
+                      isProcessing && "cursor-not-allowed opacity-60"
+                    )}
+                  >
+                    Text output
+                  </button>
+                </div>
+
+                <UploadDropzone
+                  uploadedFiles={uploadedFiles}
+                  filePreviewUrls={filePreviewUrls}
+                  pdfPageCounts={pdfPageCounts}
+                  isDragging={isDragging}
+                  isProcessing={isProcessing}
+                  onDragOver={onDragOver}
+                  onDragLeave={onDragLeave}
+                  onDrop={onDrop}
+                  onFileInput={onFileInput}
+                  onRemoveFile={onRemoveFile}
+                  onClearFiles={onClearFiles}
+                />
+
+                <div className="flex flex-col gap-3 rounded-md border border-border bg-card/50 p-3 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      {uploadedFiles.length ? `${uploadedFiles.length} selected` : "No files selected"}
+                    </p>
+                    <p className="text-xs font-semibold text-muted-foreground">
+                      {uploadedFiles.length ? `${formatBytes(uploadedSizeMb * 1024 * 1024)} - ${creditEstimate || uploadedFiles.length} estimated credits` : "Add files or PDFs to start."}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2 sm:justify-end">
+                    {(isUploading || isProcessing) && !isComplete ? (
+                      <Button
+                        variant="outline"
+                        onClick={onCancel}
+                        className="h-11 rounded-md border-border bg-card/70 px-5 text-primary hover:bg-accent"
+                      >
+                        <X className="mr-2 h-4 w-4" />
+                        Cancel
+                      </Button>
+                    ) : null}
+                    <Button
+                      size="lg"
+                      onClick={onConvert}
+                      disabled={!uploadedFiles.length || isProcessing || noCredits}
+                      className="h-12 gap-2 rounded-md bg-primary px-6 text-primary-foreground shadow-sm hover:bg-primary/90"
+                    >
+                      {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+                      {isProcessing ? "Converting" : processLabel}
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : null}
 
             <div className="space-y-4">
-              <JobProgressPanel
-                stage={stage}
-                isUploading={isUploading}
-                isProcessing={isProcessing}
-                isComplete={isComplete}
-                uploadProgress={uploadProgress}
-                progress={progress}
-                processingTime={processingTime}
-              />
+              {!hasBatchResults ? (
+                <JobProgressPanel
+                  stage={stage}
+                  isUploading={isUploading}
+                  isProcessing={isProcessing}
+                  isComplete={isComplete}
+                  uploadProgress={uploadProgress}
+                  progress={progress}
+                  processingTime={processingTime}
+                />
+              ) : null}
               {(!isComplete || (resultFiles?.length || 0) <= 1) ? (
                 <ResultPreviewPanel
                   isComplete={isComplete}
