@@ -449,7 +449,7 @@ export default function Home() {
                   size="sm"
                   asChild
                 >
-                  <NextLink href="/dashboard">Go to Dashboard</NextLink>
+                  <NextLink href="/dashboard/client">Convert Files</NextLink>
                 </Button>
               ) : (
                 <>

@@ -97,7 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Redirect to dashboard on sign-in (only from auth pages)
         if (event === 'SIGNED_IN') {
           const currentPath = window.location.pathname
-          const authPages = ['/verify-email']
+          const authPages = ['/sign-in', '/sign-up']
 
           if (authPages.some(page => currentPath.includes(page))) {
             router.push('/dashboard/client')
@@ -119,20 +119,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
 
     try {
+      setLoading(true)
       // Use the signOut helper
       await (await import('@/lib/auth-helpers')).signOut()
 
-      // State will be cleared by onAuthStateChange SIGNED_OUT event
-      
+      setUser(null)
+      setSession(null)
+      setProfile(null)
+
       // Redirect to landing page
-      router.push('/')
+      router.replace('/')
+      router.refresh()
     } catch (error) {
       // Clear local state even on error
       setUser(null)
       setSession(null)
       setProfile(null)
       // Still redirect on error
-      router.push('/')
+      router.replace('/')
+      router.refresh()
+    } finally {
+      setLoading(false)
     }
   }
 

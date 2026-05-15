@@ -14,7 +14,6 @@ import { showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui";
 import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
 import { useBillingStatus } from "@/hooks/useBillingStatus";
-import { useProcessingState } from "@/contexts/ProcessingStateContext";
 import { compressImages, formatFileSize } from "@/lib/image-compression";
 import {
   acceptedUploadMimeTypes,
@@ -70,11 +69,6 @@ function InlineSpinner({ className }: { className?: string }) {
 
 export default function LandingConverter() {
   const heroImageRef = useRef<HTMLDivElement>(null);
-  // Get state management from context
-  const contextValue = useProcessingState()
-  const processingState = contextValue?.state
-  const updateState = contextValue?.updateState
-  const clearState = contextValue?.clearState;
 
   // Free trial state
   const [trialInfo, setTrialInfo] = useState({ uuid: '', used: 0, remaining: 3, hasRemaining: true, limit: 3 });
@@ -224,48 +218,6 @@ export default function LandingConverter() {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  // Restore state from context on mount
-  useEffect(() => {
-    // Only restore if we don't already have result files
-    if (!resultFiles.length && processingState && processingState.processedFiles && processingState.processedFiles.length > 0) {
-
-      // Restore processed files
-      setResultFiles(processingState.processedFiles);
-
-      // Fetch table preview for the first file if available
-      if (processingState.processedFiles.length > 0) {
-        fetchTablePreview(processingState.processedFiles[0].file_id);
-      }
-
-      // Restore status
-      if (processingState.status === 'completed' || processingState.processingComplete) {
-        setProcessingComplete(true);
-        setIsProcessing(false);
-      } else if (processingState.status === 'processing') {
-        setIsProcessing(true);
-        setProcessingComplete(false);
-      }
-    }
-  }, []); // Only run once on mount
-
-  // Save state to context when it changes
-  useEffect(() => {
-    // Only update if we have updateState function available
-    if (!updateState) return;
-
-    if (resultFiles.length > 0 || isProcessing) {
-      try {
-        updateState({
-          processedFiles: resultFiles,
-          status: processingComplete ? 'completed' : isProcessing ? 'processing' : 'idle',
-          processingComplete: processingComplete,
-          uploadedFiles: [] // Don't save File objects
-        });
-      } catch (error) {
-      }
-    }
-  }, [resultFiles, isProcessing, processingComplete, updateState]);
 
   // Silently wake up backend when page loads
   useEffect(() => {
@@ -679,14 +631,6 @@ export default function LandingConverter() {
     if (status.status === 'completed' || status.status === 'partially_completed') {
       setProcessingComplete(true);
       setIsProcessing(false);
-      if (updateState) {
-        updateState({
-          processedFiles: status.results?.files || [],
-          status: 'completed',
-          processingComplete: true,
-          uploadedFiles: []
-        });
-      }
       stopJobMonitoring();
       void refreshBilling({ includeStatus: isAuthenticated, includeLimits: true });
       return true;
@@ -861,8 +805,6 @@ export default function LandingConverter() {
     stopJobMonitoring();
     isExecutingAutoActionsRef.current = false;
 
-    // Clear context state
-    clearState();
   };
 
   const handleShareFile = (file: any) => {

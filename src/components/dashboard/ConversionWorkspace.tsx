@@ -216,17 +216,34 @@ function ResumeBatchBanner({
 
 export function UploadDropzone({
   uploadedFiles,
+  filePreviewUrls,
+  pdfPageCounts,
   isDragging,
   isProcessing,
   onDragOver,
   onDragLeave,
   onDrop,
   onFileInput,
+  onRemoveFile,
+  onClearFiles,
 }: Pick<
   ConversionWorkspaceProps,
-  "uploadedFiles" | "isDragging" | "isProcessing" | "onDragOver" | "onDragLeave" | "onDrop" | "onFileInput"
+  | "uploadedFiles"
+  | "filePreviewUrls"
+  | "pdfPageCounts"
+  | "isDragging"
+  | "isProcessing"
+  | "onDragOver"
+  | "onDragLeave"
+  | "onDrop"
+  | "onFileInput"
+  | "onRemoveFile"
+  | "onClearFiles"
 >) {
+  const [selectedPreview, setSelectedPreview] = useState<{ url: string; name: string } | null>(null)
+
   return (
+    <>
     <div
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
@@ -236,22 +253,36 @@ export function UploadDropzone({
         isDragging ? "border-primary bg-card/85 scale-[0.997]" : "border-border bg-card/50 hover:border-primary/50"
       )}
     >
-      <div className={cn("flex flex-col items-center justify-center px-6 py-8 text-center", uploadedFiles.length ? "min-h-[170px]" : "min-h-[270px]")}>
-        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg border border-border bg-card/75 shadow-[0_18px_45px_rgb(0 0 0 / 0.10)]">
+      <div className={cn("px-6 py-6 text-center", uploadedFiles.length ? "min-h-[330px]" : "flex min-h-[270px] flex-col items-center justify-center")}>
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg border border-border bg-card/75 shadow-[0_18px_45px_rgb(0 0 0 / 0.10)]">
           <FolderUp className="h-7 w-7 text-primary" />
         </div>
         <h3 className="text-xl font-semibold text-foreground">{isDragging ? "Drop files" : uploadedFiles.length ? "Drop more files" : "Upload files"}</h3>
         <p className="mt-2 text-sm font-semibold text-muted-foreground">Images and PDFs</p>
-        <label
-          htmlFor="workspace-file-upload"
-          className={cn(
-            "mt-5 inline-flex h-12 cursor-pointer items-center justify-center rounded-md bg-primary px-6 text-sm font-bold text-primary-foreground shadow-sm transition hover:bg-primary/90",
-            isProcessing && "pointer-events-none opacity-55"
-          )}
-        >
-          <FileImage className="mr-2 h-4 w-4" />
-          Browse files
-        </label>
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+          <label
+            htmlFor="workspace-file-upload"
+            className={cn(
+              "inline-flex h-11 cursor-pointer items-center justify-center rounded-md bg-primary px-5 text-sm font-bold text-primary-foreground shadow-sm transition hover:bg-primary/90",
+              isProcessing && "pointer-events-none opacity-55"
+            )}
+          >
+            <FileImage className="mr-2 h-4 w-4" />
+            Browse files
+          </label>
+          {uploadedFiles.length ? (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={onClearFiles}
+              disabled={isProcessing}
+              className="h-11 rounded-md border-border bg-card px-4 text-primary shadow-sm hover:bg-accent"
+            >
+              Clear
+            </Button>
+          ) : null}
+        </div>
         <input
           id="workspace-file-upload"
           type="file"
@@ -261,8 +292,93 @@ export function UploadDropzone({
           disabled={isProcessing}
           className="hidden"
         />
+
+        {uploadedFiles.length ? (
+          <div className="mt-5 grid grid-cols-2 gap-2 text-left sm:grid-cols-3 xl:grid-cols-4">
+            {uploadedFiles.map((file, index) => {
+              const pdf = isPdfFile(file)
+              const pageCount = pdfPageCounts[index]
+              const previewUrl = filePreviewUrls[index]
+              return (
+                <div
+                  key={`${file.name}-${file.size}-${index}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => {
+                    if (previewUrl) setSelectedPreview({ url: previewUrl, name: file.name })
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault()
+                      if (previewUrl) setSelectedPreview({ url: previewUrl, name: file.name })
+                    }
+                  }}
+                  className="group cursor-pointer rounded-md border border-border bg-card/70 p-2 outline-none transition hover:-translate-y-0.5 hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                  <div className="relative mb-2 aspect-[4/3] overflow-hidden rounded-md border border-border bg-white">
+                    {previewUrl ? (
+                      <img src={previewUrl} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        {pdf ? <FileText className="h-5 w-5 text-primary" /> : <FileImage className="h-5 w-5 text-primary" />}
+                      </div>
+                    )}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        onRemoveFile(index)
+                        setSelectedPreview(null)
+                      }}
+                      disabled={isProcessing}
+                      className="absolute right-1 top-1 h-7 w-7 rounded-md bg-card/88 text-primary opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-accent group-hover:opacity-100"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-bold text-foreground">{file.name}</p>
+                    <p className="mt-0.5 truncate text-[11px] font-semibold text-muted-foreground">
+                      {pdf ? `${pageCount ? `${pageCount} page${pageCount === 1 ? "" : "s"}` : "PDF"}` : "Image"} - {formatBytes(file.size)}
+                    </p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        ) : null}
       </div>
     </div>
+      {selectedPreview ? (
+        <div
+          className="fixed inset-0 z-[90] flex items-center justify-center bg-[#111827]/50 p-4 backdrop-blur-xl"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setSelectedPreview(null)
+          }}
+        >
+          <div className="w-full max-w-4xl overflow-hidden rounded-md border border-border bg-card p-4 shadow-xl">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <p className="truncate text-sm font-semibold text-foreground">{selectedPreview.name}</p>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => setSelectedPreview(null)}
+                className="h-9 rounded-md border-border bg-background px-3 text-primary"
+                aria-label="Close preview"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex max-h-[78vh] items-center justify-center overflow-hidden rounded-lg bg-white">
+              <img src={selectedPreview.url} alt={selectedPreview.name} className="max-h-[78vh] w-full object-contain" />
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   )
 }
 
@@ -980,7 +1096,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
       />
       <WorkspaceErrorBanner banner={banner} onDismiss={onDismissBanner} />
 
-      <Card className="ax-glass-card overflow-hidden rounded-md">
+      <Card className="overflow-hidden rounded-md border-border bg-card shadow-sm">
         <CardContent className="p-4 lg:p-5">
           <div className="mb-4 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <StageRail stage={stage} />
@@ -1031,19 +1147,14 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
 
               <UploadDropzone
                 uploadedFiles={uploadedFiles}
+                filePreviewUrls={filePreviewUrls}
+                pdfPageCounts={pdfPageCounts}
                 isDragging={isDragging}
                 isProcessing={isProcessing}
                 onDragOver={onDragOver}
                 onDragLeave={onDragLeave}
                 onDrop={onDrop}
                 onFileInput={onFileInput}
-              />
-
-              <SelectedFilesTray
-                uploadedFiles={uploadedFiles}
-                filePreviewUrls={filePreviewUrls}
-                pdfPageCounts={pdfPageCounts}
-                isProcessing={isProcessing}
                 onRemoveFile={onRemoveFile}
                 onClearFiles={onClearFiles}
               />

@@ -532,8 +532,9 @@ function ProcessImagesContent() {
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    if (isProcessing || isUploading) return
     setIsDragging(true)
-  }, [])
+  }, [isProcessing, isUploading])
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -546,6 +547,8 @@ function ProcessImagesContent() {
     e.stopPropagation()
     setIsDragging(false)
 
+    if (isProcessing || isUploading) return
+
     const files = Array.from(e.dataTransfer.files).filter(isAcceptedUploadFile)
     if (files.length === 0) {
       setWorkspaceBanner({
@@ -557,18 +560,32 @@ function ProcessImagesContent() {
     }
 
     setWorkspaceBanner(null)
+    const shouldStartFresh = status === 'completed' || Boolean(resultFiles?.length)
+    if (shouldStartFresh) {
+      reset()
+      setTablePreviewData([])
+      setTextPreview('')
+      setFirstImageUrl('')
+      setActivePreviewFileId('')
+      clearState()
+    }
     
     setUploadedFiles(prev => {
-      const remainingSlots = Math.max(0, maxUploadFiles - prev.length)
+      const remainingSlots = Math.max(0, maxUploadFiles - (shouldStartFresh ? 0 : prev.length))
       const filesToAdd = files.slice(0, remainingSlots)
       if (files.length > filesToAdd.length) {
         showBatchLimitToast(maxUploadFiles)
       }
-      return [...prev, ...filesToAdd]
+      return shouldStartFresh ? filesToAdd : [...prev, ...filesToAdd]
     })
-  }, [maxUploadFiles])
+  }, [maxUploadFiles, isProcessing, isUploading, status, resultFiles?.length, reset, clearState])
 
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isProcessing || isUploading) {
+      e.target.value = ''
+      return
+    }
+
     const files = e.target.files
     if (files) {
       const fileArray = Array.from(files).filter(isAcceptedUploadFile)
@@ -583,17 +600,26 @@ function ProcessImagesContent() {
       }
 
       setWorkspaceBanner(null)
+      const shouldStartFresh = status === 'completed' || Boolean(resultFiles?.length)
+      if (shouldStartFresh) {
+        reset()
+        setTablePreviewData([])
+        setTextPreview('')
+        setFirstImageUrl('')
+        setActivePreviewFileId('')
+        clearState()
+      }
       setUploadedFiles(prev => {
-        const remainingSlots = Math.max(0, maxUploadFiles - prev.length)
+        const remainingSlots = Math.max(0, maxUploadFiles - (shouldStartFresh ? 0 : prev.length))
         const filesToAdd = fileArray.slice(0, remainingSlots)
         if (fileArray.length > filesToAdd.length) {
           showBatchLimitToast(maxUploadFiles)
         }
-        return [...prev, ...filesToAdd]
+        return shouldStartFresh ? filesToAdd : [...prev, ...filesToAdd]
       })
       e.target.value = ''
     }
-  }, [maxUploadFiles])
+  }, [maxUploadFiles, isProcessing, isUploading, status, resultFiles?.length, reset, clearState])
 
   const creditAvailable = entitlementCredits?.available_credits ?? limits?.credits?.available_credits ?? 0
   const noCredits = Boolean((entitlementCredits || limits?.credits) && creditAvailable <= 0)
@@ -1202,12 +1228,7 @@ Best regards`
         onDrop={handleDrop}
         onFileInput={handleFileInput}
         onRemoveFile={handleRemoveFile}
-        onClearFiles={() => {
-          setUploadedFiles([])
-          setPdfPageCounts({})
-          setActivePreviewFileId('')
-          setWorkspaceBanner(null)
-        }}
+        onClearFiles={handleReset}
         onConvert={handleProcessImages}
         onCancel={handleCancelProcessing}
         onReset={handleReset}

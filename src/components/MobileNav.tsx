@@ -90,15 +90,15 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
 
   const mainNavItems: MobileNavItem[] = [
     {
-      label: "Overview",
-      href: "/dashboard",
-      icon: Activity,
-      show: isAuthenticated
-    },
-    {
       label: "Convert Files",
       href: "/dashboard/client",
       icon: Upload,
+      show: isAuthenticated
+    },
+    {
+      label: "Overview",
+      href: "/dashboard",
+      icon: Activity,
       show: isAuthenticated
     },
     {
@@ -164,8 +164,8 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
     onClick: () => void
   }> = isAuthenticated
     ? [
-        { label: "Dashboard", icon: LayoutDashboard, active: pathname === "/dashboard", onClick: () => handleNavigation("/dashboard") },
         { label: "Convert", icon: Upload, active: pathname === "/dashboard/client", onClick: () => handleNavigation("/dashboard/client") },
+        { label: "Overview", icon: LayoutDashboard, active: pathname === "/dashboard", onClick: () => handleNavigation("/dashboard") },
         { label: "History", icon: History, active: pathname === "/history", onClick: () => handleNavigation("/history") },
       ]
     : [
