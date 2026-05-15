@@ -100,8 +100,9 @@ type ConversionWorkspaceProps = {
   onSaveToHistory: () => void
   onShareFile: (file: ResultFile) => void
   onShareAll: () => void
-  onDownloadFile: (file: ResultFile) => void
+  onDownloadFile: (file: ResultFile, index?: number) => void
   onDownloadAll: () => void
+  onDownloadReviewedBatch?: (editedTables: Record<string, any[][]>) => void | Promise<void>
   onEditFile: (file: ResultFile, index?: number) => void
 }
 
@@ -698,6 +699,7 @@ export function ResultActions({
   onShareAll,
   onDownloadFile,
   onDownloadAll,
+  onDownloadReviewedBatch,
   onEditFile,
 }: Pick<
   ConversionWorkspaceProps,
@@ -716,11 +718,13 @@ export function ResultActions({
   | "onShareAll"
   | "onDownloadFile"
   | "onDownloadAll"
+  | "onDownloadReviewedBatch"
   | "onEditFile"
 >) {
   const [comparisonIndex, setComparisonIndex] = useState<number | null>(null)
   const [editingCell, setEditingCell] = useState<{ fileKey: string; row: number; col: number } | null>(null)
   const [editedTables, setEditedTables] = useState<Record<string, any[][]>>({})
+  const [reviewedDownloadBusy, setReviewedDownloadBusy] = useState(false)
   if (!resultFiles?.length) return null
 
   const comparisonFile = comparisonIndex !== null ? resultFiles[comparisonIndex] : null
@@ -761,7 +765,10 @@ export function ResultActions({
 
   const downloadCorrectedFiles = async () => {
     const entries = Object.entries(editedTables).filter(([, table]) => table.length > 0)
-    if (!entries.length) return
+    if (!entries.length) {
+      onDownloadAll()
+      return
+    }
 
     const XLSX = await import("xlsx")
 
@@ -782,6 +789,19 @@ export function ResultActions({
       document.body.removeChild(link)
       URL.revokeObjectURL(url)
       await new Promise(resolve => setTimeout(resolve, 180))
+    }
+  }
+
+  const handleReviewedBatchDownload = async () => {
+    setReviewedDownloadBusy(true)
+    try {
+      if (onDownloadReviewedBatch) {
+        await onDownloadReviewedBatch(editedTables)
+      } else {
+        await downloadCorrectedFiles()
+      }
+    } finally {
+      setReviewedDownloadBusy(false)
     }
   }
 
@@ -822,21 +842,17 @@ export function ResultActions({
             Share
           </Button>
           <Button
-            variant="outline"
-            onClick={onDownloadAll}
-            className="h-10 gap-2 rounded-md border-border bg-card px-4 text-primary shadow-sm hover:bg-accent"
+            onClick={handleReviewedBatchDownload}
+            disabled={reviewedDownloadBusy}
+            className="h-10 gap-2 rounded-md bg-primary px-4 text-primary-foreground shadow-sm hover:bg-primary/90"
           >
-            <Download className="h-4 w-4" />
-            Download all
+            {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            Download reviewed batch
           </Button>
           {editedCount > 0 && !isTextOutput ? (
-            <Button
-              onClick={downloadCorrectedFiles}
-              className="h-10 gap-2 rounded-md bg-primary px-4 text-primary-foreground shadow-sm hover:bg-primary/90"
-            >
-              <Download className="h-4 w-4" />
-              Download corrected files
-            </Button>
+            <span className="inline-flex h-10 items-center rounded-md border border-primary/20 bg-primary/10 px-3 text-xs font-semibold text-primary">
+              {editedCount} edited
+            </span>
           ) : null}
         </div>
       ) : null}
@@ -896,7 +912,7 @@ export function ResultActions({
                   size="sm"
                   onClick={(event) => {
                     event.stopPropagation()
-                    onDownloadFile(file)
+                    onDownloadFile(file, index)
                   }}
                   className="h-9 rounded-md bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
                 >
@@ -1084,6 +1100,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     onShareAll,
     onDownloadFile,
     onDownloadAll,
+    onDownloadReviewedBatch,
     onEditFile,
   } = props
 
@@ -1226,6 +1243,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                 onShareAll={onShareAll}
                 onDownloadFile={onDownloadFile}
                 onDownloadAll={onDownloadAll}
+                onDownloadReviewedBatch={onDownloadReviewedBatch}
                 onEditFile={onEditFile}
               />
             </div>

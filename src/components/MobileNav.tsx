@@ -108,6 +108,12 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       show: isAuthenticated
     },
     {
+      label: "Workflows",
+      href: "/dashboard/workflows",
+      icon: Target,
+      show: isAuthenticated
+    },
+    {
       label: "Settings",
       href: "/dashboard/settings",
       icon: Settings,

@@ -15,7 +15,7 @@ import { AppIcon } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { cn } from "@/lib/utils"
 
-type SidebarItemKey = "overview" | "process" | "history" | "pricing" | "settings"
+type SidebarItemKey = "overview" | "process" | "workflows" | "history" | "pricing" | "settings"
 
 interface WorkspaceSidebarProps {
   activeItem: SidebarItemKey
@@ -29,9 +29,22 @@ interface WorkspaceSidebarProps {
   } | null
 }
 
+function WorkflowGlyph({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path d="M5 7h5m4 0h5M5 17h5m4 0h5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M10 7c2 0 2 10 4 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M10 17c2 0 2-10 4-10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="5" cy="7" r="1.8" fill="currentColor" />
+      <circle cx="19" cy="17" r="1.8" fill="currentColor" />
+    </svg>
+  )
+}
+
 const sidebarItems = [
   { key: "overview" as const, label: "Overview", icon: Activity, href: "/dashboard" },
   { key: "process" as const, label: "Convert Files", icon: Upload, href: "/dashboard/client" },
+  { key: "workflows" as const, label: "Workflows", icon: WorkflowGlyph, href: "/dashboard/workflows" },
   { key: "history" as const, label: "History", icon: History, href: "/history" },
   { key: "pricing" as const, label: "Pricing", icon: BillingSeal, href: "/pricing" },
   { key: "settings" as const, label: "Settings", icon: Settings, href: "/dashboard/settings" },

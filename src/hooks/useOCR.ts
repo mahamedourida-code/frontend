@@ -28,7 +28,7 @@ interface UseOCRReturn {
   uploadImage: (file: File) => Promise<BatchConvertResponse | null>
   uploadBatch: (files: File[], options?: UploadBatchOptions) => Promise<BatchConvertResponse | null>
   getStatus: (jobId: string) => Promise<void>
-  downloadFile: (fileId: string) => Promise<void>
+  downloadFile: (fileId: string, filename?: string) => Promise<void>
   saveToHistory: () => Promise<void>
   connectWebSocket: (sessionId: string, jobIdToTrack?: string) => void
   disconnectWebSocket: () => void
@@ -223,7 +223,7 @@ export function useOCR(): UseOCRReturn {
   }, [applyJobStatus])
 
   // Download file
-  const downloadFile = useCallback(async (fileId: string): Promise<void> => {
+  const downloadFile = useCallback(async (fileId: string, filename?: string): Promise<void> => {
 
     if (!fileId) {
       toast.error('Unable to download: File ID is missing')
@@ -241,7 +241,7 @@ export function useOCR(): UseOCRReturn {
       const link = document.createElement('a')
       link.href = url
       const extension = blob.type.startsWith('text/') || outputFormatRef.current === 'txt' ? 'txt' : 'xlsx'
-      link.download = `result-${fileId}.${extension}`
+      link.download = filename || `result-${fileId}.${extension}`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)

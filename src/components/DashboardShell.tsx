@@ -16,7 +16,7 @@ import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { ocrApi, type RecoverableJobSummary } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
 
-type DashboardItemKey = "overview" | "process" | "history" | "pricing" | "settings"
+type DashboardItemKey = "overview" | "process" | "workflows" | "history" | "pricing" | "settings"
 
 type DashboardShellProps = {
   activeItem: DashboardItemKey
@@ -131,6 +131,7 @@ export function DashboardShell({
   const topNav = [
     { label: "Overview", href: "/dashboard", active: activeItem === "overview" },
     { label: "Convert Files", href: "/dashboard/client", active: activeItem === "process" },
+    { label: "Workflows", href: "/dashboard/workflows", active: activeItem === "workflows" },
     { label: "Plans", href: "/pricing", active: activeItem === "pricing" },
   ]
 

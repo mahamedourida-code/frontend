@@ -90,6 +90,7 @@ export default function LandingConverter() {
   const [comparisonOpen, setComparisonOpen] = useState(false);
   const [editingCell, setEditingCell] = useState<{ fileId: string; row: number; col: number } | null>(null);
   const [editedFileIds, setEditedFileIds] = useState<Set<string>>(() => new Set());
+  const [reviewedDownloadBusy, setReviewedDownloadBusy] = useState(false);
   const [firstImageUrl, setFirstImageUrl] = useState<string>('');
   const [outputMode, setOutputMode] = useState<'table' | 'text'>('table');
   const [totalFilesToProcess, setTotalFilesToProcess] = useState(0);
@@ -123,6 +124,40 @@ export default function LandingConverter() {
   const cleanFilename = (filename: string | undefined): string => {
     if (!filename) return 'result.xlsx';
     return filename.replace('_processed', '');
+  };
+
+  const filenameStem = (name?: string | null, fallback = "axliner_result") => {
+    const raw = (name || fallback).split(/[\\/]/).pop() || fallback;
+    const withoutExt = raw.replace(/\.[^/.]+$/, "").replace(/_processed$/i, "");
+    const cleaned = withoutExt
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9._-]+/g, "_")
+      .replace(/^_+|_+$/g, "");
+    return cleaned || fallback;
+  };
+
+  const getSmartOutputFilename = (file: any, index: number) => {
+    const sourceName =
+      file?.original_filename ||
+      file?.source_filename ||
+      file?.input_filename ||
+      uploadedFiles[index]?.name ||
+      file?.filename ||
+      `axliner_${index + 1}`;
+    return `${filenameStem(sourceName, `axliner_${index + 1}`)}.${outputMode === 'text' ? 'txt' : 'xlsx'}`;
+  };
+
+  const getSmartSheetName = (name: string, used: Set<string>) => {
+    const base = filenameStem(name, "Sheet").replace(/[:\\/?*[\]]/g, "_").slice(0, 26) || "Sheet";
+    let next = base;
+    let suffix = 2;
+    while (used.has(next)) {
+      next = `${base.slice(0, 26 - String(suffix).length)}_${suffix}`;
+      suffix += 1;
+    }
+    used.add(next);
+    return next.slice(0, 31);
   };
 
   const getResultFileId = (file: any, index: number) => file?.file_id || `result-${index}`;
@@ -260,10 +295,10 @@ export default function LandingConverter() {
         // toast.info(`Auto-downloading ${resultFiles.length} file(s)...`)
         const downloadedIds = new Set<string>()
 
-        for (const file of resultFiles) {
+        for (const [index, file] of resultFiles.entries()) {
           if (file.file_id && !downloadedIds.has(file.file_id)) {
             try {
-              await handleDownloadFile(file.file_id)
+              await handleDownloadFile(file.file_id, getSmartOutputFilename(file, index))
               downloadedIds.add(file.file_id)
               await new Promise(resolve => setTimeout(resolve, 500))
             } catch (error) {
@@ -510,7 +545,7 @@ export default function LandingConverter() {
     await processImages(uploadedFiles);
   }, [uploadedFiles, maxUploadFiles, processImages]);
 
-  const handleDownloadFile = async (fileId: string) => {
+  const handleDownloadFile = async (fileId: string, filename?: string) => {
 
     if (!fileId) {
       toast.error('Unable to download: File ID is missing');
@@ -528,7 +563,7 @@ export default function LandingConverter() {
       const link = document.createElement('a');
       link.href = url;
       // Use a simple filename without _processed
-      link.download = `result-${fileId.substring(0, 8)}.${outputMode === 'text' ? 'txt' : 'xlsx'}`;
+      link.download = filename || `result-${fileId.substring(0, 8)}.${outputMode === 'text' ? 'txt' : 'xlsx'}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -954,10 +989,10 @@ export default function LandingConverter() {
 
     // toast.info(`Downloading ${resultFiles.length} file(s)...`);
 
-    for (const file of resultFiles) {
+    for (const [index, file] of resultFiles.entries()) {
       if (file.file_id) {
         try {
-          await handleDownloadFile(file.file_id);
+          await handleDownloadFile(file.file_id, getSmartOutputFilename(file, index));
           await new Promise(resolve => setTimeout(resolve, 500));
         } catch (error) {
         }
@@ -1135,6 +1170,62 @@ export default function LandingConverter() {
 
     if (downloaded) {
       toast.success(`Downloaded ${downloaded} corrected file${downloaded === 1 ? '' : 's'}`);
+    }
+  };
+
+  const downloadReviewedBatch = async () => {
+    if (!resultFiles.length) return;
+
+    setReviewedDownloadBusy(true);
+    try {
+      if (outputMode === 'text') {
+        const parts: string[] = [];
+        for (const [index, file] of resultFiles.entries()) {
+          if (!file.file_id) continue;
+          const blob = await ocrApi.downloadFile(file.file_id, currentSessionId || undefined);
+          const text = await blob.text();
+          parts.push(`===== ${getSmartOutputFilename(file, index)} =====\n${text.trim()}`);
+        }
+
+        const blob = new Blob([parts.join('\n\n')], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${filenameStem(uploadedFiles[0]?.name || 'axliner_batch')}_reviewed.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        toast.success('Reviewed batch downloaded.');
+        return;
+      }
+
+      const XLSX = await import('xlsx');
+      const workbook = XLSX.utils.book_new();
+      const usedSheetNames = new Set<string>();
+
+      for (const [index, file] of resultFiles.entries()) {
+        if (!file.file_id) continue;
+        const preview = resultPreviews[file.file_id] || await fetchTablePreview(file.file_id, false);
+        const table = preview?.table || [];
+        if (!table.length) continue;
+
+        const sheet = XLSX.utils.aoa_to_sheet(table);
+        const sheetName = getSmartSheetName(getSmartOutputFilename(file, index), usedSheetNames);
+        XLSX.utils.book_append_sheet(workbook, sheet, sheetName);
+      }
+
+      if (!workbook.SheetNames.length) {
+        await handleDownloadAll();
+        return;
+      }
+
+      XLSX.writeFile(workbook, `${filenameStem(uploadedFiles[0]?.name || 'axliner_batch')}_reviewed.xlsx`);
+      toast.success('Reviewed batch downloaded.');
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || 'Could not prepare the reviewed batch.');
+    } finally {
+      setReviewedDownloadBusy(false);
     }
   };
 
@@ -1349,7 +1440,7 @@ export default function LandingConverter() {
                                 ))}
                               </div>
                               <p className="mb-3 text-sm font-semibold text-foreground">{uploadedFiles.length} file{uploadedFiles.length > 1 ? 's' : ''} ready</p>
-                              {!isAuthenticated && !isProcessing && !processingComplete && (
+                              {!isAuthenticated && !isProcessing && !processingComplete && (uploadedFiles.length >= 2 || uploadedFiles.length >= maxUploadFiles || trialInfo.remaining <= 1) && (
                                 <div className="mb-4 rounded-md border border-border bg-background/70 p-3 text-left shadow-sm">
                                   <p className="text-sm font-semibold text-foreground">Want to keep bigger batches safe?</p>
                                   <p className="mt-1 text-xs leading-5 text-muted-foreground">
@@ -1438,27 +1529,19 @@ export default function LandingConverter() {
                           </div>
                         </div>
                         <div className="flex flex-wrap gap-2 lg:justify-end">
-                          {processingComplete && editedFileIds.size > 0 && outputMode !== 'text' && (
+                          {processingComplete && resultFiles.length > 0 && (
                             <Button
                               size="sm"
-                              onClick={downloadCorrectedFiles}
+                              onClick={downloadReviewedBatch}
+                              disabled={reviewedDownloadBusy}
                               className="h-10 rounded-md bg-primary px-4 text-primary-foreground shadow-sm hover:bg-primary/90"
                             >
-                              <Download className="mr-1.5 h-4 w-4" />
-                              Download corrected files
+                              {reviewedDownloadBusy ? <InlineSpinner className="mr-1.5 h-4 w-4" /> : <Download className="mr-1.5 h-4 w-4" />}
+                              Download reviewed batch
                             </Button>
                           )}
                           {processingComplete && resultFiles.length > 1 && (
                             <>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={handleDownloadAll}
-                                className="h-10 rounded-md border-border bg-background px-4 text-primary shadow-sm hover:bg-muted"
-                              >
-                                <Download className="mr-1.5 h-4 w-4" />
-                                Download All
-                              </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
@@ -1574,11 +1657,12 @@ export default function LandingConverter() {
                               </div>
                               <Button
                                 size="sm"
-                                onClick={handleDownloadAll}
+                                onClick={downloadReviewedBatch}
+                                disabled={reviewedDownloadBusy}
                                 className="w-full gap-2 rounded-md sm:w-auto"
                               >
-                                <Download className="h-4 w-4" />
-                                Download All
+                                {reviewedDownloadBusy ? <InlineSpinner className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                                Download reviewed batch
                               </Button>
                             </div>
 
@@ -1641,7 +1725,7 @@ export default function LandingConverter() {
                                             <FileSpreadsheet className="h-5 w-5 shrink-0 text-primary" />
                                           )}
                                         <p className="truncate text-sm font-semibold text-foreground">
-                                          {cleanFilename(file.filename)}
+                                          {getSmartOutputFilename(file, index)}
                                         </p>
                                       </div>
                                       <div className="flex shrink-0 items-center gap-1.5">
@@ -1661,7 +1745,7 @@ export default function LandingConverter() {
                                           size="sm"
                                           onClick={(event) => {
                                             event.stopPropagation();
-                                            handleDownloadFile(file.file_id);
+                                            handleDownloadFile(file.file_id, getSmartOutputFilename(file, index));
                                           }}
                                           className="h-8 rounded-md px-3 text-xs"
                                         >

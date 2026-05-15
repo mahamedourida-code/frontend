@@ -52,6 +52,42 @@ function ProcessImagesFallback() {
   )
 }
 
+function filenameStem(name?: string | null, fallback = "axliner_result") {
+  const raw = (name || fallback).split(/[\\/]/).pop() || fallback
+  const withoutExt = raw.replace(/\.[^/.]+$/, "").replace(/_processed$/i, "")
+  const cleaned = withoutExt
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9._-]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+  return cleaned || fallback
+}
+
+function smartOutputFilename(file: any, index: number, sourceFiles: File[], outputMode: "table" | "text") {
+  const sourceName =
+    file?.original_filename ||
+    file?.source_filename ||
+    file?.input_filename ||
+    sourceFiles[index]?.name ||
+    file?.filename ||
+    `axliner_${index + 1}`
+  return `${filenameStem(sourceName, `axliner_${index + 1}`)}.${outputMode === "text" ? "txt" : "xlsx"}`
+}
+
+function smartSheetName(name: string, used: Set<string>) {
+  const base = filenameStem(name, "Sheet")
+    .replace(/[:\\/?*[\]]/g, "_")
+    .slice(0, 26) || "Sheet"
+  let next = base
+  let suffix = 2
+  while (used.has(next)) {
+    next = `${base.slice(0, 26 - String(suffix).length)}_${suffix}`
+    suffix += 1
+  }
+  used.add(next)
+  return next.slice(0, 31)
+}
+
 export default function ProcessImagesPage() {
   return (
     <Suspense fallback={<ProcessImagesFallback />}>
@@ -1111,13 +1147,13 @@ Best regards`
     if (!resultFiles || resultFiles.length === 0) return
 
     let downloadCount = 0
-    for (const file of resultFiles) {
+    for (const [index, file] of resultFiles.entries()) {
       if (!file.file_id) {
         continue
       }
 
       try {
-        await downloadFile(file.file_id)
+        await downloadFile(file.file_id, smartOutputFilename(file, index, uploadedFiles, outputMode))
         downloadCount++
         await new Promise(resolve => setTimeout(resolve, 500))
       } catch (error) {
@@ -1132,12 +1168,72 @@ Best regards`
     }
   }
 
-  const handleDownloadResultFile = (file: any) => {
+  const handleDownloadResultFile = (file: any, index = 0) => {
     if (!file?.file_id) {
       toast.error('Unable to download: File ID is missing')
       return
     }
-    downloadFile(file.file_id)
+    downloadFile(file.file_id, smartOutputFilename(file, index, uploadedFiles, outputMode))
+  }
+
+  const handleDownloadReviewedBatch = async (editedTables: Record<string, any[][]>) => {
+    if (!resultFiles || resultFiles.length === 0) return
+
+    try {
+      if (outputMode === 'text') {
+        const textParts: string[] = []
+        for (const [index, file] of resultFiles.entries()) {
+          if (!file.file_id) continue
+          const blob = await ocrApi.downloadFile(file.file_id)
+          const text = await blob.text()
+          textParts.push(`===== ${smartOutputFilename(file, index, uploadedFiles, outputMode)} =====\n${text.trim()}`)
+        }
+        const blob = new Blob([textParts.join('\n\n')], { type: 'text/plain;charset=utf-8' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `${filenameStem(uploadedFiles[0]?.name || 'axliner_batch')}_reviewed.txt`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+        toast.success('Reviewed batch downloaded.')
+        return
+      }
+
+      const XLSX = await import('xlsx')
+      const workbook = XLSX.utils.book_new()
+      const usedSheetNames = new Set<string>()
+
+      for (const [index, file] of resultFiles.entries()) {
+        if (!file.file_id) continue
+        const key = file.file_id || `result-${index}`
+        let table = editedTables[key]
+
+        if (!table?.length) {
+          const blob = await ocrApi.downloadFile(file.file_id)
+          const arrayBuffer = await blob.arrayBuffer()
+          const sourceWorkbook = XLSX.read(arrayBuffer, { type: 'array' })
+          const firstSheet = sourceWorkbook.Sheets[sourceWorkbook.SheetNames[0]]
+          table = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as any[][]
+        }
+
+        if (!table?.length) continue
+        const sheet = XLSX.utils.aoa_to_sheet(table)
+        const sheetName = smartSheetName(smartOutputFilename(file, index, uploadedFiles, outputMode), usedSheetNames)
+        XLSX.utils.book_append_sheet(workbook, sheet, sheetName)
+      }
+
+      if (!workbook.SheetNames.length) {
+        await handleDownloadAll()
+        return
+      }
+
+      XLSX.writeFile(workbook, `${filenameStem(uploadedFiles[0]?.name || 'axliner_batch')}_reviewed.xlsx`)
+      toast.success('Reviewed batch downloaded.')
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || 'Could not prepare the reviewed batch.')
+    }
   }
 
   const handleEditResultFile = (file: any, index = 0) => {
@@ -1164,6 +1260,10 @@ Best regards`
 
   const isComplete = status === 'completed' && resultFiles && resultFiles.length > 0
   const isTextOutput = outputMode === 'text'
+  const displayResultFiles = resultFiles?.map((file, index) => ({
+    ...file,
+    filename: smartOutputFilename(file, index, uploadedFiles, outputMode),
+  })) || null
   const uploadedSizeMb = uploadedFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024)
   const processLabel = isTextOutput ? 'Extract text' : 'Convert files'
   const creditEstimate = uploadedFiles.reduce((total, file, index) => {
@@ -1225,7 +1325,7 @@ Best regards`
         maxUploadFiles={maxUploadFiles}
         processLabel={processLabel}
         noCredits={noCredits || batchExceedsCredits}
-        resultFiles={resultFiles}
+        resultFiles={displayResultFiles}
         tablePreviewData={tablePreviewData}
         textPreview={textPreview}
         firstImageUrl={firstImageUrl}
@@ -1247,6 +1347,7 @@ Best regards`
         onShareAll={handleShareAll}
         onDownloadFile={handleDownloadResultFile}
         onDownloadAll={handleDownloadAll}
+        onDownloadReviewedBatch={handleDownloadReviewedBatch}
         onEditFile={handleEditResultFile}
       />
 
