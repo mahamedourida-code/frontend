@@ -22,7 +22,7 @@ import {
   isAcceptedUploadFile,
   isPdfFile,
 } from "@/lib/upload-files";
-import { Download, FileSpreadsheet, FileText, RotateCcw, Share2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, FileSpreadsheet, FileText, RotateCcw, Share2, X } from "lucide-react";
 
 const LandingDialogs = dynamic(
   () => import("@/components/landing/LandingDialogs"),
@@ -38,6 +38,11 @@ type ResultPreview = {
   table: any[][];
   text: string;
   loading?: boolean;
+};
+
+type OutputBadge = {
+  label: "Ready" | "Needs review";
+  className: string;
 };
 
 function SiteIcon({ src, className, alt = "" }: { src: string; className?: string; alt?: string }) {
@@ -90,6 +95,7 @@ export default function LandingConverter() {
   const [selectedResultIndex, setSelectedResultIndex] = useState(0);
   const [comparisonOpen, setComparisonOpen] = useState(false);
   const [editingCell, setEditingCell] = useState<{ fileId: string; row: number; col: number } | null>(null);
+  const [editedFileIds, setEditedFileIds] = useState<Set<string>>(() => new Set());
   const [firstImageUrl, setFirstImageUrl] = useState<string>('');
   const [outputMode, setOutputMode] = useState<'table' | 'text'>('table');
   const [totalFilesToProcess, setTotalFilesToProcess] = useState(0);
@@ -123,6 +129,30 @@ export default function LandingConverter() {
   const cleanFilename = (filename: string | undefined): string => {
     if (!filename) return 'result.xlsx';
     return filename.replace('_processed', '');
+  };
+
+  const getResultFileId = (file: any, index: number) => file?.file_id || `result-${index}`;
+
+  const getOutputBadge = (file: any, preview?: ResultPreview): OutputBadge => {
+    const rawConfidence =
+      file?.confidence_score ??
+      file?.confidence ??
+      file?.quality_score ??
+      file?.metadata?.confidence_score ??
+      file?.metadata?.confidence ??
+      null;
+    const confidence = typeof rawConfidence === 'number'
+      ? rawConfidence <= 1 ? rawConfidence * 100 : rawConfidence
+      : null;
+    const needsReview =
+      preview?.loading ||
+      file?.status === 'failed' ||
+      file?.requires_review ||
+      (confidence !== null && confidence < 82);
+
+    return needsReview
+      ? { label: "Needs review", className: "border-amber-200 bg-amber-50 text-amber-800" }
+      : { label: "Ready", className: "border-emerald-200 bg-emerald-50 text-emerald-800" };
   };
 
   useEffect(() => {
@@ -413,6 +443,7 @@ export default function LandingConverter() {
       setTablePreviewData([]);
       setTextPreview('');
       setResultPreviews({});
+      setEditedFileIds(new Set());
       setSelectedResultIndex(0);
       setComparisonOpen(false);
       setEditingCell(null);
@@ -600,11 +631,10 @@ export default function LandingConverter() {
       const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
       const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as any[][];
 
-      const previewData = data.slice(0, Math.min(24, data.length));
-      const preview = { table: previewData, text: '', loading: false };
+      const preview = { table: data, text: '', loading: false };
       setResultPreviews(prev => ({ ...prev, [fileId]: preview }));
       if (syncActivePreview) {
-        setTablePreviewData(previewData);
+        setTablePreviewData(data);
         setTextPreview('');
       }
       return preview;
@@ -820,6 +850,7 @@ export default function LandingConverter() {
     setTablePreviewData([]);
     setTextPreview('');
     setResultPreviews({});
+    setEditedFileIds(new Set());
     setSelectedResultIndex(0);
     setComparisonOpen(false);
     setEditingCell(null);
@@ -1099,6 +1130,12 @@ export default function LandingConverter() {
     if (file.file_id) void fetchTablePreview(file.file_id);
   };
 
+  const goToAdjacentResult = (direction: -1 | 1) => {
+    if (resultFiles.length < 2) return;
+    const nextIndex = (selectedResultIndex + direction + resultFiles.length) % resultFiles.length;
+    openResultComparison(nextIndex);
+  };
+
   const updatePreviewCell = (fileId: string, rowIndex: number, cellIndex: number, value: string) => {
     const currentPreview = resultPreviews[fileId] || { table: [], text: '' };
     const nextTable = currentPreview.table.map(row => [...row]);
@@ -1113,9 +1150,49 @@ export default function LandingConverter() {
         loading: false,
       },
     }));
+    setEditedFileIds(prev => {
+      const next = new Set(prev);
+      next.add(fileId);
+      return next;
+    });
 
     if (selectedResult?.file_id === fileId) {
       setTablePreviewData(nextTable);
+    }
+  };
+
+  const downloadCorrectedFiles = async () => {
+    const editedFiles = resultFiles.filter((file, index) => editedFileIds.has(getResultFileId(file, index)));
+    if (!editedFiles.length) return;
+
+    const XLSX = await import('xlsx');
+    let downloaded = 0;
+
+    for (const file of editedFiles) {
+      const fileId = file.file_id;
+      const table = fileId ? resultPreviews[fileId]?.table : null;
+      if (!fileId || !table?.length) continue;
+
+      const worksheet = XLSX.utils.aoa_to_sheet(table);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const baseName = cleanFilename(file.filename).replace(/\.[^/.]+$/, '');
+      link.href = url;
+      link.download = `${baseName || 'result'}_corrected.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      downloaded += 1;
+      await new Promise(resolve => setTimeout(resolve, 180));
+    }
+
+    if (downloaded) {
+      toast.success(`Downloaded ${downloaded} corrected file${downloaded === 1 ? '' : 's'}`);
     }
   };
 
@@ -1400,6 +1477,16 @@ export default function LandingConverter() {
                           </div>
                         </div>
                         <div className="flex flex-wrap gap-2 lg:justify-end">
+                          {processingComplete && editedFileIds.size > 0 && outputMode !== 'text' && (
+                            <Button
+                              size="sm"
+                              onClick={downloadCorrectedFiles}
+                              className="h-10 rounded-md bg-primary px-4 text-primary-foreground shadow-sm hover:bg-primary/90"
+                            >
+                              <Download className="mr-1.5 h-4 w-4" />
+                              Download corrected files
+                            </Button>
+                          )}
                           {processingComplete && resultFiles.length > 1 && (
                             <>
                               <Button
@@ -1507,11 +1594,6 @@ export default function LandingConverter() {
                                             ))}
                                           </tbody>
                                         </table>
-                                        {selectedTablePreview.length >= 24 && (
-                                          <div className="border-t border-gray-200 bg-emerald-50 px-3 py-2 text-center text-xs font-semibold text-primary">
-                                            Showing first 24 rows
-                                          </div>
-                                        )}
                                       </>
                                     )}
                                   </div>
@@ -1549,6 +1631,9 @@ export default function LandingConverter() {
                                 const previewUrl = getResultPreviewUrl(index, file);
                                 const compact = resultFiles.length > 8;
                                 const filePreview = file.file_id ? resultPreviews[file.file_id] : undefined;
+                                const fileId = getResultFileId(file, index);
+                                const badge = getOutputBadge(file, filePreview);
+                                const edited = editedFileIds.has(fileId);
 
                                 return (
                                   <div
@@ -1598,6 +1683,18 @@ export default function LandingConverter() {
                                           {cleanFilename(file.filename)}
                                         </p>
                                       </div>
+                                      <div className="flex shrink-0 items-center gap-1.5">
+                                        <span className={cn("rounded-md border px-2 py-1 text-[10px] font-semibold", badge.className)}>
+                                          {badge.label}
+                                        </span>
+                                        {edited && (
+                                          <span className="rounded-md border border-primary/20 bg-primary/10 px-2 py-1 text-[10px] font-semibold text-primary">
+                                            Edited
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="mt-3 flex min-w-0 items-center justify-end gap-3">
                                       <div className="flex flex-wrap items-center gap-1.5">
                                         <Button
                                           size="sm"
@@ -1773,6 +1870,28 @@ export default function LandingConverter() {
             >
               <X className="h-4 w-4" />
             </Button>
+            {resultFiles.length > 1 && (
+              <>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={() => goToAdjacentResult(-1)}
+                  className="absolute left-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 rounded-md border-border bg-background text-primary"
+                  aria-label="Previous result"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={() => goToAdjacentResult(1)}
+                  className="absolute right-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 rounded-md border-border bg-background text-primary"
+                  aria-label="Next result"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </Button>
+              </>
+            )}
 
             <div className="grid max-h-[84vh] gap-3 overflow-auto lg:grid-cols-[0.92fr_1.08fr]">
               <div

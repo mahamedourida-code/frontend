@@ -99,6 +99,7 @@ function ProcessImagesContent() {
   const [tablePreviewData, setTablePreviewData] = useState<any[][]>([])
   const [textPreview, setTextPreview] = useState('')
   const [firstImageUrl, setFirstImageUrl] = useState<string>('')
+  const [activePreviewFileId, setActivePreviewFileId] = useState<string>('')
   const [outputMode, setOutputMode] = useState<'table' | 'text'>('table')
   const {
     limits: entitlementLimits,
@@ -633,6 +634,7 @@ function ProcessImagesContent() {
       setTablePreviewData([])
       setTextPreview('')
       setFirstImageUrl('')
+      setActivePreviewFileId('')
       setWorkspaceBanner(null)
 
       if (uploadedFiles.length > 0) {
@@ -706,6 +708,7 @@ function ProcessImagesContent() {
     setTablePreviewData([])
     setTextPreview('')
     setFirstImageUrl('')
+    setActivePreviewFileId('')
     
     // Clear context state
     clearState()
@@ -717,6 +720,7 @@ function ProcessImagesContent() {
 
   // Fetch and parse Excel file for preview (same as landing page)
   const fetchTablePreview = useCallback(async (fileId: string) => {
+    setActivePreviewFileId(fileId)
     try {
       const blob = await ocrApi.downloadFile(fileId)
 
@@ -734,9 +738,7 @@ function ProcessImagesContent() {
       const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as any[][]
       
       
-      // Limit to first 10 rows for preview
-      const previewData = data.slice(0, Math.min(10, data.length))
-      setTablePreviewData(previewData)
+      setTablePreviewData(data)
       setTextPreview('')
     } catch (error) {
       // Don't show error toast - just silently fail to show preview
@@ -1191,6 +1193,7 @@ Best regards`
         tablePreviewData={tablePreviewData}
         textPreview={textPreview}
         firstImageUrl={firstImageUrl}
+        activePreviewFileId={activePreviewFileId}
         isTextOutput={isTextOutput}
         isSaving={isSaving}
         isSaved={isSaved}
@@ -1202,6 +1205,7 @@ Best regards`
         onClearFiles={() => {
           setUploadedFiles([])
           setPdfPageCounts({})
+          setActivePreviewFileId('')
           setWorkspaceBanner(null)
         }}
         onConvert={handleProcessImages}

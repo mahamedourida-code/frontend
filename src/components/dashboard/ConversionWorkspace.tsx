@@ -4,6 +4,8 @@ import { useState, type ChangeEvent, type DragEvent } from "react"
 import {
   AlertCircle,
   ArrowRight,
+  ChevronLeft,
+  ChevronRight,
   CheckCircle2,
   Clock3,
   Download,
@@ -40,6 +42,12 @@ type ResultFile = {
   file_id?: string
   filename?: string
   size_bytes?: number
+  confidence_score?: number
+  confidence?: number
+  quality_score?: number
+  requires_review?: boolean
+  status?: string
+  metadata?: Record<string, any>
 }
 
 type RecoverableJob = {
@@ -76,6 +84,7 @@ type ConversionWorkspaceProps = {
   tablePreviewData: any[][]
   textPreview: string
   firstImageUrl: string
+  activePreviewFileId?: string
   isTextOutput: boolean
   isSaving: boolean
   isSaved: boolean
@@ -528,6 +537,35 @@ export function ResultPreviewPanel({
   )
 }
 
+function getResultKey(file: ResultFile, index: number) {
+  return file.file_id || `result-${index}`
+}
+
+function getOutputBadge(file: ResultFile) {
+  const rawConfidence =
+    file.confidence_score ??
+    file.confidence ??
+    file.quality_score ??
+    file.metadata?.confidence_score ??
+    file.metadata?.confidence ??
+    null
+  const confidence = typeof rawConfidence === "number"
+    ? rawConfidence <= 1 ? rawConfidence * 100 : rawConfidence
+    : null
+  const needsReview =
+    file.status === "failed" ||
+    file.requires_review ||
+    (confidence !== null && confidence < 82)
+
+  return needsReview
+    ? { label: "Needs review", className: "border-amber-200 bg-amber-50 text-amber-800" }
+    : { label: "Ready", className: "border-emerald-200 bg-emerald-50 text-emerald-800" }
+}
+
+function correctedFilename(filename?: string) {
+  return `${(filename || "result").replace("_processed", "").replace(/\.[^/.]+$/, "")}_corrected.xlsx`
+}
+
 export function ResultActions({
   resultFiles,
   isComplete,
@@ -537,6 +575,7 @@ export function ResultActions({
   tablePreviewData,
   textPreview,
   firstImageUrl,
+  activePreviewFileId,
   onReset,
   onSaveToHistory,
   onShareFile,
@@ -554,6 +593,7 @@ export function ResultActions({
   | "tablePreviewData"
   | "textPreview"
   | "firstImageUrl"
+  | "activePreviewFileId"
   | "onReset"
   | "onSaveToHistory"
   | "onShareFile"
@@ -562,15 +602,87 @@ export function ResultActions({
   | "onDownloadAll"
   | "onEditFile"
 >) {
-  const [comparisonFile, setComparisonFile] = useState<ResultFile | null>(null)
+  const [comparisonIndex, setComparisonIndex] = useState<number | null>(null)
+  const [editingCell, setEditingCell] = useState<{ fileKey: string; row: number; col: number } | null>(null)
+  const [editedTables, setEditedTables] = useState<Record<string, any[][]>>({})
   if (!resultFiles?.length) return null
+
+  const comparisonFile = comparisonIndex !== null ? resultFiles[comparisonIndex] : null
+  const comparisonKey = comparisonFile && comparisonIndex !== null ? getResultKey(comparisonFile, comparisonIndex) : ""
+  const comparisonLoaded = Boolean(
+    comparisonFile &&
+    (!comparisonFile.file_id || activePreviewFileId === comparisonFile.file_id)
+  )
+  const comparisonTable = comparisonKey
+    ? editedTables[comparisonKey] || (comparisonLoaded ? tablePreviewData : [])
+    : []
+  const comparisonText = comparisonLoaded ? textPreview : ""
+  const comparisonColumnCount = Math.max(1, ...comparisonTable.map(row => row.length))
+  const editedCount = Object.keys(editedTables).length
+
+  const openComparison = (index: number) => {
+    const file = resultFiles[index]
+    if (!file) return
+    setComparisonIndex(index)
+    setEditingCell(null)
+    onEditFile(file, index)
+  }
+
+  const goToAdjacentResult = (direction: -1 | 1) => {
+    if (comparisonIndex === null || resultFiles.length < 2) return
+    openComparison((comparisonIndex + direction + resultFiles.length) % resultFiles.length)
+  }
+
+  const updateCorrectedCell = (fileKey: string, rowIndex: number, cellIndex: number, value: string) => {
+    setEditedTables(prev => {
+      const source = prev[fileKey] || comparisonTable
+      const nextTable = source.map(row => [...row])
+      if (!nextTable[rowIndex]) nextTable[rowIndex] = []
+      nextTable[rowIndex][cellIndex] = value
+      return { ...prev, [fileKey]: nextTable }
+    })
+  }
+
+  const downloadCorrectedFiles = async () => {
+    const entries = Object.entries(editedTables).filter(([, table]) => table.length > 0)
+    if (!entries.length) return
+
+    const XLSX = await import("xlsx")
+
+    for (const [fileKey, table] of entries) {
+      const fileIndex = resultFiles.findIndex((file, index) => getResultKey(file, index) === fileKey)
+      const file = fileIndex >= 0 ? resultFiles[fileIndex] : undefined
+      const worksheet = XLSX.utils.aoa_to_sheet(table)
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1")
+      const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" })
+      const blob = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = correctedFilename(file?.filename)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+      await new Promise(resolve => setTimeout(resolve, 180))
+    }
+  }
 
   return (
     <>
     <div className="space-y-3">
       {isComplete ? (
         <div className="flex flex-wrap items-center gap-2">
-          <Button onClick={onReset} className="h-10 gap-2 rounded-md bg-primary px-4 text-primary-foreground shadow-sm hover:bg-primary/90">
+          <Button
+            onClick={() => {
+              setEditedTables({})
+              setComparisonIndex(null)
+              setEditingCell(null)
+              onReset()
+            }}
+            className="h-10 gap-2 rounded-md bg-primary px-4 text-primary-foreground shadow-sm hover:bg-primary/90"
+          >
             <RotateCcw className="h-4 w-4" />
             New batch
           </Button>
@@ -601,84 +713,131 @@ export function ResultActions({
             <Download className="h-4 w-4" />
             Download all
           </Button>
+          {editedCount > 0 && !isTextOutput ? (
+            <Button
+              onClick={downloadCorrectedFiles}
+              className="h-10 gap-2 rounded-md bg-primary px-4 text-primary-foreground shadow-sm hover:bg-primary/90"
+            >
+              <Download className="h-4 w-4" />
+              Download corrected files
+            </Button>
+          ) : null}
         </div>
       ) : null}
 
       <div className="grid gap-2">
-        {resultFiles.map((file, index) => (
-          <div
-            key={file.file_id || index}
-            role="button"
-            tabIndex={0}
-            onClick={() => {
-              onEditFile(file, index)
-              setComparisonFile(file)
-            }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault()
-                onEditFile(file, index)
-                setComparisonFile(file)
-              }
-            }}
-            className="grid cursor-pointer gap-3 rounded-md border border-border bg-card/60 p-3 outline-none transition hover:border-primary/30 hover:bg-accent/60 focus-visible:ring-2 focus-visible:ring-primary sm:grid-cols-[1fr_auto] sm:items-center"
-          >
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
-                {index + 1}
+        {resultFiles.map((file, index) => {
+          const fileKey = getResultKey(file, index)
+          const badge = getOutputBadge(file)
+          const edited = Boolean(editedTables[fileKey])
+
+          return (
+            <div
+              key={file.file_id || index}
+              role="button"
+              tabIndex={0}
+              onClick={() => openComparison(index)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault()
+                  openComparison(index)
+                }
+              }}
+              className="grid cursor-pointer gap-3 rounded-md border border-border bg-card/60 p-3 outline-none transition hover:border-primary/30 hover:bg-accent/60 focus-visible:ring-2 focus-visible:ring-primary sm:grid-cols-[1fr_auto] sm:items-center"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
+                  {index + 1}
+                </div>
+                {isTextOutput ? <FileText className="h-5 w-5 shrink-0 text-primary" /> : <FileSpreadsheet className="h-5 w-5 shrink-0 text-primary" />}
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-foreground">{file.filename || `Result ${index + 1}`}</p>
+                  {file.size_bytes ? <p className="text-xs font-semibold text-muted-foreground">{formatBytes(file.size_bytes)}</p> : null}
+                </div>
               </div>
-              {isTextOutput ? <FileText className="h-5 w-5 shrink-0 text-primary" /> : <FileSpreadsheet className="h-5 w-5 shrink-0 text-primary" />}
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-foreground">{file.filename || `Result ${index + 1}`}</p>
-                {file.size_bytes ? <p className="text-xs font-semibold text-muted-foreground">{formatBytes(file.size_bytes)}</p> : null}
+              <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                <span className={cn("rounded-md border px-2 py-1 text-[10px] font-semibold", badge.className)}>
+                  {badge.label}
+                </span>
+                {edited ? (
+                  <span className="rounded-md border border-primary/20 bg-primary/10 px-2 py-1 text-[10px] font-semibold text-primary">
+                    Edited
+                  </span>
+                ) : null}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    onShareFile(file)
+                  }}
+                  className="h-9 rounded-md border-border bg-card text-primary shadow-sm hover:bg-accent"
+                >
+                  <Share2 className="mr-1.5 h-4 w-4" />
+                  Share
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    onDownloadFile(file)
+                  }}
+                  className="h-9 rounded-md bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
+                >
+                  <Download className="mr-1.5 h-4 w-4" />
+                  Download
+                </Button>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2 sm:justify-end">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={(event) => {
-                  event.stopPropagation()
-                  onShareFile(file)
-                }}
-                className="h-9 rounded-md border-border bg-card text-primary shadow-sm hover:bg-accent"
-              >
-                <Share2 className="mr-1.5 h-4 w-4" />
-                Share
-              </Button>
-              <Button
-                size="sm"
-                onClick={(event) => {
-                  event.stopPropagation()
-                  onDownloadFile(file)
-                }}
-                className="h-9 rounded-md bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
-              >
-                <Download className="mr-1.5 h-4 w-4" />
-                Download
-              </Button>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
       {comparisonFile ? (
         <div
           className="fixed inset-0 z-[90] flex items-center justify-center bg-[#111827]/50 p-3 backdrop-blur-xl sm:p-5"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setComparisonFile(null)
+            if (event.target === event.currentTarget) {
+              setComparisonIndex(null)
+              setEditingCell(null)
+            }
           }}
         >
           <div className="relative w-full max-w-[1240px] rounded-md border border-border bg-card p-3 shadow-xl sm:p-4">
             <Button
               size="sm"
               variant="outline"
-              onClick={() => setComparisonFile(null)}
+              onClick={() => {
+                setComparisonIndex(null)
+                setEditingCell(null)
+              }}
               className="absolute right-4 top-4 z-10 h-9 rounded-md border-border bg-background px-3 text-primary"
               aria-label="Close comparison"
             >
               <X className="h-4 w-4" />
             </Button>
+            {resultFiles.length > 1 ? (
+              <>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={() => goToAdjacentResult(-1)}
+                  className="absolute left-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 rounded-md border-border bg-background text-primary"
+                  aria-label="Previous result"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={() => goToAdjacentResult(1)}
+                  className="absolute right-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 rounded-md border-border bg-background text-primary"
+                  aria-label="Next result"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </Button>
+              </>
+            ) : null}
 
             <div className="grid max-h-[84vh] gap-3 overflow-auto lg:grid-cols-[0.92fr_1.08fr]">
               <div className="flex min-h-[420px] items-center justify-center overflow-hidden rounded-md border border-border bg-white">
@@ -690,20 +849,58 @@ export function ResultActions({
               </div>
 
               <div className="max-h-[74vh] min-h-[420px] overflow-auto rounded-md border border-border bg-white">
-                {isTextOutput || textPreview ? (
+                {isTextOutput || comparisonText ? (
                   <pre className="min-h-[420px] whitespace-pre-wrap p-5 text-left text-sm leading-7 text-gray-950">
-                    {textPreview || "Text preview is loading..."}
+                    {comparisonText || "Text preview is loading..."}
                   </pre>
-                ) : tablePreviewData.length ? (
+                ) : comparisonTable.length ? (
                   <table className="w-full min-w-[680px] border-collapse text-sm text-gray-950">
                     <tbody>
-                      {tablePreviewData.map((row, rowIndex) => (
+                      {comparisonTable.map((row, rowIndex) => (
                         <tr key={rowIndex} className={rowIndex === 0 ? "bg-primary text-primary-foreground" : rowIndex % 2 === 0 ? "bg-emerald-50" : "bg-white"}>
-                          {row.map((cell, cellIndex) => (
-                            <td key={cellIndex} className="min-w-[120px] border border-gray-200 px-3 py-2 text-left font-medium">
-                              {cell || ""}
-                            </td>
-                          ))}
+                          {Array.from({ length: comparisonColumnCount }).map((_, cellIndex) => {
+                            const isEditing =
+                              editingCell?.fileKey === comparisonKey &&
+                              editingCell.row === rowIndex &&
+                              editingCell.col === cellIndex
+                            const value = row[cellIndex] || ""
+
+                            return (
+                              <td
+                                key={cellIndex}
+                                onDoubleClick={() => {
+                                  if (!isTextOutput && comparisonKey) {
+                                    setEditingCell({ fileKey: comparisonKey, row: rowIndex, col: cellIndex })
+                                  }
+                                }}
+                                className={cn(
+                                  "min-w-[120px] border border-gray-200 px-3 py-2 text-left font-medium",
+                                  rowIndex === 0 ? "border-white/20" : "hover:bg-emerald-50"
+                                )}
+                              >
+                                {isEditing ? (
+                                  <input
+                                    autoFocus
+                                    defaultValue={value}
+                                    onBlur={(event) => {
+                                      updateCorrectedCell(comparisonKey, rowIndex, cellIndex, event.target.value)
+                                      setEditingCell(null)
+                                    }}
+                                    onKeyDown={(event) => {
+                                      if (event.key === "Enter" || event.key === "Escape") {
+                                        event.currentTarget.blur()
+                                      }
+                                    }}
+                                    className="w-full rounded-md border border-primary/30 bg-white px-2 py-1 text-sm text-gray-950 outline-none ring-2 ring-primary/15"
+                                  />
+                                ) : (
+                                  <span className={cn(!value && "text-gray-950/30")}>
+                                    {value || " "}
+                                  </span>
+                                )}
+                              </td>
+                            )
+                          })}
                         </tr>
                       ))}
                     </tbody>
@@ -753,6 +950,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     tablePreviewData,
     textPreview,
     firstImageUrl,
+    activePreviewFileId,
     isTextOutput,
     isSaving,
     isSaved,
@@ -910,6 +1108,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                 tablePreviewData={tablePreviewData}
                 textPreview={textPreview}
                 firstImageUrl={firstImageUrl}
+                activePreviewFileId={activePreviewFileId}
                 onReset={onReset}
                 onSaveToHistory={onSaveToHistory}
                 onShareFile={onShareFile}
