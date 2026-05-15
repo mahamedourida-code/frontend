@@ -37,6 +37,7 @@ const sections = [
       "Convert documents into structured spreadsheets or text output.",
       "Recover active jobs, keep history available, and protect downloads from unauthorized access.",
       "Manage free quotas, paid plans, billing status, credits, and abuse prevention.",
+      "Send verified billing and subscription state from Lemon Squeezy into AxLiner so credits and limits can be applied.",
       "Improve reliability, queue performance, OCR quality, and support investigations.",
     ],
   },
@@ -46,6 +47,7 @@ const sections = [
       "Supabase is used for authentication, database records, and durable file metadata.",
       "Supabase Storage is used for generated files and upload/output storage.",
       "Fly.io and Vercel host backend and frontend infrastructure.",
+      "Lemon Squeezy is used as Merchant of Record for paid checkout, receipts, invoices, tax handling, and customer billing portal access.",
       "OCR processing may use external model infrastructure where needed to perform the conversion.",
     ],
   },
@@ -53,7 +55,7 @@ const sections = [
     title: "Retention",
     items: [
       "Generated files are kept for a limited download and share window unless the product plan says otherwise.",
-      "Job and billing metadata may be retained longer for account history, fraud prevention, tax, and audit needs.",
+      "Job, credit, and billing metadata may be retained longer for account history, fraud prevention, tax, chargeback, and audit needs.",
       "Temporary processing files are treated as scratch data and are not meant for permanent storage.",
     ],
   },
@@ -81,8 +83,8 @@ export default function PrivacyPolicyPage() {
   const router = useRouter()
 
   return (
-    <main className="min-h-screen bg-[#E9ECE4] text-[#111827]">
-      <nav className="sticky top-0 z-40 border-b border-black/10 bg-[#E9ECE4]/76 backdrop-blur-xl">
+    <main className="min-h-screen bg-background text-foreground">
+      <nav className="sticky top-0 z-40 border-b border-black/10 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-3 font-bold" aria-label="AxLiner home">
             <AppIcon size={34} />
@@ -92,7 +94,7 @@ export default function PrivacyPolicyPage() {
             variant="ghost"
             size="sm"
             onClick={() => router.back()}
-            className="rounded-full text-[#2f165e] hover:bg-white/45"
+            className="rounded-md text-primary hover:bg-muted"
           >
             <ChevronLeft className="mr-1 h-4 w-4" />
             Back
@@ -101,36 +103,36 @@ export default function PrivacyPolicyPage() {
       </nav>
 
       <section className="mx-auto max-w-6xl px-4 pb-12 pt-16 sm:px-6 lg:px-8 lg:pb-16 lg:pt-24">
-        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#2f165e]">
+        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
           Privacy
         </p>
         <h1 className="mt-5 max-w-4xl text-5xl font-semibold leading-tight tracking-normal sm:text-6xl">
           Clear rules for your documents and account data.
         </h1>
-        <p className="mt-6 max-w-3xl text-lg font-medium leading-8 text-[#111827]/78">
+        <p className="mt-6 max-w-3xl text-lg font-medium leading-8 text-foreground/78">
           AxLiner processes documents to create spreadsheet and text outputs. This page explains what data is handled, why it is needed, and how users can control it.
         </p>
-        <p className="mt-4 text-sm font-semibold text-[#111827]/58">Last updated: May 7, 2026</p>
+        <p className="mt-4 text-sm font-semibold text-foreground/58">Last updated: May 7, 2026</p>
 
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           {highlights.map((item) => (
-            <div key={item.title} className="rounded-[24px] border border-white/55 bg-white/38 p-5 shadow-[0_18px_45px_rgba(42,35,64,0.07)] backdrop-blur-xl">
+            <div key={item.title} className="rounded-md border border-border bg-card p-5 shadow-sm">
               <h2 className="text-lg font-semibold">{item.title}</h2>
-              <p className="mt-3 text-sm font-medium leading-7 text-[#111827]/72">{item.text}</p>
+              <p className="mt-3 text-sm font-medium leading-7 text-foreground/72">{item.text}</p>
             </div>
           ))}
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 lg:px-8">
-        <div className="divide-y divide-[#111827]/12 rounded-[34px] border border-white/55 bg-white/34 shadow-[0_24px_70px_rgba(42,35,64,0.08)] backdrop-blur-xl">
+        <div className="divide-y divide-border rounded-md border border-border bg-card shadow-sm">
           {sections.map((section) => (
             <div key={section.title} className="grid gap-6 p-6 lg:grid-cols-[300px_1fr] lg:p-8">
               <h2 className="text-2xl font-semibold tracking-normal">{section.title}</h2>
               <ul className="space-y-3">
                 {section.items.map((item) => (
-                  <li key={item} className="flex gap-3 text-base font-medium leading-8 text-[#111827]/78">
-                    <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-[#2f165e]" />
+                  <li key={item} className="flex gap-3 text-base font-medium leading-8 text-foreground/78">
+                    <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -139,15 +141,15 @@ export default function PrivacyPolicyPage() {
           ))}
         </div>
 
-        <div className="mt-10 rounded-[30px] bg-[#2f165e] p-6 text-white shadow-[0_24px_70px_rgba(47,22,94,0.22)] sm:p-8">
+        <div className="mt-10 rounded-md bg-primary p-6 text-primary-foreground shadow-sm sm:p-8">
           <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
               <h2 className="text-2xl font-semibold">Questions or deletion requests</h2>
-              <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-white/72">
+              <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-primary-foreground/72">
                 Contact us for privacy questions, account deletion, or file deletion support.
               </p>
             </div>
-            <Button asChild className="rounded-full bg-white px-6 text-[#2f165e] hover:bg-white/90">
+            <Button asChild className="rounded-md bg-background px-6 text-primary hover:bg-card/90">
               <a href="mailto:axliner.excel@gmail.com">Contact privacy</a>
             </Button>
           </div>

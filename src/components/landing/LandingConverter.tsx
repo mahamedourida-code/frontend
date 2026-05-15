@@ -1198,15 +1198,15 @@ export default function LandingConverter() {
               </h2>
             </div>
             {resultFiles.length === 0 && !isProcessing && (
-              <div className="mx-auto mb-8 flex w-full max-w-[1120px] items-center rounded-full border border-primary/25 bg-primary p-2 shadow-[0_18px_50px_rgb(0 0 0 / 0.14)]">
+              <div className="mx-auto mb-8 grid w-full max-w-[760px] grid-cols-2 gap-2 rounded-md border border-border bg-card p-2 shadow-sm">
                 <button
                   type="button"
                   onClick={() => setOutputMode('table')}
                   className={cn(
-                    "flex-1 rounded-full px-4 py-3 text-sm font-semibold transition-colors",
+                    "rounded-md px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     outputMode === 'table'
-                      ? "bg-secondary text-primary shadow-sm"
-                      : "text-primary-foreground/80 hover:bg-white/10 hover:text-primary-foreground"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
                   Table output
@@ -1215,10 +1215,10 @@ export default function LandingConverter() {
                   type="button"
                   onClick={() => setOutputMode('text')}
                   className={cn(
-                    "flex-1 rounded-full px-4 py-3 text-sm font-semibold transition-colors",
+                    "rounded-md px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     outputMode === 'text'
-                      ? "bg-secondary text-primary shadow-sm"
-                      : "text-primary-foreground/80 hover:bg-white/10 hover:text-primary-foreground"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
                   Text output
@@ -1659,7 +1659,7 @@ export default function LandingConverter() {
                       )}
 
                       {isProcessing && !processingComplete && resultFiles.length === 0 && (
-                        <div className="mt-5 flex items-center justify-center gap-2 rounded-[1.25rem] border border-white/60 bg-white/40 p-4 text-sm font-medium text-muted-foreground backdrop-blur-xl">
+                        <div className="mt-5 flex items-center justify-center gap-2 rounded-md border border-border bg-card p-4 text-sm font-medium text-muted-foreground shadow-sm">
                           <InlineSpinner className="h-4 w-4" />
                           <span>Converting. This may take {conversionEstimateLabel}.</span>
                         </div>
@@ -1673,11 +1673,8 @@ export default function LandingConverter() {
                     <Button
                      onClick={handleProcessImage}
                      disabled={uploadedFiles.length === 0 || isProcessing}
-                     className={`min-h-[58px] rounded-[1.25rem] border text-base font-semibold transition-all duration-200 ${
-                      uploadedFiles.length === 0
-                           ? 'border-white/20 bg-white/20 text-primary-foreground/50 hover:bg-white/20 cursor-not-allowed'
-                           : 'border-secondary bg-secondary text-primary hover:bg-white hover:scale-[1.01] shadow-lg shadow-black/10'
-                      }`}
+                     size="lg"
+                     className="min-h-[52px] rounded-md text-base font-semibold disabled:bg-primary/45 disabled:text-primary-foreground/60"
                     >
                       {isProcessing ? (
                         <>

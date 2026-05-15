@@ -155,16 +155,16 @@ const faqItems = [
   },
 ];
 
-const ownedPipelineImages = [
-  { src: "/sex.png", alt: "AxLiner document intake interface" },
-  { src: "/sex1.png", alt: "AxLiner extraction workflow" },
-  { src: "/sex2.png", alt: "AxLiner structured output review" },
-];
-
 const ownedPipelineCopy = [
   "AxLiner owns the job queue, file metadata, download permissions, export layer, and recovery flow around every batch. Each file stays tied to a durable owner so status, sharing, and downloads follow the same access model.",
   "The product is shaped for handwritten tables and spreadsheet review, not a generic OCR wrapper stitched into a landing page. Every result is prepared for rows, columns, review, and clean export instead of loose extracted text.",
   "External infrastructure can sit behind the pipeline, but the workflow, storage model, and user experience stay controlled by AxLiner. That keeps retries, batch recovery, and output delivery predictable for real users.",
+];
+
+const footerGlyphs = [
+  { label: "Batch OCR", value: "B1", lines: [68, 46, 78] },
+  { label: "Table map", value: "T4", lines: [52, 84, 61] },
+  { label: "Secure files", value: "S2", lines: [80, 56, 70] },
 ];
 
 export default function Home() {
@@ -556,27 +556,27 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative isolate bg-background px-4 py-10 sm:px-6 lg:px-8">
+        <div className="relative isolate bg-background px-4 py-12 sm:px-6 lg:px-8">
         <div
           ref={contrastSectionRef}
-          className="relative mx-auto max-w-[1540px] overflow-hidden rounded-md bg-primary px-3 py-10 text-primary-foreground shadow-sm sm:px-5 lg:px-8 lg:py-14 [&_.text-card-foreground]:!text-primary-foreground [&_.text-foreground]:!text-primary-foreground [&_.text-muted-foreground]:!text-primary-foreground/80 [&_.text-primary]:!text-primary-foreground"
+          className="relative mx-auto max-w-[1280px] text-foreground"
         >
           <div className="relative z-10">
         {/* What is Axliner Section */}
-        <section ref={whatSectionRef} className="relative z-10 py-4 lg:py-6">
-          <div className="container mx-auto max-w-[960px] px-2 sm:px-4">
-            <div className="mx-auto max-w-[900px]">
+        <section ref={whatSectionRef} className="relative z-10 py-8 lg:py-10">
+          <div className="container mx-auto max-w-[1180px] px-0 sm:px-4">
+            <div className="mx-auto max-w-[1120px]">
               {/* Section Header */}
-              <div className="text-center mb-5">
-                <div className="inline-flex items-center gap-2 rounded-md border border-white/25 bg-white/10 px-3 py-1.5 mb-2 shadow-sm shadow-black/10 backdrop-blur-2xl">
-                  <h2 className="text-sm font-semibold text-foreground sm:text-base">
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 mb-2 shadow-sm">
+                  <h2 className="text-lg font-semibold text-foreground sm:text-xl">
                     What is Axliner?
                   </h2>
                 </div>
               </div>
 
               {/* Main Content */}
-              <div className="relative mx-auto max-w-[840px]">
+              <div className="relative mx-auto max-w-[1100px]">
                 <svg
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full lg:block"
@@ -587,7 +587,7 @@ export default function Home() {
                     className="what-story-path"
                     d="M74 15 L26 50 L74 85"
                     fill="none"
-                    stroke="rgba(255,255,255,0.42)"
+                    stroke="rgba(22,101,52,0.24)"
                     strokeWidth="0.34"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -595,57 +595,57 @@ export default function Home() {
                   />
                 </svg>
 
-                <div className="relative z-10 space-y-4 lg:space-y-5">
-                  <div className="what-story-row grid items-center gap-4 lg:grid-cols-[minmax(0,0.98fr)_minmax(260px,1.02fr)]">
-                    <Card className="rounded-md border border-white/20 bg-white/10 shadow-sm shadow-black/10 backdrop-blur-2xl">
-                      <CardContent className="p-3 sm:p-4">
-                        <p className="text-xs leading-5 text-foreground sm:text-sm sm:leading-6">
-                          Axliner is a <span className="font-bold">7-billion parameter vision-language model</span> fine-tuned from Meta's Llama 3 family for handwritten tables, forms, and spreadsheet-like documents. It understands document structure first, so the result is usable rows, columns, headers, and values.
+                <div className="relative z-10 space-y-7 lg:space-y-9">
+                  <div className="what-story-row grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.9fr)]">
+                    <Card className="rounded-md border border-border bg-card shadow-sm">
+                      <CardContent className="p-5 sm:p-6">
+                        <p className="text-base leading-7 text-foreground">
+                          Axliner uses a <span className="font-bold">7-billion parameter document vision-language model</span> in the Qwen2-VL and olmOCR family, adapted for handwritten tables, forms, and spreadsheet-like documents. It understands document structure first, so the result is usable rows, columns, headers, and values.
                         </p>
                       </CardContent>
                     </Card>
 
-                    <div className="what-story-image relative flex min-h-[130px] items-center justify-center lg:min-h-[190px]">
+                    <div className="what-story-image relative flex min-h-[190px] items-center justify-center lg:min-h-[250px]">
                       <img
                         src="/what-is/chaos-invoices.svg"
                         alt=""
-                        className="h-[135px] w-full object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.15)] sm:h-[165px] lg:h-[220px]"
+                        className="h-[190px] w-full object-contain drop-shadow-[0_14px_24px_rgba(0,0,0,0.14)] sm:h-[230px] lg:h-[280px]"
                       />
                     </div>
                   </div>
 
-                  <div className="what-story-row grid items-center gap-4 lg:grid-cols-[minmax(260px,1.02fr)_minmax(0,0.98fr)]">
-                    <div className="what-story-image relative order-2 flex min-h-[145px] items-center justify-center lg:order-1 lg:min-h-[205px]">
+                  <div className="what-story-row grid items-center gap-6 lg:grid-cols-[minmax(300px,0.9fr)_minmax(0,1fr)]">
+                    <div className="what-story-image relative order-2 flex min-h-[200px] items-center justify-center lg:order-1 lg:min-h-[270px]">
                       <img
                         src="/what-is/axliner-cpu.svg"
                         alt=""
-                        className="h-[150px] w-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.16)] sm:h-[185px] lg:h-[245px]"
+                        className="h-[205px] w-full object-contain drop-shadow-[0_14px_26px_rgba(0,0,0,0.15)] sm:h-[250px] lg:h-[310px]"
                       />
                     </div>
 
-                    <Card className="order-1 rounded-md border border-white/20 bg-white/10 shadow-sm shadow-black/10 backdrop-blur-2xl lg:order-2">
-                      <CardContent className="p-3 sm:p-4">
-                        <p className="text-xs leading-5 text-foreground sm:text-sm sm:leading-6">
+                    <Card className="order-1 rounded-md border border-border bg-card shadow-sm lg:order-2">
+                      <CardContent className="p-5 sm:p-6">
+                        <p className="text-base leading-7 text-foreground">
                           During conversion, Axliner cleans the image, detects table regions, reads handwriting, and keeps cell relationships intact. It was trained on diverse handwritten datasets, table extraction data, and augmented noisy documents, so dense notes and phone photos can still become structured spreadsheets.
                         </p>
                       </CardContent>
                     </Card>
                   </div>
 
-                  <div className="what-story-row grid items-center gap-4 lg:grid-cols-[minmax(0,0.98fr)_minmax(260px,1.02fr)]">
-                    <Card className="rounded-md border border-white/20 bg-white/10 shadow-sm shadow-black/10 backdrop-blur-2xl">
-                      <CardContent className="p-3 sm:p-4">
-                        <p className="text-xs leading-5 text-foreground sm:text-sm sm:leading-6">
+                  <div className="what-story-row grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.9fr)]">
+                    <Card className="rounded-md border border-border bg-card shadow-sm">
+                      <CardContent className="p-5 sm:p-6">
+                        <p className="text-base leading-7 text-foreground">
                           The workflow is designed for batch processing. Upload several images, watch progress as each page finishes, then download clean Excel files ready for review, reporting, editing, or sharing without losing the table logic people need in the final workbook.
                         </p>
                       </CardContent>
                     </Card>
 
-                    <div className="what-story-image relative flex min-h-[130px] items-center justify-center lg:min-h-[190px]">
+                    <div className="what-story-image relative flex min-h-[190px] items-center justify-center lg:min-h-[250px]">
                       <img
                         src="/what-is/chill-output.svg"
                         alt=""
-                        className="h-[135px] w-full object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.15)] sm:h-[165px] lg:h-[220px]"
+                        className="h-[190px] w-full object-contain drop-shadow-[0_14px_24px_rgba(0,0,0,0.14)] sm:h-[230px] lg:h-[280px]"
                       />
                     </div>
                   </div>
@@ -656,7 +656,7 @@ export default function Home() {
                 <Card className="ax-glass-card overflow-hidden rounded-xl border-border shadow-sm">
                   <CardContent className="space-y-8 p-6 sm:p-8 lg:p-10">
                     <p className="text-xl text-foreground leading-relaxed">
-                      Axliner is a <span className="font-bold">7-billion parameter vision-language model</span> a fine-tuned Meta's Llama 3 Model. The model underwent extensive instruction fine-tuning specifically optimized for <span className="font-bold">handwritten text recognition</span>, <span className="font-bold">table structure preservation</span>, and <span className="font-bold">multi-language document understanding</span>.
+                      Axliner is a <span className="font-bold">7-billion parameter document vision-language model</span> adapted from the Qwen2-VL and olmOCR family. The model underwent instruction tuning for <span className="font-bold">handwritten text recognition</span>, <span className="font-bold">table structure preservation</span>, and <span className="font-bold">multi-language document understanding</span>.
                     </p>
 
                     <p className="text-xl text-foreground leading-relaxed">
@@ -683,7 +683,7 @@ export default function Home() {
         <ScrollAnimatedSection id="trusted" className="w-full overflow-hidden py-5">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-4" data-animate="headline">
-              <div className="mb-2 inline-flex items-center gap-2 rounded-md border border-white/25 bg-white/10 px-3 py-2 shadow-sm shadow-black/10 backdrop-blur-2xl">
+              <div className="mb-2 inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 shadow-sm">
                 <h2 className="text-sm font-semibold text-foreground sm:text-base">
                   Chosen by experts at top organizations
                 </h2>
@@ -879,39 +879,36 @@ export default function Home() {
           </div>
         </ScrollAnimatedSection>
 
-        <ScrollAnimatedSection id="owned-ai" className="relative z-20 overflow-hidden px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-          <div className="mx-auto max-w-[1280px]">
-            <div className="mx-auto max-w-[980px] text-center" data-animate="headline">
+        <ScrollAnimatedSection id="owned-ai" className="relative z-20 overflow-hidden px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+          <div className="mx-auto grid max-w-[1280px] gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
+            <div data-animate="headline">
               <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
                 Not a third-party wrapper
               </p>
-              <h2 className="mt-5 text-4xl font-semibold leading-[1.02] tracking-normal text-foreground sm:text-5xl lg:text-[4.2rem]">
-                Document AI built before the hype cycle.
+              <h2 className="mt-5 max-w-xl text-3xl font-semibold leading-tight tracking-normal text-foreground sm:text-4xl lg:text-5xl">
+                OCR infrastructure controlled around your batch workflow.
               </h2>
+              <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground">
+                AxLiner controls queue admission, file ownership, recovery, exports, and download permissions around the model call. That is the difference between a demo wrapper and a product that can survive real batch work.
+              </p>
             </div>
 
-            <div className="mx-auto mt-10 max-w-[980px]" data-animate="stagger">
-              <div className="mx-auto overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-                <div className="grid min-h-[170px] sm:grid-cols-3 lg:min-h-[220px]">
-                  {ownedPipelineImages.map((image) => (
-                    <div key={image.src} className="relative min-h-[170px] border-border sm:border-l sm:first:border-l-0 lg:min-h-[220px]">
-                      <Image
-                        src={image.src}
-                        alt={image.alt}
-                        fill
-                        sizes="(min-width: 1024px) 31vw, 100vw"
-                        className="object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
+            <div data-animate="stagger" className="space-y-5">
+              <div className="overflow-hidden rounded-md border border-border bg-card p-2 shadow-sm">
+                <Image
+                  src="/server.webp"
+                  alt="AxLiner server processing layer"
+                  width={1100}
+                  height={620}
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="h-[260px] w-full rounded-md object-cover object-center sm:h-[320px] lg:h-[380px]"
+                />
               </div>
-
-              <div className="mx-auto mt-8 grid max-w-[940px] gap-6 text-center text-foreground md:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-3">
                 {ownedPipelineCopy.map((item, index) => (
-                  <div key={item} className="border-t border-border pt-5">
-                    <p className="text-sm font-bold text-primary">0{index + 1}</p>
-                    <p className="mt-3 text-base font-medium leading-8 text-foreground/80">{item}</p>
+                  <div key={item} className="rounded-md border border-border bg-card p-4 shadow-sm">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">0{index + 1}</p>
+                    <p className="mt-3 text-sm leading-6 text-muted-foreground">{item}</p>
                   </div>
                 ))}
               </div>
@@ -931,7 +928,7 @@ export default function Home() {
           <div className="relative z-10">
         {/* AI Engine Section */}
         <ScrollAnimatedSection id="ai-engine" className="py-16">
-          <div className="container mx-auto max-w-[1640px] px-4 sm:px-6 lg:px-8">
+          <div className="container mx-auto max-w-[1460px] px-4 sm:px-6 lg:px-8">
             <div className="mx-auto">
               <div className="mx-auto mb-12 max-w-4xl text-center" data-animate="headline">
                 <div className="mb-5 inline-flex items-center gap-2 rounded-md border border-border bg-background px-4 py-2 shadow-sm">
@@ -943,25 +940,28 @@ export default function Home() {
               </div>
 
               {/* Main Content */}
-              <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.72fr)] lg:items-start">
+              <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(380px,0.82fr)] lg:items-start">
                 <Card className="overflow-hidden border-border bg-card shadow-sm" data-animate="stagger">
                   <CardHeader className="border-b border-border">
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Workflow</p>
-                        <CardTitle className="mt-1 text-2xl">From page to workbook</CardTitle>
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Model stack</p>
+                        <CardTitle className="mt-1 text-2xl">Fine-tuned VLM for handwritten tables</CardTitle>
+                        <CardDescription className="mt-3 max-w-3xl text-sm leading-6">
+                          AxLiner's OCR path is shaped around a 7B vision-language model in the Qwen2-VL family, adapted for document images, table recovery, and spreadsheet-ready output.
+                        </CardDescription>
                       </div>
                       <span className="rounded-md border border-border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-                        4 stage pipeline
+                        Qwen2-VL-7B style base
                       </span>
                     </div>
                   </CardHeader>
                   <CardContent className="p-0">
                     {[
-                      ["01", "Image cleanup", "Rotation, contrast, shadows, and page noise are normalized before extraction."],
-                      ["02", "Table detection", "The engine finds headers, repeated rows, totals, and spreadsheet-like regions."],
-                      ["03", "Handwriting read", "Letters, numbers, and symbols stay attached to the cells where they belong."],
-                      ["04", "Workbook export", "Rows and columns are packaged into XLSX files ready for review."],
+                      ["01", "Vision encoder", "Document pages are normalized into visual tokens so handwriting, ruled tables, stamps, and noisy phone captures stay readable."],
+                      ["02", "Instruction tuning", "The model is tuned with OCR-style prompts, table reconstruction targets, and cell-aware extraction examples instead of generic chat answers."],
+                      ["03", "Schema alignment", "Rows, headers, merged cells, totals, and column boundaries are rebuilt before export so the output behaves like a spreadsheet."],
+                      ["04", "Batch orchestration", "Redis-backed jobs, deterministic file metadata, and retry-safe workers keep multi-file processing recoverable."],
                     ].map(([step, title, copy]) => (
                       <div key={step} className="grid gap-4 border-b border-border p-5 last:border-b-0 sm:grid-cols-[72px_1fr_auto] sm:items-center">
                         <span className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border bg-background text-sm font-semibold text-primary">
@@ -986,23 +986,46 @@ export default function Home() {
                 </Card>
 
                 <div className="space-y-4" data-animate="stagger">
-                  <div className="overflow-hidden rounded-xl border border-border bg-card p-3 shadow-sm">
-                    <Image
-                      src="/purchase.webp"
-                      alt="Professionals reviewing documents"
-                      width={720}
-                      height={860}
-                      sizes="(min-width: 1024px) 30vw, 100vw"
-                      className="h-[360px] w-full rounded-lg object-cover object-center lg:h-[520px]"
-                    />
-                  </div>
+                  <Card className="overflow-hidden border-border bg-card shadow-sm">
+                    <CardHeader className="border-b border-border pb-4">
+                      <CardTitle className="text-base">Extraction telemetry</CardTitle>
+                      <CardDescription>Compact signals inspired by operator dashboards, not generic AI cards.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-5 p-5">
+                      {[
+                        ["Layout tokens", "visual patches", 82],
+                        ["Table confidence", "cell graph", 94],
+                        ["Export readiness", "xlsx schema", 88],
+                      ].map(([label, sublabel, value]) => (
+                        <div key={label as string}>
+                          <div className="mb-2 flex items-center justify-between gap-3">
+                            <div>
+                              <p className="text-sm font-semibold text-foreground">{label}</p>
+                              <p className="text-xs text-muted-foreground">{sublabel}</p>
+                            </div>
+                            <p className="text-sm font-semibold text-primary">{value}%</p>
+                          </div>
+                          <div className="h-2 overflow-hidden rounded-md bg-muted">
+                            <div className="h-full rounded-md bg-primary" style={{ width: `${value}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                      <div className="rounded-md border border-border bg-background p-4">
+                        <div className="grid grid-cols-6 gap-1">
+                          {[52, 64, 48, 78, 88, 70, 92, 76, 84, 58, 68, 96].map((height, index) => (
+                            <span key={index} className="rounded-sm bg-primary/75" style={{ height: `${height}px` }} />
+                          ))}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
 
               {/* Footer Note */}
               <div className="mt-12 text-center" data-animate="stagger">
                 <p className="text-sm text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-                  <span className="font-semibold text-foreground">Designed for operators:</span> every step is shaped around the spreadsheet people need after the upload, from invoices and paper forms to handwritten class notes and archive tables.
+                  <span className="font-semibold text-foreground">Designed for operators:</span> the model work, queue logic, and export layer are all shaped around the spreadsheet people need after upload.
                 </p>
               </div>
             </div>
@@ -1108,9 +1131,9 @@ export default function Home() {
           <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-primary-foreground/10 blur-3xl" />
         </div>
 
-        <div className="relative border-y border-primary-foreground/10 py-4">
+        <div className="relative border-y border-primary-foreground/15 py-4">
           <div
-            className="flex w-max items-center gap-10 whitespace-nowrap text-xs font-semibold uppercase tracking-[0.28em] text-primary-foreground/70"
+            className="flex w-max items-center gap-10 whitespace-nowrap text-xs font-semibold uppercase tracking-[0.28em] text-primary-foreground/85"
             style={{ animation: "scroll-left 42s linear infinite" }}
           >
             {[...Array(2)].map((_, repeat) => (
@@ -1130,10 +1153,25 @@ export default function Home() {
           <div className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(640px,1fr)]">
             <div>
               <div className="text-4xl font-semibold tracking-tight">AxLiner</div>
-              <p className="mt-6 max-w-xl text-lg leading-8 text-primary-foreground/75">
+              <p className="mt-6 max-w-xl text-lg font-medium leading-8 text-primary-foreground/90">
                 Upload handwritten documents, recover the table structure, and move clean Excel files into your workflow without rebuilding the spreadsheet by hand.
               </p>
-              <p className="mt-7 text-sm font-semibold uppercase tracking-[0.24em] text-primary-foreground/60">
+              <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-3">
+                {footerGlyphs.map((glyph) => (
+                  <div key={glyph.label} className="rounded-md border border-primary-foreground/20 bg-primary-foreground/10 p-3">
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="font-mono text-sm font-bold text-primary-foreground">{glyph.value}</span>
+                      <span className="grid h-7 w-7 grid-cols-3 gap-[2px] rounded-sm border border-primary-foreground/25 p-1">
+                        {glyph.lines.map((height, index) => (
+                          <span key={index} className="self-end rounded-sm bg-primary-foreground/80" style={{ height: `${height}%` }} />
+                        ))}
+                      </span>
+                    </div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary-foreground/80">{glyph.label}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-7 text-sm font-semibold uppercase tracking-[0.24em] text-primary-foreground/75">
                 Made with love in Alaska.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -1152,8 +1190,8 @@ export default function Home() {
 
             <div className="grid gap-8 sm:grid-cols-4">
               <div>
-                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/60">Discover</h4>
-                <ul className="mt-5 space-y-3 text-sm font-medium text-primary-foreground/80">
+                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/80">Discover</h4>
+                <ul className="mt-5 space-y-3 text-sm font-semibold text-primary-foreground/90">
                   <li><a href="#features" className="transition-colors hover:text-primary-foreground">Solutions</a></li>
                   <li><a href="#benchmarks" className="transition-colors hover:text-primary-foreground">Benchmarks</a></li>
                   <li><a href="#how-it-works" className="transition-colors hover:text-primary-foreground">How it works</a></li>
@@ -1163,8 +1201,8 @@ export default function Home() {
               </div>
 
               <div>
-                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/60">Product</h4>
-                <ul className="mt-5 space-y-3 text-sm font-medium text-primary-foreground/80">
+                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/80">Product</h4>
+                <ul className="mt-5 space-y-3 text-sm font-semibold text-primary-foreground/90">
                   <li><NextLink href="/dashboard/client" className="transition-colors hover:text-primary-foreground">Process images</NextLink></li>
                   <li><NextLink href="/history" className="transition-colors hover:text-primary-foreground">History</NextLink></li>
                   <li><NextLink href="/dashboard/settings" className="transition-colors hover:text-primary-foreground">Billing</NextLink></li>
@@ -1173,8 +1211,8 @@ export default function Home() {
               </div>
 
               <div>
-                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/60">Support</h4>
-                <ul className="mt-5 space-y-3 text-sm font-medium text-primary-foreground/80">
+                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/80">Support</h4>
+                <ul className="mt-5 space-y-3 text-sm font-semibold text-primary-foreground/90">
                   <li><a href="mailto:axliner.excel@gmail.com" className="transition-colors hover:text-primary-foreground">Contact</a></li>
                   <li><NextLink href="/privacy-policy" className="transition-colors hover:text-primary-foreground">Privacy</NextLink></li>
                   <li><NextLink href="/terms-of-service" className="transition-colors hover:text-primary-foreground">Terms</NextLink></li>
@@ -1183,8 +1221,8 @@ export default function Home() {
               </div>
 
               <div className="rounded-xl border border-primary-foreground/15 bg-primary-foreground/10 p-5 backdrop-blur-md">
-                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/60">Create</h4>
-                <p className="mt-5 text-sm leading-7 text-primary-foreground/75">
+                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/80">Create</h4>
+                <p className="mt-5 text-sm font-medium leading-7 text-primary-foreground/90">
                   Start with a small batch, then upgrade when your document volume grows.
                 </p>
                 <NextLink href="/sign-up" className="mt-5 inline-flex text-sm font-semibold text-primary-foreground underline underline-offset-4">

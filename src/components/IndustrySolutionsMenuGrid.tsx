@@ -9,14 +9,14 @@ export function IndustrySolutionsMenuGrid() {
         <NavigationMenuLink asChild key={solution.slug}>
           <Link
             href={`/solutions/${solution.slug}`}
-            className="group flex select-none flex-col items-center gap-2 rounded-[16px] p-2 text-center leading-none no-underline outline-none transition-colors hover:bg-white/45 focus:bg-white/45"
+            className="group flex select-none flex-col items-center gap-2 rounded-md p-2 text-center leading-none no-underline outline-none transition-colors hover:bg-muted focus:bg-muted"
           >
             <img
               src={solution.cardAsset}
               alt=""
               className="h-16 w-16 object-contain transition-transform duration-300 group-hover:scale-105"
             />
-            <span className="min-h-[34px] text-sm font-semibold leading-[1.2] text-[#111827]">
+            <span className="min-h-[34px] text-sm font-semibold leading-[1.2] text-foreground">
               {solution.title}
             </span>
           </Link>

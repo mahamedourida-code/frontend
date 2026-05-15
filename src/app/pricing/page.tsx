@@ -55,9 +55,9 @@ function planPresentation(plan: BillingPlan) {
 
 function PricingFallback() {
   return (
-    <main className="min-h-screen bg-[#E9ECE4]">
+    <main className="min-h-screen bg-background">
       <div className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-4">
-        <div className="h-12 w-12 rounded-full border-4 border-[#d9c9fb] border-t-[#2f165e] animate-spin" />
+        <div className="h-12 w-12 rounded-full border-4 border-border border-t-primary animate-spin" />
       </div>
     </main>
   )
@@ -191,7 +191,7 @@ function PricingContent() {
       return {
         title: "Subscription active",
         text: "Your plan and credits are active on your workspace.",
-        tone: "border-[#d8c7ff] bg-white/66",
+        tone: "border-border bg-card/70",
       }
     }
 
@@ -199,7 +199,7 @@ function PricingContent() {
       return {
         title: "Checkout cancelled",
         text: "No charge was made. You can restart checkout whenever you are ready.",
-        tone: "border-[#e8d7c3] bg-white/66",
+        tone: "border-border bg-card/70",
       }
     }
 
@@ -207,7 +207,7 @@ function PricingContent() {
       return {
         title: "Billing needs attention",
         text: "The payment or subscription status was not confirmed. Open billing settings or contact support if this repeats.",
-        tone: "border-[#f1c7c7] bg-white/66",
+        tone: "border-destructive/30 bg-card/70",
       }
     }
 
@@ -215,7 +215,7 @@ function PricingContent() {
       return {
         title: "Confirming payment",
         text: "Lemon Squeezy accepted the checkout. AxLiner is waiting for the verified billing update before changing credits.",
-        tone: "border-[#d8c7ff] bg-white/66",
+        tone: "border-border bg-card/70",
       }
     }
 
@@ -228,7 +228,7 @@ function PricingContent() {
 
   const navLinkClass = cn(
     navigationMenuTriggerStyle(),
-    "bg-transparent text-black transition-colors hover:bg-accent/50 focus:bg-transparent focus:text-black active:bg-transparent dark:text-white"
+    "bg-transparent text-black transition-colors hover:bg-accent/50 focus:bg-transparent focus:text-black active:bg-transparent dark:text-primary-foreground"
   )
 
   const pricingContent = (
@@ -236,7 +236,7 @@ function PricingContent() {
         {!user && (
         <nav className="fixed left-0 right-0 top-0 z-50 pt-3 backdrop-blur-2xl lg:pt-4">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between rounded-[35px] border border-black/10 bg-neutral-100/55 p-2 shadow-[0_18px_45px_rgba(20,20,20,0.08)] ring-1 ring-white/35 backdrop-blur-2xl lg:p-3">
+            <div className="flex items-center justify-between rounded-md border border-border bg-background/82 p-2 shadow-sm backdrop-blur-2xl lg:p-3">
               <Link href="/" aria-label="AxLiner home" className="flex-shrink-0">
                 <AppLogo />
               </Link>
@@ -245,7 +245,7 @@ function PricingContent() {
                 <NavigationMenu>
                   <NavigationMenuList className="gap-1">
                     <NavigationMenuItem>
-                      <NavigationMenuTrigger className="bg-transparent text-black transition-colors hover:bg-accent/50 focus:bg-transparent focus:text-black active:bg-transparent dark:text-white">
+                      <NavigationMenuTrigger className="bg-transparent text-black transition-colors hover:bg-accent/50 focus:bg-transparent focus:text-black active:bg-transparent dark:text-primary-foreground">
                         Solutions
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
@@ -292,7 +292,7 @@ function PricingContent() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="rounded-full border-[1.6px] border-foreground/30 bg-white/90 px-4 py-2 text-sm font-medium text-foreground backdrop-blur-sm transition-colors hover:bg-white dark:bg-white/20 dark:hover:bg-white/30"
+                  className="rounded-md"
                   onClick={() => {
                     setSignInRedirectPath("/dashboard/client")
                     setSignInOpen(true)
@@ -314,11 +314,11 @@ function PricingContent() {
           </h1>
 
           {!user && !loading && (
-            <div className="mx-auto mt-8 inline-flex flex-wrap items-center justify-center gap-3 rounded-[24px] border border-[#e5d9fb] bg-white/64 px-5 py-3 text-sm font-semibold text-black shadow-[0_18px_45px_rgba(47,22,94,0.08)] backdrop-blur-xl">
-              <span>Create a free account to get <span className="text-[#2f165e]">{freeCreditsLabel}</span>.</span>
+            <div className="mx-auto mt-8 inline-flex flex-wrap items-center justify-center gap-3 rounded-md border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground shadow-sm">
+              <span>Create a free account to get <span className="text-primary">{freeCreditsLabel}</span>.</span>
               <Button
                 size="sm"
-                className="rounded-full bg-[#2f165e] px-5 text-white hover:bg-[#24104b]"
+                className="rounded-full bg-primary px-5 text-primary-foreground hover:bg-primary/90"
                 onClick={() => {
                   setSignInRedirectPath("/dashboard/client")
                   setSignInOpen(true)
@@ -330,14 +330,14 @@ function PricingContent() {
           )}
 
           {isFreeAccount && (
-            <div className="mx-auto mt-8 flex max-w-xl flex-wrap items-center justify-center gap-4 rounded-[28px] border border-[#e5d9fb] bg-white/68 px-5 py-4 shadow-[0_20px_55px_rgba(47,22,94,0.10)] backdrop-blur-xl">
-              <CreditStack className="h-8 w-8 text-[#2f165e]" />
+            <div className="mx-auto mt-8 flex max-w-xl flex-wrap items-center justify-center gap-4 rounded-md border border-border bg-card px-5 py-4 shadow-sm">
+              <CreditStack className="h-8 w-8 text-primary" />
               <div className="text-left">
-                <p className="text-2xl font-semibold text-[#2f165e]">{accountCredits.toLocaleString()}</p>
-                <p className="text-sm font-semibold text-[#6b7280]">credits left</p>
+                <p className="text-2xl font-semibold text-primary">{accountCredits.toLocaleString()}</p>
+                <p className="text-sm font-semibold text-muted-foreground">credits left</p>
               </div>
               <Button
-                className="rounded-full bg-[#2f165e] px-6 text-white hover:bg-[#24104b]"
+                className="rounded-full bg-primary px-6 text-primary-foreground hover:bg-primary/90"
                 onClick={() => document.getElementById("plans")?.scrollIntoView({ behavior: "smooth", block: "start" })}
               >
                 Upgrade
@@ -345,17 +345,17 @@ function PricingContent() {
             </div>
           )}
 
-          <div className="mt-7 inline-flex rounded-[18px] border border-[#e6dbff] bg-white/58 p-1 shadow-[0_16px_45px_rgba(68,31,132,0.10)] backdrop-blur">
+          <div className="mt-7 inline-flex rounded-md border border-border bg-card p-1 shadow-sm">
             {(["month", "year"] as BillingMode[]).map((mode) => (
               <button
                 key={mode}
                 type="button"
                 onClick={() => setBillingMode(mode)}
                 className={cn(
-                  "rounded-[14px] px-6 py-2 text-sm font-bold transition",
+                  "rounded-md px-6 py-2 text-sm font-bold transition",
                   billingMode === mode
-                    ? "bg-[#2f165e] text-white shadow-[0_10px_28px_rgba(68,31,132,0.24)]"
-                    : "text-[#5d4a83] hover:bg-white/70"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-muted"
                 )}
               >
                 {mode === "month" ? "Monthly" : "Annual"}
@@ -365,8 +365,8 @@ function PricingContent() {
         </div>
 
         {statusPanel && (
-          <div className={cn("mx-auto mt-8 max-w-4xl rounded-[24px] border p-5 text-center shadow-[0_18px_55px_rgba(68,31,132,0.08)] backdrop-blur-xl", statusPanel.tone)}>
-            <p className="text-base font-black text-[#2f165e]">{statusPanel.title}</p>
+          <div className={cn("mx-auto mt-8 max-w-4xl rounded-md border p-5 text-center shadow-sm", statusPanel.tone)}>
+            <p className="text-base font-black text-primary">{statusPanel.title}</p>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">{statusPanel.text}</p>
           </div>
         )}
@@ -374,25 +374,25 @@ function PricingContent() {
         <div id="plans" className="mx-auto mt-20 grid max-w-[1500px] gap-6 md:grid-cols-2 xl:grid-cols-4">
           {billingLoading && plans.length === 0
             ? Array.from({ length: 4 }).map((_, index) => (
-                <Card key={index} className="h-[570px] rounded-[30px] border-[#ded3f4] bg-white/48 shadow-[0_24px_70px_rgba(30,18,57,0.08)] backdrop-blur-xl">
+                <Card key={index} className="h-[570px] rounded-md border-border bg-card shadow-sm">
                   <CardContent className="h-full animate-pulse p-7">
-                    <div className="h-5 w-24 rounded-full bg-[#eadfff]" />
-                    <div className="mt-10 h-12 w-36 rounded-2xl bg-[#eadfff]" />
-                    <div className="mt-8 h-24 rounded-[22px] bg-[#eadfff]/70" />
-                    <div className="mt-8 h-12 rounded-2xl bg-[#eadfff]" />
+                    <div className="h-5 w-24 rounded-full bg-muted" />
+                    <div className="mt-10 h-12 w-36 rounded-2xl bg-muted" />
+                    <div className="mt-8 h-24 rounded-md bg-muted" />
+                    <div className="mt-8 h-12 rounded-2xl bg-muted" />
                   </CardContent>
                 </Card>
               ))
             : visiblePlans.length === 0
               ? (
-                <Card className="rounded-[30px] border-[#ded3f4] bg-white/70 shadow-[0_18px_55px_rgba(30,18,57,0.07)] backdrop-blur-xl md:col-span-2 xl:col-span-4">
+                <Card className="rounded-md border-border bg-card shadow-sm md:col-span-2 xl:col-span-4">
                   <CardContent className="p-8 text-center">
-                    <p className="text-xl font-semibold text-[#111827]">Pricing is temporarily unavailable</p>
-                    <p className="mx-auto mt-3 max-w-2xl text-sm font-medium leading-6 text-[#6b7280]">
+                    <p className="text-xl font-semibold text-foreground">Pricing is temporarily unavailable</p>
+                    <p className="mx-auto mt-3 max-w-2xl text-sm font-medium leading-6 text-muted-foreground">
                       Plan data comes from the billing backend. Refresh this page in a moment, or contact support if the plan catalog stays unavailable.
                     </p>
                     <Button
-                      className="mt-6 rounded-full bg-[#2f165e] px-6 text-white hover:bg-[#24104b]"
+                      className="mt-6 rounded-full bg-primary px-6 text-primary-foreground hover:bg-primary/90"
                       onClick={() => void refreshBilling({ includePlans: true, includeStatus: Boolean(user), includeLimits: false })}
                     >
                       Refresh pricing
@@ -426,17 +426,17 @@ function PricingContent() {
                   <Card
                     key={plan.key}
                     className={cn(
-                      "relative overflow-visible rounded-[30px] border-[#ded3f4] bg-white/70 shadow-[0_18px_55px_rgba(30,18,57,0.07)] backdrop-blur-xl",
-                      isPopular && "border-[#2f165e] bg-white/82 shadow-[0_24px_70px_rgba(68,31,132,0.14)]"
+                      "relative overflow-visible rounded-md border-border bg-card shadow-sm",
+                      isPopular && "border-primary shadow-md"
                     )}
                   >
                     {isPopular && (
-                      <div className="absolute -top-4 right-5 rounded-[12px] bg-[#151216] px-4 py-2 text-xs font-bold text-white shadow-lg">
+                      <div className="absolute -top-4 right-5 rounded-md bg-foreground px-4 py-2 text-xs font-bold text-background shadow-sm">
                         Most popular
                       </div>
                     )}
                     {plan.annual_discount_percent > 0 && (
-                      <div className="absolute -top-4 left-5 rounded-[12px] bg-[#2f165e] px-4 py-2 text-xs font-bold text-white shadow-lg">
+                      <div className="absolute -top-4 left-5 rounded-md bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm">
                         Save {plan.annual_discount_percent}%
                       </div>
                     )}
@@ -446,21 +446,21 @@ function PricingContent() {
                           <div>
                             <p className="text-xl font-semibold text-foreground">{presentation.name}</p>
                           </div>
-                          {plan.plan === "mega" ? <PlanSwitch className="h-7 w-7 text-[#2f165e]" /> : <CreditStack className="h-7 w-7 text-[#2f165e]" />}
+                          {plan.plan === "mega" ? <PlanSwitch className="h-7 w-7 text-primary" /> : <CreditStack className="h-7 w-7 text-primary" />}
                         </div>
                         <div className="mt-10 flex items-end gap-3">
-                          <span className="text-5xl font-semibold tracking-normal text-[#2f165e]">{plan.price_formatted}</span>
-                          <span className="pb-1.5 text-sm font-semibold text-[#6b7280]">{intervalLabel}</span>
+                          <span className="text-5xl font-semibold tracking-normal text-primary">{plan.price_formatted}</span>
+                          <span className="pb-1.5 text-sm font-semibold text-muted-foreground">{intervalLabel}</span>
                         </div>
-                        <div className="mt-8 rounded-[22px] bg-[#2f165e] p-5 text-white shadow-[0_16px_40px_rgba(47,22,94,0.18)]">
+                        <div className="mt-8 rounded-md bg-primary p-5 text-primary-foreground shadow-sm">
                           <p className="text-3xl font-semibold">{presentation.included}</p>
                         </div>
                         <Button
                           className={cn(
-                            "mt-8 h-14 w-full rounded-[18px] text-base font-bold",
+                            "mt-8 h-14 w-full rounded-md text-base font-bold",
                             isPopular
-                              ? "bg-[#2f165e] text-white hover:bg-[#24104b]"
-                              : "bg-[#151216] text-white hover:bg-[#2f165e]"
+                              ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                              : "bg-foreground text-background hover:bg-primary hover:text-primary-foreground"
                           )}
                           disabled={Boolean(isLoading || (isPaid && !plan.checkout_available))}
                           onClick={() => startCheckout(plan)}
@@ -475,13 +475,13 @@ function PricingContent() {
                         </Button>
                       </div>
 
-                      <div className="border-t border-[#ece5fb] p-7">
+                      <div className="border-t border-border p-7">
                         <ul className="space-y-4">
                           {features.map((feature) => (
                             <li key={`${feature.value}-${feature.label}`} className="flex items-baseline gap-3 text-[15px] leading-6">
-                              <span className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-[#2f165e]" />
-                              <span className="font-semibold text-[#2f165e]">{feature.value}</span>
-                              <span className="text-[#6b7280]">{feature.label}</span>
+                              <span className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                              <span className="font-semibold text-primary">{feature.value}</span>
+                              <span className="text-muted-foreground">{feature.label}</span>
                             </li>
                           ))}
                         </ul>
@@ -506,7 +506,7 @@ function PricingContent() {
                 companyLogos.map((imgNum) => (
                   <Card
                     key={`${setIndex}-${imgNum}`}
-                    className="h-[80px] w-[120px] flex-shrink-0 border border-[#ded3f4] bg-white shadow-[0_14px_35px_rgba(68,31,132,0.08)] transition-all duration-300 hover:border-[#A78BFA]/50 hover:shadow-md"
+                    className="h-[80px] w-[120px] flex-shrink-0 border border-border bg-card shadow-[0_14px_35px_rgb(0 0 0 / 0.08)] transition-all duration-300 hover:border-primary/50 hover:shadow-md"
                   >
                     <CardContent className="flex h-full w-full items-center justify-center p-2">
                       <img
@@ -534,7 +534,7 @@ function PricingContent() {
   }
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#E9ECE4]">
+    <main className="min-h-screen overflow-hidden bg-background">
       {pricingContent}
       <GoogleSignInModal open={signInOpen} onOpenChange={setSignInOpen} redirectPath={signInRedirectPath} />
     </main>
