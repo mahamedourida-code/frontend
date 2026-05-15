@@ -15,7 +15,7 @@ import { AppIcon } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { cn } from "@/lib/utils"
 
-type SidebarItemKey = "overview" | "process" | "workflows" | "history" | "pricing" | "settings"
+type SidebarItemKey = "overview" | "process" | "history" | "pricing" | "settings"
 
 interface WorkspaceSidebarProps {
   activeItem: SidebarItemKey
@@ -29,22 +29,9 @@ interface WorkspaceSidebarProps {
   } | null
 }
 
-function WorkflowGlyph({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
-      <path d="M5 7h5m4 0h5M5 17h5m4 0h5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M10 7c2 0 2 10 4 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M10 17c2 0 2-10 4-10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <circle cx="5" cy="7" r="1.8" fill="currentColor" />
-      <circle cx="19" cy="17" r="1.8" fill="currentColor" />
-    </svg>
-  )
-}
-
 const sidebarItems = [
   { key: "overview" as const, label: "Overview", icon: Activity, href: "/dashboard" },
   { key: "process" as const, label: "Convert Files", icon: Upload, href: "/dashboard/client" },
-  { key: "workflows" as const, label: "Workflows", icon: WorkflowGlyph, href: "/dashboard/workflows" },
   { key: "history" as const, label: "History", icon: History, href: "/history" },
   { key: "pricing" as const, label: "Pricing", icon: BillingSeal, href: "/pricing" },
   { key: "settings" as const, label: "Settings", icon: Settings, href: "/dashboard/settings" },
@@ -53,6 +40,15 @@ const sidebarItems = [
 export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
   const displayName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "User"
   const email = user?.email || ""
+
+  const handleSignOut = async () => {
+    const { signOut } = await import("@/lib/auth-helpers")
+    try {
+      await signOut()
+    } finally {
+      window.location.replace("/")
+    }
+  }
 
   return (
     <aside className="fixed inset-y-0 start-0 z-30 hidden w-56 border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex md:flex-col">
@@ -142,11 +138,15 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild className="text-destructive">
-                <Link href="/signout">
+              <DropdownMenuItem
+                className="text-destructive"
+                onSelect={(event) => {
+                  event.preventDefault()
+                  void handleSignOut()
+                }}
+              >
                   <LogOut className="size-4" />
                   Sign Out
-                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

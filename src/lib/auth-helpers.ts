@@ -7,13 +7,16 @@ import { createClient } from '@/utils/supabase/client'
 export const signOut = async () => {
   const supabase = createClient()
 
-  const { error } = await supabase.auth.signOut()
-
-  if (error) {
-    throw error
-  }
+  const { error } = await supabase.auth.signOut({ scope: 'global' })
 
   if (typeof window !== 'undefined') {
+    document.cookie.split(';').forEach(cookie => {
+      const name = cookie.split('=')[0]?.trim()
+      if (name && (name.startsWith('sb-') || name.toLowerCase().includes('supabase'))) {
+        document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax`
+      }
+    })
+
     const appFlags = [
       'wasProcessing',
       'uploadedFilesCache',
@@ -23,6 +26,21 @@ export const signOut = async () => {
       sessionStorage.removeItem(key)
       localStorage.removeItem(key)
     })
+
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('sb-') || key.toLowerCase().includes('supabase')) {
+        localStorage.removeItem(key)
+      }
+    })
+    Object.keys(sessionStorage).forEach(key => {
+      if (key.startsWith('sb-') || key.toLowerCase().includes('supabase')) {
+        sessionStorage.removeItem(key)
+      }
+    })
+  }
+
+  if (error) {
+    throw error
   }
 }
 

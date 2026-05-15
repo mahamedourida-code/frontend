@@ -88,6 +88,15 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
     setIsOpen(false)
   }
 
+  const handleSignOut = async () => {
+    const { signOut } = await import("@/lib/auth-helpers")
+    try {
+      await signOut()
+    } finally {
+      window.location.replace("/")
+    }
+  }
+
   const mainNavItems: MobileNavItem[] = [
     {
       label: "Convert Files",
@@ -105,12 +114,6 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       label: "History",
       href: "/history",
       icon: History,
-      show: isAuthenticated
-    },
-    {
-      label: "Workflows",
-      href: "/dashboard/workflows",
-      icon: Target,
       show: isAuthenticated
     },
     {
@@ -423,8 +426,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                     variant="ghost"
                     className="h-11 w-full gap-3 rounded-2xl text-destructive hover:bg-destructive/10 hover:text-destructive"
                     onClick={() => {
-                      // Handle logout
-                      handleNavigation("/signout")
+                      void handleSignOut()
                     }}
                   >
                     <LogOut className="h-5 w-5" />

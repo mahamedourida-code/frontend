@@ -1,13 +1,9 @@
 "use client"
 
 import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/contexts/AuthContext"
+import { signOut } from "@/lib/auth-helpers"
 
 export default function SignOutPage() {
-  const router = useRouter()
-  const { signOut } = useAuth()
-
   useEffect(() => {
     let active = true
 
@@ -16,7 +12,7 @@ export default function SignOutPage() {
         await signOut()
       } finally {
         if (active) {
-          router.replace("/")
+          window.location.replace("/")
         }
       }
     }
@@ -26,7 +22,7 @@ export default function SignOutPage() {
     return () => {
       active = false
     }
-  }, [router, signOut])
+  }, [])
 
   return null
 }
