@@ -421,6 +421,15 @@ export default function LandingConverter() {
         return;
       }
 
+      if (!isAuthenticated) {
+        const currentTrial = getTrialInfo();
+        setTrialInfo(currentTrial);
+        if (!currentTrial.hasRemaining) {
+          setShowLimitDialog(true);
+          return;
+        }
+      }
+
       setIsProcessing(true);
       setIsUploading(true);
       setUploadProgress(0);
@@ -542,8 +551,17 @@ export default function LandingConverter() {
       return;
     }
 
+    if (!isAuthenticated) {
+      const currentTrial = getTrialInfo();
+      setTrialInfo(currentTrial);
+      if (!currentTrial.hasRemaining) {
+        setShowLimitDialog(true);
+        return;
+      }
+    }
+
     await processImages(uploadedFiles);
-  }, [uploadedFiles, maxUploadFiles, processImages]);
+  }, [uploadedFiles, maxUploadFiles, isAuthenticated, processImages]);
 
   const handleDownloadFile = async (fileId: string, filename?: string) => {
 
@@ -1336,7 +1354,7 @@ export default function LandingConverter() {
               </div>
             )}
               <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : 'w-full max-w-[1260px]'}`}>
-                <div className={resultFiles.length === 0 && !isProcessing ? "grid items-stretch gap-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(440px,1.08fr)]" : "relative w-full"}>
+                <div className="space-y-5">
                 <div className="relative w-full space-y-5 rounded-md border border-border bg-card p-5 text-foreground shadow-sm sm:p-6 lg:p-7">
                   {latestRecoverableJob && !isProcessing && (
                     <div className="rounded-md border border-border bg-muted p-4 shadow-sm">
@@ -1444,7 +1462,7 @@ export default function LandingConverter() {
                                 <div className="mb-4 rounded-md border border-border bg-background/70 p-3 text-left shadow-sm">
                                   <p className="text-sm font-semibold text-foreground">Want to keep bigger batches safe?</p>
                                   <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                    Create a free account for 30 credits, batch recovery, and saved downloads after reload.
+                                    Create a free account for 3 daily runs, 30 credits, batch recovery, and saved downloads after reload.
                                   </p>
                                   <Button
                                     size="sm"
@@ -1573,7 +1591,7 @@ export default function LandingConverter() {
                       {resultFiles.length > 0 && (
                         <div className="space-y-4">
                           {/* Preview Section - Only for first file */}
-                          {resultFiles.length > 0 && (selectedTablePreview.length > 0 || selectedTextPreview) && selectedImageUrl && (
+                          {resultFiles.length === 1 && (selectedTablePreview.length > 0 || selectedTextPreview) && selectedImageUrl && (
                             <div className="space-y-4">
                               {/* Image and Table Preview Side by Side */}
                               <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
@@ -1647,6 +1665,7 @@ export default function LandingConverter() {
                             </div>
                           )}
 
+                          {resultFiles.length > 1 && (
                           <div className="rounded-md border border-border bg-muted p-4 shadow-sm sm:p-5">
                             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                               <div>
@@ -1783,6 +1802,7 @@ export default function LandingConverter() {
                               )}
                             </div>
                           </div>
+                          )}
                         </div>
                       )}
 

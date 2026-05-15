@@ -20,11 +20,8 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
-
-export type WorkspaceStage = "Added" | "Uploading" | "Queued" | "Processing" | "Ready" | "Failed"
 
 export type WorkspaceBanner = {
   title: string
@@ -61,7 +58,6 @@ type ResultPreview = {
 }
 
 type ConversionWorkspaceProps = {
-  stage: WorkspaceStage
   banner?: WorkspaceBanner | null
   onDismissBanner?: () => void
   latestRecoverableJob?: RecoverableJob | null
@@ -76,9 +72,6 @@ type ConversionWorkspaceProps = {
   isUploading: boolean
   isProcessing: boolean
   isComplete: boolean
-  uploadProgress: number
-  progress?: { total_images?: number; processed_images?: number; percentage?: number } | null
-  processingTime: number
   uploadedSizeMb: number
   creditAvailable: number
   creditEstimate: number
@@ -468,48 +461,6 @@ export function SelectedFilesTray({
   )
 }
 
-export function JobProgressPanel({
-  stage,
-  isUploading,
-  isProcessing,
-  isComplete,
-  uploadProgress,
-  progress,
-  processingTime,
-}: Pick<
-  ConversionWorkspaceProps,
-  "stage" | "isUploading" | "isProcessing" | "isComplete" | "uploadProgress" | "progress" | "processingTime"
->) {
-  const progressValue = isUploading ? uploadProgress : progress?.percentage ?? (stage === "Queued" ? 12 : stage === "Processing" ? 48 : isComplete ? 100 : 0)
-  const active = isUploading || isProcessing || isComplete || stage === "Failed"
-
-  if (!active) return null
-
-  return (
-    <div className="rounded-md border border-border bg-card/50 p-4 backdrop-blur-xl">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Status</p>
-          <p className="mt-1 text-lg font-semibold text-foreground">{stage}</p>
-        </div>
-        {active ? (
-          <div className="rounded-md border border-border bg-card/70 px-3 py-1 text-xs font-bold text-primary">
-            {processingTime}s
-          </div>
-        ) : null}
-      </div>
-
-      <div className="mt-4 space-y-3">
-        <Progress value={progressValue} className="h-2" />
-        <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
-          <span>{isComplete ? "Ready" : stage === "Failed" ? "Failed" : "Converting"}</span>
-          {progress?.total_images ? <span>{progress.processed_images || 0}/{progress.total_images} files</span> : null}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export function ResultPreviewPanel({
   isComplete,
   resultFiles,
@@ -762,6 +713,7 @@ export function ResultActions({
   const comparisonText = comparisonLoaded ? textPreview : ""
   const comparisonColumnCount = Math.max(1, ...comparisonTable.map(row => row.length))
   const editedCount = Object.keys(editedTables).length
+  const comparisonImageUrl = comparisonFile?.input_preview_url || firstImageUrl
 
   const openComparison = (index: number) => {
     const file = resultFiles[index]
@@ -1045,8 +997,8 @@ export function ResultActions({
 
             <div className="grid max-h-[84vh] gap-3 overflow-auto lg:grid-cols-[0.92fr_1.08fr]">
               <div className="flex min-h-[420px] items-center justify-center overflow-hidden rounded-md border border-border bg-white">
-                {firstImageUrl ? (
-                  <img src={firstImageUrl} alt="Input preview" className="max-h-[74vh] w-full object-contain" />
+                {comparisonImageUrl ? (
+                  <img src={comparisonImageUrl} alt="Input preview" className="max-h-[74vh] w-full object-contain" />
                 ) : (
                   <div className="text-sm font-semibold text-muted-foreground">Input preview unavailable</div>
                 )}
@@ -1126,7 +1078,6 @@ export function ResultActions({
 
 export function ConversionWorkspace(props: ConversionWorkspaceProps) {
   const {
-    stage,
     banner,
     onDismissBanner,
     latestRecoverableJob,
@@ -1141,9 +1092,6 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     isUploading,
     isProcessing,
     isComplete,
-    uploadProgress,
-    progress,
-    processingTime,
     uploadedSizeMb,
     creditEstimate,
     processLabel,
@@ -1266,27 +1214,6 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
             ) : null}
 
             <div className="space-y-4">
-              {!hasBatchResults ? (
-                <JobProgressPanel
-                  stage={stage}
-                  isUploading={isUploading}
-                  isProcessing={isProcessing}
-                  isComplete={isComplete}
-                  uploadProgress={uploadProgress}
-                  progress={progress}
-                  processingTime={processingTime}
-                />
-              ) : null}
-              {(!isComplete || (resultFiles?.length || 0) <= 1) ? (
-                <ResultPreviewPanel
-                  isComplete={isComplete}
-                  resultFiles={resultFiles}
-                  tablePreviewData={tablePreviewData}
-                  textPreview={textPreview}
-                  firstImageUrl={firstImageUrl}
-                  isTextOutput={isTextOutput}
-                />
-              ) : null}
               <ResultActions
                 resultFiles={resultFiles}
                 isComplete={isComplete}

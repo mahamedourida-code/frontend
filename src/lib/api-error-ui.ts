@@ -80,7 +80,7 @@ export function getApiErrorUi(error: any, context: ErrorActionContext = {}): Err
     if (!context.isAuthenticated) {
       return {
         title: "Free trial limit reached",
-        description: "The free trial includes 3 runs with up to 3 images each. Create a free account for 30 credits, saved batches, and reload-safe downloads.",
+        description: "The free trial includes 3 total runs with up to 3 images each. Create a free account for 3 daily runs, 30 credits, saved batches, and reload-safe downloads.",
         action: context.onSignIn
           ? { label: "Create account", onClick: context.onSignIn }
           : { label: "Create account", onClick: () => goTo(`/sign-up?next=${encodeURIComponent(upgradeHref)}`) },

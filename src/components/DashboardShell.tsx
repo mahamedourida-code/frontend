@@ -128,12 +128,6 @@ export function DashboardShell({
 
   const nextActionHref = activeItem === "process" ? "/history" : "/dashboard/client"
   const nextActionLabel = activeItem === "process" ? "History" : "Convert Files"
-  const topNav = [
-    { label: "Overview", href: "/dashboard", active: activeItem === "overview" },
-    { label: "Convert Files", href: "/dashboard/client", active: activeItem === "process" },
-    { label: "Workflows", href: "/dashboard/workflows", active: activeItem === "workflows" },
-    { label: "Plans", href: "/pricing", active: activeItem === "pricing" },
-  ]
 
   return (
     <div className="min-h-svh bg-background text-foreground md:grid md:grid-cols-[14rem_minmax(0,1fr)]">
@@ -155,21 +149,6 @@ export function DashboardShell({
                 <Separator orientation="vertical" className="h-6" />
               </>
             )}
-
-            <nav className="hidden items-center gap-1 md:flex">
-              {topNav.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "inline-flex h-9 items-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-                    item.active ? "bg-accent text-accent-foreground" : "text-muted-foreground"
-                  )}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
 
             <div className="me-auto min-w-0 md:hidden">
               <div className="truncate text-sm font-medium">{title}</div>

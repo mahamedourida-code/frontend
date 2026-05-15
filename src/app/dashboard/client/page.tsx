@@ -15,7 +15,6 @@ import { useBillingStatus } from "@/hooks/useBillingStatus"
 import {
   ConversionWorkspace,
   type WorkspaceBanner,
-  type WorkspaceStage,
 } from "@/components/dashboard/ConversionWorkspace"
 import {
   CheckCircle,
@@ -136,8 +135,6 @@ function ProcessImagesContent() {
     return false
   })
 
-  const [processingTime, setProcessingTime] = useState(0)
-  const processingTimerRef = useRef<NodeJS.Timeout | null>(null)
   const [tablePreviewData, setTablePreviewData] = useState<any[][]>([])
   const [textPreview, setTextPreview] = useState('')
   const [resultPreviews, setResultPreviews] = useState<Record<string, ResultPreview>>({})
@@ -398,30 +395,6 @@ function ProcessImagesContent() {
       isExecutingAutoActionsRef.current = false
     }
   }, [uploadedFiles.length, isProcessing])
-
-  // Processing timer
-  useEffect(() => {
-    if (isProcessing) {
-      // Reset and start timer
-      setProcessingTime(0)
-      processingTimerRef.current = setInterval(() => {
-        setProcessingTime(prev => prev + 1)
-      }, 1000)
-    } else {
-      // Stop timer
-      if (processingTimerRef.current) {
-        clearInterval(processingTimerRef.current)
-        processingTimerRef.current = null
-      }
-    }
-
-    // Cleanup on unmount
-    return () => {
-      if (processingTimerRef.current) {
-        clearInterval(processingTimerRef.current)
-      }
-    }
-  }, [isProcessing])
 
   // Listen for localStorage changes from settings page
   useEffect(() => {
@@ -1346,15 +1319,6 @@ Best regards`
   }, 0)
   const creditsKnown = Boolean(entitlementCredits || limits?.credits)
   const batchExceedsCredits = Boolean(creditsKnown && uploadedFiles.length > 0 && creditEstimate > creditAvailable)
-  const workspaceStage: WorkspaceStage = status === 'failed' || Boolean(ocrError)
-    ? 'Failed'
-    : isComplete
-      ? 'Ready'
-      : status === 'queued'
-          ? 'Queued'
-          : isUploading || isProcessing
-            ? 'Processing'
-            : 'Added'
   const creditBanner: WorkspaceBanner | null = noCredits && !isProcessing
     ? {
         title: "No credits left",
@@ -1382,7 +1346,6 @@ Best regards`
       contentClassName="max-w-none px-3 sm:px-5 lg:px-6"
     >
       <ConversionWorkspace
-        stage={workspaceStage}
         banner={workspaceBanner ?? creditBanner}
         onDismissBanner={workspaceBanner ? () => setWorkspaceBanner(null) : undefined}
         latestRecoverableJob={!isProcessing ? latestRecoverableJob : null}
@@ -1397,9 +1360,6 @@ Best regards`
         isUploading={isUploading}
         isProcessing={isProcessing}
         isComplete={Boolean(isComplete)}
-        uploadProgress={uploadProgress}
-        progress={progress}
-        processingTime={processingTime}
         uploadedSizeMb={uploadedSizeMb}
         creditAvailable={creditAvailable}
         creditEstimate={creditEstimate}

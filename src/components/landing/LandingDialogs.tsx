@@ -163,7 +163,7 @@ export default function LandingDialogs({
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Free trial limit reached</DialogTitle>
             <DialogDescription className="text-base">
-              The free trial includes 3 runs with up to 3 images each. Create a free account for 30 credits, saved batches, and reload-safe downloads.
+              The free trial includes 3 total runs with up to 3 images each. Create a free account for 3 daily runs, 30 credits, saved batches, and reload-safe downloads.
             </DialogDescription>
           </DialogHeader>
           <div className="mt-6 flex gap-3">
