@@ -7,7 +7,6 @@ import { toast } from "sonner"
 
 import { AppLogo } from "@/components/AppIcon"
 import { CreditStack, PlanSwitch } from "@/components/BillingGlyphs"
-import { DashboardShell } from "@/components/DashboardShell"
 import { GoogleSignInModal } from "@/components/GoogleSignInModal"
 import { IndustrySolutionsMenuGrid } from "@/components/IndustrySolutionsMenuGrid"
 import { MobileNav } from "@/components/MobileNav"
@@ -224,16 +223,17 @@ function PricingContent() {
   const isFreeAccount = Boolean(user && billingStatus?.plan === "free")
   const accountCredits = billingStatus?.credits?.available_credits ?? 0
   const freePlan = backendByKey.get("free")
-  const freeCreditsLabel = freePlan?.included_volume || "5 free runs"
+  const freeCreditsLabel = freePlan?.included_volume || "30 free credits"
 
   const navLinkClass = cn(
     navigationMenuTriggerStyle(),
     "bg-transparent text-foreground transition-colors hover:bg-muted focus:bg-transparent active:bg-transparent"
   )
 
+  const isSignedIn = Boolean(user && !loading)
+
   const pricingContent = (
-      <section className={cn("mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8", user ? "pt-4" : "pt-28 lg:pt-32")}>
-        {!user && (
+      <section className="mx-auto max-w-7xl px-4 pb-16 pt-28 sm:px-6 lg:px-8 lg:pt-32">
         <nav className="fixed left-0 right-0 top-0 z-50 pt-3 backdrop-blur-2xl lg:pt-4">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between rounded-md border border-border bg-background/82 p-2 shadow-sm backdrop-blur-2xl lg:p-3">
@@ -281,33 +281,49 @@ function PricingContent() {
               </div>
 
               <div className="hidden items-center gap-3 lg:flex">
-                <Button
-                  size="sm"
-                  className="rounded-md"
-                  onClick={() => {
-                    setSignInRedirectPath("/pricing?from=signup")
-                    setSignInOpen(true)
-                  }}
-                >
-                  Sign Up
-                </Button>
-                <Button
-                  variant="outline"
-                  className="rounded-md"
-                  onClick={() => {
-                    setSignInRedirectPath("/dashboard/client")
-                    setSignInOpen(true)
-                  }}
-                >
-                  Sign in
-                </Button>
+                {isSignedIn ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="rounded-md"
+                      asChild
+                    >
+                      <Link href="/dashboard">Dashboard</Link>
+                    </Button>
+                    <Button className="rounded-md" asChild>
+                      <Link href="/dashboard/client">Convert Files</Link>
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      size="sm"
+                      className="rounded-md"
+                      onClick={() => {
+                        setSignInRedirectPath("/pricing?from=signup")
+                        setSignInOpen(true)
+                      }}
+                    >
+                      Sign Up
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="rounded-md"
+                      onClick={() => {
+                        setSignInRedirectPath("/dashboard/client")
+                        setSignInOpen(true)
+                      }}
+                    >
+                      Sign in
+                    </Button>
+                  </>
+                )}
               </div>
 
-              <MobileNav />
+              <MobileNav isAuthenticated={isSignedIn} user={user} />
             </div>
           </div>
         </nav>
-        )}
 
         <div className="mx-auto mt-12 max-w-4xl text-center">
           <h1 className="mx-auto text-4xl font-semibold leading-tight tracking-normal text-foreground sm:text-5xl lg:text-6xl">
@@ -414,7 +430,7 @@ function PricingContent() {
                       : "forever"
                 const features = [
                   plan.plan === "anonymous" || plan.plan === "free"
-                    ? { value: plan.included_volume, label: "after account creation" }
+                    ? { value: plan.included_volume, label: "" }
                     : { value: presentation.included, label: "available in this plan" },
                   { value: `${plan.max_files_per_batch}`, label: "images per run" },
                   { value: `${plan.max_file_size_mb}MB`, label: "max file size" },
@@ -483,7 +499,7 @@ function PricingContent() {
                             <li key={`${feature.value}-${feature.label}`} className="flex items-baseline gap-3 text-[15px] leading-6">
                               <span className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                               <span className="font-semibold text-primary">{feature.value}</span>
-                              <span className="text-muted-foreground">{feature.label}</span>
+                              {feature.label && <span className="text-muted-foreground">{feature.label}</span>}
                             </li>
                           ))}
                         </ul>
@@ -525,15 +541,6 @@ function PricingContent() {
         </section>
       </section>
   )
-
-  if (user) {
-    return (
-      <DashboardShell activeItem="pricing" title="Pricing" user={user} showBack={false}>
-        {pricingContent}
-        <GoogleSignInModal open={signInOpen} onOpenChange={setSignInOpen} redirectPath={signInRedirectPath} />
-      </DashboardShell>
-    )
-  }
 
   return (
     <main className="min-h-screen overflow-hidden bg-background">

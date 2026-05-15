@@ -29,6 +29,9 @@ type DashboardStats = {
   lastWeekProcessed: number
   averageTime: number
   successRate: number
+  selectedPeriodProcessed?: number
+  activeJobs?: number
+  failedJobs?: number
 }
 
 function MiniChartIcon({ type }: { type: "line" | "bar" | "donut" | "flow" }) {
@@ -94,8 +97,8 @@ export function DashboardMiniCharts({
 
   const stageData = [
     { label: "Today", value: stats.todayProcessed },
-    { label: "7 days", value: stats.lastWeekProcessed },
-    { label: "Month", value: stats.thisMonthProcessed },
+    { label: "Active", value: stats.activeJobs || 0 },
+    { label: "Review", value: stats.failedJobs || 0 },
   ]
   const stageMax = Math.max(...stageData.map((item) => item.value), 1)
 
@@ -141,7 +144,7 @@ export function DashboardMiniCharts({
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold tabular-nums">{stats.todayProcessed.toLocaleString()}</div>
-          <p className="text-xs text-muted-foreground">Images today</p>
+          <p className="text-xs text-muted-foreground">Files today</p>
           <div className="mt-3 h-20">
             {hasActivity ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -187,8 +190,8 @@ export function DashboardMiniCharts({
               </div>
             </div>
             <div>
-              <p className="text-sm font-medium">Successful jobs</p>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">Based on completed history for this range.</p>
+              <p className="text-sm font-medium">Ready jobs</p>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">Completed output over the selected range.</p>
             </div>
           </div>
         </CardContent>

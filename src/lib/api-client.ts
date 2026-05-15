@@ -292,6 +292,32 @@ export interface JobRecoveryResponse {
   jobs: RecoverableJobSummary[]
 }
 
+export type DashboardRange = '1d' | '7d' | '30d' | '3m'
+
+export interface DashboardSummaryResponse {
+  range: DashboardRange
+  chart: Array<{
+    timestamp: string
+    count: number
+    formattedDate?: string
+    formattedTime?: string
+  }>
+  stats: {
+    totalProcessed: number
+    todayProcessed: number
+    thisMonthProcessed: number
+    monthProcessed: number
+    lastWeekProcessed: number
+    selectedPeriodProcessed: number
+    averageTime: number
+    successRate: number
+    totalJobs: number
+    activeJobs: number
+    failedJobs: number
+    successfulJobs: number
+  }
+}
+
 export interface UploadBatchMultipartOptions {
   output_format?: string
   consolidation_strategy?: string
@@ -412,6 +438,13 @@ export const billingApi = {
 export const ocrApi = {
   getLimits: async (): Promise<AppLimits> => {
     const response = await apiClient.get<AppLimits>('/api/v1/config/limits')
+    return response.data
+  },
+
+  getDashboard: async (range: DashboardRange = '7d'): Promise<DashboardSummaryResponse> => {
+    const response = await apiClient.get<DashboardSummaryResponse>('/api/v1/jobs/dashboard', {
+      params: { range },
+    })
     return response.data
   },
 

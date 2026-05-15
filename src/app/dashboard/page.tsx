@@ -10,7 +10,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardMiniCharts } from "@/components/dashboard/DashboardMiniCharts"
-import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { cn } from "@/lib/utils"
 import {
   BarChart3,
@@ -64,6 +63,11 @@ interface DashboardStats {
   lastWeekProcessed: number
   averageTime: number
   successRate: number
+  selectedPeriodProcessed: number
+  totalJobs: number
+  activeJobs: number
+  failedJobs: number
+  successfulJobs: number
 }
 
 export default function DashboardPage() {
@@ -78,13 +82,14 @@ export default function DashboardPage() {
     monthProcessed: 0,
     lastWeekProcessed: 0,
     averageTime: 0,
-    successRate: 0
+    successRate: 0,
+    selectedPeriodProcessed: 0,
+    totalJobs: 0,
+    activeJobs: 0,
+    failedJobs: 0,
+    successfulJobs: 0,
   })
   const [loading, setLoading] = useState(true)
-  const { refresh: refreshBilling } = useBillingStatus({
-    enabled: Boolean(user && !authLoading),
-    loadStatus: true,
-  })
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -106,6 +111,39 @@ export default function DashboardPage() {
     setLoading(true)
 
     try {
+      const dashboard = await ocrApi.getDashboard(timeRange)
+      setChartData(
+        (dashboard.chart || []).map((point: any) => ({
+          ...point,
+          timestamp: new Date(point.timestamp),
+        }))
+      )
+      setStats({
+        totalProcessed: dashboard.stats?.totalProcessed || 0,
+        todayProcessed: dashboard.stats?.todayProcessed || 0,
+        thisMonthProcessed: dashboard.stats?.thisMonthProcessed || 0,
+        monthProcessed: dashboard.stats?.monthProcessed || 0,
+        lastWeekProcessed: dashboard.stats?.lastWeekProcessed || 0,
+        averageTime: dashboard.stats?.averageTime || 0,
+        successRate: dashboard.stats?.successRate || 0,
+        selectedPeriodProcessed: dashboard.stats?.selectedPeriodProcessed || 0,
+        totalJobs: dashboard.stats?.totalJobs || 0,
+        activeJobs: dashboard.stats?.activeJobs || 0,
+        failedJobs: dashboard.stats?.failedJobs || 0,
+        successfulJobs: dashboard.stats?.successfulJobs || 0,
+      })
+    } catch (error) {
+      try {
+        await fetchDashboardDataFromHistory()
+      } catch {
+        resetDashboardData()
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchDashboardDataFromHistory = async () => {
       // Calculate date range based on selected time
       const now = new Date()
       let fromDate: Date
@@ -127,15 +165,7 @@ export default function DashboardPage() {
           fromDate = subDays(now, 7)
       }
 
-      const [historyResponse, billingSnapshot] = await Promise.all([
-        ocrApi.getHistory(500, 0),
-        refreshBilling({
-          includeStatus: true,
-          includePlans: false,
-          includeLimits: false,
-        }),
-      ])
-      const creditsResponse = billingSnapshot?.status?.credits || null
+      const historyResponse = await ocrApi.getHistory(500, 0)
       const allJobs = normalizeHistoryJobs(historyResponse)
       const typedJobs = allJobs
         .filter(job => new Date(job.created_at) >= fromDate)
@@ -200,7 +230,6 @@ export default function DashboardPage() {
       const successfulJobs = typedJobs.filter(job => job.status === 'completed').length
       const successRate = totalJobs > 0 ? (successfulJobs / totalJobs) * 100 : 0
 
-      const userTotalProcessed = creditsResponse?.used_credits ?? 0
       const monthStart = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1))
       const monthJobs = allJobs.filter(job => new Date(job.created_at) >= monthStart)
       const thisMonthProcessed = monthJobs.reduce((sum, job) => {
@@ -235,16 +264,35 @@ export default function DashboardPage() {
       }, 0)
 
       const newStats = {
-        totalProcessed: userTotalProcessed || totalImages,
+        totalProcessed: allJobs.reduce((sum, job) => sum + getJobImageCount(job), 0) || totalImages,
         todayProcessed: todayImages,
         thisMonthProcessed: thisMonthProcessed,
         monthProcessed: thisMonthProcessed,
         lastWeekProcessed: lastWeekProcessed,
         averageTime: avgTime,
-        successRate
+        successRate,
+        selectedPeriodProcessed: totalImages,
+        totalJobs: allJobs.length,
+        activeJobs: allJobs.filter(job => ["queued", "processing"].includes(job.status)).length,
+        failedJobs: typedJobs.filter(job => job.status === "failed").length,
+        successfulJobs: successfulJobs,
       }
       setStats(newStats)
-    } catch (error) {
+  }
+
+  const getJobImageCount = (job: Job): number => {
+    let metadata = job.processing_metadata
+    if (typeof metadata === 'string') {
+      try {
+        metadata = JSON.parse(metadata)
+      } catch (e) {
+        metadata = undefined
+      }
+    }
+    return Number(metadata?.successful_images || metadata?.processed_images || metadata?.total_images || 1)
+  }
+
+  const resetDashboardData = () => {
       // Set default values on error
       setChartData([])
       setStats({
@@ -254,11 +302,13 @@ export default function DashboardPage() {
         monthProcessed: 0,
         lastWeekProcessed: 0,
         averageTime: 0,
-        successRate: 0
+        successRate: 0,
+        selectedPeriodProcessed: 0,
+        totalJobs: 0,
+        activeJobs: 0,
+        failedJobs: 0,
+        successfulJobs: 0,
       })
-    } finally {
-      setLoading(false)
-    }
   }
 
   const normalizeHistoryJobs = (response: any): Job[] => {
@@ -374,7 +424,7 @@ export default function DashboardPage() {
     {
       title: "Today",
       value: stats.todayProcessed,
-      helper: "Images processed",
+      helper: "Files processed",
       icon: CalendarDays,
     },
     {
@@ -392,15 +442,22 @@ export default function DashboardPage() {
     {
       title: "Total",
       value: stats.totalProcessed,
-      helper: "All time images",
+      helper: "All time files",
       icon: BarChart3,
     },
   ]
 
   const summaryRows = [
     { label: "Success rate", value: stats.successRate ? `${Math.round(stats.successRate)}%` : "-" },
-    { label: "Last 7 days", value: stats.lastWeekProcessed.toLocaleString() },
-    { label: "Selected period", value: chartData.reduce((sum, item) => sum + item.count, 0).toLocaleString() },
+    { label: "Selected period", value: stats.selectedPeriodProcessed.toLocaleString() },
+    { label: "Active jobs", value: stats.activeJobs.toLocaleString() },
+    { label: "Needs review", value: stats.failedJobs.toLocaleString() },
+  ]
+
+  const enhancementIdeas = [
+    { title: "Review queue", text: "Put low-confidence files in one pass before download." },
+    { title: "Batch templates", text: "Save output preferences for repeated invoice and form runs." },
+    { title: "Team handoff", text: "Let operators assign a completed batch to another reviewer." },
   ]
 
   return (
@@ -486,7 +543,7 @@ export default function DashboardPage() {
             <Card className="col-span-1 lg:col-span-3">
               <CardHeader>
                 <CardTitle>Run Summary</CardTitle>
-                <CardDescription>Batch activity across your workspace.</CardDescription>
+                <CardDescription>Batch activity and items that need attention.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-5">
                 <div className="space-y-4">
@@ -513,6 +570,21 @@ export default function DashboardPage() {
                     Convert Files
                   </Button>
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card className="col-span-1 lg:col-span-7">
+              <CardHeader>
+                <CardTitle>Next Product Wins</CardTitle>
+                <CardDescription>Small dashboard additions that would make batch work feel more finished.</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-3 md:grid-cols-3">
+                {enhancementIdeas.map((idea) => (
+                  <div key={idea.title} className="rounded-md border bg-muted/30 p-4">
+                    <p className="text-sm font-semibold">{idea.title}</p>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{idea.text}</p>
+                  </div>
+                ))}
               </CardContent>
             </Card>
           </div>

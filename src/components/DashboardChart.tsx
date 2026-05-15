@@ -1,13 +1,14 @@
 "use client"
 
-import React, { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import {
   LineChart,
   Line,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip
+  Tooltip,
+  ResponsiveContainer
 } from 'recharts'
 import { ChartLine } from 'lucide-react'
 
@@ -27,32 +28,10 @@ interface DashboardChartProps {
 
 export default function DashboardChart({ chartData, timeRange }: DashboardChartProps) {
   const [isMounted, setIsMounted] = useState(false)
-  const [dimensions, setDimensions] = useState({ width: 0, height: 280 })
-  const containerRef = useRef<HTMLDivElement>(null)
   
   useEffect(() => {
     setIsMounted(true)
-    
-    // Set initial dimensions
-    if (containerRef.current) {
-      const { width } = containerRef.current.getBoundingClientRect()
-      setDimensions({ width, height: 280 })
-    }
-
-    // Handle resize
-    const handleResize = () => {
-      if (containerRef.current) {
-        const { width } = containerRef.current.getBoundingClientRect()
-        setDimensions({ width, height: 280 })
-      }
-    }
-
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
   }, [])
-
-  useEffect(() => {
-  }, [chartData, timeRange, dimensions])
   
   if (!isMounted) {
     return (
@@ -74,54 +53,51 @@ export default function DashboardChart({ chartData, timeRange }: DashboardChartP
     )
   }
 
-  // Use fixed width if dimensions not yet calculated
-  const chartWidth = dimensions.width || 800
-
   return (
-    <div ref={containerRef} style={{ width: '100%', height: 280 }}>
-      <LineChart 
-        width={chartWidth} 
-        height={280} 
-        data={chartData} 
-        margin={{ top: 5, right: 5, left: -20, bottom: 0 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.7} />
-        <XAxis
-          dataKey={timeRange === "1d" ? "formattedTime" : "formattedDate"}
-          stroke="var(--muted-foreground)"
-          fontSize={10}
-          tickLine={false}
-          axisLine={false}
-        />
-        <YAxis
-          stroke="var(--muted-foreground)"
-          fontSize={10}
-          tickLine={false}
-          axisLine={false}
-          domain={[0, 'dataMax + 2']}
-          allowDecimals={false}
-        />
-        <Tooltip
-          contentStyle={{
-            backgroundColor: 'var(--card)',
-            color: 'var(--foreground)',
-            border: '1px solid var(--border)',
-            borderRadius: '8px',
-            boxShadow: 'var(--shadow-md)',
-            fontSize: '12px'
-          }}
-          labelStyle={{ color: 'var(--muted-foreground)' }}
-          formatter={(value: any) => [`${value} images`, 'Processed']}
-        />
-        <Line
-          type="linear"
-          dataKey="count"
-          stroke="var(--primary)"
-          strokeWidth={2}
-          dot={{ fill: 'var(--primary)', r: 3 }}
-          activeDot={{ r: 5 }}
-        />
-      </LineChart>
+    <div className="h-[280px] w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart
+          data={chartData}
+          margin={{ top: 5, right: 5, left: -20, bottom: 0 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.7} />
+          <XAxis
+            dataKey={timeRange === "1d" ? "formattedTime" : "formattedDate"}
+            stroke="var(--muted-foreground)"
+            fontSize={10}
+            tickLine={false}
+            axisLine={false}
+          />
+          <YAxis
+            stroke="var(--muted-foreground)"
+            fontSize={10}
+            tickLine={false}
+            axisLine={false}
+            domain={[0, 'dataMax + 2']}
+            allowDecimals={false}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: 'var(--card)',
+              color: 'var(--foreground)',
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
+              boxShadow: 'var(--shadow-md)',
+              fontSize: '12px'
+            }}
+            labelStyle={{ color: 'var(--muted-foreground)' }}
+            formatter={(value: any) => [`${value} files`, 'Processed']}
+          />
+          <Line
+            type="linear"
+            dataKey="count"
+            stroke="var(--primary)"
+            strokeWidth={2}
+            dot={{ fill: 'var(--primary)', r: 3 }}
+            activeDot={{ r: 5 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   )
 }
