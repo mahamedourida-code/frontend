@@ -228,7 +228,7 @@ function PricingContent() {
 
   const navLinkClass = cn(
     navigationMenuTriggerStyle(),
-    "bg-transparent text-black transition-colors hover:bg-accent/50 focus:bg-transparent focus:text-black active:bg-transparent dark:text-primary-foreground"
+    "bg-transparent text-foreground transition-colors hover:bg-muted focus:bg-transparent active:bg-transparent"
   )
 
   const pricingContent = (
@@ -245,7 +245,7 @@ function PricingContent() {
                 <NavigationMenu>
                   <NavigationMenuList className="gap-1">
                     <NavigationMenuItem>
-                      <NavigationMenuTrigger className="bg-transparent text-black transition-colors hover:bg-accent/50 focus:bg-transparent focus:text-black active:bg-transparent dark:text-primary-foreground">
+                      <NavigationMenuTrigger className="bg-transparent text-foreground transition-colors hover:bg-muted focus:bg-transparent active:bg-transparent">
                         Solutions
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
@@ -282,7 +282,8 @@ function PricingContent() {
 
               <div className="hidden items-center gap-3 lg:flex">
                 <Button
-                  className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-lg transition-colors hover:bg-primary/90 hover:shadow-xl"
+                  size="sm"
+                  className="rounded-md"
                   onClick={() => {
                     setSignInRedirectPath("/pricing?from=signup")
                     setSignInOpen(true)
@@ -308,8 +309,8 @@ function PricingContent() {
         </nav>
         )}
 
-        <div className="mx-auto mt-14 max-w-4xl text-center">
-          <h1 className="mx-auto text-6xl font-semibold leading-none tracking-normal text-foreground sm:text-7xl lg:text-8xl">
+        <div className="mx-auto mt-12 max-w-4xl text-center">
+          <h1 className="mx-auto text-4xl font-semibold leading-tight tracking-normal text-foreground sm:text-5xl lg:text-6xl">
             Pricing
           </h1>
 
@@ -318,7 +319,7 @@ function PricingContent() {
               <span>Create a free account to get <span className="text-primary">{freeCreditsLabel}</span>.</span>
               <Button
                 size="sm"
-                className="rounded-full bg-primary px-5 text-primary-foreground hover:bg-primary/90"
+                className="rounded-md"
                 onClick={() => {
                   setSignInRedirectPath("/dashboard/client")
                   setSignInOpen(true)
@@ -337,7 +338,7 @@ function PricingContent() {
                 <p className="text-sm font-semibold text-muted-foreground">credits left</p>
               </div>
               <Button
-                className="rounded-full bg-primary px-6 text-primary-foreground hover:bg-primary/90"
+                className="rounded-md px-6"
                 onClick={() => document.getElementById("plans")?.scrollIntoView({ behavior: "smooth", block: "start" })}
               >
                 Upgrade
@@ -452,8 +453,9 @@ function PricingContent() {
                           <span className="text-5xl font-semibold tracking-normal text-primary">{plan.price_formatted}</span>
                           <span className="pb-1.5 text-sm font-semibold text-muted-foreground">{intervalLabel}</span>
                         </div>
-                        <div className="mt-8 rounded-md bg-primary p-5 text-primary-foreground shadow-sm">
-                          <p className="text-3xl font-semibold">{presentation.included}</p>
+                        <div className="mt-8 rounded-md border border-primary/20 bg-primary p-4 text-primary-foreground shadow-sm">
+                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground/75">Included volume</p>
+                          <p className="mt-2 text-xl font-semibold leading-tight">{presentation.included}</p>
                         </div>
                         <Button
                           className={cn(
@@ -506,7 +508,7 @@ function PricingContent() {
                 companyLogos.map((imgNum) => (
                   <Card
                     key={`${setIndex}-${imgNum}`}
-                    className="h-[80px] w-[120px] flex-shrink-0 border border-border bg-card shadow-[0_14px_35px_rgb(0 0 0 / 0.08)] transition-all duration-300 hover:border-primary/50 hover:shadow-md"
+                    className="h-[80px] w-[120px] flex-shrink-0 border border-border bg-card shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md"
                   >
                     <CardContent className="flex h-full w-full items-center justify-center p-2">
                       <img

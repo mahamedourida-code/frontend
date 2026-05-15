@@ -376,11 +376,14 @@ export default function Home() {
   return (
     <div className="min-h-screen relative bg-transparent">
       {/* Navigation Bar */}
-      <nav className="fixed inset-x-0 top-0 z-50 h-16 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        <div className="mx-auto flex h-full max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
+      <nav className="fixed left-0 right-0 top-0 z-50 pt-3 backdrop-blur-2xl lg:pt-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between rounded-md border border-border bg-background/82 p-2 shadow-sm backdrop-blur-2xl lg:p-3">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <AppLogo />
+              <NextLink href="/" aria-label="AxLiner home">
+                <AppLogo />
+              </NextLink>
             </div>
 
             {/* Desktop Navigation Items - Hidden on Mobile */}
@@ -389,7 +392,7 @@ export default function Home() {
                 <NavigationMenuList className="gap-1">
                   {/* Solutions Dropdown */}
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger className="bg-transparent text-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                    <NavigationMenuTrigger className="bg-transparent text-foreground transition-colors hover:bg-muted">
                       Solutions
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
@@ -400,7 +403,7 @@ export default function Home() {
                   <NavigationMenuItem>
                     <NavigationMenuLink
                       href="/pricing"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-accent hover:text-accent-foreground")}
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-muted")}
                     >
                       Pricing
                     </NavigationMenuLink>
@@ -409,7 +412,7 @@ export default function Home() {
                   <NavigationMenuItem>
                     <NavigationMenuLink
                       href="/blogs"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-accent hover:text-accent-foreground")}
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-muted")}
                     >
                       Blogs
                     </NavigationMenuLink>
@@ -418,7 +421,7 @@ export default function Home() {
                   {/* How AxLiner's Built */}
                   <NavigationMenuItem>
                     <button
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-accent hover:text-accent-foreground")}
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-muted")}
                       onClick={() => scrollToSection('ai-engine')}
                     >
                       How AxLiner's Built
@@ -428,7 +431,7 @@ export default function Home() {
                   {/* Benchmarks */}
                   <NavigationMenuItem>
                     <button
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-accent hover:text-accent-foreground")}
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-muted")}
                       onClick={() => scrollToSection('benchmarks')}
                     >
                       Benchmarks
@@ -439,7 +442,7 @@ export default function Home() {
             </div>
 
             {/* Sign In & Try for Free Buttons - Desktop */}
-            <div className="hidden items-center gap-2 lg:flex">
+            <div className="hidden items-center gap-3 lg:flex">
               <ThemeToggle />
               {isAuthenticated ? (
                 <Button
@@ -450,15 +453,13 @@ export default function Home() {
                 </Button>
               ) : (
                 <>
-                  <Button
-                    size="sm"
-                    onClick={() => openSignInModal("/pricing?from=signup")}
-                  >
+                  <Button size="sm" className="rounded-md" onClick={() => openSignInModal("/pricing?from=signup")}>
                     Sign Up
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
+                    className="rounded-md"
                     onClick={() => openSignInModal("/dashboard/client")}
                   >
                     Sign in
@@ -466,6 +467,7 @@ export default function Home() {
                 </>
               )}
             </div>
+          </div>
         </div>
       </nav>
 
@@ -822,13 +824,13 @@ export default function Home() {
                 <BenchmarkAccuracyChart />
 
                 {/* Performance Metrics Table */}
-                <Card className="border-border bg-card/80 shadow-sm backdrop-blur-md" data-animate="stagger">
+                <Card className="border-border bg-card shadow-sm" data-animate="stagger">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg font-semibold">Comprehensive Performance Metrics</CardTitle>
                     <p className="text-sm text-muted-foreground">Average across all test scenarios</p>
                   </CardHeader>
                   <CardContent>
-                      <div className="overflow-hidden rounded-lg border border-border bg-background/80 backdrop-blur-md">
+                      <div className="overflow-hidden rounded-md border border-border bg-background">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-border/50 bg-muted/30">
@@ -963,22 +965,13 @@ export default function Home() {
                       ["03", "Schema alignment", "Rows, headers, merged cells, totals, and column boundaries are rebuilt before export so the output behaves like a spreadsheet."],
                       ["04", "Batch orchestration", "Redis-backed jobs, deterministic file metadata, and retry-safe workers keep multi-file processing recoverable."],
                     ].map(([step, title, copy]) => (
-                      <div key={step} className="grid gap-4 border-b border-border p-5 last:border-b-0 sm:grid-cols-[72px_1fr_auto] sm:items-center">
+                      <div key={step} className="grid gap-4 border-b border-border p-5 last:border-b-0 sm:grid-cols-[72px_1fr] sm:items-center">
                         <span className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border bg-background text-sm font-semibold text-primary">
                           {step}
                         </span>
                         <div>
                           <p className="font-semibold text-foreground">{title}</p>
                           <p className="mt-1 text-sm leading-6 text-muted-foreground">{copy}</p>
-                        </div>
-                        <div className="hidden h-12 w-28 items-end gap-1 sm:flex">
-                          {[42, 58, 48, 74, 62, 88, 72].map((height, index) => (
-                            <span
-                              key={`${step}-${index}`}
-                              className="w-full rounded-t-sm bg-primary/70"
-                              style={{ height: `${height}%` }}
-                            />
-                          ))}
                         </div>
                       </div>
                     ))}
@@ -992,29 +985,33 @@ export default function Home() {
                       <CardDescription>Compact signals inspired by operator dashboards, not generic AI cards.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-5 p-5">
-                      {[
-                        ["Layout tokens", "visual patches", 82],
-                        ["Table confidence", "cell graph", 94],
-                        ["Export readiness", "xlsx schema", 88],
-                      ].map(([label, sublabel, value]) => (
-                        <div key={label as string}>
-                          <div className="mb-2 flex items-center justify-between gap-3">
-                            <div>
-                              <p className="text-sm font-semibold text-foreground">{label}</p>
-                              <p className="text-xs text-muted-foreground">{sublabel}</p>
-                            </div>
-                            <p className="text-sm font-semibold text-primary">{value}%</p>
-                          </div>
-                          <div className="h-2 overflow-hidden rounded-md bg-muted">
-                            <div className="h-full rounded-md bg-primary" style={{ width: `${value}%` }} />
-                          </div>
-                        </div>
-                      ))}
                       <div className="rounded-md border border-border bg-background p-4">
-                        <div className="grid grid-cols-6 gap-1">
-                          {[52, 64, 48, 78, 88, 70, 92, 76, 84, 58, 68, 96].map((height, index) => (
-                            <span key={index} className="rounded-sm bg-primary/75" style={{ height: `${height}px` }} />
+                        <div className="grid grid-cols-[110px_1fr_auto] gap-3 border-b border-border py-3 text-sm first:pt-0">
+                          <span className="font-semibold text-foreground">Vision</span>
+                          <span className="text-muted-foreground">page patches, rotation, noise cleanup</span>
+                          <span className="font-semibold text-primary">ready</span>
+                        </div>
+                        <div className="grid grid-cols-[110px_1fr_auto] gap-3 border-b border-border py-3 text-sm">
+                          <span className="font-semibold text-foreground">Language</span>
+                          <span className="text-muted-foreground">handwriting tokens and table prompts</span>
+                          <span className="font-semibold text-primary">tuned</span>
+                        </div>
+                        <div className="grid grid-cols-[110px_1fr_auto] gap-3 py-3 text-sm">
+                          <span className="font-semibold text-foreground">Export</span>
+                          <span className="text-muted-foreground">cell graph to spreadsheet schema</span>
+                          <span className="font-semibold text-primary">xlsx</span>
+                        </div>
+                      </div>
+                      <div className="rounded-md border border-border bg-muted p-4">
+                        <div className="flex items-end gap-1.5">
+                          {[36, 58, 44, 78, 70, 96, 66, 84].map((height, index) => (
+                            <span key={index} className="w-full rounded-sm bg-primary/75" style={{ height: `${height}px` }} />
                           ))}
+                        </div>
+                        <div className="mt-4 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                          <span>image</span>
+                          <span>tokens</span>
+                          <span>xlsx</span>
                         </div>
                       </div>
                     </CardContent>
