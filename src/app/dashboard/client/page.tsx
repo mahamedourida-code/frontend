@@ -34,7 +34,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { wakeUpBackendSilently } from "@/lib/backend-health"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
-import { buildDownloadUrl, buildMessengerShareUrl, buildOfficeViewerUrl } from "@/lib/public-config"
+import { buildDownloadUrl, buildMessengerShareUrl } from "@/lib/public-config"
 import {
   createPdfFirstPageScreenshot,
   getPdfPageCount,
@@ -1112,12 +1112,16 @@ Best regards`
     downloadFile(file.file_id)
   }
 
-  const handleEditResultFile = (file: any) => {
+  const handleEditResultFile = (file: any, index = 0) => {
     if (!file?.file_id) {
       toast.error('Unable to edit: File ID is missing')
       return
     }
-    window.open(buildOfficeViewerUrl(file.file_id), '_blank')
+    const matchedPreview = getResultInputPreviewUrl(file, index)
+    if (matchedPreview) setFirstImageUrl(matchedPreview)
+    setTablePreviewData([])
+    setTextPreview('')
+    void fetchTablePreview(file.file_id)
   }
 
   
@@ -1133,7 +1137,7 @@ Best regards`
   const isComplete = status === 'completed' && resultFiles && resultFiles.length > 0
   const isTextOutput = outputMode === 'text'
   const uploadedSizeMb = uploadedFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024)
-  const processLabel = isTextOutput ? 'Extract text' : 'Convert to Excel'
+  const processLabel = isTextOutput ? 'Extract text' : 'Convert files'
   const creditEstimate = uploadedFiles.reduce((total, file, index) => {
     return total + (isPdfFile(file) ? (pdfPageCounts[index] || 1) : 1)
   }, 0)
@@ -1141,11 +1145,9 @@ Best regards`
     ? 'Failed'
     : isComplete
       ? 'Ready'
-      : isUploading
-        ? 'Uploading'
-        : status === 'queued'
+      : status === 'queued'
           ? 'Queued'
-          : isProcessing
+          : isUploading || isProcessing
             ? 'Processing'
             : 'Added'
   const creditBanner: WorkspaceBanner | null = noCredits && !isProcessing
@@ -1159,7 +1161,7 @@ Best regards`
     : null
 
   return (
-    <DashboardShell activeItem="process" title="Process Images" eyebrow="Batch" user={user}>
+    <DashboardShell activeItem="process" title="Convert Files" eyebrow="Batch" user={user}>
       <ConversionWorkspace
         stage={workspaceStage}
         banner={workspaceBanner ?? creditBanner}

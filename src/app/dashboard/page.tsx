@@ -408,7 +408,7 @@ export default function DashboardPage() {
       <div className="mb-2 flex items-center justify-between space-y-2">
         <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
         <div className="flex items-center space-x-2">
-          <Button onClick={() => router.push("/dashboard/client")}>Process Images</Button>
+          <Button onClick={() => router.push("/dashboard/client")}>Convert Files</Button>
         </div>
       </div>
 
@@ -510,7 +510,7 @@ export default function DashboardPage() {
                     onClick={() => router.push("/dashboard/client")}
                     className="mt-4"
                   >
-                    Process Images
+                    Convert Files
                   </Button>
                 </div>
               </CardContent>

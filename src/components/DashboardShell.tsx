@@ -127,10 +127,10 @@ export function DashboardShell({
   }, [processingState, recoverableJob])
 
   const nextActionHref = activeItem === "process" ? "/history" : "/dashboard/client"
-  const nextActionLabel = activeItem === "process" ? "History" : "Process Images"
+  const nextActionLabel = activeItem === "process" ? "History" : "Convert Files"
   const topNav = [
     { label: "Overview", href: "/dashboard", active: activeItem === "overview" },
-    { label: "Process Images", href: "/dashboard/client", active: activeItem === "process" },
+    { label: "Convert Files", href: "/dashboard/client", active: activeItem === "process" },
     { label: "Plans", href: "/pricing", active: activeItem === "pricing" },
   ]
 

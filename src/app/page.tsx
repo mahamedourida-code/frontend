@@ -1200,7 +1200,7 @@ export default function Home() {
               <div>
                 <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/80">Product</h4>
                 <ul className="mt-5 space-y-3 text-sm font-semibold text-primary-foreground/90">
-                  <li><NextLink href="/dashboard/client" className="transition-colors hover:text-primary-foreground">Process images</NextLink></li>
+                  <li><NextLink href="/dashboard/client" className="transition-colors hover:text-primary-foreground">Convert files</NextLink></li>
                   <li><NextLink href="/history" className="transition-colors hover:text-primary-foreground">History</NextLink></li>
                   <li><NextLink href="/dashboard/settings" className="transition-colors hover:text-primary-foreground">Billing</NextLink></li>
                   <li><a href="#security" className="transition-colors hover:text-primary-foreground">Security</a></li>

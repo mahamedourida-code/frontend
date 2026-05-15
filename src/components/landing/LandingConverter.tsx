@@ -1123,7 +1123,7 @@ export default function LandingConverter() {
     if (preview?.text) {
       const lines = preview.text.split(/\r?\n/).filter(Boolean).slice(0, 5);
       return (
-        <div className="flex h-full min-h-[96px] flex-col gap-1.5 overflow-hidden rounded-[0.95rem] border border-primary/10 bg-white p-3">
+        <div className="flex h-full min-h-[96px] flex-col gap-1.5 overflow-hidden rounded-md border border-border bg-white p-3">
           {lines.length > 0 ? lines.map((line, index) => (
             <span key={index} className="truncate text-[10px] font-semibold text-gray-600">
               {line}
@@ -1138,7 +1138,7 @@ export default function LandingConverter() {
     const rows = preview?.table?.length ? preview.table.slice(0, 5) : [];
 
     return (
-      <div className="h-full min-h-[96px] overflow-hidden rounded-[0.95rem] border border-primary/10 bg-white">
+      <div className="h-full min-h-[96px] overflow-hidden rounded-md border border-border bg-white">
         <div className="grid grid-cols-4 bg-primary">
           {Array.from({ length: 4 }).map((_, index) => (
             <span key={index} className="h-3 border-r border-white/20 last:border-r-0" />
@@ -1226,7 +1226,7 @@ export default function LandingConverter() {
               </div>
             )}
               <div ref={heroImageRef} className={`relative mx-auto ${resultFiles.length > 0 ? 'w-full max-w-none' : 'w-full max-w-[1260px]'}`}>
-                <div className={resultFiles.length === 0 ? "grid items-stretch gap-8" : "relative w-full"}>
+                <div className={resultFiles.length === 0 && !isProcessing ? "grid items-stretch gap-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(440px,1.08fr)]" : "relative w-full"}>
                 <div className="relative w-full space-y-5 rounded-md border border-border bg-card p-5 text-foreground shadow-sm sm:p-6 lg:p-7">
                   {latestRecoverableJob && !isProcessing && (
                     <div className="rounded-md border border-border bg-muted p-4 shadow-sm">
@@ -1249,7 +1249,7 @@ export default function LandingConverter() {
                     </div>
                   )}
                   {/* Upload Dropzone - Hide when showing results */}
-                  {!processingComplete && resultFiles.length === 0 && (
+                  {!isProcessing && !processingComplete && resultFiles.length === 0 && (
                     <div className="space-y-3">
                       <div
                         onClick={() => document.getElementById('file-upload-landing')?.click()}
@@ -1438,20 +1438,6 @@ export default function LandingConverter() {
                           </Button>
                         </div>
                       </div>
-
-                      {isProcessing && !processingComplete && (
-                        <div className="mb-5 rounded-md border border-border bg-muted p-5">
-                          <div className="flex items-start gap-3">
-                            <InlineSpinner className="mt-1 h-5 w-5 shrink-0 text-primary" />
-                            <div>
-                              <p className="text-sm font-semibold text-foreground">Converting your batch</p>
-                              <p className="mt-1 text-sm font-medium leading-6 text-foreground/70">
-                                This may take {conversionEstimateLabel} based on {activeFileCount} file{activeFileCount > 1 ? 's' : ''}.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
 
                       {resultFiles.length > 0 && (
                         <div className="space-y-4">
@@ -1658,12 +1644,6 @@ export default function LandingConverter() {
                         </div>
                       )}
 
-                      {isProcessing && !processingComplete && resultFiles.length === 0 && (
-                        <div className="mt-5 flex items-center justify-center gap-2 rounded-md border border-border bg-card p-4 text-sm font-medium text-muted-foreground shadow-sm">
-                          <InlineSpinner className="h-4 w-4" />
-                          <span>Converting. This may take {conversionEstimateLabel}.</span>
-                        </div>
-                      )}
                     </div>
                   )}
 
@@ -1691,7 +1671,7 @@ export default function LandingConverter() {
                   )}
                 </div>
 
-                {resultFiles.length === 0 && (
+                {resultFiles.length === 0 && !isProcessing && (
                   <div className="relative flex min-h-[560px] flex-col justify-between overflow-hidden rounded-md border border-border bg-card p-5 text-foreground shadow-sm sm:p-6 lg:p-7">
                     <div className="flex items-center justify-between gap-4 px-1">
                       <div>
@@ -1703,10 +1683,10 @@ export default function LandingConverter() {
                       </span>
                     </div>
 
-                    <div className="mt-6 grid flex-1 gap-6 sm:grid-cols-2">
+                    <div className="mt-6 grid flex-1 gap-5 sm:grid-cols-2">
                       <figure className="flex min-h-[470px] flex-col">
                         <figcaption className="mb-3 px-1 text-sm font-semibold text-muted-foreground">Before</figcaption>
-                        <div className="relative flex flex-1 items-center justify-center">
+                        <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-md border border-border bg-background p-3">
                           <Image
                             src="/b.webp"
                             alt="Handwritten table before conversion"
@@ -1720,7 +1700,7 @@ export default function LandingConverter() {
 
                       <figure className="flex min-h-[470px] flex-col">
                         <figcaption className="mb-3 px-1 text-sm font-semibold text-muted-foreground">After</figcaption>
-                        <div className="relative flex flex-1 items-center justify-center">
+                        <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-md border border-border bg-background p-3">
                           <Image
                             src="/bb.png"
                             alt="Spreadsheet output after conversion"
@@ -1746,20 +1726,20 @@ export default function LandingConverter() {
             if (event.target === event.currentTarget) setSelectedUploadPreview(null);
           }}
         >
-          <div className="relative w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/60 bg-white/85 p-4 shadow-[0_36px_110px_rgba(17,24,39,0.34)] backdrop-blur-2xl">
+          <div className="relative w-full max-w-4xl overflow-hidden rounded-md border border-border bg-card p-4 shadow-xl">
             <div className="mb-3 flex items-center justify-between gap-3">
               <p className="truncate text-sm font-semibold text-foreground">{selectedUploadPreview.name}</p>
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => setSelectedUploadPreview(null)}
-                className="h-9 rounded-full border-primary/20 bg-white/75 px-3 text-primary"
+                className="h-9 rounded-md border-border bg-background px-3 text-primary"
                 aria-label="Close preview"
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            <div className="flex max-h-[78vh] items-center justify-center overflow-hidden rounded-[1.35rem] bg-white">
+            <div className="flex max-h-[78vh] items-center justify-center overflow-hidden rounded-md bg-white">
               <img
                 src={selectedUploadPreview.url}
                 alt={selectedUploadPreview.name}
@@ -1780,10 +1760,7 @@ export default function LandingConverter() {
             }
           }}
         >
-          <div className="relative w-full max-w-[1240px] rounded-[1.5rem] bg-background/90 p-3 shadow-[0_36px_110px_rgba(17,24,39,0.34)] backdrop-blur-2xl sm:p-4">
-            <p className="absolute left-5 top-4 z-10 max-w-[70%] truncate text-sm font-semibold text-foreground">
-              {cleanFilename(selectedResult.filename)}
-            </p>
+          <div className="relative w-full max-w-[1240px] rounded-md border border-border bg-card p-3 shadow-xl sm:p-4">
             <Button
               size="sm"
               variant="outline"
@@ -1791,13 +1768,13 @@ export default function LandingConverter() {
                 setComparisonOpen(false);
                 setEditingCell(null);
               }}
-              className="absolute right-4 top-3 z-10 h-9 rounded-full border-primary/16 bg-white/70 px-3 text-primary"
+              className="absolute right-4 top-4 z-10 h-9 rounded-md border-border bg-background px-3 text-primary"
               aria-label="Close comparison"
             >
               <X className="h-4 w-4" />
             </Button>
 
-            <div className="grid max-h-[84vh] gap-3 overflow-auto pt-10 lg:grid-cols-[0.92fr_1.08fr]">
+            <div className="grid max-h-[84vh] gap-3 overflow-auto lg:grid-cols-[0.92fr_1.08fr]">
               <div
                 role="button"
                 tabIndex={0}
@@ -1808,7 +1785,7 @@ export default function LandingConverter() {
                     setSelectedUploadPreview({ url: selectedImageUrl, name: selectedResult?.filename || 'Input preview' });
                   }
                 }}
-                className="flex min-h-[420px] cursor-zoom-in items-center justify-center overflow-hidden rounded-[1.15rem] bg-white/72 outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                className="flex min-h-[420px] cursor-zoom-in items-center justify-center overflow-hidden rounded-md border border-border bg-white outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 {selectedImageUrl ? (
                   <img
@@ -1823,7 +1800,7 @@ export default function LandingConverter() {
                 )}
               </div>
 
-              <div className="max-h-[74vh] min-h-[420px] overflow-auto rounded-[1.15rem] bg-white">
+              <div className="max-h-[74vh] min-h-[420px] overflow-auto rounded-md border border-border bg-white">
                 {selectedPreview?.loading ? (
                   <div className="flex min-h-[420px] items-center justify-center gap-2 text-sm font-semibold text-muted-foreground">
                     <InlineSpinner className="h-4 w-4 text-primary" />

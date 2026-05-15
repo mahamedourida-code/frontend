@@ -31,7 +31,7 @@ interface WorkspaceSidebarProps {
 
 const sidebarItems = [
   { key: "overview" as const, label: "Overview", icon: Activity, href: "/dashboard" },
-  { key: "process" as const, label: "Process Images", icon: Upload, href: "/dashboard/client" },
+  { key: "process" as const, label: "Convert Files", icon: Upload, href: "/dashboard/client" },
   { key: "history" as const, label: "History", icon: History, href: "/history" },
   { key: "pricing" as const, label: "Pricing", icon: BillingSeal, href: "/pricing" },
   { key: "settings" as const, label: "Settings", icon: Settings, href: "/dashboard/settings" },
@@ -47,12 +47,9 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
         <div className="p-2">
           <Link href="/" aria-label="Go to AxLiner homepage">
             <div className="flex h-12 items-center gap-2 rounded-md px-2 text-start hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <AppIcon size={18} className="rounded-sm" />
-              </div>
+              <AppIcon size={28} className="shrink-0" />
               <div className="grid flex-1 text-start text-sm leading-tight">
                 <span className="truncate font-semibold">AxLiner</span>
-                <span className="truncate text-xs text-muted-foreground">Excel OCR workspace</span>
               </div>
             </div>
           </Link>

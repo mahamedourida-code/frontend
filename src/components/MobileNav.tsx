@@ -96,7 +96,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       show: isAuthenticated
     },
     {
-      label: "Process Images",
+      label: "Convert Files",
       href: "/dashboard/client",
       icon: Upload,
       show: isAuthenticated
@@ -165,7 +165,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
   }> = isAuthenticated
     ? [
         { label: "Dashboard", icon: LayoutDashboard, active: pathname === "/dashboard", onClick: () => handleNavigation("/dashboard") },
-        { label: "Process", icon: Upload, active: pathname === "/dashboard/client", onClick: () => handleNavigation("/dashboard/client") },
+        { label: "Convert", icon: Upload, active: pathname === "/dashboard/client", onClick: () => handleNavigation("/dashboard/client") },
         { label: "History", icon: History, active: pathname === "/history", onClick: () => handleNavigation("/history") },
       ]
     : [

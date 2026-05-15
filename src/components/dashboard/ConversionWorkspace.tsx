@@ -93,10 +93,10 @@ type ConversionWorkspaceProps = {
   onShareAll: () => void
   onDownloadFile: (file: ResultFile) => void
   onDownloadAll: () => void
-  onEditFile: (file: ResultFile) => void
+  onEditFile: (file: ResultFile, index?: number) => void
 }
 
-const stages: WorkspaceStage[] = ["Added", "Uploading", "Queued", "Processing", "Ready"]
+const stages: WorkspaceStage[] = ["Added", "Queued", "Processing", "Ready"]
 
 function formatBytes(bytes: number) {
   if (!bytes) return "0 MB"
@@ -114,7 +114,7 @@ function StageRail({ stage }: { stage: WorkspaceStage }) {
           <span
             key={item}
             className={cn(
-              "inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-bold",
+              "inline-flex h-8 items-center gap-1.5 rounded-md border px-3 text-xs font-bold",
               active && "border-primary bg-primary text-primary-foreground",
               done && "border-border bg-card/70 text-primary",
               !active && !done && "border-border bg-card/50 text-muted-foreground",
@@ -128,7 +128,7 @@ function StageRail({ stage }: { stage: WorkspaceStage }) {
         )
       })}
       {stage === "Failed" && (
-        <span className="inline-flex h-8 items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-3 text-xs font-bold text-rose-700">
+        <span className="inline-flex h-8 items-center gap-1.5 rounded-md border border-rose-200 bg-rose-50 px-3 text-xs font-bold text-rose-700">
           <AlertCircle className="h-3.5 w-3.5" />
           Failed
         </span>
@@ -143,7 +143,7 @@ function WorkspaceErrorBanner({ banner, onDismiss }: { banner?: WorkspaceBanner 
   return (
     <div
       className={cn(
-        "mb-4 flex flex-col gap-3 rounded-xl border p-4 shadow-[0_16px_42px_rgb(0 0 0 / 0.08)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between",
+        "mb-4 flex flex-col gap-3 rounded-md border p-4 shadow-sm backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between",
         banner.tone === "error" && "border-rose-200 bg-rose-50/88 text-rose-950",
         banner.tone === "warning" && "border-amber-200 bg-amber-50/88 text-amber-950",
         (!banner.tone || banner.tone === "info") && "border-border bg-card/70 text-foreground"
@@ -158,12 +158,12 @@ function WorkspaceErrorBanner({ banner, onDismiss }: { banner?: WorkspaceBanner 
       </div>
       <div className="flex items-center gap-2">
         {banner.actionLabel && banner.onAction ? (
-          <Button onClick={banner.onAction} className="h-10 rounded-full bg-primary px-4 text-primary-foreground hover:bg-primary/90">
+          <Button onClick={banner.onAction} className="h-10 rounded-md bg-primary px-4 text-primary-foreground hover:bg-primary/90">
             {banner.actionLabel}
           </Button>
         ) : null}
         {onDismiss ? (
-          <Button variant="ghost" size="icon" onClick={onDismiss} className="h-10 w-10 rounded-full">
+          <Button variant="ghost" size="icon" onClick={onDismiss} className="h-10 w-10 rounded-md">
             <X className="h-4 w-4" />
           </Button>
         ) : null}
@@ -184,7 +184,7 @@ function ResumeBatchBanner({
   if (!latestRecoverableJob) return null
 
   return (
-    <div className="mb-4 flex flex-col gap-3 rounded-xl border border-primary bg-primary p-4 text-primary-foreground shadow-[0_16px_42px_rgb(0 0 0 / 0.14)] sm:flex-row sm:items-center sm:justify-between">
+    <div className="mb-4 flex flex-col gap-3 rounded-md border border-primary bg-primary p-4 text-primary-foreground shadow-sm sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
         <Loader2 className="h-5 w-5 text-primary-foreground" />
         <div>
@@ -197,7 +197,7 @@ function ResumeBatchBanner({
       <Button
         onClick={onContinueLatestJob}
         disabled={recoveryLoading}
-        className="h-10 rounded-full border border-white/20 bg-background px-4 text-primary hover:bg-card/90"
+        className="h-10 rounded-md border border-white/20 bg-background px-4 text-primary hover:bg-card/90"
       >
         {recoveryLoading ? "Resuming..." : "Continue latest job"}
       </Button>
@@ -223,7 +223,7 @@ export function UploadDropzone({
       onDragLeave={onDragLeave}
       onDrop={onDrop}
       className={cn(
-        "relative overflow-hidden rounded-xl border border-dashed transition-all duration-200",
+        "relative overflow-hidden rounded-md border border-dashed transition-all duration-200",
         isDragging ? "border-primary bg-card/85 scale-[0.997]" : "border-border bg-card/50 hover:border-primary/50"
       )}
     >
@@ -236,7 +236,7 @@ export function UploadDropzone({
         <label
           htmlFor="workspace-file-upload"
           className={cn(
-            "mt-5 inline-flex h-12 cursor-pointer items-center justify-center rounded-full bg-primary px-6 text-sm font-bold text-primary-foreground shadow-[0_16px_36px_rgb(0 0 0 / 0.14)] transition hover:bg-primary/90",
+            "mt-5 inline-flex h-12 cursor-pointer items-center justify-center rounded-md bg-primary px-6 text-sm font-bold text-primary-foreground shadow-sm transition hover:bg-primary/90",
             isProcessing && "pointer-events-none opacity-55"
           )}
         >
@@ -274,7 +274,7 @@ export function SelectedFilesTray({
 
   return (
     <>
-    <div className="rounded-xl border border-border bg-card/50 p-3 backdrop-blur-xl">
+    <div className="rounded-md border border-border bg-card/50 p-3 backdrop-blur-xl">
       <div className="mb-3 flex items-center justify-between gap-3">
         <p className="text-sm font-semibold text-foreground">Selected files</p>
         <Button
@@ -282,7 +282,7 @@ export function SelectedFilesTray({
           variant="ghost"
           onClick={onClearFiles}
           disabled={isProcessing}
-          className="h-8 rounded-full px-3 text-primary"
+          className="h-8 rounded-md px-3 text-primary"
         >
           Clear
         </Button>
@@ -325,7 +325,7 @@ export function SelectedFilesTray({
                     setSelectedPreview(null)
                   }}
                   disabled={isProcessing}
-                  className="absolute right-1 top-1 h-7 w-7 rounded-full bg-card/88 text-primary opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-accent group-hover:opacity-100"
+                  className="absolute right-1 top-1 h-7 w-7 rounded-md bg-card/88 text-primary opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-accent group-hover:opacity-100"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
@@ -333,7 +333,7 @@ export function SelectedFilesTray({
               <div className="min-w-0">
                 <p className="truncate text-xs font-bold text-foreground">{file.name}</p>
                 <p className="mt-0.5 truncate text-[11px] font-semibold text-muted-foreground">
-                  {pdf ? `${pageCount ? `${pageCount} page${pageCount === 1 ? "" : "s"}` : "PDF"}` : "Image"} · {formatBytes(file.size)}
+                  {pdf ? `${pageCount ? `${pageCount} page${pageCount === 1 ? "" : "s"}` : "PDF"}` : "Image"} - {formatBytes(file.size)}
                 </p>
               </div>
             </div>
@@ -348,14 +348,14 @@ export function SelectedFilesTray({
             if (event.target === event.currentTarget) setSelectedPreview(null)
           }}
         >
-          <div className="w-full max-w-4xl overflow-hidden rounded-xl border border-white/60 bg-card/88 p-4 shadow-[0_36px_110px_rgba(17,24,39,0.34)] backdrop-blur-2xl">
+          <div className="w-full max-w-4xl overflow-hidden rounded-md border border-border bg-card p-4 shadow-xl">
             <div className="mb-3 flex items-center justify-between gap-3">
               <p className="truncate text-sm font-semibold text-foreground">{selectedPreview.name}</p>
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => setSelectedPreview(null)}
-                className="h-9 rounded-full border-primary/20 bg-card/75 px-3 text-primary"
+                className="h-9 rounded-md border-border bg-background px-3 text-primary"
                 aria-label="Close preview"
               >
                 <X className="h-4 w-4" />
@@ -387,14 +387,14 @@ export function JobProgressPanel({
   const active = isUploading || isProcessing || isComplete || stage === "Failed"
 
   return (
-    <div className="rounded-xl border border-border bg-card/50 p-4 backdrop-blur-xl">
+    <div className="rounded-md border border-border bg-card/50 p-4 backdrop-blur-xl">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Status</p>
           <p className="mt-1 text-lg font-semibold text-foreground">{stage}</p>
         </div>
         {active ? (
-          <div className="rounded-full border border-border bg-card/70 px-3 py-1 text-xs font-bold text-primary">
+          <div className="rounded-md border border-border bg-card/70 px-3 py-1 text-xs font-bold text-primary">
             {processingTime}s
           </div>
         ) : null}
@@ -404,12 +404,12 @@ export function JobProgressPanel({
         <div className="mt-4 space-y-3">
           <Progress value={progressValue} className="h-2" />
           <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
-            <span>{isUploading ? "Uploading" : isComplete ? "Ready" : stage === "Failed" ? "Failed" : "Processing"}</span>
+            <span>{isComplete ? "Ready" : stage === "Failed" ? "Failed" : "Converting"}</span>
             {progress?.total_images ? <span>{progress.processed_images || 0}/{progress.total_images} files</span> : null}
           </div>
         </div>
       ) : (
-        <div className="mt-4 h-2 rounded-full bg-muted" />
+        <div className="mt-4 h-2 rounded-md bg-muted" />
       )}
     </div>
   )
@@ -430,15 +430,15 @@ export function ResultPreviewPanel({
 
   if (!isComplete || !resultFiles?.length) {
     return (
-      <div className="flex min-h-[300px] flex-col justify-between rounded-xl border border-border bg-card/50 p-4 backdrop-blur-xl">
+      <div className="flex min-h-[300px] flex-col justify-between rounded-md border border-border bg-card/50 p-4 backdrop-blur-xl">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Result</p>
           <p className="mt-2 text-lg font-semibold text-foreground">Preview appears here</p>
         </div>
         <div className="grid gap-2">
-          <div className="h-9 rounded-xl bg-card/65" />
-          <div className="h-9 w-4/5 rounded-xl bg-card/60" />
-          <div className="h-9 w-3/5 rounded-xl bg-card/50" />
+          <div className="h-9 rounded-md bg-card/65" />
+          <div className="h-9 w-4/5 rounded-md bg-card/60" />
+          <div className="h-9 w-3/5 rounded-md bg-card/50" />
         </div>
       </div>
     )
@@ -446,7 +446,7 @@ export function ResultPreviewPanel({
 
   return (
     <>
-    <div className="rounded-xl border border-border bg-card/50 p-3 backdrop-blur-xl">
+    <div className="rounded-md border border-border bg-card/50 p-3 backdrop-blur-xl">
       <div className="grid gap-3 xl:grid-cols-2">
         {firstImageUrl ? (
           <div>
@@ -505,14 +505,14 @@ export function ResultPreviewPanel({
             if (event.target === event.currentTarget) setImagePreviewOpen(false)
           }}
         >
-          <div className="w-full max-w-4xl overflow-hidden rounded-xl border border-white/60 bg-card/88 p-4 shadow-[0_36px_110px_rgba(17,24,39,0.34)] backdrop-blur-2xl">
+          <div className="w-full max-w-4xl overflow-hidden rounded-md border border-border bg-card p-4 shadow-xl">
             <div className="mb-3 flex items-center justify-between gap-3">
               <p className="truncate text-sm font-semibold text-foreground">{resultFiles[0]?.filename || "Input preview"}</p>
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => setImagePreviewOpen(false)}
-                className="h-9 rounded-full border-primary/20 bg-card/75 px-3 text-primary"
+                className="h-9 rounded-md border-border bg-background px-3 text-primary"
                 aria-label="Close preview"
               >
                 <X className="h-4 w-4" />
@@ -534,6 +534,9 @@ export function ResultActions({
   isTextOutput,
   isSaving,
   isSaved,
+  tablePreviewData,
+  textPreview,
+  firstImageUrl,
   onReset,
   onSaveToHistory,
   onShareFile,
@@ -548,6 +551,9 @@ export function ResultActions({
   | "isTextOutput"
   | "isSaving"
   | "isSaved"
+  | "tablePreviewData"
+  | "textPreview"
+  | "firstImageUrl"
   | "onReset"
   | "onSaveToHistory"
   | "onShareFile"
@@ -556,13 +562,15 @@ export function ResultActions({
   | "onDownloadAll"
   | "onEditFile"
 >) {
+  const [comparisonFile, setComparisonFile] = useState<ResultFile | null>(null)
   if (!resultFiles?.length) return null
 
   return (
+    <>
     <div className="space-y-3">
       {isComplete ? (
         <div className="flex flex-wrap items-center gap-2">
-          <Button onClick={onReset} className="h-10 gap-2 rounded-full bg-primary px-4 text-primary-foreground shadow-sm hover:bg-primary/90">
+          <Button onClick={onReset} className="h-10 gap-2 rounded-md bg-primary px-4 text-primary-foreground shadow-sm hover:bg-primary/90">
             <RotateCcw className="h-4 w-4" />
             New batch
           </Button>
@@ -571,7 +579,7 @@ export function ResultActions({
               onClick={onSaveToHistory}
               disabled={isSaving}
               variant="outline"
-              className="h-10 gap-2 rounded-full border-primary/20 bg-card/72 px-4 text-primary shadow-sm hover:bg-accent"
+              className="h-10 gap-2 rounded-md border-border bg-card px-4 text-primary shadow-sm hover:bg-accent"
             >
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               Save
@@ -580,7 +588,7 @@ export function ResultActions({
           <Button
             variant="outline"
             onClick={resultFiles.length > 1 ? onShareAll : () => onShareFile(resultFiles[0])}
-            className="h-10 gap-2 rounded-full border-primary/20 bg-card/72 px-4 text-primary shadow-sm hover:bg-accent"
+            className="h-10 gap-2 rounded-md border-border bg-card px-4 text-primary shadow-sm hover:bg-accent"
           >
             <Share2 className="h-4 w-4" />
             Share
@@ -588,7 +596,7 @@ export function ResultActions({
           <Button
             variant="outline"
             onClick={onDownloadAll}
-            className="h-10 gap-2 rounded-full border-primary/20 bg-card/72 px-4 text-primary shadow-sm hover:bg-accent"
+            className="h-10 gap-2 rounded-md border-border bg-card px-4 text-primary shadow-sm hover:bg-accent"
           >
             <Download className="h-4 w-4" />
             Download all
@@ -598,9 +606,25 @@ export function ResultActions({
 
       <div className="grid gap-2">
         {resultFiles.map((file, index) => (
-          <div key={file.file_id || index} className="grid gap-3 rounded-lg border border-border bg-card/60 p-3 sm:grid-cols-[1fr_auto] sm:items-center">
+          <div
+            key={file.file_id || index}
+            role="button"
+            tabIndex={0}
+            onClick={() => {
+              onEditFile(file, index)
+              setComparisonFile(file)
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault()
+                onEditFile(file, index)
+                setComparisonFile(file)
+              }
+            }}
+            className="grid cursor-pointer gap-3 rounded-md border border-border bg-card/60 p-3 outline-none transition hover:border-primary/30 hover:bg-accent/60 focus-visible:ring-2 focus-visible:ring-primary sm:grid-cols-[1fr_auto] sm:items-center"
+          >
             <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
                 {index + 1}
               </div>
               {isTextOutput ? <FileText className="h-5 w-5 shrink-0 text-primary" /> : <FileSpreadsheet className="h-5 w-5 shrink-0 text-primary" />}
@@ -613,13 +637,23 @@ export function ResultActions({
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => onShareFile(file)}
-                className="h-9 rounded-full border-primary/20 bg-card/72 text-primary shadow-sm hover:bg-accent"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onShareFile(file)
+                }}
+                className="h-9 rounded-md border-border bg-card text-primary shadow-sm hover:bg-accent"
               >
                 <Share2 className="mr-1.5 h-4 w-4" />
                 Share
               </Button>
-              <Button size="sm" onClick={() => onDownloadFile(file)} className="h-9 rounded-full bg-primary text-primary-foreground shadow-sm hover:bg-primary/90">
+              <Button
+                size="sm"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onDownloadFile(file)
+                }}
+                className="h-9 rounded-md bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
+              >
                 <Download className="mr-1.5 h-4 w-4" />
                 Download
               </Button>
@@ -628,6 +662,64 @@ export function ResultActions({
         ))}
       </div>
     </div>
+      {comparisonFile ? (
+        <div
+          className="fixed inset-0 z-[90] flex items-center justify-center bg-[#111827]/50 p-3 backdrop-blur-xl sm:p-5"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setComparisonFile(null)
+          }}
+        >
+          <div className="relative w-full max-w-[1240px] rounded-md border border-border bg-card p-3 shadow-xl sm:p-4">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setComparisonFile(null)}
+              className="absolute right-4 top-4 z-10 h-9 rounded-md border-border bg-background px-3 text-primary"
+              aria-label="Close comparison"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+
+            <div className="grid max-h-[84vh] gap-3 overflow-auto lg:grid-cols-[0.92fr_1.08fr]">
+              <div className="flex min-h-[420px] items-center justify-center overflow-hidden rounded-md border border-border bg-white">
+                {firstImageUrl ? (
+                  <img src={firstImageUrl} alt="Input preview" className="max-h-[74vh] w-full object-contain" />
+                ) : (
+                  <div className="text-sm font-semibold text-muted-foreground">Input preview unavailable</div>
+                )}
+              </div>
+
+              <div className="max-h-[74vh] min-h-[420px] overflow-auto rounded-md border border-border bg-white">
+                {isTextOutput || textPreview ? (
+                  <pre className="min-h-[420px] whitespace-pre-wrap p-5 text-left text-sm leading-7 text-gray-950">
+                    {textPreview || "Text preview is loading..."}
+                  </pre>
+                ) : tablePreviewData.length ? (
+                  <table className="w-full min-w-[680px] border-collapse text-sm text-gray-950">
+                    <tbody>
+                      {tablePreviewData.map((row, rowIndex) => (
+                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-primary text-primary-foreground" : rowIndex % 2 === 0 ? "bg-emerald-50" : "bg-white"}>
+                          {row.map((cell, cellIndex) => (
+                            <td key={cellIndex} className="min-w-[120px] border border-gray-200 px-3 py-2 text-left font-medium">
+                              {cell || ""}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="flex min-h-[420px] items-center justify-center gap-2 text-sm font-semibold text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                    Preparing preview
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   )
 }
 
@@ -690,7 +782,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
       />
       <WorkspaceErrorBanner banner={banner} onDismiss={onDismissBanner} />
 
-      <Card className="ax-glass-card overflow-hidden rounded-xl">
+      <Card className="ax-glass-card overflow-hidden rounded-md">
         <CardContent className="p-4 lg:p-5">
           <div className="mb-4 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <StageRail stage={stage} />
@@ -712,13 +804,13 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
 
           <div className="grid gap-4 xl:grid-cols-[minmax(0,0.98fr)_minmax(420px,1fr)]">
             <div className="space-y-4">
-              <div className="flex w-fit rounded-full border border-white/60 bg-white/44 p-1 shadow-[0_16px_40px_rgba(42,35,64,0.08)] backdrop-blur-2xl">
+              <div className="flex w-fit rounded-md border border-border bg-card p-1 shadow-sm">
                 <button
                   type="button"
                   onClick={() => onOutputModeChange("table")}
                   disabled={isProcessing}
                   className={cn(
-                    "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+                    "rounded-md px-4 py-2 text-sm font-semibold transition-colors",
                     outputMode === "table" ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-card/60",
                     isProcessing && "cursor-not-allowed opacity-60"
                   )}
@@ -730,7 +822,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                   onClick={() => onOutputModeChange("text")}
                   disabled={isProcessing}
                   className={cn(
-                    "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+                    "rounded-md px-4 py-2 text-sm font-semibold transition-colors",
                     outputMode === "text" ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-card/60",
                     isProcessing && "cursor-not-allowed opacity-60"
                   )}
@@ -758,13 +850,13 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                 onClearFiles={onClearFiles}
               />
 
-              <div className="flex flex-col gap-3 rounded-xl border border-border bg-card/50 p-3 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 rounded-md border border-border bg-card/50 p-3 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm font-semibold text-foreground">
                     {uploadedFiles.length ? `${uploadedFiles.length} selected` : "No files selected"}
                   </p>
                   <p className="text-xs font-semibold text-muted-foreground">
-                    {uploadedFiles.length ? `${formatBytes(uploadedSizeMb * 1024 * 1024)} · ${creditEstimate || uploadedFiles.length} estimated credits` : "Add images or PDFs to start."}
+                    {uploadedFiles.length ? `${formatBytes(uploadedSizeMb * 1024 * 1024)} - ${creditEstimate || uploadedFiles.length} estimated credits` : "Add images or PDFs to start."}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 sm:justify-end">
@@ -772,7 +864,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                     <Button
                       variant="outline"
                       onClick={onCancel}
-                      className="h-11 rounded-full border-border bg-card/70 px-5 text-primary hover:bg-accent"
+                      className="h-11 rounded-md border-border bg-card/70 px-5 text-primary hover:bg-accent"
                     >
                       <X className="mr-2 h-4 w-4" />
                       Cancel
@@ -782,10 +874,10 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                     size="lg"
                     onClick={onConvert}
                     disabled={!uploadedFiles.length || isProcessing || noCredits}
-                    className="h-12 gap-2 rounded-full bg-primary px-6 text-primary-foreground shadow-[0_16px_36px_rgb(0 0 0 / 0.14)] hover:bg-primary/90"
+                    className="h-12 gap-2 rounded-md bg-primary px-6 text-primary-foreground shadow-sm hover:bg-primary/90"
                   >
                     {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
-                    {isProcessing ? "Working" : processLabel}
+                    {isProcessing ? "Converting" : processLabel}
                   </Button>
                 </div>
               </div>
@@ -815,6 +907,9 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                 isTextOutput={isTextOutput}
                 isSaving={isSaving}
                 isSaved={isSaved}
+                tablePreviewData={tablePreviewData}
+                textPreview={textPreview}
+                firstImageUrl={firstImageUrl}
                 onReset={onReset}
                 onSaveToHistory={onSaveToHistory}
                 onShareFile={onShareFile}
