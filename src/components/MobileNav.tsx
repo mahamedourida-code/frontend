@@ -18,7 +18,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { AppIcon } from "@/components/AppIcon"
+import { AppLogo } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { industrySolutions } from "@/lib/industry-solutions"
@@ -254,8 +254,8 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 "border-border bg-background"
               )}>
                 <div className="flex items-center gap-2">
-                  <AppIcon size={32} />
-                  <SheetTitle className="text-base md:text-lg font-bold">AxLiner</SheetTitle>
+                  <SheetTitle className="sr-only">AxLiner</SheetTitle>
+                  <AppLogo className="h-8 w-auto text-foreground" />
                   <div className="ms-auto">
                     <ThemeToggle />
                   </div>

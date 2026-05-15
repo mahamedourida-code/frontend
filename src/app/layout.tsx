@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Caveat, Outfit } from "next/font/google";
+import { Caveat, Inter } from "next/font/google";
 import "./globals.css";
 import "../styles/mobile-nav.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ProcessingStateProvider } from "@/contexts/ProcessingStateContext";
 import { Toaster } from "sonner";
 
-const outfit = Outfit({
-  variable: "--font-outfit",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
@@ -88,7 +88,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${outfit.variable} ${caveat.variable} antialiased font-sans bg-background text-foreground relative overflow-x-hidden`}
+        className={`${inter.variable} ${caveat.variable} antialiased font-sans bg-background text-foreground relative overflow-x-hidden`}
       >
         <ThemeProvider defaultTheme="light" storageKey="AxLiner-theme">
           <ProcessingStateProvider>

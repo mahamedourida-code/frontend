@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { AppIcon } from "@/components/AppIcon"
+import { AppLogo } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { cn } from "@/lib/utils"
 
@@ -55,11 +55,8 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
       <div className="flex h-full flex-col">
         <div className="p-2">
           <Link href="/" aria-label="Go to AxLiner homepage">
-            <div className="flex h-12 items-center gap-2 rounded-md px-2 text-start hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-              <AppIcon size={28} className="shrink-0" />
-              <div className="grid flex-1 text-start text-sm leading-tight">
-                <span className="truncate font-semibold">AxLiner</span>
-              </div>
+            <div className="flex h-12 items-center rounded-md px-2 text-start text-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+              <AppLogo className="h-7 w-auto" />
             </div>
           </Link>
         </div>

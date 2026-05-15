@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
-import { AppIcon } from "@/components/AppIcon"
+import { AppLogo } from "@/components/AppIcon"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -74,11 +74,8 @@ function SignInContent() {
       <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center justify-center">
         <Card className="w-full max-w-[420px] overflow-hidden rounded-md border border-border bg-card shadow-sm">
           <CardContent className="p-6 sm:p-8">
-            <Link href="/" className="mb-8 flex items-center justify-center gap-3">
-              <span className="flex h-12 w-12 items-center justify-center rounded-md border border-border bg-background">
-                <AppIcon size={30} />
-              </span>
-              <span className="text-xl font-black text-foreground">AxLiner</span>
+            <Link href="/" className="mb-8 flex items-center justify-center" aria-label="AxLiner home">
+              <AppLogo className="h-9 w-auto" />
             </Link>
 
             <div className="mb-7 text-center">

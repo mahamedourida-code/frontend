@@ -1,6 +1,6 @@
 "use client"
 
-import { AppIcon } from "@/components/AppIcon"
+import { AppLogo } from "@/components/AppIcon"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft } from "lucide-react"
 import Link from "next/link"
@@ -86,9 +86,8 @@ export default function PrivacyPolicyPage() {
     <main className="min-h-screen bg-background text-foreground">
       <nav className="sticky top-0 z-40 border-b border-black/10 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-3 font-bold" aria-label="AxLiner home">
-            <AppIcon size={34} />
-            <span>AxLiner</span>
+          <Link href="/" className="flex items-center font-bold" aria-label="AxLiner home">
+            <AppLogo className="h-8 w-auto" />
           </Link>
           <Button
             variant="ghost"
