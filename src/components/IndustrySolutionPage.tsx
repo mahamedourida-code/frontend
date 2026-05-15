@@ -63,24 +63,6 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
 
                   <NavigationMenuItem>
                     <NavigationMenuLink
-                      href="/pricing"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-primary-foreground")}
-                    >
-                      Pricing
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <NavigationMenuLink
-                      href="/blogs"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-primary-foreground")}
-                    >
-                      Blogs
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <NavigationMenuLink
                       href="/#ai-engine"
                       className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-primary-foreground")}
                     >
@@ -94,6 +76,24 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
                       className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-primary-foreground")}
                     >
                       Benchmarks
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+
+                  <NavigationMenuItem>
+                    <NavigationMenuLink
+                      href="/pricing"
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-primary-foreground")}
+                    >
+                      Pricing
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+
+                  <NavigationMenuItem>
+                    <NavigationMenuLink
+                      href="/blogs"
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-primary-foreground")}
+                    >
+                      Blogs
                     </NavigationMenuLink>
                   </NavigationMenuItem>
                 </NavigationMenuList>

@@ -400,24 +400,6 @@ export default function Home() {
                     </NavigationMenuContent>
                   </NavigationMenuItem>
 
-                  <NavigationMenuItem>
-                    <NavigationMenuLink
-                      href="/pricing"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-muted")}
-                    >
-                      Pricing
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <NavigationMenuLink
-                      href="/blogs"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-muted")}
-                    >
-                      Blogs
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-
                   {/* How AxLiner's Built */}
                   <NavigationMenuItem>
                     <button
@@ -436,6 +418,24 @@ export default function Home() {
                     >
                       Benchmarks
                     </button>
+                  </NavigationMenuItem>
+
+                  <NavigationMenuItem>
+                    <NavigationMenuLink
+                      href="/pricing"
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-muted")}
+                    >
+                      Pricing
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+
+                  <NavigationMenuItem>
+                    <NavigationMenuLink
+                      href="/blogs"
+                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-muted")}
+                    >
+                      Blogs
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
                 </NavigationMenuList>
               </NavigationMenu>

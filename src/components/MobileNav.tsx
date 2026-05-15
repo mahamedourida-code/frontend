@@ -139,6 +139,17 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       show: !isAuthenticated
     },
     {
+      label: "Solutions",
+      icon: FileSpreadsheet,
+      show: !isAuthenticated,
+      children: industrySolutions.map((solution) => ({
+        label: solution.title,
+        href: `/solutions/${solution.slug}`,
+        iconSrc: solution.cardAsset,
+        description: solution.eyebrow
+      }))
+    },
+    {
       label: "Pricing",
       href: "/pricing",
       icon: BillingSeal,
@@ -149,17 +160,6 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       href: "/blogs",
       icon: FileText,
       show: !isAuthenticated
-    },
-    {
-      label: "Solutions",
-      icon: FileSpreadsheet,
-      show: !isAuthenticated,
-      children: industrySolutions.map((solution) => ({
-        label: solution.title,
-        href: `/solutions/${solution.slug}`,
-        iconSrc: solution.cardAsset,
-        description: solution.eyebrow
-      }))
     }
   ]
 

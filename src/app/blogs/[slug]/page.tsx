@@ -100,19 +100,19 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
               <Link className="rounded-md px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted" href="/#features">
                 Solutions
               </Link>
+              <Link className="rounded-md px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted" href="/#benchmarks">
+                Benchmarks
+              </Link>
               <Link className="rounded-md px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted" href="/pricing">
                 Pricing
               </Link>
               <Link className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground" href="/blogs">
                 Blogs
               </Link>
-              <Link className="rounded-md px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted" href="/#benchmarks">
-                Benchmarks
-              </Link>
             </div>
 
             <div className="hidden items-center gap-3 lg:flex">
-              <Button asChild className="rounded-full bg-primary px-5 text-primary-foreground hover:bg-primary/90">
+              <Button asChild className="rounded-md bg-primary px-5 text-primary-foreground hover:bg-primary/90">
                 <Link href="/#converter">Try It</Link>
               </Button>
             </div>

@@ -254,18 +254,6 @@ function PricingContent() {
                     </NavigationMenuItem>
 
                     <NavigationMenuItem>
-                      <NavigationMenuLink href="/pricing" className={navLinkClass}>
-                        Pricing
-                      </NavigationMenuLink>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                      <NavigationMenuLink href="/blogs" className={navLinkClass}>
-                        Blogs
-                      </NavigationMenuLink>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
                       <NavigationMenuLink href="/#ai-engine" className={navLinkClass}>
                         How AxLiner's Built
                       </NavigationMenuLink>
@@ -274,6 +262,18 @@ function PricingContent() {
                     <NavigationMenuItem>
                       <NavigationMenuLink href="/#benchmarks" className={navLinkClass}>
                         Benchmarks
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+
+                    <NavigationMenuItem>
+                      <NavigationMenuLink href="/pricing" className={navLinkClass}>
+                        Pricing
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+
+                    <NavigationMenuItem>
+                      <NavigationMenuLink href="/blogs" className={navLinkClass}>
+                        Blogs
                       </NavigationMenuLink>
                     </NavigationMenuItem>
                   </NavigationMenuList>
