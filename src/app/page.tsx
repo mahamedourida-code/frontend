@@ -487,7 +487,7 @@ export default function Home() {
           <div className="relative z-10 container mx-auto max-w-[1500px] px-4 sm:px-5 lg:px-9">
             <div className="grid min-h-[500px] items-center gap-14 lg:min-h-[535px] lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)] lg:gap-16">
               <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:translate-x-8 lg:text-left xl:translate-x-10">
-                <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight text-primary sm:text-5xl lg:text-6xl">
+                <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight text-black sm:text-5xl lg:text-6xl">
                   Handwritten images to Excel in seconds
                 </h1>
                 <p className="mt-8 text-base leading-8 text-foreground sm:text-lg lg:text-xl">
