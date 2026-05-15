@@ -88,6 +88,12 @@ function smartSheetName(name: string, used: Set<string>) {
   return next.slice(0, 31)
 }
 
+type ResultPreview = {
+  table: any[][]
+  text: string
+  loading?: boolean
+}
+
 export default function ProcessImagesPage() {
   return (
     <Suspense fallback={<ProcessImagesFallback />}>
@@ -134,6 +140,8 @@ function ProcessImagesContent() {
   const processingTimerRef = useRef<NodeJS.Timeout | null>(null)
   const [tablePreviewData, setTablePreviewData] = useState<any[][]>([])
   const [textPreview, setTextPreview] = useState('')
+  const [resultPreviews, setResultPreviews] = useState<Record<string, ResultPreview>>({})
+  const resultPreviewsRef = useRef<Record<string, ResultPreview>>({})
   const [firstImageUrl, setFirstImageUrl] = useState<string>('')
   const [activePreviewFileId, setActivePreviewFileId] = useState<string>('')
   const [outputMode, setOutputMode] = useState<'table' | 'text'>('table')
@@ -682,7 +690,7 @@ function ProcessImagesContent() {
     if (uploadedFiles.length > maxUploadFiles) {
       setWorkspaceBanner({
         title: "Reduce batch size",
-        description: `Your current plan allows up to ${maxUploadFiles} images per run.`,
+        description: `Your current plan allows up to ${maxUploadFiles} files per run.`,
         actionLabel: "See plans",
         onAction: () => router.push("/pricing?from=batch-limit"),
         tone: "warning",
@@ -769,6 +777,8 @@ function ProcessImagesContent() {
     // Clear preview data
     setTablePreviewData([])
     setTextPreview('')
+    setResultPreviews({})
+    resultPreviewsRef.current = {}
     setFirstImageUrl('')
     setActivePreviewFileId('')
     
@@ -781,16 +791,49 @@ function ProcessImagesContent() {
   }
 
   // Fetch and parse Excel file for preview (same as landing page)
-  const fetchTablePreview = useCallback(async (fileId: string) => {
-    setActivePreviewFileId(fileId)
+  const fetchTablePreview = useCallback(async (fileId: string, syncActivePreview = true) => {
+    const existing = resultPreviewsRef.current[fileId]
+    if (existing && (existing.table.length > 0 || existing.text)) {
+      if (syncActivePreview) {
+        setActivePreviewFileId(fileId)
+        setTablePreviewData(existing.table)
+        setTextPreview(existing.text)
+      }
+      return existing
+    }
+
+    if (syncActivePreview) {
+      setActivePreviewFileId(fileId)
+    }
+    setResultPreviews(prev => {
+      const next = {
+        ...prev,
+        [fileId]: {
+          table: prev[fileId]?.table || [],
+          text: prev[fileId]?.text || '',
+          loading: true,
+        },
+      }
+      resultPreviewsRef.current = next
+      return next
+    })
+
     try {
       const blob = await ocrApi.downloadFile(fileId)
 
       if (outputMode === 'text' || blob.type.startsWith('text/')) {
         const text = await blob.text()
-        setTextPreview(text.slice(0, 6000))
-        setTablePreviewData([])
-        return
+        const preview = { table: [], text: text.slice(0, 6000), loading: false }
+        setResultPreviews(prev => {
+          const next = { ...prev, [fileId]: preview }
+          resultPreviewsRef.current = next
+          return next
+        })
+        if (syncActivePreview) {
+          setTextPreview(preview.text)
+          setTablePreviewData([])
+        }
+        return preview
       }
       
       const XLSX = await import('xlsx')
@@ -800,10 +843,32 @@ function ProcessImagesContent() {
       const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as any[][]
       
       
-      setTablePreviewData(data)
-      setTextPreview('')
+      const preview = { table: data, text: '', loading: false }
+      setResultPreviews(prev => {
+        const next = { ...prev, [fileId]: preview }
+        resultPreviewsRef.current = next
+        return next
+      })
+      if (syncActivePreview) {
+        setTablePreviewData(data)
+        setTextPreview('')
+      }
+      return preview
     } catch (error) {
+      setResultPreviews(prev => {
+        const next = {
+          ...prev,
+          [fileId]: {
+            table: prev[fileId]?.table || [],
+            text: prev[fileId]?.text || '',
+            loading: false,
+          },
+        }
+        resultPreviewsRef.current = next
+        return next
+      })
       // Don't show error toast - just silently fail to show preview
+      return null
     }
   }, [outputMode])
 
@@ -815,6 +880,15 @@ function ProcessImagesContent() {
       }
     }
   }, [resultFiles, tablePreviewData.length, textPreview, fetchTablePreview])
+
+  useEffect(() => {
+    if (!resultFiles?.length) return
+
+    resultFiles.slice(0, 16).forEach((file: any) => {
+      if (!file.file_id || resultPreviewsRef.current[file.file_id]) return
+      void fetchTablePreview(file.file_id, false)
+    })
+  }, [resultFiles, fetchTablePreview])
 
   const handleShareFile = async (file: any) => {
     
@@ -1263,6 +1337,7 @@ Best regards`
   const displayResultFiles = resultFiles?.map((file, index) => ({
     ...file,
     filename: smartOutputFilename(file, index, uploadedFiles, outputMode),
+    input_preview_url: getResultInputPreviewUrl(file, index),
   })) || null
   const uploadedSizeMb = uploadedFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024)
   const processLabel = isTextOutput ? 'Extract text' : 'Convert files'
@@ -1328,6 +1403,7 @@ Best regards`
         resultFiles={displayResultFiles}
         tablePreviewData={tablePreviewData}
         textPreview={textPreview}
+        resultPreviews={resultPreviews}
         firstImageUrl={firstImageUrl}
         activePreviewFileId={activePreviewFileId}
         isTextOutput={isTextOutput}

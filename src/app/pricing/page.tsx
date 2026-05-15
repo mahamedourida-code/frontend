@@ -31,15 +31,25 @@ type BillingMode = "month" | "year"
 const companyLogos = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 const paidPlanKeys: BillingPlanKey[] = ["pro_monthly", "pro_yearly", "max_monthly", "max_yearly", "mega_monthly", "mega_yearly"]
 
-function imagesLabel(count: number) {
-  return `${count.toLocaleString()} image${count === 1 ? "" : "s"}`
+const planDisplayOverrides: Record<string, { credits: number; priceFormatted?: string; included: string }> = {
+  pro_monthly: { credits: 1000, priceFormatted: "$10", included: "1,000 files / month" },
+  pro_yearly: { credits: 12000, priceFormatted: "$100", included: "12,000 files / year" },
+  max_monthly: { credits: 2500, priceFormatted: "$20", included: "2,500 files / month" },
+  max_yearly: { credits: 30000, priceFormatted: "$190", included: "30,000 files / year" },
+  mega_monthly: { credits: 7000, priceFormatted: "$50", included: "7,000 files / month" },
+  mega_yearly: { credits: 84000, priceFormatted: "$530", included: "84,000 files / year" },
+}
+
+function filesLabel(count: number) {
+  return `${count.toLocaleString()} file${count === 1 ? "" : "s"}`
 }
 
 function planPresentation(plan: BillingPlan) {
+  const override = planDisplayOverrides[plan.key]
   const monthlyAllowance =
-    plan.interval === "year" && plan.credits > 0
-      ? Math.round(plan.credits / 12)
-      : plan.credits
+    plan.interval === "year" && (override?.credits || plan.credits) > 0
+      ? Math.round((override?.credits || plan.credits) / 12)
+      : (override?.credits || plan.credits)
   const baseName = plan.name || "Plan"
   const name =
     plan.interval === "year" && plan.checkout_key && !/year|annual/i.test(baseName)
@@ -47,9 +57,9 @@ function planPresentation(plan: BillingPlan) {
       : baseName
   const included = !plan.checkout_key
     ? plan.included_volume || `${plan.credits.toLocaleString()} credits`
-    : `${imagesLabel(monthlyAllowance)} / month`
+    : override?.included || `${filesLabel(monthlyAllowance)} / month`
 
-  return { name, included }
+  return { name, included, priceFormatted: override?.priceFormatted || plan.price_formatted }
 }
 
 function PricingFallback() {
@@ -432,11 +442,11 @@ function PricingContent() {
                   plan.plan === "anonymous" || plan.plan === "free"
                     ? { value: plan.included_volume, label: "" }
                     : { value: presentation.included, label: "available in this plan" },
-                  { value: `${plan.max_files_per_batch}`, label: "images per run" },
+                  { value: `${plan.max_files_per_batch}`, label: "files per run" },
                   { value: `${plan.max_file_size_mb}MB`, label: "max file size" },
                   plan.plan === "anonymous" || plan.plan === "free"
                     ? { value: "Free", label: "trial access before upgrade" }
-                    : { value: "Completed", label: "images charge credits only after success" },
+                    : { value: "Completed", label: "files charge credits only after success" },
                 ]
 
                 return (
@@ -466,10 +476,10 @@ function PricingContent() {
                           {plan.plan === "mega" ? <PlanSwitch className="h-7 w-7 text-primary" /> : <CreditStack className="h-7 w-7 text-primary" />}
                         </div>
                         <div className="mt-10 flex items-end gap-3">
-                          <span className="text-5xl font-semibold tracking-normal text-primary">{plan.price_formatted}</span>
+                          <span className="text-5xl font-semibold tracking-normal text-primary">{presentation.priceFormatted}</span>
                           <span className="pb-1.5 text-sm font-semibold text-muted-foreground">{intervalLabel}</span>
                         </div>
-                        <div className="mt-8 rounded-md border border-primary/20 bg-primary p-4 text-primary-foreground shadow-sm">
+                        <div className="mt-8 flex min-h-[118px] flex-col justify-center rounded-md border border-primary/20 bg-primary p-5 text-primary-foreground shadow-sm">
                           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground/75">Included volume</p>
                           <p className="mt-2 text-xl font-semibold leading-tight">{presentation.included}</p>
                         </div>

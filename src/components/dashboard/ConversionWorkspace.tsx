@@ -42,6 +42,7 @@ type ResultFile = {
   file_id?: string
   filename?: string
   size_bytes?: number
+  input_preview_url?: string
   confidence_score?: number
   confidence?: number
   quality_score?: number
@@ -53,6 +54,12 @@ type ResultFile = {
 type RecoverableJob = {
   processed_images?: number
   total_images?: number
+}
+
+type ResultPreview = {
+  table: any[][]
+  text: string
+  loading?: boolean
 }
 
 type ConversionWorkspaceProps = {
@@ -83,6 +90,7 @@ type ConversionWorkspaceProps = {
   resultFiles: ResultFile[] | null
   tablePreviewData: any[][]
   textPreview: string
+  resultPreviews?: Record<string, ResultPreview>
   firstImageUrl: string
   activePreviewFileId?: string
   isTextOutput: boolean
@@ -683,6 +691,58 @@ function correctedFilename(filename?: string) {
   return `${(filename || "result").replace("_processed", "").replace(/\.[^/.]+$/, "")}_corrected.xlsx`
 }
 
+function ResultThumb({ preview, isTextOutput }: { preview?: ResultPreview; isTextOutput: boolean }) {
+  if (preview?.loading) {
+    return (
+      <div className="flex h-full min-h-[112px] items-center justify-center rounded-md border border-border bg-background">
+        <Loader2 className="h-4 w-4 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (isTextOutput || preview?.text) {
+    const lines = (preview?.text || "").split(/\r?\n/).filter(Boolean).slice(0, 5)
+    return (
+      <div className="flex h-full min-h-[112px] flex-col gap-1.5 overflow-hidden rounded-md border border-border bg-white p-3">
+        {lines.length ? lines.map((line, index) => (
+          <span key={index} className="truncate text-[10px] font-semibold text-gray-700">
+            {line}
+          </span>
+        )) : (
+          <span className="text-[10px] font-semibold text-gray-500">Text output</span>
+        )}
+      </div>
+    )
+  }
+
+  const rows = preview?.table?.length ? preview.table.slice(0, 5) : []
+
+  return (
+    <div className="h-full min-h-[112px] overflow-hidden rounded-md border border-border bg-white">
+      <div className="grid grid-cols-4 bg-primary">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <span key={index} className="h-3 border-r border-white/20 last:border-r-0" />
+        ))}
+      </div>
+      {rows.length ? rows.map((row, rowIndex) => (
+        <div key={rowIndex} className="grid grid-cols-4 border-b border-gray-200 last:border-b-0">
+          {Array.from({ length: 4 }).map((_, cellIndex) => (
+            <span key={cellIndex} className="truncate border-r border-gray-200 px-2 py-1.5 text-[10px] font-medium text-gray-800 last:border-r-0">
+              {row?.[cellIndex] || " "}
+            </span>
+          ))}
+        </div>
+      )) : (
+        <div className="grid gap-1.5 p-3">
+          <div className="h-2 rounded bg-gray-200" />
+          <div className="h-2 w-4/5 rounded bg-gray-200" />
+          <div className="h-2 w-3/5 rounded bg-gray-200" />
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function ResultActions({
   resultFiles,
   isComplete,
@@ -691,6 +751,7 @@ export function ResultActions({
   isSaved,
   tablePreviewData,
   textPreview,
+  resultPreviews,
   firstImageUrl,
   activePreviewFileId,
   onReset,
@@ -710,6 +771,7 @@ export function ResultActions({
   | "isSaved"
   | "tablePreviewData"
   | "textPreview"
+  | "resultPreviews"
   | "firstImageUrl"
   | "activePreviewFileId"
   | "onReset"
@@ -844,7 +906,7 @@ export function ResultActions({
           <Button
             onClick={handleReviewedBatchDownload}
             disabled={reviewedDownloadBusy}
-            className="h-10 gap-2 rounded-md bg-primary px-4 text-primary-foreground shadow-sm hover:bg-primary/90"
+            className="h-10 gap-2 rounded-md bg-foreground px-4 text-background shadow-sm hover:bg-primary hover:text-primary-foreground"
           >
             {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             Download reviewed batch
@@ -857,11 +919,34 @@ export function ResultActions({
         </div>
       ) : null}
 
-      <div className="grid gap-2">
+      <div className="rounded-md border border-border bg-muted p-4 shadow-sm sm:p-5">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Batch output</p>
+            <p className="mt-1 text-lg font-semibold text-foreground">
+              {resultFiles.length} file{resultFiles.length > 1 ? "s" : ""} ready
+            </p>
+          </div>
+          {resultFiles.length > 1 ? (
+            <span className="rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold text-muted-foreground">
+              Open any card to review cells
+            </span>
+          ) : null}
+        </div>
+
+        <div className={cn(
+          "grid gap-3",
+          resultFiles.length > 8
+            ? "grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4"
+            : "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+        )}>
         {resultFiles.map((file, index) => {
           const fileKey = getResultKey(file, index)
           const badge = getOutputBadge(file)
           const edited = Boolean(editedTables[fileKey])
+          const preview = file.file_id ? resultPreviews?.[file.file_id] : undefined
+          const visiblePreview = edited ? { table: editedTables[fileKey] || [], text: preview?.text || "", loading: false } : preview
+          const compact = resultFiles.length > 8
 
           return (
             <div
@@ -875,27 +960,52 @@ export function ResultActions({
                   openComparison(index)
                 }
               }}
-              className="grid cursor-pointer gap-3 rounded-md border border-border bg-card/60 p-3 outline-none transition hover:border-primary/30 hover:bg-accent/60 focus-visible:ring-2 focus-visible:ring-primary sm:grid-cols-[1fr_auto] sm:items-center"
+              className={cn(
+                "group cursor-pointer rounded-md border border-border bg-card p-3 shadow-sm outline-none transition duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary",
+                compact ? "min-h-[160px]" : "min-h-[188px]"
+              )}
             >
-              <div className="flex min-w-0 items-center gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
-                  {index + 1}
+              <div className="grid grid-cols-[minmax(76px,0.9fr)_minmax(0,1.1fr)] gap-3">
+                <div className="overflow-hidden rounded-md border border-border bg-background">
+                  {file.input_preview_url ? (
+                    <img
+                      src={file.input_preview_url}
+                      alt={`Input file ${index + 1}`}
+                      className="h-full min-h-[112px] w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full min-h-[112px] items-center justify-center bg-muted">
+                      <FileImage className="h-7 w-7 text-primary/65" />
+                    </div>
+                  )}
                 </div>
-                {isTextOutput ? <FileText className="h-5 w-5 shrink-0 text-primary" /> : <FileSpreadsheet className="h-5 w-5 shrink-0 text-primary" />}
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-foreground">{file.filename || `Result ${index + 1}`}</p>
-                  {file.size_bytes ? <p className="text-xs font-semibold text-muted-foreground">{formatBytes(file.size_bytes)}</p> : null}
+                <ResultThumb preview={visiblePreview} isTextOutput={isTextOutput} />
+              </div>
+
+              <div className="mt-3 flex min-w-0 items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary text-[11px] font-bold text-primary-foreground">
+                    {index + 1}
+                  </span>
+                  {isTextOutput ? <FileText className="h-5 w-5 shrink-0 text-primary" /> : <FileSpreadsheet className="h-5 w-5 shrink-0 text-primary" />}
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">{file.filename || `Result ${index + 1}`}</p>
+                    {file.size_bytes ? <p className="text-xs font-semibold text-muted-foreground">{formatBytes(file.size_bytes)}</p> : null}
+                  </div>
+                </div>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <span className={cn("rounded-md border px-2 py-1 text-[10px] font-semibold", badge.className)}>
+                    {badge.label}
+                  </span>
+                  {edited ? (
+                    <span className="rounded-md border border-primary/20 bg-primary/10 px-2 py-1 text-[10px] font-semibold text-primary">
+                      Edited
+                    </span>
+                  ) : null}
                 </div>
               </div>
-              <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                <span className={cn("rounded-md border px-2 py-1 text-[10px] font-semibold", badge.className)}>
-                  {badge.label}
-                </span>
-                {edited ? (
-                  <span className="rounded-md border border-primary/20 bg-primary/10 px-2 py-1 text-[10px] font-semibold text-primary">
-                    Edited
-                  </span>
-                ) : null}
+
+              <div className="mt-3 flex justify-end gap-2">
                 <Button
                   size="sm"
                   variant="outline"
@@ -903,9 +1013,9 @@ export function ResultActions({
                     event.stopPropagation()
                     onShareFile(file)
                   }}
-                  className="h-9 rounded-md border-border bg-card text-primary shadow-sm hover:bg-accent"
+                  className="h-8 rounded-md border-border bg-card px-3 text-xs text-foreground shadow-sm hover:bg-accent"
                 >
-                  <Share2 className="mr-1.5 h-4 w-4" />
+                  <Share2 className="mr-1.5 h-3.5 w-3.5" />
                   Share
                 </Button>
                 <Button
@@ -914,15 +1024,16 @@ export function ResultActions({
                     event.stopPropagation()
                     onDownloadFile(file, index)
                   }}
-                  className="h-9 rounded-md bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
+                  className="h-8 rounded-md bg-foreground px-3 text-xs text-background shadow-sm hover:bg-primary hover:text-primary-foreground"
                 >
-                  <Download className="mr-1.5 h-4 w-4" />
+                  <Download className="mr-1.5 h-3.5 w-3.5" />
                   Download
                 </Button>
               </div>
             </div>
           )
         })}
+        </div>
       </div>
     </div>
       {comparisonFile ? (
@@ -1081,6 +1192,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     resultFiles,
     tablePreviewData,
     textPreview,
+    resultPreviews,
     firstImageUrl,
     activePreviewFileId,
     isTextOutput,
@@ -1182,7 +1294,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                     {uploadedFiles.length ? `${uploadedFiles.length} selected` : "No files selected"}
                   </p>
                   <p className="text-xs font-semibold text-muted-foreground">
-                    {uploadedFiles.length ? `${formatBytes(uploadedSizeMb * 1024 * 1024)} - ${creditEstimate || uploadedFiles.length} estimated credits` : "Add images or PDFs to start."}
+                    {uploadedFiles.length ? `${formatBytes(uploadedSizeMb * 1024 * 1024)} - ${creditEstimate || uploadedFiles.length} estimated credits` : "Add files or PDFs to start."}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 sm:justify-end">
@@ -1219,14 +1331,16 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                 progress={progress}
                 processingTime={processingTime}
               />
-              <ResultPreviewPanel
-                isComplete={isComplete}
-                resultFiles={resultFiles}
-                tablePreviewData={tablePreviewData}
-                textPreview={textPreview}
-                firstImageUrl={firstImageUrl}
-                isTextOutput={isTextOutput}
-              />
+              {(!isComplete || (resultFiles?.length || 0) <= 1) ? (
+                <ResultPreviewPanel
+                  isComplete={isComplete}
+                  resultFiles={resultFiles}
+                  tablePreviewData={tablePreviewData}
+                  textPreview={textPreview}
+                  firstImageUrl={firstImageUrl}
+                  isTextOutput={isTextOutput}
+                />
+              ) : null}
               <ResultActions
                 resultFiles={resultFiles}
                 isComplete={isComplete}
@@ -1235,6 +1349,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                 isSaved={isSaved}
                 tablePreviewData={tablePreviewData}
                 textPreview={textPreview}
+                resultPreviews={resultPreviews}
                 firstImageUrl={firstImageUrl}
                 activePreviewFileId={activePreviewFileId}
                 onReset={onReset}
