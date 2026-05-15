@@ -6,8 +6,6 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
-  CheckCircle2,
-  Clock3,
   Download,
   FileImage,
   FileSpreadsheet,
@@ -21,7 +19,7 @@ import {
   X,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
@@ -114,45 +112,10 @@ type ConversionWorkspaceProps = {
   onEditFile: (file: ResultFile, index?: number) => void
 }
 
-const stages: WorkspaceStage[] = ["Added", "Queued", "Processing", "Ready"]
-
 function formatBytes(bytes: number) {
   if (!bytes) return "0 MB"
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`
-}
-
-function StageRail({ stage }: { stage: WorkspaceStage }) {
-  return (
-    <div className="flex flex-wrap gap-2">
-      {stages.map((item) => {
-        const active = item === stage
-        const done = stages.indexOf(item) < stages.indexOf(stage) && stage !== "Failed"
-        return (
-          <span
-            key={item}
-            className={cn(
-              "inline-flex h-8 items-center gap-1.5 rounded-md border px-3 text-xs font-bold",
-              active && "border-primary bg-primary text-primary-foreground",
-              done && "border-border bg-card/70 text-primary",
-              !active && !done && "border-border bg-card/50 text-muted-foreground",
-              stage === "Failed" && item === "Added" && "border-rose-200 bg-rose-50 text-rose-700"
-            )}
-          >
-            {done ? <CheckCircle2 className="h-3.5 w-3.5" /> : null}
-            {active && stage !== "Ready" && stage !== "Failed" ? <Clock3 className="h-3.5 w-3.5" /> : null}
-            {item}
-          </span>
-        )
-      })}
-      {stage === "Failed" && (
-        <span className="inline-flex h-8 items-center gap-1.5 rounded-md border border-rose-200 bg-rose-50 px-3 text-xs font-bold text-rose-700">
-          <AlertCircle className="h-3.5 w-3.5" />
-          Failed
-        </span>
-      )}
-    </div>
-  )
 }
 
 function WorkspaceErrorBanner({ banner, onDismiss }: { banner?: WorkspaceBanner | null; onDismiss?: () => void }) {
@@ -692,7 +655,7 @@ function correctedFilename(filename?: string) {
 function ResultThumb({ preview, isTextOutput }: { preview?: ResultPreview; isTextOutput: boolean }) {
   if (preview?.loading) {
     return (
-      <div className="flex h-full min-h-[180px] items-center justify-center rounded-md border border-border bg-background">
+      <div className="flex h-full min-h-[240px] items-center justify-center rounded-md border border-border bg-background">
         <Loader2 className="h-4 w-4 animate-spin text-primary" />
       </div>
     )
@@ -701,7 +664,7 @@ function ResultThumb({ preview, isTextOutput }: { preview?: ResultPreview; isTex
   if (isTextOutput || preview?.text) {
     const lines = (preview?.text || "").split(/\r?\n/).filter(Boolean).slice(0, 5)
     return (
-      <div className="flex h-full min-h-[180px] flex-col gap-2 overflow-hidden rounded-md border border-border bg-white p-4">
+      <div className="flex h-full min-h-[240px] flex-col gap-2 overflow-hidden rounded-md border border-border bg-white p-4">
         {lines.length ? lines.map((line, index) => (
           <span key={index} className="truncate text-xs font-semibold text-gray-700">
             {line}
@@ -716,7 +679,7 @@ function ResultThumb({ preview, isTextOutput }: { preview?: ResultPreview; isTex
   const rows = preview?.table?.length ? preview.table.slice(0, 5) : []
 
   return (
-    <div className="h-full min-h-[180px] overflow-hidden rounded-md border border-border bg-white">
+    <div className="h-full min-h-[240px] overflow-hidden rounded-md border border-border bg-white">
       <div className="grid grid-cols-4 bg-primary">
         {Array.from({ length: 4 }).map((_, index) => (
           <span key={index} className="h-5 border-r border-white/20 last:border-r-0" />
@@ -935,8 +898,8 @@ export function ResultActions({
         <div className={cn(
           "grid gap-4",
           resultFiles.length > 8
-            ? "grid-cols-1 md:grid-cols-2 2xl:grid-cols-3"
-            : "grid-cols-1 2xl:grid-cols-2"
+            ? "grid-cols-1 xl:grid-cols-2"
+            : "grid-cols-1"
         )}>
         {resultFiles.map((file, index) => {
           const fileKey = getResultKey(file, index)
@@ -960,7 +923,7 @@ export function ResultActions({
               }}
               className={cn(
                 "group cursor-pointer rounded-md border border-border bg-card p-3 shadow-sm outline-none transition duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary",
-                compact ? "min-h-[250px]" : "min-h-[300px]"
+                compact ? "min-h-[320px]" : "min-h-[380px]"
               )}
             >
               <div className="grid gap-3 lg:grid-cols-[minmax(180px,0.95fr)_minmax(0,1.05fr)]">
@@ -969,10 +932,10 @@ export function ResultActions({
                     <img
                       src={file.input_preview_url}
                       alt={`Input file ${index + 1}`}
-                      className="h-full min-h-[180px] w-full object-contain"
+                      className="h-full min-h-[240px] w-full object-contain"
                     />
                   ) : (
-                    <div className="flex h-full min-h-[180px] items-center justify-center bg-muted">
+                    <div className="flex h-full min-h-[240px] items-center justify-center bg-muted">
                       <FileImage className="h-7 w-7 text-primary/65" />
                     </div>
                   )}
@@ -1182,9 +1145,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     progress,
     processingTime,
     uploadedSizeMb,
-    creditAvailable,
     creditEstimate,
-    maxUploadFiles,
     processLabel,
     noCredits,
     resultFiles,
@@ -1225,31 +1186,8 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
       <WorkspaceErrorBanner banner={banner} onDismiss={onDismissBanner} />
 
       <Card className="overflow-hidden rounded-md border-border bg-card shadow-sm">
-        <CardHeader className="border-b border-border pb-4">
-          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-            <StageRail stage={stage} />
-            <div className="grid gap-2 sm:grid-cols-3">
-              <div className="rounded-lg border border-border bg-card/60 px-3 py-2">
-                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Credits</p>
-                <p className="text-base font-semibold text-primary">{creditAvailable}</p>
-              </div>
-              <div className="rounded-lg border border-border bg-card/60 px-3 py-2">
-                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Estimate</p>
-                <p className="text-base font-semibold text-foreground">{creditEstimate || 0}</p>
-              </div>
-              <div className="rounded-lg border border-border bg-card/60 px-3 py-2">
-                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Limit</p>
-                <p className="text-base font-semibold text-foreground">{maxUploadFiles}</p>
-              </div>
-            </div>
-          </div>
-        </CardHeader>
-
-        <CardContent className="p-4 lg:p-5">
-          <div className={cn(
-            "grid gap-5",
-            hasBatchResults ? "xl:grid-cols-1" : "xl:grid-cols-[minmax(0,0.98fr)_minmax(420px,1fr)]"
-          )}>
+        <CardContent className="space-y-5 p-4 lg:p-5">
+          <div className="grid gap-5">
             {!hasBatchResults ? (
               <div className="space-y-4">
                 <div className="flex w-fit rounded-md border border-border bg-muted p-1 shadow-sm">
