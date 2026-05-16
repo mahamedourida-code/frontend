@@ -161,10 +161,124 @@ const ownedPipelineCopy = [
   "External infrastructure can sit behind the pipeline, but the workflow, storage model, and user experience stay controlled by AxLiner. That keeps retries, batch recovery, and output delivery predictable for real users.",
 ];
 
-const footerGlyphs = [
-  { label: "Batch OCR", value: "B1", lines: [68, 46, 78] },
-  { label: "Table map", value: "T4", lines: [52, 84, 61] },
-  { label: "Secure files", value: "S2", lines: [80, 56, 70] },
+type FooterIconProps = {
+  className?: string;
+};
+
+function FooterShieldIcon({ className }: FooterIconProps) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 3.2 19 7v5.4c0 4.4-2.9 7.8-7 8.9-4.1-1.1-7-4.5-7-8.9V7l7-3.8Z" />
+      <path d="m9.2 12.2 1.9 1.9 4-4.2" />
+    </svg>
+  );
+}
+
+function FooterBatchIcon({ className }: FooterIconProps) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M8 7.5h10.5A2.5 2.5 0 0 1 21 10v7.5a2.5 2.5 0 0 1-2.5 2.5H8A2.5 2.5 0 0 1 5.5 17.5V10A2.5 2.5 0 0 1 8 7.5Z" />
+      <path d="M3 14.5V8a4 4 0 0 1 4-4h8.5" />
+      <path d="M9.5 12h7" />
+      <path d="M9.5 16h5" />
+    </svg>
+  );
+}
+
+function FooterTableIcon({ className }: FooterIconProps) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M5.5 4.5h13A2.5 2.5 0 0 1 21 7v10a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17V7a2.5 2.5 0 0 1 2.5-2.5Z" />
+      <path d="M3 9h18" />
+      <path d="M8 9v10.5" />
+      <path d="M14.5 9v10.5" />
+      <path d="M8 14h13" />
+    </svg>
+  );
+}
+
+const footerHighlights = [
+  {
+    label: "Private by design",
+    description: "Owner-bound jobs, signed downloads, and clear file access.",
+    Icon: FooterShieldIcon,
+  },
+  {
+    label: "Batch-ready",
+    description: "Recover active jobs and review many outputs from one run.",
+    Icon: FooterBatchIcon,
+  },
+  {
+    label: "Excel-first",
+    description: "Tables stay readable, editable, and ready for handoff.",
+    Icon: FooterTableIcon,
+  },
+];
+
+const footerColumns = [
+  {
+    title: "Product",
+    links: [
+      { label: "Convert files", href: "/dashboard/client" },
+      { label: "Pricing", href: "/pricing" },
+      { label: "Benchmarks", href: "#benchmarks" },
+      { label: "Security", href: "#security" },
+    ],
+  },
+  {
+    title: "Solutions",
+    links: [
+      { label: "Accounting", href: "/solutions/accounting" },
+      { label: "Banking", href: "/solutions/banking" },
+      { label: "Backoffice", href: "/solutions/backoffice-automation" },
+      { label: "Healthcare", href: "/solutions/healthcare" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "Blogs", href: "/blogs" },
+      { label: "How it works", href: "#how-it-works" },
+      { label: "Contact", href: "mailto:axliner.excel@gmail.com" },
+      { label: "Try AxLiner", href: "/dashboard/client" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy", href: "/privacy-policy" },
+      { label: "Terms", href: "/terms-of-service" },
+      { label: "Data deletion", href: "/data-deletion" },
+      { label: "Billing", href: "/dashboard/settings" },
+    ],
+  },
 ];
 
 export default function Home() {
@@ -487,7 +601,7 @@ export default function Home() {
           <div className="relative z-10 container mx-auto max-w-[1500px] px-4 sm:px-5 lg:px-9">
             <div className="grid min-h-[500px] items-center gap-14 lg:min-h-[535px] lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)] lg:gap-16">
               <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:translate-x-8 lg:text-left xl:translate-x-10">
-                <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight text-black sm:text-5xl lg:text-6xl">
+                <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight text-black dark:text-white sm:text-5xl lg:text-6xl">
                   Handwritten images to Excel in seconds
                 </h1>
                 <p className="mt-8 text-base leading-8 text-foreground sm:text-lg lg:text-xl">
@@ -611,7 +725,7 @@ export default function Home() {
                       <img
                         src="/what-is/chaos-invoices.svg"
                         alt=""
-                        className="h-[190px] w-full object-contain drop-shadow-[0_14px_24px_rgba(0,0,0,0.14)] sm:h-[230px] lg:h-[280px]"
+                        className="h-[190px] w-full object-contain drop-shadow-[0_14px_24px_rgba(0,0,0,0.14)] [filter:hue-rotate(88deg)_saturate(0.88)_brightness(0.98)] dark:[filter:hue-rotate(88deg)_saturate(0.92)_brightness(1.06)] sm:h-[230px] lg:h-[280px]"
                       />
                     </div>
                   </div>
@@ -619,7 +733,7 @@ export default function Home() {
                   <div className="what-story-row grid items-center gap-6 lg:grid-cols-[minmax(300px,0.9fr)_minmax(0,1fr)]">
                     <div className="what-story-image relative order-2 flex min-h-[200px] items-center justify-center lg:order-1 lg:min-h-[270px]">
                       <img
-                        src="/what-is/axliner-cpu.svg"
+                        src="/hero-flow/axliner.svg"
                         alt=""
                         className="h-[205px] w-full object-contain drop-shadow-[0_14px_26px_rgba(0,0,0,0.15)] sm:h-[250px] lg:h-[310px]"
                       />
@@ -1122,116 +1236,75 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 overflow-hidden bg-primary text-primary-foreground">
-        <div className="pointer-events-none absolute inset-0 opacity-35">
-          <div className="absolute -left-32 top-10 h-72 w-72 rounded-full bg-primary-foreground/10 blur-3xl" />
-          <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-primary-foreground/10 blur-3xl" />
-        </div>
-
-        <div className="relative border-y border-primary-foreground/15 py-4">
-          <div
-            className="flex w-max items-center gap-10 whitespace-nowrap text-xs font-semibold uppercase tracking-[0.28em] text-primary-foreground/85"
-            style={{ animation: "scroll-left 42s linear infinite" }}
-          >
-            {[...Array(2)].map((_, repeat) => (
-              <div key={repeat} className="flex items-center gap-10">
-                <span>0101001110</span>
-                <span>handwritten tables</span>
-                <span>secure exports</span>
-                <span>batch recovery</span>
-                <span>structured xlsx</span>
-                <span>0100100001</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="relative mx-auto max-w-[1540px] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(640px,1fr)]">
-            <div>
-              <div className="text-4xl font-semibold tracking-tight">AxLiner</div>
-              <p className="mt-6 max-w-xl text-lg font-medium leading-8 text-primary-foreground/90">
-                Upload handwritten documents, recover the table structure, and move clean Excel files into your workflow without rebuilding the spreadsheet by hand.
+      <footer className="relative z-10 border-t border-primary/20 bg-primary text-primary-foreground">
+        <div className="mx-auto max-w-[1540px] px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,0.92fr)_minmax(620px,1fr)] lg:items-start">
+            <div className="max-w-2xl">
+              <NextLink
+                href="/"
+                aria-label="AxLiner home"
+                className="inline-flex rounded-md border border-primary-foreground/20 bg-primary-foreground px-3 py-2 text-foreground shadow-sm transition-transform hover:-translate-y-0.5"
+              >
+                <AppLogo className="h-8 w-auto" />
+              </NextLink>
+              <p className="mt-6 max-w-xl text-base font-medium leading-7 text-primary-foreground/85">
+                Handwritten documents go in. Reviewable Excel files come out. AxLiner keeps the batch, ownership, and download flow clear for teams that live in spreadsheets.
               </p>
-              <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-3">
-                {footerGlyphs.map((glyph) => (
-                  <div key={glyph.label} className="rounded-md border border-primary-foreground/20 bg-primary-foreground/10 p-3">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="font-mono text-sm font-bold text-primary-foreground">{glyph.value}</span>
-                      <span className="grid h-7 w-7 grid-cols-3 gap-[2px] rounded-sm border border-primary-foreground/25 p-1">
-                        {glyph.lines.map((height, index) => (
-                          <span key={index} className="self-end rounded-sm bg-primary-foreground/80" style={{ height: `${height}%` }} />
-                        ))}
-                      </span>
-                    </div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary-foreground/80">{glyph.label}</p>
+              <div className="mt-7 grid gap-3 sm:grid-cols-3">
+                {footerHighlights.map(({ label, description, Icon }) => (
+                  <div
+                    key={label}
+                    className="rounded-md border border-primary-foreground/16 bg-primary-foreground/[0.08] p-4 shadow-sm"
+                  >
+                    <Icon className="h-5 w-5 text-primary-foreground" />
+                    <p className="mt-4 text-sm font-semibold text-primary-foreground">{label}</p>
+                    <p className="mt-2 text-xs font-medium leading-5 text-primary-foreground/72">{description}</p>
                   </div>
                 ))}
               </div>
-              <p className="mt-7 text-sm font-semibold uppercase tracking-[0.24em] text-primary-foreground/75">
-                Made with love in Alaska.
-              </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button asChild className="bg-background px-7 py-5 font-semibold text-foreground hover:bg-background/90">
+                <Button asChild className="bg-primary-foreground px-7 py-5 font-semibold text-foreground hover:bg-primary-foreground/90">
                   <NextLink href="/dashboard/client">Try It</NextLink>
                 </Button>
                 <Button
                   asChild
                   variant="outline"
-                  className="border-primary-foreground/25 bg-primary-foreground/10 px-7 py-5 font-semibold text-primary-foreground hover:bg-primary-foreground/15 hover:text-primary-foreground"
+                  className="border-primary-foreground/24 bg-transparent px-7 py-5 font-semibold text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
                 >
                   <NextLink href="/pricing">See Pricing</NextLink>
                 </Button>
               </div>
             </div>
 
-            <div className="grid gap-8 sm:grid-cols-4">
-              <div>
-                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/80">Discover</h4>
-                <ul className="mt-5 space-y-3 text-sm font-semibold text-primary-foreground/90">
-                  <li><a href="#features" className="transition-colors hover:text-primary-foreground">Solutions</a></li>
-                  <li><a href="#benchmarks" className="transition-colors hover:text-primary-foreground">Benchmarks</a></li>
-                  <li><a href="#how-it-works" className="transition-colors hover:text-primary-foreground">How it works</a></li>
-                  <li><NextLink href="/pricing" className="transition-colors hover:text-primary-foreground">Pricing</NextLink></li>
-                  <li><NextLink href="/blogs" className="transition-colors hover:text-primary-foreground">Blogs</NextLink></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/80">Product</h4>
-                <ul className="mt-5 space-y-3 text-sm font-semibold text-primary-foreground/90">
-                  <li><NextLink href="/dashboard/client" className="transition-colors hover:text-primary-foreground">Convert files</NextLink></li>
-                  <li><NextLink href="/history" className="transition-colors hover:text-primary-foreground">History</NextLink></li>
-                  <li><NextLink href="/dashboard/settings" className="transition-colors hover:text-primary-foreground">Billing</NextLink></li>
-                  <li><a href="#security" className="transition-colors hover:text-primary-foreground">Security</a></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/80">Support</h4>
-                <ul className="mt-5 space-y-3 text-sm font-semibold text-primary-foreground/90">
-                  <li><a href="mailto:axliner.excel@gmail.com" className="transition-colors hover:text-primary-foreground">Contact</a></li>
-                  <li><NextLink href="/privacy-policy" className="transition-colors hover:text-primary-foreground">Privacy</NextLink></li>
-                  <li><NextLink href="/terms-of-service" className="transition-colors hover:text-primary-foreground">Terms</NextLink></li>
-                  <li><NextLink href="/data-deletion" className="transition-colors hover:text-primary-foreground">Data deletion</NextLink></li>
-                </ul>
-              </div>
-
-              <div className="rounded-xl border border-primary-foreground/15 bg-primary-foreground/10 p-5 backdrop-blur-md">
-                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/80">Create</h4>
-                <p className="mt-5 text-sm font-medium leading-7 text-primary-foreground/90">
-                  Start with a small batch, then upgrade when your document volume grows.
-                </p>
-                <NextLink href="/sign-up" className="mt-5 inline-flex text-sm font-semibold text-primary-foreground underline underline-offset-4">
-                  Create free account
-                </NextLink>
-              </div>
+            <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
+              {footerColumns.map((column) => (
+                <div key={column.title}>
+                  <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground/66">
+                    {column.title}
+                  </h4>
+                  <ul className="mt-4 space-y-3 text-sm font-semibold text-primary-foreground/88">
+                    {column.links.map((link) => (
+                      <li key={`${column.title}-${link.label}`}>
+                        {link.href.startsWith("mailto:") ? (
+                          <a href={link.href} className="transition-colors hover:text-primary-foreground">
+                            {link.label}
+                          </a>
+                        ) : (
+                          <NextLink href={link.href} className="transition-colors hover:text-primary-foreground">
+                            {link.label}
+                          </NextLink>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
           
-          <div className="mt-14 flex flex-col gap-4 border-t border-primary-foreground/10 pt-6 text-xs font-medium text-primary-foreground/50 sm:flex-row sm:items-center sm:justify-between">
-            <p>© 2026 AxLiner. All rights reserved.</p>
-            <p>Secure document processing for teams that live in spreadsheets.</p>
+          <div className="mt-12 flex flex-col gap-4 border-t border-primary-foreground/14 pt-6 text-xs font-medium text-primary-foreground/60 sm:flex-row sm:items-center sm:justify-between">
+            <p>&copy; 2026 AxLiner. All rights reserved.</p>
+            <p>Made with care in Alaska. Secure document processing for spreadsheet teams.</p>
           </div>
         </div>
       </footer>
