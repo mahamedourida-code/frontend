@@ -28,6 +28,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/benchmarks`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.82,
+    },
+    {
+      url: `${baseUrl}/how-axliner-is-built`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.82,
+    },
+    {
       url: `${baseUrl}/blogs`,
       lastModified,
       changeFrequency: 'weekly',

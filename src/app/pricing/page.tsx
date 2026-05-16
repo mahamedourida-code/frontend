@@ -264,13 +264,13 @@ function PricingContent() {
                     </NavigationMenuItem>
 
                     <NavigationMenuItem>
-                      <NavigationMenuLink href="/#ai-engine" className={navLinkClass}>
+                      <NavigationMenuLink href="/how-axliner-is-built" className={navLinkClass}>
                         How AxLiner's Built
                       </NavigationMenuLink>
                     </NavigationMenuItem>
 
                     <NavigationMenuItem>
-                      <NavigationMenuLink href="/#benchmarks" className={navLinkClass}>
+                      <NavigationMenuLink href="/benchmarks" className={navLinkClass}>
                         Benchmarks
                       </NavigationMenuLink>
                     </NavigationMenuItem>
@@ -342,7 +342,7 @@ function PricingContent() {
 
           {!user && !loading && (
             <div className="mx-auto mt-8 inline-flex flex-wrap items-center justify-center gap-3 rounded-md border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground shadow-sm">
-              <span>Create a free account to get <span className="text-primary">{freeCreditsLabel}</span>.</span>
+              <span>Create a free account to get <span className="font-bold text-foreground">{freeCreditsLabel}</span>.</span>
               <Button
                 size="sm"
                 className="rounded-md"
@@ -358,9 +358,9 @@ function PricingContent() {
 
           {isFreeAccount && (
             <div className="mx-auto mt-8 flex max-w-xl flex-wrap items-center justify-center gap-4 rounded-md border border-border bg-card px-5 py-4 shadow-sm">
-              <CreditStack className="h-8 w-8 text-primary" />
+              <CreditStack className="h-8 w-8 text-foreground" />
               <div className="text-left">
-                <p className="text-2xl font-semibold text-primary">{accountCredits.toLocaleString()}</p>
+                <p className="text-2xl font-semibold text-foreground">{accountCredits.toLocaleString()}</p>
                 <p className="text-sm font-semibold text-muted-foreground">credits left</p>
               </div>
               <Button
@@ -381,7 +381,7 @@ function PricingContent() {
                 className={cn(
                   "rounded-md px-6 py-2 text-sm font-bold transition",
                   billingMode === mode
-                    ? "bg-primary text-primary-foreground shadow-sm"
+                    ? "bg-foreground text-background shadow-sm"
                     : "text-muted-foreground hover:bg-muted"
                 )}
               >
@@ -393,7 +393,7 @@ function PricingContent() {
 
         {statusPanel && (
           <div className={cn("mx-auto mt-8 max-w-4xl rounded-md border p-5 text-center shadow-sm", statusPanel.tone)}>
-            <p className="text-base font-black text-primary">{statusPanel.title}</p>
+            <p className="text-base font-black text-foreground">{statusPanel.title}</p>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">{statusPanel.text}</p>
           </div>
         )}
@@ -419,7 +419,7 @@ function PricingContent() {
                       Plan data comes from the billing backend. Refresh this page in a moment, or contact support if the plan catalog stays unavailable.
                     </p>
                     <Button
-                      className="mt-6 rounded-full bg-primary px-6 text-primary-foreground hover:bg-primary/90"
+                      className="mt-6 rounded-full bg-foreground px-6 text-background hover:bg-foreground/90"
                       onClick={() => void refreshBilling({ includePlans: true, includeStatus: Boolean(user), includeLimits: false })}
                     >
                       Refresh pricing
@@ -453,42 +453,42 @@ function PricingContent() {
                   <Card
                     key={plan.key}
                     className={cn(
-                      "relative overflow-visible rounded-md border-border bg-card shadow-sm",
-                      isPopular && "border-primary shadow-md"
+                      "relative overflow-hidden rounded-md border-border bg-card shadow-sm",
+                      isPopular && "border-foreground/25 shadow-md"
                     )}
                   >
-                    {isPopular && (
-                      <div className="absolute -top-4 right-5 rounded-md bg-foreground px-4 py-2 text-xs font-bold text-background shadow-sm">
-                        Most popular
-                      </div>
-                    )}
-                    {plan.annual_discount_percent > 0 && (
-                      <div className="absolute -top-4 left-5 rounded-md bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm">
-                        Save {plan.annual_discount_percent}%
-                      </div>
-                    )}
                     <CardContent className="p-0">
                       <div className="p-7">
+                        <div className="mb-6 flex min-h-8 flex-wrap items-center gap-2">
+                          {isPopular && (
+                            <span className="rounded-md bg-foreground px-3 py-1.5 text-xs font-bold text-background shadow-sm">
+                              Most popular
+                            </span>
+                          )}
+                          {plan.annual_discount_percent > 0 && (
+                            <span className="rounded-md border border-border bg-muted px-3 py-1.5 text-xs font-bold text-foreground">
+                              Save {plan.annual_discount_percent}%
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-start justify-between gap-4">
                           <div>
                             <p className="text-xl font-semibold text-foreground">{presentation.name}</p>
                           </div>
-                          {plan.plan === "mega" ? <PlanSwitch className="h-7 w-7 text-primary" /> : <CreditStack className="h-7 w-7 text-primary" />}
+                          {plan.plan === "mega" ? <PlanSwitch className="h-7 w-7 text-foreground/65" /> : <CreditStack className="h-7 w-7 text-foreground/65" />}
                         </div>
                         <div className="mt-10 flex items-end gap-3">
-                          <span className="text-5xl font-semibold tracking-normal text-primary">{presentation.priceFormatted}</span>
+                          <span className="text-5xl font-semibold tracking-normal text-foreground">{presentation.priceFormatted}</span>
                           <span className="pb-1.5 text-sm font-semibold text-muted-foreground">{intervalLabel}</span>
                         </div>
-                        <div className="mt-8 flex min-h-[118px] flex-col justify-center rounded-md border border-primary/20 bg-primary p-5 text-primary-foreground shadow-sm">
-                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground/75">Included volume</p>
+                        <div className="mt-8 flex min-h-[118px] flex-col justify-center rounded-md border border-border bg-muted p-5 text-foreground shadow-sm">
+                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Included volume</p>
                           <p className="mt-2 text-xl font-semibold leading-tight">{presentation.included}</p>
                         </div>
                         <Button
                           className={cn(
                             "mt-8 h-14 w-full rounded-md text-base font-bold",
-                            isPopular
-                              ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                              : "bg-foreground text-background hover:bg-primary hover:text-primary-foreground"
+                            "bg-foreground text-background hover:bg-foreground/90"
                           )}
                           disabled={Boolean(isLoading || (isPaid && !plan.checkout_available))}
                           onClick={() => startCheckout(plan)}
@@ -507,8 +507,8 @@ function PricingContent() {
                         <ul className="space-y-4">
                           {features.map((feature) => (
                             <li key={`${feature.value}-${feature.label}`} className="flex items-baseline gap-3 text-[15px] leading-6">
-                              <span className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                              <span className="font-semibold text-primary">{feature.value}</span>
+                              <span className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-foreground" />
+                              <span className="font-semibold text-foreground">{feature.value}</span>
                               {feature.label && <span className="text-muted-foreground">{feature.label}</span>}
                             </li>
                           ))}
@@ -534,7 +534,7 @@ function PricingContent() {
                 companyLogos.map((imgNum) => (
                   <Card
                     key={`${setIndex}-${imgNum}`}
-                    className="h-[80px] w-[120px] flex-shrink-0 border border-border bg-card shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md"
+                    className="h-[80px] w-[120px] flex-shrink-0 border border-border bg-card shadow-sm transition-all duration-300 hover:border-foreground/30 hover:shadow-md"
                   >
                     <CardContent className="flex h-full w-full items-center justify-center p-2">
                       <img

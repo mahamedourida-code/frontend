@@ -63,7 +63,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
 
                   <NavigationMenuItem>
                     <NavigationMenuLink
-                      href="/#ai-engine"
+                      href="/how-axliner-is-built"
                       className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-primary-foreground")}
                     >
                       How AxLiner's Built
@@ -72,7 +72,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
 
                   <NavigationMenuItem>
                     <NavigationMenuLink
-                      href="/#benchmarks"
+                      href="/benchmarks"
                       className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-primary-foreground")}
                     >
                       Benchmarks

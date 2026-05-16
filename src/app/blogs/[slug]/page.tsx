@@ -100,7 +100,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
               <Link className="rounded-md px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted" href="/#features">
                 Solutions
               </Link>
-              <Link className="rounded-md px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted" href="/#benchmarks">
+              <Link className="rounded-md px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted" href="/benchmarks">
                 Benchmarks
               </Link>
               <Link className="rounded-md px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted" href="/pricing">

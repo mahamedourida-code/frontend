@@ -159,6 +159,18 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       show: !isAuthenticated
     },
     {
+      label: "Benchmarks",
+      href: "/benchmarks",
+      icon: HelpCircle,
+      show: !isAuthenticated
+    },
+    {
+      label: "How AxLiner's Built",
+      href: "/how-axliner-is-built",
+      icon: Activity,
+      show: !isAuthenticated
+    },
+    {
       label: "Blogs",
       href: "/blogs",
       icon: FileText,
@@ -404,7 +416,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleSectionClick("benchmarks")}
+                          onClick={() => handleNavigation("/benchmarks")}
                           className="h-10 w-full justify-start gap-3 rounded-2xl px-2 hover:bg-accent"
                         >
                           <HelpCircle className="h-5 w-5" />

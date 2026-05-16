@@ -248,7 +248,7 @@ const footerColumns = [
     links: [
       { label: "Convert files", href: "/dashboard/client" },
       { label: "Pricing", href: "/pricing" },
-      { label: "Benchmarks", href: "#benchmarks" },
+      { label: "Benchmarks", href: "/benchmarks" },
       { label: "Security", href: "#security" },
     ],
   },
@@ -265,7 +265,7 @@ const footerColumns = [
     title: "Resources",
     links: [
       { label: "Blogs", href: "/blogs" },
-      { label: "How it works", href: "#how-it-works" },
+      { label: "How it works", href: "/how-axliner-is-built" },
       { label: "Contact", href: "mailto:axliner.excel@gmail.com" },
       { label: "Try AxLiner", href: "/dashboard/client" },
     ],
@@ -514,24 +514,22 @@ export default function Home() {
                     </NavigationMenuContent>
                   </NavigationMenuItem>
 
-                  {/* How AxLiner's Built */}
                   <NavigationMenuItem>
-                    <button
+                    <NavigationMenuLink
+                      href="/how-axliner-is-built"
                       className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-muted")}
-                      onClick={() => scrollToSection('ai-engine')}
                     >
                       How AxLiner's Built
-                    </button>
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
 
-                  {/* Benchmarks */}
                   <NavigationMenuItem>
-                    <button
+                    <NavigationMenuLink
+                      href="/benchmarks"
                       className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-muted")}
-                      onClick={() => scrollToSection('benchmarks')}
                     >
                       Benchmarks
-                    </button>
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
 
                   <NavigationMenuItem>
@@ -725,7 +723,7 @@ export default function Home() {
                       <img
                         src="/what-is/chaos-invoices.svg"
                         alt=""
-                        className="h-[190px] w-full object-contain drop-shadow-[0_14px_24px_rgba(0,0,0,0.14)] [filter:hue-rotate(88deg)_saturate(0.88)_brightness(0.98)] dark:[filter:hue-rotate(88deg)_saturate(0.92)_brightness(1.06)] sm:h-[230px] lg:h-[280px]"
+                        className="h-[190px] w-full object-contain drop-shadow-[0_14px_24px_rgba(0,0,0,0.14)] [filter:sepia(0.32)_hue-rotate(68deg)_saturate(1.06)_brightness(0.96)] dark:[filter:sepia(0.28)_hue-rotate(68deg)_saturate(1.08)_brightness(1.06)] sm:h-[230px] lg:h-[280px]"
                       />
                     </div>
                   </div>
@@ -761,7 +759,7 @@ export default function Home() {
                       <img
                         src="/what-is/chill-output.svg"
                         alt=""
-                        className="h-[190px] w-full object-contain drop-shadow-[0_14px_24px_rgba(0,0,0,0.14)] sm:h-[230px] lg:h-[280px]"
+                        className="h-[190px] w-full object-contain drop-shadow-[0_14px_24px_rgba(0,0,0,0.14)] [filter:sepia(0.34)_hue-rotate(62deg)_saturate(1.05)_brightness(0.97)] dark:[filter:sepia(0.28)_hue-rotate(62deg)_saturate(1.08)_brightness(1.06)] sm:h-[230px] lg:h-[280px]"
                       />
                     </div>
                   </div>
@@ -1236,40 +1234,40 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-primary/20 bg-primary text-primary-foreground">
+      <footer className="relative z-10 border-t border-primary/20 bg-primary text-white">
         <div className="mx-auto max-w-[1540px] px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,0.92fr)_minmax(620px,1fr)] lg:items-start">
             <div className="max-w-2xl">
               <NextLink
                 href="/"
                 aria-label="AxLiner home"
-                className="inline-flex rounded-md border border-primary-foreground/20 bg-primary-foreground px-3 py-2 text-foreground shadow-sm transition-transform hover:-translate-y-0.5"
+                className="inline-flex rounded-md border border-white/20 bg-white px-3 py-2 text-foreground shadow-sm transition-transform hover:-translate-y-0.5"
               >
                 <AppLogo className="h-8 w-auto" />
               </NextLink>
-              <p className="mt-6 max-w-xl text-base font-medium leading-7 text-primary-foreground/85">
+              <p className="mt-6 max-w-xl text-base font-medium leading-7 text-white/90">
                 Handwritten documents go in. Reviewable Excel files come out. AxLiner keeps the batch, ownership, and download flow clear for teams that live in spreadsheets.
               </p>
               <div className="mt-7 grid gap-3 sm:grid-cols-3">
                 {footerHighlights.map(({ label, description, Icon }) => (
                   <div
                     key={label}
-                    className="rounded-md border border-primary-foreground/16 bg-primary-foreground/[0.08] p-4 shadow-sm"
+                    className="rounded-md border border-white/18 bg-white/[0.08] p-4 shadow-sm"
                   >
-                    <Icon className="h-5 w-5 text-primary-foreground" />
-                    <p className="mt-4 text-sm font-semibold text-primary-foreground">{label}</p>
-                    <p className="mt-2 text-xs font-medium leading-5 text-primary-foreground/72">{description}</p>
+                    <Icon className="h-5 w-5 text-white" />
+                    <p className="mt-4 text-sm font-semibold text-white">{label}</p>
+                    <p className="mt-2 text-xs font-medium leading-5 text-white/78">{description}</p>
                   </div>
                 ))}
               </div>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button asChild className="bg-primary-foreground px-7 py-5 font-semibold text-foreground hover:bg-primary-foreground/90">
+                <Button asChild className="bg-white px-7 py-5 font-semibold text-foreground hover:bg-white/90">
                   <NextLink href="/dashboard/client">Try It</NextLink>
                 </Button>
                 <Button
                   asChild
                   variant="outline"
-                  className="border-primary-foreground/24 bg-transparent px-7 py-5 font-semibold text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+                  className="border-white/28 bg-transparent px-7 py-5 font-semibold text-white hover:bg-white/10 hover:text-white"
                 >
                   <NextLink href="/pricing">See Pricing</NextLink>
                 </Button>
@@ -1279,18 +1277,18 @@ export default function Home() {
             <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
               {footerColumns.map((column) => (
                 <div key={column.title}>
-                  <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground/66">
+                  <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">
                     {column.title}
                   </h4>
-                  <ul className="mt-4 space-y-3 text-sm font-semibold text-primary-foreground/88">
+                  <ul className="mt-4 space-y-3 text-sm font-semibold text-white/90">
                     {column.links.map((link) => (
                       <li key={`${column.title}-${link.label}`}>
                         {link.href.startsWith("mailto:") ? (
-                          <a href={link.href} className="transition-colors hover:text-primary-foreground">
+                          <a href={link.href} className="transition-colors hover:text-white">
                             {link.label}
                           </a>
                         ) : (
-                          <NextLink href={link.href} className="transition-colors hover:text-primary-foreground">
+                          <NextLink href={link.href} className="transition-colors hover:text-white">
                             {link.label}
                           </NextLink>
                         )}
@@ -1302,7 +1300,7 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="mt-12 flex flex-col gap-4 border-t border-primary-foreground/14 pt-6 text-xs font-medium text-primary-foreground/60 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-12 flex flex-col gap-4 border-t border-white/16 pt-6 text-xs font-medium text-white/70 sm:flex-row sm:items-center sm:justify-between">
             <p>&copy; 2026 AxLiner. All rights reserved.</p>
             <p>Made with care in Alaska. Secure document processing for spreadsheet teams.</p>
           </div>
