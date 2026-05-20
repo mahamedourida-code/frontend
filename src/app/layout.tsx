@@ -30,11 +30,9 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/crop.png' },
-      { url: '/crop.png', sizes: '32x32', type: 'image/png' },
-      { url: '/crop.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
-    shortcut: '/crop.png',
+    shortcut: '/favicon.svg',
     apple: '/crop.png',
     other: [
       {

@@ -266,7 +266,7 @@ const footerColumns = [
     links: [
       { label: "Blogs", href: "/blogs" },
       { label: "How it works", href: "/how-axliner-is-built" },
-      { label: "Contact", href: "mailto:axliner.excel@gmail.com" },
+      { label: "Contact", href: "mailto:contact@axliner.com" },
       { label: "Try AxLiner", href: "/dashboard/client" },
     ],
   },

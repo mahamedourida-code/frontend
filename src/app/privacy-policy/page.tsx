@@ -149,7 +149,7 @@ export default function PrivacyPolicyPage() {
               </p>
             </div>
             <Button asChild className="rounded-md bg-background px-6 text-primary hover:bg-card/90">
-              <a href="mailto:axliner.excel@gmail.com">Contact privacy</a>
+              <a href="mailto:contact@axliner.com">Contact privacy</a>
             </Button>
           </div>
         </div>

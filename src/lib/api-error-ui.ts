@@ -68,7 +68,7 @@ export function getApiErrorUi(error: any, context: ErrorActionContext = {}): Err
   const message = getMessage(error)
   const upgradeHref = context.upgradeHref || "/pricing?from=credits"
   const billingHref = context.billingHref || "/dashboard/settings?section=billing"
-  const supportHref = context.supportHref || "mailto:support@axliner.com"
+  const supportHref = context.supportHref || "mailto:contact@axliner.com"
 
   if (
     status === 402 ||
