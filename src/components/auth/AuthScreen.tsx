@@ -24,28 +24,28 @@ const testimonialSet = [
       "AxLiner gives our bookkeeping team clean Excel files from handwritten expense sheets before month-end review starts.",
     name: "Mara Ellis",
     title: "Senior Bookkeeper, Ledger North",
-    avatar: "/testimonials/alex_finn.jpg",
+    avatar: "/testimonial/alex_finn.jpg",
   },
   {
     quote:
       "We upload paper invoices and field notes in one batch, then review the spreadsheet instead of rebuilding every row.",
     name: "Daniel Rowe",
     title: "Accounting Operations Lead",
-    avatar: "/testimonials/jon_myers.jpg",
+    avatar: "/testimonial/jon_myers.jpg",
   },
   {
     quote:
       "For bank statement photos and handwritten logs, the team starts from structured rows instead of a blank workbook.",
     name: "Nadia Clarke",
     title: "Payroll & Reconciliation Manager",
-    avatar: "/testimonials/catalin.jpg",
+    avatar: "/testimonial/catalin.jpg",
   },
   {
     quote:
       "The biggest win is review speed. Assistants send us corrected spreadsheets, not screenshots and manual notes.",
     name: "Oliver Grant",
     title: "Bookkeeping Partner, Northline Books",
-    avatar: "/testimonials/tom_dorr.jpg",
+    avatar: "/testimonial/tom_dorr.jpg",
   },
 ]
 
@@ -74,7 +74,12 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
   const [notice, setNotice] = useState("")
   const [providerLoading, setProviderLoading] = useState<Provider | null>(null)
   const [emailLoading, setEmailLoading] = useState(false)
-  const testimonial = testimonialSet[isSignUp ? 1 : 0]
+  const [testimonialIndex, setTestimonialIndex] = useState(isSignUp ? 1 : 0)
+  const testimonial = testimonialSet[testimonialIndex]
+
+  useEffect(() => {
+    setTestimonialIndex(Math.floor(Math.random() * testimonialSet.length))
+  }, [])
 
   useEffect(() => {
     if (!loading && user) {
@@ -150,7 +155,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <div className="grid min-h-screen lg:grid-cols-[minmax(480px,0.92fr)_minmax(520px,1.08fr)]">
+      <div className="grid min-h-screen lg:grid-cols-[minmax(440px,0.9fr)_minmax(520px,1.1fr)]">
         <section className="flex min-h-screen flex-col px-6 py-6 sm:px-10 lg:px-14">
           <header className="flex items-center justify-between">
             <Link href="/" aria-label="AxLiner home" className="text-foreground">
@@ -164,18 +169,18 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
             </Link>
           </header>
 
-          <div className="mx-auto flex w-full max-w-[410px] flex-1 flex-col justify-center py-12">
+          <div className="mx-auto flex w-full max-w-[390px] flex-1 flex-col justify-center py-12">
             <div>
-              <h1 className="text-3xl font-semibold leading-tight tracking-normal text-foreground sm:text-[2.35rem]">
+              <h1 className="text-2xl font-semibold leading-tight tracking-normal text-foreground">
                 {isSignUp ? "Create your AxLiner account" : "Sign in to AxLiner"}
               </h1>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 {isSignUp
-                  ? "Start converting handwritten paperwork into review-ready Excel files."
-                  : "Continue to your batch conversion workspace."}
+                  ? "Start converting handwritten paperwork into Excel."
+                  : "Continue to your workspace."}
               </p>
 
-              <div className="mt-8 space-y-4">
+              <div className="mt-7 space-y-4">
                 <OAuthButton provider="google" loading={providerLoading} disabled={emailLoading} onClick={handleOAuthSignIn} />
 
                 <div className="relative py-1">
@@ -211,10 +216,10 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
                       onChange={(event) => setEmail(event.target.value)}
                       placeholder="name@company.com"
                       autoComplete="email"
-                      className="h-12 rounded-md bg-card"
+                      className="h-11 rounded-md bg-card text-sm"
                     />
                   </div>
-                  <Button type="submit" className="h-12 w-full rounded-md font-semibold" disabled={emailLoading || providerLoading !== null}>
+                  <Button type="submit" className="h-11 w-full rounded-md text-sm font-semibold" disabled={emailLoading || providerLoading !== null}>
                     {emailLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     {isSignUp ? "Create account" : "Email me a secure link"}
                   </Button>
@@ -234,40 +239,24 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
           </div>
         </section>
 
-        <aside className="hidden min-h-screen border-l border-border bg-[#f3faf5] text-foreground dark:bg-[#101812] dark:text-white lg:flex">
-          <div className="mx-auto flex w-full max-w-[520px] flex-col justify-center px-12 py-16">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground dark:text-white/60">
-              Trusted by accounting teams
-            </p>
+        <aside className="hidden min-h-screen border-l border-border bg-[#eefbf3] text-foreground dark:bg-[#101812] dark:text-white lg:flex">
+          <div className="mx-auto flex w-full max-w-[430px] flex-col justify-center px-12 py-16">
+            <Image
+              src={testimonial.avatar}
+              alt={testimonial.name}
+              width={72}
+              height={72}
+              className="h-[72px] w-[72px] rounded-full border-4 border-background object-cover shadow-sm dark:border-[#101812]"
+            />
 
-            <div className="mt-10 flex items-center">
-              {testimonialSet.map((item, index) => (
-                <Image
-                  key={item.name}
-                  src={item.avatar}
-                  alt=""
-                  width={56}
-                  height={56}
-                  className="-ml-3 h-14 w-14 rounded-full border-4 border-[#f3faf5] object-cover first:ml-0 dark:border-[#101812]"
-                  style={{ zIndex: testimonialSet.length - index }}
-                />
-              ))}
-            </div>
-
-            <blockquote className="mt-10 max-w-[460px] text-[1.8rem] font-semibold leading-[1.22] tracking-normal text-foreground dark:text-white">
+            <blockquote className="mt-8 max-w-[390px] text-xl font-semibold leading-snug tracking-normal text-foreground dark:text-white">
               "{testimonial.quote}"
             </blockquote>
 
-            <div className="mt-8">
-              <p className="text-base font-semibold text-foreground dark:text-white">{testimonial.name}</p>
-              <p className="mt-1 text-sm font-medium text-muted-foreground dark:text-white/65">{testimonial.title}</p>
+            <div className="mt-6">
+              <p className="text-sm font-semibold text-foreground dark:text-white">{testimonial.name}</p>
+              <p className="mt-1 text-xs font-medium text-muted-foreground dark:text-white/65">{testimonial.title}</p>
             </div>
-
-            <div className="mt-12 h-px w-full bg-border dark:bg-white/12" />
-
-            <p className="mt-7 max-w-sm text-sm leading-6 text-muted-foreground dark:text-white/65">
-              Convert handwritten tables, bank notes, invoices, and paper forms into Excel files your team can review.
-            </p>
           </div>
         </aside>
       </div>
@@ -290,7 +279,7 @@ function OAuthButton({
     <Button
       type="button"
       variant="outline"
-      className="h-12 w-full rounded-md border-border bg-card font-semibold"
+      className="h-11 w-full rounded-md border-border bg-card text-sm font-semibold"
       disabled={disabled || loading !== null}
       onClick={() => onClick(provider)}
     >
