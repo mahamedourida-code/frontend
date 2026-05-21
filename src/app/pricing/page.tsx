@@ -401,9 +401,6 @@ function PricingContent() {
       <section className="mx-auto max-w-[1480px] px-4 pb-16 pt-28 sm:px-6 lg:px-8 lg:pt-32">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="text-5xl font-semibold tracking-normal text-foreground sm:text-6xl">Pricing</h1>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-muted-foreground">
-            Clear plans for handwritten images, PDFs, and batch conversion into review-ready Excel files.
-          </p>
 
           <div className="mt-8 inline-flex rounded-full border border-border bg-card p-1 shadow-sm">
             {(["month", "year"] as BillingMode[]).map((mode) => (
