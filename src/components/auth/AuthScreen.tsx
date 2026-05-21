@@ -24,28 +24,21 @@ const testimonialSet = [
       "AxLiner gives our bookkeeping team clean Excel files from handwritten expense sheets before month-end review starts.",
     name: "Mara Ellis",
     title: "Senior Bookkeeper, Ledger North",
-    avatar: "/testimonial/alex_finn.jpg",
+    avatar: "/testimonial/aa.jpg",
   },
   {
     quote:
       "We upload paper invoices and field notes in one batch, then review the spreadsheet instead of rebuilding every row.",
     name: "Daniel Rowe",
     title: "Accounting Operations Lead",
-    avatar: "/testimonial/jon_myers.jpg",
+    avatar: "/testimonial/zz.jpg",
   },
   {
     quote:
       "For bank statement photos and handwritten logs, the team starts from structured rows instead of a blank workbook.",
     name: "Nadia Clarke",
     title: "Payroll & Reconciliation Manager",
-    avatar: "/testimonial/catalin.jpg",
-  },
-  {
-    quote:
-      "The biggest win is review speed. Assistants send us corrected spreadsheets, not screenshots and manual notes.",
-    name: "Oliver Grant",
-    title: "Bookkeeping Partner, Northline Books",
-    avatar: "/testimonial/tom_dorr.jpg",
+    avatar: "/testimonial/ee.jpg",
   },
 ]
 
@@ -74,12 +67,8 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
   const [notice, setNotice] = useState("")
   const [providerLoading, setProviderLoading] = useState<Provider | null>(null)
   const [emailLoading, setEmailLoading] = useState(false)
-  const [testimonialIndex, setTestimonialIndex] = useState(isSignUp ? 1 : 0)
+  const [testimonialIndex] = useState(() => Math.floor(Math.random() * testimonialSet.length))
   const testimonial = testimonialSet[testimonialIndex]
-
-  useEffect(() => {
-    setTestimonialIndex(Math.floor(Math.random() * testimonialSet.length))
-  }, [])
 
   useEffect(() => {
     if (!loading && user) {
@@ -174,11 +163,6 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
               <h1 className="text-2xl font-semibold leading-tight tracking-normal text-foreground">
                 {isSignUp ? "Create your AxLiner account" : "Sign in to AxLiner"}
               </h1>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                {isSignUp
-                  ? "Start converting handwritten paperwork into Excel."
-                  : "Continue to your workspace."}
-              </p>
 
               <div className="mt-7 space-y-4">
                 <OAuthButton provider="google" loading={providerLoading} disabled={emailLoading} onClick={handleOAuthSignIn} />
