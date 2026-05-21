@@ -1,6 +1,8 @@
 "use client"
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react"
+import "bootstrap/dist/css/bootstrap.min.css"
+
+import { Fragment, Suspense, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
@@ -26,6 +28,14 @@ import { billingApi, type BillingPlan, type BillingPlanKey } from "@/lib/api-cli
 import { cn } from "@/lib/utils"
 
 type BillingMode = "month" | "year"
+type ComparisonGroup = {
+  title: string
+  rows: Array<{
+    label: string
+    values: string[]
+    emphasis?: boolean
+  }>
+}
 
 const companyLogos = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 const paidPlanKeys: BillingPlanKey[] = ["pro_monthly", "pro_yearly", "max_monthly", "max_yearly", "mega_monthly", "mega_yearly"]
@@ -295,26 +305,60 @@ function PricingContent() {
   const isSignedIn = Boolean(user && !loading)
 
   const comparisonPlans = visiblePlans
-  const comparisonRows = [
+  const comparisonGroups: ComparisonGroup[] = [
     {
-      label: "Included files",
-      values: comparisonPlans.map((plan) => planPresentation(plan).included),
+      title: "Conversion",
+      rows: [
+        {
+          label: "Files included",
+          emphasis: true,
+          values: comparisonPlans.map((plan) => planPresentation(plan).included),
+        },
+        {
+          label: "Files per run",
+          emphasis: true,
+          values: comparisonPlans.map((plan) => `Up to ${plan.max_files_per_batch}`),
+        },
+        {
+          label: "Max file size",
+          emphasis: true,
+          values: comparisonPlans.map((plan) => `${plan.max_file_size_mb}MB`),
+        },
+        {
+          label: "Output modes",
+          values: comparisonPlans.map(() => "Table + text"),
+        },
+      ],
     },
     {
-      label: "Files per run",
-      values: comparisonPlans.map((plan) => `Up to ${plan.max_files_per_batch}`),
+      title: "Review and export",
+      rows: [
+        {
+          label: "Handwritten OCR",
+          values: comparisonPlans.map(() => "Included"),
+        },
+        {
+          label: "Batch comparison",
+          values: comparisonPlans.map((plan) => (plan.checkout_key ? "Compare and edit" : "Preview")),
+        },
+        {
+          label: "Reviewed downloads",
+          values: comparisonPlans.map((plan) => (plan.checkout_key ? "Corrected batch" : "Single export")),
+        },
+      ],
     },
     {
-      label: "File size",
-      values: comparisonPlans.map((plan) => `${plan.max_file_size_mb}MB`),
-    },
-    {
-      label: "Output modes",
-      values: comparisonPlans.map(() => "Table + text"),
-    },
-    {
-      label: "Review workflow",
-      values: comparisonPlans.map((plan) => (plan.checkout_key ? "Batch compare + edit" : "Basic review")),
+      title: "Workspace",
+      rows: [
+        {
+          label: "Saved conversion history",
+          values: comparisonPlans.map((plan) => (plan.plan === "anonymous" ? "Trial only" : "Included")),
+        },
+        {
+          label: "Billing access",
+          values: comparisonPlans.map((plan) => (plan.checkout_key ? "Manage plan" : "Free workspace")),
+        },
+      ],
     },
   ]
 
@@ -491,11 +535,29 @@ function PricingContent() {
                 const isPopular = plan.plan === "max"
                 const intervalLabel = plan.interval === "year" ? "per year" : plan.interval === "month" ? "per month" : "forever"
                 const featureRows = [
-                  presentation.included,
-                  `Up to ${plan.max_files_per_batch} files per run`,
-                  `${plan.max_file_size_mb}MB max file size`,
-                  "Table and text output",
-                  isPaid ? "Batch review workspace" : "Saved workspace access",
+                  {
+                    lead: presentation.included,
+                    detail: "included",
+                    emphasis: true,
+                  },
+                  {
+                    lead: `Up to ${plan.max_files_per_batch}`,
+                    detail: "files per run",
+                    emphasis: true,
+                  },
+                  {
+                    lead: `${plan.max_file_size_mb}MB`,
+                    detail: "max file size",
+                    emphasis: true,
+                  },
+                  {
+                    lead: "Table and text",
+                    detail: "output",
+                  },
+                  {
+                    lead: isPaid ? "Batch review" : "Saved workspace",
+                    detail: isPaid ? "workspace" : "access",
+                  },
                 ]
 
                 return (
@@ -525,14 +587,9 @@ function PricingContent() {
                       <p className="mt-2 text-sm font-medium text-muted-foreground">{intervalLabel}</p>
                     </div>
 
-                    <div className="mt-6 rounded-2xl border border-border bg-muted/50 p-4">
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Included</p>
-                      <p className="mt-2 text-lg font-semibold text-foreground">{presentation.included}</p>
-                    </div>
-
                     <Button
                       className={cn(
-                        "mt-6 h-11 w-full rounded-full text-sm font-semibold",
+                        "mt-8 h-11 w-full rounded-full text-sm font-semibold",
                         isPopular ? "bg-foreground text-background hover:bg-foreground/90" : ""
                       )}
                       variant={isPopular ? "default" : "outline"}
@@ -550,9 +607,14 @@ function PricingContent() {
 
                     <ul className="mt-7 flex-1 space-y-3 border-t border-border pt-6">
                       {featureRows.map((feature) => (
-                        <li key={feature} className="flex items-start gap-3 text-sm leading-6 text-muted-foreground">
+                        <li key={`${feature.lead}-${feature.detail}`} className="flex items-start gap-3 text-sm leading-6 text-muted-foreground">
                           <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground" />
-                          <span>{feature}</span>
+                          <span>
+                            <span className={cn("font-semibold", feature.emphasis ? "text-[#18E399]" : "text-foreground")}>
+                              {feature.lead}
+                            </span>{" "}
+                            {feature.detail}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -560,36 +622,6 @@ function PricingContent() {
                 )
               })}
         </div>
-
-        {comparisonPlans.length > 0 && (
-          <section className="mx-auto mt-16 max-w-[1180px]">
-            <div className="mb-6 text-center">
-              <h2 className="text-3xl font-semibold tracking-normal text-foreground">Compare plans</h2>
-            </div>
-            <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-              <div className="grid min-w-[760px] grid-cols-[1.15fr_repeat(4,1fr)] border-b border-border bg-muted/40">
-                <div className="p-4 text-sm font-semibold text-muted-foreground">Feature</div>
-                {comparisonPlans.map((plan) => (
-                  <div key={plan.plan} className="p-4 text-sm font-semibold text-foreground">
-                    {planPresentation(plan).name}
-                  </div>
-                ))}
-              </div>
-              <div className="overflow-x-auto">
-                {comparisonRows.map((row) => (
-                  <div key={row.label} className="grid min-w-[760px] grid-cols-[1.15fr_repeat(4,1fr)] border-b border-border last:border-b-0">
-                    <div className="p-4 text-sm font-semibold text-foreground">{row.label}</div>
-                    {row.values.map((value, index) => (
-                      <div key={`${row.label}-${index}`} className="p-4 text-sm text-muted-foreground">
-                        {value}
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
 
         <section className="mx-auto mt-16 max-w-6xl overflow-hidden">
           <div className="relative z-10 overflow-hidden">
@@ -620,6 +652,87 @@ function PricingContent() {
             </div>
           </div>
         </section>
+
+        {comparisonPlans.length > 0 && (
+          <section className="mx-auto mt-20 max-w-[1260px]">
+            <div className="mb-10 text-center">
+              <h2 className="text-4xl font-semibold tracking-normal text-foreground">Compare plans</h2>
+            </div>
+
+            <div className="table-responsive overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+              <table className="table table-borderless mb-0 min-w-[980px] align-middle text-start">
+                <thead>
+                  <tr className="border-bottom border-border">
+                    <th scope="col" className="w-[24%] bg-card px-4 py-5 text-sm font-semibold text-muted-foreground lg:px-6">
+                      Features
+                    </th>
+                    {comparisonPlans.map((plan) => {
+                      const presentation = planPresentation(plan)
+                      const isPaid = Boolean(plan.checkout_key)
+                      const isLoading = Boolean(plan.checkout_key && checkoutLoading === plan.checkout_key)
+
+                      return (
+                        <th key={`${plan.plan}-${plan.interval}`} scope="col" className="bg-card px-4 py-5 lg:px-5">
+                          <div className="flex min-h-[210px] flex-col items-start">
+                            <p className="text-lg font-semibold text-foreground">{presentation.name}</p>
+                            <p className="mt-2 text-sm font-semibold text-[#18E399]">{presentation.included}</p>
+                            <div className="mt-5 text-3xl font-semibold tracking-normal text-foreground">
+                              <AnimatedPrice formatted={presentation.priceFormatted} />
+                            </div>
+                            <p className="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                              {plan.interval === "year" ? "per year" : plan.interval === "month" ? "per month" : "free"}
+                            </p>
+                            <Button
+                              className="mt-auto h-10 w-full rounded-full text-sm font-semibold"
+                              variant={plan.plan === "max" ? "default" : "outline"}
+                              disabled={Boolean(isLoading || (isPaid && !plan.checkout_available))}
+                              onClick={() => startCheckout(plan)}
+                            >
+                              {isLoading
+                                ? "Opening..."
+                                : isPaid && !plan.checkout_available
+                                  ? "Checkout pending"
+                                  : isPaid
+                                    ? "Choose plan"
+                                    : "Start free"}
+                            </Button>
+                          </div>
+                        </th>
+                      )
+                    })}
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparisonGroups.map((group) => (
+                    <Fragment key={group.title}>
+                      <tr className="border-top border-border bg-muted/40">
+                        <th
+                          colSpan={comparisonPlans.length + 1}
+                          scope="colgroup"
+                          className="px-4 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-foreground lg:px-6"
+                        >
+                          {group.title}
+                        </th>
+                      </tr>
+                      {group.rows.map((row) => (
+                        <tr key={row.label} className="border-bottom border-border last:border-bottom-0">
+                          <th scope="row" className="bg-card px-4 py-4 text-sm font-semibold text-foreground lg:px-6">
+                            {row.label}
+                          </th>
+                          {row.values.map((value, index) => (
+                            <td key={`${row.label}-${index}`} className="bg-card px-4 py-4 text-sm text-muted-foreground lg:px-5">
+                              <span className={cn(row.emphasis && "font-semibold text-[#18E399]")}>{value}</span>
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
       </section>
     </main>
   )
