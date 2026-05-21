@@ -40,6 +40,7 @@ type ComparisonGroup = {
   rows: Array<{
     label: string
     values: ComparisonCell[]
+    emphasis?: boolean
   }>
 }
 
@@ -97,6 +98,11 @@ function planPresentation(plan: BillingPlan) {
     monthlyAllowance,
     priceFormatted: override?.priceFormatted || plan.price_formatted,
   }
+}
+
+function planRunPolicy(plan: BillingPlan) {
+  if (plan.daily_run_limit) return `${plan.daily_run_limit} runs/day`
+  return "No daily run cap"
 }
 
 function AnimatedPrice({ formatted }: { formatted: string }) {
@@ -329,35 +335,60 @@ function PricingContent() {
   const comparisonPlans = visiblePlans
   const comparisonGroups: ComparisonGroup[] = [
     {
-      title: "Limits",
+      title: "Plan restrictions",
       rows: [
         {
           label: "Included files",
           values: comparisonPlans.map((plan) => planPresentation(plan).included),
+          emphasis: true,
+        },
+        {
+          label: "Run policy",
+          values: comparisonPlans.map((plan) => planRunPolicy(plan)),
+          emphasis: true,
         },
         {
           label: "Files per run",
           values: comparisonPlans.map((plan) => `Up to ${plan.max_files_per_batch}`),
+          emphasis: true,
         },
         {
           label: "Max file size",
           values: comparisonPlans.map((plan) => `${plan.max_file_size_mb}MB`),
+          emphasis: true,
         },
       ],
     },
     {
-      title: "Conversion",
+      title: "Document modes",
       rows: [
         {
-          label: "Handwritten OCR",
+          label: "Handwritten table mode",
           values: comparisonPlans.map(() => true),
         },
         {
-          label: "Table output",
+          label: "Bank statement mode",
           values: comparisonPlans.map(() => true),
         },
         {
-          label: "Text output",
+          label: "Invoice and receipt extraction",
+          values: comparisonPlans.map(() => true),
+        },
+        {
+          label: "Text extraction mode",
+          values: comparisonPlans.map(() => true),
+        },
+      ],
+    },
+    {
+      title: "Outputs",
+      rows: [
+        {
+          label: "Excel table output",
+          values: comparisonPlans.map(() => true),
+        },
+        {
+          label: "PDF and image batches",
           values: comparisonPlans.map(() => true),
         },
       ],
@@ -722,7 +753,10 @@ function PricingContent() {
                         {row.values.map((value, index) => (
                           <TableCell
                             key={`${row.label}-${index}`}
-                            className="border-b border-border px-4 py-5 text-sm font-medium text-muted-foreground lg:px-5"
+                            className={cn(
+                              "border-b border-border px-4 py-5 text-sm font-medium lg:px-5",
+                              row.emphasis ? "text-foreground" : "text-muted-foreground"
+                            )}
                           >
                             <CompareCellValue value={value} />
                           </TableCell>
