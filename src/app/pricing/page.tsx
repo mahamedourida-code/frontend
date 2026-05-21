@@ -1,7 +1,5 @@
 "use client"
 
-import "bootstrap/dist/css/bootstrap.min.css"
-
 import { Fragment, Suspense, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -13,6 +11,14 @@ import { IndustrySolutionsMenuGrid } from "@/components/IndustrySolutionsMenuGri
 import { MobileNav } from "@/components/MobileNav"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -28,12 +34,12 @@ import { billingApi, type BillingPlan, type BillingPlanKey } from "@/lib/api-cli
 import { cn } from "@/lib/utils"
 
 type BillingMode = "month" | "year"
+type ComparisonCell = string | boolean
 type ComparisonGroup = {
   title: string
   rows: Array<{
     label: string
-    values: string[]
-    emphasis?: boolean
+    values: ComparisonCell[]
   }>
 }
 
@@ -131,6 +137,22 @@ function AnimatedPrice({ formatted }: { formatted: string }) {
       <span>{Math.round(displayValue).toLocaleString()}</span>
     </span>
   )
+}
+
+function CompareTick() {
+  return (
+    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-foreground/10 bg-foreground text-background">
+      <svg aria-hidden="true" viewBox="0 0 16 16" className="h-3.5 w-3.5 fill-none stroke-current stroke-[2.4]">
+        <path d="M3.2 8.4 6.4 11.5 12.9 4.8" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </span>
+  )
+}
+
+function CompareCellValue({ value }: { value: ComparisonCell }) {
+  if (value === true) return <CompareTick />
+  if (value === false) return <span className="text-base text-muted-foreground/60">-</span>
+  return <span>{value}</span>
 }
 
 function PricingFallback() {
@@ -307,56 +329,53 @@ function PricingContent() {
   const comparisonPlans = visiblePlans
   const comparisonGroups: ComparisonGroup[] = [
     {
-      title: "Conversion",
+      title: "Limits",
       rows: [
         {
-          label: "Files included",
-          emphasis: true,
+          label: "Included files",
           values: comparisonPlans.map((plan) => planPresentation(plan).included),
         },
         {
           label: "Files per run",
-          emphasis: true,
           values: comparisonPlans.map((plan) => `Up to ${plan.max_files_per_batch}`),
         },
         {
           label: "Max file size",
-          emphasis: true,
           values: comparisonPlans.map((plan) => `${plan.max_file_size_mb}MB`),
-        },
-        {
-          label: "Output modes",
-          values: comparisonPlans.map(() => "Table + text"),
         },
       ],
     },
     {
-      title: "Review and export",
+      title: "Conversion",
       rows: [
         {
           label: "Handwritten OCR",
-          values: comparisonPlans.map(() => "Included"),
+          values: comparisonPlans.map(() => true),
         },
         {
-          label: "Batch comparison",
-          values: comparisonPlans.map((plan) => (plan.checkout_key ? "Compare and edit" : "Preview")),
+          label: "Table output",
+          values: comparisonPlans.map(() => true),
         },
         {
-          label: "Reviewed downloads",
-          values: comparisonPlans.map((plan) => (plan.checkout_key ? "Corrected batch" : "Single export")),
+          label: "Text output",
+          values: comparisonPlans.map(() => true),
         },
       ],
     },
     {
-      title: "Workspace",
+      title: "Review",
       rows: [
         {
-          label: "Saved conversion history",
-          values: comparisonPlans.map((plan) => (plan.plan === "anonymous" ? "Trial only" : "Included")),
+          label: "Result comparison",
+          values: comparisonPlans.map(() => true),
         },
         {
-          label: "Billing access",
-          values: comparisonPlans.map((plan) => (plan.checkout_key ? "Manage plan" : "Free workspace")),
+          label: "Batch review workspace",
+          values: comparisonPlans.map((plan) => Boolean(plan.checkout_key)),
+        },
+        {
+          label: "Corrected batch download",
+          values: comparisonPlans.map((plan) => Boolean(plan.checkout_key)),
         },
       ],
     },
@@ -535,29 +554,11 @@ function PricingContent() {
                 const isPopular = plan.plan === "max"
                 const intervalLabel = plan.interval === "year" ? "per year" : plan.interval === "month" ? "per month" : "forever"
                 const featureRows = [
-                  {
-                    lead: presentation.included,
-                    detail: "included",
-                    emphasis: true,
-                  },
-                  {
-                    lead: `Up to ${plan.max_files_per_batch}`,
-                    detail: "files per run",
-                    emphasis: true,
-                  },
-                  {
-                    lead: `${plan.max_file_size_mb}MB`,
-                    detail: "max file size",
-                    emphasis: true,
-                  },
-                  {
-                    lead: "Table and text",
-                    detail: "output",
-                  },
-                  {
-                    lead: isPaid ? "Batch review" : "Saved workspace",
-                    detail: isPaid ? "workspace" : "access",
-                  },
+                  presentation.included,
+                  `Up to ${plan.max_files_per_batch} files per run`,
+                  `${plan.max_file_size_mb}MB max file size`,
+                  "Table and text output",
+                  isPaid ? "Batch review workspace" : "Saved workspace access",
                 ]
 
                 return (
@@ -587,9 +588,14 @@ function PricingContent() {
                       <p className="mt-2 text-sm font-medium text-muted-foreground">{intervalLabel}</p>
                     </div>
 
+                    <div className="mt-6 rounded-2xl border border-border bg-muted/50 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Included</p>
+                      <p className="mt-2 text-lg font-semibold text-foreground">{presentation.included}</p>
+                    </div>
+
                     <Button
                       className={cn(
-                        "mt-8 h-11 w-full rounded-full text-sm font-semibold",
+                        "mt-6 h-11 w-full rounded-full text-sm font-semibold",
                         isPopular ? "bg-foreground text-background hover:bg-foreground/90" : ""
                       )}
                       variant={isPopular ? "default" : "outline"}
@@ -607,14 +613,9 @@ function PricingContent() {
 
                     <ul className="mt-7 flex-1 space-y-3 border-t border-border pt-6">
                       {featureRows.map((feature) => (
-                        <li key={`${feature.lead}-${feature.detail}`} className="flex items-start gap-3 text-sm leading-6 text-muted-foreground">
+                        <li key={feature} className="flex items-start gap-3 text-sm leading-6 text-muted-foreground">
                           <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground" />
-                          <span>
-                            <span className={cn("font-semibold", feature.emphasis ? "text-[#18E399]" : "text-foreground")}>
-                              {feature.lead}
-                            </span>{" "}
-                            {feature.detail}
-                          </span>
+                          <span>{feature}</span>
                         </li>
                       ))}
                     </ul>
@@ -659,78 +660,79 @@ function PricingContent() {
               <h2 className="text-4xl font-semibold tracking-normal text-foreground">Compare plans</h2>
             </div>
 
-            <div className="table-responsive overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-              <table className="table table-borderless mb-0 min-w-[980px] align-middle text-start">
-                <thead>
-                  <tr className="border-bottom border-border">
-                    <th scope="col" className="w-[24%] bg-card px-4 py-5 text-sm font-semibold text-muted-foreground lg:px-6">
-                      Features
-                    </th>
-                    {comparisonPlans.map((plan) => {
-                      const presentation = planPresentation(plan)
-                      const isPaid = Boolean(plan.checkout_key)
-                      const isLoading = Boolean(plan.checkout_key && checkoutLoading === plan.checkout_key)
+            <Table className="min-w-[940px] border-separate border-spacing-0">
+              <TableHeader>
+                <TableRow className="border-border hover:bg-transparent">
+                  <TableHead className="w-[26%] border-b border-border px-4 pb-6 pt-3 text-sm font-semibold text-muted-foreground lg:px-6">
+                    Features
+                  </TableHead>
+                  {comparisonPlans.map((plan) => {
+                    const presentation = planPresentation(plan)
 
-                      return (
-                        <th key={`${plan.plan}-${plan.interval}`} scope="col" className="bg-card px-4 py-5 lg:px-5">
-                          <div className="flex min-h-[210px] flex-col items-start">
-                            <p className="text-lg font-semibold text-foreground">{presentation.name}</p>
-                            <p className="mt-2 text-sm font-semibold text-[#18E399]">{presentation.included}</p>
-                            <div className="mt-5 text-3xl font-semibold tracking-normal text-foreground">
-                              <AnimatedPrice formatted={presentation.priceFormatted} />
-                            </div>
-                            <p className="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                              {plan.interval === "year" ? "per year" : plan.interval === "month" ? "per month" : "free"}
-                            </p>
-                            <Button
-                              className="mt-auto h-10 w-full rounded-full text-sm font-semibold"
-                              variant={plan.plan === "max" ? "default" : "outline"}
-                              disabled={Boolean(isLoading || (isPaid && !plan.checkout_available))}
-                              onClick={() => startCheckout(plan)}
-                            >
-                              {isLoading
-                                ? "Opening..."
-                                : isPaid && !plan.checkout_available
-                                  ? "Checkout pending"
-                                  : isPaid
-                                    ? "Choose plan"
-                                    : "Start free"}
-                            </Button>
+                    return (
+                      <TableHead
+                        key={`${plan.plan}-${plan.interval}`}
+                        className="min-w-[170px] border-b border-border px-4 pb-6 pt-3 align-top lg:px-5"
+                      >
+                        <div className="flex min-h-[192px] flex-col items-start whitespace-normal">
+                          <p className="text-lg font-semibold text-foreground">{presentation.name}</p>
+                          <p className="mt-3 text-sm font-medium text-muted-foreground">{presentation.included}</p>
+                          <div className="mt-5 text-3xl font-semibold tracking-normal text-foreground">
+                            <AnimatedPrice formatted={presentation.priceFormatted} />
                           </div>
-                        </th>
-                      )
-                    })}
-                  </tr>
-                </thead>
-                <tbody>
-                  {comparisonGroups.map((group) => (
-                    <Fragment key={group.title}>
-                      <tr className="border-top border-border bg-muted/40">
-                        <th
-                          colSpan={comparisonPlans.length + 1}
-                          scope="colgroup"
-                          className="px-4 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-foreground lg:px-6"
-                        >
-                          {group.title}
-                        </th>
-                      </tr>
-                      {group.rows.map((row) => (
-                        <tr key={row.label} className="border-bottom border-border last:border-bottom-0">
-                          <th scope="row" className="bg-card px-4 py-4 text-sm font-semibold text-foreground lg:px-6">
-                            {row.label}
-                          </th>
-                          {row.values.map((value, index) => (
-                            <td key={`${row.label}-${index}`} className="bg-card px-4 py-4 text-sm text-muted-foreground lg:px-5">
-                              <span className={cn(row.emphasis && "font-semibold text-[#18E399]")}>{value}</span>
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </Fragment>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                            {plan.interval === "year" ? "per year" : plan.interval === "month" ? "per month" : "free"}
+                          </p>
+                          <Button
+                            className="mt-auto h-10 w-full rounded-full text-sm font-semibold"
+                            variant={plan.plan === "max" ? "default" : "outline"}
+                            disabled={Boolean(plan.checkout_key && (!plan.checkout_available || checkoutLoading === plan.checkout_key))}
+                            onClick={() => startCheckout(plan)}
+                          >
+                            {plan.checkout_key && checkoutLoading === plan.checkout_key
+                              ? "Opening checkout..."
+                              : plan.checkout_key && !plan.checkout_available
+                                ? "Checkout pending"
+                                : plan.checkout_key
+                                  ? "Choose plan"
+                                  : "Start free"}
+                          </Button>
+                        </div>
+                      </TableHead>
+                    )
+                  })}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {comparisonGroups.map((group) => (
+                  <Fragment key={group.title}>
+                    <TableRow className="border-border bg-muted/35 hover:bg-muted/35">
+                      <TableCell
+                        colSpan={comparisonPlans.length + 1}
+                        className="border-b border-border px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-foreground lg:px-6"
+                      >
+                        {group.title}
+                      </TableCell>
+                    </TableRow>
+                    {group.rows.map((row) => (
+                      <TableRow key={row.label} className="border-border hover:bg-muted/20">
+                        <TableCell className="border-b border-border px-4 py-5 text-sm font-semibold text-foreground lg:px-6">
+                          {row.label}
+                        </TableCell>
+                        {row.values.map((value, index) => (
+                          <TableCell
+                            key={`${row.label}-${index}`}
+                            className="border-b border-border px-4 py-5 text-sm font-medium text-muted-foreground lg:px-5"
+                          >
+                            <CompareCellValue value={value} />
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </Fragment>
+                ))}
+              </TableBody>
+            </Table>
           </section>
         )}
       </section>
