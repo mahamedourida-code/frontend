@@ -49,13 +49,6 @@ const testimonialSet = [
   },
 ]
 
-const floatingAvatarPositions = [
-  "left-[12%] top-[14%] h-16 w-16",
-  "right-[18%] top-[18%] h-12 w-12",
-  "left-[18%] bottom-[18%] h-12 w-12",
-  "right-[13%] bottom-[20%] h-16 w-16",
-]
-
 function AuthFallback() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -173,7 +166,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
 
           <div className="mx-auto flex w-full max-w-[410px] flex-1 flex-col justify-center py-12">
             <div>
-              <h1 className="text-3xl font-semibold tracking-normal text-foreground sm:text-4xl">
+              <h1 className="text-3xl font-semibold leading-tight tracking-normal text-foreground sm:text-[2.35rem]">
                 {isSignUp ? "Create your AxLiner account" : "Sign in to AxLiner"}
               </h1>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
@@ -241,53 +234,40 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
           </div>
         </section>
 
-        <aside className="relative hidden min-h-screen overflow-hidden border-l border-border bg-primary text-primary-foreground lg:flex">
-          <div className="absolute inset-0 opacity-25">
-            <div className="absolute left-[12%] top-[18%] h-40 w-40 rounded-full border border-current" />
-            <div className="absolute right-[14%] top-[28%] h-72 w-72 rounded-full border border-current" />
-            <div className="absolute bottom-[14%] left-[20%] h-56 w-56 rounded-full border border-current" />
-          </div>
+        <aside className="hidden min-h-screen border-l border-border bg-[#f3faf5] text-foreground dark:bg-[#101812] dark:text-white lg:flex">
+          <div className="mx-auto flex w-full max-w-[520px] flex-col justify-center px-12 py-16">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground dark:text-white/60">
+              Trusted by accounting teams
+            </p>
 
-          {testimonialSet.map((item, index) => (
-            <Image
-              key={item.name}
-              src={item.avatar}
-              alt=""
-              width={96}
-              height={96}
-              className={`absolute rounded-full border-4 border-background object-cover shadow-lg ${floatingAvatarPositions[index]}`}
-            />
-          ))}
-
-          <div className="relative z-10 mx-auto flex w-full max-w-[560px] flex-col justify-center px-12 py-16">
-            <div className="mb-12 flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-current/30 bg-background/20">
+            <div className="mt-10 flex items-center">
+              {testimonialSet.map((item, index) => (
                 <Image
-                  src={testimonial.avatar}
-                  alt={testimonial.name}
-                  width={44}
-                  height={44}
-                  className="h-10 w-10 rounded-full object-cover"
-                />
-              </div>
-              <div>
-                <p className="text-sm font-semibold">{testimonial.name}</p>
-                <p className="text-xs font-medium opacity-75">{testimonial.title}</p>
-              </div>
-            </div>
-
-            <blockquote className="text-4xl font-semibold leading-tight tracking-normal">
-              "{testimonial.quote}"
-            </blockquote>
-
-            <div className="mt-12 flex gap-2">
-              {testimonialSet.slice(0, 3).map((item) => (
-                <span
                   key={item.name}
-                  className={`h-2.5 rounded-full bg-current ${item.name === testimonial.name ? "w-8 opacity-95" : "w-2.5 opacity-45"}`}
+                  src={item.avatar}
+                  alt=""
+                  width={56}
+                  height={56}
+                  className="-ml-3 h-14 w-14 rounded-full border-4 border-[#f3faf5] object-cover first:ml-0 dark:border-[#101812]"
+                  style={{ zIndex: testimonialSet.length - index }}
                 />
               ))}
             </div>
+
+            <blockquote className="mt-10 max-w-[460px] text-[1.8rem] font-semibold leading-[1.22] tracking-normal text-foreground dark:text-white">
+              "{testimonial.quote}"
+            </blockquote>
+
+            <div className="mt-8">
+              <p className="text-base font-semibold text-foreground dark:text-white">{testimonial.name}</p>
+              <p className="mt-1 text-sm font-medium text-muted-foreground dark:text-white/65">{testimonial.title}</p>
+            </div>
+
+            <div className="mt-12 h-px w-full bg-border dark:bg-white/12" />
+
+            <p className="mt-7 max-w-sm text-sm leading-6 text-muted-foreground dark:text-white/65">
+              Convert handwritten tables, bank notes, invoices, and paper forms into Excel files your team can review.
+            </p>
           </div>
         </aside>
       </div>
