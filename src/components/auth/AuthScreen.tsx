@@ -21,34 +21,39 @@ type Provider = "google"
 const testimonialSet = [
   {
     quote:
-      "We clear handwritten expense sheets and supplier notes before close without rebuilding every row manually.",
+      "AxLiner gives our bookkeeping team clean Excel files from handwritten expense sheets before month-end review starts.",
     name: "Mara Ellis",
     title: "Senior Bookkeeper, Ledger North",
     avatar: "/testimonials/alex_finn.jpg",
-    features: ["Month-end review", "Receipt batches", "Cleaner Excel"],
   },
   {
     quote:
-      "The useful part is speed. Our team uploads the paper stack, reviews the tables, then sends corrected workbooks to accounting.",
+      "We upload paper invoices and field notes in one batch, then review the spreadsheet instead of rebuilding every row.",
     name: "Daniel Rowe",
     title: "Accounting Operations Lead",
     avatar: "/testimonials/jon_myers.jpg",
-    features: ["Batch intake", "Audit trail", "Spreadsheet handoff"],
   },
   {
     quote:
-      "For bank statement photos and handwritten logs, AxLiner gives our reviewers a structured starting point instead of a blank spreadsheet.",
+      "For bank statement photos and handwritten logs, the team starts from structured rows instead of a blank workbook.",
     name: "Nadia Clarke",
     title: "Payroll & Reconciliation Manager",
     avatar: "/testimonials/catalin.jpg",
-    features: ["Bank statements", "Manual notes", "Review workflow"],
+  },
+  {
+    quote:
+      "The biggest win is review speed. Assistants send us corrected spreadsheets, not screenshots and manual notes.",
+    name: "Oliver Grant",
+    title: "Bookkeeping Partner, Northline Books",
+    avatar: "/testimonials/tom_dorr.jpg",
   },
 ]
 
-const trustItems = [
-  { value: "30", label: "free account credits" },
-  { value: "3", label: "trial runs before signup" },
-  { value: "xlsx", label: "review-ready output" },
+const floatingAvatarPositions = [
+  "left-[12%] top-[14%] h-16 w-16",
+  "right-[18%] top-[18%] h-12 w-12",
+  "left-[18%] bottom-[18%] h-12 w-12",
+  "right-[13%] bottom-[20%] h-16 w-16",
 ]
 
 function AuthFallback() {
@@ -151,82 +156,44 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
   if (loading) return <AuthFallback />
 
   return (
-    <main className="min-h-screen bg-background px-4 py-6 text-foreground sm:px-6 lg:px-8">
-      <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-[1180px] flex-col">
-        <header className="flex items-center justify-between">
-          <Link href="/" aria-label="AxLiner home" className="text-foreground">
-            <AppLogo className="h-8 w-auto" />
-          </Link>
-          <Button asChild variant="ghost" className="rounded-md px-4 text-sm font-semibold">
-            <Link href={isSignUp ? `/sign-in?next=${encodeURIComponent(nextPath)}` : `/sign-up?next=${encodeURIComponent(nextPath)}`}>
-              {isSignUp ? "Sign in" : "Create account"}
+    <main className="min-h-screen bg-background text-foreground">
+      <div className="grid min-h-screen lg:grid-cols-[minmax(480px,0.92fr)_minmax(520px,1.08fr)]">
+        <section className="flex min-h-screen flex-col px-6 py-6 sm:px-10 lg:px-14">
+          <header className="flex items-center justify-between">
+            <Link href="/" aria-label="AxLiner home" className="text-foreground">
+              <AppLogo className="h-8 w-auto" />
             </Link>
-          </Button>
-        </header>
+            <Link
+              href={isSignUp ? `/sign-in?next=${encodeURIComponent(nextPath)}` : `/sign-up?next=${encodeURIComponent(nextPath)}`}
+              className="text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {isSignUp ? "Sign in" : "Sign up"}
+            </Link>
+          </header>
 
-        <section className="grid flex-1 items-center gap-8 py-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(420px,0.78fr)] lg:gap-14">
-          <aside className="hidden lg:block">
-            <div className="max-w-xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                Built for spreadsheet operators
+          <div className="mx-auto flex w-full max-w-[410px] flex-1 flex-col justify-center py-12">
+            <div>
+              <h1 className="text-3xl font-semibold tracking-normal text-foreground sm:text-4xl">
+                {isSignUp ? "Create your AxLiner account" : "Sign in to AxLiner"}
+              </h1>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                {isSignUp
+                  ? "Start converting handwritten paperwork into review-ready Excel files."
+                  : "Continue to your batch conversion workspace."}
               </p>
-              <blockquote className="mt-7 text-3xl font-semibold leading-tight tracking-normal text-foreground">
-                "{testimonial.quote}"
-              </blockquote>
 
-              <div className="mt-7 flex items-center gap-4">
-                <Image
-                  src={testimonial.avatar}
-                  alt={testimonial.name}
-                  width={54}
-                  height={54}
-                  className="h-14 w-14 rounded-full object-cover"
-                />
-                <div>
-                  <p className="font-semibold text-foreground">{testimonial.name}</p>
-                  <p className="mt-1 text-sm font-medium text-muted-foreground">{testimonial.title}</p>
-                </div>
-              </div>
+              <div className="mt-8 space-y-4">
+                <OAuthButton provider="google" loading={providerLoading} disabled={emailLoading} onClick={handleOAuthSignIn} />
 
-              <div className="mt-9">
-                <p className="text-sm font-semibold text-muted-foreground">Favorite workflow gains</p>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  {testimonial.features.map((feature) => (
-                    <span key={feature} className="rounded-md border border-border bg-card px-4 py-2 text-sm font-semibold shadow-sm">
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-10 grid max-w-lg grid-cols-3 gap-3">
-                {trustItems.map((item) => (
-                  <div key={item.label} className="rounded-md border border-border bg-card p-4 shadow-sm">
-                    <p className="text-2xl font-semibold text-foreground">{item.value}</p>
-                    <p className="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">{item.label}</p>
+                <div className="relative py-1">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-border" />
                   </div>
-                ))}
-              </div>
-            </div>
-          </aside>
-
-          <div className="mx-auto w-full max-w-[430px]">
-            <div className="rounded-lg border border-border bg-card p-6 shadow-sm sm:p-8">
-              <div className="text-center">
-                <div className="mx-auto mb-7 flex h-11 w-fit items-center rounded-md border border-border bg-background px-4 shadow-sm">
-                  <AppLogo className="h-7 w-auto" />
+                  <div className="relative flex justify-center text-xs">
+                    <span className="bg-background px-3 font-semibold uppercase tracking-[0.16em] text-muted-foreground">or</span>
+                  </div>
                 </div>
-                <h1 className="text-2xl font-semibold tracking-normal text-foreground">
-                  {isSignUp ? "Create your AxLiner workspace" : "Welcome back"}
-                </h1>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  {isSignUp
-                    ? "Start with email or Google. No password to remember."
-                    : "Sign in with email or Google to continue your batch conversions."}
-                </p>
-              </div>
 
-              <div className="mt-7 space-y-4">
                 {error && (
                   <Alert variant="destructive">
                     <AlertDescription>{error}</AlertDescription>
@@ -239,10 +206,10 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
                   </Alert>
                 )}
 
-                <form className="space-y-3" onSubmit={handleEmailSubmit}>
+                <form className="space-y-4" onSubmit={handleEmailSubmit}>
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-sm font-semibold">
-                      Email
+                      Email address
                     </Label>
                     <Input
                       id="email"
@@ -251,28 +218,17 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
                       onChange={(event) => setEmail(event.target.value)}
                       placeholder="name@company.com"
                       autoComplete="email"
-                      className="h-12 rounded-md bg-background"
+                      className="h-12 rounded-md bg-card"
                     />
                   </div>
-                  <Button type="submit" className="h-11 w-full rounded-md font-semibold" disabled={emailLoading || providerLoading !== null}>
+                  <Button type="submit" className="h-12 w-full rounded-md font-semibold" disabled={emailLoading || providerLoading !== null}>
                     {emailLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    {isSignUp ? "Create account with email" : "Email me a secure link"}
+                    {isSignUp ? "Create account" : "Email me a secure link"}
                   </Button>
                 </form>
-
-                <div className="relative py-1">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-border" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-3 font-semibold tracking-[0.16em] text-muted-foreground">or</span>
-                  </div>
-                </div>
-
-                <OAuthButton provider="google" loading={providerLoading} disabled={emailLoading} onClick={handleOAuthSignIn} />
               </div>
 
-              <p className="mt-7 text-center text-sm text-muted-foreground">
+              <p className="mt-7 text-sm text-muted-foreground">
                 {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
                 <Link
                   href={isSignUp ? `/sign-in?next=${encodeURIComponent(nextPath)}` : `/sign-up?next=${encodeURIComponent(nextPath)}`}
@@ -282,19 +238,58 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
                 </Link>
               </p>
             </div>
-
-            <div className="mt-5 rounded-md border border-border bg-card/70 p-4 shadow-sm">
-              <div className="flex items-start gap-3">
-                <div className="mt-1 h-2.5 w-2.5 rounded-full bg-primary" />
-                <p className="text-sm leading-6 text-muted-foreground">
-                  {isSignUp
-                    ? "Create a free account to get 30 credits, saved batches, and reload-safe downloads."
-                    : "Your files, credits, and previous batches stay tied to your workspace after sign in."}
-                </p>
-              </div>
-            </div>
           </div>
         </section>
+
+        <aside className="relative hidden min-h-screen overflow-hidden border-l border-border bg-primary text-primary-foreground lg:flex">
+          <div className="absolute inset-0 opacity-25">
+            <div className="absolute left-[12%] top-[18%] h-40 w-40 rounded-full border border-current" />
+            <div className="absolute right-[14%] top-[28%] h-72 w-72 rounded-full border border-current" />
+            <div className="absolute bottom-[14%] left-[20%] h-56 w-56 rounded-full border border-current" />
+          </div>
+
+          {testimonialSet.map((item, index) => (
+            <Image
+              key={item.name}
+              src={item.avatar}
+              alt=""
+              width={96}
+              height={96}
+              className={`absolute rounded-full border-4 border-background object-cover shadow-lg ${floatingAvatarPositions[index]}`}
+            />
+          ))}
+
+          <div className="relative z-10 mx-auto flex w-full max-w-[560px] flex-col justify-center px-12 py-16">
+            <div className="mb-12 flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-current/30 bg-background/20">
+                <Image
+                  src={testimonial.avatar}
+                  alt={testimonial.name}
+                  width={44}
+                  height={44}
+                  className="h-10 w-10 rounded-full object-cover"
+                />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">{testimonial.name}</p>
+                <p className="text-xs font-medium opacity-75">{testimonial.title}</p>
+              </div>
+            </div>
+
+            <blockquote className="text-4xl font-semibold leading-tight tracking-normal">
+              "{testimonial.quote}"
+            </blockquote>
+
+            <div className="mt-12 flex gap-2">
+              {testimonialSet.slice(0, 3).map((item) => (
+                <span
+                  key={item.name}
+                  className={`h-2.5 rounded-full bg-current ${item.name === testimonial.name ? "w-8 opacity-95" : "w-2.5 opacity-45"}`}
+                />
+              ))}
+            </div>
+          </div>
+        </aside>
       </div>
     </main>
   )
@@ -315,7 +310,7 @@ function OAuthButton({
     <Button
       type="button"
       variant="outline"
-      className="h-12 w-full rounded-md border-border bg-background font-semibold"
+      className="h-12 w-full rounded-md border-border bg-card font-semibold"
       disabled={disabled || loading !== null}
       onClick={() => onClick(provider)}
     >
