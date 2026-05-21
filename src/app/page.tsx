@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -42,11 +42,6 @@ const LandingConverter = dynamic(
 
 const TestimonialsMarquee = dynamic(
   () => import("@/components/landing/TestimonialsMarquee"),
-  { ssr: false }
-);
-
-const GoogleSignInModal = dynamic(
-  () => import("@/components/GoogleSignInModal").then((mod) => mod.GoogleSignInModal),
   { ssr: false }
 );
 
@@ -292,15 +287,8 @@ export default function Home() {
   const securityBandRef = useRef<HTMLDivElement>(null);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showSignInModal, setShowSignInModal] = useState(false);
-  const [signInRedirectPath, setSignInRedirectPath] = useState("/dashboard/client");
   const [shouldLoadConverter, setShouldLoadConverter] = useState(false);
   const supabase = createClient();
-
-  const openSignInModal = useCallback((redirectPath = "/dashboard/client") => {
-    setSignInRedirectPath(redirectPath);
-    setShowSignInModal(true);
-  }, []);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -565,16 +553,16 @@ export default function Home() {
                 </Button>
               ) : (
                 <>
-                  <Button size="sm" className="rounded-md" onClick={() => openSignInModal("/pricing?from=signup")}>
-                    Sign Up
+                  <Button size="sm" className="rounded-md" asChild>
+                    <NextLink href="/sign-up?next=%2Fdashboard%2Fclient">Sign Up</NextLink>
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     className="rounded-md"
-                    onClick={() => openSignInModal("/dashboard/client")}
+                    asChild
                   >
-                    Sign in
+                    <NextLink href="/sign-in?next=%2Fdashboard%2Fclient">Sign in</NextLink>
                   </Button>
                 </>
               )}
@@ -1310,18 +1298,9 @@ export default function Home() {
       {/* Mobile Navigation */}
       <MobileNav 
         onSectionClick={scrollToSection}
-        onSignInClick={() => openSignInModal("/dashboard/client")}
         isAuthenticated={isAuthenticated}
       />
 
-      {showSignInModal && (
-        <GoogleSignInModal
-          open={showSignInModal}
-          onOpenChange={setShowSignInModal}
-          redirectPath={signInRedirectPath}
-        />
-      )}
-
-      <GoogleOneTap enabled={!isAuthenticated && !showSignInModal} redirectPath="/dashboard/client" />
+      <GoogleOneTap enabled={!isAuthenticated} redirectPath="/dashboard/client" />
     </div>
   )}

@@ -84,9 +84,14 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
     }
   }, [loading, nextPath, router, user])
 
-  const redirectTo = () => {
+  const oauthRedirectTo = () => {
     if (typeof window === "undefined") return undefined
     return `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`
+  }
+
+  const emailRedirectTo = () => {
+    if (typeof window === "undefined") return undefined
+    return `${window.location.origin}/auth/confirm?next=${encodeURIComponent(nextPath)}`
   }
 
   const handleOAuthSignIn = async (provider: Provider) => {
@@ -97,7 +102,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: redirectTo(),
+        redirectTo: oauthRedirectTo(),
       },
     })
 
@@ -124,7 +129,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
     const { error } = await supabase.auth.signInWithOtp({
       email: normalizedEmail,
       options: {
-        emailRedirectTo: redirectTo(),
+        emailRedirectTo: emailRedirectTo(),
         shouldCreateUser: isSignUp,
       },
     })

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
@@ -18,6 +19,7 @@ type Provider = 'google'
 export function GoogleSignInModal({ open, onOpenChange, redirectPath = '/dashboard/client' }: GoogleSignInModalProps) {
   const [loading, setLoading] = useState<Provider | null>(null)
   const supabase = createClient()
+  const encodedRedirect = encodeURIComponent(redirectPath)
 
   const handleOAuthSignIn = async (provider: Provider) => {
     setLoading(provider)
@@ -42,11 +44,19 @@ export function GoogleSignInModal({ open, onOpenChange, redirectPath = '/dashboa
       <DialogContent className="sm:max-w-md">
         <div className="flex flex-col items-center justify-center gap-6 py-8">
           <div className="text-center space-y-2">
-            <h2 className="text-2xl font-semibold tracking-tight">Welcome to AxLiner</h2>
-            <p className="text-sm text-muted-foreground">Continue with Google to access your workspace.</p>
+            <h2 className="text-2xl font-semibold tracking-tight">Access AxLiner</h2>
+            <p className="text-sm text-muted-foreground">
+              Sign in with Google or use email verification on the auth page.
+            </p>
           </div>
 
           <div className="w-full space-y-3">
+            <Button asChild size="lg" className="w-full">
+              <Link href={`/sign-up?next=${encodedRedirect}`}>Create free account</Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="w-full">
+              <Link href={`/sign-in?next=${encodedRedirect}`}>Sign in with email</Link>
+            </Button>
             <Button
               variant="outline"
               size="lg"

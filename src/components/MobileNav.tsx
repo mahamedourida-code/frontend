@@ -445,17 +445,33 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                     <span className="text-sm md:text-base">Sign Out</span>
                   </Button>
                 ) : (
-                  <Button
-                    variant="outline"
-                    className="h-11 w-full gap-3 rounded-2xl"
-                    onClick={() => {
-                      setIsOpen(false);
-                      onSignInClick?.();
-                    }}
-                  >
-                    <LogIn className="h-5 w-5" />
-                    <span className="text-sm md:text-base">Sign In</span>
-                  </Button>
+                  <>
+                    <Button
+                      className="h-11 w-full gap-3 rounded-2xl"
+                      onClick={() => {
+                        setIsOpen(false);
+                        handleNavigation("/sign-up?next=%2Fdashboard%2Fclient");
+                      }}
+                    >
+                      <LogIn className="h-5 w-5" />
+                      <span className="text-sm md:text-base">Create account</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-11 w-full gap-3 rounded-2xl"
+                      onClick={() => {
+                        setIsOpen(false);
+                        if (onSignInClick) {
+                          onSignInClick();
+                        } else {
+                          handleNavigation("/sign-in?next=%2Fdashboard%2Fclient");
+                        }
+                      }}
+                    >
+                      <LogIn className="h-5 w-5" />
+                      <span className="text-sm md:text-base">Sign in</span>
+                    </Button>
+                  </>
                 )}
               </div>
             </SheetContent>
