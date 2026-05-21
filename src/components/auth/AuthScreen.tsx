@@ -155,8 +155,8 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <div className="grid min-h-screen lg:grid-cols-[minmax(440px,0.9fr)_minmax(520px,1.1fr)]">
-        <section className="flex min-h-screen flex-col px-6 py-6 sm:px-10 lg:px-14">
+      <div className="grid min-h-screen lg:grid-cols-[minmax(560px,1.08fr)_minmax(460px,0.92fr)]">
+        <section className="flex min-h-screen flex-col px-6 py-6 sm:px-10 lg:px-16">
           <header className="flex items-center justify-between">
             <Link href="/" aria-label="AxLiner home" className="text-foreground">
               <AppLogo className="h-8 w-auto" />
@@ -240,7 +240,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
         </section>
 
         <aside className="hidden min-h-screen border-l border-border bg-[#eefbf3] text-foreground dark:bg-[#101812] dark:text-white lg:flex">
-          <div className="mx-auto flex w-full max-w-[430px] flex-col justify-center px-12 py-16">
+          <div className="mx-auto flex w-full max-w-[390px] flex-col justify-center px-10 py-16">
             <Image
               src={testimonial.avatar}
               alt={testimonial.name}
@@ -249,7 +249,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
               className="h-[72px] w-[72px] rounded-full border-4 border-background object-cover shadow-sm dark:border-[#101812]"
             />
 
-            <blockquote className="mt-8 max-w-[390px] text-xl font-semibold leading-snug tracking-normal text-foreground dark:text-white">
+            <blockquote className="mt-8 max-w-[360px] text-xl font-semibold leading-snug tracking-normal text-foreground dark:text-white">
               "{testimonial.quote}"
             </blockquote>
 
