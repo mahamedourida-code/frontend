@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, type ChangeEvent, type DragEvent } from "react"
+import { useEffect, useState, type ChangeEvent, type DragEvent } from "react"
 import {
   AlertCircle,
   ArrowRight,
@@ -711,9 +711,24 @@ export function ResultActions({
   const [editedTables, setEditedTables] = useState<Record<string, any[][]>>({})
   const [resultFilter, setResultFilter] = useState<ResultFilter>("all")
   const [reviewedDownloadBusy, setReviewedDownloadBusy] = useState(false)
-  if (!resultFiles?.length) return null
+  const safeResultFiles = resultFiles || []
 
-  const comparisonFile = comparisonIndex !== null ? resultFiles[comparisonIndex] : null
+  useEffect(() => {
+    if (!safeResultFiles.length) return
+
+    const hasReviewFiles = safeResultFiles.some((file) => {
+      const badge = getOutputBadge(file)
+      return badge.state === "review"
+    })
+    const hasFailedFiles = safeResultFiles.some((file) => getOutputBadge(file).state === "failed")
+
+    setResultFilter(hasReviewFiles ? "review" : hasFailedFiles ? "failed" : "all")
+  }, [safeResultFiles.map((file) => file.file_id || file.filename || "").join("|")])
+
+  if (!safeResultFiles.length) return null
+
+  const firstResultFile = safeResultFiles[0]
+  const comparisonFile = comparisonIndex !== null ? safeResultFiles[comparisonIndex] : null
   const comparisonKey = comparisonFile && comparisonIndex !== null ? getResultKey(comparisonFile, comparisonIndex) : ""
   const comparisonLoaded = Boolean(
     comparisonFile &&
@@ -726,7 +741,7 @@ export function ResultActions({
   const comparisonColumnCount = Math.max(1, ...comparisonTable.map(row => row.length))
   const editedCount = Object.keys(editedTables).length
   const comparisonImageUrl = comparisonFile?.input_preview_url || firstImageUrl
-  const resultEntries = resultFiles.map((file, index) => {
+  const resultEntries = safeResultFiles.map((file, index) => {
     const fileKey = getResultKey(file, index)
     const badge = getOutputBadge(file)
     const edited = Boolean(editedTables[fileKey])
@@ -749,7 +764,7 @@ export function ResultActions({
   })
 
   const openComparison = (index: number) => {
-    const file = resultFiles[index]
+    const file = safeResultFiles[index]
     if (!file) return
     setComparisonIndex(index)
     setEditingCell(null)
@@ -757,8 +772,8 @@ export function ResultActions({
   }
 
   const goToAdjacentResult = (direction: -1 | 1) => {
-    if (comparisonIndex === null || resultFiles.length < 2) return
-    openComparison((comparisonIndex + direction + resultFiles.length) % resultFiles.length)
+    if (comparisonIndex === null || safeResultFiles.length < 2) return
+    openComparison((comparisonIndex + direction + safeResultFiles.length) % safeResultFiles.length)
   }
 
   const updateCorrectedCell = (fileKey: string, rowIndex: number, cellIndex: number, value: string) => {
@@ -781,8 +796,8 @@ export function ResultActions({
     const XLSX = await import("xlsx")
 
     for (const [fileKey, table] of entries) {
-      const fileIndex = resultFiles.findIndex((file, index) => getResultKey(file, index) === fileKey)
-      const file = fileIndex >= 0 ? resultFiles[fileIndex] : undefined
+      const fileIndex = safeResultFiles.findIndex((file, index) => getResultKey(file, index) === fileKey)
+      const file = fileIndex >= 0 ? safeResultFiles[fileIndex] : undefined
       const worksheet = XLSX.utils.aoa_to_sheet(table)
       const workbook = XLSX.utils.book_new()
       XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1")
@@ -817,7 +832,7 @@ export function ResultActions({
     <>
     <div className="space-y-3">
       {isComplete ? (
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="sticky top-[4.5rem] z-20 flex flex-wrap items-center gap-2 rounded-md border border-border bg-card/95 p-2 shadow-sm backdrop-blur-xl">
           <Button
             onClick={() => {
               setEditedTables({})
@@ -843,11 +858,19 @@ export function ResultActions({
           ) : null}
           <Button
             variant="outline"
-            onClick={resultFiles.length > 1 ? onShareAll : () => onShareFile(resultFiles[0])}
+            onClick={safeResultFiles.length > 1 ? onShareAll : () => firstResultFile && onShareFile(firstResultFile)}
             className="h-10 gap-2 rounded-md border-border bg-card px-4 text-primary shadow-sm hover:bg-accent"
           >
             <Share2 className="h-4 w-4" />
             Share
+          </Button>
+          <Button
+            variant="outline"
+            onClick={onDownloadAll}
+            className="h-10 gap-2 rounded-md border-border bg-card px-4 text-foreground shadow-sm hover:bg-accent"
+          >
+            <Download className="h-4 w-4" />
+            Download all
           </Button>
           <Button
             onClick={handleReviewedBatchDownload}
@@ -870,7 +893,7 @@ export function ResultActions({
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Batch review board</p>
             <p className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
-              {resultFiles.length} file{resultFiles.length > 1 ? "s" : ""} ready to inspect
+              {safeResultFiles.length} file{safeResultFiles.length > 1 ? "s" : ""} ready to inspect
             </p>
           </div>
           <span className="rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground">
@@ -905,16 +928,49 @@ export function ResultActions({
           ))}
         </div>
 
+        <div className="mb-4 overflow-x-auto rounded-md border border-border bg-card/65 p-2 shadow-sm">
+          <div className="flex min-w-max items-center gap-2">
+            {resultEntries.map(({ file, index, fileKey, badge, edited }) => (
+              <button
+                key={`strip-${fileKey}`}
+                type="button"
+                onClick={() => openComparison(index)}
+                className="group inline-flex items-center gap-2 rounded-md border border-border bg-background p-2 text-left transition hover:border-primary/40 hover:bg-accent"
+              >
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-foreground text-[11px] font-bold text-background">
+                  {index + 1}
+                </span>
+                <span className="flex h-12 w-10 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-white">
+                  {file.input_preview_url ? (
+                    <img src={file.input_preview_url} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <FileImage className="h-4 w-4 text-primary/70" />
+                  )}
+                </span>
+                <ArrowRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition group-hover:text-primary" />
+                <span className="min-w-[104px]">
+                  <span className="block max-w-[126px] truncate text-xs font-semibold text-foreground">
+                    {file.filename || `Result ${index + 1}`}
+                  </span>
+                  <span className={cn("mt-1 inline-flex rounded-md border px-2 py-0.5 text-[10px] font-semibold", edited ? "border-primary/20 bg-primary/10 text-primary" : badge.className)}>
+                    {edited ? "Edited" : badge.label}
+                  </span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className={cn(
           "grid gap-4",
-          resultFiles.length > 8
+          safeResultFiles.length > 8
             ? "grid-cols-1 xl:grid-cols-2"
             : "grid-cols-1"
         )}>
         {filteredResultEntries.length ? filteredResultEntries.map(({ file, index, fileKey, badge, edited }) => {
           const preview = file.file_id ? resultPreviews?.[file.file_id] : undefined
           const visiblePreview = edited ? { table: editedTables[fileKey] || [], text: preview?.text || "", loading: false } : preview
-          const compact = resultFiles.length > 8
+          const compact = safeResultFiles.length > 8
 
           return (
             <div
@@ -1002,7 +1058,17 @@ export function ResultActions({
           )
         }) : (
           <div className="rounded-md border border-dashed border-border bg-card p-5">
-            <p className="text-sm font-semibold text-foreground">No files in this filter</p>
+            <p className="text-sm font-semibold text-foreground">No files in this view</p>
+            <p className="mt-1 text-xs font-semibold text-muted-foreground">The full batch is still available.</p>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setResultFilter("all")}
+              className="mt-3 h-8 rounded-md border-border bg-background px-3 text-xs text-foreground hover:bg-accent"
+            >
+              Show all files
+            </Button>
           </div>
         )}
         </div>
@@ -1031,7 +1097,7 @@ export function ResultActions({
             >
               <X className="h-4 w-4" />
             </Button>
-            {resultFiles.length > 1 ? (
+            {safeResultFiles.length > 1 ? (
               <>
                 <Button
                   size="icon"
@@ -1075,7 +1141,8 @@ export function ResultActions({
                         <tr key={rowIndex} className={rowIndex === 0 ? "bg-primary text-primary-foreground" : rowIndex % 2 === 0 ? "bg-emerald-50" : "bg-white"}>
                           {Array.from({ length: comparisonColumnCount }).map((_, cellIndex) => {
                             const isEditing =
-                              editingCell?.fileKey === comparisonKey &&
+                              editingCell !== null &&
+                              editingCell.fileKey === comparisonKey &&
                               editingCell.row === rowIndex &&
                               editingCell.col === cellIndex
                             const value = row[cellIndex] || ""
