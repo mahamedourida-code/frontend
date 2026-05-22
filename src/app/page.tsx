@@ -416,6 +416,7 @@ export default function Home() {
     const canvasContext = canvas?.getContext("2d", { alpha: false });
     if (!section || !canvas || !canvasContext) return;
 
+    const frameSection = section;
     const frameCanvas = canvas;
     const frameContext = canvasContext;
     let gsapContext: any;
@@ -486,7 +487,7 @@ export default function Home() {
     }
 
     function resizeCanvas() {
-      const bounds = section.getBoundingClientRect();
+      const bounds = frameSection.getBoundingClientRect();
       const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
       const width = Math.max(1, Math.round(bounds.width * pixelRatio));
       const height = Math.max(1, Math.round(bounds.height * pixelRatio));
@@ -505,7 +506,7 @@ export default function Home() {
 
     if (typeof ResizeObserver !== "undefined") {
       resizeObserver = new ResizeObserver(resizeCanvas);
-      resizeObserver.observe(section);
+      resizeObserver.observe(frameSection);
     } else {
       window.addEventListener("resize", resizeCanvas);
     }
@@ -520,7 +521,7 @@ export default function Home() {
           snap: "frame",
           onUpdate: renderFrame,
           scrollTrigger: {
-            trigger: section,
+            trigger: frameSection,
             start: "top top",
             end: () => `+=${Math.round(Math.max(window.innerHeight * 2.6, 1800))}`,
             scrub: 0.25,
@@ -529,7 +530,7 @@ export default function Home() {
             invalidateOnRefresh: true,
           },
         });
-      }, section);
+      }, frameSection);
 
       ScrollTrigger.refresh();
     });
