@@ -669,7 +669,7 @@ export default function Home() {
           />
           {shouldLoadCinematic ? (
             <video
-              src="/cinematic/ink-to-grid-scroll.mp4"
+              src="/cinematic/ink-to-grid-loop.mp4"
               poster="/cinematic/ink-to-grid-poster.webp"
               autoPlay
               loop
