@@ -70,7 +70,7 @@ export default function HowAxlinerIsBuiltPage() {
     >
       <section id="model" className="scroll-mt-32 border-t border-border pt-9">
         <h2 className="text-3xl font-semibold tracking-normal">Model path</h2>
-        <div className="mt-5 space-y-5 text-[19px] leading-8">
+        <div className="mt-5 space-y-4">
           <p>
             The extraction path starts with a vision-language model in the Qwen2-VL and olmOCR direction: document
             pixels are turned into a representation the model can read, and the prompt path is narrowed toward page
@@ -97,7 +97,7 @@ export default function HowAxlinerIsBuiltPage() {
 
       <section id="structure" className="scroll-mt-32 border-t border-border pt-9">
         <h2 className="text-3xl font-semibold tracking-normal">Table structure</h2>
-        <div className="mt-5 space-y-5 text-[19px] leading-8">
+        <div className="mt-5 space-y-4">
           <p>
             A workbook is more demanding than plain OCR text. The pipeline has to preserve the idea of a header, detect
             when writing belongs to the next row, keep totals attached to their column, and avoid turning a ruled table
@@ -129,7 +129,7 @@ export default function HowAxlinerIsBuiltPage() {
 
       <section id="batch" className="scroll-mt-32 border-t border-border pt-9">
         <h2 className="text-3xl font-semibold tracking-normal">Batch layer</h2>
-        <div className="mt-5 space-y-5 text-[19px] leading-8">
+        <div className="mt-5 space-y-4">
           <p>
             Batch upload is where the model becomes software. The web request should not own the whole run. Queue
             admission, workers, storage metadata, file ownership, and retry-safe outputs need to carry the job while
@@ -145,7 +145,7 @@ export default function HowAxlinerIsBuiltPage() {
 
       <section id="export" className="scroll-mt-32 border-t border-border pt-9">
         <h2 className="text-3xl font-semibold tracking-normal">Excel review</h2>
-        <div className="mt-5 space-y-5 text-[19px] leading-8">
+        <div className="mt-5 space-y-4">
           <p>
             Output is finished when it is usable. The comparison view lets a user see the source beside the table,
             correct cells inline, mark reviewed files, and download the corrected batch. That review loop is the bridge

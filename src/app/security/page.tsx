@@ -65,7 +65,7 @@ export default function SecurityPage() {
     >
       <section id="document-path" className="scroll-mt-32 border-t border-border pt-9">
         <h2 className="text-3xl font-semibold tracking-normal">Document path</h2>
-        <div className="mt-5 space-y-5 text-[19px] leading-8">
+        <div className="mt-5 space-y-4">
           <p>
             The conversion path begins with upload, passes through a queued processing job, stores result metadata, and
             ends with review and download. Each stage should preserve the association between the source batch and the
@@ -91,7 +91,7 @@ export default function SecurityPage() {
 
       <section id="ownership" className="scroll-mt-32 border-t border-border pt-9">
         <h2 className="text-3xl font-semibold tracking-normal">Ownership</h2>
-        <div className="mt-5 space-y-5 text-[19px] leading-8">
+        <div className="mt-5 space-y-4">
           <p>
             Signed-in jobs should be checked against the account that created them. Anonymous trial jobs need their
             original session context. That boundary matters for status polling, file preview, ZIP generation, share
@@ -107,7 +107,7 @@ export default function SecurityPage() {
 
       <section id="downloads" className="scroll-mt-32 border-t border-border pt-9">
         <h2 className="text-3xl font-semibold tracking-normal">Downloads and sharing</h2>
-        <div className="mt-5 space-y-5 text-[19px] leading-8">
+        <div className="mt-5 space-y-4">
           <p>
             Result access is most trustworthy when a frontend receives backend-generated download or share paths after
             the backend verifies file metadata. A file identifier alone should not be treated as permission to read
@@ -123,7 +123,7 @@ export default function SecurityPage() {
 
       <section id="operations" className="scroll-mt-32 border-t border-border pt-9">
         <h2 className="text-3xl font-semibold tracking-normal">Operational controls</h2>
-        <div className="mt-5 space-y-5 text-[19px] leading-8">
+        <div className="mt-5 space-y-4">
           <p>
             Queue admission, rate limits, OCR concurrency caps, durable job metadata, and retry-safe worker behavior are
             reliability controls with security value. They reduce runaway workloads and keep one user from exhausting
@@ -139,7 +139,7 @@ export default function SecurityPage() {
 
       <section id="questions" className="scroll-mt-32 border-t border-border pt-9">
         <h2 className="text-3xl font-semibold tracking-normal">Questions</h2>
-        <p className="mt-5 text-[19px] leading-8">
+        <p className="mt-5">
           For security or privacy questions, use the contact path and avoid emailing sensitive source documents unless
           support asks for a safe sample.
         </p>

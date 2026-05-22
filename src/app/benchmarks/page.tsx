@@ -67,7 +67,7 @@ export default function BenchmarksPage() {
     >
       <section id="measured" className="scroll-mt-32 border-t border-border pt-9">
         <h2 className="text-3xl font-semibold tracking-normal">What we measure</h2>
-        <div className="mt-5 space-y-5 text-[19px] leading-8">
+        <div className="mt-5 space-y-4">
           <p>
             AxLiner is aimed at document work where structure matters. A receipt list, a paper ledger, a classroom
             table, or a handwritten invoice grid can be readable to a person while still being difficult to restore
@@ -93,7 +93,7 @@ export default function BenchmarksPage() {
 
       <section id="accuracy" className="scroll-mt-32 border-t border-border pt-9">
         <h2 className="text-3xl font-semibold tracking-normal">Accuracy view</h2>
-        <p className="mt-5 text-[19px] leading-8">
+        <p className="mt-5">
           The chart keeps the page readable while still showing the extraction story. Text accuracy matters first, but
           the benchmark is read next to table fidelity because spreadsheet teams pay for the reconstruction time after
           OCR, not only for transcribed words.
@@ -105,7 +105,7 @@ export default function BenchmarksPage() {
 
       <section id="workbook" className="scroll-mt-32 border-t border-border pt-9">
         <h2 className="text-3xl font-semibold tracking-normal">Workbook metrics</h2>
-        <p className="mt-5 text-[19px] leading-8">
+        <p className="mt-5">
           The comparison table records the signals users feel during review. Lower character error rates reduce spot
           fixes. Stronger structure recovery reduces reformatting. Noise tolerance matters when the original document
           came from a desk photo instead of a clean scanner.
@@ -141,7 +141,7 @@ export default function BenchmarksPage() {
 
       <section id="review" className="scroll-mt-32 border-t border-border pt-9">
         <h2 className="text-3xl font-semibold tracking-normal">Review protocol</h2>
-        <div className="mt-5 space-y-5 text-[19px] leading-8">
+        <div className="mt-5 space-y-4">
           <p>
             The final check follows the user flow. The source page is prepared, the model reads the handwriting, the
             table is reconstructed, and the exported workbook is reviewed where corrections happen.
