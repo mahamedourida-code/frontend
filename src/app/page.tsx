@@ -285,7 +285,6 @@ export default function Home() {
   const cinematicStageRef = useRef<HTMLDivElement>(null);
   const cinematicVideoRef = useRef<HTMLVideoElement>(null);
   const contrastSectionRef = useRef<HTMLDivElement>(null);
-  const whatSectionRef = useRef<HTMLDivElement>(null);
   const benchmarkBandRef = useRef<HTMLDivElement>(null);
   const securityBandRef = useRef<HTMLDivElement>(null);
 
@@ -375,44 +374,36 @@ export default function Home() {
     if (!cinematicSection || !cinematicStage || !cinematicVideo) return;
 
     let ctx: any;
-    let scrollTrigger: any;
     let cancelled = false;
-
-    const setScrollTime = (progress: number) => {
-      if (!Number.isFinite(cinematicVideo.duration) || cinematicVideo.duration <= 0) return;
-
-      const finalFrameTime = Math.max(cinematicVideo.duration - 0.05, 0);
-      const nextTime = finalFrameTime * progress;
-
-      if (Math.abs(cinematicVideo.currentTime - nextTime) > 0.03) {
-        cinematicVideo.currentTime = nextTime;
-      }
-    };
 
     const setupCinematicScroll = () => {
       if (cancelled || !Number.isFinite(cinematicVideo.duration) || cinematicVideo.duration <= 0) return;
 
       cinematicVideo.pause();
-      setScrollTime(0);
+      cinematicVideo.currentTime = 0;
 
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        setScrollTime(0.55);
+        cinematicVideo.currentTime = cinematicVideo.duration * 0.55;
         return;
       }
 
-      void loadGsap().then(({ gsap, ScrollTrigger }) => {
+      void loadGsap().then(({ gsap }) => {
         if (cancelled) return;
 
+        const scrollPixelsPerVideoSecond = 120;
+
         ctx = gsap.context(() => {
-          scrollTrigger = ScrollTrigger.create({
-            trigger: cinematicSection,
-            pin: cinematicStage,
-            start: "top top",
-            end: () => `+=${Math.max(window.innerHeight * 2.6, 2200)}`,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-            onUpdate: (self: { progress: number }) => {
-              setScrollTime(self.progress);
+          gsap.to(cinematicVideo, {
+            currentTime: Math.max(cinematicVideo.duration - 0.05, 0),
+            ease: "none",
+            scrollTrigger: {
+              trigger: cinematicSection,
+              pin: cinematicStage,
+              start: "top 8%",
+              end: () => `+=${Math.max(cinematicVideo.duration * scrollPixelsPerVideoSecond, window.innerHeight * 2.4)}`,
+              scrub: 0.2,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
             },
           });
         }, cinematicSection);
@@ -429,15 +420,13 @@ export default function Home() {
       cancelled = true;
       cinematicVideo.removeEventListener("loadedmetadata", setupCinematicScroll);
       cinematicVideo.pause();
-      scrollTrigger?.kill();
       ctx?.revert();
     };
   }, []);
 
   useEffect(() => {
     const contrastSection = contrastSectionRef.current;
-    const whatSection = whatSectionRef.current;
-    if (!contrastSection || !whatSection) return;
+    if (!contrastSection) return;
 
     let ctx: any;
     let cancelled = false;
@@ -446,58 +435,6 @@ export default function Home() {
       if (cancelled) return;
 
       ctx = gsap.context(() => {
-        gsap.fromTo(
-          ".what-story-row",
-          { opacity: 0, y: 76 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.9,
-            ease: "power3.out",
-            stagger: 0.18,
-            scrollTrigger: {
-              trigger: whatSection,
-              start: "top 70%",
-              end: "bottom 72%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
-
-        gsap.fromTo(
-          ".what-story-image",
-          { opacity: 0, scale: 0.84, rotation: (index: number) => (index === 1 ? 4 : -4) },
-          {
-            opacity: 1,
-            scale: 1,
-            rotation: 0,
-            duration: 1,
-            ease: "power3.out",
-            stagger: 0.2,
-            scrollTrigger: {
-              trigger: whatSection,
-              start: "top 68%",
-              end: "bottom 72%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
-
-        gsap.fromTo(
-          ".what-story-path",
-          { strokeDasharray: 520, strokeDashoffset: 520 },
-          {
-            strokeDashoffset: 0,
-            ease: "none",
-            scrollTrigger: {
-              trigger: whatSection,
-              start: "top 60%",
-              end: "bottom 62%",
-              scrub: 1,
-            },
-          }
-        );
-
         [benchmarkBandRef.current, securityBandRef.current].forEach((band) => {
           if (!band) return;
 
@@ -727,11 +664,11 @@ export default function Home() {
         <section
           ref={cinematicSectionRef}
           aria-label="Ink to spreadsheet cinematic"
-          className="relative z-10 bg-[#04130d]"
+          className="relative z-10 overflow-hidden bg-[linear-gradient(180deg,var(--background)_0%,rgba(24,227,153,0.07)_48%,var(--background)_100%)] px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20"
         >
           <div
             ref={cinematicStageRef}
-            className="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#04130d]"
+            className="relative mx-auto flex aspect-[4/3] w-full max-w-[1240px] items-center justify-center overflow-hidden rounded-md border border-emerald-100/15 bg-[#04130d] shadow-[0_32px_88px_rgba(4,19,13,0.32)] sm:aspect-video"
           >
             <video
               ref={cinematicVideoRef}
@@ -744,7 +681,7 @@ export default function Home() {
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(4,19,13,0.88)_0%,rgba(4,19,13,0.12)_16%,rgba(4,19,13,0.08)_76%,rgba(4,19,13,0.92)_100%)]"
+              className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(4,19,13,0.3)_0%,rgba(4,19,13,0.04)_25%,rgba(4,19,13,0.04)_72%,rgba(4,19,13,0.48)_100%)]"
             />
             <div
               aria-hidden="true"
@@ -762,123 +699,6 @@ export default function Home() {
           className="relative mx-auto max-w-[1280px] text-foreground"
         >
           <div className="relative z-10">
-        {/* What is Axliner Section */}
-        <section ref={whatSectionRef} className="relative z-10 py-8 lg:py-10">
-          <div className="container mx-auto max-w-[1180px] px-0 sm:px-4">
-            <div className="mx-auto max-w-[1120px]">
-              {/* Section Header */}
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 mb-2 shadow-sm">
-                  <h2 className="text-lg font-semibold text-foreground sm:text-xl">
-                    What is Axliner?
-                  </h2>
-                </div>
-              </div>
-
-              {/* Main Content */}
-              <div className="relative mx-auto max-w-[1100px]">
-                <svg
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full lg:block"
-                  viewBox="0 0 100 100"
-                  preserveAspectRatio="none"
-                >
-                  <path
-                    className="what-story-path"
-                    d="M74 15 L26 50 L74 85"
-                    fill="none"
-                    stroke="rgba(22,101,52,0.24)"
-                    strokeWidth="0.34"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeDasharray="1.4 1.15"
-                  />
-                </svg>
-
-                <div className="relative z-10 space-y-7 lg:space-y-9">
-                  <div className="what-story-row grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.9fr)]">
-                    <Card className="rounded-md border border-border bg-card shadow-sm">
-                      <CardContent className="p-5 sm:p-6">
-                        <p className="text-base leading-7 text-foreground">
-                          Axliner uses a <span className="font-bold">7-billion parameter document vision-language model</span> in the Qwen2-VL and olmOCR family, adapted for handwritten tables, forms, and spreadsheet-like documents. It understands document structure first, so the result is usable rows, columns, headers, and values.
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <div className="what-story-image relative flex min-h-[190px] items-center justify-center lg:min-h-[250px]">
-                      <img
-                        src="/what-is/chaos-invoices.svg"
-                        alt=""
-                        className="h-[190px] w-full object-contain drop-shadow-[0_14px_24px_rgba(0,0,0,0.14)] [filter:sepia(0.32)_hue-rotate(68deg)_saturate(1.06)_brightness(0.96)] dark:[filter:sepia(0.28)_hue-rotate(68deg)_saturate(1.08)_brightness(1.06)] sm:h-[230px] lg:h-[280px]"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="what-story-row grid items-center gap-6 lg:grid-cols-[minmax(300px,0.9fr)_minmax(0,1fr)]">
-                    <div className="what-story-image relative order-2 flex min-h-[200px] items-center justify-center lg:order-1 lg:min-h-[270px]">
-                      <img
-                        src="/hero-flow/axliner.svg"
-                        alt=""
-                        className="h-[205px] w-full object-contain drop-shadow-[0_14px_26px_rgba(0,0,0,0.15)] sm:h-[250px] lg:h-[310px]"
-                      />
-                    </div>
-
-                    <Card className="order-1 rounded-md border border-border bg-card shadow-sm lg:order-2">
-                      <CardContent className="p-5 sm:p-6">
-                        <p className="text-base leading-7 text-foreground">
-                          During conversion, Axliner cleans the image, detects table regions, reads handwriting, and keeps cell relationships intact. It was trained on diverse handwritten datasets, table extraction data, and augmented noisy documents, so dense notes and phone photos can still become structured spreadsheets.
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  <div className="what-story-row grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.9fr)]">
-                    <Card className="rounded-md border border-border bg-card shadow-sm">
-                      <CardContent className="p-5 sm:p-6">
-                        <p className="text-base leading-7 text-foreground">
-                          The workflow is designed for batch processing. Upload several images, watch progress as each page finishes, then download clean Excel files ready for review, reporting, editing, or sharing without losing the table logic people need in the final workbook.
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <div className="what-story-image relative flex min-h-[190px] items-center justify-center lg:min-h-[250px]">
-                      <img
-                        src="/what-is/chill-output.svg"
-                        alt=""
-                        className="h-[190px] w-full object-contain drop-shadow-[0_14px_24px_rgba(0,0,0,0.14)] [filter:sepia(0.34)_hue-rotate(62deg)_saturate(1.05)_brightness(0.97)] dark:[filter:sepia(0.28)_hue-rotate(62deg)_saturate(1.08)_brightness(1.06)] sm:h-[230px] lg:h-[280px]"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="hidden">
-                <Card className="ax-glass-card overflow-hidden rounded-xl border-border shadow-sm">
-                  <CardContent className="space-y-8 p-6 sm:p-8 lg:p-10">
-                    <p className="text-xl text-foreground leading-relaxed">
-                      Axliner is a <span className="font-bold">7-billion parameter document vision-language model</span> adapted from the Qwen2-VL and olmOCR family. The model underwent instruction tuning for <span className="font-bold">handwritten text recognition</span>, <span className="font-bold">table structure preservation</span>, and <span className="font-bold">multi-language document understanding</span>.
-                    </p>
-
-                    <p className="text-xl text-foreground leading-relaxed">
-                      Unlike generic OCR systems, Axliner was trained on diverse handwritten datasets including the <span className="font-bold">IAM Handwriting Database</span>, proprietary table extraction datasets, and synthetic augmented data. The fine-tuning process focused on <span className="font-bold">preserving table semantics, cell relationships, and hierarchical document structures</span> — achieving <span className="font-bold">96.8% accuracy</span> on complex handwritten tables.
-                    </p>
-
-                    <p className="text-xl text-foreground leading-relaxed">
-                      The system supports <span className="font-bold">batch processing using your live plan limit</span>, with real-time conversion progress as each page finishes. Axliner handles <span className="font-bold">8+ languages</span> including complex scripts like Arabic and Chinese, while maintaining cell relationships and formatting integrity across all output formats.
-                    </p>
-
-                    <p className="text-xl text-foreground leading-relaxed">
-                      Built for enterprise workflows, Axliner excels in <span className="font-bold">financial document processing</span>, <span className="font-bold">invoice digitization</span>, <span className="font-bold">form automation</span>, and archive digitization — trained on over <span className="font-bold">2 million handwritten samples</span> using a Llama 3-based vision-language transformer architecture.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <div />
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Companies Section - Trusted By */}
         <ScrollAnimatedSection id="trusted" className="w-full overflow-hidden py-5">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
