@@ -156,10 +156,10 @@ const ownedPipelineCopy = [
   "External infrastructure can sit behind the pipeline, but the workflow, storage model, and user experience stay controlled by AxLiner. That keeps retries, batch recovery, and output delivery predictable for real users.",
 ];
 
-const cinematicFrameCount = 49;
+const cinematicFrameCount = 138;
 const cinematicFrameUrls = Array.from(
   { length: cinematicFrameCount },
-  (_, index) => `/cinematic/frames/ink-grid-${String(index + 1).padStart(3, "0")}.webp`
+  (_, index) => `/cinematic/slow-frames/ink-grid-${String(index + 1).padStart(3, "0")}.webp`
 );
 
 type FooterIconProps = {
@@ -386,7 +386,7 @@ export default function Home() {
           observer.disconnect();
         }
       },
-      { rootMargin: "420px 0px" }
+      { rootMargin: "1200px 0px" }
     );
 
     observer.observe(mountTarget);
@@ -422,6 +422,8 @@ export default function Home() {
     let gsapContext: any;
     let resizeObserver: ResizeObserver | undefined;
     let cancelled = false;
+    let lastDrawnFrame: HTMLImageElement | undefined;
+    let lastDrawnFrameIndex = -1;
     const playhead = { frame: 0 };
 
     const frameIsReady = (frame?: HTMLImageElement) =>
@@ -453,9 +455,11 @@ export default function Home() {
       return undefined;
     }
 
-    function renderFrame() {
-      const frame = getFrame(Math.round(playhead.frame));
+    function renderFrame(force = false) {
+      const frameIndex = Math.round(playhead.frame);
+      const frame = getFrame(frameIndex);
       if (!frame || !frameCanvas.width || !frameCanvas.height) return;
+      if (!force && frame === lastDrawnFrame && frameIndex === lastDrawnFrameIndex) return;
 
       const targetRatio = frameCanvas.width / frameCanvas.height;
       const frameRatio = frame.naturalWidth / frame.naturalHeight;
@@ -484,6 +488,8 @@ export default function Home() {
         frameCanvas.width,
         frameCanvas.height
       );
+      lastDrawnFrame = frame;
+      lastDrawnFrameIndex = frameIndex;
     }
 
     function resizeCanvas() {
@@ -499,7 +505,7 @@ export default function Home() {
         frameContext.imageSmoothingQuality = "high";
       }
 
-      renderFrame();
+      renderFrame(true);
     }
 
     resizeCanvas();
@@ -523,8 +529,8 @@ export default function Home() {
           scrollTrigger: {
             trigger: frameSection,
             start: "top top",
-            end: () => `+=${Math.round(Math.max(window.innerHeight * 2.6, 1800))}`,
-            scrub: 0.25,
+            end: () => `+=${Math.round(Math.max(window.innerHeight * 5.4, 3600))}`,
+            scrub: 0.4,
             pin: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
@@ -831,7 +837,7 @@ export default function Home() {
           className="relative z-10 isolate h-svh min-h-[560px] w-full overflow-hidden bg-[#04130d]"
         >
           <Image
-            src="/cinematic/ink-to-grid-poster.webp"
+            src="/cinematic/slow-frames/ink-grid-001.webp"
             alt=""
             fill
             sizes="100vw"
