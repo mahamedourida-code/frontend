@@ -438,129 +438,69 @@ Current inventory warning:
 - The public folder already contains very large images, including testimonial files over several MB and one file over 25 MB.
 - New generated assets should not repeat that cost.
 
-## GPT Image prompts to generate next
+## Image prompts to generate
 
-Use these as starting prompts. Generate a small coherent set first, review the look, then generate variants using the chosen style.
+Use generated images for atmosphere, trust, and the accounting context. Do not ask the image model to draw readable invoices, bank statements, spreadsheet cells, dashboard UI, or screens full of document text. Use real AxLiner screenshots and real document previews when the product itself must be shown.
 
-### Prompt 1: hero accounting batch scene
+Shared constraints to append to the prompts below:
 
-Placement:
+`Photorealistic editorial commercial photography, believable human posture, natural skin texture, real materials, restrained green accent details, soft neutral color grading, no readable text, no fake UI, no legible document content, no brand logos, no floating paperwork, no holograms, no stock-photo handshake, no overdone neon glow, no vector illustration, no 3D render.`
 
-- Landing hero or first workflow proof section.
+### Landing and hero support
 
-Prompt:
+1. **Batch work saved**
 
-> Create a professional editorial product image for a SaaS that converts handwritten accounting documents into Excel batches. Show a clean month-end accounting desk from a slightly elevated angle: a small stack of handwritten invoices, ruled expense notes, several receipts, a printed bank statement page, and a laptop with a clean spreadsheet review interface visible but not readable in detail. The paperwork should feel real and varied, not messy stock clutter. Include subtle accounting cues such as invoice line items, PO reference boxes, tax/VAT rows, debit-credit columns, and reconciliation check marks as visual motifs only. Color palette: neutral paper whites, graphite text, muted desk tones, and restrained AxLiner green accents. Lighting soft and natural, professional, calm, high trust, no neon glow, no robots, no floating AI symbols, no confidential company data, no branded logos, no oversized text. Leave clean negative space on one side for website copy. Photorealistic with polished SaaS art direction.
+   `A calm accounting operations desk after a busy intake period, several tidy trays and clipped paper stacks arranged by stage, one calculator, neutral folders, green sticky tabs used as subtle accents, a finance professional's hands moving the last checked stack into a finished tray, bright side daylight, authentic office detail, wide composition with clear negative space for website copy.`
 
-### Prompt 2: bulk input to review-ready output
+2. **Handwritten specialist**
 
-Placement:
+   `Close editorial photograph of a bookkeeper reviewing a rough field notebook beside organized office tools, the marks on paper are blurred and not readable, pencil smudges and worn paper edges feel real, green pen and small desk plant as restrained accent, warm natural light, focused and trustworthy mood, no visible computer screen.`
 
-- Section directly after hero.
+3. **Bulk conversion story**
 
-Prompt:
+   `Top-down professional photograph of an intake table with mixed physical sources represented by envelopes, clipped sheets, phone-photo printouts, folders, binder clips, receipt silhouettes, and a finished output tray, stages arranged left to right so the scene suggests batch flow, no readable page content, clean premium SaaS campaign style, realistic shadows.`
 
-> Create a clean workflow illustration that explains bulk handwritten document conversion without using words. On the left, show a neat fan of several source documents: handwritten tables, receipts with handwritten notes, a paper form, and a bank statement PDF page. In the center, show a restrained AxLiner processing surface represented by a clean document scanner-like software node with green review light accents. On the right, show a batch of organized spreadsheet result previews and file cards, each paired visually with its source. The feeling should be one-click batch flow, review-ready results, and accounting efficiency. Keep it professional and minimal, with accurate paper textures and spreadsheet grid cues. No generic AI brain, no glowing tunnel, no excessive arrows, no illegible fake UI text, no logos. Background should be easy to cut out or place on a light SaaS page.
+### Auth and trust surfaces
 
-### Prompt 3: AP invoice pile under control
+4. **Sign-in side visual**
 
-Placement:
+   `A quiet modern finance workspace at early morning, a focused accounting professional seated near a window with a notebook, calculator, and tidy folders, relaxed confidence rather than staged smiling, soft green reflections from desk objects, half of the frame left open for UI overlay, shallow depth of field, realistic office atmosphere.`
 
-- Solutions/accounting page or landing target-user section.
+5. **Security and reliability**
 
-Prompt:
+   `Professional archive and operations scene with a secure locked storage cabinet, labeled shapes kept abstract and unreadable, orderly folders, a laptop closed on the desk, soft directional lighting, muted neutral materials with a subtle AxLiner green accent, visual tone of privacy and care without cyber-security cliches.`
 
-> Generate a polished professional scene of an accounts payable specialist handling a high-volume invoice morning. Show the moment after disorder becomes organized: incoming invoices and receipts grouped on one side, reviewed spreadsheet outputs and tidy batch folders on the other side, with the person's attention on verification rather than typing. Include subtle AP details such as vendor invoice layouts, totals rows, PO fields, approval stamps, tax lines, and payment date cues. The person should look focused and credible, not exaggerated or smiling at camera. The scene should communicate time saved from manual data entry. Palette neutral with restrained green accents, soft natural office lighting, editorial B2B SaaS quality, no visible brand names, no private data, no futuristic AI effects.
+6. **Contact page**
 
-### Prompt 4: handwritten ledger to spreadsheet comparison
+   `Approachable support scene in a real small SaaS office, one operations specialist listening on headset while taking concise notes, no visible monitor content, daylight, tidy desk, human and responsive mood, green accent from desk accessories only, realistic editorial photograph with room for contact-page text.`
 
-Placement:
+### Accounting and vertical pages
 
-- Try It support visual, blog cover, or benchmark explainer.
+7. **Invoice workflow**
 
-Prompt:
+   `Bookkeeping desk during invoice review, two people working side by side with calculators, clipped paper bundles, stamps, ruler, and highlighter marks kept abstract, no readable supplier names or totals, practical monthly-close energy, natural overhead and window light, clean but not sterile.`
 
-> Create a crisp comparison image for handwritten OCR review. Left side: a believable handwritten ledger page with ruled columns, imperfect pen pressure, notes in margins, and a few crossed corrections. Right side: a clean spreadsheet table preview with aligned rows and clear column boundaries. The two sides should visibly correspond without needing labels. Use realistic accounting cues such as date, reference, description, debit, credit, balance, tax, and total structure, but keep details anonymized and not dependent on readable tiny text. Product-quality lighting and spacing, clean paper texture, no heavy frame, no generic iconography, no blue-purple AI glow.
+8. **Bank statement mode**
 
-### Prompt 5: bank statement mode
+   `A reconciliation workspace with a finance analyst comparing organized paper bundles and a calculator beside a notebook, papers show only soft lines and blurred marks, no readable account numbers, no visible spreadsheet screen, precise orderly composition, restrained green highlight tabs, professional banking tone.`
 
-Placement:
+9. **Backoffice bulk intake**
 
-- Bank statement mode page.
+   `Operations table receiving many small paperwork batches from different teams, folders grouped in reusable trays, barcode-like shapes kept abstract and unreadable, hands sorting work into ready and review piles, efficient real-world office scene, neutral palette with small green accents.`
 
-Prompt:
+### Dashboard empty states and pricing support
 
-> Create a professional product-context image for bank statement extraction. Show a scanned statement with a text summary region and a transaction table region being reviewed beside a clean workbook preview that preserves statement metadata above organized transaction rows. The visual should communicate "extract what is visible, keep the statement context, review the rows" without claiming automated accounting decisions. Use realistic bank-statement structure such as opening balance, transaction dates, descriptions, debits, credits, and closing balance as layout cues only. Keep the bank anonymous. Tone: precise, careful, trustworthy, finance-oriented, restrained green accents, soft white and graphite palette, no coins, no calculators as the main idea, no magical AI visuals.
+10. **First batch invitation**
 
-### Prompt 6: bookkeeping daily-life receipt batch
+    `A single clean intake tray waiting on a desk with a notebook, calculator, clips, and one green marker beside it, realistic soft morning light, minimal premium composition, generous negative space, feeling of ready-to-start work without showing any screen or readable paper.`
 
-Placement:
+11. **Plan value image**
 
-- Blog/solution asset.
+    `Three neat stacks of paperwork represented only by thickness and organization level, from small personal stack to larger team trays, placed on a refined accounting desk with scale communicated by volume rather than numbers, realistic photography, clear separation, soft shadows, no labels or text.`
 
-Prompt:
+### Prompt rule
 
-> Create a modern editorial image of a bookkeeper sorting a day's small-paper workload: thermal receipts, handwritten expense notes, folded supplier slips, and a spreadsheet open for review. The work should look familiar to small business bookkeeping: paper clips, dated receipt groups, vendor slips, and a calm verification process. Emphasize batch handling and reduced typing. Professional office realism, slight top-down composition, subtle green accent objects, clean surfaces, no meme style, no stock-photo handshake, no brand logos, no visible personal information.
-
-### Prompt 7: correction and exception review
-
-Placement:
-
-- Dashboard empty state or landing product proof.
-
-Prompt:
-
-> Generate a polished SaaS visual of document exception review. Show several compact result cards where most outputs are marked ready and one result is flagged for review, with a source handwritten table beside an editable spreadsheet grid. The focus is careful correction, not model magic. Use realistic file thumbnails, subtle status chips, spreadsheet cells, and a batch download idea. Keep the interface abstract enough to avoid copying any competitor UI, but close enough to look like real software. Clean grid, high trust, neutral background, restrained green highlights, no oversized text, no clutter, no neon.
-
-### Prompt 8: month-end bulk savings story
-
-Placement:
-
-- Landing section around value/savings.
-
-Prompt:
-
-> Create an editorial split-moment image for month-end document work. One side implies repetitive manual entry with many handwritten forms waiting; the other side implies fast reviewed output batches with organized spreadsheets and fewer papers remaining. Make the improvement subtle and credible, not a dramatic before-after mess. Include accounting cues: close checklist, invoice batch tabs, receipts, ledger columns, reconciliation marks. The visual should say "less retyping, more review" for accountants and operations staff. Professional B2B composition, calm green accents, soft shadows, no cartoon chaos, no fake KPI text.
-
-### Prompt 9: security for document ownership
-
-Placement:
-
-- Security page or trust section.
-
-Prompt:
-
-> Create a professional security image for a document-processing SaaS without using a giant padlock. Show organized document files moving through controlled stages: upload, owned job, storage, verified download. Use subtle visual cues such as secure file trays, identity-bound tags, clear paths, and clean workstation context. The documents should be handwritten and accounting-related but anonymized. Mood: precise, accountable, calm, enterprise-ready. Palette neutral with subtle AxLiner green. No hacker imagery, no shield explosion, no glowing cyberspace tunnel, no confidential data.
-
-### Prompt 10: contact and support scene
-
-Placement:
-
-- Contact page.
-
-Prompt:
-
-> Create a calm support-oriented editorial image for a document SaaS contact page. Show a professional workspace with a reviewed batch of handwritten accounting files, a clear notes sheet, and a support conversation implied by a clean open laptop view without readable chat text. The image should communicate that users can ask about document modes, pricing, and processing workflow. Natural lighting, credible B2B tone, clean desk, muted colors with small green accents, no call-center stock photo, no fake customer logos.
-
-### Prompt 11: dashboard empty-state mini illustration
-
-Placement:
-
-- Dashboard Overview empty state or History empty state.
-
-Prompt:
-
-> Create a small clean illustration for an empty conversion workspace. Show three compact source documents entering a tidy batch tray and one spreadsheet result card ready to review. Style should be minimal editorial software illustration with real-paper cues, soft lines, neutral background, subtle green accent, no text, no complex background, no generic upload cloud icon, suitable for a dashboard card.
-
-### Prompt 12: accounting insider motif sheet
-
-Placement:
-
-- Reusable supporting motifs for cards, blogs, and solution headings.
-
-Prompt:
-
-> Create a coherent sheet of small professional accounting-document motifs on a transparent or plain light background: invoice line-item strip, receipt corner, ruled handwritten ledger fragment, approval stamp impression, VAT/tax row marker, PO reference tag, debit-credit columns, reconciliation tick, bank statement row strip, paperclip, file tab, and spreadsheet cell selection. Keep all motifs in one consistent visual style with neutral paper tones and restrained green accents. No playful emoji style, no 3D plastic icons, no fake brand logos, no large text.
+If the image is meant to explain a product action, do not generate it. Use a real UI capture, a controlled SVG, or a coded product frame instead. Generated images should sell the setting, audience, and workload relief.
 
 ## Accounting cues and "insider" motifs to reuse
 
