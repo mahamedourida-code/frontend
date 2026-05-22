@@ -498,6 +498,42 @@ Shared constraints to append to the prompts below:
 
     `Three neat stacks of paperwork represented only by thickness and organization level, from small personal stack to larger team trays, placed on a refined accounting desk with scale communicated by volume rather than numbers, realistic photography, clear separation, soft shadows, no labels or text.`
 
+### Brand-world and campaign backgrounds
+
+Use these for hero backgrounds, footer backdrops, auth visuals, pricing accents, and section breaks. They should make AxLiner feel recognizable before the product UI appears. They do not need documents.
+
+12. **Jade coast**
+
+    `A real coastal landscape photographed at the edge of morning light, deep jade water folding into pale stone and sea mist, soft green-blue reflections that match a modern spreadsheet brand, organic shoreline curves leaving generous clean space for web copy, premium calm mood, sharp natural detail, no people, no boats, no fantasy effects.`
+
+13. **Forest light path**
+
+    `A photoreal forest opening with filtered mint-green sunlight passing through dark leaves onto a quiet path, rich shadow detail, wet bark and soft moss textures, refined color grading that pairs emerald green with warm neutral highlights, the image feels elegant and slightly unexpected for a SaaS website, broad composition with one clear low-detail area for text.`
+
+14. **Sea-glass workspace mood**
+
+    `Close cinematic photograph of sea-glass green reflections moving across brushed metal, clear glass, and a pale desk surface, sunlight refracted like water but fully realistic, sophisticated material study for a premium software campaign, abstract enough for a section background, not a render, no UI, no logos, no text.`
+
+15. **Greenhouse after rain**
+
+    `A real modern greenhouse after rain, glass walls with crisp droplets, lush green plants kept controlled and architectural, cool daylight meeting warm interior highlights, quiet premium atmosphere, subtle depth and strong negative space, colors harmonize with emerald and graphite UI accents, not overly tropical, not stock imagery.`
+
+16. **Night harbor contrast**
+
+    `A calm harbor at blue hour with deep charcoal water, restrained green reflections from distant lights, soft silver sky, realistic atmospheric haze, elegant dark-mode campaign background with smooth open space around the horizon, refined and trustworthy rather than dramatic, no city logos, no neon overload.`
+
+17. **Stone and water rhythm**
+
+    `Editorial close view of clear water moving over dark smooth stone and pale mineral edges, emerald-tinted highlights, natural ripples forming a quiet rhythm, highly realistic texture and lighting, a distinctive organic background for a precision product, contrast stays soft enough for overlaid interface cards.`
+
+18. **Warm field contrast**
+
+    `A real late-afternoon landscape with muted golden grass beside a narrow green irrigation line and dark earth, clean horizon, understated human-order-meets-nature feeling, color palette intentionally complements AxLiner green with warm cream and graphite tones, premium documentary photograph, no buildings, no text.`
+
+Brand-world rule:
+
+`Keep the scene real and ownable. Prefer one memorable natural material or place with AxLiner-compatible color over generic abstract gradients, floating shapes, fake papers, or fake screens.`
+
 ### Prompt rule
 
 If the image is meant to explain a product action, do not generate it. Use a real UI capture, a controlled SVG, or a coded product frame instead. Generated images should sell the setting, audience, and workload relief.
