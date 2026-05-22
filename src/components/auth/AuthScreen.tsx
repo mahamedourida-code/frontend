@@ -223,23 +223,32 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
           </div>
         </section>
 
-        <aside className="hidden min-h-screen border-l border-border bg-[#eefbf3] text-foreground dark:bg-[#101812] dark:text-white lg:flex">
-          <div className="mx-auto flex w-full max-w-[390px] flex-col justify-center px-10 py-16">
+        <aside className="relative hidden min-h-screen overflow-hidden border-l border-border bg-[#062522] text-white lg:flex">
+          <Image
+            src="/signin.png"
+            alt=""
+            fill
+            priority
+            sizes="(min-width: 1024px) 46vw, 0vw"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,16,18,0.18)_0%,rgba(3,16,18,0.42)_42%,rgba(3,16,18,0.88)_100%)]" />
+          <div className="relative mx-auto flex w-full max-w-[430px] flex-col justify-end px-10 py-16">
             <Image
               src={testimonial.avatar}
               alt={testimonial.name}
-              width={72}
-              height={72}
-              className="h-[72px] w-[72px] rounded-full border-4 border-background object-cover shadow-sm dark:border-[#101812]"
+              width={64}
+              height={64}
+              className="h-16 w-16 rounded-full border border-white/35 object-cover shadow-lg"
             />
 
-            <blockquote className="mt-8 max-w-[360px] text-xl font-semibold leading-snug tracking-normal text-foreground dark:text-white">
+            <blockquote className="mt-7 max-w-[380px] text-lg font-semibold leading-snug tracking-normal text-white">
               "{testimonial.quote}"
             </blockquote>
 
-            <div className="mt-6">
-              <p className="text-sm font-semibold text-foreground dark:text-white">{testimonial.name}</p>
-              <p className="mt-1 text-xs font-medium text-muted-foreground dark:text-white/65">{testimonial.title}</p>
+            <div className="mt-5 border-t border-white/20 pt-4">
+              <p className="text-sm font-semibold text-white">{testimonial.name}</p>
+              <p className="mt-1 text-xs font-medium text-white/75">{testimonial.title}</p>
             </div>
           </div>
         </aside>
