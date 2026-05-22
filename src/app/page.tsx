@@ -281,6 +281,9 @@ export default function Home() {
   const converterMountRef = useRef<HTMLDivElement>(null);
   const topBackgroundSectionRef = useRef<HTMLDivElement>(null);
   const topBackgroundRef = useRef<HTMLDivElement>(null);
+  const cinematicSectionRef = useRef<HTMLElement>(null);
+  const cinematicStageRef = useRef<HTMLDivElement>(null);
+  const cinematicVideoRef = useRef<HTMLVideoElement>(null);
   const contrastSectionRef = useRef<HTMLDivElement>(null);
   const whatSectionRef = useRef<HTMLDivElement>(null);
   const benchmarkBandRef = useRef<HTMLDivElement>(null);
@@ -361,6 +364,72 @@ export default function Home() {
 
     return () => {
       cancelled = true;
+      ctx?.revert();
+    };
+  }, []);
+
+  useEffect(() => {
+    const cinematicSection = cinematicSectionRef.current;
+    const cinematicStage = cinematicStageRef.current;
+    const cinematicVideo = cinematicVideoRef.current;
+    if (!cinematicSection || !cinematicStage || !cinematicVideo) return;
+
+    let ctx: any;
+    let scrollTrigger: any;
+    let cancelled = false;
+
+    const setScrollTime = (progress: number) => {
+      if (!Number.isFinite(cinematicVideo.duration) || cinematicVideo.duration <= 0) return;
+
+      const finalFrameTime = Math.max(cinematicVideo.duration - 0.05, 0);
+      const nextTime = finalFrameTime * progress;
+
+      if (Math.abs(cinematicVideo.currentTime - nextTime) > 0.03) {
+        cinematicVideo.currentTime = nextTime;
+      }
+    };
+
+    const setupCinematicScroll = () => {
+      if (cancelled || !Number.isFinite(cinematicVideo.duration) || cinematicVideo.duration <= 0) return;
+
+      cinematicVideo.pause();
+      setScrollTime(0);
+
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        setScrollTime(0.55);
+        return;
+      }
+
+      void loadGsap().then(({ gsap, ScrollTrigger }) => {
+        if (cancelled) return;
+
+        ctx = gsap.context(() => {
+          scrollTrigger = ScrollTrigger.create({
+            trigger: cinematicSection,
+            pin: cinematicStage,
+            start: "top top",
+            end: () => `+=${Math.max(window.innerHeight * 2.6, 2200)}`,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            onUpdate: (self: { progress: number }) => {
+              setScrollTime(self.progress);
+            },
+          });
+        }, cinematicSection);
+      });
+    };
+
+    if (cinematicVideo.readyState >= 1) {
+      setupCinematicScroll();
+    } else {
+      cinematicVideo.addEventListener("loadedmetadata", setupCinematicScroll, { once: true });
+    }
+
+    return () => {
+      cancelled = true;
+      cinematicVideo.removeEventListener("loadedmetadata", setupCinematicScroll);
+      cinematicVideo.pause();
+      scrollTrigger?.kill();
       ctx?.revert();
     };
   }, []);
@@ -654,6 +723,35 @@ export default function Home() {
             </section>
           )}
         </div>
+
+        <section
+          ref={cinematicSectionRef}
+          aria-label="Ink to spreadsheet cinematic"
+          className="relative z-10 bg-[#04130d]"
+        >
+          <div
+            ref={cinematicStageRef}
+            className="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#04130d]"
+          >
+            <video
+              ref={cinematicVideoRef}
+              src="/cinematic/ink-to-grid-scroll.mp4"
+              poster="/cinematic/1.png"
+              muted
+              playsInline
+              preload="metadata"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(4,19,13,0.88)_0%,rgba(4,19,13,0.12)_16%,rgba(4,19,13,0.08)_76%,rgba(4,19,13,0.92)_100%)]"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-emerald-200/10"
+            />
+          </div>
+        </section>
 
           </div>
         </div>
