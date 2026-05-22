@@ -183,7 +183,7 @@ const footerColumns = [
       { label: "Convert files", href: "/dashboard/client" },
       { label: "Pricing", href: "/pricing" },
       { label: "Benchmarks", href: "/benchmarks" },
-      { label: "Security", href: "#security" },
+      { label: "Security", href: "/security" },
     ],
   },
   {
@@ -965,7 +965,7 @@ export default function Home() {
                   className="mt-12 bg-secondary px-8 py-6 text-lg font-semibold text-secondary-foreground shadow-none hover:bg-secondary/80"
                   asChild
                 >
-                  <NextLink href="/privacy-policy">More Information</NextLink>
+                  <NextLink href="/security">More Information</NextLink>
                 </Button>
               </div>
             </div>

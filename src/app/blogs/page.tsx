@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { AppLogo } from "@/components/AppIcon";
-import { Button } from "@/components/ui/button";
-import { MobileNav } from "@/components/MobileNav";
+import { MarketingNavBar } from "@/components/MarketingNavBar";
 import { blogPosts } from "@/lib/blogs";
 
 function dateParts(date: string) {
@@ -38,38 +36,7 @@ export const metadata: Metadata = {
 export default function BlogsPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <nav className="fixed left-0 right-0 top-0 z-50 pt-3 backdrop-blur-2xl lg:pt-4">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between rounded-md border border-border bg-background/82 p-2 shadow-sm backdrop-blur-2xl lg:p-3">
-            <Link href="/" aria-label="AxLiner home">
-              <AppLogo />
-            </Link>
-
-            <div className="hidden items-center gap-2 lg:flex">
-              <Link className="rounded-md px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted" href="/#features">
-                Solutions
-              </Link>
-              <Link className="rounded-md px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted" href="/benchmarks">
-                Benchmarks
-              </Link>
-              <Link className="rounded-md px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted" href="/pricing">
-                Pricing
-              </Link>
-              <Link className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground" href="/blogs">
-                Blogs
-              </Link>
-            </div>
-
-            <div className="hidden items-center gap-3 lg:flex">
-              <Button asChild className="rounded-md bg-primary px-5 text-primary-foreground hover:bg-primary/90">
-                <Link href="/#converter">Try It</Link>
-              </Button>
-            </div>
-
-            <MobileNav />
-          </div>
-        </div>
-      </nav>
+      <MarketingNavBar />
 
       <section className="mx-auto max-w-6xl px-4 pb-8 pt-28 sm:px-6 lg:px-8 lg:pt-32">
         <div className="border-b border-black/10 pb-8">
