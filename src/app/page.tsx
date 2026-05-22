@@ -281,9 +281,6 @@ export default function Home() {
   const converterMountRef = useRef<HTMLDivElement>(null);
   const topBackgroundSectionRef = useRef<HTMLDivElement>(null);
   const topBackgroundRef = useRef<HTMLDivElement>(null);
-  const cinematicSectionRef = useRef<HTMLElement>(null);
-  const cinematicStageRef = useRef<HTMLDivElement>(null);
-  const cinematicVideoRef = useRef<HTMLVideoElement>(null);
   const contrastSectionRef = useRef<HTMLDivElement>(null);
   const benchmarkBandRef = useRef<HTMLDivElement>(null);
   const securityBandRef = useRef<HTMLDivElement>(null);
@@ -363,63 +360,6 @@ export default function Home() {
 
     return () => {
       cancelled = true;
-      ctx?.revert();
-    };
-  }, []);
-
-  useEffect(() => {
-    const cinematicSection = cinematicSectionRef.current;
-    const cinematicStage = cinematicStageRef.current;
-    const cinematicVideo = cinematicVideoRef.current;
-    if (!cinematicSection || !cinematicStage || !cinematicVideo) return;
-
-    let ctx: any;
-    let cancelled = false;
-
-    const setupCinematicScroll = () => {
-      if (cancelled || !Number.isFinite(cinematicVideo.duration) || cinematicVideo.duration <= 0) return;
-
-      cinematicVideo.pause();
-      cinematicVideo.currentTime = 0;
-
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        cinematicVideo.currentTime = cinematicVideo.duration * 0.55;
-        return;
-      }
-
-      void loadGsap().then(({ gsap }) => {
-        if (cancelled) return;
-
-        const scrollPixelsPerVideoSecond = 120;
-
-        ctx = gsap.context(() => {
-          gsap.to(cinematicVideo, {
-            currentTime: Math.max(cinematicVideo.duration - 0.05, 0),
-            ease: "none",
-            scrollTrigger: {
-              trigger: cinematicSection,
-              pin: cinematicStage,
-              start: "top 8%",
-              end: () => `+=${Math.max(cinematicVideo.duration * scrollPixelsPerVideoSecond, window.innerHeight * 2.4)}`,
-              scrub: 0.2,
-              anticipatePin: 1,
-              invalidateOnRefresh: true,
-            },
-          });
-        }, cinematicSection);
-      });
-    };
-
-    if (cinematicVideo.readyState >= 1) {
-      setupCinematicScroll();
-    } else {
-      cinematicVideo.addEventListener("loadedmetadata", setupCinematicScroll, { once: true });
-    }
-
-    return () => {
-      cancelled = true;
-      cinematicVideo.removeEventListener("loadedmetadata", setupCinematicScroll);
-      cinematicVideo.pause();
       ctx?.revert();
     };
   }, []);
@@ -662,21 +602,21 @@ export default function Home() {
         </div>
 
         <section
-          ref={cinematicSectionRef}
           aria-label="Ink to spreadsheet cinematic"
-          className="relative z-10 overflow-hidden bg-[linear-gradient(180deg,var(--background)_0%,rgba(24,227,153,0.07)_48%,var(--background)_100%)] px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20"
+          className="relative z-10 overflow-hidden bg-[linear-gradient(180deg,var(--background)_0%,rgba(24,227,153,0.08)_48%,var(--background)_100%)] px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20"
         >
           <div
-            ref={cinematicStageRef}
             className="relative mx-auto flex aspect-[4/3] w-full max-w-[1240px] items-center justify-center overflow-hidden rounded-md border border-emerald-100/15 bg-[#04130d] shadow-[0_32px_88px_rgba(4,19,13,0.32)] sm:aspect-video"
           >
             <video
-              ref={cinematicVideoRef}
               src="/cinematic/ink-to-grid-scroll.mp4"
               poster="/cinematic/1.png"
+              autoPlay
+              loop
               muted
               playsInline
-              preload="metadata"
+              preload="auto"
+              aria-label="Handwritten ledger transforming into a spreadsheet"
               className="absolute inset-0 h-full w-full object-cover object-center"
             />
             <div
