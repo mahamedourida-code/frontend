@@ -159,7 +159,7 @@ const ownedPipelineCopy = [
 const cinematicFrameCount = 138;
 const cinematicFrameUrls = Array.from(
   { length: cinematicFrameCount },
-  (_, index) => `/cinematic/slow-frames/ink-grid-${String(index + 1).padStart(3, "0")}.webp`
+  (_, index) => `/cinematic/frames-4k/ink-grid-${String(index + 1).padStart(3, "0")}.webp`
 );
 
 type FooterIconProps = {
@@ -429,7 +429,11 @@ export default function Home() {
     const frameIsReady = (frame?: HTMLImageElement) =>
       !!frame && frame.complete && frame.naturalWidth > 0;
 
-    const frames = cinematicFrameUrls.map((src, index) => {
+    const frames: Array<HTMLImageElement | undefined> = Array(cinematicFrameCount);
+
+    function loadFrame(index: number) {
+      if (index < 0 || index >= cinematicFrameCount || frames[index]) return;
+
       const frame = new window.Image();
       frame.decoding = "async";
       frame.onload = () => {
@@ -437,9 +441,18 @@ export default function Home() {
           renderFrame();
         }
       };
-      frame.src = src;
-      return frame;
-    });
+      frame.src = cinematicFrameUrls[index];
+      frames[index] = frame;
+    }
+
+    function loadFramesAround(index: number) {
+      loadFrame(index);
+
+      for (let offset = 1; offset <= 12; offset += 1) {
+        loadFrame(index - offset);
+        loadFrame(index + offset);
+      }
+    }
 
     function getFrame(index: number) {
       if (frameIsReady(frames[index])) return frames[index];
@@ -457,6 +470,7 @@ export default function Home() {
 
     function renderFrame(force = false) {
       const frameIndex = Math.round(playhead.frame);
+      loadFramesAround(frameIndex);
       const frame = getFrame(frameIndex);
       if (!frame || !frameCanvas.width || !frameCanvas.height) return;
       if (!force && frame === lastDrawnFrame && frameIndex === lastDrawnFrameIndex) return;
@@ -508,6 +522,7 @@ export default function Home() {
       renderFrame(true);
     }
 
+    loadFramesAround(0);
     resizeCanvas();
 
     if (typeof ResizeObserver !== "undefined") {
@@ -837,10 +852,11 @@ export default function Home() {
           className="relative z-10 isolate h-svh min-h-[560px] w-full overflow-hidden bg-[#04130d]"
         >
           <Image
-            src="/cinematic/slow-frames/ink-grid-001.webp"
+            src="/cinematic/frames-4k/ink-grid-001.webp"
             alt=""
             fill
             sizes="100vw"
+            unoptimized
             aria-hidden="true"
             className="object-cover object-center"
           />
