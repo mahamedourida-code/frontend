@@ -225,6 +225,22 @@ function FooterTableIcon({ className }: FooterIconProps) {
   );
 }
 
+function FooterLinkedInIcon({ className }: FooterIconProps) {
+  return (
+    <svg aria-hidden="true" className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M6.8 8.1H3.2V20h3.6V8.1Zm.2-3.7A2.1 2.1 0 1 1 2.8 4.4a2.1 2.1 0 0 1 4.2 0ZM20.8 13.2V20h-3.6v-6.3c0-1.6-.6-2.7-2-2.7-1.1 0-1.7.7-2 1.5-.1.3-.1.8-.1 1.2V20H9.5s.1-10.1 0-11.9h3.6v1.7c.5-.8 1.4-2 3.4-2 2.5 0 4.3 1.6 4.3 5.4Z" />
+    </svg>
+  );
+}
+
+function FooterYouTubeIcon({ className }: FooterIconProps) {
+  return (
+    <svg aria-hidden="true" className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M21.4 7.1a2.8 2.8 0 0 0-2-2C17.7 4.6 12 4.6 12 4.6s-5.7 0-7.4.5a2.8 2.8 0 0 0-2 2A29.4 29.4 0 0 0 2.1 12c0 1.7.2 3.4.5 4.9a2.8 2.8 0 0 0 2 2c1.7.5 7.4.5 7.4.5s5.7 0 7.4-.5a2.8 2.8 0 0 0 2-2c.3-1.5.5-3.2.5-4.9 0-1.7-.2-3.4-.5-4.9Zm-11.6 8V8.9l5.5 3.1-5.5 3.1Z" />
+    </svg>
+  );
+}
+
 const footerHighlights = [
   {
     label: "Private by design",
@@ -279,6 +295,19 @@ const footerColumns = [
       { label: "Data deletion", href: "/data-deletion" },
       { label: "Billing", href: "/dashboard/settings" },
     ],
+  },
+];
+
+const footerSocialLinks = [
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com",
+    Icon: FooterLinkedInIcon,
+  },
+  {
+    label: "YouTube",
+    href: "https://www.youtube.com",
+    Icon: FooterYouTubeIcon,
   },
 ];
 
@@ -1263,70 +1292,100 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-primary/20 bg-primary text-white">
-        <div className="mx-auto max-w-[1540px] px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,0.92fr)_minmax(620px,1fr)] lg:items-start">
+      <footer className="relative z-10 overflow-hidden border-t border-white/10 bg-[#031b17] text-white">
+        <Image
+          src="/buttom.png"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(100deg,rgba(2,17,17,0.96)_0%,rgba(2,27,22,0.82)_48%,rgba(3,27,22,0.72)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_16%,rgba(231,255,235,0.24),transparent_30%)]" />
+
+        <div className="relative mx-auto max-w-[1540px] px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(620px,1fr)] lg:items-start">
             <div className="max-w-2xl">
               <NextLink
                 href="/"
                 aria-label="AxLiner home"
-                className="inline-flex rounded-md border border-white/20 bg-white px-3 py-2 text-foreground shadow-sm transition-transform hover:-translate-y-0.5"
+                className="inline-flex rounded-md border border-white/25 bg-white px-3 py-2 text-foreground shadow-lg shadow-black/15 transition-transform hover:-translate-y-0.5"
               >
                 <AppLogo className="h-8 w-auto" />
               </NextLink>
-              <p className="mt-6 max-w-xl text-base font-medium leading-7 text-white/90">
+              <h2 className="mt-7 max-w-xl text-3xl font-semibold leading-tight text-white sm:text-4xl">
+                Turn handwritten paperwork into review-ready Excel batches.
+              </h2>
+              <p className="mt-5 max-w-xl text-base font-medium leading-7 text-white/82">
                 Handwritten documents go in. Reviewable Excel files come out. AxLiner keeps the batch, ownership, and download flow clear for teams that live in spreadsheets.
               </p>
-              <div className="mt-7 grid gap-3 sm:grid-cols-3">
-                {footerHighlights.map(({ label, description, Icon }) => (
-                  <div
-                    key={label}
-                    className="rounded-md border border-white/18 bg-white/[0.08] p-4 shadow-sm"
-                  >
-                    <Icon className="h-5 w-5 text-white" />
-                    <p className="mt-4 text-sm font-semibold text-white">{label}</p>
-                    <p className="mt-2 text-xs font-medium leading-5 text-white/78">{description}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Button asChild className="bg-white px-7 py-5 font-semibold text-foreground hover:bg-white/90">
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Button asChild className="bg-white px-7 py-5 font-semibold text-[#05221c] shadow-lg shadow-black/15 hover:bg-[#f3fff8]">
                   <NextLink href="/dashboard/client">Try It</NextLink>
                 </Button>
                 <Button
                   asChild
                   variant="outline"
-                  className="border-white/28 bg-transparent px-7 py-5 font-semibold text-white hover:bg-white/10 hover:text-white"
+                  className="border-white/28 bg-black/10 px-7 py-5 font-semibold text-white backdrop-blur-sm hover:bg-white/12 hover:text-white"
                 >
                   <NextLink href="/pricing">See Pricing</NextLink>
                 </Button>
+                <div className="flex items-center gap-2 ps-1">
+                  {footerSocialLinks.map(({ label, href, Icon }) => (
+                    <a
+                      key={label}
+                      href={href}
+                      aria-label={label}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/22 bg-white/10 text-white backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white/18"
+                    >
+                      <Icon className="h-5 w-5" />
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
-              {footerColumns.map((column) => (
-                <div key={column.title}>
-                  <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">
-                    {column.title}
-                  </h4>
-                  <ul className="mt-4 space-y-3 text-sm font-semibold text-white/90">
-                    {column.links.map((link) => (
-                      <li key={`${column.title}-${link.label}`}>
-                        {link.href.startsWith("mailto:") ? (
-                          <a href={link.href} className="transition-colors hover:text-white">
-                            {link.label}
-                          </a>
-                        ) : (
-                          <NextLink href={link.href} className="transition-colors hover:text-white">
-                            {link.label}
-                          </NextLink>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+            <div className="rounded-md border border-white/16 bg-black/20 p-5 shadow-2xl shadow-black/15 backdrop-blur-md sm:p-7">
+              <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
+                {footerColumns.map((column) => (
+                  <div key={column.title}>
+                    <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/64">
+                      {column.title}
+                    </h4>
+                    <ul className="mt-4 space-y-3 text-sm font-semibold text-white/90">
+                      {column.links.map((link) => (
+                        <li key={`${column.title}-${link.label}`}>
+                          {link.href.startsWith("mailto:") ? (
+                            <a href={link.href} className="transition-colors hover:text-white">
+                              {link.label}
+                            </a>
+                          ) : (
+                            <NextLink href={link.href} className="transition-colors hover:text-white">
+                              {link.label}
+                            </NextLink>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </div>
+          </div>
+
+          <div className="mt-10 grid gap-3 sm:grid-cols-3">
+            {footerHighlights.map(({ label, description, Icon }) => (
+              <div
+                key={label}
+                className="rounded-md border border-white/16 bg-white/[0.09] p-4 shadow-sm backdrop-blur-sm"
+              >
+                <Icon className="h-5 w-5 text-white" />
+                <p className="mt-4 text-sm font-semibold text-white">{label}</p>
+                <p className="mt-2 text-xs font-medium leading-5 text-white/76">{description}</p>
+              </div>
+            ))}
           </div>
           
           <div className="mt-12 flex flex-col gap-4 border-t border-white/16 pt-6 text-xs font-medium text-white/70 sm:flex-row sm:items-center sm:justify-between">
