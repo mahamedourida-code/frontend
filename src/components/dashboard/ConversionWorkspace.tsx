@@ -481,7 +481,7 @@ export function ResultPreviewPanel({
       <div className="flex min-h-[300px] flex-col justify-between rounded-md border border-border bg-card/50 p-4 backdrop-blur-xl">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Result</p>
-          <p className="mt-2 text-lg font-semibold text-foreground">Your review set appears here</p>
+          <p className="mt-2 text-lg font-semibold text-foreground">Review board</p>
         </div>
         <div className="grid gap-2">
           <div className="h-9 rounded-md bg-card/65" />

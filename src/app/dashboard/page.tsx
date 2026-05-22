@@ -85,6 +85,17 @@ function formatPlanLabel(plan?: string | null) {
   return plan.charAt(0).toUpperCase() + plan.slice(1)
 }
 
+function statusBadgeClass(label: string) {
+  const normalized = label.toLowerCase()
+  if (normalized.includes("failed") || normalized.includes("review")) {
+    return "border-amber-200 bg-amber-50 text-amber-800"
+  }
+  if (normalized.includes("processing") || normalized.includes("queued")) {
+    return "border-blue-200 bg-blue-50 text-blue-800"
+  }
+  return "border-emerald-200 bg-emerald-50 text-emerald-800"
+}
+
 export default function DashboardPage() {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
@@ -390,6 +401,12 @@ export default function DashboardPage() {
     return job.filename || `Batch ${String(job.original_job_id || job.id || "").slice(0, 8) || "run"}`
   }
 
+  const getOutputName = (job: Job) => {
+    const name = getJobName(job)
+    if (/\.(xlsx|xls|csv|txt)$/i.test(name)) return name
+    return `${name.replace(/\.[^/.]+$/, "") || "batch"}.xlsx`
+  }
+
   const jobNeedsAttention = (job: Job) => {
     let metadata = job.processing_metadata
     if (typeof metadata === "string") {
@@ -550,6 +567,12 @@ export default function DashboardPage() {
     ? savedJobs
     : recentJobs.filter((job) => job.status === "completed" || job.status === "partially_completed")
   ).slice(0, 4)
+  const boardJobs = [...attentionJobs, ...outputJobs]
+    .filter((job, index, list) => {
+      const id = job.id || job.original_job_id || getJobName(job)
+      return list.findIndex((item) => (item.id || item.original_job_id || getJobName(item)) === id) === index
+    })
+    .slice(0, 3)
   const availableCredits = credits?.available_credits ?? billingStatus?.credits?.available_credits ?? null
   const planLabel = billingLoading && !billingStatus ? "Loading" : formatPlanLabel(billingStatus?.plan)
   const recoveryProgress = recoverableJob?.total_images
@@ -589,47 +612,48 @@ export default function DashboardPage() {
             <CardHeader className="border-b border-border pb-5">
               <CardTitle className="text-xl">Next batch</CardTitle>
               <CardDescription className="max-w-2xl leading-6">
-                Convert handwritten invoices, bank statements, table photos, and PDF pages into files you can review before download.
+                Convert files, review the board, download the corrected package.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5 p-6">
               <div className="rounded-md border border-border bg-muted/35 p-3">
                 <div className="mb-3 flex items-center justify-between gap-3">
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Normal result view</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Review board</p>
                   <span className="rounded-md border border-border bg-card px-2.5 py-1 text-xs font-semibold text-foreground">
-                    Batch review board
+                    Input beside output
                   </span>
                 </div>
-                <div className="grid gap-3">
-                  {[
-                    ["handwritten_invoice_04.jpg", "invoice_04.xlsx", "Ready"],
-                    ["bank_statement_page_02.pdf", "statement_page_02.xlsx", "Needs review"],
-                    ["field_table_11.png", "field_table_11.xlsx", "Edited"],
-                  ].map(([input, output, state], index) => (
-                    <div key={input} className="grid gap-3 rounded-md border border-border bg-card p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-center">
-                      <div className="min-w-0">
-                        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Input</p>
-                        <p className="mt-1 truncate text-sm font-semibold text-foreground">{input}</p>
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Output</p>
-                        <p className="mt-1 truncate text-sm font-semibold text-foreground">{output}</p>
-                      </div>
-                      <span
-                        className={cn(
-                          "w-fit rounded-md border px-2.5 py-1 text-xs font-semibold",
-                          index === 1
-                            ? "border-amber-200 bg-amber-50 text-amber-800"
-                            : index === 2
-                              ? "border-primary/20 bg-primary/10 text-primary"
-                              : "border-emerald-200 bg-emerald-50 text-emerald-800"
-                        )}
-                      >
-                        {state}
-                      </span>
+                {boardJobs.length ? (
+                  <div className="grid gap-3">
+                    {boardJobs.map((job) => {
+                      const statusLabel = getStatusLabel(job)
+
+                      return (
+                        <div key={job.id || job.original_job_id || getJobName(job)} className="grid gap-3 rounded-md border border-border bg-card p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-center">
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Input</p>
+                            <p className="mt-1 truncate text-sm font-semibold text-foreground">{getJobName(job)}</p>
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Output</p>
+                            <p className="mt-1 truncate text-sm font-semibold text-foreground">{getOutputName(job)}</p>
+                          </div>
+                          <span className={cn("w-fit rounded-md border px-2.5 py-1 text-xs font-semibold", statusBadgeClass(statusLabel))}>
+                            {statusLabel}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-3 rounded-md border border-dashed border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">No batch board yet</p>
+                      <p className="mt-1 text-xs font-medium text-muted-foreground">Start with invoices, statements, forms, or table photos.</p>
                     </div>
-                  ))}
-                </div>
+                    <Button size="sm" onClick={() => router.push("/dashboard/client")}>Create board</Button>
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -710,9 +734,9 @@ export default function DashboardPage() {
                   ))}
                 </div>
               ) : (
-                <div className="rounded-md border border-dashed border-border p-5">
-                  <p className="text-sm font-medium text-foreground">No recent review blockers</p>
-                  <p className="mt-1 text-sm text-muted-foreground">New exceptions and partial runs will surface here.</p>
+                <div className="flex items-center justify-between gap-3 rounded-md border border-dashed border-border p-4">
+                  <p className="text-sm font-medium text-foreground">No review blockers</p>
+                  <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800">Clear</span>
                 </div>
               )}
             </CardContent>
@@ -742,9 +766,9 @@ export default function DashboardPage() {
                   ))}
                 </div>
               ) : (
-                <div className="rounded-md border border-dashed border-border p-5">
-                  <p className="text-sm font-medium text-foreground">No saved outputs yet</p>
-                  <p className="mt-1 text-sm text-muted-foreground">Completed spreadsheet files will collect in History after a run.</p>
+                <div className="flex flex-col gap-3 rounded-md border border-dashed border-border p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm font-medium text-foreground">No downloaded batches</p>
+                  <Button size="sm" variant="outline" onClick={() => router.push("/dashboard/client")}>Convert Files</Button>
                 </div>
               )}
             </CardContent>
@@ -754,7 +778,6 @@ export default function DashboardPage() {
         <div className="pt-4">
           <div className="mb-3 flex items-center justify-between gap-3">
             <p className="text-sm font-semibold text-muted-foreground">Volume and processing</p>
-            <p className="hidden text-xs text-muted-foreground sm:block">Analytics stay below current batch work.</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {metricCards.map((item) => {
