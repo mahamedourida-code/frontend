@@ -249,6 +249,11 @@ export interface ProcessedFile {
   filename: string
   original_image: string
   size_bytes?: number
+  status?: string
+  document_mode?: string
+  requires_review?: boolean
+  confidence_score?: number
+  review_flags?: Array<Record<string, unknown>>
   created_at: string
 }
 
@@ -321,7 +326,7 @@ export interface DashboardSummaryResponse {
 export interface UploadBatchMultipartOptions {
   output_format?: string
   consolidation_strategy?: string
-  document_mode?: 'table' | 'bank_statement'
+  document_mode?: 'table' | 'bank_statement' | 'invoice_receipt'
   signal?: AbortSignal
   onUploadProgress?: (percent: number, event: AxiosProgressEvent) => void
 }

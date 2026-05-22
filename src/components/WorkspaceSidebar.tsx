@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Activity, Building2, ChevronsUpDown, FileSpreadsheet, History, LogOut, Settings, Upload } from "lucide-react"
+import { Activity, Building2, ChevronsUpDown, FileSpreadsheet, History, LogOut, ReceiptText, Settings, Upload } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -72,6 +72,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
               const processSubItems = [
                 { label: "Table mode", href: "/dashboard/client", icon: FileSpreadsheet },
                 { label: "Bank statements", href: "/dashboard/bank-statements", icon: Building2 },
+                { label: "Invoices/receipts", href: "/dashboard/invoice-receipts", icon: ReceiptText },
               ]
 
               if (isProcess) {

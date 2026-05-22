@@ -65,6 +65,7 @@ function filenameStem(name?: string | null, fallback = "axliner_result") {
 function smartOutputFilename(file: any, index: number, sourceFiles: File[], outputMode: "table" | "text") {
   const sourceName =
     file?.original_filename ||
+    file?.original_image ||
     file?.source_filename ||
     file?.input_filename ||
     sourceFiles[index]?.name ||
@@ -93,7 +94,7 @@ type ResultPreview = {
   loading?: boolean
 }
 
-type ConversionDocumentMode = "table" | "bank_statement"
+type ConversionDocumentMode = "table" | "bank_statement" | "invoice_receipt"
 
 export default function ProcessImagesPage() {
   return (
@@ -144,6 +145,7 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
   const [firstImageUrl, setFirstImageUrl] = useState<string>('')
   const [activePreviewFileId, setActivePreviewFileId] = useState<string>('')
   const [outputMode, setOutputMode] = useState<'table' | 'text'>('table')
+  const [activeDocumentMode, setActiveDocumentMode] = useState<ConversionDocumentMode>(documentMode)
   const {
     limits: entitlementLimits,
     credits: entitlementCredits,
@@ -201,6 +203,13 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
   } = useOCR()
   const [latestRecoverableJob, setLatestRecoverableJob] = useState<RecoverableJobSummary | null>(null)
   const [recoveryLoading, setRecoveryLoading] = useState(false)
+
+  useEffect(() => {
+    setActiveDocumentMode(documentMode)
+    if (documentMode !== 'table') {
+      setOutputMode('table')
+    }
+  }, [documentMode])
 
   useEffect(() => {
     if (!ocrError) return
@@ -687,8 +696,8 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
       }
 
       const response = await uploadBatch(uploadedFiles, {
-        outputFormat: documentMode === 'bank_statement' ? 'xlsx' : outputMode === 'text' ? 'txt' : 'xlsx',
-        documentMode,
+        outputFormat: activeDocumentMode === 'table' && outputMode === 'text' ? 'txt' : 'xlsx',
+        documentMode: activeDocumentMode,
       })
       if (response && response.session_id) {
         connectWebSocket(response.session_id, response.job_id)
@@ -721,7 +730,7 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
       })
       showApiErrorToast(error, errorContext)
     }
-  }, [uploadedFiles, uploadBatch, connectWebSocket, maxUploadFiles, router, outputMode, documentMode, createFilePreviewUrl, noCredits])
+  }, [uploadedFiles, uploadBatch, connectWebSocket, maxUploadFiles, router, outputMode, activeDocumentMode, createFilePreviewUrl, noCredits])
 
   const handleCancelProcessing = useCallback(async () => {
     await cancelProcessing()
@@ -1309,9 +1318,10 @@ Best regards`
   }
 
   const isComplete = status === 'completed' && resultFiles && resultFiles.length > 0
-  const isBankStatementMode = documentMode === 'bank_statement'
-  const isTextOutput = !isBankStatementMode && outputMode === 'text'
-  const effectiveOutputMode = isBankStatementMode ? 'table' : outputMode
+  const isBankStatementMode = activeDocumentMode === 'bank_statement'
+  const isInvoiceReceiptMode = activeDocumentMode === 'invoice_receipt'
+  const isTextOutput = activeDocumentMode === 'table' && outputMode === 'text'
+  const effectiveOutputMode = isBankStatementMode || isInvoiceReceiptMode ? 'table' : outputMode
   const displayResultFiles = resultFiles?.map((file, index) => ({
     ...file,
     filename: smartOutputFilename(file, index, uploadedFiles, effectiveOutputMode),
@@ -1345,8 +1355,8 @@ Best regards`
   return (
     <DashboardShell
       activeItem="process"
-      title={isBankStatementMode ? "Bank Statement Mode" : "Convert Files"}
-      eyebrow={isBankStatementMode ? "Statements" : "Batch"}
+      title={isBankStatementMode ? "Bank Statement Mode" : isInvoiceReceiptMode ? "Invoice and Receipt Mode" : "Convert Files"}
+      eyebrow={isBankStatementMode ? "Statements" : isInvoiceReceiptMode ? "Accounting" : "Batch"}
       user={user}
       contentClassName="max-w-none px-3 sm:px-5 lg:px-6"
     >
@@ -1362,7 +1372,11 @@ Best regards`
         isDragging={isDragging}
         outputMode={effectiveOutputMode}
         onOutputModeChange={setOutputMode}
-        documentMode={documentMode}
+        documentMode={activeDocumentMode}
+        onDocumentModeChange={(mode) => {
+          setActiveDocumentMode(mode)
+          if (mode !== 'table') setOutputMode('table')
+        }}
         isUploading={isUploading}
         isProcessing={isProcessing}
         isComplete={Boolean(isComplete)}

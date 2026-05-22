@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import { compressImages } from '@/lib/image-compression' 
 
 type UploadOutputFormat = 'xlsx' | 'txt'
-type UploadDocumentMode = 'table' | 'bank_statement'
+type UploadDocumentMode = 'table' | 'bank_statement' | 'invoice_receipt'
 
 interface UploadBatchOptions {
   outputFormat?: UploadOutputFormat

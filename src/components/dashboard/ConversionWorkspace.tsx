@@ -32,7 +32,8 @@ export type WorkspaceBanner = {
 }
 
 type OutputMode = "table" | "text"
-type DocumentMode = "table" | "bank_statement"
+type DocumentMode = "table" | "bank_statement" | "invoice_receipt"
+type ResultFilter = "all" | "ready" | "review" | "edited" | "failed"
 
 type ResultFile = {
   file_id?: string
@@ -43,7 +44,9 @@ type ResultFile = {
   confidence?: number
   quality_score?: number
   requires_review?: boolean
+  review_flags?: Array<Record<string, any>>
   status?: string
+  original_image?: string
   metadata?: Record<string, any>
 }
 
@@ -71,6 +74,7 @@ type ConversionWorkspaceProps = {
   outputMode: OutputMode
   onOutputModeChange: (mode: OutputMode) => void
   documentMode?: DocumentMode
+  onDocumentModeChange?: (mode: DocumentMode) => void
   isUploading: boolean
   isProcessing: boolean
   isComplete: boolean
@@ -164,7 +168,7 @@ function ResumeBatchBanner({
       <div className="flex items-center gap-3">
         <Loader2 className="h-5 w-5 text-primary-foreground" />
         <div>
-          <p className="text-sm font-semibold">Continue latest batch</p>
+          <p className="text-sm font-semibold">Return to unfinished batch</p>
           <p className="text-xs text-primary-foreground/70">
             {latestRecoverableJob.processed_images || 0} of {latestRecoverableJob.total_images || 0} files processed
           </p>
@@ -175,7 +179,7 @@ function ResumeBatchBanner({
         disabled={recoveryLoading}
         className="h-10 rounded-md border border-white/20 bg-background px-4 text-primary hover:bg-card/90"
       >
-        {recoveryLoading ? "Resuming..." : "Continue latest job"}
+        {recoveryLoading ? "Resuming..." : "Open batch"}
       </Button>
     </div>
   )
@@ -594,11 +598,16 @@ function getOutputBadge(file: ResultFile) {
   const needsReview =
     file.status === "failed" ||
     file.requires_review ||
+    Boolean(file.review_flags?.length || file.metadata?.review_flags?.length) ||
     (confidence !== null && confidence < 82)
 
+  if (file.status === "failed") {
+    return { state: "failed" as const, label: "Failed", className: "border-rose-200 bg-rose-50 text-rose-800" }
+  }
+
   return needsReview
-    ? { label: "Needs review", className: "border-amber-200 bg-amber-50 text-amber-800" }
-    : { label: "Ready", className: "border-emerald-200 bg-emerald-50 text-emerald-800" }
+    ? { state: "review" as const, label: "Needs review", className: "border-amber-200 bg-amber-50 text-amber-800" }
+    : { state: "ready" as const, label: "Ready", className: "border-emerald-200 bg-emerald-50 text-emerald-800" }
 }
 
 function correctedFilename(filename?: string) {
@@ -700,6 +709,7 @@ export function ResultActions({
   const [comparisonIndex, setComparisonIndex] = useState<number | null>(null)
   const [editingCell, setEditingCell] = useState<{ fileKey: string; row: number; col: number } | null>(null)
   const [editedTables, setEditedTables] = useState<Record<string, any[][]>>({})
+  const [resultFilter, setResultFilter] = useState<ResultFilter>("all")
   const [reviewedDownloadBusy, setReviewedDownloadBusy] = useState(false)
   if (!resultFiles?.length) return null
 
@@ -716,6 +726,27 @@ export function ResultActions({
   const comparisonColumnCount = Math.max(1, ...comparisonTable.map(row => row.length))
   const editedCount = Object.keys(editedTables).length
   const comparisonImageUrl = comparisonFile?.input_preview_url || firstImageUrl
+  const resultEntries = resultFiles.map((file, index) => {
+    const fileKey = getResultKey(file, index)
+    const badge = getOutputBadge(file)
+    const edited = Boolean(editedTables[fileKey])
+
+    return { file, index, fileKey, badge, edited }
+  })
+  const filterCounts = resultEntries.reduce(
+    (counts, entry) => {
+      counts.all += 1
+      counts[entry.badge.state] += 1
+      if (entry.edited) counts.edited += 1
+      return counts
+    },
+    { all: 0, ready: 0, review: 0, edited: 0, failed: 0 } as Record<ResultFilter, number>
+  )
+  const filteredResultEntries = resultEntries.filter((entry) => {
+    if (resultFilter === "all") return true
+    if (resultFilter === "edited") return entry.edited
+    return entry.badge.state === resultFilter
+  })
 
   const openComparison = (index: number) => {
     const file = resultFiles[index]
@@ -847,16 +878,40 @@ export function ResultActions({
           </span>
         </div>
 
+        <div className="mb-4 flex flex-wrap gap-2">
+          {([
+            ["all", "All"],
+            ["ready", "Ready"],
+            ["review", "Needs review"],
+            ["edited", "Edited"],
+            ["failed", "Failed"],
+          ] as Array<[ResultFilter, string]>).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setResultFilter(value)}
+              className={cn(
+                "inline-flex h-9 items-center gap-2 rounded-md border px-3 text-xs font-semibold transition",
+                resultFilter === value
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-card text-foreground hover:bg-accent"
+              )}
+            >
+              {label}
+              <span className={cn("rounded-sm px-1.5 py-0.5 text-[10px]", resultFilter === value ? "bg-white/20" : "bg-muted text-muted-foreground")}>
+                {filterCounts[value]}
+              </span>
+            </button>
+          ))}
+        </div>
+
         <div className={cn(
           "grid gap-4",
           resultFiles.length > 8
             ? "grid-cols-1 xl:grid-cols-2"
             : "grid-cols-1"
         )}>
-        {resultFiles.map((file, index) => {
-          const fileKey = getResultKey(file, index)
-          const badge = getOutputBadge(file)
-          const edited = Boolean(editedTables[fileKey])
+        {filteredResultEntries.length ? filteredResultEntries.map(({ file, index, fileKey, badge, edited }) => {
           const preview = file.file_id ? resultPreviews?.[file.file_id] : undefined
           const visiblePreview = edited ? { table: editedTables[fileKey] || [], text: preview?.text || "", loading: false } : preview
           const compact = resultFiles.length > 8
@@ -945,7 +1000,11 @@ export function ResultActions({
               </div>
             </div>
           )
-        })}
+        }) : (
+          <div className="rounded-md border border-dashed border-border bg-card p-5">
+            <p className="text-sm font-semibold text-foreground">No files in this filter</p>
+          </div>
+        )}
         </div>
       </div>
     </div>
@@ -1090,6 +1149,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     outputMode,
     onOutputModeChange,
     documentMode = "table",
+    onDocumentModeChange,
     isUploading,
     isProcessing,
     isComplete,
@@ -1125,6 +1185,32 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
   } = props
   const hasResults = Boolean(isComplete && (resultFiles?.length || 0) > 0)
   const isBankStatementMode = documentMode === "bank_statement"
+  const isInvoiceReceiptMode = documentMode === "invoice_receipt"
+  const selectedMode = isBankStatementMode
+    ? "bank_statement"
+    : isInvoiceReceiptMode
+      ? "invoice_receipt"
+      : outputMode === "text"
+        ? "text"
+        : "table"
+  const expectedOutputs = Math.max(creditEstimate || 0, uploadedFiles.length)
+  const modeOptions = [
+    { value: "table", label: "Table", helper: "Rows and columns" },
+    { value: "bank_statement", label: "Bank statement", helper: "Text + transactions" },
+    { value: "invoice_receipt", label: "Invoice/receipt", helper: "Totals, dates, line items" },
+    { value: "text", label: "Text extraction", helper: "Readable text" },
+  ] as const
+
+  const handleModeChange = (mode: typeof modeOptions[number]["value"]) => {
+    if (mode === "text") {
+      onDocumentModeChange?.("table")
+      onOutputModeChange("text")
+      return
+    }
+
+    onDocumentModeChange?.(mode)
+    onOutputModeChange("table")
+  }
 
   return (
     <div className="space-y-4">
@@ -1140,48 +1226,28 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
           <div className="grid gap-5">
             {!hasResults ? (
               <div className="space-y-4">
-                {isBankStatementMode ? (
-                  <div className="rounded-md border border-border bg-muted/55 p-4 shadow-sm">
-                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                      <div>
-                        <p className="text-sm font-semibold text-foreground">Bank statement mode</p>
-                        <p className="mt-1 max-w-3xl text-sm font-medium leading-6 text-muted-foreground">
-                          Detect visible statement text and transaction rows only. Output keeps statement text in a large wrapped block, then places the transaction table underneath with separate summary, raw text, and review sheets.
-                        </p>
-                      </div>
-                      <span className="inline-flex w-fit rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground">
-                        XLSX workbook
+                <div className="grid gap-2 rounded-md border border-border bg-muted/45 p-2 shadow-sm sm:grid-cols-2 xl:grid-cols-4">
+                  {modeOptions.map((mode) => (
+                    <button
+                      key={mode.value}
+                      type="button"
+                      onClick={() => handleModeChange(mode.value)}
+                      disabled={isProcessing}
+                      className={cn(
+                        "rounded-md border px-3 py-3 text-left transition-colors",
+                        selectedMode === mode.value
+                          ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                          : "border-transparent bg-card/70 text-foreground hover:bg-accent",
+                        isProcessing && "cursor-not-allowed opacity-60"
+                      )}
+                    >
+                      <span className="block text-sm font-semibold">{mode.label}</span>
+                      <span className={cn("mt-1 block text-xs font-medium", selectedMode === mode.value ? "text-primary-foreground/75" : "text-muted-foreground")}>
+                        {mode.helper}
                       </span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex w-fit rounded-md border border-border bg-muted p-1 shadow-sm">
-                    <button
-                      type="button"
-                      onClick={() => onOutputModeChange("table")}
-                      disabled={isProcessing}
-                      className={cn(
-                        "rounded-md px-4 py-2 text-sm font-semibold transition-colors",
-                        outputMode === "table" ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-card/60",
-                        isProcessing && "cursor-not-allowed opacity-60"
-                      )}
-                    >
-                      Table output
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => onOutputModeChange("text")}
-                      disabled={isProcessing}
-                      className={cn(
-                        "rounded-md px-4 py-2 text-sm font-semibold transition-colors",
-                        outputMode === "text" ? "bg-primary text-primary-foreground shadow-sm" : "text-foreground hover:bg-card/60",
-                        isProcessing && "cursor-not-allowed opacity-60"
-                      )}
-                    >
-                      Text output
-                    </button>
-                  </div>
-                )}
+                  ))}
+                </div>
 
                 <UploadDropzone
                   uploadedFiles={uploadedFiles}
@@ -1203,7 +1269,9 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                       {uploadedFiles.length ? `${uploadedFiles.length} selected` : "No files selected"}
                     </p>
                     <p className="text-xs font-semibold text-muted-foreground">
-                      {uploadedFiles.length ? `${formatBytes(uploadedSizeMb * 1024 * 1024)} - ${creditEstimate || uploadedFiles.length} estimated credits` : "Add a batch, review outputs, and download corrected files."}
+                      {uploadedFiles.length
+                        ? `${expectedOutputs} expected output${expectedOutputs === 1 ? "" : "s"} - ${formatBytes(uploadedSizeMb * 1024 * 1024)}`
+                        : "Add a batch, review outputs, and download corrected files."}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2 sm:justify-end">
