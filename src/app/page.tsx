@@ -416,6 +416,8 @@ export default function Home() {
     const canvasContext = canvas?.getContext("2d", { alpha: false });
     if (!section || !canvas || !canvasContext) return;
 
+    const frameCanvas = canvas;
+    const frameContext = canvasContext;
     let gsapContext: any;
     let resizeObserver: ResizeObserver | undefined;
     let cancelled = false;
@@ -452,9 +454,9 @@ export default function Home() {
 
     function renderFrame() {
       const frame = getFrame(Math.round(playhead.frame));
-      if (!frame || !canvas.width || !canvas.height) return;
+      if (!frame || !frameCanvas.width || !frameCanvas.height) return;
 
-      const targetRatio = canvas.width / canvas.height;
+      const targetRatio = frameCanvas.width / frameCanvas.height;
       const frameRatio = frame.naturalWidth / frame.naturalHeight;
       let sourceX = 0;
       let sourceY = 0;
@@ -469,8 +471,8 @@ export default function Home() {
         sourceY = (frame.naturalHeight - sourceHeight) / 2;
       }
 
-      canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-      canvasContext.drawImage(
+      frameContext.clearRect(0, 0, frameCanvas.width, frameCanvas.height);
+      frameContext.drawImage(
         frame,
         sourceX,
         sourceY,
@@ -478,8 +480,8 @@ export default function Home() {
         sourceHeight,
         0,
         0,
-        canvas.width,
-        canvas.height
+        frameCanvas.width,
+        frameCanvas.height
       );
     }
 
@@ -489,11 +491,11 @@ export default function Home() {
       const width = Math.max(1, Math.round(bounds.width * pixelRatio));
       const height = Math.max(1, Math.round(bounds.height * pixelRatio));
 
-      if (canvas.width !== width || canvas.height !== height) {
-        canvas.width = width;
-        canvas.height = height;
-        canvasContext.imageSmoothingEnabled = true;
-        canvasContext.imageSmoothingQuality = "high";
+      if (frameCanvas.width !== width || frameCanvas.height !== height) {
+        frameCanvas.width = width;
+        frameCanvas.height = height;
+        frameContext.imageSmoothingEnabled = true;
+        frameContext.imageSmoothingQuality = "high";
       }
 
       renderFrame();
