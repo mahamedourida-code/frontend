@@ -1,25 +1,7 @@
-"use client"
-
 import { AppLogo } from "@/components/AppIcon"
+import { MobileNav } from "@/components/MobileNav"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-
-const highlights = [
-  {
-    title: "Documents",
-    text: "Uploaded images and PDFs are used to run conversion, create previews, and generate output files.",
-  },
-  {
-    title: "Account",
-    text: "We keep basic account, billing, usage, and job metadata so your history, limits, and downloads work.",
-  },
-  {
-    title: "Control",
-    text: "You can request deletion, avoid sharing links, and keep permanent copies in your own workspace.",
-  },
-]
 
 const sections = [
   {
@@ -80,80 +62,85 @@ const sections = [
 ]
 
 export default function PrivacyPolicyPage() {
-  const router = useRouter()
-
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <nav className="sticky top-0 z-40 border-b border-black/10 bg-background/80 backdrop-blur-xl">
+      <nav className="sticky top-0 z-40 border-b border-border bg-background/84 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center font-bold" aria-label="AxLiner home">
+          <Link href="/" aria-label="AxLiner home">
             <AppLogo className="h-8 w-auto" />
           </Link>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.back()}
-            className="rounded-md text-primary hover:bg-muted"
-          >
-            <ChevronLeft className="mr-1 h-4 w-4" />
-            Back
-          </Button>
+          <div className="hidden items-center gap-2 lg:flex">
+            <Link href="/data-deletion" className="rounded-md px-4 py-2 text-sm font-semibold hover:bg-muted">
+              Data deletion
+            </Link>
+            <Button asChild className="rounded-md">
+              <Link href="/contact">Contact</Link>
+            </Button>
+          </div>
+          <MobileNav />
         </div>
       </nav>
 
-      <section className="mx-auto max-w-6xl px-4 pb-12 pt-16 sm:px-6 lg:px-8 lg:pb-16 lg:pt-24">
-        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
-          Privacy
-        </p>
-        <h1 className="mt-5 max-w-4xl text-5xl font-semibold leading-tight tracking-normal sm:text-6xl">
-          Clear rules for your documents and account data.
-        </h1>
-        <p className="mt-6 max-w-3xl text-lg font-medium leading-8 text-foreground/78">
-          AxLiner processes documents to create spreadsheet and text outputs. This page explains what data is handled, why it is needed, and how users can control it.
-        </p>
-        <p className="mt-4 text-sm font-semibold text-foreground/58">Last updated: May 7, 2026</p>
+      <article className="mx-auto max-w-[760px] px-4 pb-24 pt-16 sm:px-6 lg:px-8 lg:pt-20">
+        <header>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Privacy</p>
+          <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-normal sm:text-5xl">
+            Clear rules for your documents and account data.
+          </h1>
+          <p className="mt-5 text-xl leading-8 text-foreground/76">
+            AxLiner processes document files to create spreadsheet and text outputs. This page explains what data is
+            handled, why the service needs it, and where users can ask for access, correction, or deletion.
+          </p>
+          <p className="mt-4 text-sm font-semibold text-foreground/58">Last updated: May 22, 2026</p>
+        </header>
 
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {highlights.map((item) => (
-            <div key={item.title} className="rounded-md border border-border bg-card p-5 shadow-sm">
-              <h2 className="text-lg font-semibold">{item.title}</h2>
-              <p className="mt-3 text-sm font-medium leading-7 text-foreground/72">{item.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+        <section className="mt-10 border-t border-border pt-9">
+          <p className="text-[19px] leading-8">
+            Uploaded images and PDFs are used for conversion, preview generation, review, and output delivery. Account,
+            billing, usage, and job metadata exist so a batch can be limited, recovered, secured, and downloaded by
+            the right owner.
+          </p>
+          <p className="mt-5 text-[19px] leading-8">
+            Users control whether they share result links and should keep permanent copies of needed spreadsheets in
+            their own workspace. AxLiner does not position temporary processing storage as an archive for source
+            paperwork.
+          </p>
+        </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 lg:px-8">
-        <div className="divide-y divide-border rounded-md border border-border bg-card shadow-sm">
+        <div className="mt-10 space-y-10 border-t border-border pt-9">
           {sections.map((section) => (
-            <div key={section.title} className="grid gap-6 p-6 lg:grid-cols-[300px_1fr] lg:p-8">
+            <section key={section.title}>
               <h2 className="text-2xl font-semibold tracking-normal">{section.title}</h2>
-              <ul className="space-y-3">
+              <ul className="mt-5 space-y-3">
                 {section.items.map((item) => (
-                  <li key={item} className="flex gap-3 text-base font-medium leading-8 text-foreground/78">
-                    <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                  <li key={item} className="flex gap-3 text-[19px] leading-8 text-foreground">
+                    <span className="mt-[14px] h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
-            </div>
+            </section>
           ))}
         </div>
 
-        <div className="mt-10 rounded-md bg-primary p-6 text-primary-foreground shadow-sm sm:p-8">
-          <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-center">
-            <div>
-              <h2 className="text-2xl font-semibold">Questions or deletion requests</h2>
-              <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-primary-foreground/72">
-                Contact us for privacy questions, account deletion, or file deletion support.
-              </p>
-            </div>
-            <Button asChild className="rounded-md bg-background px-6 text-primary hover:bg-card/90">
-              <a href="mailto:contact@axliner.com">Contact privacy</a>
+        <section className="mt-10 border-t border-border pt-9">
+          <h2 className="text-2xl font-semibold tracking-normal">Questions or deletion requests</h2>
+          <div className="mt-5 space-y-5 text-[19px] leading-8">
+            <p>
+              Use the contact page for privacy questions, account questions, and file deletion support. If the request
+              is a deletion request, use the account email when possible and state the action you want AxLiner to take.
+            </p>
+          </div>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <Button asChild className="rounded-md px-6">
+              <Link href="/contact">Contact AxLiner</Link>
+            </Button>
+            <Button asChild variant="outline" className="rounded-md px-6">
+              <Link href="/data-deletion">Data deletion</Link>
             </Button>
           </div>
-        </div>
-      </section>
+        </section>
+      </article>
     </main>
   )
 }

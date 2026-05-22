@@ -156,74 +156,9 @@ const ownedPipelineCopy = [
   "External infrastructure can sit behind the pipeline, but the workflow, storage model, and user experience stay controlled by AxLiner. That keeps retries, batch recovery, and output delivery predictable for real users.",
 ];
 
-const cinematicFrameCount = 138;
-const cinematicFrameUrls = Array.from(
-  { length: cinematicFrameCount },
-  (_, index) => `/cinematic/slow-frames/ink-grid-${String(index + 1).padStart(3, "0")}.webp`
-);
-
 type FooterIconProps = {
   className?: string;
 };
-
-function FooterShieldIcon({ className }: FooterIconProps) {
-  return (
-    <svg
-      aria-hidden="true"
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 3.2 19 7v5.4c0 4.4-2.9 7.8-7 8.9-4.1-1.1-7-4.5-7-8.9V7l7-3.8Z" />
-      <path d="m9.2 12.2 1.9 1.9 4-4.2" />
-    </svg>
-  );
-}
-
-function FooterBatchIcon({ className }: FooterIconProps) {
-  return (
-    <svg
-      aria-hidden="true"
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M8 7.5h10.5A2.5 2.5 0 0 1 21 10v7.5a2.5 2.5 0 0 1-2.5 2.5H8A2.5 2.5 0 0 1 5.5 17.5V10A2.5 2.5 0 0 1 8 7.5Z" />
-      <path d="M3 14.5V8a4 4 0 0 1 4-4h8.5" />
-      <path d="M9.5 12h7" />
-      <path d="M9.5 16h5" />
-    </svg>
-  );
-}
-
-function FooterTableIcon({ className }: FooterIconProps) {
-  return (
-    <svg
-      aria-hidden="true"
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M5.5 4.5h13A2.5 2.5 0 0 1 21 7v10a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17V7a2.5 2.5 0 0 1 2.5-2.5Z" />
-      <path d="M3 9h18" />
-      <path d="M8 9v10.5" />
-      <path d="M14.5 9v10.5" />
-      <path d="M8 14h13" />
-    </svg>
-  );
-}
 
 function FooterLinkedInIcon({ className }: FooterIconProps) {
   return (
@@ -240,24 +175,6 @@ function FooterYouTubeIcon({ className }: FooterIconProps) {
     </svg>
   );
 }
-
-const footerHighlights = [
-  {
-    label: "Private by design",
-    description: "Owner-bound jobs, signed downloads, and clear file access.",
-    Icon: FooterShieldIcon,
-  },
-  {
-    label: "Batch-ready",
-    description: "Recover active jobs and review many outputs from one run.",
-    Icon: FooterBatchIcon,
-  },
-  {
-    label: "Excel-first",
-    description: "Tables stay readable, editable, and ready for handoff.",
-    Icon: FooterTableIcon,
-  },
-];
 
 const footerColumns = [
   {
@@ -283,7 +200,7 @@ const footerColumns = [
     links: [
       { label: "Blogs", href: "/blogs" },
       { label: "How it works", href: "/how-axliner-is-built" },
-      { label: "Contact", href: "mailto:contact@axliner.com" },
+      { label: "Contact", href: "/contact" },
       { label: "Try AxLiner", href: "/dashboard/client" },
     ],
   },
@@ -314,8 +231,6 @@ const footerSocialLinks = [
 export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
   const converterMountRef = useRef<HTMLDivElement>(null);
-  const cinematicMountRef = useRef<HTMLElement>(null);
-  const cinematicCanvasRef = useRef<HTMLCanvasElement>(null);
   const topBackgroundSectionRef = useRef<HTMLDivElement>(null);
   const topBackgroundRef = useRef<HTMLDivElement>(null);
   const contrastSectionRef = useRef<HTMLDivElement>(null);
@@ -324,8 +239,6 @@ export default function Home() {
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [shouldLoadConverter, setShouldLoadConverter] = useState(false);
-  const [shouldLoadCinematic, setShouldLoadCinematic] = useState(false);
-  const [isCinematicActive, setIsCinematicActive] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -367,187 +280,6 @@ export default function Home() {
     observer.observe(mountTarget);
     return () => observer.disconnect();
   }, [shouldLoadConverter]);
-
-  useEffect(() => {
-    if (shouldLoadCinematic) return;
-
-    const mountTarget = cinematicMountRef.current;
-    if (!mountTarget) return;
-
-    if (typeof IntersectionObserver === "undefined") {
-      setShouldLoadCinematic(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShouldLoadCinematic(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "1200px 0px" }
-    );
-
-    observer.observe(mountTarget);
-
-    return () => observer.disconnect();
-  }, [shouldLoadCinematic]);
-
-  useEffect(() => {
-    const mountTarget = cinematicMountRef.current;
-    if (!mountTarget || typeof IntersectionObserver === "undefined") return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsCinematicActive(entry.isIntersecting),
-      { rootMargin: "-32% 0px -38% 0px" }
-    );
-
-    observer.observe(mountTarget);
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!shouldLoadCinematic) return;
-
-    const section = cinematicMountRef.current;
-    const canvas = cinematicCanvasRef.current;
-    const canvasContext = canvas?.getContext("2d", { alpha: false });
-    if (!section || !canvas || !canvasContext) return;
-
-    const frameSection = section;
-    const frameCanvas = canvas;
-    const frameContext = canvasContext;
-    let gsapContext: any;
-    let resizeObserver: ResizeObserver | undefined;
-    let cancelled = false;
-    let lastDrawnFrame: HTMLImageElement | undefined;
-    let lastDrawnFrameIndex = -1;
-    const playhead = { frame: 0 };
-
-    const frameIsReady = (frame?: HTMLImageElement) =>
-      !!frame && frame.complete && frame.naturalWidth > 0;
-
-    const frames = cinematicFrameUrls.map((src, index) => {
-      const frame = new window.Image();
-      frame.decoding = "async";
-      frame.onload = () => {
-        if (!cancelled && (index === 0 || index === Math.round(playhead.frame))) {
-          renderFrame();
-        }
-      };
-      frame.src = src;
-      return frame;
-    });
-
-    function getFrame(index: number) {
-      if (frameIsReady(frames[index])) return frames[index];
-
-      for (let offset = 1; offset < frames.length; offset += 1) {
-        const previousFrame = frames[index - offset];
-        const nextFrame = frames[index + offset];
-
-        if (frameIsReady(previousFrame)) return previousFrame;
-        if (frameIsReady(nextFrame)) return nextFrame;
-      }
-
-      return undefined;
-    }
-
-    function renderFrame(force = false) {
-      const frameIndex = Math.round(playhead.frame);
-      const frame = getFrame(frameIndex);
-      if (!frame || !frameCanvas.width || !frameCanvas.height) return;
-      if (!force && frame === lastDrawnFrame && frameIndex === lastDrawnFrameIndex) return;
-
-      const targetRatio = frameCanvas.width / frameCanvas.height;
-      const frameRatio = frame.naturalWidth / frame.naturalHeight;
-      let sourceX = 0;
-      let sourceY = 0;
-      let sourceWidth = frame.naturalWidth;
-      let sourceHeight = frame.naturalHeight;
-
-      if (frameRatio > targetRatio) {
-        sourceWidth = frame.naturalHeight * targetRatio;
-        sourceX = (frame.naturalWidth - sourceWidth) / 2;
-      } else {
-        sourceHeight = frame.naturalWidth / targetRatio;
-        sourceY = (frame.naturalHeight - sourceHeight) / 2;
-      }
-
-      frameContext.clearRect(0, 0, frameCanvas.width, frameCanvas.height);
-      frameContext.drawImage(
-        frame,
-        sourceX,
-        sourceY,
-        sourceWidth,
-        sourceHeight,
-        0,
-        0,
-        frameCanvas.width,
-        frameCanvas.height
-      );
-      lastDrawnFrame = frame;
-      lastDrawnFrameIndex = frameIndex;
-    }
-
-    function resizeCanvas() {
-      const bounds = frameSection.getBoundingClientRect();
-      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-      const width = Math.max(1, Math.round(bounds.width * pixelRatio));
-      const height = Math.max(1, Math.round(bounds.height * pixelRatio));
-
-      if (frameCanvas.width !== width || frameCanvas.height !== height) {
-        frameCanvas.width = width;
-        frameCanvas.height = height;
-        frameContext.imageSmoothingEnabled = true;
-        frameContext.imageSmoothingQuality = "high";
-      }
-
-      renderFrame(true);
-    }
-
-    resizeCanvas();
-
-    if (typeof ResizeObserver !== "undefined") {
-      resizeObserver = new ResizeObserver(resizeCanvas);
-      resizeObserver.observe(frameSection);
-    } else {
-      window.addEventListener("resize", resizeCanvas);
-    }
-
-    void loadGsap().then(({ gsap, ScrollTrigger }) => {
-      if (cancelled) return;
-
-      gsapContext = gsap.context(() => {
-        gsap.to(playhead, {
-          frame: cinematicFrameCount - 1,
-          ease: "none",
-          snap: "frame",
-          onUpdate: renderFrame,
-          scrollTrigger: {
-            trigger: frameSection,
-            start: "top top",
-            end: () => `+=${Math.round(Math.max(window.innerHeight * 5.4, 3600))}`,
-            scrub: 0.4,
-            pin: true,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-          },
-        });
-      }, frameSection);
-
-      ScrollTrigger.refresh();
-    });
-
-    return () => {
-      cancelled = true;
-      gsapContext?.revert();
-      resizeObserver?.disconnect();
-      window.removeEventListener("resize", resizeCanvas);
-    };
-  }, [shouldLoadCinematic]);
 
   useEffect(() => {
     const topSection = topBackgroundSectionRef.current;
@@ -644,14 +376,7 @@ export default function Home() {
   return (
     <div className="min-h-screen relative bg-transparent">
       {/* Navigation Bar */}
-      <nav
-        className={cn(
-          "fixed left-0 right-0 top-0 z-50 pt-3 backdrop-blur-2xl transition-[opacity,transform,visibility] duration-500 ease-out lg:pt-4",
-          isCinematicActive
-            ? "invisible pointer-events-none -translate-y-[calc(100%+1rem)] opacity-0"
-            : "visible translate-y-0 opacity-100"
-        )}
-      >
+      <nav className="fixed left-0 right-0 top-0 z-50 pt-3 backdrop-blur-2xl lg:pt-4">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between rounded-md border border-border bg-background/82 p-2 shadow-sm backdrop-blur-2xl lg:p-3">
             {/* Logo */}
@@ -831,30 +556,7 @@ export default function Home() {
           </div>
         </div>
 
-        <section
-          ref={cinematicMountRef}
-          aria-label="Ink to spreadsheet cinematic"
-          className="relative z-10 isolate h-svh min-h-[560px] w-full overflow-hidden bg-[#04130d]"
-        >
-          <Image
-            src="/cinematic/slow-frames/ink-grid-001.webp"
-            alt=""
-            fill
-            sizes="100vw"
-            aria-hidden="true"
-            className="object-cover object-center"
-          />
-          {shouldLoadCinematic ? (
-            <canvas
-              ref={cinematicCanvasRef}
-              aria-hidden="true"
-              tabIndex={-1}
-              className="pointer-events-none absolute inset-0 h-full w-full"
-            />
-          ) : null}
-        </section>
-
-        <div className="relative z-20 -mt-[100svh] isolate bg-background px-4 py-12 sm:px-6 lg:px-8">
+        <div className="relative z-20 isolate bg-background px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
         <div
           ref={contrastSectionRef}
           className="relative mx-auto max-w-[1280px] text-foreground"
@@ -973,7 +675,7 @@ export default function Home() {
           </div>
         </ScrollAnimatedSection>
         {/* Benchmark Section */}
-        <ScrollAnimatedSection id="benchmarks" className="relative z-20 -mt-6 overflow-hidden pt-28 pb-16">
+        <ScrollAnimatedSection id="benchmarks" className="relative z-20 mt-10 overflow-hidden pt-24 pb-20">
           <div
             ref={benchmarkBandRef}
             aria-hidden="true"
@@ -1384,19 +1086,6 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-10 grid gap-3 sm:grid-cols-3">
-            {footerHighlights.map(({ label, description, Icon }) => (
-              <div
-                key={label}
-                className="rounded-md border border-white/16 bg-white/[0.09] p-4 shadow-sm backdrop-blur-sm"
-              >
-                <Icon className="h-5 w-5 text-white" />
-                <p className="mt-4 text-sm font-semibold text-white">{label}</p>
-                <p className="mt-2 text-xs font-medium leading-5 text-white/76">{description}</p>
-              </div>
-            ))}
-          </div>
-          
           <div className="mt-12 flex flex-col gap-4 border-t border-white/16 pt-6 text-xs font-medium text-white/70 sm:flex-row sm:items-center sm:justify-between">
             <p>&copy; 2026 AxLiner. All rights reserved.</p>
             <p>Made with care in Alaska. Secure document processing for spreadsheet teams.</p>

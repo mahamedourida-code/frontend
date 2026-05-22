@@ -28,6 +28,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/contact`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.72,
+    },
+    {
       url: `${baseUrl}/benchmarks`,
       lastModified,
       changeFrequency: 'monthly',
@@ -92,6 +98,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified,
       changeFrequency: 'yearly',
       priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/data-deletion`,
+      lastModified,
+      changeFrequency: 'yearly',
+      priority: 0.25,
     },
     {
       url: `${baseUrl}/terms-of-service`,

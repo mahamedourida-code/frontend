@@ -1,0 +1,117 @@
+import type { Metadata } from "next"
+import Image from "next/image"
+import Link from "next/link"
+
+import { AppLogo } from "@/components/AppIcon"
+import { MobileNav } from "@/components/MobileNav"
+import { Button } from "@/components/ui/button"
+
+export const metadata: Metadata = {
+  title: "Contact AxLiner",
+  description: "Contact AxLiner for product, billing, privacy, or account questions.",
+  alternates: {
+    canonical: "https://www.axliner.com/contact",
+  },
+}
+
+export default function ContactPage() {
+  return (
+    <main className="min-h-screen bg-background text-foreground">
+      <nav className="sticky top-0 z-40 border-b border-border bg-background/84 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <Link href="/" aria-label="AxLiner home">
+            <AppLogo className="h-8 w-auto" />
+          </Link>
+          <div className="hidden items-center gap-2 lg:flex">
+            <Link href="/pricing" className="rounded-md px-4 py-2 text-sm font-semibold hover:bg-muted">
+              Pricing
+            </Link>
+            <Link href="/blogs" className="rounded-md px-4 py-2 text-sm font-semibold hover:bg-muted">
+              Blogs
+            </Link>
+            <Button asChild className="rounded-md">
+              <a href="mailto:contact@axliner.com?subject=AxLiner%20question">Email AxLiner</a>
+            </Button>
+          </div>
+          <MobileNav />
+        </div>
+      </nav>
+
+      <article className="mx-auto max-w-[860px] px-4 pb-24 pt-16 sm:px-6 lg:px-8 lg:pt-20">
+        <header>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Contact</p>
+          <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-normal text-foreground sm:text-5xl">
+            Reach the AxLiner team with the document problem in front of you.
+          </h1>
+          <p className="mt-5 text-xl leading-8 text-foreground/76">
+            Write to us for product questions, billing questions, privacy requests, or help with a conversion batch.
+            A useful message explains what you uploaded, what output you expected, and whether the issue happened in
+            Table mode or Bank statement mode.
+          </p>
+
+          <div className="relative mt-9 aspect-[16/8] overflow-hidden rounded-md border border-border bg-card shadow-sm">
+            <Image
+              src="/forest.png"
+              alt="Green forest light"
+              fill
+              priority
+              sizes="(min-width: 1024px) 860px, 100vw"
+              className="object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,18,14,0.62),rgba(2,18,14,0.14))]" />
+            <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8">
+              <p className="max-w-xl text-lg font-semibold leading-7">
+                Start with the source document type, expected spreadsheet result, and any job or file name you can
+                share safely.
+              </p>
+            </div>
+          </div>
+        </header>
+
+        <section className="mt-10 border-t border-border pt-9">
+          <h2 className="text-2xl font-semibold tracking-normal">The fastest contact path</h2>
+          <div className="mt-5 space-y-5 text-[19px] leading-8 text-foreground">
+            <p>
+              For normal support, email{" "}
+              <a className="font-semibold text-primary underline underline-offset-4" href="mailto:contact@axliner.com">
+                contact@axliner.com
+              </a>
+              . If the question is about a failed batch, mention the approximate time of the run, the file type, the
+              number of files or PDF pages, and the output mode you selected.
+            </p>
+            <p>
+              If the question is about a paid plan, include the account email used in AxLiner and describe whether the
+              problem happened during checkout, plan activation, credit balance, or billing portal access. Do not send
+              passwords, access tokens, or sensitive document contents by email.
+            </p>
+          </div>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <Button asChild className="rounded-md px-6">
+              <a href="mailto:contact@axliner.com?subject=AxLiner%20support%20request">Send email</a>
+            </Button>
+            <Button asChild variant="outline" className="rounded-md px-6">
+              <Link href="/data-deletion">Data deletion</Link>
+            </Button>
+          </div>
+        </section>
+
+        <section className="mt-10 border-t border-border pt-9">
+          <h2 className="text-2xl font-semibold tracking-normal">Privacy and account requests</h2>
+          <div className="mt-5 space-y-5 text-[19px] leading-8 text-foreground">
+            <p>
+              Privacy questions and deletion requests should be clear enough to verify the account and the action being
+              requested. Use the account email, say whether you want generated files deleted or the account removed,
+              and avoid attaching documents unless support asks for a safe sample.
+            </p>
+            <p>
+              The <Link href="/privacy-policy" className="font-semibold text-primary underline underline-offset-4">privacy policy</Link>{" "}
+              explains how document files, job metadata, billing status, and service providers are handled. The{" "}
+              <Link href="/data-deletion" className="font-semibold text-primary underline underline-offset-4">data deletion page</Link>{" "}
+              explains the deletion path and retention exceptions.
+            </p>
+          </div>
+        </section>
+      </article>
+    </main>
+  )
+}
