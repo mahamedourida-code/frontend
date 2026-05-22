@@ -96,19 +96,19 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
               Where it fits
             </p>
             <h2 className="mt-4 text-2xl font-semibold leading-tight text-foreground sm:text-3xl">
-              Built for the gap between scanned documents and usable operations data.
+              Built for the gap between handwritten files and corrected spreadsheet output.
             </h2>
           </div>
 
           <div className="grid gap-4">
             <div className="ax-surface rounded-md p-6">
               <p className="text-base leading-7 text-foreground">
-                Most {solution.title.toLowerCase()} teams already know what has to happen after extraction: check the numbers, correct edge cases, and send the file into a spreadsheet, reporting tool, or internal workflow. AxLiner is shaped around that review step instead of producing a raw text dump that still needs to be rebuilt by hand.
+                Most {solution.title.toLowerCase()} teams already know what has to happen after conversion: review the rows, correct edge cases, and send the spreadsheet into reporting or operations. AxLiner is shaped around that step instead of leaving a pile of handwritten paperwork to rebuild by hand.
               </p>
             </div>
             <div className="ax-surface rounded-md p-6">
               <p className="text-base leading-7 text-foreground">
-                The product keeps batches simple: upload the documents, let the system preserve the table structure, then download a file your team can open immediately. That makes it useful for daily paperwork, backlog cleanup, and repeatable document intake without forcing a custom engineering project for every new format.
+                The product keeps batches simple: upload the invoices, bank statements, forms, or table files, inspect the result set, fix the exceptions, then download corrected outputs your team can open immediately. That fits daily intake and backlog cleanup without forcing a custom project for every format.
               </p>
             </div>
           </div>
@@ -132,7 +132,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
               How it works
             </p>
             <h2 className="mt-4 text-2xl font-semibold leading-tight text-foreground sm:text-3xl">
-              A simple path from messy input to usable spreadsheet output.
+              A short path from a file batch to reviewable Excel output.
             </h2>
             <div className="mt-7 grid gap-4">
               {solution.workflow.map((step, index) => (

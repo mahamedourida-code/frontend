@@ -123,6 +123,25 @@ const solutionCards = [
   },
 ];
 
+const batchWorkflowSteps = [
+  {
+    title: "Add a batch",
+    text: "Handwritten invoices, bank statements, table photos, forms, or PDFs.",
+  },
+  {
+    title: "Review outputs",
+    text: "Each file lands in a result set you can inspect instead of retyping.",
+  },
+  {
+    title: "Fix exceptions",
+    text: "Correct cells that need attention while the source stays beside them.",
+  },
+  {
+    title: "Download Excel",
+    text: "Take the corrected spreadsheet files out together when the run is ready.",
+  },
+];
+
 const faqItems = [
   {
     question: "Can I convert PDFs and images in the same batch?",
@@ -153,7 +172,7 @@ const faqItems = [
 
 const ownedPipelineCopy = [
   "AxLiner owns the job queue, file metadata, download permissions, export layer, and recovery flow around every batch. Each file stays tied to a durable owner so status, sharing, and downloads follow the same access model.",
-  "The product is shaped for handwritten tables and spreadsheet review, not a generic OCR wrapper stitched into a landing page. Every result is prepared for rows, columns, review, and clean export instead of loose extracted text.",
+  "The product is shaped for handwritten tables and batch review, not loose extracted text. Every result is prepared for rows, columns, exception checks, and clean spreadsheet export.",
   "External infrastructure can sit behind the pipeline, but the workflow, storage model, and user experience stay controlled by AxLiner. That keeps retries, batch recovery, and output delivery predictable for real users.",
 ];
 
@@ -490,7 +509,7 @@ export default function Home() {
                   Handwritten images to Excel in seconds
                 </h1>
                 <p className="mt-8 text-base leading-8 text-foreground sm:text-lg lg:text-xl">
-                  Upload handwritten tables, class notes, invoices, receipts, paper forms, and screenshots from any workflow. AxLiner reads the structure, preserves the rows and columns, and gives you clean Excel files you can review, edit, share, or use in reporting without retyping everything by hand.
+                  Drop a batch of handwritten invoices, bank statements, forms, table photos, or PDFs. AxLiner turns each file into a reviewable spreadsheet output, keeps the batch together for quick fixes, and lets you download corrected Excel files without retyping the rows yourself.
                 </p>
 
                 <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row lg:items-center">
@@ -526,13 +545,45 @@ export default function Home() {
               <div className="flex flex-col items-center lg:translate-x-14 lg:items-end xl:translate-x-20">
                 <BrandVisualFrame treatment="cutout" className="relative w-full max-w-[800px]">
                   <div className="absolute inset-x-8 bottom-5 h-20 rounded-full bg-primary/15 blur-3xl" aria-hidden="true" />
+                  <div className="absolute left-1 top-7 z-20 hidden w-48 rounded-md border border-border bg-card/95 p-3 text-left shadow-md backdrop-blur sm:block lg:-left-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Batch added</p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">12 handwritten files</p>
+                    <p className="mt-2 text-xs leading-5 text-muted-foreground">Invoices, statements, table photos</p>
+                  </div>
                   <img
                     src="/header.svg"
                     alt="AxLiner document conversion illustration"
                     className="relative z-10 mx-auto h-auto w-full max-w-[760px] object-contain"
                   />
+                  <div className="absolute bottom-8 right-2 z-20 hidden w-52 rounded-md border border-border bg-card/95 p-3 text-left shadow-md backdrop-blur sm:block lg:-right-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Review set ready</p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">Fix exceptions, export XLSX</p>
+                    <div className="mt-2 flex gap-1.5">
+                      <span className="h-1.5 flex-1 rounded-full bg-primary" />
+                      <span className="h-1.5 flex-1 rounded-full bg-primary/65" />
+                      <span className="h-1.5 flex-1 rounded-full bg-primary/35" />
+                    </div>
+                  </div>
                 </BrandVisualFrame>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative z-10 px-4 pb-8 sm:px-5 lg:px-9">
+          <div className="container mx-auto max-w-[1500px]">
+            <div className="ax-surface grid gap-px overflow-hidden rounded-md bg-border sm:grid-cols-2 xl:grid-cols-4">
+              {batchWorkflowSteps.map((step, index) => (
+                <div key={step.title} className="bg-card/95 p-4 sm:p-5">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background text-sm font-semibold text-primary">
+                      0{index + 1}
+                    </span>
+                    <p className="text-base font-semibold text-foreground">{step.title}</p>
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">{step.text}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -624,7 +675,7 @@ export default function Home() {
           />
           <div className="relative z-10">
         {/* Why Choose Us Section */}
-        <ScrollAnimatedSection id="features" className="relative z-20 pt-16 pb-16">
+        <ScrollAnimatedSection id="features" className="relative z-20 pb-10 pt-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
               <BrandSectionLabel className="mb-4">
@@ -639,10 +690,10 @@ export default function Home() {
                 <Card
                   key={solution.title}
                   data-animate="stagger"
-                  className="group flex min-h-[560px] overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md"
+                  className="group flex min-h-[448px] overflow-hidden rounded-md border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md"
                 >
-                  <CardContent className="flex h-full w-full flex-col p-7 sm:p-8">
-                    <BrandVisualFrame treatment="document" className="flex h-56 items-center justify-center sm:h-64">
+                  <CardContent className="flex h-full w-full flex-col p-6 sm:p-7">
+                    <BrandVisualFrame treatment="document" className="flex h-44 items-center justify-center sm:h-48">
                       <img
                         src={solution.asset}
                         alt=""
@@ -650,17 +701,17 @@ export default function Home() {
                       />
                     </BrandVisualFrame>
 
-                    <div className="mt-10 flex flex-1 flex-col">
-                      <CardTitle className="text-2xl font-semibold tracking-normal text-foreground">
+                    <div className="mt-7 flex flex-1 flex-col">
+                      <CardTitle className="text-xl font-semibold tracking-normal text-foreground">
                         {solution.title}
                       </CardTitle>
-                      <CardDescription className="mt-5 text-[15px] leading-7 text-muted-foreground">
+                      <CardDescription className="mt-4 text-sm leading-6 text-muted-foreground">
                         {solution.description}
                       </CardDescription>
 
                       <NextLink
                         href={solution.href}
-                        className="mt-auto flex items-end justify-between gap-4 pt-12 text-left text-sm font-medium text-foreground transition-colors hover:text-primary"
+                        className="mt-auto flex items-end justify-between gap-4 pt-8 text-left text-sm font-medium text-foreground transition-colors hover:text-primary"
                       >
                         <span>Discover More</span>
                         <span className="relative block h-10 w-10 text-primary transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
@@ -676,7 +727,7 @@ export default function Home() {
           </div>
         </ScrollAnimatedSection>
         {/* Benchmark Section */}
-        <ScrollAnimatedSection id="benchmarks" className="relative z-20 mt-10 overflow-hidden pt-24 pb-20">
+        <ScrollAnimatedSection id="benchmarks" className="relative z-20 overflow-hidden pb-16 pt-16">
           <div
             ref={benchmarkBandRef}
             aria-hidden="true"
@@ -763,14 +814,14 @@ export default function Home() {
           </div>
         </ScrollAnimatedSection>
 
-        <ScrollAnimatedSection id="owned-ai" className="relative z-20 overflow-hidden px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+        <ScrollAnimatedSection id="owned-ai" className="relative z-20 overflow-hidden px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
           <div className="mx-auto grid max-w-[1280px] gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
             <div data-animate="headline">
               <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
                 Not a third-party wrapper
               </p>
               <h2 className="mt-5 max-w-xl text-3xl font-semibold leading-tight tracking-normal text-foreground sm:text-4xl lg:text-5xl">
-                OCR infrastructure controlled around your batch workflow.
+                Batch conversion infrastructure built for review work.
               </h2>
               <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground">
                 AxLiner controls queue admission, file ownership, recovery, exports, and download permissions around the model call. That is the difference between a demo wrapper and a product that can survive real batch work.
@@ -811,7 +862,7 @@ export default function Home() {
           />
           <div className="relative z-10">
         {/* AI Engine Section */}
-        <ScrollAnimatedSection id="ai-engine" className="py-16">
+        <ScrollAnimatedSection id="ai-engine" className="py-14">
           <div className="container mx-auto max-w-[1460px] px-4 sm:px-6 lg:px-8">
             <div className="mx-auto">
               <div className="mx-auto mb-12 max-w-4xl text-center" data-animate="headline">
@@ -910,7 +961,7 @@ export default function Home() {
             </div>
           </div>
         </ScrollAnimatedSection>
-        <ScrollAnimatedSection id="security" className="relative z-10 overflow-hidden py-20 lg:py-24">
+        <ScrollAnimatedSection id="security" className="relative z-10 overflow-hidden py-16 lg:py-20">
           <div
             ref={securityBandRef}
             aria-hidden="true"
@@ -926,7 +977,7 @@ export default function Home() {
             <div className="grid gap-10 lg:grid-cols-[minmax(360px,0.82fr)_minmax(520px,1.18fr)] lg:items-center">
               <div data-animate="headline">
                 <p className="text-xl font-medium text-foreground">Security & Compliance</p>
-                <h2 className="mt-6 max-w-2xl text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-6xl">
+                <h2 className="mt-5 max-w-2xl text-3xl font-bold leading-tight text-foreground sm:text-4xl lg:text-5xl">
                   Your Data Security Guaranteed
                 </h2>
 
@@ -942,18 +993,18 @@ export default function Home() {
                 </BrandVisualFrame>
               </div>
 
-              <div className="lg:pt-12" data-animate="stagger">
-                <p className="max-w-3xl text-2xl leading-10 text-foreground">
+              <div className="lg:pt-8" data-animate="stagger">
+                <p className="max-w-3xl text-lg leading-8 text-foreground sm:text-xl">
                   At AxLiner, your data is treated with utmost care. We build around global data protection expectations and international privacy requirements for document processing workflows.
                 </p>
 
-                <div className="mt-10 space-y-7">
+                <div className="mt-8 space-y-5">
                   {[
                     "ISO 27001-aligned security controls",
                     "Built for GDPR, SOC 2, CCPA and HIPAA-conscious workflows",
                     "Secure infrastructure across Supabase, Fly.io and Vercel",
                   ].map((item) => (
-                    <div key={item} className="flex items-start gap-4 text-xl text-foreground">
+                    <div key={item} className="flex items-start gap-4 text-base text-foreground sm:text-lg">
                       <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-primary text-primary">
                         <span className="h-2.5 w-1.5 rotate-45 border-b-2 border-r-2 border-current" />
                       </span>
@@ -963,7 +1014,7 @@ export default function Home() {
                 </div>
 
                 <Button
-                  className="mt-12 bg-secondary px-8 py-6 text-lg font-semibold text-secondary-foreground shadow-none hover:bg-secondary/80"
+                  className="mt-9 bg-secondary px-7 py-5 text-base font-semibold text-secondary-foreground shadow-none hover:bg-secondary/80"
                   asChild
                 >
                   <NextLink href="/security">More Information</NextLink>
@@ -971,27 +1022,27 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mx-auto mt-24 max-w-[1160px] text-center lg:mt-28" data-animate="headline">
-              <h3 className="text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-[4.25rem]">
+            <div className="mx-auto mt-16 max-w-[1160px] text-center lg:mt-20" data-animate="headline">
+              <h3 className="text-3xl font-bold leading-tight text-foreground sm:text-4xl lg:text-5xl">
                 Frequently Asked Questions
               </h3>
             </div>
 
-            <div className="mx-auto mt-14 max-w-[928px] border-y border-border text-left" data-animate="stagger">
+            <div className="mx-auto mt-10 max-w-[928px] border-y border-border text-left" data-animate="stagger">
               {faqItems.map((item, index) => (
                 <details
                   key={item.question}
                   className="group border-b border-border last:border-b-0"
                   open={index === 0}
                 >
-                  <summary className="flex min-h-[78px] cursor-pointer list-none items-center justify-between gap-6 py-5 text-xl font-semibold text-foreground [&::-webkit-details-marker]:hidden">
+                  <summary className="flex min-h-[70px] cursor-pointer list-none items-center justify-between gap-6 py-4 text-lg font-semibold text-foreground [&::-webkit-details-marker]:hidden">
                     <span>{item.question}</span>
                     <span className="relative h-6 w-6 shrink-0">
                       <span className="absolute left-1/2 top-1/2 h-[2px] w-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground" />
                       <span className="absolute left-1/2 top-1/2 h-5 w-[2px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground transition-opacity duration-200 group-open:opacity-0" />
                     </span>
                   </summary>
-                  <div className="pb-9 pr-10">
+                  <div className="pb-7 pr-10">
                     <p className="text-base leading-8 text-muted-foreground">{item.answer}</p>
                   </div>
                 </details>

@@ -560,7 +560,7 @@ export default function DashboardPage() {
                     <span className="mt-1 size-2.5 rounded-full bg-primary" />
                     <div>
                       <p className="text-sm font-medium">Batch workspace</p>
-                      <p className="mt-1 text-sm text-muted-foreground">Ready for image and PDF runs.</p>
+                      <p className="mt-1 text-sm text-muted-foreground">Add handwritten invoices, statements, or table files, then review corrected spreadsheet outputs.</p>
                     </div>
                   </div>
                   <Button

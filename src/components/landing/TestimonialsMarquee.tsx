@@ -7,13 +7,13 @@ const firstRowTestimonials = [
     name: "Sarah Mitchell",
     handle: "@sarahmitchell",
     avatar: "/testimonials/avi_schiffmann.jpg",
-    text: "AxLiner has completely transformed how we process invoices. What used to take hours now takes minutes. The accuracy is incredible!",
+    text: "Our invoice batches move faster now. We review the extracted rows, fix the few edge cases, and get the Excel handoff out sooner.",
   },
   {
     name: "David Chen",
     handle: "@davidchen",
     avatar: "/testimonials/alex_finn.jpg",
-    text: "Best OCR tool I've ever used. The handwritten table recognition is mind-blowing. We've processed thousands of documents with near-perfect accuracy.",
+    text: "Handwritten table batches finally feel manageable. The review set is much easier than retyping rows from scans.",
   },
   {
     name: "Emily Rodriguez",
@@ -25,7 +25,7 @@ const firstRowTestimonials = [
     name: "Michael Thompson",
     handle: "@mikethompson",
     avatar: "/testimonials/tom_blomfield.jpg",
-    text: "I was skeptical at first, but AxLiner exceeded all expectations. The table structure preservation is phenomenal. We've saved thousands of hours in manual data entry.",
+    text: "AxLiner keeps the table structure clear enough for review. That saves our team from rebuilding every spreadsheet by hand.",
   },
   {
     name: "Jessica Park",
@@ -40,7 +40,7 @@ const secondRowTestimonials = [
     name: "Robert Williams",
     handle: "@robertwilliams",
     avatar: "/testimonials/bodega_man.jpg",
-    text: "The reason I chose AxLiner is the consistent accuracy and speed. Processing handwritten documents has never been easier. This tool has revolutionized our data extraction workflow and saved us countless hours of manual work.",
+    text: "We upload handwritten paperwork in a batch, inspect the result cards, and spend time on exceptions instead of typing every line again.",
   },
   {
     name: "Amanda Foster",
@@ -52,7 +52,7 @@ const secondRowTestimonials = [
     name: "Chris Anderson",
     handle: "@chrisanderson",
     avatar: "/testimonials/jon_myers.jpg",
-    text: "The UX is incredibly intuitive. Just upload your images and get perfect Excel files in seconds.",
+    text: "The workflow is direct: add files, review the spreadsheet outputs, download the corrected batch.",
   },
   {
     name: "Rachel Martinez",
@@ -64,7 +64,7 @@ const secondRowTestimonials = [
     name: "James Wilson",
     handle: "@jameswilson",
     avatar: "/testimonials/alexander_wilczek.jpg",
-    text: "AxLiner's OCR accuracy beats everything else I've tried.",
+    text: "It saves the slow part of data entry without hiding the review step.",
   },
 ];
 
@@ -72,7 +72,7 @@ function TestimonialCard({ testimonial, index }: { testimonial: typeof firstRowT
   return (
     <div
       key={index}
-      className="w-[450px] flex-shrink-0 rounded-lg border border-gray-200 bg-white p-6 text-gray-950 shadow-sm transition-all duration-300 hover:shadow-md dark:border-gray-200 dark:bg-white dark:text-gray-950"
+      className="w-[390px] flex-shrink-0 rounded-lg border border-gray-200 bg-white p-5 text-gray-950 shadow-sm transition-all duration-300 hover:shadow-md dark:border-gray-200 dark:bg-white dark:text-gray-950"
     >
       <div className="mb-4 flex items-center gap-3">
         <Image
@@ -92,7 +92,7 @@ function TestimonialCard({ testimonial, index }: { testimonial: typeof firstRowT
       </div>
 
       <div className="mb-4 border-t border-dashed border-gray-200" />
-      <p className="text-base leading-relaxed text-gray-900">{testimonial.text}</p>
+      <p className="text-sm leading-6 text-gray-900">{testimonial.text}</p>
     </div>
   );
 }

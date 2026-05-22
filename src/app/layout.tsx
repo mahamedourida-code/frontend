@@ -18,9 +18,9 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Image to Excel – FREE OCR Model",
-  description: "Convert images and handwritten tables to Excel for free with Axliner's OCR workflow. Fast, accurate, and built for plan-based batch processing.",
-  keywords: ["image to excel free", "AI OCR", "Llama 3", "7B model", "handwritten OCR", "table extractor", "screenshot to excel", "Axliner"],
+  title: "Handwritten Files to Excel | AxLiner Batch Conversion",
+  description: "Convert handwritten invoices, bank statements, table photos, PDFs, and image batches into reviewable Excel outputs with AxLiner.",
+  keywords: ["handwritten files to excel", "image to excel", "bank statement to excel", "invoice table extraction", "batch file conversion", "handwritten OCR", "table extractor", "Axliner"],
   robots: {
     index: true,
     follow: true,
@@ -43,8 +43,8 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.json',
   openGraph: {
-    title: "Image to Excel - 7B finetuned Llama 3 OCR Model",
-    description: "Convert images and handwritten tables to Excel with Axliner's OCR workflow. Fast, accurate, and built for plan-based batch processing.",
+    title: "Handwritten Files to Excel | AxLiner Batch Conversion",
+    description: "Add handwritten file batches, review spreadsheet outputs, fix exceptions, and download corrected Excel files with AxLiner.",
     url: "https://axliner.com/",
     siteName: "Axliner",
     type: "website",
@@ -59,8 +59,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Image to Excel - 7B finetuned Llama 3 OCR Model",
-    description: "Convert images and handwritten tables to Excel with Axliner's OCR workflow. Fast, accurate, and built for plan-based batch processing.",
+    title: "Handwritten Files to Excel | AxLiner Batch Conversion",
+    description: "Add handwritten file batches, review spreadsheet outputs, fix exceptions, and download corrected Excel files with AxLiner.",
     images: ['https://axliner.com/crop.png'],
   },
 };

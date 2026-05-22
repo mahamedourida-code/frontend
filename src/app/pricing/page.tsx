@@ -65,11 +65,11 @@ const displayNameByPlan: Record<string, string> = {
 }
 
 const descriptionByPlan: Record<string, string> = {
-  anonymous: "Try the workflow before creating a workspace.",
-  free: "For light handwritten conversions and saved history.",
-  pro: "For regular accounting and admin document batches.",
-  max: "For teams processing larger monthly paperwork volume.",
-  mega: "For high-volume document teams and operations workflows.",
+  anonymous: "Try a small handwritten batch before creating a workspace.",
+  free: "For light handwritten runs with saved review history.",
+  pro: "For recurring invoice, statement, and table batches.",
+  max: "For teams reviewing larger paperwork runs each month.",
+  mega: "For high-volume document batches and spreadsheet handoff.",
 }
 
 function filesLabel(count: number) {
@@ -92,7 +92,7 @@ function planPresentation(plan: BillingPlan) {
 
   return {
     name,
-    description: descriptionByPlan[plan.plan] || "Convert handwritten files into review-ready spreadsheets.",
+    description: descriptionByPlan[plan.plan] || "Turn handwritten file batches into reviewable spreadsheet outputs.",
     included,
     credits,
     monthlyAllowance,

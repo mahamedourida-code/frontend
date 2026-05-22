@@ -225,7 +225,7 @@ export function UploadDropzone({
           <FolderUp className="h-7 w-7 text-primary" />
         </div>
         <h3 className="text-xl font-semibold text-foreground">{isDragging ? "Drop files" : uploadedFiles.length ? "Drop more files" : "Upload files"}</h3>
-        <p className="mt-2 text-sm font-semibold text-muted-foreground">Images and PDFs</p>
+        <p className="mt-2 text-sm font-semibold text-muted-foreground">Handwritten invoices, statements, tables, images, and PDFs</p>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
           <label
             htmlFor="workspace-file-upload"
@@ -481,7 +481,7 @@ export function ResultPreviewPanel({
       <div className="flex min-h-[300px] flex-col justify-between rounded-md border border-border bg-card/50 p-4 backdrop-blur-xl">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Result</p>
-          <p className="mt-2 text-lg font-semibold text-foreground">Preview appears here</p>
+          <p className="mt-2 text-lg font-semibold text-foreground">Your review set appears here</p>
         </div>
         <div className="grid gap-2">
           <div className="h-9 rounded-md bg-card/65" />
@@ -1205,7 +1205,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                       {uploadedFiles.length ? `${uploadedFiles.length} selected` : "No files selected"}
                     </p>
                     <p className="text-xs font-semibold text-muted-foreground">
-                      {uploadedFiles.length ? `${formatBytes(uploadedSizeMb * 1024 * 1024)} - ${creditEstimate || uploadedFiles.length} estimated credits` : "Add files or PDFs to start."}
+                      {uploadedFiles.length ? `${formatBytes(uploadedSizeMb * 1024 * 1024)} - ${creditEstimate || uploadedFiles.length} estimated credits` : "Add a batch, review outputs, and download corrected files."}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2 sm:justify-end">
