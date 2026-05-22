@@ -156,6 +156,12 @@ const ownedPipelineCopy = [
   "External infrastructure can sit behind the pipeline, but the workflow, storage model, and user experience stay controlled by AxLiner. That keeps retries, batch recovery, and output delivery predictable for real users.",
 ];
 
+const cinematicFrameCount = 49;
+const cinematicFrameUrls = Array.from(
+  { length: cinematicFrameCount },
+  (_, index) => `/cinematic/frames/ink-grid-${String(index + 1).padStart(3, "0")}.webp`
+);
+
 type FooterIconProps = {
   className?: string;
 };
@@ -280,6 +286,7 @@ export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
   const converterMountRef = useRef<HTMLDivElement>(null);
   const cinematicMountRef = useRef<HTMLElement>(null);
+  const cinematicCanvasRef = useRef<HTMLCanvasElement>(null);
   const topBackgroundSectionRef = useRef<HTMLDivElement>(null);
   const topBackgroundRef = useRef<HTMLDivElement>(null);
   const contrastSectionRef = useRef<HTMLDivElement>(null);
@@ -371,6 +378,138 @@ export default function Home() {
 
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (!shouldLoadCinematic) return;
+
+    const section = cinematicMountRef.current;
+    const canvas = cinematicCanvasRef.current;
+    const canvasContext = canvas?.getContext("2d", { alpha: false });
+    if (!section || !canvas || !canvasContext) return;
+
+    let gsapContext: any;
+    let resizeObserver: ResizeObserver | undefined;
+    let cancelled = false;
+    const playhead = { frame: 0 };
+
+    const frameIsReady = (frame?: HTMLImageElement) =>
+      !!frame && frame.complete && frame.naturalWidth > 0;
+
+    const frames = cinematicFrameUrls.map((src, index) => {
+      const frame = new window.Image();
+      frame.decoding = "async";
+      frame.onload = () => {
+        if (!cancelled && (index === 0 || index === Math.round(playhead.frame))) {
+          renderFrame();
+        }
+      };
+      frame.src = src;
+      return frame;
+    });
+
+    function getFrame(index: number) {
+      if (frameIsReady(frames[index])) return frames[index];
+
+      for (let offset = 1; offset < frames.length; offset += 1) {
+        const previousFrame = frames[index - offset];
+        const nextFrame = frames[index + offset];
+
+        if (frameIsReady(previousFrame)) return previousFrame;
+        if (frameIsReady(nextFrame)) return nextFrame;
+      }
+
+      return undefined;
+    }
+
+    function renderFrame() {
+      const frame = getFrame(Math.round(playhead.frame));
+      if (!frame || !canvas.width || !canvas.height) return;
+
+      const targetRatio = canvas.width / canvas.height;
+      const frameRatio = frame.naturalWidth / frame.naturalHeight;
+      let sourceX = 0;
+      let sourceY = 0;
+      let sourceWidth = frame.naturalWidth;
+      let sourceHeight = frame.naturalHeight;
+
+      if (frameRatio > targetRatio) {
+        sourceWidth = frame.naturalHeight * targetRatio;
+        sourceX = (frame.naturalWidth - sourceWidth) / 2;
+      } else {
+        sourceHeight = frame.naturalWidth / targetRatio;
+        sourceY = (frame.naturalHeight - sourceHeight) / 2;
+      }
+
+      canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+      canvasContext.drawImage(
+        frame,
+        sourceX,
+        sourceY,
+        sourceWidth,
+        sourceHeight,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+    }
+
+    function resizeCanvas() {
+      const bounds = section.getBoundingClientRect();
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      const width = Math.max(1, Math.round(bounds.width * pixelRatio));
+      const height = Math.max(1, Math.round(bounds.height * pixelRatio));
+
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+        canvasContext.imageSmoothingEnabled = true;
+        canvasContext.imageSmoothingQuality = "high";
+      }
+
+      renderFrame();
+    }
+
+    resizeCanvas();
+
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(resizeCanvas);
+      resizeObserver.observe(section);
+    } else {
+      window.addEventListener("resize", resizeCanvas);
+    }
+
+    void loadGsap().then(({ gsap, ScrollTrigger }) => {
+      if (cancelled) return;
+
+      gsapContext = gsap.context(() => {
+        gsap.to(playhead, {
+          frame: cinematicFrameCount - 1,
+          ease: "none",
+          snap: "frame",
+          onUpdate: renderFrame,
+          scrollTrigger: {
+            trigger: section,
+            start: "top top",
+            end: () => `+=${Math.round(Math.max(window.innerHeight * 2.6, 1800))}`,
+            scrub: 0.25,
+            pin: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
+      }, section);
+
+      ScrollTrigger.refresh();
+    });
+
+    return () => {
+      cancelled = true;
+      gsapContext?.revert();
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", resizeCanvas);
+    };
+  }, [shouldLoadCinematic]);
 
   useEffect(() => {
     const topSection = topBackgroundSectionRef.current;
@@ -657,7 +796,7 @@ export default function Home() {
         <section
           ref={cinematicMountRef}
           aria-label="Ink to spreadsheet cinematic"
-          className="relative z-10 isolate h-[100svh] min-h-[680px] w-full overflow-hidden bg-[#04130d] sm:min-h-[760px] lg:h-[112svh]"
+          className="relative z-10 isolate h-svh min-h-[560px] w-full overflow-hidden bg-[#04130d]"
         >
           <Image
             src="/cinematic/ink-to-grid-poster.webp"
@@ -668,19 +807,11 @@ export default function Home() {
             className="object-cover object-center"
           />
           {shouldLoadCinematic ? (
-            <video
-              src="/cinematic/ink-to-grid-loop.mp4"
-              poster="/cinematic/ink-to-grid-poster.webp"
-              autoPlay
-              loop
-              muted
-              playsInline
-              disablePictureInPicture
-              disableRemotePlayback
-              preload="metadata"
+            <canvas
+              ref={cinematicCanvasRef}
               aria-hidden="true"
               tabIndex={-1}
-              className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
+              className="pointer-events-none absolute inset-0 h-full w-full"
             />
           ) : null}
         </section>
