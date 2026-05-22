@@ -123,25 +123,6 @@ const solutionCards = [
   },
 ];
 
-const batchWorkflowSteps = [
-  {
-    title: "Add a batch",
-    text: "Handwritten invoices, bank statements, table photos, forms, or PDFs.",
-  },
-  {
-    title: "Review outputs",
-    text: "Each file lands in a result set you can inspect instead of retyping.",
-  },
-  {
-    title: "Fix exceptions",
-    text: "Correct cells that need attention while the source stays beside them.",
-  },
-  {
-    title: "Download Excel",
-    text: "Take the corrected spreadsheet files out together when the run is ready.",
-  },
-];
-
 const faqItems = [
   {
     question: "Can I convert PDFs and images in the same batch?",
@@ -545,45 +526,13 @@ export default function Home() {
               <div className="flex flex-col items-center lg:translate-x-14 lg:items-end xl:translate-x-20">
                 <BrandVisualFrame treatment="cutout" className="relative w-full max-w-[800px]">
                   <div className="absolute inset-x-8 bottom-5 h-20 rounded-full bg-primary/15 blur-3xl" aria-hidden="true" />
-                  <div className="absolute left-1 top-7 z-20 hidden w-48 rounded-md border border-border bg-card/95 p-3 text-left shadow-md backdrop-blur sm:block lg:-left-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Batch added</p>
-                    <p className="mt-1 text-sm font-semibold text-foreground">12 handwritten files</p>
-                    <p className="mt-2 text-xs leading-5 text-muted-foreground">Invoices, statements, table photos</p>
-                  </div>
                   <img
                     src="/header.svg"
                     alt="AxLiner document conversion illustration"
                     className="relative z-10 mx-auto h-auto w-full max-w-[760px] object-contain"
                   />
-                  <div className="absolute bottom-8 right-2 z-20 hidden w-52 rounded-md border border-border bg-card/95 p-3 text-left shadow-md backdrop-blur sm:block lg:-right-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Review set ready</p>
-                    <p className="mt-1 text-sm font-semibold text-foreground">Fix exceptions, export XLSX</p>
-                    <div className="mt-2 flex gap-1.5">
-                      <span className="h-1.5 flex-1 rounded-full bg-primary" />
-                      <span className="h-1.5 flex-1 rounded-full bg-primary/65" />
-                      <span className="h-1.5 flex-1 rounded-full bg-primary/35" />
-                    </div>
-                  </div>
                 </BrandVisualFrame>
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="relative z-10 px-4 pb-8 sm:px-5 lg:px-9">
-          <div className="container mx-auto max-w-[1500px]">
-            <div className="ax-surface grid gap-px overflow-hidden rounded-md bg-border sm:grid-cols-2 xl:grid-cols-4">
-              {batchWorkflowSteps.map((step, index) => (
-                <div key={step.title} className="bg-card/95 p-4 sm:p-5">
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background text-sm font-semibold text-primary">
-                      0{index + 1}
-                    </span>
-                    <p className="text-base font-semibold text-foreground">{step.title}</p>
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-muted-foreground">{step.text}</p>
-                </div>
-              ))}
             </div>
           </div>
         </section>
@@ -675,7 +624,7 @@ export default function Home() {
           />
           <div className="relative z-10">
         {/* Why Choose Us Section */}
-        <ScrollAnimatedSection id="features" className="relative z-20 pb-10 pt-12">
+        <ScrollAnimatedSection id="features" className="relative z-20 pt-16 pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
               <BrandSectionLabel className="mb-4">
@@ -690,10 +639,10 @@ export default function Home() {
                 <Card
                   key={solution.title}
                   data-animate="stagger"
-                  className="group flex min-h-[448px] overflow-hidden rounded-md border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md"
+                  className="group flex min-h-[560px] overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md"
                 >
-                  <CardContent className="flex h-full w-full flex-col p-6 sm:p-7">
-                    <BrandVisualFrame treatment="document" className="flex h-44 items-center justify-center sm:h-48">
+                  <CardContent className="flex h-full w-full flex-col p-7 sm:p-8">
+                    <BrandVisualFrame treatment="document" className="flex h-56 items-center justify-center sm:h-64">
                       <img
                         src={solution.asset}
                         alt=""
@@ -701,17 +650,17 @@ export default function Home() {
                       />
                     </BrandVisualFrame>
 
-                    <div className="mt-7 flex flex-1 flex-col">
-                      <CardTitle className="text-xl font-semibold tracking-normal text-foreground">
+                    <div className="mt-10 flex flex-1 flex-col">
+                      <CardTitle className="text-2xl font-semibold tracking-normal text-foreground">
                         {solution.title}
                       </CardTitle>
-                      <CardDescription className="mt-4 text-sm leading-6 text-muted-foreground">
+                      <CardDescription className="mt-5 text-[15px] leading-7 text-muted-foreground">
                         {solution.description}
                       </CardDescription>
 
                       <NextLink
                         href={solution.href}
-                        className="mt-auto flex items-end justify-between gap-4 pt-8 text-left text-sm font-medium text-foreground transition-colors hover:text-primary"
+                        className="mt-auto flex items-end justify-between gap-4 pt-12 text-left text-sm font-medium text-foreground transition-colors hover:text-primary"
                       >
                         <span>Discover More</span>
                         <span className="relative block h-10 w-10 text-primary transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
