@@ -2,8 +2,7 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 
-import { AppLogo } from "@/components/AppIcon"
-import { MobileNav } from "@/components/MobileNav"
+import { MarketingNavBar } from "@/components/MarketingNavBar"
 import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = {
@@ -17,27 +16,9 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <nav className="sticky top-0 z-40 border-b border-border bg-background/84 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" aria-label="AxLiner home">
-            <AppLogo className="h-8 w-auto" />
-          </Link>
-          <div className="hidden items-center gap-2 lg:flex">
-            <Link href="/pricing" className="rounded-md px-4 py-2 text-sm font-semibold hover:bg-muted">
-              Pricing
-            </Link>
-            <Link href="/blogs" className="rounded-md px-4 py-2 text-sm font-semibold hover:bg-muted">
-              Blogs
-            </Link>
-            <Button asChild className="rounded-md">
-              <a href="mailto:contact@axliner.com?subject=AxLiner%20question">Email AxLiner</a>
-            </Button>
-          </div>
-          <MobileNav />
-        </div>
-      </nav>
+      <MarketingNavBar />
 
-      <article className="mx-auto max-w-[860px] px-4 pb-24 pt-16 sm:px-6 lg:px-8 lg:pt-20">
+      <article className="mx-auto max-w-[860px] px-4 pb-24 pt-32 sm:px-6 lg:px-8 lg:pt-36">
         <header>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Contact</p>
           <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-normal text-foreground sm:text-5xl">
