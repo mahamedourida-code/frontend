@@ -651,10 +651,13 @@ export default function Home() {
           )}
         </div>
 
+          </div>
+        </div>
+
         <section
           ref={cinematicMountRef}
           aria-label="Ink to spreadsheet cinematic"
-          className="relative left-1/2 z-10 isolate h-[100svh] min-h-[680px] w-[100dvw] -translate-x-1/2 overflow-hidden bg-[#04130d] sm:min-h-[760px] lg:h-[112svh]"
+          className="relative z-10 isolate h-[100svh] min-h-[680px] w-full overflow-hidden bg-[#04130d] sm:min-h-[760px] lg:h-[112svh]"
         >
           <Image
             src="/cinematic/ink-to-grid-poster.webp"
@@ -680,22 +683,7 @@ export default function Home() {
               className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
             />
           ) : null}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(4,19,13,0.38)_0%,rgba(4,19,13,0.04)_18%,rgba(4,19,13,0.02)_76%,rgba(4,19,13,0.44)_100%)]"
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-background/75 to-transparent"
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background/80 to-transparent"
-          />
         </section>
-
-          </div>
-        </div>
 
         <div className="relative isolate bg-background px-4 py-12 sm:px-6 lg:px-8">
         <div
