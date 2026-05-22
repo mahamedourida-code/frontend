@@ -279,6 +279,7 @@ const footerColumns = [
 export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
   const converterMountRef = useRef<HTMLDivElement>(null);
+  const cinematicMountRef = useRef<HTMLElement>(null);
   const topBackgroundSectionRef = useRef<HTMLDivElement>(null);
   const topBackgroundRef = useRef<HTMLDivElement>(null);
   const contrastSectionRef = useRef<HTMLDivElement>(null);
@@ -287,6 +288,7 @@ export default function Home() {
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [shouldLoadConverter, setShouldLoadConverter] = useState(false);
+  const [shouldLoadCinematic, setShouldLoadCinematic] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -328,6 +330,32 @@ export default function Home() {
     observer.observe(mountTarget);
     return () => observer.disconnect();
   }, [shouldLoadConverter]);
+
+  useEffect(() => {
+    if (shouldLoadCinematic) return;
+
+    const mountTarget = cinematicMountRef.current;
+    if (!mountTarget) return;
+
+    if (typeof IntersectionObserver === "undefined") {
+      setShouldLoadCinematic(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoadCinematic(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "420px 0px" }
+    );
+
+    observer.observe(mountTarget);
+
+    return () => observer.disconnect();
+  }, [shouldLoadCinematic]);
 
   useEffect(() => {
     const topSection = topBackgroundSectionRef.current;
@@ -602,32 +630,43 @@ export default function Home() {
         </div>
 
         <section
+          ref={cinematicMountRef}
           aria-label="Ink to spreadsheet cinematic"
-          className="relative z-10 overflow-hidden bg-[linear-gradient(180deg,var(--background)_0%,rgba(24,227,153,0.08)_48%,var(--background)_100%)] px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20"
+          className="relative z-10 isolate h-svh min-h-[620px] overflow-hidden bg-[#04130d]"
         >
-          <div
-            className="relative mx-auto flex aspect-[4/3] w-full max-w-[1240px] items-center justify-center overflow-hidden rounded-md border border-emerald-100/15 bg-[#04130d] shadow-[0_32px_88px_rgba(4,19,13,0.32)] sm:aspect-video"
-          >
+          <Image
+            src="/cinematic/ink-to-grid-poster.webp"
+            alt=""
+            fill
+            sizes="100vw"
+            aria-hidden="true"
+            className="object-cover object-center"
+          />
+          {shouldLoadCinematic ? (
             <video
               src="/cinematic/ink-to-grid-scroll.mp4"
-              poster="/cinematic/1.png"
+              poster="/cinematic/ink-to-grid-poster.webp"
               autoPlay
               loop
               muted
               playsInline
-              preload="auto"
+              preload="metadata"
               aria-label="Handwritten ledger transforming into a spreadsheet"
               className="absolute inset-0 h-full w-full object-cover object-center"
             />
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(4,19,13,0.3)_0%,rgba(4,19,13,0.04)_25%,rgba(4,19,13,0.04)_72%,rgba(4,19,13,0.48)_100%)]"
-            />
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-emerald-200/10"
-            />
-          </div>
+          ) : null}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(4,19,13,0.38)_0%,rgba(4,19,13,0.04)_18%,rgba(4,19,13,0.02)_76%,rgba(4,19,13,0.44)_100%)]"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-background/75 to-transparent"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background/80 to-transparent"
+          />
         </section>
 
           </div>
