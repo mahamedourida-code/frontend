@@ -837,16 +837,14 @@ export function ResultActions({
       <div className="rounded-md border border-border bg-muted/35 p-4 shadow-sm sm:p-5 xl:p-6">
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Batch output</p>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Batch review board</p>
             <p className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
-              {resultFiles.length} file{resultFiles.length > 1 ? "s" : ""} ready
+              {resultFiles.length} file{resultFiles.length > 1 ? "s" : ""} ready to inspect
             </p>
           </div>
-          {resultFiles.length > 1 ? (
-            <span className="rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground">
-              Click a card to review and edit cells
-            </span>
-          ) : null}
+          <span className="rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground">
+            Input beside output, status by file
+          </span>
         </div>
 
         <div className={cn(
@@ -1125,7 +1123,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     onDownloadReviewedBatch,
     onEditFile,
   } = props
-  const hasBatchResults = Boolean(isComplete && (resultFiles?.length || 0) > 1)
+  const hasResults = Boolean(isComplete && (resultFiles?.length || 0) > 0)
   const isBankStatementMode = documentMode === "bank_statement"
 
   return (
@@ -1140,7 +1138,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
       <Card className="overflow-hidden rounded-md border-border bg-card shadow-sm">
         <CardContent className="space-y-5 p-4 lg:p-5">
           <div className="grid gap-5">
-            {!hasBatchResults ? (
+            {!hasResults ? (
               <div className="space-y-4">
                 {isBankStatementMode ? (
                   <div className="rounded-md border border-border bg-muted/55 p-4 shadow-sm">

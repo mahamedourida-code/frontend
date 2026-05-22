@@ -593,17 +593,43 @@ export default function DashboardPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5 p-6">
-              <div className="grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-3">
-                {[
-                  ["Add", "Drop a file batch"],
-                  ["Review", "Check exceptions"],
-                  ["Export", "Download Excel"],
-                ].map(([title, copy]) => (
-                  <div key={title} className="bg-card p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{title}</p>
-                    <p className="mt-2 text-sm font-medium text-foreground">{copy}</p>
-                  </div>
-                ))}
+              <div className="rounded-md border border-border bg-muted/35 p-3">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Normal result view</p>
+                  <span className="rounded-md border border-border bg-card px-2.5 py-1 text-xs font-semibold text-foreground">
+                    Batch review board
+                  </span>
+                </div>
+                <div className="grid gap-3">
+                  {[
+                    ["handwritten_invoice_04.jpg", "invoice_04.xlsx", "Ready"],
+                    ["bank_statement_page_02.pdf", "statement_page_02.xlsx", "Needs review"],
+                    ["field_table_11.png", "field_table_11.xlsx", "Edited"],
+                  ].map(([input, output, state], index) => (
+                    <div key={input} className="grid gap-3 rounded-md border border-border bg-card p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-center">
+                      <div className="min-w-0">
+                        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Input</p>
+                        <p className="mt-1 truncate text-sm font-semibold text-foreground">{input}</p>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Output</p>
+                        <p className="mt-1 truncate text-sm font-semibold text-foreground">{output}</p>
+                      </div>
+                      <span
+                        className={cn(
+                          "w-fit rounded-md border px-2.5 py-1 text-xs font-semibold",
+                          index === 1
+                            ? "border-amber-200 bg-amber-50 text-amber-800"
+                            : index === 2
+                              ? "border-primary/20 bg-primary/10 text-primary"
+                              : "border-emerald-200 bg-emerald-50 text-emerald-800"
+                        )}
+                      >
+                        {state}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
