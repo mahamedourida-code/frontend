@@ -289,6 +289,7 @@ export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [shouldLoadConverter, setShouldLoadConverter] = useState(false);
   const [shouldLoadCinematic, setShouldLoadCinematic] = useState(false);
+  const [isCinematicActive, setIsCinematicActive] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -356,6 +357,20 @@ export default function Home() {
 
     return () => observer.disconnect();
   }, [shouldLoadCinematic]);
+
+  useEffect(() => {
+    const mountTarget = cinematicMountRef.current;
+    if (!mountTarget || typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsCinematicActive(entry.isIntersecting),
+      { rootMargin: "-32% 0px -38% 0px" }
+    );
+
+    observer.observe(mountTarget);
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const topSection = topBackgroundSectionRef.current;
@@ -452,7 +467,14 @@ export default function Home() {
   return (
     <div className="min-h-screen relative bg-transparent">
       {/* Navigation Bar */}
-      <nav className="fixed left-0 right-0 top-0 z-50 pt-3 backdrop-blur-2xl lg:pt-4">
+      <nav
+        className={cn(
+          "fixed left-0 right-0 top-0 z-50 pt-3 backdrop-blur-2xl transition-[opacity,transform,visibility] duration-500 ease-out lg:pt-4",
+          isCinematicActive
+            ? "invisible pointer-events-none -translate-y-[calc(100%+1rem)] opacity-0"
+            : "visible translate-y-0 opacity-100"
+        )}
+      >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between rounded-md border border-border bg-background/82 p-2 shadow-sm backdrop-blur-2xl lg:p-3">
             {/* Logo */}
@@ -632,7 +654,7 @@ export default function Home() {
         <section
           ref={cinematicMountRef}
           aria-label="Ink to spreadsheet cinematic"
-          className="relative z-10 isolate h-svh min-h-[620px] overflow-hidden bg-[#04130d]"
+          className="relative left-1/2 z-10 isolate h-[100svh] min-h-[680px] w-[100dvw] -translate-x-1/2 overflow-hidden bg-[#04130d] sm:min-h-[760px] lg:h-[112svh]"
         >
           <Image
             src="/cinematic/ink-to-grid-poster.webp"
@@ -650,9 +672,12 @@ export default function Home() {
               loop
               muted
               playsInline
+              disablePictureInPicture
+              disableRemotePlayback
               preload="metadata"
-              aria-label="Handwritten ledger transforming into a spreadsheet"
-              className="absolute inset-0 h-full w-full object-cover object-center"
+              aria-hidden="true"
+              tabIndex={-1}
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
             />
           ) : null}
           <div
