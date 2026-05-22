@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BrandVisualFrame } from "@/components/BrandVisual";
 import { MarketingNavBar } from "@/components/MarketingNavBar";
 import { blogPosts, getBlogPost } from "@/lib/blogs";
 
@@ -117,16 +118,16 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
             </div>
           </div>
 
-          <div className="relative mt-8 aspect-[16/9] overflow-hidden bg-card">
+          <BrandVisualFrame treatment="photo" className="mt-8 aspect-[16/9]">
             <Image
               src={post.image}
               alt={post.imageAlt}
               fill
               priority
               sizes="760px"
-              className="object-cover"
+              className="rounded-md object-cover"
             />
-          </div>
+          </BrandVisualFrame>
           <p className="mt-3 text-sm leading-6 text-black/60">{post.imageAlt}</p>
         </header>
 

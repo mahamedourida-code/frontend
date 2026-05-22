@@ -18,6 +18,7 @@ import { MobileNav } from "@/components/MobileNav";
 import ScrollAnimatedSection from "@/components/ScrollAnimatedSection";
 import { cn } from "@/lib/utils";
 import { AppLogo } from "@/components/AppIcon";
+import { BrandSectionLabel, BrandVisualFrame } from "@/components/BrandVisual";
 
 import { createClient } from "@/utils/supabase/client";
 import NextLink from "next/link";
@@ -378,7 +379,7 @@ export default function Home() {
       {/* Navigation Bar */}
       <nav className="fixed left-0 right-0 top-0 z-50 pt-3 backdrop-blur-2xl lg:pt-4">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between rounded-md border border-border bg-background/82 p-2 shadow-sm backdrop-blur-2xl lg:p-3">
+          <div className="ax-nav-surface flex items-center justify-between p-2 lg:p-3">
             {/* Logo */}
             <div className="flex-shrink-0">
               <NextLink href="/" aria-label="AxLiner home">
@@ -523,14 +524,14 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col items-center lg:translate-x-14 lg:items-end xl:translate-x-20">
-                <div className="relative w-full max-w-[800px]">
+                <BrandVisualFrame treatment="cutout" className="relative w-full max-w-[800px]">
                   <div className="absolute inset-x-8 bottom-5 h-20 rounded-full bg-primary/15 blur-3xl" aria-hidden="true" />
                   <img
                     src="/header.svg"
                     alt="AxLiner document conversion illustration"
-                    className="relative z-10 mx-auto h-auto w-full max-w-[760px] object-contain drop-shadow-[0_30px_70px_rgba(42,35,64,0.16)]"
+                    className="relative z-10 mx-auto h-auto w-full max-w-[760px] object-contain"
                   />
-                </div>
+                </BrandVisualFrame>
               </div>
             </div>
           </div>
@@ -566,11 +567,11 @@ export default function Home() {
         <ScrollAnimatedSection id="trusted" className="w-full overflow-hidden py-5">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-4" data-animate="headline">
-              <div className="mb-2 inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 shadow-sm">
+              <BrandSectionLabel className="mb-2">
                 <h2 className="text-sm font-semibold text-foreground sm:text-base">
                   Chosen by experts at top organizations
                 </h2>
-              </div>
+              </BrandSectionLabel>
             </div>
 
             <div className="relative z-10 overflow-hidden" data-animate="stagger">
@@ -626,11 +627,11 @@ export default function Home() {
         <ScrollAnimatedSection id="features" className="relative z-20 pt-16 pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12" data-animate="headline">
-              <div className="inline-flex items-center gap-2 rounded-md border bg-background px-4 py-2 mb-4 shadow-sm">
+              <BrandSectionLabel className="mb-4">
                 <h2 className="text-lg sm:text-xl font-bold text-foreground">
                   Solutions
                 </h2>
-              </div>
+              </BrandSectionLabel>
             </div>
 
             <div className="mx-auto grid max-w-[1540px] grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -641,13 +642,13 @@ export default function Home() {
                   className="group flex min-h-[560px] overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md"
                 >
                   <CardContent className="flex h-full w-full flex-col p-7 sm:p-8">
-                    <div className="flex h-56 items-center justify-center sm:h-64">
+                    <BrandVisualFrame treatment="document" className="flex h-56 items-center justify-center sm:h-64">
                       <img
                         src={solution.asset}
                         alt=""
                         className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.04]"
                       />
-                    </div>
+                    </BrandVisualFrame>
 
                     <div className="mt-10 flex flex-1 flex-col">
                       <CardTitle className="text-2xl font-semibold tracking-normal text-foreground">
@@ -690,11 +691,11 @@ export default function Home() {
           <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12" data-animate="headline">
-                <div className="inline-flex items-center gap-2 rounded-md border bg-background px-4 py-2 mb-4 shadow-sm">
+                <BrandSectionLabel className="mb-4">
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     Benchmarks
                   </h2>
-                </div>
+                </BrandSectionLabel>
 
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                   Benchmarked against major cloud providers on real-world handwritten documents and complex table structures.
@@ -777,7 +778,7 @@ export default function Home() {
             </div>
 
             <div data-animate="stagger" className="space-y-5">
-              <div className="overflow-hidden rounded-md border border-border bg-card p-2 shadow-sm">
+              <BrandVisualFrame treatment="photo">
                 <Image
                   src="/server.webp"
                   alt="AxLiner server processing layer"
@@ -786,7 +787,7 @@ export default function Home() {
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   className="h-[260px] w-full rounded-md object-cover object-center sm:h-[320px] lg:h-[380px]"
                 />
-              </div>
+              </BrandVisualFrame>
               <div className="grid gap-3 sm:grid-cols-3">
                 {ownedPipelineCopy.map((item, index) => (
                   <div key={item} className="rounded-md border border-border bg-card p-4 shadow-sm">
@@ -814,12 +815,12 @@ export default function Home() {
           <div className="container mx-auto max-w-[1460px] px-4 sm:px-6 lg:px-8">
             <div className="mx-auto">
               <div className="mx-auto mb-12 max-w-4xl text-center" data-animate="headline">
-                <div className="mb-5 inline-flex items-center gap-2 rounded-md border border-border bg-background px-4 py-2 shadow-sm">
+                <BrandSectionLabel className="mb-5">
                   <span className="h-2 w-2 rounded-full bg-primary" />
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     How AxLiner's Engine Is Built
                   </h2>
-                </div>
+                </BrandSectionLabel>
               </div>
 
               {/* Main Content */}
@@ -929,16 +930,16 @@ export default function Home() {
                   Your Data Security Guaranteed
                 </h2>
 
-                <div className="mt-8 max-w-[500px] overflow-hidden rounded-xl border border-border bg-card p-2 shadow-sm">
+                <BrandVisualFrame treatment="photo" className="mt-8 max-w-[500px]">
                     <Image
                       src="/secu.webp"
                       alt="Secure digital document processing"
                       width={760}
                       height={420}
                       sizes="(min-width: 1024px) 40vw, 100vw"
-                      className="h-[210px] w-full rounded-lg object-cover object-center sm:h-[240px] lg:h-[260px]"
+                      className="h-[210px] w-full rounded-md object-cover object-center sm:h-[240px] lg:h-[260px]"
                     />
-                </div>
+                </BrandVisualFrame>
               </div>
 
               <div className="lg:pt-12" data-animate="stagger">
@@ -1003,7 +1004,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 overflow-hidden border-t border-white/10 bg-[#031b17] text-white">
+      <footer className="ax-immersive-backdrop relative z-10 border-t border-white/10 text-white">
         <Image
           src="/buttom.png"
           alt=""
@@ -1011,10 +1012,10 @@ export default function Home() {
           sizes="100vw"
           className="object-cover object-center"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(100deg,rgba(2,17,17,0.96)_0%,rgba(2,27,22,0.82)_48%,rgba(3,27,22,0.72)_100%)]" />
+        <div className="ax-footer-overlay" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_16%,rgba(231,255,235,0.24),transparent_30%)]" />
 
-        <div className="relative mx-auto max-w-[1540px] px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <div className="relative z-10 mx-auto max-w-[1540px] px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(620px,1fr)] lg:items-start">
             <div className="max-w-2xl">
               <NextLink

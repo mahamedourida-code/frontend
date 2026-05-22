@@ -223,7 +223,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
           </div>
         </section>
 
-        <aside className="relative hidden min-h-screen overflow-hidden border-l border-border bg-[#062522] text-white lg:flex">
+        <aside className="ax-immersive-backdrop hidden min-h-screen border-l border-border text-white lg:flex">
           <Image
             src="/signin.png"
             alt=""
@@ -232,8 +232,8 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
             sizes="(min-width: 1024px) 46vw, 0vw"
             className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,16,18,0.18)_0%,rgba(3,16,18,0.42)_42%,rgba(3,16,18,0.88)_100%)]" />
-          <div className="relative mx-auto flex w-full max-w-[430px] flex-col justify-end px-10 py-16">
+          <div className="ax-immersive-overlay" />
+          <div className="relative z-10 mx-auto flex w-full max-w-[430px] flex-col justify-end px-10 py-16">
             <Image
               src={testimonial.avatar}
               alt={testimonial.name}

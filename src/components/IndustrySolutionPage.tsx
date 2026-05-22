@@ -1,20 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { AppLogo } from "@/components/AppIcon";
-import { MobileNav } from "@/components/MobileNav";
+import { BrandVisualFrame } from "@/components/BrandVisual";
+import { MarketingNavBar } from "@/components/MarketingNavBar";
 import { IndustrySolution, POLIVALENT_SOLUTION_IMAGE } from "@/lib/industry-solutions";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
-import { IndustrySolutionsMenuGrid } from "@/components/IndustrySolutionsMenuGrid";
-import { cn } from "@/lib/utils";
 
 function ArrowMark({ className = "" }: { className?: string }) {
   return (
@@ -27,7 +16,7 @@ function ArrowMark({ className = "" }: { className?: string }) {
 
 function NumberedBlock({ number, title, text }: { number: string; title: string; text: string }) {
   return (
-    <div className="rounded-md border border-border bg-card p-4 shadow-sm">
+    <div className="ax-surface rounded-md p-4">
       <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
         {number}
       </div>
@@ -40,83 +29,7 @@ function NumberedBlock({ number, title, text }: { number: string; title: string;
 export function IndustrySolutionPage({ solution }: { solution: IndustrySolution }) {
   return (
     <main className="ax-page-bg min-h-screen overflow-hidden text-foreground">
-      <nav className="fixed left-0 right-0 top-0 z-50 pt-3 backdrop-blur-2xl lg:pt-4">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between rounded-md border border-border bg-background/82 p-2 shadow-sm backdrop-blur-2xl lg:p-3">
-            <div className="flex-shrink-0">
-              <Link href="/" aria-label="AxLiner home">
-                <AppLogo />
-              </Link>
-            </div>
-
-            <div className="hidden flex-1 items-center justify-center lg:flex">
-              <NavigationMenu>
-                <NavigationMenuList className="gap-1">
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger className="bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-primary-foreground">
-                      Solutions
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <IndustrySolutionsMenuGrid />
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <NavigationMenuLink
-                      href="/how-axliner-is-built"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-primary-foreground")}
-                    >
-                      How AxLiner's Built
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <NavigationMenuLink
-                      href="/benchmarks"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-primary-foreground")}
-                    >
-                      Benchmarks
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <NavigationMenuLink
-                      href="/pricing"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-primary-foreground")}
-                    >
-                      Pricing
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <NavigationMenuLink
-                      href="/blogs"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-black transition-colors hover:bg-accent/50 dark:text-primary-foreground")}
-                    >
-                      Blogs
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
-            </div>
-
-            <div className="hidden items-center gap-3 lg:flex">
-              <Button asChild size="sm" className="rounded-md">
-                <Link href="/sign-up">Sign Up</Link>
-              </Button>
-              <Button
-                variant="outline"
-                asChild
-                className="rounded-md"
-              >
-                <Link href="/sign-in">Sign in</Link>
-              </Button>
-            </div>
-
-            <MobileNav />
-          </div>
-        </div>
-      </nav>
+      <MarketingNavBar />
 
       <section className="relative mx-auto grid max-w-6xl gap-8 px-4 pb-12 pt-28 sm:px-6 lg:grid-cols-[0.96fr_1.04fr] lg:px-8 lg:pb-16 lg:pt-32">
         <div className="flex flex-col justify-center">
@@ -150,7 +63,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
           </div>
         </div>
 
-        <div className="relative min-h-[300px] overflow-hidden rounded-md border border-border bg-card p-2 shadow-sm sm:min-h-[360px] lg:min-h-[440px]">
+        <BrandVisualFrame treatment="photo" className="min-h-[300px] sm:min-h-[360px] lg:min-h-[440px]">
           <Image
             src={solution.detailImage}
             alt={`${solution.title} document workflow`}
@@ -159,7 +72,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
             sizes="(min-width: 1024px) 54vw, 100vw"
             className="rounded-md object-cover"
           />
-        </div>
+        </BrandVisualFrame>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
@@ -167,7 +80,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
           {solution.useCases.map((item) => (
             <div
               key={item}
-              className="rounded-md border border-border bg-card px-4 py-5 shadow-sm"
+              className="ax-surface rounded-md px-4 py-5"
             >
               <div className="mb-4 h-[3px] w-10 rounded-full bg-primary" />
               <p className="text-sm font-semibold leading-6 text-foreground">{item}</p>
@@ -178,7 +91,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
 
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[0.86fr_1.14fr] lg:items-start">
-          <div className="rounded-md border border-border bg-card p-6 shadow-sm">
+          <div className="ax-surface rounded-md p-6">
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
               Where it fits
             </p>
@@ -188,12 +101,12 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
           </div>
 
           <div className="grid gap-4">
-            <div className="rounded-md border border-border bg-card p-6 shadow-sm">
+            <div className="ax-surface rounded-md p-6">
               <p className="text-base leading-7 text-foreground">
                 Most {solution.title.toLowerCase()} teams already know what has to happen after extraction: check the numbers, correct edge cases, and send the file into a spreadsheet, reporting tool, or internal workflow. AxLiner is shaped around that review step instead of producing a raw text dump that still needs to be rebuilt by hand.
               </p>
             </div>
-            <div className="rounded-md border border-border bg-card p-6 shadow-sm">
+            <div className="ax-surface rounded-md p-6">
               <p className="text-base leading-7 text-foreground">
                 The product keeps batches simple: upload the documents, let the system preserve the table structure, then download a file your team can open immediately. That makes it useful for daily paperwork, backlog cleanup, and repeatable document intake without forcing a custom engineering project for every new format.
               </p>
@@ -203,7 +116,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
       </section>
 
       <section className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1.04fr_0.96fr] lg:px-8 lg:py-16">
-        <div className="relative min-h-[300px] overflow-hidden rounded-md border border-border bg-card p-2 shadow-sm sm:min-h-[360px] lg:min-h-[420px]">
+        <BrandVisualFrame treatment="photo" className="min-h-[300px] sm:min-h-[360px] lg:min-h-[420px]">
           <Image
             src={POLIVALENT_SOLUTION_IMAGE}
             alt="AxLiner workspace overview"
@@ -211,10 +124,10 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
             sizes="(min-width: 1024px) 54vw, 100vw"
             className="rounded-md object-cover"
           />
-        </div>
+        </BrandVisualFrame>
 
         <div className="flex flex-col justify-center">
-          <div className="rounded-md border border-border bg-card p-6 shadow-sm sm:p-7">
+          <div className="ax-surface rounded-md p-6 sm:p-7">
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
               How it works
             </p>

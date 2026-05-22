@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 
+import { BrandVisualFrame } from "@/components/BrandVisual"
 import { MarketingNavBar } from "@/components/MarketingNavBar"
 import { Button } from "@/components/ui/button"
 
@@ -30,23 +31,23 @@ export default function ContactPage() {
             Table mode or Bank statement mode.
           </p>
 
-          <div className="relative mt-9 aspect-[16/8] overflow-hidden rounded-md border border-border bg-card shadow-sm">
+          <BrandVisualFrame treatment="photo" className="mt-9 aspect-[16/8]">
             <Image
               src="/forest.png"
               alt="Green forest light"
               fill
               priority
               sizes="(min-width: 1024px) 860px, 100vw"
-              className="object-cover object-center"
+              className="rounded-md object-cover object-center"
             />
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,18,14,0.62),rgba(2,18,14,0.14))]" />
-            <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8">
+            <div className="absolute inset-0 rounded-md bg-[linear-gradient(90deg,rgba(2,18,14,0.62),rgba(2,18,14,0.14))]" />
+            <div className="absolute inset-x-0 bottom-0 z-10 p-6 text-white sm:p-8">
               <p className="max-w-xl text-lg font-semibold leading-7">
                 Start with the source document type, expected spreadsheet result, and any job or file name you can
                 share safely.
               </p>
             </div>
-          </div>
+          </BrandVisualFrame>
         </header>
 
         <section className="mt-10 border-t border-border pt-9">

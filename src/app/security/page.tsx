@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 
+import { BrandVisualFrame } from "@/components/BrandVisual"
 import { EditorialPageShell } from "@/components/EditorialPageShell"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -38,16 +39,16 @@ export default function SecurityPage() {
       meta="Security overview for AxLiner document processing workflows."
       links={securitySections}
       hero={
-        <div className="relative mt-9 aspect-[16/8.6] overflow-hidden rounded-md border border-border bg-card shadow-sm">
+        <BrandVisualFrame treatment="photo" className="mt-9 aspect-[16/8.6]">
           <Image
             src="/secu.webp"
             alt="Secure document processing illustration"
             fill
             priority
             sizes="(min-width: 1024px) 820px, 100vw"
-            className="object-cover object-center"
+            className="rounded-md object-cover object-center"
           />
-        </div>
+        </BrandVisualFrame>
       }
       intro={
         <>

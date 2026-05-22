@@ -243,6 +243,18 @@
   --gradient-accent: linear-gradient(135deg, hsl(158 60% 34%) 0%, hsl(143 58% 34%) 100%);
   --gradient-glass: linear-gradient(135deg, rgb(255 255 255 / 0.1) 0%, rgb(255 255 255 / 0.05) 100%);
   --shadow-glow: 0 0 50px -12px hsl(143 58% 34% / 0.45);
+  --ax-visual-surface: color-mix(in srgb, var(--card) 92%, var(--secondary));
+  --ax-visual-document: color-mix(in srgb, var(--card) 78%, hsl(143 58% 34% / 0.08));
+  --ax-visual-line: color-mix(in srgb, var(--border) 86%, var(--primary));
+  --ax-visual-sheen: linear-gradient(140deg, rgb(255 255 255 / 0.72), transparent 42%);
+  --ax-visual-shadow: 0 1px 2px rgb(15 23 42 / 0.06), 0 20px 52px -34px rgb(15 23 42 / 0.28);
+  --ax-visual-shadow-raised: 0 1px 2px rgb(15 23 42 / 0.08), 0 28px 72px -40px rgb(15 23 42 / 0.34);
+  --ax-photo-overlay: linear-gradient(180deg, rgb(3 17 17 / 0.12), rgb(3 17 17 / 0.38) 46%, rgb(3 17 17 / 0.84));
+  --ax-footer-overlay: linear-gradient(102deg, rgb(2 17 17 / 0.96), rgb(2 27 22 / 0.82) 52%, rgb(3 27 22 / 0.7));
+  --ax-motion-fast: 180ms;
+  --ax-motion-base: 320ms;
+  --ax-motion-enter: 720ms;
+  --ax-motion-ease: cubic-bezier(0.2, 0, 0, 1);
   --font-sans: var(--font-inter), Inter, Arial, Helvetica, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: monospace;
@@ -298,6 +310,12 @@
   --sidebar-accent-foreground: hsl(138 24% 96%);
   --sidebar-border: hsl(220 12% 22%);
   --sidebar-ring: hsl(142 62% 55%);
+  --ax-visual-surface: color-mix(in srgb, var(--card) 88%, var(--secondary));
+  --ax-visual-document: color-mix(in srgb, var(--card) 82%, var(--primary) 18%);
+  --ax-visual-line: color-mix(in srgb, var(--border) 82%, var(--primary));
+  --ax-visual-sheen: linear-gradient(140deg, rgb(255 255 255 / 0.11), transparent 44%);
+  --ax-visual-shadow: 0 1px 2px rgb(0 0 0 / 0.28), 0 22px 54px -36px rgb(0 0 0 / 0.68);
+  --ax-visual-shadow-raised: 0 1px 2px rgb(0 0 0 / 0.32), 0 30px 78px -42px rgb(0 0 0 / 0.78);
   --font-sans: var(--font-inter), Inter, Arial, Helvetica, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: monospace;
@@ -424,6 +442,122 @@ body {
     @apply bg-background text-foreground;
     min-height: 100%;
     letter-spacing: 0;
+  }
+}
+
+@layer components {
+  .ax-surface {
+    border: 1px solid var(--ax-visual-line);
+    background: var(--ax-visual-surface);
+    box-shadow: var(--ax-visual-shadow);
+  }
+
+  .ax-section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: fit-content;
+    border: 1px solid var(--ax-visual-line);
+    border-radius: calc(var(--radius) - 2px);
+    background: color-mix(in srgb, var(--ax-visual-surface) 86%, transparent);
+    box-shadow: var(--shadow-sm);
+    padding: 0.55rem 0.9rem;
+    color: var(--foreground);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .ax-nav-surface {
+    border: 1px solid var(--ax-visual-line);
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--background) 82%, transparent);
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  .ax-visual-frame {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid var(--ax-visual-line);
+    border-radius: var(--radius);
+    background: var(--ax-visual-surface);
+    box-shadow: var(--ax-visual-shadow);
+    padding: clamp(0.375rem, 0.6vw, 0.625rem);
+    transition:
+      border-color var(--ax-motion-fast) var(--ax-motion-ease),
+      box-shadow var(--ax-motion-base) var(--ax-motion-ease),
+      transform var(--ax-motion-base) var(--ax-motion-ease);
+  }
+
+  .ax-visual-frame::before {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: inherit;
+    background: var(--ax-visual-sheen);
+    content: "";
+  }
+
+  .ax-visual-frame[data-treatment="product"] {
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--card) 98%, var(--primary) 2%), var(--ax-visual-surface));
+  }
+
+  .ax-visual-frame[data-treatment="document"] {
+    background:
+      linear-gradient(135deg, var(--ax-visual-document), var(--ax-visual-surface));
+    padding: clamp(0.75rem, 1.2vw, 1.125rem);
+  }
+
+  .ax-visual-frame[data-treatment="cutout"] {
+    overflow: visible;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    filter: drop-shadow(0 26px 56px rgb(15 23 42 / 0.14));
+  }
+
+  .ax-visual-frame[data-treatment="cutout"]::before {
+    display: none;
+  }
+
+  .ax-immersive-backdrop {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--primary) 18%, hsl(162 82% 7%));
+  }
+
+  .ax-immersive-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: var(--ax-photo-overlay);
+  }
+
+  .ax-footer-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: var(--ax-footer-overlay);
+  }
+}
+
+@media (hover: hover) {
+  .ax-visual-frame:not([data-treatment="cutout"]):hover {
+    border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
+    box-shadow: var(--ax-visual-shadow-raised);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ax-visual-frame,
+  .ax-section-label {
+    transition: none;
   }
 }
 

@@ -31,55 +31,56 @@ export default function ScrollAnimatedSection({
     const headline = section.querySelector('[data-animate="headline"]');
     const staggerElements = section.querySelectorAll('[data-animate="stagger"]');
 
-    // Animate headline
-    if (headline) {
-      gsap.fromTo(
-        headline,
-        {
-          opacity: 0,
-          y: 50,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
-          },
-        }
-      );
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
     }
 
-    // Stagger animate sub-elements
-    if (staggerElements.length > 0) {
-      gsap.fromTo(
-        staggerElements,
-        {
-          opacity: 0,
-          y: 50,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power3.out",
-          stagger: 0.2,
-          scrollTrigger: {
-            trigger: section,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
+    const ctx = gsap.context(() => {
+      if (headline) {
+        gsap.fromTo(
+          headline,
+          {
+            autoAlpha: 0,
+            y: 24,
           },
-        }
-      );
-    }
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.72,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 84%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
 
-    // Cleanup
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
+      if (staggerElements.length > 0) {
+        gsap.fromTo(
+          staggerElements,
+          {
+            autoAlpha: 0,
+            y: 22,
+          },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.72,
+            ease: "power2.out",
+            stagger: 0.08,
+            scrollTrigger: {
+              trigger: section,
+              start: "top 84%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
+    }, section);
+
+    return () => ctx.revert();
   }, []);
 
   return (

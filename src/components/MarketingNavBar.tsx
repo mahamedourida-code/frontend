@@ -24,7 +24,7 @@ export function MarketingNavBar() {
   return (
     <nav className="fixed left-0 right-0 top-0 z-50 pt-3 backdrop-blur-2xl lg:pt-4">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between rounded-md border border-border bg-background/82 p-2 shadow-sm backdrop-blur-2xl lg:p-3">
+        <div className="ax-nav-surface flex items-center justify-between p-2 lg:p-3">
           <Link href="/" aria-label="AxLiner home" className="flex-shrink-0">
             <AppLogo />
           </Link>

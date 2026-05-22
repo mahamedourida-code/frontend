@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { BrandVisualFrame } from "@/components/BrandVisual";
 import { MarketingNavBar } from "@/components/MarketingNavBar";
 import { blogPosts } from "@/lib/blogs";
 
@@ -83,14 +84,16 @@ export default function BlogsPage() {
 
                   <div className="mt-5 border-t border-black/10 pt-6">
                     <div className="grid gap-6 lg:grid-cols-[330px_minmax(0,1fr)]">
-                      <Link href={`/blogs/${post.slug}`} className="group relative h-[190px] w-full overflow-hidden bg-card lg:w-[330px]">
-                        <Image
-                          src={post.image}
-                          alt={post.imageAlt}
-                          fill
-                          sizes="(min-width: 1024px) 330px, 100vw"
-                          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                        />
+                      <Link href={`/blogs/${post.slug}`} className="group relative h-[190px] w-full lg:w-[330px]">
+                        <BrandVisualFrame treatment="photo" className="h-full w-full">
+                          <Image
+                            src={post.image}
+                            alt={post.imageAlt}
+                            fill
+                            sizes="(min-width: 1024px) 330px, 100vw"
+                            className="rounded-md object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                          />
+                        </BrandVisualFrame>
                       </Link>
 
                       <div className="flex min-h-[190px] flex-col justify-between">

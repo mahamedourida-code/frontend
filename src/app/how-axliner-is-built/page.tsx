@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 
+import { BrandVisualFrame } from "@/components/BrandVisual"
 import { EditorialPageShell } from "@/components/EditorialPageShell"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -44,16 +45,16 @@ export default function HowAxlinerIsBuiltPage() {
       meta="Technical note: AxLiner is designed around handwritten document extraction and spreadsheet review."
       links={engineLinks}
       hero={
-        <div className="relative mt-9 aspect-[16/9] overflow-hidden rounded-md border border-border bg-card shadow-sm">
+        <BrandVisualFrame treatment="photo" className="mt-9 aspect-[16/9]">
           <Image
             src="/purchase.webp"
             alt="AxLiner document engine workflow"
             fill
             priority
             sizes="(min-width: 1024px) 820px, 100vw"
-            className="object-cover object-center"
+            className="rounded-md object-cover object-center"
           />
-        </div>
+        </BrandVisualFrame>
       }
       intro={
         <>
