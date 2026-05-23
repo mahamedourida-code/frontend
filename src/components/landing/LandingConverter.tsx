@@ -1466,7 +1466,7 @@ export default function LandingConverter() {
                                   </p>
                                   <Button
                                     size="sm"
-                                    variant="critical"
+                                    variant="glossy"
                                     className="mt-3 h-8 rounded-md px-3 text-xs font-semibold"
                                     onClick={(event) => {
                                       event.stopPropagation();
@@ -1811,7 +1811,7 @@ export default function LandingConverter() {
                   {!isProcessing && resultFiles.length === 0 && (
                   <div className="grid gap-4">
                     <Button
-                     variant="critical"
+                     variant="glossy"
                      onClick={handleProcessImage}
                      disabled={uploadedFiles.length === 0 || isProcessing}
                      size="lg"

@@ -284,8 +284,8 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
               {isAuthenticated && (
                 <div className="border-b border-border px-3 py-3">
                   <Button
-                    variant="critical"
-                    className="h-10 w-full justify-center"
+                    variant="glossy"
+                    className="mx-auto h-10 w-[11.25rem] justify-center font-bold"
                     onClick={() => handleNavigation("/dashboard/client#upload-files")}
                   >
                     <Upload className="h-4 w-4" />

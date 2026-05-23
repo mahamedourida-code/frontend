@@ -139,7 +139,7 @@ function WorkspaceErrorBanner({ banner, onDismiss }: { banner?: WorkspaceBanner 
       </div>
       <div className="flex items-center gap-2">
         {banner.actionLabel && banner.onAction ? (
-          <Button variant={isUpgradeAction ? "critical" : "outline"} onClick={banner.onAction} className="h-9 rounded-md px-4">
+          <Button variant={isUpgradeAction ? "lime" : "outline"} onClick={banner.onAction} className="h-9 rounded-md px-4">
             {banner.actionLabel}
           </Button>
         ) : null}
@@ -1356,11 +1356,11 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                       </Button>
                     ) : null}
                     <Button
-                      variant="critical"
+                      variant="glossy"
                       size="lg"
                       onClick={onConvert}
                       disabled={!uploadedFiles.length || isProcessing || noCredits}
-                      className="h-10 gap-2 rounded-md px-5 shadow-sm"
+                      className="h-10 gap-2 rounded-md px-5"
                     >
                       {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
                       {isProcessing ? "Converting" : processLabel}

@@ -50,8 +50,8 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
           <WorkspaceSwitcher user={user} onSignOut={() => void handleSignOut()} />
         </div>
 
-        <div className="space-y-2 px-3 pb-6 pt-1">
-          <Button asChild variant="critical" className="h-11 w-full justify-center rounded-lg text-[15px] font-semibold shadow-sm">
+        <div className="flex justify-center px-3 pb-6 pt-1">
+          <Button asChild variant="glossy" className="h-10 w-[11.25rem] justify-center rounded-lg text-[15px] font-bold">
             <Link href="/dashboard/client#upload-files">
               <Upload className="size-4" />
               Upload
@@ -147,7 +147,8 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
             </p>
             <Button
               asChild
-              className="mt-4 h-11 w-full justify-center rounded-xl border-0 bg-[#c4f65d] text-[15px] font-bold text-[#152018] shadow-none hover:bg-[#b5eb49] hover:text-[#152018] dark:bg-[#9fd649] dark:hover:bg-[#aeea50]"
+              variant="lime"
+              className="mt-4 h-11 w-full justify-center rounded-xl text-[15px] font-bold"
             >
               <Link href="/pricing">Upgrade</Link>
             </Button>

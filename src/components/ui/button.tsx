@@ -11,6 +11,12 @@ const buttonVariants = cva(
       variant: {
         default: "border border-border bg-card text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground",
         critical: "bg-primary text-primary-foreground hover:bg-primary/90",
+        glossy:
+          "border border-[#09b878] bg-[linear-gradient(180deg,var(--ax-action-highlight)_0%,var(--ax-action-base)_48%,var(--ax-action-depth)_100%)] text-[#082018] shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_2px_5px_rgba(11,133,88,0.22)] hover:brightness-[1.04] focus-visible:border-[#09b878]",
+        ink:
+          "border border-[#0d1524] bg-[linear-gradient(180deg,#344153_0%,#152030_47%,#0b111d_100%)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.24),0_2px_4px_rgba(15,23,42,0.3)] hover:brightness-110 focus-visible:border-[#0d1524]",
+        lime:
+          "border border-[#b6e84d] bg-[linear-gradient(180deg,var(--ax-upgrade-highlight)_0%,var(--ax-upgrade-base)_46%,var(--ax-upgrade-depth)_100%)] text-[#111b16] shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_2px_4px_rgba(80,108,22,0.14)] hover:brightness-[1.03] focus-visible:border-[#b6e84d]",
         destructive:
           "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:

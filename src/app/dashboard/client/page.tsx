@@ -11,6 +11,7 @@ import { ocrApi } from "@/lib/api-client"
 import type { AppLimits, RecoverableJobSummary } from "@/lib/api-client"
 import { getApiErrorUi, showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui"
 import { DashboardShell } from "@/components/DashboardShell"
+import { WorkspaceFilesPanel } from "@/components/dashboard/WorkspaceFilesPanel"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import {
   ConversionWorkspace,
@@ -1412,6 +1413,7 @@ Best regards`
         onDownloadReviewedBatch={handleDownloadReviewedBatch}
         onEditFile={handleEditResultFile}
       />
+      <WorkspaceFilesPanel refreshKey={jobId && status === "completed" ? `${jobId}:${isSaved}` : undefined} />
 
       <Dialog open={shareDialogOpen} onOpenChange={(open) => {
         if (!open) {

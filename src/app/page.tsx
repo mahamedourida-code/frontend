@@ -445,24 +445,30 @@ export default function Home() {
               <ThemeToggle />
               {isAuthenticated ? (
                 <Button
-                  variant="critical"
+                  variant="glossy"
                   size="sm"
+                  className="rounded-lg px-4 font-semibold"
                   asChild
                 >
                   <NextLink href="/dashboard/client">Convert Files</NextLink>
                 </Button>
               ) : (
                 <>
-                  <Button size="sm" className="rounded-md" asChild>
-                    <NextLink href="/sign-up?next=%2Fdashboard%2Fclient">Sign Up</NextLink>
-                  </Button>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    className="rounded-md"
+                    className="rounded-lg px-4 font-semibold text-foreground"
                     asChild
                   >
-                    <NextLink href="/sign-in?next=%2Fdashboard%2Fclient">Sign in</NextLink>
+                    <NextLink href="/sign-in?next=%2Fdashboard%2Fclient">Log in</NextLink>
+                  </Button>
+                  <Button
+                    variant="ink"
+                    size="sm"
+                    className="rounded-lg px-4 font-semibold"
+                    asChild
+                  >
+                    <NextLink href="/sign-up?next=%2Fdashboard%2Fclient">Sign up</NextLink>
                   </Button>
                 </>
               )}
@@ -496,8 +502,9 @@ export default function Home() {
 
                 <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row lg:items-center">
                   <Button
+                    variant="glossy"
                     onClick={() => scrollToSection('converter')}
-                    className="h-12 px-8 text-base font-semibold"
+                    className="h-[52px] rounded-xl px-10 text-base font-bold"
                   >
                     Try It
                   </Button>
