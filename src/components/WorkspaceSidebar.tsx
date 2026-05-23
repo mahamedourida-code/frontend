@@ -95,7 +95,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                       />
                       <span className="truncate">{item.label}</span>
                     </Link>
-                    <div className={cn("ms-4 mt-1 hidden space-y-1 border-s border-sidebar-border ps-2 group-hover/process:block", activeItem === "process" && "block")}>
+                    <div className="ms-4 mt-1 space-y-1 border-s border-sidebar-border ps-2">
                       {processSubItems.map((subItem) => {
                         const SubIcon = subItem.icon
                         const selected = pathname === subItem.href
