@@ -64,17 +64,11 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
           </Link>
         </div>
 
-        <div className="space-y-2 px-3 pb-5 pt-2">
-          <Button asChild variant="critical" className="h-10 w-full justify-center shadow-xs">
-            <Link href="/dashboard/client">
-              <Upload className="size-4" />
-              Convert files
-            </Link>
-          </Button>
+        <div className="px-3 pb-5 pt-2">
           <Button asChild variant="outline" className="h-10 w-full justify-start border-sidebar-border bg-sidebar shadow-xs">
-            <Link href="/dashboard/bank-statements">
-              <Building2 className="size-4" />
-              Bank statements
+            <Link href="/dashboard/client#upload-files">
+              <Upload className="size-4" />
+              Upload files
             </Link>
           </Button>
         </div>

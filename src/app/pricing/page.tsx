@@ -477,7 +477,7 @@ function PricingContent() {
                 </>
               ) : (
                 <>
-                  <Button variant="critical" size="sm" className="rounded-md" asChild>
+                  <Button size="sm" className="rounded-md" asChild>
                     <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign Up</Link>
                   </Button>
                   <Button variant="outline" className="rounded-md" asChild>

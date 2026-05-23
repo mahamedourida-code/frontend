@@ -119,6 +119,7 @@ function formatBytes(bytes: number) {
 
 function WorkspaceErrorBanner({ banner, onDismiss }: { banner?: WorkspaceBanner | null; onDismiss?: () => void }) {
   if (!banner) return null
+  const isUpgradeAction = /upgrade|plans|credits|billing/i.test(banner.actionLabel || "")
 
   return (
     <div
@@ -138,7 +139,7 @@ function WorkspaceErrorBanner({ banner, onDismiss }: { banner?: WorkspaceBanner 
       </div>
       <div className="flex items-center gap-2">
         {banner.actionLabel && banner.onAction ? (
-          <Button variant="critical" onClick={banner.onAction} className="h-10 rounded-md px-4">
+          <Button variant={isUpgradeAction ? "critical" : "outline"} onClick={banner.onAction} className="h-9 rounded-md px-4">
             {banner.actionLabel}
           </Button>
         ) : null}
@@ -164,20 +165,21 @@ function ResumeBatchBanner({
   if (!latestRecoverableJob) return null
 
   return (
-    <div className="mb-4 flex flex-col gap-3 rounded-md border border-primary bg-primary p-4 text-primary-foreground shadow-sm sm:flex-row sm:items-center sm:justify-between">
+    <div className="mb-3 flex flex-col gap-3 rounded-md border border-border bg-card p-3 text-foreground shadow-xs sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
-        <Loader2 className="h-5 w-5 text-primary-foreground" />
+        <Loader2 className="h-4 w-4 text-muted-foreground" />
         <div>
           <p className="text-sm font-semibold">Return to unfinished batch</p>
-          <p className="text-xs text-primary-foreground/70">
+          <p className="text-xs text-muted-foreground">
             {latestRecoverableJob.processed_images || 0} of {latestRecoverableJob.total_images || 0} files processed
           </p>
         </div>
       </div>
       <Button
+        variant="outline"
         onClick={onContinueLatestJob}
         disabled={recoveryLoading}
-        className="h-10 rounded-md border border-white/20 bg-background px-4 text-primary hover:bg-card/90"
+        className="h-9 rounded-md px-4"
       >
         {recoveryLoading ? "Resuming..." : "Open batch"}
       </Button>
@@ -216,6 +218,7 @@ export function UploadDropzone({
   return (
     <>
     <div
+      id="upload-files"
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
@@ -224,18 +227,18 @@ export function UploadDropzone({
         isDragging ? "border-primary bg-card/85 scale-[0.997]" : "border-border bg-card/50 hover:border-primary/50"
       )}
     >
-      <div className={cn("px-6 py-6 text-center", uploadedFiles.length ? "min-h-[330px]" : "flex min-h-[270px] flex-col items-center justify-center")}>
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg border border-border bg-card/75 shadow-[0_18px_45px_rgb(0 0 0 / 0.10)]">
-          <FolderUp className="h-7 w-7 text-primary" />
+      <div className={cn("px-4 py-4 text-center sm:px-5", uploadedFiles.length ? "min-h-[248px]" : "flex min-h-[208px] flex-col items-center justify-center")}>
+        <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-md border border-border bg-card shadow-xs">
+          <FolderUp className="h-5 w-5 text-foreground" />
         </div>
-        <h3 className="text-xl font-semibold text-foreground">{isDragging ? "Drop files" : uploadedFiles.length ? "Drop more files" : "Upload files"}</h3>
-        <p className="mt-2 text-sm font-semibold text-muted-foreground">Handwritten invoices, statements, tables, images, and PDFs</p>
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+        <h3 className="text-lg font-semibold text-foreground">{isDragging ? "Drop files" : uploadedFiles.length ? "Drop more files" : "Upload files"}</h3>
+        <p className="mt-1 text-xs font-medium text-muted-foreground">Handwritten invoices, statements, tables, images, and PDFs</p>
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
           <label
             htmlFor="workspace-file-upload"
             className={cn(
-              buttonVariants({ variant: "critical", size: "lg" }),
-              "h-11 cursor-pointer px-5 font-semibold shadow-sm",
+              buttonVariants({ variant: "outline", size: "default" }),
+              "h-9 cursor-pointer px-4 font-medium",
               isProcessing && "pointer-events-none opacity-55"
             )}
           >
@@ -249,7 +252,7 @@ export function UploadDropzone({
               variant="outline"
               onClick={onClearFiles}
               disabled={isProcessing}
-              className="h-11 rounded-md border-border bg-card px-4 text-foreground shadow-sm hover:bg-accent"
+              className="h-9 rounded-md border-border bg-card px-4 text-foreground shadow-sm hover:bg-accent"
             >
               Clear
             </Button>
@@ -266,7 +269,7 @@ export function UploadDropzone({
         />
 
         {uploadedFiles.length ? (
-          <div className="mt-5 grid grid-cols-2 gap-2 text-left sm:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-3 grid grid-cols-3 gap-2 text-left sm:grid-cols-4 xl:grid-cols-6">
             {uploadedFiles.map((file, index) => {
               const pdf = isPdfFile(file)
               const pageCount = pdfPageCounts[index]
@@ -831,9 +834,9 @@ export function ResultActions({
 
   return (
     <>
-    <div className="space-y-3">
+    <div className="space-y-2.5">
       {isComplete ? (
-        <div className="sticky top-[4.5rem] z-20 flex flex-wrap items-center gap-2 rounded-md border border-border bg-card/95 p-2 shadow-sm backdrop-blur-xl">
+        <div className="sticky top-[4.5rem] z-20 flex flex-wrap items-center gap-2 rounded-md border border-border bg-card/95 p-2 shadow-xs backdrop-blur-xl">
           <Button
             variant="outline"
             onClick={() => {
@@ -842,7 +845,7 @@ export function ResultActions({
               setEditingCell(null)
               onReset()
             }}
-            className="h-10 gap-2 rounded-md px-4 shadow-sm"
+            className="h-9 gap-2 rounded-md px-3 shadow-xs"
           >
             <RotateCcw className="h-4 w-4" />
             New batch
@@ -852,7 +855,7 @@ export function ResultActions({
               onClick={onSaveToHistory}
               disabled={isSaving}
               variant="outline"
-              className="h-10 gap-2 rounded-md border-border bg-card px-4 text-foreground shadow-sm hover:bg-accent"
+              className="h-9 gap-2 rounded-md border-border bg-card px-3 text-foreground shadow-xs hover:bg-accent"
             >
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               Save
@@ -861,7 +864,7 @@ export function ResultActions({
           <Button
             variant="outline"
             onClick={safeResultFiles.length > 1 ? onShareAll : () => firstResultFile && onShareFile(firstResultFile)}
-            className="h-10 gap-2 rounded-md border-border bg-card px-4 text-foreground shadow-sm hover:bg-accent"
+            className="h-9 gap-2 rounded-md border-border bg-card px-3 text-foreground shadow-xs hover:bg-accent"
           >
             <Share2 className="h-4 w-4" />
             Share
@@ -869,7 +872,7 @@ export function ResultActions({
           <Button
             variant="outline"
             onClick={onDownloadAll}
-            className="h-10 gap-2 rounded-md border-border bg-card px-4 text-foreground shadow-sm hover:bg-accent"
+            className="h-9 gap-2 rounded-md border-border bg-card px-3 text-foreground shadow-xs hover:bg-accent"
           >
             <Download className="h-4 w-4" />
             Download all
@@ -877,24 +880,24 @@ export function ResultActions({
           <Button
             onClick={handleReviewedBatchDownload}
             disabled={reviewedDownloadBusy}
-            className="h-10 gap-2 rounded-md px-4 shadow-sm"
+            className="h-9 gap-2 rounded-md px-3 shadow-xs"
           >
             {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             Download reviewed batch
           </Button>
           {editedCount > 0 && !isTextOutput ? (
-            <span className="inline-flex h-10 items-center rounded-md border border-primary/20 bg-primary/10 px-3 text-xs font-semibold text-primary">
+            <span className="inline-flex h-9 items-center rounded-md border border-border bg-muted px-3 text-xs font-semibold text-foreground">
               {editedCount} edited
             </span>
           ) : null}
         </div>
       ) : null}
 
-      <div className="rounded-md border border-border bg-muted/35 p-4 shadow-sm sm:p-5 xl:p-6">
-        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="rounded-md border border-border bg-muted/25 p-3 shadow-xs sm:p-4">
+        <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Batch review board</p>
-            <p className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
+            <p className="mt-1 text-xl font-semibold tracking-tight text-foreground">
               {safeResultFiles.length} file{safeResultFiles.length > 1 ? "s" : ""} ready to inspect
             </p>
           </div>
@@ -903,7 +906,7 @@ export function ResultActions({
           </span>
         </div>
 
-        <div className="mb-4 flex flex-wrap gap-2">
+        <div className="mb-3 flex flex-wrap gap-1.5">
           {([
             ["all", "All"],
             ["ready", "Ready"],
@@ -916,21 +919,21 @@ export function ResultActions({
               type="button"
               onClick={() => setResultFilter(value)}
               className={cn(
-                "inline-flex h-9 items-center gap-2 rounded-md border px-3 text-xs font-semibold transition",
+                "inline-flex h-8 items-center gap-2 rounded-md border px-3 text-xs font-semibold transition",
                 resultFilter === value
-                  ? "border-foreground bg-foreground text-background"
+                  ? "border-border bg-accent text-accent-foreground"
                   : "border-border bg-card text-foreground hover:bg-accent"
               )}
             >
               {label}
-              <span className={cn("rounded-sm px-1.5 py-0.5 text-[10px]", resultFilter === value ? "bg-white/20" : "bg-muted text-muted-foreground")}>
+              <span className={cn("rounded-sm px-1.5 py-0.5 text-[10px]", resultFilter === value ? "bg-card text-foreground" : "bg-muted text-muted-foreground")}>
                 {filterCounts[value]}
               </span>
             </button>
           ))}
         </div>
 
-        <div className="mb-4 overflow-x-auto rounded-md border border-border bg-card/65 p-2 shadow-sm">
+        <div className="mb-3 overflow-x-auto rounded-md border border-border bg-card p-2 shadow-xs">
           <div className="flex min-w-max items-center gap-2">
             {resultEntries.map(({ file, index, fileKey, badge, edited }) => (
               <button
@@ -1291,11 +1294,11 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
       <WorkspaceErrorBanner banner={banner} onDismiss={onDismissBanner} />
 
       <Card className="overflow-hidden rounded-md border-border bg-card shadow-sm">
-        <CardContent className="space-y-5 p-4 lg:p-5">
-          <div className="grid gap-5">
+        <CardContent className="space-y-3 p-3 lg:p-4">
+          <div className="grid gap-3">
             {!hasResults ? (
-              <div className="space-y-4">
-                <div className="grid gap-2 rounded-md border border-border bg-muted/45 p-2 shadow-sm sm:grid-cols-2 xl:grid-cols-4">
+              <div className="space-y-3">
+                <div className="grid gap-1.5 rounded-md border border-border bg-muted/35 p-1.5 shadow-xs sm:grid-cols-2 xl:grid-cols-4">
                   {modeOptions.map((mode) => (
                     <button
                       key={mode.value}
@@ -1303,15 +1306,15 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                       onClick={() => handleModeChange(mode.value)}
                       disabled={isProcessing}
                       className={cn(
-                        "rounded-md border px-3 py-3 text-left transition-colors",
+                        "rounded-md border px-3 py-2 text-left transition-colors",
                         selectedMode === mode.value
-                          ? "border-foreground bg-foreground text-background shadow-sm"
+                          ? "border-border bg-accent text-accent-foreground shadow-xs"
                           : "border-transparent bg-card/70 text-foreground hover:bg-accent",
                         isProcessing && "cursor-not-allowed opacity-60"
                       )}
                     >
-                      <span className="block text-sm font-semibold">{mode.label}</span>
-                      <span className={cn("mt-1 block text-xs font-medium", selectedMode === mode.value ? "text-background/75" : "text-muted-foreground")}>
+                      <span className="block text-[13px] font-semibold">{mode.label}</span>
+                      <span className="mt-0.5 block text-[11px] font-medium text-muted-foreground">
                         {mode.helper}
                       </span>
                     </button>
@@ -1332,7 +1335,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                   onClearFiles={onClearFiles}
                 />
 
-                <div className="flex flex-col gap-3 rounded-md border border-border bg-card/50 p-3 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-2 rounded-md border border-border bg-card p-2.5 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sm font-semibold text-foreground">
                       {uploadedFiles.length ? `${uploadedFiles.length} selected` : "No files selected"}
@@ -1348,7 +1351,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                       <Button
                         variant="outline"
                         onClick={onCancel}
-                        className="h-11 rounded-md border-border bg-card/70 px-5 text-foreground hover:bg-accent"
+                        className="h-10 rounded-md border-border bg-card px-4 text-foreground hover:bg-accent"
                       >
                         <X className="mr-2 h-4 w-4" />
                         Cancel
@@ -1359,7 +1362,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                       size="lg"
                       onClick={onConvert}
                       disabled={!uploadedFiles.length || isProcessing || noCredits}
-                      className="h-12 gap-2 rounded-md px-6 shadow-sm"
+                      className="h-10 gap-2 rounded-md px-5 shadow-sm"
                     >
                       {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
                       {isProcessing ? "Converting" : processLabel}

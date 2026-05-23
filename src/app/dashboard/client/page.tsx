@@ -1358,7 +1358,7 @@ Best regards`
       title={isBankStatementMode ? "Bank Statement Mode" : isInvoiceReceiptMode ? "Invoice and Receipt Mode" : "Convert Files"}
       eyebrow={isBankStatementMode ? "Statements" : isInvoiceReceiptMode ? "Accounting" : "Batch"}
       user={user}
-      contentClassName="max-w-none px-3 sm:px-5 lg:px-6"
+      contentClassName="max-w-none px-3 py-3 sm:px-5 lg:px-6"
     >
       <ConversionWorkspace
         banner={workspaceBanner ?? creditBanner}

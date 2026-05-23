@@ -303,22 +303,14 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
               )}
 
               {isAuthenticated && (
-                <div className="space-y-2 border-b border-border px-3 py-3">
-                  <Button
-                    variant="critical"
-                    className="h-10 w-full"
-                    onClick={() => handleNavigation("/dashboard/client")}
-                  >
-                    <Upload className="h-4 w-4" />
-                    Convert files
-                  </Button>
+                <div className="border-b border-border px-3 py-3">
                   <Button
                     variant="outline"
                     className="h-10 w-full justify-start"
-                    onClick={() => handleNavigation("/dashboard/bank-statements")}
+                    onClick={() => handleNavigation("/dashboard/client#upload-files")}
                   >
-                    <FileSpreadsheet className="h-4 w-4" />
-                    Bank statements
+                    <Upload className="h-4 w-4" />
+                    Upload files
                   </Button>
                 </div>
               )}
@@ -468,7 +460,6 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 ) : (
                   <>
                     <Button
-                      variant="critical"
                       className="h-11 w-full gap-3 rounded-2xl"
                       onClick={() => {
                         setIsOpen(false);
