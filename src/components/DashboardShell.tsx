@@ -130,7 +130,7 @@ export function DashboardShell({
   const nextActionLabel = activeItem === "process" ? "History" : "Convert Files"
 
   return (
-    <div className="min-h-svh bg-background text-foreground md:grid md:grid-cols-[14rem_minmax(0,1fr)]">
+    <div className="min-h-svh bg-background text-foreground md:grid md:grid-cols-[15rem_minmax(0,1fr)]">
       <WorkspaceSidebar activeItem={activeItem} user={user} />
 
       <div className="relative z-10 min-w-0 md:col-start-2">
@@ -162,7 +162,7 @@ export function DashboardShell({
                     "hidden h-9 items-center gap-2 rounded-md border px-3 text-sm font-medium transition-colors sm:inline-flex",
                     activeJob.tone === "ready"
                       ? "border-border bg-background text-foreground hover:bg-accent"
-                      : "border-primary bg-primary text-primary-foreground hover:bg-primary/90"
+                      : "border-foreground bg-foreground text-background hover:bg-foreground/88"
                   )}
                 >
                   {activeJob.tone === "ready" ? (
@@ -183,7 +183,7 @@ export function DashboardShell({
               <DashboardCreditsPill credits={availableCredits} className="hidden sm:inline-flex" />
               <ThemeToggle />
 
-              <Button asChild size="sm" variant={isPaid ? "outline" : "default"}>
+              <Button asChild size="sm" variant={isPaid ? "outline" : "critical"}>
                 <Link href={billingActionHref}>{billingActionLabel}</Link>
               </Button>
 

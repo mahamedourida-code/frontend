@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { AppLogo } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 type SidebarItemKey = "overview" | "process" | "history" | "pricing" | "settings"
@@ -53,19 +54,34 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
   }
 
   return (
-    <aside className="fixed inset-y-0 start-0 z-30 hidden w-56 border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex md:flex-col">
+    <aside className="fixed inset-y-0 start-0 z-30 hidden w-60 border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex md:flex-col">
       <div className="flex h-full flex-col">
-        <div className="p-2">
+        <div className="px-3 pb-2 pt-3">
           <Link href="/" aria-label="Go to AxLiner homepage">
-            <div className="flex h-12 items-center rounded-md px-2 text-start text-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+            <div className="flex h-11 items-center rounded-md px-2 text-start text-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
               <AppLogo className="h-7 w-auto" />
             </div>
           </Link>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-2 py-2">
+        <div className="space-y-2 px-3 pb-5 pt-2">
+          <Button asChild variant="critical" className="h-10 w-full justify-center shadow-xs">
+            <Link href="/dashboard/client">
+              <Upload className="size-4" />
+              Convert files
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="h-10 w-full justify-start border-sidebar-border bg-sidebar shadow-xs">
+            <Link href="/dashboard/bank-statements">
+              <Building2 className="size-4" />
+              Bank statements
+            </Link>
+          </Button>
+        </div>
+
+        <nav className="flex-1 overflow-y-auto px-3 pb-3">
           <div className="space-y-1">
-            <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">General</div>
+            <div className="px-2 pb-2 pt-1 text-xs font-medium text-muted-foreground">Workspace</div>
             {sidebarItems.map((item) => {
               const Icon = item.icon
               const isProcess = item.key === "process"
@@ -90,12 +106,12 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                       <Icon
                         className={cn(
                           "size-4 shrink-0",
-                          activeItem === item.key ? "text-primary" : "text-muted-foreground group-hover:text-sidebar-accent-foreground"
+                          activeItem === item.key ? "text-foreground" : "text-muted-foreground group-hover:text-sidebar-accent-foreground"
                         )}
                       />
                       <span className="truncate">{item.label}</span>
                     </Link>
-                    <div className="ms-4 mt-1 space-y-1 border-s border-sidebar-border ps-2">
+                    <div className="ms-4 mt-1 space-y-1 border-s border-sidebar-border pb-2 ps-2">
                       {processSubItems.map((subItem) => {
                         const SubIcon = subItem.icon
                         const selected = pathname === subItem.href
@@ -110,7 +126,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                                 : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                             )}
                           >
-                            <SubIcon className={cn("size-3.5 shrink-0", selected ? "text-primary" : "text-muted-foreground")} />
+                            <SubIcon className={cn("size-3.5 shrink-0", selected ? "text-foreground" : "text-muted-foreground")} />
                             <span className="truncate">{subItem.label}</span>
                           </Link>
                         )
@@ -134,7 +150,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                   <Icon
                     className={cn(
                       "size-4 shrink-0",
-                      activeItem === item.key ? "text-primary" : "text-muted-foreground group-hover:text-sidebar-accent-foreground"
+                      activeItem === item.key ? "text-foreground" : "text-muted-foreground group-hover:text-sidebar-accent-foreground"
                     )}
                   />
                   <span className="truncate">{item.label}</span>
@@ -144,7 +160,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
           </div>
         </nav>
 
-        <div className="border-t border-sidebar-border p-2">
+        <div className="border-t border-sidebar-border p-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex h-12 w-full items-center gap-2 rounded-md px-2 text-start text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
@@ -161,7 +177,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                 <ChevronsUpDown className="ms-auto size-4 text-muted-foreground" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 rounded-lg" side="right" align="end" sideOffset={4}>
+            <DropdownMenuContent className="w-60 rounded-lg" side="right" align="end" sideOffset={4}>
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                   <Avatar className="size-8 rounded-lg">

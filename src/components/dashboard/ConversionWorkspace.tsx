@@ -18,7 +18,7 @@ import {
   Trash2,
   X,
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
@@ -138,7 +138,7 @@ function WorkspaceErrorBanner({ banner, onDismiss }: { banner?: WorkspaceBanner 
       </div>
       <div className="flex items-center gap-2">
         {banner.actionLabel && banner.onAction ? (
-          <Button onClick={banner.onAction} className="h-10 rounded-md bg-primary px-4 text-primary-foreground hover:bg-primary/90">
+          <Button variant="critical" onClick={banner.onAction} className="h-10 rounded-md px-4">
             {banner.actionLabel}
           </Button>
         ) : null}
@@ -234,7 +234,8 @@ export function UploadDropzone({
           <label
             htmlFor="workspace-file-upload"
             className={cn(
-              "inline-flex h-11 cursor-pointer items-center justify-center rounded-md bg-primary px-5 text-sm font-bold text-primary-foreground shadow-sm transition hover:bg-primary/90",
+              buttonVariants({ variant: "critical", size: "lg" }),
+              "h-11 cursor-pointer px-5 font-semibold shadow-sm",
               isProcessing && "pointer-events-none opacity-55"
             )}
           >
@@ -248,7 +249,7 @@ export function UploadDropzone({
               variant="outline"
               onClick={onClearFiles}
               disabled={isProcessing}
-              className="h-11 rounded-md border-border bg-card px-4 text-primary shadow-sm hover:bg-accent"
+              className="h-11 rounded-md border-border bg-card px-4 text-foreground shadow-sm hover:bg-accent"
             >
               Clear
             </Button>
@@ -304,7 +305,7 @@ export function UploadDropzone({
                         setSelectedPreview(null)
                       }}
                       disabled={isProcessing}
-                      className="absolute right-1 top-1 h-7 w-7 rounded-md bg-card/88 text-primary opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-accent group-hover:opacity-100"
+                      className="absolute right-1 top-1 h-7 w-7 rounded-md bg-card/88 text-foreground opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-accent group-hover:opacity-100"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
@@ -337,7 +338,7 @@ export function UploadDropzone({
                 size="sm"
                 variant="outline"
                 onClick={() => setSelectedPreview(null)}
-                className="h-9 rounded-md border-border bg-background px-3 text-primary"
+                className="h-9 rounded-md border-border bg-background px-3 text-foreground"
                 aria-label="Close preview"
               >
                 <X className="h-4 w-4" />
@@ -378,7 +379,7 @@ export function SelectedFilesTray({
           variant="ghost"
           onClick={onClearFiles}
           disabled={isProcessing}
-          className="h-8 rounded-md px-3 text-primary"
+          className="h-8 rounded-md px-3 text-foreground"
         >
           Clear
         </Button>
@@ -421,7 +422,7 @@ export function SelectedFilesTray({
                     setSelectedPreview(null)
                   }}
                   disabled={isProcessing}
-                  className="absolute right-1 top-1 h-7 w-7 rounded-md bg-card/88 text-primary opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-accent group-hover:opacity-100"
+                  className="absolute right-1 top-1 h-7 w-7 rounded-md bg-card/88 text-foreground opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-accent group-hover:opacity-100"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
@@ -451,7 +452,7 @@ export function SelectedFilesTray({
                 size="sm"
                 variant="outline"
                 onClick={() => setSelectedPreview(null)}
-                className="h-9 rounded-md border-border bg-background px-3 text-primary"
+                className="h-9 rounded-md border-border bg-background px-3 text-foreground"
                 aria-label="Close preview"
               >
                 <X className="h-4 w-4" />
@@ -564,7 +565,7 @@ export function ResultPreviewPanel({
                 size="sm"
                 variant="outline"
                 onClick={() => setImagePreviewOpen(false)}
-                className="h-9 rounded-md border-border bg-background px-3 text-primary"
+                className="h-9 rounded-md border-border bg-background px-3 text-foreground"
                 aria-label="Close preview"
               >
                 <X className="h-4 w-4" />
@@ -834,13 +835,14 @@ export function ResultActions({
       {isComplete ? (
         <div className="sticky top-[4.5rem] z-20 flex flex-wrap items-center gap-2 rounded-md border border-border bg-card/95 p-2 shadow-sm backdrop-blur-xl">
           <Button
+            variant="outline"
             onClick={() => {
               setEditedTables({})
               setComparisonIndex(null)
               setEditingCell(null)
               onReset()
             }}
-            className="h-10 gap-2 rounded-md bg-primary px-4 text-primary-foreground shadow-sm hover:bg-primary/90"
+            className="h-10 gap-2 rounded-md px-4 shadow-sm"
           >
             <RotateCcw className="h-4 w-4" />
             New batch
@@ -850,7 +852,7 @@ export function ResultActions({
               onClick={onSaveToHistory}
               disabled={isSaving}
               variant="outline"
-              className="h-10 gap-2 rounded-md border-border bg-card px-4 text-primary shadow-sm hover:bg-accent"
+              className="h-10 gap-2 rounded-md border-border bg-card px-4 text-foreground shadow-sm hover:bg-accent"
             >
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               Save
@@ -859,7 +861,7 @@ export function ResultActions({
           <Button
             variant="outline"
             onClick={safeResultFiles.length > 1 ? onShareAll : () => firstResultFile && onShareFile(firstResultFile)}
-            className="h-10 gap-2 rounded-md border-border bg-card px-4 text-primary shadow-sm hover:bg-accent"
+            className="h-10 gap-2 rounded-md border-border bg-card px-4 text-foreground shadow-sm hover:bg-accent"
           >
             <Share2 className="h-4 w-4" />
             Share
@@ -875,7 +877,7 @@ export function ResultActions({
           <Button
             onClick={handleReviewedBatchDownload}
             disabled={reviewedDownloadBusy}
-            className="h-10 gap-2 rounded-md bg-foreground px-4 text-background shadow-sm hover:bg-primary hover:text-primary-foreground"
+            className="h-10 gap-2 rounded-md px-4 shadow-sm"
           >
             {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             Download reviewed batch
@@ -916,7 +918,7 @@ export function ResultActions({
               className={cn(
                 "inline-flex h-9 items-center gap-2 rounded-md border px-3 text-xs font-semibold transition",
                 resultFilter === value
-                  ? "border-primary bg-primary text-primary-foreground"
+                  ? "border-foreground bg-foreground text-background"
                   : "border-border bg-card text-foreground hover:bg-accent"
               )}
             >
@@ -1008,7 +1010,7 @@ export function ResultActions({
 
               <div className="mt-3 flex min-w-0 items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-2">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary text-[11px] font-bold text-primary-foreground">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-foreground text-[11px] font-bold text-background">
                     {index + 1}
                   </span>
                   {isTextOutput ? <FileText className="h-5 w-5 shrink-0 text-primary" /> : <FileSpreadsheet className="h-5 w-5 shrink-0 text-primary" />}
@@ -1048,7 +1050,7 @@ export function ResultActions({
                     event.stopPropagation()
                     onDownloadFile(file, index)
                   }}
-                  className="h-8 rounded-md bg-foreground px-3 text-xs text-background shadow-sm hover:bg-primary hover:text-primary-foreground"
+                  className="h-8 rounded-md px-3 text-xs shadow-sm"
                 >
                   <Download className="mr-1.5 h-3.5 w-3.5" />
                   Download
@@ -1092,7 +1094,7 @@ export function ResultActions({
                 setComparisonIndex(null)
                 setEditingCell(null)
               }}
-              className="absolute right-4 top-4 z-10 h-9 rounded-md border-border bg-background px-3 text-primary"
+              className="absolute right-4 top-4 z-10 h-9 rounded-md border-border bg-background px-3 text-foreground"
               aria-label="Close comparison"
             >
               <X className="h-4 w-4" />
@@ -1103,7 +1105,7 @@ export function ResultActions({
                   size="icon"
                   variant="outline"
                   onClick={() => goToAdjacentResult(-1)}
-                  className="absolute left-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 rounded-md border-border bg-background text-primary"
+                  className="absolute left-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 rounded-md border-border bg-background text-foreground"
                   aria-label="Previous result"
                 >
                   <ChevronLeft className="h-5 w-5" />
@@ -1112,7 +1114,7 @@ export function ResultActions({
                   size="icon"
                   variant="outline"
                   onClick={() => goToAdjacentResult(1)}
-                  className="absolute right-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 rounded-md border-border bg-background text-primary"
+                  className="absolute right-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 rounded-md border-border bg-background text-foreground"
                   aria-label="Next result"
                 >
                   <ChevronRight className="h-5 w-5" />
@@ -1303,13 +1305,13 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                       className={cn(
                         "rounded-md border px-3 py-3 text-left transition-colors",
                         selectedMode === mode.value
-                          ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                          ? "border-foreground bg-foreground text-background shadow-sm"
                           : "border-transparent bg-card/70 text-foreground hover:bg-accent",
                         isProcessing && "cursor-not-allowed opacity-60"
                       )}
                     >
                       <span className="block text-sm font-semibold">{mode.label}</span>
-                      <span className={cn("mt-1 block text-xs font-medium", selectedMode === mode.value ? "text-primary-foreground/75" : "text-muted-foreground")}>
+                      <span className={cn("mt-1 block text-xs font-medium", selectedMode === mode.value ? "text-background/75" : "text-muted-foreground")}>
                         {mode.helper}
                       </span>
                     </button>
@@ -1346,17 +1348,18 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                       <Button
                         variant="outline"
                         onClick={onCancel}
-                        className="h-11 rounded-md border-border bg-card/70 px-5 text-primary hover:bg-accent"
+                        className="h-11 rounded-md border-border bg-card/70 px-5 text-foreground hover:bg-accent"
                       >
                         <X className="mr-2 h-4 w-4" />
                         Cancel
                       </Button>
                     ) : null}
                     <Button
+                      variant="critical"
                       size="lg"
                       onClick={onConvert}
                       disabled={!uploadedFiles.length || isProcessing || noCredits}
-                      className="h-12 gap-2 rounded-md bg-primary px-6 text-primary-foreground shadow-sm hover:bg-primary/90"
+                      className="h-12 gap-2 rounded-md px-6 shadow-sm"
                     >
                       {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
                       {isProcessing ? "Converting" : processLabel}

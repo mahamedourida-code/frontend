@@ -1333,7 +1333,7 @@ export default function LandingConverter() {
                   className={cn(
                     "rounded-md px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     outputMode === 'table'
-                      ? "bg-primary text-primary-foreground shadow-sm"
+                      ? "bg-foreground text-background shadow-sm"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
@@ -1345,7 +1345,7 @@ export default function LandingConverter() {
                   className={cn(
                     "rounded-md px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     outputMode === 'text'
-                      ? "bg-primary text-primary-foreground shadow-sm"
+                      ? "bg-foreground text-background shadow-sm"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
@@ -1466,8 +1466,8 @@ export default function LandingConverter() {
                                   </p>
                                   <Button
                                     size="sm"
-                                    variant="outline"
-                                    className="mt-3 h-8 rounded-md border-border bg-card px-3 text-xs font-semibold text-primary"
+                                    variant="critical"
+                                    className="mt-3 h-8 rounded-md px-3 text-xs font-semibold"
                                     onClick={(event) => {
                                       event.stopPropagation();
                                       openSignInModal("/dashboard/client");
@@ -1482,7 +1482,7 @@ export default function LandingConverter() {
                                   variant="outline"
                                   size="sm"
                                   disabled={isProcessing}
-                                  className="rounded-md border border-border bg-card text-sm text-primary"
+                                  className="rounded-md border border-border bg-card text-sm text-foreground"
                                   asChild
                                   onClick={(e) => e.stopPropagation()}
                                 >
@@ -1552,7 +1552,7 @@ export default function LandingConverter() {
                               size="sm"
                               onClick={downloadReviewedBatch}
                               disabled={reviewedDownloadBusy}
-                              className="h-10 rounded-md bg-primary px-4 text-primary-foreground shadow-sm hover:bg-primary/90"
+                              className="h-10 rounded-md px-4 shadow-sm"
                             >
                               {reviewedDownloadBusy ? <InlineSpinner className="mr-1.5 h-4 w-4" /> : <Download className="mr-1.5 h-4 w-4" />}
                               Download reviewed batch
@@ -1564,7 +1564,7 @@ export default function LandingConverter() {
                                 size="sm"
                                 variant="outline"
                                 onClick={handleShareAll}
-                                className="h-10 rounded-md border-border bg-background px-4 text-primary shadow-sm hover:bg-muted"
+                                className="h-10 rounded-md border-border bg-background px-4 text-foreground shadow-sm hover:bg-muted"
                               >
                                 <Share2 className="h-4 w-4" />
                                 Share All
@@ -1577,9 +1577,7 @@ export default function LandingConverter() {
                             onClick={isProcessing && !processingComplete ? cancelCurrentBatch : handleReset}
                             className={cn(
                               "h-10 rounded-md px-4 shadow-sm",
-                              isProcessing && !processingComplete
-                                ? "border-border bg-background text-primary hover:bg-muted"
-                                : "border-primary bg-primary text-primary-foreground hover:bg-primary/90"
+                              "border-border bg-background text-foreground hover:bg-muted"
                             )}
                           >
                             {isProcessing && !processingComplete ? <X className="mr-1 h-4 w-4" /> : <RotateCcw className="mr-1 h-4 w-4" />}
@@ -1735,7 +1733,7 @@ export default function LandingConverter() {
 
                                     <div className="mt-3 flex min-w-0 items-center justify-between gap-3">
                                       <div className="flex min-w-0 items-center gap-2">
-                                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary text-[11px] font-bold text-primary-foreground">
+                                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-foreground text-[11px] font-bold text-background">
                                             {index + 1}
                                           </span>
                                           {outputMode === 'text' ? (
@@ -1777,7 +1775,7 @@ export default function LandingConverter() {
                                             event.stopPropagation();
                                             handleShareFile(file);
                                           }}
-                                          className="h-8 rounded-md border border-border bg-card px-2.5 text-primary hover:bg-muted"
+                                          className="h-8 rounded-md border border-border bg-card px-2.5 text-foreground hover:bg-muted"
                                           aria-label={`Share ${cleanFilename(file.filename)}`}
                                         >
                                           <Share2 className="h-4 w-4" />
@@ -1813,6 +1811,7 @@ export default function LandingConverter() {
                   {!isProcessing && resultFiles.length === 0 && (
                   <div className="grid gap-4">
                     <Button
+                     variant="critical"
                      onClick={handleProcessImage}
                      disabled={uploadedFiles.length === 0 || isProcessing}
                      size="lg"
@@ -1895,7 +1894,7 @@ export default function LandingConverter() {
                 size="sm"
                 variant="outline"
                 onClick={() => setSelectedUploadPreview(null)}
-                className="h-9 rounded-md border-border bg-background px-3 text-primary"
+                className="h-9 rounded-md border-border bg-background px-3 text-foreground"
                 aria-label="Close preview"
               >
                 <X className="h-4 w-4" />
@@ -1930,7 +1929,7 @@ export default function LandingConverter() {
                 setComparisonOpen(false);
                 setEditingCell(null);
               }}
-              className="absolute right-4 top-4 z-10 h-9 rounded-md border-border bg-background px-3 text-primary"
+              className="absolute right-4 top-4 z-10 h-9 rounded-md border-border bg-background px-3 text-foreground"
               aria-label="Close comparison"
             >
               <X className="h-4 w-4" />
@@ -1941,7 +1940,7 @@ export default function LandingConverter() {
                   size="icon"
                   variant="outline"
                   onClick={() => goToAdjacentResult(-1)}
-                  className="absolute left-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 rounded-md border-border bg-background text-primary"
+                  className="absolute left-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 rounded-md border-border bg-background text-foreground"
                   aria-label="Previous result"
                 >
                   <ChevronLeft className="h-5 w-5" />
@@ -1950,7 +1949,7 @@ export default function LandingConverter() {
                   size="icon"
                   variant="outline"
                   onClick={() => goToAdjacentResult(1)}
-                  className="absolute right-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 rounded-md border-border bg-background text-primary"
+                  className="absolute right-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 rounded-md border-border bg-background text-foreground"
                   aria-label="Next result"
                 >
                   <ChevronRight className="h-5 w-5" />

@@ -220,11 +220,11 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                   "h-14 min-w-0 flex-col gap-1 rounded-2xl px-1.5 text-[10px] font-semibold transition-all",
                   isAuthenticated
                     ? item.active
-                      ? "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:text-primary-foreground"
-                      : "text-primary hover:bg-accent hover:text-accent-foreground"
+                      ? "bg-accent text-accent-foreground shadow-sm hover:bg-accent hover:text-accent-foreground"
+                      : "text-foreground hover:bg-accent hover:text-accent-foreground"
                     : item.active
-                      ? "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:text-primary-foreground"
-                      : "text-primary hover:bg-accent hover:text-accent-foreground"
+                      ? "bg-accent text-accent-foreground shadow-sm hover:bg-accent hover:text-accent-foreground"
+                      : "text-foreground hover:bg-accent hover:text-accent-foreground"
                 )}
               >
                 <Icon className="h-5 w-5 shrink-0" />
@@ -242,11 +242,11 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                   "h-14 min-w-0 flex-col gap-1 rounded-2xl px-1.5 text-[10px] font-semibold transition-all",
                   isAuthenticated
                     ? isOpen
-                      ? "bg-primary text-primary-foreground"
-                      : "text-primary hover:bg-accent hover:text-accent-foreground"
+                      ? "bg-accent text-accent-foreground"
+                      : "text-foreground hover:bg-accent hover:text-accent-foreground"
                     : isOpen
-                      ? "bg-primary text-primary-foreground"
-                      : "text-primary hover:bg-accent hover:text-accent-foreground"
+                      ? "bg-accent text-accent-foreground"
+                      : "text-foreground hover:bg-accent hover:text-accent-foreground"
                 )}
               >
                 <Menu className="h-5 w-5" />
@@ -302,6 +302,27 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 </div>
               )}
 
+              {isAuthenticated && (
+                <div className="space-y-2 border-b border-border px-3 py-3">
+                  <Button
+                    variant="critical"
+                    className="h-10 w-full"
+                    onClick={() => handleNavigation("/dashboard/client")}
+                  >
+                    <Upload className="h-4 w-4" />
+                    Convert files
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-10 w-full justify-start"
+                    onClick={() => handleNavigation("/dashboard/bank-statements")}
+                  >
+                    <FileSpreadsheet className="h-4 w-4" />
+                    Bank statements
+                  </Button>
+                </div>
+              )}
+
               {/* Navigation Items */}
               <div className="flex-1 overflow-y-auto py-3">
                 <nav className="space-y-1 px-3">
@@ -321,8 +342,8 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                 className={cn(
                                   "h-11 w-full justify-start gap-3 rounded-2xl px-3",
                                   isAuthenticated
-                                    ? "text-primary transition-colors hover:bg-accent hover:text-accent-foreground"
-                                    : "text-primary transition-colors hover:bg-accent hover:text-accent-foreground"
+                                    ? "text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                                    : "text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                                 )}
                               >
                                 {item.icon && <item.icon className="h-5 w-5" />}
@@ -383,8 +404,8 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                           className={cn(
                             "h-11 w-full justify-start gap-3 rounded-2xl px-3",
                             isAuthenticated
-                              ? "text-primary transition-colors hover:bg-accent hover:text-accent-foreground"
-                              : "text-primary transition-colors hover:bg-accent hover:text-accent-foreground",
+                              ? "text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                              : "text-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
                             pathname === item.href && "bg-accent"
                           )}
                         >
@@ -447,6 +468,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 ) : (
                   <>
                     <Button
+                      variant="critical"
                       className="h-11 w-full gap-3 rounded-2xl"
                       onClick={() => {
                         setIsOpen(false);

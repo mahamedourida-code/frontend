@@ -445,6 +445,7 @@ export default function Home() {
               <ThemeToggle />
               {isAuthenticated ? (
                 <Button
+                  variant="critical"
                   size="sm"
                   asChild
                 >
@@ -452,7 +453,7 @@ export default function Home() {
                 </Button>
               ) : (
                 <>
-                  <Button size="sm" className="rounded-md" asChild>
+                  <Button variant="critical" size="sm" className="rounded-md" asChild>
                     <NextLink href="/sign-up?next=%2Fdashboard%2Fclient">Sign Up</NextLink>
                   </Button>
                   <Button
@@ -495,6 +496,7 @@ export default function Home() {
 
                 <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row lg:items-center">
                   <Button
+                    variant="critical"
                     onClick={() => scrollToSection('converter')}
                     className="h-12 px-8 text-base font-semibold"
                   >

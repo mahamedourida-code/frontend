@@ -315,7 +315,7 @@ function SettingsContent() {
                             className={cn(
                               "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
                               activeSection === item.id
-                                ? "bg-primary text-primary-foreground font-medium shadow-sm"
+                                ? "bg-accent text-accent-foreground font-medium shadow-sm"
                                 : "text-muted-foreground hover:text-foreground hover:bg-accent"
                             )}
                           >
@@ -456,15 +456,15 @@ function SettingsContent() {
 
                         <div className="mt-5 flex flex-col gap-2 sm:flex-row">
                           <Button
-                            className="h-11 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
+                            className="h-11 rounded-lg"
                             onClick={openBillingPortal}
                             disabled={!hasBillingPortal || billingAction === "portal"}
                           >
                             {billingAction === "portal" ? "Opening..." : "Manage billing"}
                           </Button>
                           <Button
-                            variant="outline"
-                            className="h-11 rounded-lg border-border bg-card/60"
+                            variant={noCredits ? "critical" : "outline"}
+                            className={cn("h-11 rounded-lg", !noCredits && "border-border bg-card/60")}
                             onClick={() => window.location.assign("/pricing")}
                           >
                             {noCredits ? "Buy credits" : "Compare plans"}

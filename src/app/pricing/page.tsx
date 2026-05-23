@@ -471,13 +471,13 @@ function PricingContent() {
                   <Button variant="outline" className="rounded-md" asChild>
                     <Link href="/dashboard">Dashboard</Link>
                   </Button>
-                  <Button className="rounded-md" asChild>
+                  <Button variant="critical" className="rounded-md" asChild>
                     <Link href="/dashboard/client">Convert Files</Link>
                   </Button>
                 </>
               ) : (
                 <>
-                  <Button size="sm" className="rounded-md" asChild>
+                  <Button variant="critical" size="sm" className="rounded-md" asChild>
                     <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign Up</Link>
                   </Button>
                   <Button variant="outline" className="rounded-md" asChild>
@@ -533,6 +533,7 @@ function PricingContent() {
               </span>
               <Button
                 size="sm"
+                variant="critical"
                 className="rounded-full"
                 onClick={() => document.getElementById("plans")?.scrollIntoView({ behavior: "smooth", block: "start" })}
               >
