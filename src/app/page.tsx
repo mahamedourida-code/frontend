@@ -36,11 +36,6 @@ const BenchmarkAccuracyChart = dynamic(
   }
 );
 
-const LandingConverter = dynamic(
-  () => import("@/components/landing/LandingConverter"),
-  { ssr: false }
-);
-
 const TestimonialsMarquee = dynamic(
   () => import("@/components/landing/TestimonialsMarquee"),
   { ssr: false }
@@ -231,7 +226,6 @@ const footerSocialLinks = [
 
 export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
-  const converterMountRef = useRef<HTMLDivElement>(null);
   const topBackgroundSectionRef = useRef<HTMLDivElement>(null);
   const topBackgroundRef = useRef<HTMLDivElement>(null);
   const contrastSectionRef = useRef<HTMLDivElement>(null);
@@ -239,7 +233,6 @@ export default function Home() {
   const securityBandRef = useRef<HTMLDivElement>(null);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [shouldLoadConverter, setShouldLoadConverter] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -256,31 +249,6 @@ export default function Home() {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  useEffect(() => {
-    if (shouldLoadConverter) return;
-
-    const mountTarget = converterMountRef.current;
-    if (!mountTarget) return;
-
-    if (typeof IntersectionObserver === "undefined") {
-      setShouldLoadConverter(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShouldLoadConverter(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "720px 0px" }
-    );
-
-    observer.observe(mountTarget);
-    return () => observer.disconnect();
-  }, [shouldLoadConverter]);
 
   useEffect(() => {
     const topSection = topBackgroundSectionRef.current;
@@ -362,7 +330,8 @@ export default function Home() {
   // Smooth scroll function
   const scrollToSection = (sectionId: string) => {
     if (sectionId === "converter") {
-      setShouldLoadConverter(true);
+      window.location.assign("/dashboard/client");
+      return;
     }
 
     const element = document.getElementById(sectionId);
@@ -498,12 +467,8 @@ export default function Home() {
                 </p>
 
                 <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row lg:items-center">
-                  <Button
-                    variant="glossy"
-                    onClick={() => scrollToSection('converter')}
-                    className="h-[52px] rounded-xl px-10 text-base font-bold"
-                  >
-                    Try It
+                  <Button variant="glossy" asChild className="h-[52px] rounded-xl px-10 text-base font-bold">
+                    <NextLink href="/dashboard/client">Try It</NextLink>
                   </Button>
 
                   <div className="flex items-center gap-3">
@@ -543,21 +508,6 @@ export default function Home() {
         </section>
 
         <TestimonialsMarquee />
-        <div id="converter" ref={converterMountRef} className="scroll-mt-28">
-          {shouldLoadConverter ? (
-            <LandingConverter />
-          ) : (
-            <section className="relative z-10 pt-6 pb-16 sm:pt-8 lg:pt-10">
-              <div className="container mx-auto max-w-[1540px] px-4 sm:px-5 lg:px-9">
-                <div className="mx-auto rounded-xl border bg-card/80 p-8 text-center shadow-sm backdrop-blur">
-                  <div className="inline-flex items-center gap-2 rounded-md border bg-background px-4 py-2 shadow-sm">
-                    <h2 className="text-lg font-semibold text-foreground sm:text-xl">Try It</h2>
-                  </div>
-                </div>
-              </div>
-            </section>
-          )}
-        </div>
 
           </div>
         </div>

@@ -27,6 +27,11 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
   const [solutionsOpen, setSolutionsOpen] = React.useState(false);
   
   const scrollToSection = (sectionId: string) => {
+    if (sectionId === "converter") {
+      window.location.href = "/dashboard/client";
+      return;
+    }
+
     if (onSectionClick) {
       onSectionClick(sectionId);
     } else {

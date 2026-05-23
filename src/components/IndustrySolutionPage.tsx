@@ -48,7 +48,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <Button asChild className="h-12 rounded-md px-6">
-              <Link href="/#converter">
+              <Link href="/dashboard/client">
                 Try it with your files
                 <ArrowMark className="ml-2" />
               </Link>
@@ -160,7 +160,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
               </h2>
             </div>
             <Button asChild className="h-12 rounded-md bg-background px-6 text-primary hover:bg-card/90">
-              <Link href="/#converter">
+              <Link href="/dashboard/client">
                 Start converting
                 <ArrowMark className="ml-2" />
               </Link>

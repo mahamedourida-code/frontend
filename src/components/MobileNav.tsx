@@ -80,6 +80,12 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
   }
 
   const handleSectionClick = (sectionId: string) => {
+    if (sectionId === "converter") {
+      router.push("/dashboard/client")
+      setIsOpen(false)
+      return
+    }
+
     if (pathname === "/" && onSectionClick) {
       onSectionClick(sectionId)
     } else {
