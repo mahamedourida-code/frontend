@@ -273,7 +273,7 @@ export function UploadDropzone({
           <label
             htmlFor="workspace-file-upload"
             className={cn(
-              buttonVariants({ variant: "outline", size: "default" }),
+              buttonVariants({ variant: "surface", size: "default" }),
               "h-9 cursor-pointer px-4 font-medium",
               isProcessing && "pointer-events-none opacity-55"
             )}
@@ -914,6 +914,7 @@ export function ResultActions({
             Download all
           </Button>
           <Button
+            variant="reviewed"
             onClick={handleReviewedBatchDownload}
             disabled={reviewedDownloadBusy}
             className="h-9 gap-2 rounded-md px-3 shadow-xs"

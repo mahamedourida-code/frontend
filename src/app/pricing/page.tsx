@@ -528,7 +528,7 @@ function PricingContent() {
               </span>
               <Button
                 size="sm"
-                variant="critical"
+                variant="lime"
                 className="rounded-full"
                 onClick={() => document.getElementById("plans")?.scrollIntoView({ behavior: "smooth", block: "start" })}
               >

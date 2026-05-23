@@ -521,10 +521,10 @@ function HistoryContent() {
                   <span className="hidden lg:inline">Download</span>
                 </Button>
                 <Button
-                  variant="outline"
+                  variant="destructive"
                   size="sm"
                   onClick={handleBulkDelete}
-                  className="h-8 text-xs text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                  className="h-8 text-xs"
                 >
                   <Trash2 className="h-3 w-3 lg:mr-1" />
                   <span className="hidden lg:inline">Delete</span>
@@ -547,10 +547,10 @@ function HistoryContent() {
                   <span className="sm:hidden">All</span>
                 </Button>
                 <Button
-                  variant="outline"
+                  variant="destructive"
                   size="sm"
                   onClick={handleDeleteAll}
-                  className="h-8 text-xs text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                  className="h-8 text-xs"
                 >
                   <Trash2 className="h-3 w-3 lg:mr-1" />
                   <span className="hidden sm:inline">Delete All</span>

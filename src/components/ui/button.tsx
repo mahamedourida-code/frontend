@@ -12,13 +12,17 @@ const buttonVariants = cva(
         default: "border border-border bg-card text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground",
         critical: "bg-primary text-primary-foreground hover:bg-primary/90",
         glossy:
-          "border border-[#09b878] bg-[linear-gradient(180deg,var(--ax-action-highlight)_0%,var(--ax-action-base)_48%,var(--ax-action-depth)_100%)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_2px_5px_rgba(11,133,88,0.22)] hover:brightness-[1.04] focus-visible:border-[#09b878]",
+          "border-0 bg-transparent bg-[url('/generated_buttons/actions/primary.png')] bg-[length:100%_100%] bg-center bg-no-repeat text-white drop-shadow-[0_2px_3px_rgba(7,151,101,0.2)] hover:brightness-[1.04]",
         ink:
-          "border border-[#0d1524] bg-[linear-gradient(180deg,#344153_0%,#152030_47%,#0b111d_100%)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.24),0_2px_4px_rgba(15,23,42,0.3)] hover:brightness-110 focus-visible:border-[#0d1524]",
+          "border-0 bg-transparent bg-[url('/generated_buttons/actions/ink.png')] bg-[length:100%_100%] bg-center bg-no-repeat text-white drop-shadow-[0_2px_3px_rgba(15,23,42,0.22)] hover:brightness-110",
         lime:
-          "border border-[#b6e84d] bg-[linear-gradient(180deg,var(--ax-upgrade-highlight)_0%,var(--ax-upgrade-base)_46%,var(--ax-upgrade-depth)_100%)] text-[#111b16] shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_2px_4px_rgba(80,108,22,0.14)] hover:brightness-[1.03] focus-visible:border-[#b6e84d]",
+          "border-0 bg-transparent bg-[url('/generated_buttons/actions/upgrade.png')] bg-[length:100%_100%] bg-center bg-no-repeat text-[#111b16] drop-shadow-[0_2px_3px_rgba(80,108,22,0.14)] hover:brightness-[1.03]",
+        reviewed:
+          "border-0 bg-transparent bg-[url('/generated_buttons/actions/reviewed.png')] bg-[length:100%_100%] bg-center bg-no-repeat text-white drop-shadow-[0_2px_3px_rgba(15,23,42,0.22)] hover:brightness-110",
+        surface:
+          "border-0 bg-card bg-[url('/generated_buttons/actions/secondary.png')] bg-[length:100%_100%] bg-center bg-no-repeat text-foreground drop-shadow-[0_1px_2px_rgba(15,23,42,0.08)] hover:brightness-[0.985]",
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "border-0 bg-transparent bg-[url('/generated_buttons/actions/danger.png')] bg-[length:100%_100%] bg-center bg-no-repeat text-white drop-shadow-[0_2px_3px_rgba(202,50,20,0.2)] hover:brightness-[0.97] focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
         outline:
           "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         secondary:

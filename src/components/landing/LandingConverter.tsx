@@ -1479,7 +1479,7 @@ export default function LandingConverter() {
                               )}
                               <label htmlFor="file-upload-landing-more">
                                 <Button
-                                  variant="outline"
+                                  variant="surface"
                                   size="sm"
                                   disabled={isProcessing}
                                   className="rounded-md border border-border bg-card text-sm text-foreground"
@@ -1550,6 +1550,7 @@ export default function LandingConverter() {
                           {processingComplete && resultFiles.length > 0 && (
                             <Button
                               size="sm"
+                              variant="reviewed"
                               onClick={downloadReviewedBatch}
                               disabled={reviewedDownloadBusy}
                               className="h-10 rounded-md px-4 shadow-sm"
@@ -1674,6 +1675,7 @@ export default function LandingConverter() {
                               </div>
                               <Button
                                 size="sm"
+                                variant="reviewed"
                                 onClick={downloadReviewedBatch}
                                 disabled={reviewedDownloadBusy}
                                 className="w-full gap-2 rounded-md sm:w-auto"
