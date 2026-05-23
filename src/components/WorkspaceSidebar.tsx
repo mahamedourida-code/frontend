@@ -139,13 +139,16 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
           </div>
         </nav>
 
-        <div className="border-t border-sidebar-border p-3">
-          <div className="rounded-xl border border-sidebar-border bg-card p-3.5 shadow-xs">
-            <p className="text-[15px] font-semibold text-foreground">More batch capacity</p>
-            <p className="mt-1.5 text-[13px] leading-5 text-muted-foreground">
+        <div className="px-3 pb-4 pt-3">
+          <div className="rounded-xl border border-sidebar-border bg-card px-3.5 pb-3.5 pt-4 shadow-xs">
+            <p className="text-[15px] font-bold text-foreground">More batch capacity</p>
+            <p className="mt-1.5 text-[13px] leading-[1.45rem] text-muted-foreground">
               Process larger file sets and keep more monthly credits available.
             </p>
-            <Button asChild variant="critical" className="mt-4 h-10 w-full justify-center rounded-lg text-[15px] font-semibold">
+            <Button
+              asChild
+              className="mt-4 h-11 w-full justify-center rounded-xl border-0 bg-[#c4f65d] text-[15px] font-bold text-[#152018] shadow-none hover:bg-[#b5eb49] hover:text-[#152018] dark:bg-[#9fd649] dark:hover:bg-[#aeea50]"
+            >
               <Link href="/pricing">Upgrade</Link>
             </Button>
           </div>

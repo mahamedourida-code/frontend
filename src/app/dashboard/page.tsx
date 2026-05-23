@@ -1,6 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/useAuth"
 import { ocrApi } from "@/lib/api-client"
@@ -14,10 +16,15 @@ import { cn } from "@/lib/utils"
 import {
   BarChart3,
   CalendarDays,
+  ChevronDown,
   FileSpreadsheet,
+  Grid2X2,
+  List,
+  MoreHorizontal,
   RefreshCw,
   Timer,
-  TrendingUp
+  TrendingUp,
+  Upload
 } from "lucide-react"
 
 // Dynamic import for the Chart component to avoid SSR issues
@@ -32,6 +39,8 @@ const DashboardChart = dynamic(() => import("@/components/DashboardChart"), {
 import { format, subDays, subHours, startOfDay, endOfDay, eachDayOfInterval, eachHourOfInterval } from "date-fns"
 
 type TimeRange = "1d" | "7d" | "30d" | "3m"
+type FileView = "grid" | "list"
+type FileSort = "modified-desc" | "modified-asc"
 
 interface ProcessingMetadata {
   total_images?: number
@@ -81,6 +90,10 @@ export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth()
   const [timeRange, setTimeRange] = useState<TimeRange>("7d")
   const [chartData, setChartData] = useState<ProcessingData[]>([])
+  const [recentFiles, setRecentFiles] = useState<Job[]>([])
+  const [filesLoading, setFilesLoading] = useState(false)
+  const [fileView, setFileView] = useState<FileView>("grid")
+  const [fileSort, setFileSort] = useState<FileSort>("modified-desc")
   const [stats, setStats] = useState<DashboardStats>({
     totalProcessed: 0,
     todayProcessed: 0,
@@ -102,6 +115,7 @@ export default function DashboardPage() {
       router.push('/')
     } else if (!authLoading && user) {
       fetchDashboardData()
+      fetchFileLibrary()
     }
   }, [user?.id, authLoading, router])
 
@@ -146,6 +160,20 @@ export default function DashboardPage() {
       }
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchFileLibrary = async () => {
+    if (!user) return
+    setFilesLoading(true)
+
+    try {
+      const historyResponse = await ocrApi.getHistory(50, 0)
+      setRecentFiles(normalizeHistoryJobs(historyResponse))
+    } catch {
+      setRecentFiles([])
+    } finally {
+      setFilesLoading(false)
     }
   }
 
@@ -459,12 +487,170 @@ export default function DashboardPage() {
     { label: "Active jobs", value: stats.activeJobs.toLocaleString() },
   ]
 
+  const tools = [
+    {
+      title: "Table extraction",
+      detail: "Rows and columns",
+      href: "/dashboard/client",
+      iconSrc: "/solution/accounting.svg",
+    },
+    {
+      title: "Bank statements",
+      detail: "Text and transactions",
+      href: "/dashboard/bank-statements",
+      iconSrc: "/solution/banking.svg",
+    },
+    {
+      title: "Invoices",
+      detail: "Totals and line items",
+      href: "/dashboard/invoice-receipts",
+      iconSrc: "/solution/Backoffice%20Automation.svg",
+    },
+    {
+      title: "Text output",
+      detail: "Readable extraction",
+      href: "/dashboard/client?mode=text",
+      iconSrc: "/excel.svg",
+    },
+  ]
+
+  const sortedFiles = [...recentFiles].sort((left, right) => {
+    const leftTime = new Date(left.updated_at || left.saved_at || left.created_at).getTime()
+    const rightTime = new Date(right.updated_at || right.saved_at || right.created_at).getTime()
+    return fileSort === "modified-desc" ? rightTime - leftTime : leftTime - rightTime
+  })
+
   return (
     <DashboardShell activeItem="overview" title="Dashboard" user={user} showBack={false}>
-      <div className="space-y-4">
-        <div className="pt-4">
+      <div className="space-y-10 pt-2">
+        <section>
+          <h2 className="mb-4 text-xl font-bold tracking-tight text-foreground">Tools</h2>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {tools.map((tool) => {
+              return (
+                <Link
+                  key={tool.title}
+                  href={tool.href}
+                  className="group flex h-[86px] items-center gap-4 rounded-xl border border-border bg-card px-4 shadow-xs transition-colors hover:bg-accent/60"
+                >
+                  <span className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-muted/35 p-1.5">
+                    <Image src={tool.iconSrc} alt="" width={34} height={34} className="size-full object-contain" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-[15px] font-semibold text-foreground">{tool.title}</span>
+                    <span className="mt-0.5 block truncate text-[13px] font-medium text-muted-foreground">{tool.detail}</span>
+                  </span>
+                </Link>
+              )
+            })}
+          </div>
+        </section>
+
+        <section className="min-h-[420px]">
+          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 className="flex items-baseline gap-2 text-xl font-bold tracking-tight text-foreground">
+              My files
+              <span className="text-base font-medium text-muted-foreground">{sortedFiles.length}</span>
+            </h2>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="h-10 rounded-lg px-3 text-sm font-medium"
+                onClick={() => setFileSort((current) => current === "modified-desc" ? "modified-asc" : "modified-desc")}
+              >
+                Last modified
+                <ChevronDown className={cn("size-4 text-muted-foreground transition-transform", fileSort === "modified-asc" && "rotate-180")} />
+              </Button>
+              <Button variant="outline" className="h-10 rounded-lg px-3 text-sm font-medium" asChild>
+                <Link href="/history">
+                  All files
+                  <ChevronDown className="size-4 text-muted-foreground" />
+                </Link>
+              </Button>
+              <div className="flex overflow-hidden rounded-lg border border-border bg-card p-0.5 shadow-xs">
+                <button
+                  type="button"
+                  aria-label="Grid view"
+                  onClick={() => setFileView("grid")}
+                  className={cn("flex size-9 items-center justify-center rounded-md transition-colors", fileView === "grid" ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground")}
+                >
+                  <Grid2X2 className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="List view"
+                  onClick={() => setFileView("list")}
+                  className={cn("flex size-9 items-center justify-center rounded-md transition-colors", fileView === "list" ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground")}
+                >
+                  <List className="size-4" />
+                </button>
+              </div>
+              <Button variant="ghost" size="icon" className="size-10 rounded-lg" asChild>
+                <Link href="/history" aria-label="Open history">
+                  <MoreHorizontal className="size-5 text-muted-foreground" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+          {filesLoading ? (
+            <div className="flex min-h-[300px] items-center justify-center text-sm font-medium text-muted-foreground">
+              Loading files
+            </div>
+          ) : sortedFiles.length === 0 ? (
+            <div className="flex min-h-[300px] flex-col items-center justify-center gap-5 text-center">
+              <Grid2X2 className="size-5 text-muted-foreground/60" />
+              <p className="text-[15px] font-medium text-foreground">No files yet. Upload your first batch.</p>
+              <Button asChild variant="outline" className="h-10 rounded-lg px-5 font-medium">
+                <Link href="/dashboard/client#upload-files">
+                  <Upload className="size-4 text-muted-foreground" />
+                  Upload
+                </Link>
+              </Button>
+            </div>
+          ) : fileView === "grid" ? (
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {sortedFiles.map((file) => (
+                <Link
+                  key={file.id}
+                  href="/history"
+                  className="flex min-h-[90px] items-center gap-3 rounded-xl border border-border bg-card p-3.5 shadow-xs transition-colors hover:bg-accent/55"
+                >
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                    <FileSpreadsheet className="size-5" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-semibold text-foreground">{file.filename || "Converted file"}</span>
+                    <span className="mt-1 block text-xs font-medium text-muted-foreground">
+                      {format(new Date(file.updated_at || file.saved_at || file.created_at), "MMM d, yyyy")}
+                    </span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs">
+              {sortedFiles.map((file) => (
+                <Link
+                  key={file.id}
+                  href="/history"
+                  className="flex items-center gap-4 border-b border-border px-4 py-3 last:border-0 hover:bg-accent/55"
+                >
+                  <FileSpreadsheet className="size-4 shrink-0 text-muted-foreground" />
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">{file.filename || "Converted file"}</span>
+                  <span className="hidden text-xs font-medium text-muted-foreground sm:block">
+                    {format(new Date(file.updated_at || file.saved_at || file.created_at), "MMM d, yyyy")}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="space-y-4 border-t border-border pt-8">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <p className="text-sm font-semibold text-muted-foreground">Volume and processing</p>
+            <p className="text-lg font-bold tracking-tight text-foreground">Usage</p>
             <Button
               size="sm"
               variant="outline"
@@ -498,7 +684,7 @@ export default function DashboardPage() {
               )
             })}
           </div>
-        </div>
+        </section>
 
           <DashboardMiniCharts chartData={chartData} stats={stats} />
 
