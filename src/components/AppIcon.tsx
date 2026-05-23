@@ -33,6 +33,21 @@ export function AppIconMinimal({ className = '', size = 24 }: AppIconProps) {
   )
 }
 
+export function AxMark({ className = '' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="400 330 170 110"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      role="img"
+      aria-label="Ax"
+    >
+      <path d="M452.288 356.68H451.776L425.92 429H410.176L443.84 338.504H460.608L494.144 429H477.76L452.288 356.68ZM476.096 406.216H428.352V392.776H476.096V406.216ZM563.831 363.08L537.847 400.712L529.015 391.88L547.063 363.08H563.831ZM499.575 429L525.943 390.984L534.263 402.248L516.471 429H499.575ZM516.599 363.08L533.111 389.96L539.383 394.568L563.959 429H546.935L530.167 403.784L523.255 398.152L499.703 363.08H516.599Z" fill="#18E399" />
+    </svg>
+  )
+}
+
 // Logo version with app name
 export function AppLogo({ className = '' }: { className?: string }) {
   return (

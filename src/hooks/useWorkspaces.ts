@@ -80,8 +80,18 @@ export function useWorkspaces(user: WorkspaceUser) {
           .select("*")
           .single()
 
-        if (createError) throw createError
-        records = [created as Workspace]
+        if (createError?.code === "23505") {
+          const { data: existing, error: existingError } = await supabase
+            .from("workspaces")
+            .select("*")
+            .order("created_at", { ascending: true })
+
+          if (existingError) throw existingError
+          records = (existing || []) as Workspace[]
+        } else {
+          if (createError) throw createError
+          records = [created as Workspace]
+        }
       }
 
       setWorkspaces(records)

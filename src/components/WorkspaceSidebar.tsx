@@ -3,7 +3,6 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Activity, Building2, FileSpreadsheet, History, ReceiptText, Settings, Upload } from "lucide-react"
-import { AppLogo } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { Button } from "@/components/ui/button"
 import { WorkspaceSwitcher } from "@/components/WorkspaceSwitcher"
@@ -45,17 +44,14 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
   }
 
   return (
-    <aside className="fixed inset-y-0 start-0 z-30 hidden w-60 border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex md:flex-col">
+    <aside className="fixed inset-y-0 start-0 z-30 hidden w-[15.75rem] border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex md:flex-col">
       <div className="flex h-full flex-col">
-        <div className="space-y-3 px-3 pb-3 pt-3">
-          <Link href="/" aria-label="Go to AxLiner homepage" className="inline-flex px-2 py-1 text-foreground">
-            <AppLogo className="h-7 w-auto" />
-          </Link>
+        <div className="px-3 pb-3 pt-2">
           <WorkspaceSwitcher user={user} onSignOut={() => void handleSignOut()} />
         </div>
 
-        <div className="px-3 pb-5 pt-1">
-          <Button asChild variant="critical" className="h-10 w-full justify-center shadow-xs">
+        <div className="space-y-2 px-3 pb-6 pt-1">
+          <Button asChild variant="critical" className="h-11 w-full justify-center rounded-lg text-[15px] font-semibold shadow-sm">
             <Link href="/dashboard/client#upload-files">
               <Upload className="size-4" />
               Upload
@@ -64,8 +60,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
         </div>
 
         <nav className="flex-1 overflow-y-auto px-3 pb-3">
-          <div className="space-y-1">
-            <div className="px-2 pb-2 pt-1 text-xs font-medium text-muted-foreground">Workspace</div>
+          <div className="space-y-1.5">
             {sidebarItems.map((item) => {
               const Icon = item.icon
               const isProcess = item.key === "process"
@@ -81,7 +76,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                     <Link
                       href={item.href}
                       className={cn(
-                        "group flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm font-medium transition-colors",
+                        "group flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[15px] font-semibold transition-colors",
                         activeItem === item.key
                           ? "bg-sidebar-accent text-sidebar-accent-foreground"
                           : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
@@ -89,13 +84,13 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                     >
                       <Icon
                         className={cn(
-                          "size-4 shrink-0",
+                          "size-[18px] shrink-0",
                           activeItem === item.key ? "text-foreground" : "text-muted-foreground group-hover:text-sidebar-accent-foreground"
                         )}
                       />
                       <span className="truncate">{item.label}</span>
                     </Link>
-                    <div className="ms-4 mt-1 space-y-1 border-s border-sidebar-border pb-2 ps-2">
+                    <div className="ms-6 mt-1 space-y-1 border-s border-sidebar-border pb-2 ps-2">
                       {processSubItems.map((subItem) => {
                         const SubIcon = subItem.icon
                         const selected = pathname === subItem.href
@@ -104,13 +99,13 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                             key={subItem.href}
                             href={subItem.href}
                             className={cn(
-                              "flex h-7 items-center gap-2 rounded-md px-2 text-xs font-medium transition-colors",
+                              "flex h-8 items-center gap-2 rounded-md px-2 text-[13px] font-medium transition-colors",
                               selected
                                 ? "bg-sidebar-accent text-sidebar-accent-foreground"
                                 : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                             )}
                           >
-                            <SubIcon className={cn("size-3.5 shrink-0", selected ? "text-foreground" : "text-muted-foreground")} />
+                            <SubIcon className={cn("size-4 shrink-0", selected ? "text-foreground" : "text-muted-foreground")} />
                             <span className="truncate">{subItem.label}</span>
                           </Link>
                         )
@@ -125,7 +120,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                   key={item.key}
                   href={item.href}
                   className={cn(
-                    "group flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm font-medium transition-colors",
+                    "group flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[15px] font-semibold transition-colors",
                     activeItem === item.key
                       ? "bg-sidebar-accent text-sidebar-accent-foreground"
                       : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
@@ -133,7 +128,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                 >
                   <Icon
                     className={cn(
-                      "size-4 shrink-0",
+                      "size-[18px] shrink-0",
                       activeItem === item.key ? "text-foreground" : "text-muted-foreground group-hover:text-sidebar-accent-foreground"
                     )}
                   />
@@ -145,12 +140,12 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
         </nav>
 
         <div className="border-t border-sidebar-border p-3">
-          <div className="rounded-md border border-sidebar-border bg-card p-3 shadow-xs">
-            <p className="text-sm font-semibold text-foreground">More batch capacity</p>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+          <div className="rounded-xl border border-sidebar-border bg-card p-3.5 shadow-xs">
+            <p className="text-[15px] font-semibold text-foreground">More batch capacity</p>
+            <p className="mt-1.5 text-[13px] leading-5 text-muted-foreground">
               Process larger file sets and keep more monthly credits available.
             </p>
-            <Button asChild variant="critical" className="mt-4 h-10 w-full justify-center">
+            <Button asChild variant="critical" className="mt-4 h-10 w-full justify-center rounded-lg text-[15px] font-semibold">
               <Link href="/pricing">Upgrade</Link>
             </Button>
           </div>
