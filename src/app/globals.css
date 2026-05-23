@@ -251,9 +251,9 @@
   --ax-visual-shadow-raised: 0 1px 2px rgb(15 23 42 / 0.08), 0 28px 72px -40px rgb(15 23 42 / 0.34);
   --ax-photo-overlay: linear-gradient(180deg, rgb(3 17 17 / 0.12), rgb(3 17 17 / 0.38) 46%, rgb(3 17 17 / 0.84));
   --ax-footer-overlay: linear-gradient(102deg, rgb(2 17 17 / 0.96), rgb(2 27 22 / 0.82) 52%, rgb(3 27 22 / 0.7));
-  --ax-action-highlight: #52f2bd;
-  --ax-action-base: #18e399;
-  --ax-action-depth: #0dc681;
+  --ax-action-highlight: #22c98b;
+  --ax-action-base: #079765;
+  --ax-action-depth: #056746;
   --ax-upgrade-highlight: #e9ff9c;
   --ax-upgrade-base: #d4ff6f;
   --ax-upgrade-depth: #b9ec45;
@@ -322,9 +322,9 @@
   --ax-visual-sheen: linear-gradient(140deg, rgb(255 255 255 / 0.11), transparent 44%);
   --ax-visual-shadow: 0 1px 2px rgb(0 0 0 / 0.28), 0 22px 54px -36px rgb(0 0 0 / 0.68);
   --ax-visual-shadow-raised: 0 1px 2px rgb(0 0 0 / 0.32), 0 30px 78px -42px rgb(0 0 0 / 0.78);
-  --ax-action-highlight: #52f2bd;
-  --ax-action-base: #18e399;
-  --ax-action-depth: #0dc681;
+  --ax-action-highlight: #22c98b;
+  --ax-action-base: #079765;
+  --ax-action-depth: #056746;
   --ax-upgrade-highlight: #e9ff9c;
   --ax-upgrade-base: #d4ff6f;
   --ax-upgrade-depth: #b9ec45;

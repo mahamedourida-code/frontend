@@ -73,7 +73,7 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
   ), [files, sort])
 
   return (
-    <section className="mt-8 px-1 pb-8">
+    <section className="mt-10 min-h-[400px] border-t border-border px-1 pb-8 pt-7">
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="flex items-baseline gap-2 text-xl font-bold tracking-tight text-foreground">
           My files
@@ -126,7 +126,7 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
           Loading files
         </div>
       ) : sortedFiles.length === 0 ? (
-        <div className="flex min-h-[165px] items-center justify-center rounded-xl border border-dashed border-border text-sm font-medium text-muted-foreground">
+        <div className="flex min-h-[260px] items-center justify-center text-sm font-medium text-muted-foreground">
           Converted batches appear here.
         </div>
       ) : view === "grid" ? (

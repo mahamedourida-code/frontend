@@ -19,7 +19,6 @@ import {
   X,
 } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
 
@@ -34,6 +33,7 @@ export type WorkspaceBanner = {
 type OutputMode = "table" | "text"
 type DocumentMode = "table" | "bank_statement" | "invoice_receipt"
 type ResultFilter = "all" | "ready" | "review" | "edited" | "failed"
+type WorkspaceMode = "table" | "bank_statement" | "invoice_receipt" | "text"
 
 type ResultFile = {
   file_id?: string
@@ -184,6 +184,42 @@ function ResumeBatchBanner({
         {recoveryLoading ? "Resuming..." : "Open batch"}
       </Button>
     </div>
+  )
+}
+
+function ModeGlyph({ mode }: { mode: WorkspaceMode }) {
+  if (mode === "bank_statement") {
+    return (
+      <svg viewBox="0 0 28 28" fill="none" className="size-6" aria-hidden="true">
+        <path d="M4 10.5 14 5l10 5.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M6.5 12.5h15M8.5 12.5v8m5.5-8v8m5.5-8v8M5.5 22.5h17" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      </svg>
+    )
+  }
+
+  if (mode === "invoice_receipt") {
+    return (
+      <svg viewBox="0 0 28 28" fill="none" className="size-6" aria-hidden="true">
+        <path d="M8 4.5h12v19l-3-2-3 2-3-2-3 2v-19Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+        <path d="M11 10h6M11 14h6M11 18h4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      </svg>
+    )
+  }
+
+  if (mode === "text") {
+    return (
+      <svg viewBox="0 0 28 28" fill="none" className="size-6" aria-hidden="true">
+        <path d="M7 5.5h14v17H7z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+        <path d="M10 10h8M10 14h8M10 18h5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      </svg>
+    )
+  }
+
+  return (
+    <svg viewBox="0 0 28 28" fill="none" className="size-6" aria-hidden="true">
+      <rect x="5" y="6" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M5 11.5h18M11 6v16M17 6v16" stroke="currentColor" strokeWidth="1.7" />
+    </svg>
   )
 }
 
@@ -621,7 +657,7 @@ function correctedFilename(filename?: string) {
 function ResultThumb({ preview, isTextOutput }: { preview?: ResultPreview; isTextOutput: boolean }) {
   if (preview?.loading) {
     return (
-      <div className="flex h-full min-h-[240px] items-center justify-center rounded-md border border-border bg-background">
+      <div className="flex h-full min-h-[310px] items-center justify-center rounded-md border border-border bg-background">
         <Loader2 className="h-4 w-4 animate-spin text-primary" />
       </div>
     )
@@ -630,7 +666,7 @@ function ResultThumb({ preview, isTextOutput }: { preview?: ResultPreview; isTex
   if (isTextOutput || preview?.text) {
     const lines = (preview?.text || "").split(/\r?\n/).filter(Boolean).slice(0, 5)
     return (
-      <div className="flex h-full min-h-[240px] flex-col gap-2 overflow-hidden rounded-md border border-border bg-white p-4">
+      <div className="flex h-full min-h-[310px] flex-col gap-2 overflow-hidden rounded-md border border-border bg-white p-4">
         {lines.length ? lines.map((line, index) => (
           <span key={index} className="truncate text-xs font-semibold text-gray-700">
             {line}
@@ -645,7 +681,7 @@ function ResultThumb({ preview, isTextOutput }: { preview?: ResultPreview; isTex
   const rows = preview?.table?.length ? preview.table.slice(0, 5) : []
 
   return (
-    <div className="h-full min-h-[240px] overflow-hidden rounded-md border border-border bg-white">
+    <div className="h-full min-h-[310px] overflow-hidden rounded-md border border-border bg-white">
       <div className="grid grid-cols-4 bg-primary">
         {Array.from({ length: 4 }).map((_, index) => (
           <span key={index} className="h-5 border-r border-white/20 last:border-r-0" />
@@ -893,20 +929,16 @@ export function ResultActions({
         </div>
       ) : null}
 
-      <div className="rounded-md border border-border bg-muted/25 p-3 shadow-xs sm:p-4">
-        <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="pt-2">
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Batch review board</p>
-            <p className="mt-1 text-xl font-semibold tracking-tight text-foreground">
-              {safeResultFiles.length} file{safeResultFiles.length > 1 ? "s" : ""} ready to inspect
+            <p className="text-2xl font-bold tracking-tight text-foreground">
+              Results <span className="text-base font-medium text-muted-foreground">{safeResultFiles.length}</span>
             </p>
           </div>
-          <span className="rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground">
-            Input beside output, status by file
-          </span>
         </div>
 
-        <div className="mb-3 flex flex-wrap gap-1.5">
+        <div className="mb-4 flex flex-wrap gap-1.5">
           {([
             ["all", "All"],
             ["ready", "Ready"],
@@ -931,39 +963,6 @@ export function ResultActions({
               </span>
             </button>
           ))}
-        </div>
-
-        <div className="mb-3 overflow-x-auto rounded-md border border-border bg-card p-2 shadow-xs">
-          <div className="flex min-w-max items-center gap-2">
-            {resultEntries.map(({ file, index, fileKey, badge, edited }) => (
-              <button
-                key={`strip-${fileKey}`}
-                type="button"
-                onClick={() => openComparison(index)}
-                className="group inline-flex items-center gap-2 rounded-md border border-border bg-background p-2 text-left transition hover:border-primary/40 hover:bg-accent"
-              >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-foreground text-[11px] font-bold text-background">
-                  {index + 1}
-                </span>
-                <span className="flex h-12 w-10 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-white">
-                  {file.input_preview_url ? (
-                    <img src={file.input_preview_url} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    <FileImage className="h-4 w-4 text-primary/70" />
-                  )}
-                </span>
-                <ArrowRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition group-hover:text-primary" />
-                <span className="min-w-[104px]">
-                  <span className="block max-w-[126px] truncate text-xs font-semibold text-foreground">
-                    {file.filename || `Result ${index + 1}`}
-                  </span>
-                  <span className={cn("mt-1 inline-flex rounded-md border px-2 py-0.5 text-[10px] font-semibold", edited ? "border-primary/20 bg-primary/10 text-primary" : badge.className)}>
-                    {edited ? "Edited" : badge.label}
-                  </span>
-                </span>
-              </button>
-            ))}
-          </div>
         </div>
 
         <div className={cn(
@@ -991,7 +990,7 @@ export function ResultActions({
               }}
               className={cn(
                 "group cursor-pointer rounded-md border border-border bg-card p-3 shadow-sm outline-none transition duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary",
-                compact ? "min-h-[320px]" : "min-h-[380px]"
+                compact ? "min-h-[390px]" : "min-h-[470px]"
               )}
             >
               <div className="grid gap-3 lg:grid-cols-[minmax(180px,0.95fr)_minmax(0,1.05fr)]">
@@ -1000,10 +999,10 @@ export function ResultActions({
                     <img
                       src={file.input_preview_url}
                       alt={`Input file ${index + 1}`}
-                      className="h-full min-h-[240px] w-full object-contain"
+                      className="h-full min-h-[310px] w-full object-contain"
                     />
                   ) : (
-                    <div className="flex h-full min-h-[240px] items-center justify-center bg-muted">
+                    <div className="flex h-full min-h-[310px] items-center justify-center bg-muted">
                       <FileImage className="h-7 w-7 text-primary/65" />
                     </div>
                   )}
@@ -1267,10 +1266,38 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
         : "table"
   const expectedOutputs = Math.max(creditEstimate || 0, uploadedFiles.length)
   const modeOptions = [
-    { value: "table", label: "Table", helper: "Rows and columns" },
-    { value: "bank_statement", label: "Bank statement", helper: "Text + transactions" },
-    { value: "invoice_receipt", label: "Invoice/receipt", helper: "Totals, dates, line items" },
-    { value: "text", label: "Text extraction", helper: "Readable text" },
+    {
+      value: "table",
+      label: "Table",
+      helper: "Rows and columns",
+      icon: "bg-[#ebfbf3] text-[#098451]",
+      selected: "border-[#91dec0] bg-[#f2fff9]",
+      hover: "hover:border-[#91dec0] hover:bg-[#f2fff9]",
+    },
+    {
+      value: "bank_statement",
+      label: "Bank statement",
+      helper: "Text + transactions",
+      icon: "bg-[#eef5ff] text-[#3275d5]",
+      selected: "border-[#a9c9f5] bg-[#f5f9ff]",
+      hover: "hover:border-[#a9c9f5] hover:bg-[#f5f9ff]",
+    },
+    {
+      value: "invoice_receipt",
+      label: "Invoice/receipt",
+      helper: "Totals, dates, line items",
+      icon: "bg-[#fff3ea] text-[#dd6d2f]",
+      selected: "border-[#f0c09f] bg-[#fff9f4]",
+      hover: "hover:border-[#f0c09f] hover:bg-[#fff9f4]",
+    },
+    {
+      value: "text",
+      label: "Text extraction",
+      helper: "Readable text",
+      icon: "bg-[#f4efff] text-[#7755d8]",
+      selected: "border-[#c6b5f4] bg-[#faf8ff]",
+      hover: "hover:border-[#c6b5f4] hover:bg-[#faf8ff]",
+    },
   ] as const
 
   const handleModeChange = (mode: typeof modeOptions[number]["value"]) => {
@@ -1293,12 +1320,13 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
       />
       <WorkspaceErrorBanner banner={banner} onDismiss={onDismissBanner} />
 
-      <Card className="overflow-hidden rounded-md border-border bg-card shadow-sm">
-        <CardContent className="space-y-3 p-3 lg:p-4">
-          <div className="grid gap-3">
-            {!hasResults ? (
-              <div className="space-y-3">
-                <div className="grid gap-1.5 rounded-md border border-border bg-muted/35 p-1.5 shadow-xs sm:grid-cols-2 xl:grid-cols-4">
+      <div className="space-y-3">
+        <div className="grid gap-4">
+          {!hasResults ? (
+            <div className="space-y-5">
+              <section>
+                <h2 className="mb-3 text-xl font-bold tracking-tight text-foreground">Tools</h2>
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                   {modeOptions.map((mode) => (
                     <button
                       key={mode.value}
@@ -1306,36 +1334,44 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                       onClick={() => handleModeChange(mode.value)}
                       disabled={isProcessing}
                       className={cn(
-                        "rounded-md border px-3 py-2 text-left transition-colors",
+                        "flex h-[84px] items-center gap-3 rounded-xl border border-border bg-card px-4 text-left shadow-xs transition-colors",
+                        mode.hover,
                         selectedMode === mode.value
-                          ? "border-border bg-accent text-accent-foreground shadow-xs"
-                          : "border-transparent bg-card/70 text-foreground hover:bg-accent",
+                          ? mode.selected
+                          : "text-foreground",
                         isProcessing && "cursor-not-allowed opacity-60"
                       )}
                     >
-                      <span className="block text-[13px] font-semibold">{mode.label}</span>
-                      <span className="mt-0.5 block text-[11px] font-medium text-muted-foreground">
-                        {mode.helper}
+                      <span className={cn("flex size-11 shrink-0 items-center justify-center rounded-xl", mode.icon)}>
+                        <ModeGlyph mode={mode.value} />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-[15px] font-semibold">{mode.label}</span>
+                        <span className="mt-0.5 block truncate text-[13px] font-medium text-muted-foreground">
+                          {mode.helper}
+                        </span>
                       </span>
                     </button>
                   ))}
                 </div>
+              </section>
 
-                <UploadDropzone
-                  uploadedFiles={uploadedFiles}
-                  filePreviewUrls={filePreviewUrls}
-                  pdfPageCounts={pdfPageCounts}
-                  isDragging={isDragging}
-                  isProcessing={isProcessing}
-                  onDragOver={onDragOver}
-                  onDragLeave={onDragLeave}
-                  onDrop={onDrop}
-                  onFileInput={onFileInput}
-                  onRemoveFile={onRemoveFile}
-                  onClearFiles={onClearFiles}
-                />
+              <UploadDropzone
+                uploadedFiles={uploadedFiles}
+                filePreviewUrls={filePreviewUrls}
+                pdfPageCounts={pdfPageCounts}
+                isDragging={isDragging}
+                isProcessing={isProcessing}
+                onDragOver={onDragOver}
+                onDragLeave={onDragLeave}
+                onDrop={onDrop}
+                onFileInput={onFileInput}
+                onRemoveFile={onRemoveFile}
+                onClearFiles={onClearFiles}
+              />
 
-                <div className="flex flex-col gap-2 rounded-md border border-border bg-card p-2.5 sm:flex-row sm:items-center sm:justify-between">
+              {uploadedFiles.length || isUploading || isProcessing ? (
+                <div className="flex flex-col gap-3 px-1 sm:flex-row sm:items-center sm:justify-between">
                   {uploadedFiles.length ? (
                     <div>
                       <p className="text-sm font-semibold text-foreground">{uploadedFiles.length} selected</p>
@@ -1360,41 +1396,41 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                       size="lg"
                       onClick={onConvert}
                       disabled={!uploadedFiles.length || isProcessing || noCredits}
-                      className="h-10 gap-2 rounded-md px-5"
+                      className="h-11 gap-2 rounded-xl px-6 font-semibold"
                     >
                       {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
                       {isProcessing ? "Converting" : processLabel}
                     </Button>
                   </div>
                 </div>
-              </div>
-            ) : null}
-
-            <div className="space-y-4">
-              <ResultActions
-                resultFiles={resultFiles}
-                isComplete={isComplete}
-                isTextOutput={isTextOutput}
-                isSaving={isSaving}
-                isSaved={isSaved}
-                tablePreviewData={tablePreviewData}
-                textPreview={textPreview}
-                resultPreviews={resultPreviews}
-                firstImageUrl={firstImageUrl}
-                activePreviewFileId={activePreviewFileId}
-                onReset={onReset}
-                onSaveToHistory={onSaveToHistory}
-                onShareFile={onShareFile}
-                onShareAll={onShareAll}
-                onDownloadFile={onDownloadFile}
-                onDownloadAll={onDownloadAll}
-                onDownloadReviewedBatch={onDownloadReviewedBatch}
-                onEditFile={onEditFile}
-              />
+              ) : null}
             </div>
+          ) : null}
+
+          <div className="space-y-4">
+            <ResultActions
+              resultFiles={resultFiles}
+              isComplete={isComplete}
+              isTextOutput={isTextOutput}
+              isSaving={isSaving}
+              isSaved={isSaved}
+              tablePreviewData={tablePreviewData}
+              textPreview={textPreview}
+              resultPreviews={resultPreviews}
+              firstImageUrl={firstImageUrl}
+              activePreviewFileId={activePreviewFileId}
+              onReset={onReset}
+              onSaveToHistory={onSaveToHistory}
+              onShareFile={onShareFile}
+              onShareAll={onShareAll}
+              onDownloadFile={onDownloadFile}
+              onDownloadAll={onDownloadAll}
+              onDownloadReviewedBatch={onDownloadReviewedBatch}
+              onEditFile={onEditFile}
+            />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

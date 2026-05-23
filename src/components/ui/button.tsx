@@ -12,7 +12,7 @@ const buttonVariants = cva(
         default: "border border-border bg-card text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground",
         critical: "bg-primary text-primary-foreground hover:bg-primary/90",
         glossy:
-          "border border-[#09b878] bg-[linear-gradient(180deg,var(--ax-action-highlight)_0%,var(--ax-action-base)_48%,var(--ax-action-depth)_100%)] text-[#082018] shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_2px_5px_rgba(11,133,88,0.22)] hover:brightness-[1.04] focus-visible:border-[#09b878]",
+          "border border-[#09b878] bg-[linear-gradient(180deg,var(--ax-action-highlight)_0%,var(--ax-action-base)_48%,var(--ax-action-depth)_100%)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_2px_5px_rgba(11,133,88,0.22)] hover:brightness-[1.04] focus-visible:border-[#09b878]",
         ink:
           "border border-[#0d1524] bg-[linear-gradient(180deg,#344153_0%,#152030_47%,#0b111d_100%)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.24),0_2px_4px_rgba(15,23,42,0.3)] hover:brightness-110 focus-visible:border-[#0d1524]",
         lime:

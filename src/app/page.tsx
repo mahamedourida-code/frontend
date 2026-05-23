@@ -445,27 +445,24 @@ export default function Home() {
               <ThemeToggle />
               {isAuthenticated ? (
                 <Button
-                  variant="glossy"
-                  size="sm"
-                  className="rounded-lg px-4 font-semibold"
+                  variant="ink"
+                  className="h-11 rounded-xl px-7 text-base font-semibold"
                   asChild
                 >
-                  <NextLink href="/dashboard/client">Convert Files</NextLink>
+                  <NextLink href="/dashboard">Dashboard</NextLink>
                 </Button>
               ) : (
                 <>
                   <Button
                     variant="ghost"
-                    size="sm"
-                    className="rounded-lg px-4 font-semibold text-foreground"
+                    className="h-11 rounded-xl px-5 text-base font-medium text-foreground"
                     asChild
                   >
                     <NextLink href="/sign-in?next=%2Fdashboard%2Fclient">Log in</NextLink>
                   </Button>
                   <Button
                     variant="ink"
-                    size="sm"
-                    className="rounded-lg px-4 font-semibold"
+                    className="h-11 rounded-xl px-7 text-base font-semibold"
                     asChild
                   >
                     <NextLink href="/sign-up?next=%2Fdashboard%2Fclient">Sign up</NextLink>
@@ -1040,7 +1037,7 @@ export default function Home() {
                 Handwritten documents go in. Reviewable Excel files come out. AxLiner keeps the batch, ownership, and download flow clear for teams that live in spreadsheets.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-3">
-                <Button asChild className="bg-white px-7 py-5 font-semibold text-[#05221c] shadow-lg shadow-black/15 hover:bg-[#f3fff8]">
+                <Button asChild variant="glossy" className="px-7 py-5 font-semibold">
                   <NextLink href="/dashboard/client">Try It</NextLink>
                 </Button>
                 <Button

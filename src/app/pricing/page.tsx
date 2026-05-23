@@ -467,21 +467,16 @@ function PricingContent() {
 
             <div className="hidden items-center gap-3 lg:flex">
               {isSignedIn ? (
-                <>
-                  <Button variant="outline" className="rounded-md" asChild>
-                    <Link href="/dashboard">Dashboard</Link>
-                  </Button>
-                  <Button variant="critical" className="rounded-md" asChild>
-                    <Link href="/dashboard/client">Convert Files</Link>
-                  </Button>
-                </>
+                <Button variant="ink" className="h-11 rounded-xl px-7 text-base font-semibold" asChild>
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
               ) : (
                 <>
-                  <Button size="sm" className="rounded-md" asChild>
-                    <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign Up</Link>
+                  <Button variant="ghost" className="h-11 rounded-xl px-5 text-base font-medium" asChild>
+                    <Link href="/sign-in?next=%2Fdashboard%2Fclient">Log in</Link>
                   </Button>
-                  <Button variant="outline" className="rounded-md" asChild>
-                    <Link href="/sign-in?next=%2Fdashboard%2Fclient">Sign in</Link>
+                  <Button variant="ink" className="h-11 rounded-xl px-7 text-base font-semibold" asChild>
+                    <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign up</Link>
                   </Button>
                 </>
               )}

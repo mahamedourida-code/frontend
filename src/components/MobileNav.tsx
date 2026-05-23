@@ -439,7 +439,8 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 ) : (
                   <>
                     <Button
-                      className="h-11 w-full gap-3 rounded-2xl"
+                      variant="ink"
+                      className="h-11 w-full gap-3 rounded-xl text-base font-semibold"
                       onClick={() => {
                         setIsOpen(false);
                         handleNavigation("/sign-up?next=%2Fdashboard%2Fclient");
@@ -449,8 +450,8 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                       <span className="text-sm md:text-base">Create account</span>
                     </Button>
                     <Button
-                      variant="outline"
-                      className="h-11 w-full gap-3 rounded-2xl"
+                      variant="ghost"
+                      className="h-11 w-full gap-3 rounded-xl text-base font-medium"
                       onClick={() => {
                         setIsOpen(false);
                         if (onSignInClick) {

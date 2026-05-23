@@ -69,11 +69,11 @@ export function MarketingNavBar() {
           </div>
 
           <div className="hidden items-center gap-3 lg:flex">
-            <Button asChild size="sm" className="rounded-md">
-              <Link href="/sign-up">Sign Up</Link>
+            <Button asChild variant="ghost" className="h-11 rounded-xl px-5 text-base font-medium">
+              <Link href="/sign-in">Log in</Link>
             </Button>
-            <Button variant="outline" asChild className="rounded-md">
-              <Link href="/sign-in">Sign in</Link>
+            <Button variant="ink" asChild className="h-11 rounded-xl px-7 text-base font-semibold">
+              <Link href="/sign-up">Sign up</Link>
             </Button>
           </div>
 
