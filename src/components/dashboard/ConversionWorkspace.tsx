@@ -1336,16 +1336,14 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                 />
 
                 <div className="flex flex-col gap-2 rounded-md border border-border bg-card p-2.5 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">
-                      {uploadedFiles.length ? `${uploadedFiles.length} selected` : "No files selected"}
-                    </p>
-                    <p className="text-xs font-semibold text-muted-foreground">
-                      {uploadedFiles.length
-                        ? `${expectedOutputs} expected output${expectedOutputs === 1 ? "" : "s"} - ${formatBytes(uploadedSizeMb * 1024 * 1024)}`
-                        : "Add a batch, review outputs, and download corrected files."}
-                    </p>
-                  </div>
+                  {uploadedFiles.length ? (
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">{uploadedFiles.length} selected</p>
+                      <p className="text-xs font-semibold text-muted-foreground">
+                        {expectedOutputs} expected output{expectedOutputs === 1 ? "" : "s"} - {formatBytes(uploadedSizeMb * 1024 * 1024)}
+                      </p>
+                    </div>
+                  ) : <span />}
                   <div className="flex flex-wrap gap-2 sm:justify-end">
                     {(isUploading || isProcessing) && !isComplete ? (
                       <Button

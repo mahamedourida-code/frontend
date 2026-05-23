@@ -92,8 +92,6 @@ export function DashboardShell({
   const availableCredits = credits?.available_credits ?? billingStatus?.credits?.available_credits ?? null
   const plan = billingStatus?.plan || "free"
   const isPaid = paidPlans.has(plan)
-  const billingActionHref = isPaid ? "/dashboard/settings?section=billing" : "/pricing"
-  const billingActionLabel = isPaid ? "Manage billing" : "Upgrade"
 
   const activeJob = useMemo(() => {
     if (processingState.status === "processing") {
@@ -183,9 +181,11 @@ export function DashboardShell({
               <DashboardCreditsPill credits={availableCredits} className="hidden sm:inline-flex" />
               <ThemeToggle />
 
-              <Button asChild size="sm" variant={isPaid ? "outline" : "critical"}>
-                <Link href={billingActionHref}>{billingActionLabel}</Link>
-              </Button>
+              {isPaid ? (
+                <Button asChild size="sm" variant="outline">
+                  <Link href="/dashboard/settings?section=billing">Manage billing</Link>
+                </Button>
+              ) : null}
 
               <Button asChild size="sm" variant="outline" className="hidden lg:inline-flex">
                 <Link href={nextActionHref}>

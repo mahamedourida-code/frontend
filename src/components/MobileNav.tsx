@@ -16,11 +16,11 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { AppLogo } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { WorkspaceSwitcher } from "@/components/WorkspaceSwitcher"
 import { industrySolutions } from "@/lib/industry-solutions"
 import { 
   Menu, 
@@ -276,41 +276,20 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
 
               {/* User Info - if authenticated */}
               {isAuthenticated && user && (
-                <div className="border-b border-border px-4 py-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-                        <span className="text-sm md:text-base font-semibold text-primary-foreground">
-                          {user.email?.[0]?.toUpperCase() || "U"}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">
-                          {user.name || user.email?.split("@")[0]}
-                        </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {user.email}
-                        </p>
-                      </div>
-                    </div>
-                    {user.credits !== undefined && (
-                      <Badge variant="secondary" className="text-xs">
-                        {user.credits} credits
-                      </Badge>
-                    )}
-                  </div>
+                <div className="border-b border-border px-3 py-3">
+                  <WorkspaceSwitcher user={user} onSignOut={() => void handleSignOut()} menuSide="bottom" />
                 </div>
               )}
 
               {isAuthenticated && (
                 <div className="border-b border-border px-3 py-3">
                   <Button
-                    variant="outline"
-                    className="h-10 w-full justify-start"
+                    variant="critical"
+                    className="h-10 w-full justify-center"
                     onClick={() => handleNavigation("/dashboard/client#upload-files")}
                   >
                     <Upload className="h-4 w-4" />
-                    Upload files
+                    Upload
                   </Button>
                 </div>
               )}

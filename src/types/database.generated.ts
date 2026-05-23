@@ -120,6 +120,48 @@ export type Database = {
         }
         Relationships: []
       }
+      workspaces: {
+        Row: {
+          id: string
+          owner_user_id: string
+          name: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          owner_user_id: string
+          name: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          owner_user_id?: string
+          name?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      workspace_preferences: {
+        Row: {
+          user_id: string
+          active_workspace_id: string
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          active_workspace_id: string
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          active_workspace_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       share_sessions: {
         Row: {
           access_count: number | null

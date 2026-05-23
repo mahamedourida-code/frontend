@@ -2,19 +2,11 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Activity, Building2, ChevronsUpDown, FileSpreadsheet, History, LogOut, ReceiptText, Settings, Upload } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { Activity, Building2, FileSpreadsheet, History, ReceiptText, Settings, Upload } from "lucide-react"
 import { AppLogo } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { Button } from "@/components/ui/button"
+import { WorkspaceSwitcher } from "@/components/WorkspaceSwitcher"
 import { cn } from "@/lib/utils"
 
 type SidebarItemKey = "overview" | "process" | "history" | "pricing" | "settings"
@@ -22,6 +14,7 @@ type SidebarItemKey = "overview" | "process" | "history" | "pricing" | "settings
 interface WorkspaceSidebarProps {
   activeItem: SidebarItemKey
   user?: {
+    id?: string | null
     email?: string | null
     user_metadata?: {
       avatar_url?: string | null
@@ -41,8 +34,6 @@ const sidebarItems = [
 
 export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
   const pathname = usePathname()
-  const displayName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "User"
-  const email = user?.email || ""
 
   const handleSignOut = async () => {
     const { signOut } = await import("@/lib/auth-helpers")
@@ -56,19 +47,18 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
   return (
     <aside className="fixed inset-y-0 start-0 z-30 hidden w-60 border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex md:flex-col">
       <div className="flex h-full flex-col">
-        <div className="px-3 pb-2 pt-3">
-          <Link href="/" aria-label="Go to AxLiner homepage">
-            <div className="flex h-11 items-center rounded-md px-2 text-start text-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-              <AppLogo className="h-7 w-auto" />
-            </div>
+        <div className="space-y-3 px-3 pb-3 pt-3">
+          <Link href="/" aria-label="Go to AxLiner homepage" className="inline-flex px-2 py-1 text-foreground">
+            <AppLogo className="h-7 w-auto" />
           </Link>
+          <WorkspaceSwitcher user={user} onSignOut={() => void handleSignOut()} />
         </div>
 
-        <div className="px-3 pb-5 pt-2">
-          <Button asChild variant="outline" className="h-10 w-full justify-start border-sidebar-border bg-sidebar shadow-xs">
+        <div className="px-3 pb-5 pt-1">
+          <Button asChild variant="critical" className="h-10 w-full justify-center shadow-xs">
             <Link href="/dashboard/client#upload-files">
               <Upload className="size-4" />
-              Upload files
+              Upload
             </Link>
           </Button>
         </div>
@@ -155,61 +145,15 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
         </nav>
 
         <div className="border-t border-sidebar-border p-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex h-12 w-full items-center gap-2 rounded-md px-2 text-start text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-                <Avatar className="size-8 rounded-lg">
-                  <AvatarImage src={user?.user_metadata?.avatar_url || undefined} />
-                  <AvatarFallback className="rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    {email.charAt(0).toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="grid min-w-0 flex-1 text-start text-sm leading-tight">
-                  <span className="truncate font-semibold">{displayName}</span>
-                  <span className="truncate text-xs text-muted-foreground">{email}</span>
-                </div>
-                <ChevronsUpDown className="ms-auto size-4 text-muted-foreground" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-60 rounded-lg" side="right" align="end" sideOffset={4}>
-              <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                  <Avatar className="size-8 rounded-lg">
-                    <AvatarImage src={user?.user_metadata?.avatar_url || undefined} />
-                    <AvatarFallback className="rounded-lg">{email.charAt(0).toUpperCase() || "U"}</AvatarFallback>
-                  </Avatar>
-                  <div className="grid min-w-0 flex-1 text-start text-sm leading-tight">
-                    <span className="truncate font-semibold">{displayName}</span>
-                    <span className="truncate text-xs">{email}</span>
-                  </div>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/settings">
-                  <Settings className="size-4" />
-                  Settings
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/pricing">
-                  <BillingSeal className="size-4" />
-                  Billing
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-destructive"
-                onSelect={(event) => {
-                  event.preventDefault()
-                  void handleSignOut()
-                }}
-              >
-                  <LogOut className="size-4" />
-                  Sign Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="rounded-md border border-sidebar-border bg-card p-3 shadow-xs">
+            <p className="text-sm font-semibold text-foreground">More batch capacity</p>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+              Process larger file sets and keep more monthly credits available.
+            </p>
+            <Button asChild variant="critical" className="mt-4 h-10 w-full justify-center">
+              <Link href="/pricing">Upgrade</Link>
+            </Button>
+          </div>
         </div>
       </div>
     </aside>
