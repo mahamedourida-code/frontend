@@ -1,34 +1,35 @@
-# Rive Ideas For AxLiner
+# Rive Hero Idea: The Handwritten Batch Stream
 
-## 1. Handwritten Batch Conveyor
+## Core Message
 
-**Message:** Convert a pile of handwritten files in one batch.
+Handwritten files go in together. Organized spreadsheet outputs come out together.
 
-- Show a desk-level stream of photographed handwritten invoices, receipts, and statement pages entering from the left as a small stacked batch.
-- At the center, a simple AxLiner processing station holds steady while pages feed through one by one.
-- On the right, organized spreadsheet sheets collect into a neat export stack, with a small completed-count tick increasing as each source passes through.
-- On cursor hover, the user can slightly fan the source pile and the output stack to reveal that multiple files are handled together.
+## Visual Concept
 
-**Assets to prepare:** realistic overhead paper pile, 3-4 individual handwritten document photos, one clean processor object, one spreadsheet-stack image with no readable micro-text.
+Build one clean 2D scene from isolated illustrated shapes:
 
-## 2. Accountant's Desk: Before Shift To After Shift
+- **Left:** a lively bundle of handwritten pages, receipts, statement slips, and table sheets, slightly fanned and uneven, moving together as one batch.
+- **Center:** a small AxLiner sorter shape, simple and recognizable, with one feeding slot and a quiet green pulse when a page passes through.
+- **Right:** neat spreadsheet-shaped cards emerge in order and stack into a completed batch.
 
-**Message:** Remove manual retyping from daily handwritten paperwork.
+The scene should feel crafted and memorable, not photographic and not like a generic software dashboard. Use paper shapes, scribble rows, ruled table marks, clips, stamps, and green check accents. Do not rely on readable document words.
 
-- Begin with a realistic accountant desk scene: loose handwritten forms, calculator, pencil marks, binder clips, and a laptop edge.
-- As the page scrolls, the messy paper pile slides into an AxLiner capture zone; the desk does not become futuristic, it simply becomes ordered.
-- The final state shows the same desk with papers sorted and a clear batch export tray beside the laptop.
-- Use subtle cursor interaction: moving over a paper highlights the matching output row card, expressing source/result pairing without requiring visible document text.
+## Rive Motion
 
-**Assets to prepare:** two matched desk photographs with the same camera angle, one messy and one organized; separate cutout document layers; small green reconciliation/check marks.
+- The left bundle gently shifts as pages feed continuously into the sorter.
+- Each page becomes slightly smaller as it reaches the slot.
+- One output card appears for each input page and joins the completed stack.
+- On cursor movement, the batch fans open a little and the output stack tilts forward.
+- On scroll, the output stack settles and a single download bundle tab becomes visible.
 
-## 3. Statement Review River
+## Asset Rule
 
-**Message:** Handwritten statements and table pages become a reviewable batch, not a blind export.
+Generate each object separately so it can be cut out and animated in Figma/Rive: incoming batch, processor, output stack, paper clips/stamps, and green status marks.
 
-- Use a premium, calm visual scene inspired by flowing paper: several handwritten pages move along a curved path toward the processor, like a controlled stream rather than a busy conveyor.
-- Outputs emerge as three grouped states: `Ready`, `Needs review`, and `Edited`, shown through color chips and arrangement rather than dense text.
-- During scroll, uncertain files briefly pause in the review lane while clean files continue to the download stack; this makes review feel intentional and trustworthy.
-- On hover, a source page and its paired output move forward together, emphasizing that users can verify every conversion.
+Use a completely flat solid background color that does not appear anywhere inside the illustrated object. This gives a clean silhouette for background removal. Do not request a background matching the object color.
 
-**Assets to prepare:** 4-6 photographed handwritten pages with similar lighting, one processor cutout, three clean output-card cutouts, and minimal status-chip shapes using the AxLiner green/neutral palette.
+## Prompt: First Image - Incoming Handwritten Batch
+
+```text
+Clean 2D editorial illustration, isolated object only: a playful but professional bundle of six handwritten business paper sheets fanned together as a batch, including invoice-shaped pages, a bank-statement-style ruled sheet, a receipt slip, and a table form. Show handwritten content only as abstract dark ink squiggles, ruled rows, tiny check marks, stamped corners, and paper clips; no readable words, no logos, no people, no laptop, no interface. The batch should lean slightly toward the right as if it is about to enter a processor. Use warm white paper, charcoal ink marks, subtle gray outlines, and small spreadsheet-green accents. Flat vector-like 2D style, crisp silhouette, minimal soft shading, premium and distinctive, suitable for Rive animation. Center the full object with generous empty margin around it. Background must be one single flat chroma color not used anywhere in the object, such as solid bright magenta #FF00FF, with no shadow or texture on the background, so the object can be cleanly removed in Figma.
+```
