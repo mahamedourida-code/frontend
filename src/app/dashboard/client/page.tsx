@@ -11,6 +11,7 @@ import { ocrApi } from "@/lib/api-client"
 import type { AppLimits, RecoverableJobSummary } from "@/lib/api-client"
 import { getApiErrorUi, showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui"
 import { DashboardShell } from "@/components/DashboardShell"
+import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { WorkspaceFilesPanel } from "@/components/dashboard/WorkspaceFilesPanel"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import {
@@ -43,13 +44,7 @@ import {
 } from "@/lib/upload-files"
 
 function ProcessImagesFallback() {
-  return (
-    <div className="min-h-screen bg-secondary p-3 sm:p-4">
-      <div className="flex min-h-[calc(100vh-2rem)] items-center justify-center rounded-xl border border-border bg-card/60 backdrop-blur-xl">
-        <div className="h-12 w-12 rounded-full border-4 border-border border-t-primary animate-spin" />
-      </div>
-    </div>
-  )
+  return <DashboardRouteLoader label="Loading conversion workspace" />
 }
 
 function filenameStem(name?: string | null, fallback = "axliner_result") {
@@ -307,7 +302,7 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/')
+      router.replace('/sign-in?next=%2Fdashboard%2Fclient')
     }
   }, [user, authLoading, router])
 
@@ -1311,11 +1306,7 @@ Best regards`
   
 
   if (authLoading || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
-    )
+    return <DashboardRouteLoader label="Loading conversion workspace" />
   }
 
   const isComplete = status === 'completed' && resultFiles && resultFiles.length > 0

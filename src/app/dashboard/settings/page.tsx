@@ -15,6 +15,7 @@ import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { DashboardShell } from "@/components/DashboardShell"
+import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { BillingSeal, CreditStack, PlanSwitch } from "@/components/BillingGlyphs"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { billingApi, type BillingPlanKey } from "@/lib/api-client"
@@ -36,13 +37,7 @@ type SettingsSection = 'account' | 'billing' | 'preferences'
 type Theme = 'dark' | 'light' | 'system'
 
 function SettingsFallback() {
-  return (
-    <div className="min-h-screen bg-secondary p-3 sm:p-4">
-      <div className="flex min-h-[calc(100vh-2rem)] items-center justify-center rounded-xl border border-border bg-card/60 backdrop-blur-xl">
-        <div className="h-12 w-12 rounded-full border-4 border-border border-t-primary animate-spin" />
-      </div>
-    </div>
-  )
+  return <DashboardRouteLoader label="Loading settings" />
 }
 
 export default function SettingsPage() {
@@ -56,7 +51,7 @@ export default function SettingsPage() {
 function SettingsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const { theme: currentTheme, setTheme } = useTheme()
   const supabase = createClient()
 
@@ -108,6 +103,12 @@ function SettingsContent() {
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/sign-in?next=%2Fdashboard%2Fsettings')
+    }
+  }, [authLoading, user, router])
 
   useEffect(() => {
     const section = searchParams.get('section')
@@ -272,6 +273,14 @@ function SettingsContent() {
       ]
     }
   ]
+
+  if (authLoading) {
+    return <DashboardRouteLoader label="Loading settings" />
+  }
+
+  if (!user) {
+    return null
+  }
 
   return (
     <DashboardShell activeItem="settings" title="Settings" user={user}>

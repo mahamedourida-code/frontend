@@ -37,6 +37,7 @@ import { ocrApi } from "@/lib/api-client"
 import { toast } from "sonner"
 import { useAuth } from "@/hooks/useAuth"
 import { DashboardShell } from "@/components/DashboardShell"
+import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 
 function HistoryContent() {
   const { user } = useAuth()
@@ -660,19 +661,12 @@ export default function HistoryPage() {
 
   React.useEffect(() => {
     if (!loading && !user) {
-      router.push('/sign-in')
+      router.replace('/sign-in?next=%2Fhistory')
     }
   }, [user, loading, router])
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    )
+    return <DashboardRouteLoader label="Loading history" />
   }
 
   if (!user) {

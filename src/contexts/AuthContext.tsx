@@ -71,13 +71,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setSession(session)
       setUser(session?.user ?? null)
+      setLoading(false)
 
       if (session?.user) {
-        fetchProfile(session.user.id).finally(() => {
-          if (mounted) setLoading(false)
-        })
-      } else {
-        setLoading(false)
+        void fetchProfile(session.user.id)
       }
     })
 
@@ -90,9 +87,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setSession(session)
       setUser(session?.user ?? null)
+      setLoading(false)
 
       if (session?.user) {
-        await fetchProfile(session.user.id)
+        void fetchProfile(session.user.id)
 
         // Redirect to dashboard on sign-in (only from auth pages)
         if (event === 'SIGNED_IN') {
@@ -100,14 +98,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const authPages = ['/sign-in', '/sign-up']
 
           if (authPages.some(page => currentPath.includes(page))) {
-            router.push('/dashboard/client')
+            router.replace('/dashboard/client')
           }
         }
       } else {
         setProfile(null)
       }
-
-      setLoading(false)
     })
 
     return () => {

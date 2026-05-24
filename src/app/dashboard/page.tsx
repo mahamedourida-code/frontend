@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardMiniCharts } from "@/components/dashboard/DashboardMiniCharts"
+import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { cn } from "@/lib/utils"
 import {
   BarChart3,
@@ -99,7 +100,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/')
+      router.replace('/sign-in?next=%2Fdashboard')
     } else if (!authLoading && user) {
       fetchDashboardData()
     }
@@ -410,14 +411,7 @@ export default function DashboardPage() {
   }
 
   if (authLoading || loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="mx-auto mb-4 size-10 animate-spin rounded-full border-2 border-muted border-t-primary" />
-          <p className="text-sm font-medium text-muted-foreground">Loading dashboard</p>
-        </div>
-      </div>
-    )
+    return <DashboardRouteLoader label="Loading dashboard" />
   }
 
   const averageTimeLabel = stats.averageTime > 0

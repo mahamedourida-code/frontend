@@ -4,6 +4,7 @@ import "./globals.css";
 import "../styles/mobile-nav.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ProcessingStateProvider } from "@/contexts/ProcessingStateContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "sonner";
 
 const inter = Inter({
@@ -89,12 +90,14 @@ export default function RootLayout({
         className={`${inter.variable} ${caveat.variable} antialiased font-sans bg-background text-foreground relative overflow-x-hidden`}
       >
         <ThemeProvider defaultTheme="light" storageKey="AxLiner-theme">
-          <ProcessingStateProvider>
-            <div className="relative z-10">
-              {children}
-            </div>
-            <Toaster richColors position="top-right" />
-          </ProcessingStateProvider>
+          <AuthProvider>
+            <ProcessingStateProvider>
+              <div className="relative z-10">
+                {children}
+              </div>
+              <Toaster richColors position="top-right" />
+            </ProcessingStateProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
