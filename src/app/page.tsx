@@ -1,30 +1,18 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MobileNav } from "@/components/MobileNav";
 import ScrollAnimatedSection from "@/components/ScrollAnimatedSection";
-import { cn } from "@/lib/utils";
 import { AppLogo } from "@/components/AppIcon";
 import { BrandSectionLabel, BrandVisualFrame } from "@/components/BrandVisual";
 
-import { createClient } from "@/utils/supabase/client";
 import NextLink from "next/link";
-import { IndustrySolutionsMenuGrid } from "@/components/IndustrySolutionsMenuGrid";
 import { GoogleOneTap } from "@/components/GoogleOneTap";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { MarketingNavBar } from "@/components/MarketingNavBar";
+import { useAuth } from "@/hooks/useAuth";
 
 const BenchmarkAccuracyChart = dynamic(
   () => import("@/components/landing/BenchmarkAccuracyChart"),
@@ -232,23 +220,8 @@ export default function Home() {
   const benchmarkBandRef = useRef<HTMLDivElement>(null);
   const securityBandRef = useRef<HTMLDivElement>(null);
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const supabase = createClient();
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
-    };
-
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const { user } = useAuth();
+  const isAuthenticated = Boolean(user);
 
   useEffect(() => {
     const topSection = topBackgroundSectionRef.current;
@@ -345,103 +318,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen relative bg-transparent">
-      {/* Navigation Bar */}
-      <nav className="fixed left-0 right-0 top-0 z-50 pt-3 backdrop-blur-2xl lg:pt-4">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="ax-nav-surface flex items-center justify-between p-2 lg:p-3">
-            {/* Logo */}
-            <div className="flex-shrink-0">
-              <NextLink href="/" aria-label="AxLiner home">
-                <AppLogo />
-              </NextLink>
-            </div>
-
-            {/* Desktop Navigation Items - Hidden on Mobile */}
-            <div className="hidden flex-1 items-center justify-center lg:flex">
-              <NavigationMenu>
-                <NavigationMenuList className="gap-1">
-                  {/* Solutions Dropdown */}
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger className="bg-transparent text-foreground transition-colors hover:bg-muted">
-                      Solutions
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <IndustrySolutionsMenuGrid />
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <NavigationMenuLink
-                      href="/how-axliner-is-built"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-muted")}
-                    >
-                      How AxLiner's Built
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <NavigationMenuLink
-                      href="/benchmarks"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-muted")}
-                    >
-                      Benchmarks
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <NavigationMenuLink
-                      href="/pricing"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-muted")}
-                    >
-                      Pricing
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <NavigationMenuLink
-                      href="/blogs"
-                      className={cn(navigationMenuTriggerStyle(), "bg-transparent text-foreground transition-colors hover:bg-muted")}
-                    >
-                      Blogs
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
-            </div>
-
-            {/* Sign In & Try for Free Buttons - Desktop */}
-            <div className="hidden items-center gap-3 lg:flex">
-              <ThemeToggle />
-              {isAuthenticated ? (
-                <Button
-                  variant="ink"
-                  className="h-11 rounded-xl px-7 text-base font-semibold"
-                  asChild
-                >
-                  <NextLink href="/dashboard">Dashboard</NextLink>
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    variant="ghost"
-                    className="h-11 rounded-xl px-5 text-base font-medium text-foreground"
-                    asChild
-                  >
-                    <NextLink href="/sign-in?next=%2Fdashboard%2Fclient">Log in</NextLink>
-                  </Button>
-                  <Button
-                    variant="ink"
-                    className="h-11 rounded-xl px-7 text-base font-semibold"
-                    asChild
-                  >
-                    <NextLink href="/sign-up?next=%2Fdashboard%2Fclient">Sign up</NextLink>
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
+      <MarketingNavBar onSectionClick={scrollToSection} />
 
       {/* Hero Section */}
       <main className="relative z-10">
@@ -1049,12 +926,6 @@ export default function Home() {
         </div>
       </footer>
       
-      {/* Mobile Navigation */}
-      <MobileNav 
-        onSectionClick={scrollToSection}
-        isAuthenticated={isAuthenticated}
-      />
-
       <GoogleOneTap enabled={!isAuthenticated} redirectPath="/dashboard/client" />
     </div>
   )}

@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AppLogo } from '@/components/AppIcon';
+import { MarketingNavBar } from '@/components/MarketingNavBar';
 import { Camera, FileSpreadsheet, Zap, CheckCircle, ArrowRight } from 'lucide-react';
 import NextLink from 'next/link';
 
@@ -10,18 +10,9 @@ export default function ScreenshotToExcel() {
 
   return (
     <div className="ax-page-bg min-h-screen">
-      <header className="ax-glass-header sticky top-0 z-50 w-full border-b">
-        <div className="container flex h-16 items-center justify-between">
-          <NextLink href="/" className="flex items-center" aria-label="AxLiner home">
-            <AppLogo className="h-8 w-auto" />
-          </NextLink>
-          <Button asChild>
-            <NextLink href="/#upload">Get Started</NextLink>
-          </Button>
-        </div>
-      </header>
+      <MarketingNavBar />
 
-      <main className="container relative z-10 mx-auto px-4 py-16">
+      <main className="container relative z-10 mx-auto px-4 pb-16 pt-28">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-4">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">

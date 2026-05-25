@@ -5,10 +5,8 @@ import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 
-import { AppLogo } from "@/components/AppIcon"
 import { CreditStack } from "@/components/BillingGlyphs"
-import { IndustrySolutionsMenuGrid } from "@/components/IndustrySolutionsMenuGrid"
-import { MobileNav } from "@/components/MobileNav"
+import { MarketingNavBar } from "@/components/MarketingNavBar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -19,15 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
 import { useAuth } from "@/hooks/useAuth"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { billingApi, type BillingPlan, type BillingPlanKey } from "@/lib/api-client"
@@ -330,7 +319,6 @@ function PricingContent() {
   const accountCredits = billingStatus?.credits?.available_credits ?? 0
   const freePlan = backendByKey.get("free")
   const freeCreditsLabel = freePlan?.included_volume || "30 free credits"
-  const isSignedIn = Boolean(user && !loading)
 
   const comparisonPlans = visiblePlans
   const comparisonGroups: ComparisonGroup[] = [
@@ -412,80 +400,9 @@ function PricingContent() {
     },
   ]
 
-  const navLinkClass = cn(
-    navigationMenuTriggerStyle(),
-    "bg-transparent text-foreground transition-colors hover:bg-muted focus:bg-transparent active:bg-transparent"
-  )
-
   return (
     <main className="min-h-screen overflow-hidden bg-background">
-      <nav className="fixed left-0 right-0 top-0 z-50 pt-3 backdrop-blur-2xl lg:pt-4">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="ax-nav-surface flex items-center justify-between p-2 lg:p-3">
-            <Link href="/" aria-label="AxLiner home" className="flex-shrink-0">
-              <AppLogo />
-            </Link>
-
-            <div className="hidden flex-1 items-center justify-center lg:flex">
-              <NavigationMenu>
-                <NavigationMenuList className="gap-1">
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger className="bg-transparent text-foreground transition-colors hover:bg-muted focus:bg-transparent active:bg-transparent">
-                      Solutions
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <IndustrySolutionsMenuGrid />
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <NavigationMenuLink href="/how-axliner-is-built" className={navLinkClass}>
-                      How AxLiner's Built
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <NavigationMenuLink href="/benchmarks" className={navLinkClass}>
-                      Benchmarks
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <NavigationMenuLink href="/pricing" className={navLinkClass}>
-                      Pricing
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-
-                  <NavigationMenuItem>
-                    <NavigationMenuLink href="/blogs" className={navLinkClass}>
-                      Blogs
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
-            </div>
-
-            <div className="hidden items-center gap-3 lg:flex">
-              {isSignedIn ? (
-                <Button variant="ink" className="h-11 rounded-xl px-7 text-base font-semibold" asChild>
-                  <Link href="/dashboard">Dashboard</Link>
-                </Button>
-              ) : (
-                <>
-                  <Button variant="ghost" className="h-11 rounded-xl px-5 text-base font-medium" asChild>
-                    <Link href="/sign-in?next=%2Fdashboard%2Fclient">Log in</Link>
-                  </Button>
-                  <Button variant="ink" className="h-11 rounded-xl px-7 text-base font-semibold" asChild>
-                    <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign up</Link>
-                  </Button>
-                </>
-              )}
-            </div>
-
-            <MobileNav isAuthenticated={isSignedIn} user={user} />
-          </div>
-        </div>
-      </nav>
+      <MarketingNavBar />
 
       <section className="mx-auto max-w-[1480px] px-4 pb-16 pt-28 sm:px-6 lg:px-8 lg:pt-32">
         <div className="mx-auto max-w-3xl text-center">
@@ -687,8 +604,8 @@ function PricingContent() {
               <h2 className="text-4xl font-semibold tracking-normal text-foreground">Compare plans</h2>
             </div>
 
-            <Table className="min-w-[940px] border-separate border-spacing-0">
-              <TableHeader>
+            <Table className="min-w-[940px] border-separate border-spacing-0" containerClassName="lg:overflow-visible">
+              <TableHeader className="sticky top-[72px] z-20 bg-background shadow-[0_1px_0_var(--border)]">
                 <TableRow className="border-border hover:bg-transparent">
                   <TableHead className="w-[26%] border-b border-border px-4 pb-6 pt-3 text-sm font-semibold text-muted-foreground lg:px-6">
                     Features

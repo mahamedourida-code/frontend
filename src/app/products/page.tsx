@@ -3,49 +3,16 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MobileNavigation } from "@/components/MobileNavigation";
-import { Layers, FileText, Zap, Shield, Clock, Upload, FileSpreadsheet, CheckCircle, Sparkles, Camera, Receipt, FileCheck, Table, ChevronLeft } from "lucide-react";
+import { MarketingNavBar } from "@/components/MarketingNavBar";
+import { Layers, FileText, Zap, Shield, Clock, Upload, FileSpreadsheet, CheckCircle, Sparkles, Camera, Receipt, FileCheck, Table } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 export default function ProductsPage() {
-  const router = useRouter()
-
   return (
     <div className="ax-page-bg min-h-screen">
-      {/* Header */}
-      <header className="ax-glass-header sticky top-0 z-50 border-b">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => router.back()}
-                className="gap-1 lg:gap-2"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Back</span>
-              </Button>
-              <Link href="/" className="text-2xl font-bold text-foreground">
-                Litt Up
-              </Link>
-            </div>
+      <MarketingNavBar />
 
-            {/* Mobile Navigation */}
-            <MobileNavigation />
-
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-4">
-              <Button asChild>
-                <Link href="/sign-up">Get Started</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <main className="container relative z-10 mx-auto px-4 pb-16 pt-28 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <div className="text-center mb-16">
           <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Products</Badge>

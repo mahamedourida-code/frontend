@@ -1,39 +1,15 @@
 "use client"
 
-import { AppIcon } from "@/components/AppIcon"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
-import { ChevronLeft } from "lucide-react"
+import { MarketingNavBar } from "@/components/MarketingNavBar"
 
 export default function TermsOfServicePage() {
-  const router = useRouter()
-
   return (
     <div className="ax-page-bg min-h-screen">
-      {/* Header */}
-      <header className="ax-glass-header relative z-10 border-b">
-        <div className="container max-w-4xl mx-auto px-4 py-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.back()}
-              className="gap-1"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Back
-            </Button>
-          </div>
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <AppIcon size={40} />
-            <span className="text-xl font-bold">AxLiner</span>
-          </Link>
-        </div>
-      </header>
+      <MarketingNavBar />
 
       {/* Content */}
-      <main className="ax-glass-card relative z-10 rounded-3xl container max-w-4xl mx-auto px-4 py-12">
+      <main className="ax-glass-card relative z-10 container mx-auto max-w-4xl rounded-3xl px-4 pb-12 pt-32">
         <h1 className="text-4xl font-bold mb-4">Terms of Service</h1>
         <p className="text-muted-foreground mb-8">Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
 
