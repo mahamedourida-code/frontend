@@ -8,7 +8,7 @@ import { useOCR } from "@/hooks/useOCR"
 import { useAuth } from "@/hooks/useAuth"
 import { toast } from "sonner"
 import { accountsPayableApi, ocrApi } from "@/lib/api-client"
-import type { AppLimits, DocumentMode, JobDocumentRecord, RecoverableJobSummary, ResolvedDocumentMode, VendorRuleFields } from "@/lib/api-client"
+import type { AppLimits, DocumentMode, JobDocumentRecord, ProcessedFile, RecoverableJobSummary, ResolvedDocumentMode, VendorRuleFields } from "@/lib/api-client"
 import { getApiErrorUi, showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
@@ -116,6 +116,12 @@ type ResultSourceTrace = {
   input_preview_url?: string
   source_page?: number | null
   source_page_count?: number | null
+}
+
+type DurableWorkspaceResultFile = Partial<ProcessedFile> & {
+  filename: string
+  original_filename?: string
+  document_id: string
 }
 
 type ConversionDocumentMode = DocumentMode
@@ -1613,7 +1619,7 @@ Best regards`
     return <DashboardRouteLoader label="Loading conversion workspace" />
   }
 
-  const durableResultFiles = jobDocuments.flatMap(document => {
+  const durableResultFiles: DurableWorkspaceResultFile[] = jobDocuments.flatMap((document): DurableWorkspaceResultFile[] => {
     const persistedResults = document.result_files.filter(file => file.status !== "superseded")
     if (persistedResults.length) {
       return persistedResults.map(file => ({ ...file, document_id: document.id }))
