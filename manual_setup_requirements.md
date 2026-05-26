@@ -88,7 +88,7 @@ Do not put these values in Git or frontend environment variables:
 fly secrets set QUICKBOOKS_CLIENT_ID="<intuit sandbox client id>" QUICKBOOKS_CLIENT_SECRET="<intuit sandbox client secret>" -a backend-lively-hill-7043
 ```
 
-`QUICKBOOKS_TOKEN_ENCRYPTION_KEY` can be generated and configured by the coding agent during deployment. `QUICKBOOKS_REDIRECT_URI`, environment, and API minor version are already represented in `backend/fly.toml`.
+`QUICKBOOKS_TOKEN_ENCRYPTION_KEY` has already been generated and configured as a Fly secret. `QUICKBOOKS_REDIRECT_URI`, environment, and API minor version are already represented in `backend/fly.toml`.
 
 ### Before Production Use
 
