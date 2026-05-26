@@ -19,14 +19,11 @@ export interface UserProfile extends User {
   language?: string;
 }
 
-export interface AuthCredentials {
-  email: string;
-  password: string;
-}
+export type AuthProvider = 'google' | 'github' | 'facebook';
 
-export interface SignupData extends AuthCredentials {
-  name: string;
-  confirmPassword: string;
+export interface OAuthSignInRequest {
+  provider: AuthProvider;
+  redirectTo?: string;
 }
 
 export interface AuthState {

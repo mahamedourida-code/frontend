@@ -1,16 +1,15 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { ocrApi, OCRWebSocket, BatchConvertResponse, JobStatusResponse } from '@/lib/api-client'
+import { ocrApi, OCRWebSocket, BatchConvertResponse, JobStatusResponse, type DocumentMode } from '@/lib/api-client'
 import { toast } from 'sonner'
 import { compressImages } from '@/lib/image-compression' 
 
-type UploadOutputFormat = 'xlsx' | 'txt'
-type UploadDocumentMode = 'table' | 'bank_statement' | 'invoice_receipt'
+type UploadOutputFormat = 'xlsx' | 'txt' | 'csv'
 
 interface UploadBatchOptions {
   outputFormat?: UploadOutputFormat
-  documentMode?: UploadDocumentMode
+  documentMode?: DocumentMode
 }
 
 interface UseOCRReturn {

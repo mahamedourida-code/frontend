@@ -18,7 +18,7 @@ import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { BillingSeal, CreditStack, PlanSwitch } from "@/components/BillingGlyphs"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
-import { billingApi, type BillingPlanKey } from "@/lib/api-client"
+import { billingApi, vendorMemoryApi, type BillingPlanKey, type VendorRule, type VendorRuleFields } from "@/lib/api-client"
 import {
   User,
   Globe,
@@ -33,7 +33,7 @@ import {
   Save
 } from "lucide-react"
 
-type SettingsSection = 'account' | 'billing' | 'preferences'
+type SettingsSection = 'account' | 'billing' | 'vendors' | 'preferences'
 type Theme = 'dark' | 'light' | 'system'
 
 function SettingsFallback() {
@@ -61,6 +61,10 @@ function SettingsContent() {
   const [activeSection, setActiveSection] = useState<SettingsSection>('account')
   const [loading, setLoading] = useState(false)
   const [billingAction, setBillingAction] = useState<string | null>(null)
+  const [vendorRules, setVendorRules] = useState<VendorRule[]>([])
+  const [vendorDrafts, setVendorDrafts] = useState<Record<string, VendorRuleFields>>({})
+  const [vendorRulesLoading, setVendorRulesLoading] = useState(false)
+  const [vendorRuleAction, setVendorRuleAction] = useState<string | null>(null)
   const {
     billingStatus,
     limits,
@@ -112,7 +116,7 @@ function SettingsContent() {
 
   useEffect(() => {
     const section = searchParams.get('section')
-    if (section === 'account' || section === 'billing' || section === 'preferences') {
+    if (section === 'account' || section === 'billing' || section === 'vendors' || section === 'preferences') {
       setActiveSection(section)
     }
   }, [searchParams])
@@ -255,6 +259,83 @@ function SettingsContent() {
     }
   }
 
+  const loadVendorRules = async () => {
+    setVendorRulesLoading(true)
+    try {
+      const response = await vendorMemoryApi.list()
+      setVendorRules(response.rules)
+      setVendorDrafts(Object.fromEntries(
+        response.rules.map(rule => [rule.id, { ...rule.suggested_fields }])
+      ))
+    } catch {
+      toast.error("Could not load vendor memory.")
+    } finally {
+      setVendorRulesLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (user && activeSection === 'vendors') {
+      void loadVendorRules()
+    }
+  }, [user, activeSection])
+
+  const updateVendorDraft = (ruleId: string, field: keyof VendorRuleFields, value: string) => {
+    setVendorDrafts(current => ({
+      ...current,
+      [ruleId]: {
+        ...(current[ruleId] || {}),
+        [field]: value,
+      },
+    }))
+  }
+
+  const saveVendorRule = async (rule: VendorRule) => {
+    setVendorRuleAction(rule.id)
+    try {
+      const response = await vendorMemoryApi.update(rule.id, {
+        suggested_fields: vendorDrafts[rule.id] || rule.suggested_fields,
+      })
+      setVendorRules(current => current.map(item => item.id === rule.id ? response.rule : item))
+      toast.success("Vendor memory updated.")
+    } catch {
+      toast.error("Could not update vendor memory.")
+    } finally {
+      setVendorRuleAction(null)
+    }
+  }
+
+  const toggleVendorRule = async (rule: VendorRule) => {
+    setVendorRuleAction(rule.id)
+    try {
+      const response = await vendorMemoryApi.update(rule.id, { enabled: !rule.enabled })
+      setVendorRules(current => current.map(item => item.id === rule.id ? response.rule : item))
+      toast.success(response.rule.enabled ? "Vendor memory enabled." : "Vendor memory disabled.")
+    } catch {
+      toast.error("Could not change vendor memory status.")
+    } finally {
+      setVendorRuleAction(null)
+    }
+  }
+
+  const deleteVendorRule = async (rule: VendorRule) => {
+    setVendorRuleAction(rule.id)
+    try {
+      await vendorMemoryApi.delete(rule.id)
+      setVendorRules(current => current.filter(item => item.id !== rule.id))
+      setVendorDrafts(current => {
+        const next = { ...current }
+        delete next[rule.id]
+        return next
+      })
+      toast.success("Vendor memory deleted.")
+    } catch {
+      toast.error("Could not delete vendor memory.")
+    } finally {
+      setVendorRuleAction(null)
+    }
+  }
+
   const creditTotal = billingStatus?.credits?.total_credits ?? 0
   const creditUsed = billingStatus?.credits?.used_credits ?? 0
   const creditAvailable = billingStatus?.credits?.available_credits ?? 0
@@ -269,6 +350,7 @@ function SettingsContent() {
       items: [
         { id: 'account', label: 'Account', icon: User },
         { id: 'billing', label: 'Billing', icon: BillingSeal },
+        { id: 'vendors', label: 'Vendor memory', icon: FileSpreadsheet },
         { id: 'preferences', label: 'Preferences', icon: Settings2 },
       ]
     }
@@ -520,6 +602,112 @@ function SettingsContent() {
                         </div>
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {activeSection === 'vendors' && (
+              <div className="space-y-5">
+                <Card className="ax-glass-card overflow-hidden rounded-xl">
+                  <CardHeader className="p-5 sm:p-6">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <CardTitle className="text-lg">Vendor memory</CardTitle>
+                        <CardDescription className="mt-1 max-w-xl leading-5">
+                          Rules saved after confirmed invoice or receipt review. AxLiner shows these as suggestions and never posts them automatically.
+                        </CardDescription>
+                      </div>
+                      <FileSpreadsheet className="h-6 w-6 shrink-0 text-primary" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3 p-5 pt-0 sm:p-6 sm:pt-0">
+                    {vendorRulesLoading ? (
+                      <div className="rounded-lg border border-border bg-card/50 p-4 text-sm text-muted-foreground">
+                        Loading saved vendors...
+                      </div>
+                    ) : vendorRules.length === 0 ? (
+                      <div className="rounded-lg border border-border bg-card/50 p-5">
+                        <p className="text-sm font-semibold text-foreground">No saved vendors</p>
+                        <p className="mt-1 text-sm leading-5 text-muted-foreground">
+                          Confirm an invoice or receipt in Convert Files, then remember the vendor from its review view.
+                        </p>
+                      </div>
+                    ) : vendorRules.map(rule => (
+                      <section key={rule.id} className="rounded-lg border border-border bg-card/50 p-4 backdrop-blur">
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h3 className="text-sm font-semibold text-foreground">{rule.display_name}</h3>
+                              <span className="rounded-md border border-border bg-background px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                                {rule.applies_to === 'both' ? 'Invoice / receipt' : rule.applies_to}
+                              </span>
+                              <span className={cn(
+                                "rounded-md border px-2 py-0.5 text-[11px] font-semibold",
+                                rule.enabled
+                                  ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                                  : "border-border bg-muted text-muted-foreground"
+                              )}>
+                                {rule.enabled ? 'Enabled' : 'Disabled'}
+                              </span>
+                            </div>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              Approved {formatDate(rule.approved_at)}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={vendorRuleAction === rule.id}
+                              onClick={() => void toggleVendorRule(rule)}
+                              className="h-8 rounded-md px-3 text-xs"
+                            >
+                              {rule.enabled ? 'Disable' : 'Enable'}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={vendorRuleAction === rule.id}
+                              onClick={() => void deleteVendorRule(rule)}
+                              className="h-8 rounded-md border-rose-200 px-3 text-xs text-rose-700 hover:bg-rose-50"
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                          {([
+                            ['category_account', 'Category / account', 'Office supplies'],
+                            ['tax_code', 'Tax code', 'VAT 20%'],
+                            ['currency', 'Currency', 'USD'],
+                            ['payment_terms', 'Payment terms', 'Net 30'],
+                            ['destination_treatment', 'Destination treatment', 'Draft bill'],
+                          ] as Array<[keyof VendorRuleFields, string, string]>).map(([field, label, placeholder]) => (
+                            <label key={field} className="space-y-1.5">
+                              <span className="block text-xs font-medium text-muted-foreground">{label}</span>
+                              <Input
+                                value={vendorDrafts[rule.id]?.[field] || ''}
+                                onChange={(event) => updateVendorDraft(rule.id, field, event.target.value)}
+                                placeholder={placeholder}
+                                className="h-9"
+                              />
+                            </label>
+                          ))}
+                        </div>
+                        <div className="mt-4 flex justify-end">
+                          <Button
+                            size="sm"
+                            disabled={vendorRuleAction === rule.id}
+                            onClick={() => void saveVendorRule(rule)}
+                            className="h-9 rounded-md px-4"
+                          >
+                            {vendorRuleAction === rule.id ? 'Saving...' : 'Save changes'}
+                          </Button>
+                        </div>
+                      </section>
+                    ))}
                   </CardContent>
                 </Card>
               </div>

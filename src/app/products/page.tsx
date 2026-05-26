@@ -17,7 +17,7 @@ export default function ProductsPage() {
         <div className="text-center mb-16">
           <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Products</Badge>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-6">
-            Transform Images to <span className="bg-gradient-to-r from-primary via-[#A78BFA] to-[#A78BFA] bg-clip-text text-transparent">Excel & CSV Files</span>
+            Transform Images to <span className="bg-gradient-to-r from-primary via-chart-2 to-primary bg-clip-text text-transparent">Excel & CSV Files</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Professional OCR solutions that convert any document, screenshot, or handwritten table into structured XLSX and CSV spreadsheets.
@@ -41,7 +41,7 @@ export default function ProductsPage() {
                 </div>
                 <CardTitle>Batch Screenshot Processing</CardTitle>
                 <CardDescription>
-                  Upload and process up to 100 screenshots simultaneously. Convert tables, forms, and structured data to Excel/CSV in one click. Perfect for bulk data extraction tasks.
+                  Upload and process batches of screenshots with limits matched to your plan. Convert tables, forms, and structured data to Excel/CSV in one click.
                 </CardDescription>
               </CardHeader>
             </Card>

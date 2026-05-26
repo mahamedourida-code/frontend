@@ -222,10 +222,15 @@ export interface ImageData {
   filename?: string
 }
 
+export type DocumentMode = 'auto' | 'table' | 'invoice' | 'receipt' | 'bank_statement' | 'notes' | 'invoice_receipt'
+export type ResolvedDocumentMode = 'table' | 'invoice' | 'receipt' | 'bank_statement' | 'notes'
+export type DetectedDocumentMode = ResolvedDocumentMode | 'needs_manual_selection'
+
 export interface BatchConvertRequest {
   images: ImageData[]
-  output_format?: 'xlsx' | 'csv' | 'json'
+  output_format?: 'xlsx' | 'csv' | 'txt'
   consolidation_strategy?: 'separate' | 'single_file' | 'single_sheet'
+  document_mode?: DocumentMode
 }
 
 export interface BatchConvertResponse {
@@ -248,13 +253,181 @@ export interface ProcessedFile {
   download_url: string
   filename: string
   original_image: string
+  document_id?: string
+  source_page?: number | null
+  source_page_count?: number | null
+  source_filename?: string
+  input_preview_url?: string
   size_bytes?: number
   status?: string
-  document_mode?: string
+  document_mode?: DocumentMode
   requires_review?: boolean
   confidence_score?: number
   review_flags?: Array<Record<string, unknown>>
   created_at: string
+}
+
+export interface JobDocumentExtraction {
+  id?: string
+  document_id: string
+  processing_unit_id: string
+  result_file_id?: string | null
+  status: string
+  source_preview_url?: string | null
+  source_page?: number | null
+  source_page_count?: number | null
+  source_filename?: string | null
+  metadata?: Record<string, unknown>
+  review_status?: string
+  validation_flags?: Array<Record<string, unknown>>
+  raw_structured_data?: Record<string, unknown>
+  reviewed_data?: Record<string, unknown>
+  edited?: boolean
+}
+
+export interface DocumentDuplicateWarning {
+  id: string
+  type: 'exact_source' | 'accounting_key' | 'statement_fingerprint'
+  code: string
+  message: string
+  matched_document_id?: string
+  matched_job_id?: string
+  matched_filename?: string
+  matched_created_at?: string
+  fields?: Record<string, unknown>
+  overridden?: boolean
+  detected_at?: string
+  overridden_at?: string
+}
+
+export interface VendorRuleFields {
+  category_account?: string
+  tax_code?: string
+  currency?: string
+  payment_terms?: string
+  destination_treatment?: string
+}
+
+export interface VendorRule {
+  id: string
+  owner_user_id: string
+  workspace_id: string
+  vendor_key: string
+  display_name: string
+  applies_to: 'invoice' | 'receipt' | 'both'
+  suggested_fields: VendorRuleFields
+  enabled: boolean
+  source_document_id?: string | null
+  approved_at: string
+  updated_at: string
+}
+
+export type AccountsPayableStatus =
+  | 'needs_coding'
+  | 'needs_review'
+  | 'ready_to_publish'
+  | 'published'
+  | 'failed'
+
+export interface AccountsPayableDraftData {
+  vendor?: string
+  invoice_number?: string
+  invoice_date?: string
+  due_date?: string
+  reference?: string
+  account_category?: string
+  tax_code?: string
+  currency?: string
+  subtotal?: unknown
+  tax_amount?: unknown
+  total?: unknown
+  line_items?: Array<Record<string, unknown>>
+}
+
+export interface AccountsPayableItem {
+  id: string
+  owner_user_id: string
+  workspace_id: string
+  document_id: string
+  job_id: string
+  status: AccountsPayableStatus
+  draft_data: AccountsPayableDraftData
+  attachment_visible: boolean
+  source_filename: string
+  source_access_url?: string | null
+  document_review_status?: string | null
+  vendor_suggestion?: VendorRule | null
+  metadata?: Record<string, unknown>
+  created_at: string
+  updated_at: string
+  published_at?: string | null
+}
+
+export interface QuickBooksConnectionStatus {
+  connected: boolean
+  status: 'connected' | 'disconnected' | 'error'
+  workspace_id?: string | null
+  realm_id?: string | null
+  company_name?: string | null
+  connected_at?: string | null
+  last_synced_at?: string | null
+  reference_counts: Partial<Record<'vendor' | 'account' | 'tax_code', number>>
+}
+
+export interface QuickBooksReferenceItem {
+  resource_type: 'vendor' | 'account' | 'tax_code'
+  external_id: string
+  display_name: string
+  active: boolean
+  details?: Record<string, unknown>
+  synced_at: string
+}
+
+export interface JobDocumentRecord {
+  id: string
+  job_id: string
+  original_filename: string
+  source_content_type?: string | null
+  selected_mode: DocumentMode
+  detected_mode?: DetectedDocumentMode | null
+  resolved_mode?: ResolvedDocumentMode | null
+  detection_confidence?: number | null
+  detection_review_reason?: string | null
+  mode_override_history?: Array<Record<string, unknown>>
+  metadata?: Record<string, unknown>
+  duplicate_warnings?: DocumentDuplicateWarning[]
+  vendor_suggestion?: VendorRule | null
+  status: string
+  review_status?: 'needs_review' | 'ready' | 'edited' | 'failed' | 'published' | 'deleted'
+  source_access_url?: string | null
+  preview_expires_in?: number
+  extractions: JobDocumentExtraction[]
+  result_files: ProcessedFile[]
+}
+
+export interface JobDocumentsResponse {
+  job_id: string
+  status: string
+  documents: JobDocumentRecord[]
+  total: number
+}
+
+export type DocumentReviewStatus = 'needs_review' | 'ready' | 'edited' | 'failed' | 'published' | 'deleted'
+
+export interface DocumentReviewChange {
+  id?: string
+  document_id: string
+  extraction_id: string
+  job_id: string
+  field_path: Array<string | number>
+  previous_value: unknown
+  changed_value: unknown
+  created_at: string
+}
+
+export interface DocumentReviewResponse {
+  job_id: string
+  document: JobDocumentRecord & { changes?: DocumentReviewChange[] }
 }
 
 export interface BatchJobResults {
@@ -326,7 +499,7 @@ export interface DashboardSummaryResponse {
 export interface UploadBatchMultipartOptions {
   output_format?: string
   consolidation_strategy?: string
-  document_mode?: 'table' | 'bank_statement' | 'invoice_receipt'
+  document_mode?: DocumentMode
   signal?: AbortSignal
   onUploadProgress?: (percent: number, event: AxiosProgressEvent) => void
 }
@@ -500,11 +673,12 @@ export const ocrApi = {
    * This is the old endpoint for the backend - use uploadBatchMultipart instead
    * @deprecated Use uploadBatchMultipart for better performance
    */
-  uploadBatch: async (images: ImageData[]): Promise<BatchConvertResponse> => {
+  uploadBatch: async (images: ImageData[], documentMode: DocumentMode = 'table'): Promise<BatchConvertResponse> => {
     const request: BatchConvertRequest = {
       images,
       output_format: 'xlsx',
-      consolidation_strategy: 'separate'
+      consolidation_strategy: 'separate',
+      document_mode: documentMode,
     }
 
     const response = await apiClient.post<BatchConvertResponse>('/api/v1/jobs/batch', request)
@@ -541,6 +715,103 @@ export const ocrApi = {
    */
   getStatus: async (jobId: string): Promise<JobStatusResponse> => {
     const response = await apiClient.get<JobStatusResponse>(`/api/v1/jobs/${jobId}/status`)
+    return response.data
+  },
+
+  getJobDocuments: async (jobId: string): Promise<JobDocumentsResponse> => {
+    const response = await apiClient.get<JobDocumentsResponse>(`/api/v1/jobs/${jobId}/documents`)
+    return response.data
+  },
+
+  overrideJobDocumentMode: async (
+    jobId: string,
+    documentId: string,
+    documentMode: ResolvedDocumentMode,
+    outputFormat: 'xlsx' | 'csv' | 'txt' = 'xlsx',
+  ): Promise<{ job_id: string; document_id: string; status: string; resolved_mode: ResolvedDocumentMode }> => {
+    const response = await apiClient.post(`/api/v1/jobs/${jobId}/documents/${documentId}/override-mode`, {
+      document_mode: documentMode,
+      output_format: outputFormat,
+    })
+    return response.data
+  },
+
+  getDocumentReview: async (jobId: string, documentId: string): Promise<DocumentReviewResponse> => {
+    const response = await apiClient.get<DocumentReviewResponse>(`/api/v1/jobs/${jobId}/documents/${documentId}/review`)
+    return response.data
+  },
+
+  updateDocumentReviewValue: async (
+    jobId: string,
+    documentId: string,
+    data: {
+      processing_unit_id: string
+      field_path: Array<string | number>
+      value: unknown
+      base_review_grid?: unknown[][]
+    },
+  ): Promise<Record<string, unknown>> => {
+    const response = await apiClient.post(`/api/v1/jobs/${jobId}/documents/${documentId}/review/changes`, data)
+    return response.data
+  },
+
+  updateDocumentReviewStatus: async (
+    jobId: string,
+    documentId: string,
+    reviewStatus: DocumentReviewStatus,
+    reason?: string,
+  ): Promise<DocumentReviewResponse> => {
+    const response = await apiClient.post<DocumentReviewResponse>(`/api/v1/jobs/${jobId}/documents/${documentId}/review/status`, {
+      review_status: reviewStatus,
+      reason,
+    })
+    return response.data
+  },
+
+  overrideDocumentDuplicateWarning: async (
+    jobId: string,
+    documentId: string,
+    warningId: string,
+    reason?: string,
+  ): Promise<DocumentReviewResponse> => {
+    const response = await apiClient.post<DocumentReviewResponse>(`/api/v1/jobs/${jobId}/documents/${documentId}/duplicates/override`, {
+      warning_id: warningId,
+      reason,
+    })
+    return response.data
+  },
+
+  saveDocumentVendorRule: async (
+    jobId: string,
+    documentId: string,
+    suggestedFields: VendorRuleFields,
+  ): Promise<DocumentReviewResponse & { rule: VendorRule }> => {
+    const response = await apiClient.post<DocumentReviewResponse & { rule: VendorRule }>(`/api/v1/jobs/${jobId}/documents/${documentId}/vendor-rule`, {
+      suggested_fields: suggestedFields,
+    })
+    return response.data
+  },
+
+  downloadReviewedDocument: async (
+    jobId: string,
+    documentId: string,
+    exportFormat: 'xlsx' | 'csv' | 'txt' = 'xlsx',
+  ): Promise<Blob> => {
+    const response = await apiClient.get(`/api/v1/jobs/${jobId}/documents/${documentId}/export`, {
+      params: { format: exportFormat },
+      responseType: 'blob',
+    })
+    return response.data
+  },
+
+  downloadReviewedBatch: async (
+    jobId: string,
+    exportFormat: 'xlsx' | 'csv' | 'txt' = 'xlsx',
+  ): Promise<Blob> => {
+    const response = await apiClient.get(`/api/v1/jobs/${jobId}/exports/reviewed`, {
+      params: { format: exportFormat },
+      responseType: 'blob',
+    })
     return response.data
   },
 
@@ -684,6 +955,95 @@ export const ocrApi = {
    */
   deactivateShareSession: async (sessionId: string): Promise<{ message: string }> => {
     const response = await apiClient.delete(`/api/v1/sessions/${sessionId}`)
+    return response.data
+  },
+}
+
+export const vendorMemoryApi = {
+  list: async (workspaceId?: string): Promise<{ rules: VendorRule[]; total: number }> => {
+    const response = await apiClient.get<{ rules: VendorRule[]; total: number }>('/api/v1/vendor-rules', {
+      params: workspaceId ? { workspace_id: workspaceId } : undefined,
+    })
+    return response.data
+  },
+
+  update: async (
+    ruleId: string,
+    updates: { display_name?: string; suggested_fields?: VendorRuleFields; enabled?: boolean },
+  ): Promise<{ rule: VendorRule }> => {
+    const response = await apiClient.patch<{ rule: VendorRule }>(`/api/v1/vendor-rules/${ruleId}`, updates)
+    return response.data
+  },
+
+  delete: async (ruleId: string): Promise<void> => {
+    await apiClient.delete(`/api/v1/vendor-rules/${ruleId}`)
+  },
+}
+
+export const accountsPayableApi = {
+  list: async (status?: AccountsPayableStatus): Promise<{ items: AccountsPayableItem[]; total: number }> => {
+    const response = await apiClient.get<{ items: AccountsPayableItem[]; total: number }>('/api/v1/accounts-payable', {
+      params: status ? { status } : undefined,
+    })
+    return response.data
+  },
+
+  createFromDocument: async (jobId: string, documentId: string): Promise<{ item: AccountsPayableItem }> => {
+    const response = await apiClient.post<{ item: AccountsPayableItem }>('/api/v1/accounts-payable/from-document', {
+      job_id: jobId,
+      document_id: documentId,
+    })
+    return response.data
+  },
+
+  update: async (
+    itemId: string,
+    updates: {
+      draft_data?: Pick<AccountsPayableDraftData, 'vendor' | 'due_date' | 'account_category' | 'tax_code' | 'reference' | 'line_items'>
+      attachment_visible?: boolean
+      status?: AccountsPayableStatus
+      reason?: string
+    },
+  ): Promise<{ item: AccountsPayableItem }> => {
+    const response = await apiClient.patch<{ item: AccountsPayableItem }>(`/api/v1/accounts-payable/${itemId}`, updates)
+    return response.data
+  },
+
+  bulkPublish: async (itemIds: string[]): Promise<{ items: AccountsPayableItem[]; total: number }> => {
+    const response = await apiClient.post<{ items: AccountsPayableItem[]; total: number }>('/api/v1/accounts-payable/bulk-status', {
+      item_ids: itemIds,
+      status: 'published',
+      reason: 'Marked published outside AxLiner',
+    })
+    return response.data
+  },
+}
+
+export const quickBooksApi = {
+  status: async (): Promise<QuickBooksConnectionStatus> => {
+    const response = await apiClient.get<QuickBooksConnectionStatus>('/api/v1/integrations/quickbooks/status')
+    return response.data
+  },
+
+  connect: async (): Promise<{ authorization_url: string }> => {
+    const response = await apiClient.post<{ authorization_url: string }>('/api/v1/integrations/quickbooks/connect', {})
+    return response.data
+  },
+
+  sync: async (): Promise<QuickBooksConnectionStatus> => {
+    const response = await apiClient.post<QuickBooksConnectionStatus>('/api/v1/integrations/quickbooks/sync', {})
+    return response.data
+  },
+
+  references: async (resourceType?: QuickBooksReferenceItem['resource_type']): Promise<{ items: QuickBooksReferenceItem[]; total: number }> => {
+    const response = await apiClient.get<{ items: QuickBooksReferenceItem[]; total: number }>('/api/v1/integrations/quickbooks/reference-data', {
+      params: resourceType ? { resource_type: resourceType } : undefined,
+    })
+    return response.data
+  },
+
+  disconnect: async (): Promise<QuickBooksConnectionStatus> => {
+    const response = await apiClient.delete<QuickBooksConnectionStatus>('/api/v1/integrations/quickbooks')
     return response.data
   },
 }

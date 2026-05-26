@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { WorkspaceSwitcher } from "@/components/WorkspaceSwitcher"
 import { cn } from "@/lib/utils"
 
-type SidebarItemKey = "overview" | "process" | "history" | "pricing" | "settings"
+type SidebarItemKey = "overview" | "process" | "accounts_payable" | "integrations" | "history" | "pricing" | "settings"
 
 interface WorkspaceSidebarProps {
   activeItem: SidebarItemKey
@@ -26,6 +26,8 @@ interface WorkspaceSidebarProps {
 const sidebarItems = [
   { key: "overview" as const, label: "Overview", icon: Activity, href: "/dashboard" },
   { key: "process" as const, label: "Convert Files", icon: Upload, href: "/dashboard/client" },
+  { key: "accounts_payable" as const, label: "Accounts Payable", icon: ReceiptText, href: "/dashboard/accounts-payable" },
+  { key: "integrations" as const, label: "Integrations", icon: Building2, href: "/dashboard/integrations" },
   { key: "history" as const, label: "History", icon: History, href: "/history" },
   { key: "pricing" as const, label: "Pricing", icon: BillingSeal, href: "/pricing" },
   { key: "settings" as const, label: "Settings", icon: Settings, href: "/dashboard/settings" },
@@ -65,9 +67,12 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
               const Icon = item.icon
               const isProcess = item.key === "process"
               const processSubItems = [
+                { label: "Auto detect", href: "/dashboard/auto-detect", icon: Upload },
                 { label: "Table mode", href: "/dashboard/client", icon: FileSpreadsheet },
                 { label: "Bank statements", href: "/dashboard/bank-statements", icon: Building2 },
-                { label: "Invoices/receipts", href: "/dashboard/invoice-receipts", icon: ReceiptText },
+                { label: "Invoices", href: "/dashboard/invoices", icon: ReceiptText },
+                { label: "Receipts", href: "/dashboard/receipts", icon: ReceiptText },
+                { label: "Notes", href: "/dashboard/notes", icon: FileSpreadsheet },
               ]
 
               if (isProcess) {

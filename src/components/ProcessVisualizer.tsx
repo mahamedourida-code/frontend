@@ -87,7 +87,7 @@ function FlowPacket({ delay, duration, shouldReduceMotion }: FlowPacketProps) {
         {Array.from({ length: 12 }).map((_, index) => (
           <span
             key={index}
-            className="rounded-[3px] bg-[#441F84]/75"
+            className="rounded-[3px] bg-primary/75"
             style={{ opacity: index % 4 === 0 ? 0.45 : 0.78 }}
           />
         ))}
@@ -118,7 +118,7 @@ export function ProcessVisualizer() {
       >
         <motion.path
           d="M20 0V520"
-          stroke="#A78BFA"
+          stroke="var(--primary)"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeDasharray="6 12"

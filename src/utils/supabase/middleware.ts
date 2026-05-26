@@ -55,7 +55,7 @@ export async function updateSession(request: NextRequest) {
 
   // Public paths that should be accessible without auth
   // IMPORTANT: /auth/callback must be allowed for OAuth flow to work
-  const publicPaths = ['/auth', '/verify-email', '/forgot-password', '/reset-password']
+  const publicPaths = ['/auth']
   const isPublicPath = publicPaths.some(path =>
     request.nextUrl.pathname.startsWith(path)
   )

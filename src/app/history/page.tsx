@@ -414,7 +414,7 @@ function HistoryContent() {
           size="icon"
           onClick={refresh}
           disabled={isLoading}
-          className="h-10 w-10 rounded-full border-[#d9c9fb] bg-white/65 text-[#2f165e] hover:bg-white"
+          className="h-10 w-10 rounded-full border-border bg-card/70 text-primary hover:bg-card"
         >
           <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
         </Button>

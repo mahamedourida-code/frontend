@@ -36,7 +36,9 @@ import {
   HelpCircle,
   FileText,
   FileSpreadsheet,
-  LayoutDashboard
+  LayoutDashboard,
+  ReceiptText,
+  Building2
 } from "lucide-react"
 
 interface MobileNavProps {
@@ -120,6 +122,18 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       label: "History",
       href: "/history",
       icon: History,
+      show: isAuthenticated
+    },
+    {
+      label: "Accounts Payable",
+      href: "/dashboard/accounts-payable",
+      icon: ReceiptText,
+      show: isAuthenticated
+    },
+    {
+      label: "Integrations",
+      href: "/dashboard/integrations",
+      icon: Building2,
       show: isAuthenticated
     },
     {

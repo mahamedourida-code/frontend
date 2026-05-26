@@ -7,8 +7,8 @@ import { Separator } from "@/components/ui/separator"
 import { useOCR } from "@/hooks/useOCR"
 import { useAuth } from "@/hooks/useAuth"
 import { toast } from "sonner"
-import { ocrApi } from "@/lib/api-client"
-import type { AppLimits, RecoverableJobSummary } from "@/lib/api-client"
+import { accountsPayableApi, ocrApi } from "@/lib/api-client"
+import type { AppLimits, DocumentMode, JobDocumentRecord, RecoverableJobSummary, ResolvedDocumentMode, VendorRuleFields } from "@/lib/api-client"
 import { getApiErrorUi, showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
@@ -58,7 +58,9 @@ function filenameStem(name?: string | null, fallback = "axliner_result") {
   return cleaned || fallback
 }
 
-function smartOutputFilename(file: any, index: number, sourceFiles: File[], outputMode: "table" | "text") {
+type WorkspaceOutputMode = "table" | "text" | "csv"
+
+function smartOutputFilename(file: any, index: number, sourceFiles: File[], outputMode: WorkspaceOutputMode) {
   const sourceName =
     file?.original_filename ||
     file?.original_image ||
@@ -67,21 +69,39 @@ function smartOutputFilename(file: any, index: number, sourceFiles: File[], outp
     sourceFiles[index]?.name ||
     file?.filename ||
     `axliner_${index + 1}`
-  return `${filenameStem(sourceName, `axliner_${index + 1}`)}.${outputMode === "text" ? "txt" : "xlsx"}`
+  const pageSuffix = file?.source_page ? `_page_${file.source_page}` : ""
+  const returnedExtension = String(file?.filename || "").match(/\.(xlsx|csv|txt)$/i)?.[1]?.toLowerCase()
+  const extension = returnedExtension || (outputMode === "text" ? "txt" : outputMode === "csv" ? "csv" : "xlsx")
+  return `${filenameStem(sourceName, `axliner_${index + 1}`)}${pageSuffix}.${extension}`
 }
 
-function smartSheetName(name: string, used: Set<string>) {
-  const base = filenameStem(name, "Sheet")
-    .replace(/[:\\/?*[\]]/g, "_")
-    .slice(0, 26) || "Sheet"
-  let next = base
-  let suffix = 2
-  while (used.has(next)) {
-    next = `${base.slice(0, 26 - String(suffix).length)}_${suffix}`
-    suffix += 1
-  }
-  used.add(next)
-  return next.slice(0, 31)
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}
+
+function reviewedFileExtension(blob: Blob, requested: "xlsx" | "csv" | "txt") {
+  if (blob.type.startsWith("text/plain")) return "txt"
+  if (blob.type.includes("csv")) return "csv"
+  return requested
+}
+
+function reviewedFilename(file: any, index: number, sourceFiles: File[], extension: string) {
+  const sourceName =
+    file?.original_filename ||
+    file?.original_image ||
+    file?.source_filename ||
+    sourceFiles[index]?.name ||
+    file?.filename ||
+    `axliner_${index + 1}`
+  const pageSuffix = file?.source_page ? `_page_${file.source_page}` : ""
+  return `${filenameStem(sourceName, `axliner_${index + 1}`)}${pageSuffix}_reviewed.${extension}`
 }
 
 type ResultPreview = {
@@ -90,7 +110,15 @@ type ResultPreview = {
   loading?: boolean
 }
 
-type ConversionDocumentMode = "table" | "bank_statement" | "invoice_receipt"
+type ResultSourceTrace = {
+  document_id: string
+  original_filename: string
+  input_preview_url?: string
+  source_page?: number | null
+  source_page_count?: number | null
+}
+
+type ConversionDocumentMode = DocumentMode
 
 export default function ProcessImagesPage() {
   return (
@@ -138,10 +166,19 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
   const [textPreview, setTextPreview] = useState('')
   const [resultPreviews, setResultPreviews] = useState<Record<string, ResultPreview>>({})
   const resultPreviewsRef = useRef<Record<string, ResultPreview>>({})
+  const [resultSourceTrace, setResultSourceTrace] = useState<Record<string, ResultSourceTrace>>({})
+  const [jobDocuments, setJobDocuments] = useState<JobDocumentRecord[]>([])
+  const [overridingDocumentId, setOverridingDocumentId] = useState<string | null>(null)
   const [firstImageUrl, setFirstImageUrl] = useState<string>('')
   const [activePreviewFileId, setActivePreviewFileId] = useState<string>('')
-  const [outputMode, setOutputMode] = useState<'table' | 'text'>('table')
+  const [outputMode, setOutputMode] = useState<WorkspaceOutputMode>(documentMode === "notes" ? "text" : "table")
   const [activeDocumentMode, setActiveDocumentMode] = useState<ConversionDocumentMode>(documentMode)
+  const reviewedExportFormat: "xlsx" | "csv" | "txt" =
+    activeDocumentMode === "notes" && outputMode === "text"
+      ? "txt"
+      : outputMode === "csv"
+        ? "csv"
+        : "xlsx"
   const {
     limits: entitlementLimits,
     credits: entitlementCredits,
@@ -202,9 +239,7 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
 
   useEffect(() => {
     setActiveDocumentMode(documentMode)
-    if (documentMode !== 'table') {
-      setOutputMode('table')
-    }
+    setOutputMode(documentMode === 'notes' ? 'text' : 'table')
   }, [documentMode])
 
   useEffect(() => {
@@ -486,7 +521,119 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
     }
   }, [uploadedFiles.length])
 
-  const getResultInputPreviewUrl = useCallback((file: any, fallbackIndex = 0) => {
+  const applyDurableDocuments = useCallback((documents: JobDocumentRecord[]) => {
+    const nextTrace: Record<string, ResultSourceTrace> = {}
+    documents.forEach((document: JobDocumentRecord) => {
+          document.extractions.forEach((extraction) => {
+            if (!extraction.result_file_id) return
+            nextTrace[extraction.result_file_id] = {
+              document_id: document.id,
+              original_filename: document.original_filename,
+              input_preview_url: extraction.source_preview_url || undefined,
+              source_page: extraction.source_page,
+              source_page_count: extraction.source_page_count,
+            }
+          })
+
+          document.result_files.forEach((file) => {
+            if (!file.file_id || nextTrace[file.file_id]) return
+            nextTrace[file.file_id] = {
+              document_id: document.id,
+              original_filename: document.original_filename,
+              input_preview_url:
+                file.input_preview_url ||
+                (document.source_content_type !== "application/pdf" ? document.source_access_url || undefined : undefined),
+              source_page: file.source_page,
+              source_page_count: file.source_page_count,
+            }
+          })
+        })
+    setJobDocuments(documents)
+    setResultSourceTrace(nextTrace)
+  }, [])
+
+  useEffect(() => {
+    if (!jobId) {
+      setJobDocuments([])
+      setResultSourceTrace({})
+      return
+    }
+
+    let cancelled = false
+    const loadTraceability = async () => {
+      try {
+        const response = await ocrApi.getJobDocuments(jobId)
+        if (!cancelled) applyDurableDocuments(response.documents)
+      } catch {
+        if (!cancelled && status === "completed") {
+          setJobDocuments([])
+          setResultSourceTrace({})
+        }
+      }
+    }
+
+    void loadTraceability()
+    return () => {
+      cancelled = true
+    }
+  }, [applyDurableDocuments, jobId, status, resultFiles?.map((file: any) => file.file_id || "").join("|")])
+
+  const handleDocumentModeOverride = useCallback(async (documentId: string, mode: ResolvedDocumentMode) => {
+    if (!jobId) return
+    setOverridingDocumentId(documentId)
+    setWorkspaceBanner({
+      title: "Reprocessing document",
+      description: "The selected extractor is running against the stored source file.",
+      tone: "info",
+    })
+    try {
+      await ocrApi.overrideJobDocumentMode(jobId, documentId, mode, mode === "notes" ? "txt" : "xlsx")
+      for (let attempt = 0; attempt < 16; attempt += 1) {
+        await new Promise(resolve => setTimeout(resolve, 1250))
+        const response = await ocrApi.getJobDocuments(jobId)
+        applyDurableDocuments(response.documents)
+        const document = response.documents.find(item => item.id === documentId)
+        const processing = document?.extractions.some(extraction => (
+          extraction.status === "queued" || extraction.status === "processing"
+        ))
+        if (document && !processing && document.status !== "processing") {
+          setWorkspaceBanner(null)
+          void fetchUserStats()
+          return
+        }
+      }
+      setWorkspaceBanner({
+        title: "Reprocessing continues",
+        description: "The result will appear in this batch when ready.",
+        tone: "info",
+      })
+    } catch (error) {
+      const uiError = getApiErrorUi(error, {
+        isAuthenticated: Boolean(user),
+        upgradeHref: "/pricing?from=document-mode",
+        billingHref: "/dashboard/settings?section=billing",
+      })
+      setWorkspaceBanner({
+        title: uiError.title,
+        description: uiError.description,
+        actionLabel: uiError.action?.label,
+        onAction: uiError.action?.onClick,
+        tone: "error",
+      })
+    } finally {
+      setOverridingDocumentId(null)
+    }
+  }, [applyDurableDocuments, jobId, user])
+
+  const getResultInputPreviewUrl = useCallback((file: any) => {
+    if (file?.input_preview_url) {
+      return file.input_preview_url
+    }
+    const durableTrace = file?.file_id ? resultSourceTrace[file.file_id] : undefined
+    if (durableTrace?.input_preview_url) {
+      return durableTrace.input_preview_url
+    }
+
     const normalizeName = (value: string) =>
       value
         .toLowerCase()
@@ -504,23 +651,36 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
       .map((value: string) => normalizeName(String(value)))
       .filter(Boolean)
 
-    const matchIndex = uploadedFiles.findIndex(uploadedFile => {
+    const matchIndexes = uploadedFiles.reduce<number[]>((matches, uploadedFile, index) => {
       const uploadedBase = normalizeName(uploadedFile.name)
-      return candidates.some(candidate => (
+      if (candidates.some(candidate => (
         candidate === uploadedBase ||
         candidate.includes(uploadedBase) ||
         uploadedBase.includes(candidate)
-      ))
-    })
+      ))) {
+        matches.push(index)
+      }
+      return matches
+    }, [])
 
-    const inputIndex = matchIndex >= 0 ? matchIndex : fallbackIndex
-    return filePreviewUrls[inputIndex] || ''
-  }, [filePreviewUrls, uploadedFiles])
+    if (matchIndexes.length === 1) {
+      const matchIndex = matchIndexes[0]
+      if (
+        isPdfFile(uploadedFiles[matchIndex]) &&
+        (file?.source_page > 1 || (Boolean(jobId) && (resultFiles?.length || 0) > 1))
+      ) {
+        return ''
+      }
+      return filePreviewUrls[matchIndex] || ''
+    }
+
+    return uploadedFiles.length === 1 ? filePreviewUrls[0] || '' : ''
+  }, [filePreviewUrls, jobId, resultFiles?.length, resultSourceTrace, uploadedFiles])
 
   useEffect(() => {
     if (!resultFiles?.length) return
 
-    const matchedPreview = getResultInputPreviewUrl(resultFiles[0], 0)
+    const matchedPreview = getResultInputPreviewUrl(resultFiles[0])
     if (matchedPreview && matchedPreview !== firstImageUrl) {
       setFirstImageUrl(matchedPreview)
     }
@@ -692,7 +852,12 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
       }
 
       const response = await uploadBatch(uploadedFiles, {
-        outputFormat: activeDocumentMode === 'table' && outputMode === 'text' ? 'txt' : 'xlsx',
+        outputFormat:
+          activeDocumentMode === 'notes' && outputMode === 'text'
+            ? 'txt'
+            : outputMode === 'csv'
+              ? 'csv'
+              : 'xlsx',
         documentMode: activeDocumentMode,
       })
       if (response && response.session_id) {
@@ -760,6 +925,7 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
     setTextPreview('')
     setResultPreviews({})
     resultPreviewsRef.current = {}
+    setResultSourceTrace({})
     setFirstImageUrl('')
     setActivePreviewFileId('')
     
@@ -802,7 +968,11 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
     try {
       const blob = await ocrApi.downloadFile(fileId)
 
-      if (outputMode === 'text' || blob.type.startsWith('text/')) {
+      const isReadableTextResponse =
+        outputMode === 'text' ||
+        (blob.type.startsWith('text/') && !blob.type.toLowerCase().includes('csv'))
+
+      if (isReadableTextResponse) {
         const text = await blob.text()
         const preview = { table: [], text: text.slice(0, 6000), loading: false }
         setResultPreviews(prev => {
@@ -1223,85 +1393,219 @@ Best regards`
     }
   }
 
-  const handleDownloadResultFile = (file: any, index = 0) => {
-    if (!file?.file_id) {
-      toast.error('Unable to download: File ID is missing')
+  const handleDownloadResultFile = async (file: any, index = 0) => {
+    if (jobId && file?.document_id) {
+      try {
+        const blob = await ocrApi.downloadReviewedDocument(jobId, file.document_id, reviewedExportFormat)
+        const extension = reviewedFileExtension(blob, reviewedExportFormat)
+        downloadBlob(blob, reviewedFilename(file, index, uploadedFiles, extension))
+      } catch (error: any) {
+        toast.error(error?.detail || error?.message || "Could not download the reviewed file.")
+      }
       return
     }
-    downloadFile(file.file_id, smartOutputFilename(file, index, uploadedFiles, outputMode))
+    if (file?.file_id) {
+      await downloadFile(file.file_id, smartOutputFilename(file, index, uploadedFiles, outputMode))
+      return
+    }
+    toast.error('Unable to download: File ID is missing')
   }
 
-  const handleDownloadReviewedBatch = async (editedTables: Record<string, any[][]>) => {
-    if (!resultFiles || resultFiles.length === 0) return
-
+  const handleDownloadReviewedBatch = async () => {
+    if (!jobId) {
+      await handleDownloadAll()
+      return
+    }
     try {
-      if (outputMode === 'text') {
-        const textParts: string[] = []
-        for (const [index, file] of resultFiles.entries()) {
-          if (!file.file_id) continue
-          const blob = await ocrApi.downloadFile(file.file_id)
-          const text = await blob.text()
-          textParts.push(`===== ${smartOutputFilename(file, index, uploadedFiles, outputMode)} =====\n${text.trim()}`)
-        }
-        const blob = new Blob([textParts.join('\n\n')], { type: 'text/plain;charset=utf-8' })
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = `${filenameStem(uploadedFiles[0]?.name || 'axliner_batch')}_reviewed.txt`
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        URL.revokeObjectURL(url)
-        toast.success('Reviewed batch downloaded.')
-        return
-      }
-
-      const XLSX = await import('xlsx')
-      const workbook = XLSX.utils.book_new()
-      const usedSheetNames = new Set<string>()
-
-      for (const [index, file] of resultFiles.entries()) {
-        if (!file.file_id) continue
-        const key = file.file_id || `result-${index}`
-        let table = editedTables[key]
-
-        if (!table?.length) {
-          const blob = await ocrApi.downloadFile(file.file_id)
-          const arrayBuffer = await blob.arrayBuffer()
-          const sourceWorkbook = XLSX.read(arrayBuffer, { type: 'array' })
-          const firstSheet = sourceWorkbook.Sheets[sourceWorkbook.SheetNames[0]]
-          table = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as any[][]
-        }
-
-        if (!table?.length) continue
-        const sheet = XLSX.utils.aoa_to_sheet(table)
-        const sheetName = smartSheetName(smartOutputFilename(file, index, uploadedFiles, outputMode), usedSheetNames)
-        XLSX.utils.book_append_sheet(workbook, sheet, sheetName)
-      }
-
-      if (!workbook.SheetNames.length) {
-        await handleDownloadAll()
-        return
-      }
-
-      XLSX.writeFile(workbook, `${filenameStem(uploadedFiles[0]?.name || 'axliner_batch')}_reviewed.xlsx`)
+      const blob = await ocrApi.downloadReviewedBatch(jobId, reviewedExportFormat)
+      const batchSource = jobDocuments[0]?.original_filename || uploadedFiles[0]?.name || "axliner_batch"
+      downloadBlob(blob, `${filenameStem(batchSource, "axliner_batch")}_reviewed.zip`)
       toast.success('Reviewed batch downloaded.')
     } catch (error: any) {
       toast.error(error?.detail || error?.message || 'Could not prepare the reviewed batch.')
     }
   }
 
+  const mergeReviewedDocument = useCallback((reviewDocument: JobDocumentRecord) => {
+    setJobDocuments(current => current.map(document => {
+      if (document.id !== reviewDocument.id) return document
+      return {
+        ...document,
+        ...reviewDocument,
+        source_access_url: document.source_access_url,
+        preview_expires_in: document.preview_expires_in,
+        extractions: reviewDocument.extractions.map(extraction => {
+          const existing = document.extractions.find(item => (
+            item.id === extraction.id || item.processing_unit_id === extraction.processing_unit_id
+          ))
+          return {
+            ...existing,
+            ...extraction,
+            source_preview_url: existing?.source_preview_url,
+          }
+        }),
+        result_files: document.result_files,
+      }
+    }))
+  }, [])
+
   const handleEditResultFile = (file: any, index = 0) => {
-    if (!file?.file_id) {
-      toast.error('Unable to edit: File ID is missing')
-      return
-    }
-    const matchedPreview = getResultInputPreviewUrl(file, index)
+    const matchedPreview = getResultInputPreviewUrl(file)
     if (matchedPreview) setFirstImageUrl(matchedPreview)
     setTablePreviewData([])
     setTextPreview('')
-    void fetchTablePreview(file.file_id)
+    if (file?.file_id) {
+      void fetchTablePreview(file.file_id)
+    }
+    if (jobId && file.document_id) {
+      void ocrApi.getDocumentReview(jobId, file.document_id)
+        .then(response => mergeReviewedDocument(response.document))
+        .catch(() => undefined)
+    }
   }
+
+  const reloadDurableDocuments = useCallback(async () => {
+    if (!jobId) return
+    const response = await ocrApi.getJobDocuments(jobId)
+    applyDurableDocuments(response.documents)
+  }, [applyDurableDocuments, jobId])
+
+  const persistReviewValue = useCallback(async (
+    file: any,
+    fieldPath: Array<string | number>,
+    value: string,
+    baseReviewGrid?: any[][],
+  ): Promise<boolean> => {
+    if (!jobId || !file?.document_id || !file?.processing_unit_id) {
+      setWorkspaceBanner({
+        title: "Correction was not saved",
+        description: "This result is missing durable document metadata. Reopen the batch and try again.",
+        tone: "error",
+      })
+      return false
+    }
+    try {
+      await ocrApi.updateDocumentReviewValue(jobId, file.document_id, {
+        processing_unit_id: file.processing_unit_id,
+        field_path: fieldPath,
+        value,
+        base_review_grid: baseReviewGrid,
+      })
+      await reloadDurableDocuments()
+      setWorkspaceBanner(null)
+      return true
+    } catch (error) {
+      const uiError = getApiErrorUi(error, {
+        isAuthenticated: Boolean(user),
+        upgradeHref: "/pricing",
+        billingHref: "/dashboard/settings?section=billing",
+      })
+      setWorkspaceBanner({
+        title: "Correction was not saved",
+        description: uiError.description,
+        tone: "error",
+      })
+      return false
+    }
+  }, [jobId, reloadDurableDocuments, user])
+
+  const handlePersistCellEdit = useCallback(async (
+    file: any,
+    rowIndex: number,
+    cellIndex: number,
+    value: string,
+    baseTable: any[][],
+  ) => persistReviewValue(file, ["review_grid", rowIndex, cellIndex], value, baseTable), [persistReviewValue])
+
+  const handlePersistStructuredEdit = useCallback(async (
+    file: any,
+    fieldPath: Array<string | number>,
+    value: string,
+  ) => persistReviewValue(file, fieldPath, value), [persistReviewValue])
+
+  const handleMarkDocumentReady = useCallback(async (file: any) => {
+    if (!jobId || !file?.document_id) return
+    try {
+      await ocrApi.updateDocumentReviewStatus(jobId, file.document_id, "ready")
+      await reloadDurableDocuments()
+      setWorkspaceBanner(null)
+    } catch (error) {
+      const uiError = getApiErrorUi(error, {
+        isAuthenticated: Boolean(user),
+        upgradeHref: "/pricing",
+        billingHref: "/dashboard/settings?section=billing",
+      })
+      setWorkspaceBanner({
+        title: "Could not mark this file ready",
+        description: uiError.description,
+        tone: "error",
+      })
+    }
+  }, [jobId, reloadDurableDocuments, user])
+
+  const handleOverrideDuplicateWarning = useCallback(async (file: any, warningId: string) => {
+    if (!jobId || !file?.document_id) return
+    try {
+      const response = await ocrApi.overrideDocumentDuplicateWarning(
+        jobId,
+        file.document_id,
+        warningId,
+        "Confirmed as a separate document",
+      )
+      mergeReviewedDocument(response.document)
+      await reloadDurableDocuments()
+      setWorkspaceBanner(null)
+    } catch (error) {
+      const uiError = getApiErrorUi(error, {
+        isAuthenticated: Boolean(user),
+        upgradeHref: "/pricing",
+        billingHref: "/dashboard/settings?section=billing",
+      })
+      setWorkspaceBanner({
+        title: "Could not keep this file separately",
+        description: uiError.description,
+        tone: "error",
+      })
+    }
+  }, [jobId, mergeReviewedDocument, reloadDurableDocuments, user])
+
+  const handleSaveVendorRule = useCallback(async (file: any, suggestedFields: VendorRuleFields) => {
+    if (!jobId || !file?.document_id) return false
+    try {
+      const response = await ocrApi.saveDocumentVendorRule(jobId, file.document_id, suggestedFields)
+      mergeReviewedDocument(response.document)
+      toast.success("Vendor suggestions saved for this workspace.")
+      setWorkspaceBanner(null)
+      return true
+    } catch (error) {
+      const uiError = getApiErrorUi(error, {
+        isAuthenticated: Boolean(user),
+        upgradeHref: "/pricing",
+        billingHref: "/dashboard/settings?section=billing",
+      })
+      setWorkspaceBanner({
+        title: "Vendor memory was not saved",
+        description: uiError.description,
+        tone: "error",
+      })
+      return false
+    }
+  }, [jobId, mergeReviewedDocument, user])
+
+  const handleSendToAccountsPayable = useCallback(async (file: any) => {
+    if (!jobId || !file?.document_id) return
+    try {
+      await accountsPayableApi.createFromDocument(jobId, file.document_id)
+      toast.success("Invoice added to Accounts Payable.")
+      router.push("/dashboard/accounts-payable")
+    } catch (error: any) {
+      setWorkspaceBanner({
+        title: "Invoice was not added to Accounts Payable",
+        description: error?.detail || error?.message || "Confirm the invoice and try again.",
+        tone: "error",
+      })
+    }
+  }, [jobId, router])
 
   
 
@@ -1309,18 +1613,91 @@ Best regards`
     return <DashboardRouteLoader label="Loading conversion workspace" />
   }
 
-  const isComplete = status === 'completed' && resultFiles && resultFiles.length > 0
+  const durableResultFiles = jobDocuments.flatMap(document => {
+    const persistedResults = document.result_files.filter(file => file.status !== "superseded")
+    if (persistedResults.length) {
+      return persistedResults.map(file => ({ ...file, document_id: document.id }))
+    }
+    return document.extractions.map(extraction => ({
+      file_id: extraction.result_file_id || undefined,
+      filename: document.original_filename,
+      original_filename: document.original_filename,
+      document_id: document.id,
+      input_preview_url: extraction.source_preview_url || document.source_access_url || undefined,
+      source_page: extraction.source_page,
+      source_page_count: extraction.source_page_count,
+      status: extraction.status,
+      requires_review: true,
+      review_flags: extraction.validation_flags,
+    }))
+  })
+  const visibleResultFiles = durableResultFiles.length ? durableResultFiles : resultFiles
+  const isComplete = status === 'completed' && Boolean(
+    (visibleResultFiles && visibleResultFiles.length > 0)
+    || (activeDocumentMode === "auto" && jobDocuments.length > 0)
+  )
   const isBankStatementMode = activeDocumentMode === 'bank_statement'
-  const isInvoiceReceiptMode = activeDocumentMode === 'invoice_receipt'
-  const isTextOutput = activeDocumentMode === 'table' && outputMode === 'text'
-  const effectiveOutputMode = isBankStatementMode || isInvoiceReceiptMode ? 'table' : outputMode
-  const displayResultFiles = resultFiles?.map((file, index) => ({
-    ...file,
-    filename: smartOutputFilename(file, index, uploadedFiles, effectiveOutputMode),
-    input_preview_url: getResultInputPreviewUrl(file, index),
-  })) || null
+  const isAccountingDocumentMode = activeDocumentMode === 'invoice' || activeDocumentMode === 'receipt' || activeDocumentMode === 'invoice_receipt'
+  const isTextOutput = activeDocumentMode === 'notes' && outputMode === 'text'
+  const effectiveOutputMode = outputMode
+  const displayResultFiles = visibleResultFiles?.map((file, index) => {
+    const trace = file.file_id ? resultSourceTrace[file.file_id] : undefined
+    const durableDocument = jobDocuments.find(document => (
+          document.id === file.document_id ||
+          (file.file_id && (
+          document.result_files.some(resultFile => resultFile.file_id === file.file_id) ||
+          document.extractions.some(extraction => extraction.result_file_id === file.file_id)
+          ))
+        ))
+    const durableExtraction = durableDocument?.extractions.find(extraction => (
+      file.file_id ? extraction.result_file_id === file.file_id : extraction.source_page === file.source_page
+    )) || durableDocument?.extractions[0]
+    const reviewGrid = durableExtraction?.reviewed_data?.review_grid
+    const tracedFile = trace
+      ? {
+          ...file,
+          document_id: trace.document_id,
+          original_filename: trace.original_filename,
+          source_page: trace.source_page,
+          source_page_count: trace.source_page_count,
+        }
+      : file
+
+    return {
+      ...tracedFile,
+      document_id: durableDocument?.id || tracedFile.document_id,
+      processing_unit_id: durableExtraction?.processing_unit_id,
+      review_status: durableDocument?.review_status || durableExtraction?.review_status,
+      review_grid: Array.isArray(reviewGrid) ? reviewGrid as any[][] : undefined,
+      reviewed_data: durableExtraction?.reviewed_data || durableExtraction?.raw_structured_data,
+      document_type:
+        durableDocument?.resolved_mode ||
+        durableDocument?.detected_mode ||
+        durableDocument?.selected_mode ||
+        activeDocumentMode,
+      review_flags: durableExtraction?.validation_flags || tracedFile.review_flags,
+      requires_review: durableDocument?.review_status === "needs_review" || tracedFile.requires_review,
+      duplicate_warnings: durableDocument?.duplicate_warnings || [],
+      vendor_suggestion: durableDocument?.vendor_suggestion || null,
+      filename: smartOutputFilename(tracedFile, index, uploadedFiles, effectiveOutputMode),
+      input_preview_url: getResultInputPreviewUrl(tracedFile),
+    }
+  }) || null
   const uploadedSizeMb = uploadedFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024)
-  const processLabel = isBankStatementMode ? 'Extract statement' : isTextOutput ? 'Extract text' : 'Convert files'
+  const processLabel =
+    activeDocumentMode === 'auto'
+      ? 'Detect and convert'
+      : isBankStatementMode
+        ? 'Extract statement'
+        : activeDocumentMode === 'invoice'
+          ? 'Extract invoice'
+          : activeDocumentMode === 'receipt'
+            ? 'Extract receipt'
+            : activeDocumentMode === 'notes'
+              ? 'Extract notes'
+              : isTextOutput
+                ? 'Extract text'
+                : 'Convert files'
   const creditEstimate = uploadedFiles.reduce((total, file, index) => {
     return total + (isPdfFile(file) ? (pdfPageCounts[index] || 1) : 1)
   }, 0)
@@ -1347,8 +1724,22 @@ Best regards`
   return (
     <DashboardShell
       activeItem="process"
-      title={isBankStatementMode ? "Bank Statement Mode" : isInvoiceReceiptMode ? "Invoice and Receipt Mode" : "Convert Files"}
-      eyebrow={isBankStatementMode ? "Statements" : isInvoiceReceiptMode ? "Accounting" : "Batch"}
+      title={
+        activeDocumentMode === "auto"
+          ? "Auto Detect"
+          : isBankStatementMode
+            ? "Bank Statement Mode"
+            : activeDocumentMode === "invoice"
+              ? "Invoice Mode"
+              : activeDocumentMode === "receipt"
+                ? "Receipt Mode"
+                : activeDocumentMode === "notes"
+                  ? "Notes Mode"
+                  : isAccountingDocumentMode
+                    ? "Invoice and Receipt Mode"
+                    : "Convert Files"
+      }
+      eyebrow={isBankStatementMode ? "Statements" : isAccountingDocumentMode ? "Accounting" : activeDocumentMode === "notes" ? "Notes" : "Batch"}
       user={user}
       contentClassName="max-w-none px-3 py-3 sm:px-5 lg:px-6"
     >
@@ -1367,7 +1758,7 @@ Best regards`
         documentMode={activeDocumentMode}
         onDocumentModeChange={(mode) => {
           setActiveDocumentMode(mode)
-          if (mode !== 'table') setOutputMode('table')
+          setOutputMode(mode === 'notes' ? 'text' : 'table')
         }}
         isUploading={isUploading}
         isProcessing={isProcessing}
@@ -1403,8 +1794,17 @@ Best regards`
         onDownloadAll={handleDownloadAll}
         onDownloadReviewedBatch={handleDownloadReviewedBatch}
         onEditFile={handleEditResultFile}
+        onPersistCellEdit={handlePersistCellEdit}
+        onPersistStructuredEdit={handlePersistStructuredEdit}
+        onMarkDocumentReady={handleMarkDocumentReady}
+        onSendToAccountsPayable={handleSendToAccountsPayable}
+        onOverrideDuplicateWarning={handleOverrideDuplicateWarning}
+        onSaveVendorRule={handleSaveVendorRule}
+        classifiedDocuments={activeDocumentMode === "auto" ? jobDocuments : []}
+        overridingDocumentId={overridingDocumentId}
+        onOverrideDocumentMode={handleDocumentModeOverride}
       />
-      <WorkspaceFilesPanel refreshKey={jobId && status === "completed" ? `${jobId}:${isSaved}` : undefined} />
+      {!isComplete ? <WorkspaceFilesPanel refreshKey={jobId && status === "completed" ? `${jobId}:${isSaved}` : undefined} /> : null}
 
       <Dialog open={shareDialogOpen} onOpenChange={(open) => {
         if (!open) {

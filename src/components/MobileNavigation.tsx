@@ -50,9 +50,9 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
             <span className="sr-only">Open navigation menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="right" className="w-[88vw] max-w-[390px] border-l border-[#eadfff] bg-white/95 p-0 backdrop-blur-xl sm:w-96">
+        <SheetContent side="right" className="w-[88vw] max-w-[390px] border-l border-border bg-card/95 p-0 backdrop-blur-xl sm:w-96">
           {/* Header */}
-          <div className="border-b border-[#eadfff] bg-[#E9ECE4]/75 px-6 py-4">
+          <div className="border-b border-border bg-background/80 px-6 py-4">
             <SheetTitle className="text-xl font-bold">AxLiner</SheetTitle>
             <SheetDescription className="mt-1 text-sm text-muted-foreground">
               Convert images and handwritten tables into Excel.
@@ -155,7 +155,7 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
             </div>
 
             {/* CTA Section */}
-            <div className="space-y-3 border-t border-[#eadfff] bg-[#E9ECE4]/60 px-6 py-4">
+            <div className="space-y-3 border-t border-border bg-background/60 px-6 py-4">
               <SheetClose asChild>
                 <Button
                   variant="outline"
@@ -167,7 +167,7 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
               </SheetClose>
               <SheetClose asChild>
                 <Button
-                  className="w-full h-11 text-base font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                  className="w-full h-11 text-base font-medium bg-primary hover:bg-primary/90 text-primary-foreground"
                   onClick={() => window.location.href = '/sign-up'}
                 >
                   Get Started

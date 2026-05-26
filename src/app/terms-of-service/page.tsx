@@ -37,8 +37,8 @@ export default function TermsOfServicePage() {
               <div>
                 <h3 className="text-xl font-medium mb-2">3.1 Account Creation</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  To use the Service, you must create an account by providing accurate and complete information. 
-                  You are responsible for maintaining the confidentiality of your account credentials.
+                  To use the Service, you create an account through a supported OAuth provider such as Google,
+                  GitHub, or Facebook. You are responsible for keeping that provider account secure.
                 </p>
               </div>
 
@@ -65,13 +65,26 @@ export default function TermsOfServicePage() {
               <div>
                 <h3 className="text-xl font-medium mb-2">4.1 Credit System</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  The Service operates on a credit-based system. Each user receives 80 credits per month. 
-                  Processing one image costs 1 credit. Credits reset monthly and do not roll over.
+                  The Service operates on a credit-based system. Free and paid credit allowances are defined by
+                  the current plan shown in the product and pricing page. One successfully completed image or PDF
+                  page normally costs 1 credit. Failed, cancelled, or skipped files are not intended to be charged;
+                  if credits are reserved before processing, unused credits may be released or refunded by the
+                  backend credit ledger.
                 </p>
               </div>
 
               <div>
-                <h3 className="text-xl font-medium mb-2">4.2 Fair Use</h3>
+                <h3 className="text-xl font-medium mb-2">4.2 Paid Plans and Billing</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Paid plans are processed through Lemon Squeezy as Merchant of Record. Lemon Squeezy handles
+                  checkout, payment collection, applicable taxes, invoices, receipts, and payment method updates.
+                  AxLiner uses the verified billing status from Lemon Squeezy to grant plan access, monthly or
+                  yearly credits, and plan limits.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-medium mb-2">4.3 Fair Use</h3>
                 <p className="text-muted-foreground leading-relaxed">
                   You agree to use the Service in accordance with fair use principles. Excessive or abusive usage 
                   may result in account suspension.
@@ -91,7 +104,7 @@ export default function TermsOfServicePage() {
               <li>Process images containing personal information of others without consent</li>
               <li>Attempt to reverse engineer or exploit the Service</li>
               <li>Use the Service for automated or bulk processing without permission</li>
-              <li>Share your account credentials with others</li>
+              <li>Share account access or provider sessions with others</li>
               <li>Circumvent usage limits or restrictions</li>
             </ul>
           </section>

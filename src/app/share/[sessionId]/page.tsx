@@ -19,7 +19,6 @@ import {
 } from 'lucide-react'
 import { AppIcon } from '@/components/AppIcon'
 import { ocrApi } from '@/lib/api-client'
-import { buildApiUrl, buildDownloadUrl } from '@/lib/public-config'
 import { toast } from 'sonner'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -28,6 +27,8 @@ interface SessionFile {
   filename: string
   size_bytes?: number
   created_at?: string
+  download_url?: string
+  office_viewer_url?: string
 }
 
 interface SessionDetails {
@@ -39,6 +40,7 @@ interface SessionDetails {
   expires_at?: string
   access_count: number
   is_active?: boolean
+  download_all_url?: string
 }
 
 export default function SharePage() {
@@ -92,16 +94,18 @@ export default function SharePage() {
     }
   }
   
-  const handleDownloadFile = async (fileId: string, filename: string) => {
+  const handleDownloadFile = async (file: SessionFile, fallbackName: string) => {
     try {
-      setDownloading(fileId)
+      setDownloading(file.file_id)
+
+      if (!file.download_url) {
+        toast.error('This shared file is missing a download link. Ask the sender to create a new share link.')
+        return
+      }
+
+      window.open(file.download_url, '_blank', 'noopener,noreferrer')
       
-      const downloadUrl = buildDownloadUrl(fileId)
-      
-      // Open in new tab for download
-      window.open(downloadUrl, '_blank')
-      
-      toast.success(`Downloading ${filename}`)
+      toast.success(`Downloading ${file.filename || fallbackName}`)
       
     } catch (err) {
       toast.error('Failed to download file. Please try again.')
@@ -116,10 +120,12 @@ export default function SharePage() {
     try {
       setDownloadingAll(true)
       
-      const downloadUrl = buildApiUrl(`/api/v1/sessions/${sessionId}/download-all`)
-      
-      // Open in new tab for download
-      window.open(downloadUrl, '_blank')
+      if (!session.download_all_url) {
+        toast.error('This share link is missing its ZIP download URL. Ask the sender to create a new share link.')
+        return
+      }
+
+      window.open(session.download_all_url, '_blank', 'noopener,noreferrer')
       
       toast.success('Downloading all files as ZIP')
       
@@ -303,7 +309,7 @@ export default function SharePage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleDownloadFile(file.file_id, file.filename || `file_${index + 1}.xlsx`)}
+                    onClick={() => handleDownloadFile(file, `file_${index + 1}.xlsx`)}
                     disabled={downloading === file.file_id}
                   >
                     <Download className="h-4 w-4" />

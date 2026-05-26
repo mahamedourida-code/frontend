@@ -507,7 +507,7 @@ export function EditableExcelPreview({
         <div className="border-b bg-muted/20">
           {/* Tab Headers */}
           <div className="flex items-center h-9 px-4 border-b gap-4 text-sm">
-            <span className="px-3 py-1 border-b-2 border-[#A78BFA] font-medium">Home</span>
+            <span className="px-3 py-1 border-b-2 border-primary font-medium">Home</span>
             <span className="px-3 py-1 text-muted-foreground hover:text-foreground cursor-pointer">Insert</span>
             <span className="px-3 py-1 text-muted-foreground hover:text-foreground cursor-pointer">Data</span>
             <span className="px-3 py-1 text-muted-foreground hover:text-foreground cursor-pointer">View</span>
@@ -636,7 +636,7 @@ export function EditableExcelPreview({
 
           {/* Table Area */}
           <div className={cn(
-            "flex-1 overflow-auto bg-white dark:bg-gray-950",
+            "flex-1 overflow-auto bg-card dark:bg-gray-950",
             showSplitView && "w-2/3"
           )}>
             <div className="h-full">
@@ -688,7 +688,7 @@ export function EditableExcelPreview({
                           return (
                             <td 
                               key={originalIndex}
-                              className="border border-gray-300 dark:border-gray-700 px-3 py-2 cursor-cell hover:bg-blue-100 dark:hover:bg-blue-950/30 bg-white dark:bg-gray-950"
+                              className="border border-gray-300 dark:border-gray-700 px-3 py-2 cursor-cell hover:bg-blue-100 dark:hover:bg-blue-950/30 bg-card dark:bg-gray-950"
                               onClick={() => setEditingCell({ row: rowIndex, col: actualColIndex })}
                             >
                               {editingCell?.row === rowIndex && editingCell?.col === actualColIndex ? (
@@ -753,7 +753,7 @@ export function EditableExcelPreview({
               </Button>
               <Button 
                 onClick={handleSave} 
-                className="h-9 px-4 bg-primary hover:bg-primary/90 text-white gap-2"
+                className="h-9 px-4 bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
               >
                 <Download className="h-4 w-4" />
                 Save & Download
