@@ -193,6 +193,7 @@ const footerColumns = [
     links: [
       { label: "Privacy", href: "/privacy-policy" },
       { label: "Terms", href: "/terms-of-service" },
+      { label: "EULA", href: "/end-user-license-agreement" },
       { label: "Data deletion", href: "/data-deletion" },
       { label: "Billing", href: "/dashboard/settings" },
     ],
