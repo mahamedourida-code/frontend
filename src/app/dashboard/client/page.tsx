@@ -775,11 +775,7 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
 
     const files = Array.from(e.dataTransfer.files).filter(isAcceptedUploadFile)
     if (files.length === 0) {
-      setWorkspaceBanner({
-        title: "Unsupported file type",
-        description: "Upload PNG, JPEG, WebP, HEIC, HEIF, or PDF files.",
-        tone: "warning",
-      })
+      toast.warning("Unsupported file type. Upload PNG, JPEG, WebP, HEIC, HEIF, or PDF files.")
       return
     }
 
@@ -814,11 +810,7 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
     if (files) {
       const fileArray = Array.from(files).filter(isAcceptedUploadFile)
       if (fileArray.length === 0) {
-        setWorkspaceBanner({
-          title: "Unsupported file type",
-          description: "Upload PNG, JPEG, WebP, HEIC, HEIF, or PDF files.",
-          tone: "warning",
-        })
+        toast.warning("Unsupported file type. Upload PNG, JPEG, WebP, HEIC, HEIF, or PDF files.")
         e.target.value = ''
         return
       }
@@ -936,11 +928,6 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
   const handleCancelProcessing = useCallback(async () => {
     await cancelProcessing()
     setLatestRecoverableJob(null)
-    setWorkspaceBanner({
-      title: "Batch cancelled",
-      description: "You can adjust the selected files and start again.",
-      tone: "info",
-    })
     void fetchUserStats()
     toast.info("Batch cancelled.")
   }, [cancelProcessing])
@@ -1523,11 +1510,7 @@ Best regards`
       } else {
         await reloadDurableDocuments()
       }
-      setWorkspaceBanner({
-        title: "Document deleted",
-        description: "The stored source, output, and review data are no longer available.",
-        tone: "info",
-      })
+      toast.success("Document deleted.")
     } catch (error: any) {
       setWorkspaceBanner({
         title: "Document was not deleted",
@@ -1546,11 +1529,7 @@ Best regards`
     try {
       await ocrApi.deleteStoredBatch(jobId)
       handleReset()
-      setWorkspaceBanner({
-        title: "Batch deleted",
-        description: "The stored files and financial extraction data are no longer available.",
-        tone: "info",
-      })
+      toast.success("Batch deleted.")
     } catch (error: any) {
       setWorkspaceBanner({
         title: "Batch was not deleted",
@@ -2065,7 +2044,7 @@ Best regards`
                 />
                 <Button
                   size="sm"
-                  variant={copySuccess ? "default" : "outline"}
+                  variant={copySuccess ? "reviewed" : "surface"}
                   onClick={handleCopyLink}
                   className="h-9 px-3"
                 >

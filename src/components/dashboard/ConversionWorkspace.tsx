@@ -273,7 +273,7 @@ function AutoDetectionPanel({
                 <Button
                   type="button"
                   size="sm"
-                  variant={needsSelection ? "default" : "outline"}
+                  variant={needsSelection ? "glossy" : "surface"}
                   disabled={busy || (!needsSelection && selectedMode === document.resolved_mode)}
                   onClick={() => onOverrideDocumentMode?.(document.id, selectedMode)}
                   className="h-9 rounded-md px-3"
@@ -313,7 +313,7 @@ function ResumeBatchBanner({
         </div>
       </div>
       <Button
-        variant="outline"
+        variant="surface"
         onClick={onContinueLatestJob}
         disabled={recoveryLoading}
         className="h-9 rounded-md px-4"
@@ -432,10 +432,10 @@ export function UploadDropzone({
             <Button
               type="button"
               size="sm"
-              variant="outline"
+              variant="surface"
               onClick={onClearFiles}
               disabled={isProcessing}
-              className="h-9 rounded-md border-border bg-card px-4 text-foreground shadow-sm hover:bg-accent"
+              className="h-9 rounded-md px-4"
             >
               Clear
             </Button>
@@ -471,7 +471,7 @@ export function UploadDropzone({
                       if (previewUrl) setSelectedPreview({ url: previewUrl, name: file.name })
                     }
                   }}
-                  className="group cursor-pointer rounded-md border border-border bg-card/70 p-2 outline-none transition hover:-translate-y-0.5 hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary"
+                  className="ax-interactive ax-row-enter group cursor-pointer rounded-md border border-border bg-card/70 p-2 outline-none hover:-translate-y-0.5 hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   <div className="relative mb-2 aspect-[4/3] overflow-hidden rounded-md border border-border bg-white">
                     {previewUrl ? (
@@ -790,15 +790,15 @@ function getOutputBadge(file: ResultFile) {
     (confidence !== null && confidence < 82)
 
   if (file.status === "failed" || file.review_status === "failed") {
-    return { state: "failed" as const, label: "Failed", className: "border-rose-200 bg-rose-50 text-rose-800" }
+    return { state: "failed" as const, label: "Failed", className: "bg-[var(--status-error-bg)] text-[var(--status-error-fg)] border-[color-mix(in_srgb,var(--status-error-fg)_22%,transparent)]" }
   }
 
   if (activeDuplicateWarnings(file).length) {
-    return { state: "needs_review" as const, label: "Possible duplicate", className: "border-amber-200 bg-amber-50 text-amber-800" }
+    return { state: "needs_review" as const, label: "Possible duplicate", className: "bg-[var(--status-warning-bg)] text-[var(--status-warning-fg)] border-[color-mix(in_srgb,var(--status-warning-fg)_22%,transparent)]" }
   }
 
   if (file.review_status === "published") {
-    return { state: "published" as const, label: "Published", className: "border-sky-200 bg-sky-50 text-sky-800" }
+    return { state: "published" as const, label: "Published", className: "bg-[var(--status-info-bg)] text-[var(--status-info-fg)] border-[color-mix(in_srgb,var(--status-info-fg)_22%,transparent)]" }
   }
 
   if (file.review_status === "edited") {
@@ -806,12 +806,12 @@ function getOutputBadge(file: ResultFile) {
   }
 
   if (file.review_status === "ready") {
-    return { state: "ready" as const, label: "Ready", className: "border-emerald-200 bg-emerald-50 text-emerald-800" }
+    return { state: "ready" as const, label: "Ready", className: "bg-[var(--status-success-bg)] text-[var(--status-success-fg)] border-[color-mix(in_srgb,var(--status-success-fg)_22%,transparent)]" }
   }
 
   return needsReview
-    ? { state: "needs_review" as const, label: "Needs review", className: "border-amber-200 bg-amber-50 text-amber-800" }
-    : { state: "ready" as const, label: "Ready", className: "border-emerald-200 bg-emerald-50 text-emerald-800" }
+    ? { state: "needs_review" as const, label: "Needs review", className: "bg-[var(--status-warning-bg)] text-[var(--status-warning-fg)] border-[color-mix(in_srgb,var(--status-warning-fg)_22%,transparent)]" }
+    : { state: "ready" as const, label: "Ready", className: "bg-[var(--status-success-bg)] text-[var(--status-success-fg)] border-[color-mix(in_srgb,var(--status-success-fg)_22%,transparent)]" }
 }
 
 function activeDuplicateWarnings(file: ResultFile) {
@@ -1410,7 +1410,7 @@ export function ResultActions({
       {isComplete ? (
         <div className="sticky top-[4.5rem] z-20 flex flex-wrap items-center gap-2 rounded-md border border-border bg-card/95 p-2 shadow-xs backdrop-blur-xl">
           <Button
-            variant="outline"
+            variant="surface"
             onClick={() => {
               setEditedTables({})
               setComparisonIndex(null)
@@ -1426,17 +1426,17 @@ export function ResultActions({
             <Button
               onClick={onSaveToHistory}
               disabled={isSaving}
-              variant="outline"
-              className="h-9 gap-2 rounded-md border-border bg-card px-3 text-foreground shadow-xs hover:bg-accent"
+              variant="surface"
+              className="h-9 gap-2 rounded-md px-3 shadow-xs"
             >
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               Save
             </Button>
           ) : null}
           <Button
-            variant="outline"
+            variant="ink"
             onClick={safeResultFiles.length > 1 ? onShareAll : () => firstResultFile && onShareFile(firstResultFile)}
-            className="h-9 gap-2 rounded-md border-border bg-card px-3 text-foreground shadow-xs hover:bg-accent"
+            className="h-9 gap-2 rounded-md px-3 shadow-xs"
           >
             <Share2 className="h-4 w-4" />
             Share
@@ -1469,9 +1469,9 @@ export function ResultActions({
           </Button>
           {onDeleteBatch ? (
             <Button
-              variant="outline"
+              variant="destructive"
               onClick={() => void onDeleteBatch()}
-              className="h-9 gap-2 rounded-md border-rose-200 bg-card px-3 text-rose-700 shadow-xs hover:bg-rose-50"
+              className="h-9 gap-2 rounded-md px-3 shadow-xs"
             >
               <Trash2 className="h-4 w-4" />
               Delete batch
@@ -1624,12 +1624,12 @@ export function ResultActions({
                 {file.document_id && onDeleteDocument ? (
                   <Button
                     size="sm"
-                    variant="outline"
+                    variant="destructive"
                     onClick={(event) => {
                       event.stopPropagation()
                       void onDeleteDocument(file)
                     }}
-                    className="h-8 rounded-md border-border bg-card px-2.5 text-xs text-muted-foreground shadow-sm hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700"
+                    className="h-8 rounded-md px-2.5 text-xs"
                     aria-label="Delete stored document"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -1638,12 +1638,12 @@ export function ResultActions({
                 {file.document_type === "invoice" && ["ready", "published"].includes(file.review_status || "") ? (
                   <Button
                     size="sm"
-                    variant="outline"
+                    variant="surface"
                     onClick={(event) => {
                       event.stopPropagation()
                       void onSendToAccountsPayable?.(file)
                     }}
-                    className="h-8 rounded-md border-border bg-card px-3 text-xs text-foreground shadow-sm hover:bg-accent"
+                    className="h-8 rounded-md px-3 text-xs"
                   >
                     Add to AP
                   </Button>
@@ -1651,12 +1651,12 @@ export function ResultActions({
                 {file.document_id && !["ready", "published", "failed", "deleted"].includes(file.review_status || "") ? (
                   <Button
                     size="sm"
-                    variant="outline"
+                    variant="reviewed"
                     onClick={(event) => {
                       event.stopPropagation()
                       void onMarkDocumentReady?.(file)
                     }}
-                    className="h-8 rounded-md border-border bg-card px-3 text-xs text-foreground shadow-sm hover:bg-accent"
+                    className="h-8 rounded-md px-3 text-xs"
                   >
                     Mark ready
                   </Button>
@@ -1665,14 +1665,14 @@ export function ResultActions({
                   <>
                     <Button
                       size="sm"
-                      variant="outline"
+                      variant="ink"
                       onClick={(event) => {
                         event.stopPropagation()
                         onShareFile(file)
                       }}
-                      className="h-8 rounded-md border-border bg-card px-3 text-xs text-foreground shadow-sm hover:bg-accent"
+                      className="h-8 rounded-md px-3 text-xs"
                     >
-                      <Share2 className="mr-1.5 h-3.5 w-3.5" />
+                      <Share2 className="h-3.5 w-3.5" />
                       Share
                     </Button>
                   </>
@@ -1680,13 +1680,14 @@ export function ResultActions({
                 {file.file_id || file.document_id ? (
                   <Button
                     size="sm"
+                    variant="ink"
                     onClick={(event) => {
                       event.stopPropagation()
                       onDownloadFile(file, index)
                     }}
-                    className="h-8 rounded-md px-3 text-xs shadow-sm"
+                    className="h-8 rounded-md px-3 text-xs"
                   >
-                    <Download className="mr-1.5 h-3.5 w-3.5" />
+                    <Download className="h-3.5 w-3.5" />
                     Download
                   </Button>
                 ) : null}
@@ -1726,9 +1727,9 @@ export function ResultActions({
               {comparisonFile.document_id && onDeleteDocument ? (
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="destructive"
                   onClick={() => void onDeleteDocument(comparisonFile)}
-                  className="h-9 rounded-md border-rose-200 bg-background px-3 text-xs text-rose-700 hover:bg-rose-50"
+                  className="h-9 rounded-md px-3 text-xs"
                 >
                   <Trash2 className="mr-1.5 h-3.5 w-3.5" />
                   Delete
@@ -1737,9 +1738,9 @@ export function ResultActions({
               {comparisonFile.document_type === "invoice" && ["ready", "published"].includes(comparisonFile.review_status || "") ? (
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="surface"
                   onClick={() => void onSendToAccountsPayable?.(comparisonFile)}
-                  className="h-9 rounded-md border-border bg-background px-3 text-xs text-foreground"
+                  className="h-9 rounded-md px-3 text-xs"
                 >
                   Add to Accounts Payable
                 </Button>
@@ -1747,9 +1748,9 @@ export function ResultActions({
               {comparisonFile.document_id && !["ready", "published", "failed", "deleted"].includes(comparisonFile.review_status || "") ? (
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="reviewed"
                   onClick={() => void onMarkDocumentReady?.(comparisonFile)}
-                  className="h-9 rounded-md border-border bg-background px-3 text-xs text-foreground"
+                  className="h-9 rounded-md px-3 text-xs"
                 >
                   Mark ready
                 </Button>
@@ -1851,7 +1852,7 @@ export function ResultActions({
                                 value={comparisonVendorDraft[field.key] || ""}
                                 onChange={(event) => updateVendorDraft(field.key, event.target.value)}
                                 placeholder={field.placeholder}
-                                className="mt-1 h-8 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+                                className="ax-interactive mt-1 h-8 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
                               />
                             </label>
                           ))}
@@ -1859,7 +1860,7 @@ export function ResultActions({
                         <Button
                           type="button"
                           size="sm"
-                          variant="outline"
+                          variant="surface"
                           onClick={() => void saveVendorRule()}
                           disabled={vendorRuleSavingId === comparisonFile.document_id}
                           className="mt-3 h-8 rounded-md px-3 text-xs"
@@ -1903,7 +1904,7 @@ export function ResultActions({
                     ) : !quickBooksConnection?.connected ? (
                       <div className="mt-3 flex flex-wrap items-center gap-2">
                         <p className="text-xs text-muted-foreground">Connect QuickBooks before publishing receipts.</p>
-                        <a href="/dashboard/integrations" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-8 rounded-md px-3 text-xs")}>
+                        <a href="/dashboard/integrations" className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-8 rounded-md px-3 text-xs")}>
                           Open integrations
                         </a>
                       </div>
@@ -2006,6 +2007,7 @@ export function ResultActions({
                           <Button
                             type="button"
                             size="sm"
+                            variant="glossy"
                             onClick={() => void publishReceipt()}
                             disabled={
                               receiptPublishing ||
@@ -2022,7 +2024,7 @@ export function ResultActions({
                           <Button
                             type="button"
                             size="sm"
-                            variant="outline"
+                            variant="surface"
                             onClick={() => void onRefreshQuickBooksReferences?.()}
                             className="h-9 rounded-md px-3 text-xs"
                           >
@@ -2056,7 +2058,7 @@ export function ResultActions({
                                   void updateStructuredValue(comparisonFile, [field.path], event.target.value)
                                 }
                               }}
-                              className="h-8 w-full rounded-md border border-transparent bg-gray-50 px-2 text-sm font-medium text-gray-950 outline-none transition focus:border-primary/35 focus:bg-white focus:ring-2 focus:ring-primary/15"
+                              className="ax-interactive h-8 w-full rounded-md border border-transparent bg-gray-50 px-2 text-sm font-medium text-gray-950 outline-none focus:border-primary/35 focus:bg-white focus:ring-2 focus:ring-primary/15"
                             />
                           </label>
                         ))}
@@ -2087,7 +2089,7 @@ export function ResultActions({
                                         )
                                       }
                                     }}
-                                    className="h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-xs text-gray-950 outline-none transition focus:border-primary/35 focus:bg-white focus:ring-2 focus:ring-primary/15"
+                                    className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-xs text-gray-950 outline-none focus:border-primary/35 focus:bg-white focus:ring-2 focus:ring-primary/15"
                                   />
                                 </td>
                               ))}
@@ -2142,7 +2144,7 @@ export function ResultActions({
                                         event.currentTarget.blur()
                                       }
                                     }}
-                                    className="w-full rounded-md border border-primary/30 bg-white px-2 py-1 text-sm text-gray-950 outline-none ring-2 ring-primary/15"
+                                    className="ax-interactive w-full rounded-md border border-primary/30 bg-white px-2 py-1 text-sm text-gray-950 outline-none ring-2 ring-primary/15"
                                   />
                                 ) : (
                                   <span className={cn(!value && "text-gray-950/30")}>
@@ -2399,9 +2401,9 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                   <div className="flex flex-wrap gap-2 sm:justify-end">
                     {(isUploading || isProcessing) && !isComplete ? (
                       <Button
-                        variant="outline"
+                        variant="surface"
                         onClick={onCancel}
-                        className="h-10 rounded-md border-border bg-card px-4 text-foreground hover:bg-accent"
+                        className="h-10 rounded-md px-4"
                       >
                         <X className="mr-2 h-4 w-4" />
                         Cancel

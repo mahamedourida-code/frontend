@@ -82,17 +82,16 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
         <div className="flex flex-wrap items-center gap-2">
           <Button
             type="button"
-            variant="outline"
+            variant="surface"
             className="h-10 rounded-lg px-3 text-sm font-medium"
             onClick={() => setSort((current) => current === "modified-desc" ? "modified-asc" : "modified-desc")}
           >
             Last modified
-            <ChevronDown className={cn("size-4 text-muted-foreground transition-transform", sort === "modified-asc" && "rotate-180")} />
+            <ChevronDown className={cn("size-4 transition-transform", sort === "modified-asc" && "rotate-180")} />
           </Button>
-          <Button asChild variant="outline" className="h-10 rounded-lg px-3 text-sm font-medium">
+          <Button asChild variant="surface" className="h-10 rounded-lg px-3 text-sm font-medium">
             <Link href="/history">
               All files
-              <ChevronDown className="size-4 text-muted-foreground" />
             </Link>
           </Button>
           <div className="flex overflow-hidden rounded-lg border border-border bg-card p-0.5 shadow-xs">
@@ -135,7 +134,7 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
             <Link
               key={file.id}
               href="/history"
-              className="flex min-h-[84px] items-center gap-3 rounded-xl border border-border bg-card p-3.5 shadow-xs transition-colors hover:bg-accent/55"
+              className="ax-interactive ax-row-enter flex min-h-[84px] items-center gap-3 rounded-xl border border-border bg-card p-3.5 shadow-xs hover:bg-accent/55"
             >
               <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                 <FileSpreadsheet className="size-5" />
@@ -156,7 +155,7 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
             <Link
               key={file.id}
               href="/history"
-              className="flex items-center gap-4 border-b border-border px-4 py-3 last:border-0 hover:bg-accent/55"
+              className="ax-interactive flex items-center gap-4 border-b border-border px-4 py-3 last:border-0 hover:bg-accent/55"
             >
               <FileSpreadsheet className="size-4 shrink-0 text-muted-foreground" />
               <span className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">{file.filename}</span>
