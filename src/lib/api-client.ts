@@ -460,6 +460,33 @@ export interface JobDocumentsResponse {
   total: number
 }
 
+export interface EmailIntakeAddress {
+  id: string
+  workspace_id: string
+  address: string
+  enabled: boolean
+  provider: 'resend'
+}
+
+export interface EmailIntakeMessage {
+  id: string
+  sender: string
+  received_at: string
+  source_email_reference: string
+  status: 'received' | 'queued' | 'rejected' | 'failed'
+  job_id?: string | null
+  job_status?: string | null
+  attachment_count: number
+  accepted_attachment_count: number
+  rejected_attachments: Array<{ filename: string; reason: string }>
+  documents: Array<{
+    id: string
+    original_filename: string
+    status: string
+    review_status?: DocumentReviewStatus
+  }>
+}
+
 export type DocumentReviewStatus = 'needs_review' | 'ready' | 'edited' | 'failed' | 'published' | 'deleted'
 
 export interface DocumentReviewChange {
@@ -1122,6 +1149,22 @@ export const quickBooksApi = {
 
   disconnect: async (): Promise<QuickBooksConnectionStatus> => {
     const response = await apiClient.delete<QuickBooksConnectionStatus>('/api/v1/integrations/quickbooks')
+    return response.data
+  },
+}
+
+export const emailIntakeApi = {
+  getAddress: async (workspaceId?: string): Promise<EmailIntakeAddress> => {
+    const response = await apiClient.get<EmailIntakeAddress>('/api/v1/email-intake/address', {
+      params: workspaceId ? { workspace_id: workspaceId } : undefined,
+    })
+    return response.data
+  },
+
+  listMessages: async (workspaceId?: string): Promise<{ messages: EmailIntakeMessage[]; total: number }> => {
+    const response = await apiClient.get<{ messages: EmailIntakeMessage[]; total: number }>('/api/v1/email-intake/messages', {
+      params: workspaceId ? { workspace_id: workspaceId } : undefined,
+    })
     return response.data
   },
 }

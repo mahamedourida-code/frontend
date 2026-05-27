@@ -1,7 +1,7 @@
 "use client"
 
 import { Suspense, useState, useCallback, useEffect, useRef } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useOCR } from "@/hooks/useOCR"
@@ -148,6 +148,7 @@ export default function ProcessImagesPage() {
 export function ProcessImagesContent({ documentMode = "table" }: { documentMode?: ConversionDocumentMode }) {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
   
   // Get state management from context
   const { state: processingState, updateState, clearState } = useProcessingState()
@@ -255,6 +256,7 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
   } = useOCR()
   const [latestRecoverableJob, setLatestRecoverableJob] = useState<RecoverableJobSummary | null>(null)
   const [recoveryLoading, setRecoveryLoading] = useState(false)
+  const openedJobIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     setActiveDocumentMode(documentMode)
@@ -299,6 +301,25 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
       mounted = false
     }
   }, [authLoading, user?.id])
+
+  useEffect(() => {
+    const requestedJobId = searchParams.get("job_id")
+    if (authLoading || !user || !requestedJobId || openedJobIdRef.current === requestedJobId) return
+    openedJobIdRef.current = requestedJobId
+    setActiveDocumentMode("auto")
+    setOutputMode("table")
+    setRecoveryLoading(true)
+    setUploadedFiles([])
+    resumeJob(requestedJobId)
+      .catch(() => {
+        setWorkspaceBanner({
+          title: "Batch unavailable",
+          description: "This imported batch could not be opened.",
+          tone: "error",
+        })
+      })
+      .finally(() => setRecoveryLoading(false))
+  }, [authLoading, resumeJob, searchParams, user])
 
   const continueLatestJob = useCallback(async () => {
     if (!latestRecoverableJob?.job_id) return

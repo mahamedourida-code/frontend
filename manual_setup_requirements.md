@@ -42,6 +42,22 @@ fly secrets set QUICKBOOKS_CLIENT_ID="<intuit production client id>" QUICKBOOKS_
 2. **Expense** creates an already-paid QuickBooks Purchase; **Bill** creates an unpaid QuickBooks Bill. The reviewer must select the treatment explicitly.
 3. Confirm a first receipt publication and its attached source file in a QuickBooks sandbox before intentionally writing receipts to production.
 
+## Prompt 19 - Email Intake
+
+1. In Resend, configure an inbound receiving domain for `intake.axliner.com` and add its required DNS/MX records.
+2. Create an `email.received` webhook pointing to:
+
+   `https://backend-lively-hill-7043.fly.dev/api/v1/email-intake/resend/webhook`
+
+3. Keep receiving credentials in Fly secrets only:
+
+```powershell
+fly secrets set RESEND_API_KEY="<resend api key>" RESEND_WEBHOOK_SECRET="<resend webhook signing secret>" -a backend-lively-hill-7043
+```
+
+4. After DNS and webhook setup are active, an authenticated workspace can copy its generated address from `/dashboard/inbox`.
+5. Send one invoice or receipt attachment to that address and confirm it appears in Inbox and opens its Auto-detect review batch.
+
 ## Deployment Responsibility
 
 - Frontend: changes are committed and pushed to the GitHub `frontend` repository so Vercel deploys them.

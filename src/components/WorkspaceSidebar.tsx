@@ -2,13 +2,13 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Activity, Building2, FileSpreadsheet, History, ReceiptText, Settings, Upload } from "lucide-react"
+import { Activity, Building2, FileSpreadsheet, History, Inbox, ReceiptText, Settings, Upload } from "lucide-react"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { Button } from "@/components/ui/button"
 import { WorkspaceSwitcher } from "@/components/WorkspaceSwitcher"
 import { cn } from "@/lib/utils"
 
-type SidebarItemKey = "overview" | "process" | "accounts_payable" | "integrations" | "history" | "pricing" | "settings"
+type SidebarItemKey = "overview" | "process" | "inbox" | "accounts_payable" | "integrations" | "history" | "pricing" | "settings"
 
 interface WorkspaceSidebarProps {
   activeItem: SidebarItemKey
@@ -26,6 +26,7 @@ interface WorkspaceSidebarProps {
 const sidebarItems = [
   { key: "overview" as const, label: "Overview", icon: Activity, href: "/dashboard" },
   { key: "process" as const, label: "Convert Files", icon: Upload, href: "/dashboard/client" },
+  { key: "inbox" as const, label: "Inbox", icon: Inbox, href: "/dashboard/inbox" },
   { key: "accounts_payable" as const, label: "Accounts Payable", icon: ReceiptText, href: "/dashboard/accounts-payable" },
   { key: "integrations" as const, label: "Integrations", icon: Building2, href: "/dashboard/integrations" },
   { key: "history" as const, label: "History", icon: History, href: "/history" },

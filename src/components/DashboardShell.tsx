@@ -16,7 +16,7 @@ import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { ocrApi, type RecoverableJobSummary } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
 
-type DashboardItemKey = "overview" | "process" | "accounts_payable" | "integrations" | "history" | "pricing" | "settings"
+type DashboardItemKey = "overview" | "process" | "inbox" | "accounts_payable" | "integrations" | "history" | "pricing" | "settings"
 
 type DashboardShellProps = {
   activeItem: DashboardItemKey
