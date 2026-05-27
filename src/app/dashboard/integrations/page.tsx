@@ -3,8 +3,12 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
+import { Database } from "lucide-react"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
+import { EmptyState } from "@/components/dashboard/EmptyState"
+import { PageHeader } from "@/components/dashboard/PageHeader"
+import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useAuth } from "@/hooks/useAuth"
@@ -13,7 +17,6 @@ import {
   type QuickBooksConnectionStatus,
   type QuickBooksReferenceItem,
 } from "@/lib/api-client"
-import { cn } from "@/lib/utils"
 
 const emptyConnection: QuickBooksConnectionStatus = {
   connected: false,
@@ -162,27 +165,20 @@ function IntegrationsContent() {
   return (
     <DashboardShell activeItem="integrations" title="Integrations" user={user} showBack={false}>
       <div className="max-w-5xl space-y-5">
-        <div>
-          <h1 className="text-xl font-semibold text-foreground">Integrations</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Connect an accounting workspace after your document review is ready.
-          </p>
-        </div>
+        <PageHeader
+          title="Integrations"
+          description="Connect AxLiner to QuickBooks Online to publish reviewed invoices and receipts"
+        />
 
-        <Card className="gap-0 py-0">
-          <CardContent className="px-0">
-            <div className="flex flex-col gap-5 border-b border-border px-5 py-5 sm:flex-row sm:items-start sm:justify-between">
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex flex-col gap-5 border-b border-border pb-5 sm:flex-row sm:items-start sm:justify-between">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="text-base font-semibold text-foreground">QuickBooks Online</span>
-                  <span className={cn(
-                    "rounded-md border px-2 py-0.5 text-xs font-medium",
-                    connection.connected
-                      ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300"
-                      : "border-border bg-muted text-muted-foreground",
-                  )}>
+                  <StatusBadge tone={connection.connected ? "success" : "neutral"}>
                     {connection.connected ? "Connected" : "Not connected"}
-                  </span>
+                  </StatusBadge>
                 </div>
                 <p className="max-w-xl text-sm leading-6 text-muted-foreground">
                   Import vendors, accounts, and tax references for invoice coding. Only reviewed items that you publish from Accounts Payable create unpaid QuickBooks Bills.
@@ -192,15 +188,16 @@ function IntegrationsContent() {
               <div className="flex shrink-0 flex-wrap gap-2">
                 {connection.connected ? (
                   <>
-                    <Button variant="outline" onClick={() => void sync()} disabled={Boolean(busy)}>
+                    <Button variant="surface" onClick={() => void sync()} disabled={Boolean(busy)}>
+                      <img src="/site-icons/io/database.svg" className="h-4 w-4" alt="" />
                       {busy === "sync" ? "Syncing..." : "Refresh lists"}
                     </Button>
-                    <Button variant="outline" onClick={() => void disconnect()} disabled={Boolean(busy)}>
+                    <Button variant="destructive" onClick={() => void disconnect()} disabled={Boolean(busy)}>
                       {busy === "disconnect" ? "Disconnecting..." : "Disconnect"}
                     </Button>
                   </>
                 ) : (
-                  <Button onClick={() => void connect()} disabled={Boolean(busy) || loading}>
+                  <Button variant="glossy" onClick={() => void connect()} disabled={Boolean(busy) || loading}>
                     {busy === "connect" ? "Connecting..." : "Connect QuickBooks"}
                   </Button>
                 )}
@@ -208,17 +205,17 @@ function IntegrationsContent() {
             </div>
 
             {connection.connected && (
-              <div className="grid divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-                <div className="px-5 py-4">
+              <div className="mt-5 grid gap-4 sm:grid-cols-3">
+                <div>
                   <p className="text-xs font-medium uppercase text-muted-foreground">Company</p>
                   <p className="mt-2 truncate text-sm font-medium text-foreground">{connection.company_name || "Connected company"}</p>
                   <p className="mt-1 truncate text-xs text-muted-foreground">ID {connection.realm_id}</p>
                 </div>
-                <div className="px-5 py-4">
+                <div>
                   <p className="text-xs font-medium uppercase text-muted-foreground">Last sync</p>
                   <p className="mt-2 text-sm font-medium text-foreground">{formatDate(connection.last_synced_at)}</p>
                 </div>
-                <div className="px-5 py-4">
+                <div>
                   <p className="text-xs font-medium uppercase text-muted-foreground">Available references</p>
                   <p className="mt-2 text-sm font-medium text-foreground">
                     {(connection.reference_counts.vendor || 0) + (connection.reference_counts.account || 0) + (connection.reference_counts.tax_code || 0)} records
@@ -232,22 +229,35 @@ function IntegrationsContent() {
         {connection.connected && (
           <div className="grid gap-4 lg:grid-cols-3">
             {referenceGroups.map(group => (
-              <Card key={group.key} className="gap-0 py-0">
-                <CardContent className="px-0">
-                  <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <Card key={group.key}>
+                <CardContent className="p-5">
+                  <div className="mb-3 flex items-center justify-between">
                     <h2 className="text-sm font-semibold text-foreground">{group.label}</h2>
                     <span className="text-xs text-muted-foreground">{connection.reference_counts[group.key] || 0}</span>
                   </div>
-                  <div className="min-h-40 p-2">
-                    {groupedReferences[group.key].length ? groupedReferences[group.key].map(item => (
-                      <div key={item.external_id} className="flex items-center justify-between rounded-md px-2 py-2 text-sm">
-                        <span className="min-w-0 truncate text-foreground">{item.display_name}</span>
-                        {!item.active && <span className="ms-2 text-xs text-muted-foreground">Inactive</span>}
-                      </div>
-                    )) : (
-                      <p className="px-2 py-4 text-sm text-muted-foreground">Refresh lists to load records.</p>
-                    )}
-                  </div>
+                  {groupedReferences[group.key].length ? (
+                    <div className="space-y-0.5">
+                      {groupedReferences[group.key].map(item => (
+                        <div key={item.external_id} className="ax-interactive flex items-center justify-between rounded-md px-2 py-2 text-sm hover:bg-accent/50">
+                          <span className="min-w-0 truncate text-foreground">{item.display_name}</span>
+                          {!item.active && <span className="ms-2 text-xs text-muted-foreground">Inactive</span>}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <EmptyState
+                      icon={<Database />}
+                      title="No reference data cached"
+                      description="Click Refresh QuickBooks lists to load vendors, accounts, and tax codes"
+                      action={
+                        <Button variant="surface" size="sm" onClick={() => void sync()} disabled={Boolean(busy)}>
+                          <img src="/site-icons/io/database.svg" className="h-4 w-4" alt="" />
+                          Refresh
+                        </Button>
+                      }
+                      compact
+                    />
+                  )}
                 </CardContent>
               </Card>
             ))}
