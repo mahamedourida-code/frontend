@@ -1489,6 +1489,56 @@ Best regards`
     applyDurableDocuments(response.documents)
   }, [applyDurableDocuments, jobId])
 
+  const handleDeleteStoredDocument = async (file: any) => {
+    if (!jobId || !file?.document_id) return
+    const confirmed = window.confirm(
+      "Permanently delete this stored document, its extracted values, reviewed edits, and generated files? Existing QuickBooks records are not removed.",
+    )
+    if (!confirmed) return
+    try {
+      const result = await ocrApi.deleteStoredDocument(jobId, file.document_id)
+      if (result.remaining_documents === 0) {
+        handleReset()
+      } else {
+        await reloadDurableDocuments()
+      }
+      setWorkspaceBanner({
+        title: "Document deleted",
+        description: "The stored source, output, and review data are no longer available.",
+        tone: "info",
+      })
+    } catch (error: any) {
+      setWorkspaceBanner({
+        title: "Document was not deleted",
+        description: error?.detail || error?.message || "Try again after the batch has finished.",
+        tone: "error",
+      })
+    }
+  }
+
+  const handleDeleteStoredBatch = async () => {
+    if (!jobId) return
+    const confirmed = window.confirm(
+      "Permanently delete this batch, including source files, outputs, extracted values, and review edits? Existing QuickBooks records are not removed.",
+    )
+    if (!confirmed) return
+    try {
+      await ocrApi.deleteStoredBatch(jobId)
+      handleReset()
+      setWorkspaceBanner({
+        title: "Batch deleted",
+        description: "The stored files and financial extraction data are no longer available.",
+        tone: "info",
+      })
+    } catch (error: any) {
+      setWorkspaceBanner({
+        title: "Batch was not deleted",
+        description: error?.detail || error?.message || "Try again after the batch has finished.",
+        tone: "error",
+      })
+    }
+  }
+
   const persistReviewValue = useCallback(async (
     file: any,
     fieldPath: Array<string | number>,
@@ -1870,6 +1920,8 @@ Best regards`
         onDownloadFile={handleDownloadResultFile}
         onDownloadAll={handleDownloadAll}
         onDownloadReviewedBatch={handleDownloadReviewedBatch}
+        onDeleteDocument={handleDeleteStoredDocument}
+        onDeleteBatch={handleDeleteStoredBatch}
         onEditFile={handleEditResultFile}
         onPersistCellEdit={handlePersistCellEdit}
         onPersistStructuredEdit={handlePersistStructuredEdit}

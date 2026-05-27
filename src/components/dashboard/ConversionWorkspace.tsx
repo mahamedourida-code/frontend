@@ -131,6 +131,8 @@ type ConversionWorkspaceProps = {
   onDownloadFile: (file: ResultFile, index?: number) => void
   onDownloadAll: () => void
   onDownloadReviewedBatch?: (editedTables: Record<string, any[][]>) => void | Promise<void>
+  onDeleteDocument?: (file: ResultFile) => void | Promise<void>
+  onDeleteBatch?: () => void | Promise<void>
   onEditFile: (file: ResultFile, index?: number) => void
   onPersistCellEdit?: (file: ResultFile, rowIndex: number, cellIndex: number, value: string, baseTable: any[][]) => boolean | Promise<boolean>
   onPersistStructuredEdit?: (file: ResultFile, fieldPath: Array<string | number>, value: string) => boolean | Promise<boolean>
@@ -1070,6 +1072,8 @@ export function ResultActions({
   onDownloadFile,
   onDownloadAll,
   onDownloadReviewedBatch,
+  onDeleteDocument,
+  onDeleteBatch,
   onEditFile,
   onPersistCellEdit,
   onPersistStructuredEdit,
@@ -1103,6 +1107,8 @@ export function ResultActions({
   | "onDownloadFile"
   | "onDownloadAll"
   | "onDownloadReviewedBatch"
+  | "onDeleteDocument"
+  | "onDeleteBatch"
   | "onEditFile"
   | "onPersistCellEdit"
   | "onPersistStructuredEdit"
@@ -1269,6 +1275,13 @@ export function ResultActions({
     setReceiptAccountRefId(accountMatch?.external_id || "")
     setReceiptTaxCodeRefId(taxMatch?.external_id || "")
   }, [comparisonKey, quickBooksReferences])
+
+  useEffect(() => {
+    if (comparisonIndex !== null && comparisonIndex >= safeResultFiles.length) {
+      setComparisonIndex(null)
+      setEditingCell(null)
+    }
+  }, [comparisonIndex, safeResultFiles.length])
 
   if (!safeResultFiles.length) return null
 
@@ -1454,6 +1467,16 @@ export function ResultActions({
             {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             {unresolvedDuplicateCount > 0 ? "Resolve duplicates to export" : "Download reviewed batch"}
           </Button>
+          {onDeleteBatch ? (
+            <Button
+              variant="outline"
+              onClick={() => void onDeleteBatch()}
+              className="h-9 gap-2 rounded-md border-rose-200 bg-card px-3 text-rose-700 shadow-xs hover:bg-rose-50"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete batch
+            </Button>
+          ) : null}
           {editedCount > 0 && !isTextOutput ? (
             <span className="inline-flex h-9 items-center rounded-md border border-border bg-muted px-3 text-xs font-semibold text-foreground">
               {editedCount} edited
@@ -1598,6 +1621,20 @@ export function ResultActions({
               ) : null}
 
               <div className="mt-3 flex justify-end gap-2">
+                {file.document_id && onDeleteDocument ? (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      void onDeleteDocument(file)
+                    }}
+                    className="h-8 rounded-md border-border bg-card px-2.5 text-xs text-muted-foreground shadow-sm hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700"
+                    aria-label="Delete stored document"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                ) : null}
                 {file.document_type === "invoice" && ["ready", "published"].includes(file.review_status || "") ? (
                   <Button
                     size="sm"
@@ -1686,6 +1723,17 @@ export function ResultActions({
         >
           <div className="relative w-full max-w-[1240px] rounded-md border border-border bg-card p-3 shadow-xl sm:p-4">
             <div className="absolute right-4 top-4 z-10 flex items-center gap-2">
+              {comparisonFile.document_id && onDeleteDocument ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => void onDeleteDocument(comparisonFile)}
+                  className="h-9 rounded-md border-rose-200 bg-background px-3 text-xs text-rose-700 hover:bg-rose-50"
+                >
+                  <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+                  Delete
+                </Button>
+              ) : null}
               {comparisonFile.document_type === "invoice" && ["ready", "published"].includes(comparisonFile.review_status || "") ? (
                 <Button
                   size="sm"
@@ -2169,6 +2217,8 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     onDownloadFile,
     onDownloadAll,
     onDownloadReviewedBatch,
+    onDeleteDocument,
+    onDeleteBatch,
     onEditFile,
     onPersistCellEdit,
       onPersistStructuredEdit,
@@ -2396,6 +2446,8 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
               onDownloadFile={onDownloadFile}
               onDownloadAll={onDownloadAll}
               onDownloadReviewedBatch={onDownloadReviewedBatch}
+              onDeleteDocument={onDeleteDocument}
+              onDeleteBatch={onDeleteBatch}
               onEditFile={onEditFile}
               onPersistCellEdit={onPersistCellEdit}
                 onPersistStructuredEdit={onPersistStructuredEdit}

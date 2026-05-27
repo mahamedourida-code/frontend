@@ -875,6 +875,21 @@ export const ocrApi = {
     return response.data
   },
 
+  deleteStoredDocument: async (
+    jobId: string,
+    documentId: string,
+  ): Promise<{ document_id: string; deleted: boolean; remaining_documents: number }> => {
+    const response = await apiClient.delete(`/api/v1/jobs/${jobId}/documents/${documentId}`)
+    return response.data
+  },
+
+  deleteStoredBatch: async (
+    jobId: string,
+  ): Promise<{ job_id: string; deleted: boolean; deleted_documents: number }> => {
+    const response = await apiClient.delete(`/api/v1/jobs/${jobId}/documents`)
+    return response.data
+  },
+
   getLatestRecoverableJob: async (): Promise<JobRecoveryResponse> => {
     const response = await apiClient.get<JobRecoveryResponse>('/api/v1/jobs/recover/latest')
     return response.data
