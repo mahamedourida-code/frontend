@@ -285,7 +285,7 @@ export default function EmailInboxPage() {
             {loading ? (
               <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading submissions" description="Fetching client uploads" /></div>
             ) : submissions.length === 0 ? (
-              <div className="py-4"><EmptyState compact icon={<Inbox />} title="No submissions yet" description="Clients can upload via a shared link you create above." /></div>
+              <div className="py-4"><EmptyState compact icon={<Inbox />} illustration="/illustrations/empty-inbox.png" title="No submissions yet" description="Clients can upload via a shared link you create above." /></div>
             ) : (
               <div className="divide-y divide-border">
                 {submissions.map(submission => (

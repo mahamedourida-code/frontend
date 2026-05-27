@@ -618,6 +618,7 @@ function HistoryContent() {
                   <TableCell colSpan={columns.length} className="h-32">
                     <EmptyState
                       icon={<FileSpreadsheet />}
+                      illustration="/illustrations/empty-history.png"
                       title="No saved files yet"
                       description="Save processed files to see them here"
                       compact

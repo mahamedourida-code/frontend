@@ -4,6 +4,7 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { Database } from "lucide-react"
+import Image from "next/image"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { EmptyState } from "@/components/dashboard/EmptyState"
@@ -179,6 +180,7 @@ function IntegrationsContent() {
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="text-base font-semibold text-foreground">QuickBooks Online</span>
+                  <Image src="/icons/qb-badge.png" alt="QuickBooks" width={80} height={28} className="object-contain" />
                   <StatusBadge tone={connection.connected ? "success" : "neutral"}>
                     {connection.connected ? "Connected" : "Not connected"}
                   </StatusBadge>

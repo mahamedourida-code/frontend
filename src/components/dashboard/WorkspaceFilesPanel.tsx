@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { format } from "date-fns"
 import { ChevronDown, FileSpreadsheet, Grid2X2, List, MoreHorizontal } from "lucide-react"
 import { ocrApi } from "@/lib/api-client"
@@ -125,8 +126,9 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
           Loading files
         </div>
       ) : sortedFiles.length === 0 ? (
-        <div className="flex min-h-[260px] items-center justify-center text-sm font-medium text-muted-foreground">
-          Converted batches appear here.
+        <div className="flex min-h-[260px] flex-col items-center justify-center gap-3 text-center">
+          <Image src="/icons/upload-cloud.png" alt="" width={56} height={56} className="object-contain opacity-80" loading="lazy" />
+          <p className="text-sm font-medium text-muted-foreground">Converted batches appear here.</p>
         </div>
       ) : view === "grid" ? (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">

@@ -644,6 +644,7 @@ function SettingsContent() {
                       <EmptyState
                         compact
                         icon={<FileSpreadsheet />}
+                        illustration="/illustrations/empty-vendors.png"
                         title="No saved vendors"
                         description="Confirm an invoice or receipt in Convert Files, then remember the vendor from its review view."
                       />

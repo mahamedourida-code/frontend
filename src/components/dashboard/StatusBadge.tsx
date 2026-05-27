@@ -1,4 +1,5 @@
 import * as React from "react"
+import Image from "next/image"
 
 import { cn } from "@/lib/utils"
 
@@ -10,6 +11,14 @@ type StatusTone =
   | "neutral"
   | "review"
   | "processing"
+
+const toneIcons: Partial<Record<StatusTone, string>> = {
+  success: "/icons/status/success-check.png",
+  warning: "/icons/status/warning-triangle.png",
+  error: "/icons/status/error-x.png",
+  review: "/icons/status/needs-review-eye.png",
+  processing: "/icons/status/processing-ring.png",
+}
 
 interface StatusBadgeProps {
   tone: StatusTone
@@ -36,6 +45,7 @@ const toneClasses: Record<StatusTone, string> = {
 }
 
 function StatusBadge({ tone, children, icon, className }: StatusBadgeProps) {
+  const autoIconSrc = toneIcons[tone]
   return (
     <span
       className={cn(
@@ -44,7 +54,18 @@ function StatusBadge({ tone, children, icon, className }: StatusBadgeProps) {
         className,
       )}
     >
-      {icon ? <span className="inline-flex shrink-0 [&_svg]:size-3.5">{icon}</span> : null}
+      {icon ? (
+        <span className="inline-flex shrink-0 [&_svg]:size-3.5">{icon}</span>
+      ) : autoIconSrc ? (
+        <Image
+          src={autoIconSrc}
+          alt=""
+          width={14}
+          height={14}
+          className={cn("shrink-0 object-contain", tone === "processing" && "animate-spin")}
+          loading="eager"
+        />
+      ) : null}
       {children}
     </span>
   )

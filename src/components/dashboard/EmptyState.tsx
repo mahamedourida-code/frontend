@@ -1,4 +1,5 @@
 import * as React from "react"
+import Image from "next/image"
 
 import { cn } from "@/lib/utils"
 
@@ -9,6 +10,7 @@ interface EmptyStateProps {
   action?: React.ReactNode
   compact?: boolean
   className?: string
+  illustration?: string
 }
 
 function EmptyState({
@@ -18,6 +20,7 @@ function EmptyState({
   action,
   compact = false,
   className,
+  illustration,
 }: EmptyStateProps) {
   return (
     <div
@@ -27,14 +30,26 @@ function EmptyState({
         className,
       )}
     >
-      <div
-        className={cn(
-          "flex items-center justify-center rounded-full bg-muted text-muted-foreground",
-          compact ? "size-9 [&_svg]:size-4" : "size-10 [&_svg]:size-5",
-        )}
-      >
-        {icon}
-      </div>
+      {illustration ? (
+        <Image
+          src={illustration}
+          alt=""
+          role="presentation"
+          width={compact ? 72 : 96}
+          height={compact ? 72 : 96}
+          className="object-contain opacity-90"
+          loading="lazy"
+        />
+      ) : (
+        <div
+          className={cn(
+            "flex items-center justify-center rounded-full bg-muted text-muted-foreground",
+            compact ? "size-9 [&_svg]:size-4" : "size-10 [&_svg]:size-5",
+          )}
+        >
+          {icon}
+        </div>
+      )}
       <h3 className="text-base font-medium text-foreground">{title}</h3>
       {description ? (
         <p className="max-w-sm text-sm text-muted-foreground">{description}</p>

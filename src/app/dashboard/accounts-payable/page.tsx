@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { ChevronLeft, Loader2 } from "lucide-react"
+import Image from "next/image"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { EmptyState } from "@/components/dashboard/EmptyState"
@@ -337,6 +338,7 @@ function AccountsPayableContent() {
           description="Reviewed invoices ready to publish as QuickBooks Bills"
           actions={selectedReadyIds.length ? (
             <Button variant="glossy" onClick={() => void publishSelected()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md px-4">
+              <Image src="/icons/qb-badge.png" alt="" width={16} height={16} className="mr-1 object-contain" />
               Publish {selectedReadyIds.length} to QuickBooks
             </Button>
           ) : undefined}
@@ -398,6 +400,7 @@ function AccountsPayableContent() {
               ) : visibleItems.length === 0 ? (
                 <EmptyState
                   icon={<ChevronLeft />}
+                  illustration="/illustrations/empty-ap.png"
                   title="No invoices in this queue"
                   description="Mark a reviewed invoice Ready, then add it from Convert Files."
                   compact
