@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Check, Copy, Inbox, Link2, RefreshCw, Trash2, UserPlus } from "lucide-react"
@@ -190,7 +191,10 @@ export default function EmailInboxPage() {
             <CardContent className="px-0">
               <div className="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(18rem,1fr)_minmax(16rem,1fr)]">
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Client upload links</p>
+                  <div className="flex items-center gap-2">
+                    <Image src="/icons/share.png" alt="" width={20} height={20} className="object-contain opacity-85" loading="lazy" />
+                    <p className="text-sm font-semibold text-foreground">Client upload links</p>
+                  </div>
                   <p className="mt-1 text-sm text-muted-foreground">Links expire after 7 days and submit files directly to this inbox.</p>
                   <div className="mt-4 flex gap-2">
                     <Input value={linkLabel} onChange={event => setLinkLabel(event.target.value)} placeholder="Client documents" />
@@ -222,7 +226,10 @@ export default function EmailInboxPage() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Reviewers</p>
+                  <div className="flex items-center gap-2">
+                    <Image src="/icons/reviewer.png" alt="" width={20} height={20} className="object-contain opacity-85" loading="lazy" />
+                    <p className="text-sm font-semibold text-foreground">Reviewers</p>
+                  </div>
                   <p className="mt-1 text-sm text-muted-foreground">Reviewers can edit and export batches, not manage connections or deletion.</p>
                   <div className="mt-4 flex gap-2">
                     <Input type="email" value={reviewerEmail} onChange={event => setReviewerEmail(event.target.value)} placeholder="reviewer@firm.com" />
@@ -319,7 +326,7 @@ export default function EmailInboxPage() {
             {loading ? (
               <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading imports" description="Fetching forwarded documents" /></div>
             ) : messages.length === 0 ? (
-              <div className="py-4"><EmptyState compact icon={<Inbox />} title="No emailed documents yet" description="New attachments will appear here for review." /></div>
+              <div className="py-4"><EmptyState compact icon={<Inbox />} illustration="/illustrations/client-upload.png" title="No emailed documents yet" description="New attachments will appear here for review." /></div>
             ) : (
               <div className="divide-y divide-border">
                 {messages.map((message) => {

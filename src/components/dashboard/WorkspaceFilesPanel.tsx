@@ -122,8 +122,9 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
       </div>
 
       {loading ? (
-        <div className="flex min-h-[150px] items-center justify-center text-sm font-medium text-muted-foreground">
-          Loading files
+        <div className="flex min-h-[150px] flex-col items-center justify-center gap-2">
+          <Image src="/illustrations/processing-docs.png" alt="" width={56} height={56} className="object-contain opacity-70" loading="lazy" />
+          <span className="text-sm font-medium text-muted-foreground">Loading files</span>
         </div>
       ) : sortedFiles.length === 0 ? (
         <div className="flex min-h-[260px] flex-col items-center justify-center gap-3 text-center">

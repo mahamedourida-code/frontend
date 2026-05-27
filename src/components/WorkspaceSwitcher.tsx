@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
-import { Check, ChevronDown, Headset, LogOut, Settings, UsersRound, Workflow } from "lucide-react"
+import { Check, ChevronDown, Headset, LogOut, Settings, UsersRound } from "lucide-react"
 import { AxMark } from "@/components/AppIcon"
 import {
   Dialog,
@@ -102,7 +103,7 @@ export function WorkspaceSwitcher({ user, onSignOut, menuSide = "right" }: Works
           <DropdownMenuSeparator />
           <DropdownMenuSub>
             <DropdownMenuSubTrigger className="h-10 gap-2 rounded-md px-3 text-[15px] font-semibold">
-              <Workflow className="me-2 size-[18px] text-muted-foreground" />
+              <Image src="/icons/workspace-switcher.png" alt="" width={18} height={18} className="me-2 object-contain opacity-70" loading="lazy" />
               Workspaces
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent className="w-60 rounded-lg border-border p-1.5 shadow-lg">
