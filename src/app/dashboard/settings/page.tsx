@@ -30,8 +30,12 @@ import {
   Check,
   FileSpreadsheet,
   DownloadCloud,
-  Save
+  Save,
+  Loader2,
 } from "lucide-react"
+import { EmptyState } from "@/components/dashboard/EmptyState"
+import { PageHeader } from "@/components/dashboard/PageHeader"
+import { StatusBadge } from "@/components/dashboard/StatusBadge"
 
 type SettingsSection = 'account' | 'billing' | 'vendors' | 'preferences'
 type Theme = 'dark' | 'light' | 'system'
@@ -366,6 +370,7 @@ function SettingsContent() {
 
   return (
     <DashboardShell activeItem="settings" title="Settings" user={user}>
+        <PageHeader title="Settings" description="Account, billing, vendors, and workspace preferences" />
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
           {/* Mobile Section Selector */}
           <div className="lg:hidden">
@@ -404,7 +409,7 @@ function SettingsContent() {
                             key={item.id}
                             onClick={() => setActiveSection(item.id as SettingsSection)}
                             className={cn(
-                              "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
+                              "ax-interactive w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm",
                               activeSection === item.id
                                 ? "bg-accent text-accent-foreground font-medium shadow-sm"
                                 : "text-muted-foreground hover:text-foreground hover:bg-accent"
@@ -429,7 +434,7 @@ function SettingsContent() {
               <div className="space-y-4 lg:space-y-6">
                 {/* Profile Information */}
                 <Card className="ax-glass-card">
-                  <CardHeader className="p-3 lg:p-4">
+                  <CardHeader className="p-5">
                     <div className="flex items-center gap-2">
                       <User className="h-5 w-5 text-primary" />
                       <div>
@@ -438,7 +443,7 @@ function SettingsContent() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-3 lg:space-y-4 p-3 lg:p-4">
+                  <CardContent className="space-y-4 p-5">
                     <div className="space-y-1.5 lg:space-y-2">
                       <Label htmlFor="fullname" className="text-xs lg:text-sm">Full Name</Label>
                       <Input
@@ -463,18 +468,19 @@ function SettingsContent() {
 
                     <div className="flex justify-end gap-2 lg:gap-3 pt-3 lg:pt-4 border-t">
                       <Button
-                        variant="outline"
+                        variant="surface"
                         size="sm"
                         onClick={() => setFullName(user?.user_metadata?.full_name || "")}
-                        className="h-8 lg:h-9"
+                        className="h-9"
                       >
                         Cancel
                       </Button>
                       <Button
+                        variant="glossy"
                         size="sm"
                         onClick={handleUpdateProfile}
                         disabled={loading}
-                        className="h-8 lg:h-9"
+                        className="h-9"
                       >
                         {loading ? "Saving..." : "Save Changes"}
                       </Button>
@@ -547,6 +553,7 @@ function SettingsContent() {
 
                         <div className="mt-5 flex flex-col gap-2 sm:flex-row">
                           <Button
+                            variant="glossy"
                             className="h-11 rounded-lg"
                             onClick={openBillingPortal}
                             disabled={!hasBillingPortal || billingAction === "portal"}
@@ -554,8 +561,8 @@ function SettingsContent() {
                             {billingAction === "portal" ? "Opening..." : "Manage billing"}
                           </Button>
                           <Button
-                            variant={noCredits ? "critical" : "outline"}
-                            className={cn("h-11 rounded-lg", !noCredits && "border-border bg-card/60")}
+                            variant="lime"
+                            className="h-11 rounded-lg"
                             onClick={() => window.location.assign("/pricing")}
                           >
                             {noCredits ? "Buy credits" : "Compare plans"}
@@ -581,7 +588,7 @@ function SettingsContent() {
                               type="button"
                               onClick={() => startCheckout(plan.checkout_key as BillingPlanKey)}
                               disabled={billingAction === plan.checkout_key || !plan.checkout_available}
-                              className="group flex w-full items-center justify-between gap-3 rounded-lg border border-border bg-card/50 p-4 text-left transition hover:border-primary/40 hover:bg-card/65 disabled:cursor-wait disabled:opacity-70"
+                              className="ax-interactive group flex w-full items-center justify-between gap-3 rounded-lg border border-border bg-card/50 p-4 text-left hover:border-primary/40 hover:bg-card/65 disabled:cursor-wait disabled:opacity-70"
                             >
                               <span>
                                 <span className="block text-sm font-semibold text-foreground">
@@ -623,16 +630,19 @@ function SettingsContent() {
                   </CardHeader>
                   <CardContent className="space-y-3 p-5 pt-0 sm:p-6 sm:pt-0">
                     {vendorRulesLoading ? (
-                      <div className="rounded-lg border border-border bg-card/50 p-4 text-sm text-muted-foreground">
-                        Loading saved vendors...
-                      </div>
+                      <EmptyState
+                        compact
+                        icon={<Loader2 className="animate-spin h-5 w-5" />}
+                        title="Loading vendors"
+                        description="Fetching your saved vendor rules"
+                      />
                     ) : vendorRules.length === 0 ? (
-                      <div className="rounded-lg border border-border bg-card/50 p-5">
-                        <p className="text-sm font-semibold text-foreground">No saved vendors</p>
-                        <p className="mt-1 text-sm leading-5 text-muted-foreground">
-                          Confirm an invoice or receipt in Convert Files, then remember the vendor from its review view.
-                        </p>
-                      </div>
+                      <EmptyState
+                        compact
+                        icon={<FileSpreadsheet />}
+                        title="No saved vendors"
+                        description="Confirm an invoice or receipt in Convert Files, then remember the vendor from its review view."
+                      />
                     ) : vendorRules.map(rule => (
                       <section key={rule.id} className="rounded-lg border border-border bg-card/50 p-4 backdrop-blur">
                         <div className="flex flex-wrap items-start justify-between gap-3">
@@ -642,14 +652,9 @@ function SettingsContent() {
                               <span className="rounded-md border border-border bg-background px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                                 {rule.applies_to === 'both' ? 'Invoice / receipt' : rule.applies_to}
                               </span>
-                              <span className={cn(
-                                "rounded-md border px-2 py-0.5 text-[11px] font-semibold",
-                                rule.enabled
-                                  ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                                  : "border-border bg-muted text-muted-foreground"
-                              )}>
+                              <StatusBadge tone={rule.enabled ? "success" : "neutral"}>
                                 {rule.enabled ? 'Enabled' : 'Disabled'}
-                              </span>
+                              </StatusBadge>
                             </div>
                             <p className="mt-1 text-xs text-muted-foreground">
                               Approved {formatDate(rule.approved_at)}
@@ -658,7 +663,7 @@ function SettingsContent() {
                           <div className="flex items-center gap-2">
                             <Button
                               size="sm"
-                              variant="outline"
+                              variant="surface"
                               disabled={vendorRuleAction === rule.id}
                               onClick={() => void toggleVendorRule(rule)}
                               className="h-8 rounded-md px-3 text-xs"
@@ -667,10 +672,10 @@ function SettingsContent() {
                             </Button>
                             <Button
                               size="sm"
-                              variant="outline"
+                              variant="destructive"
                               disabled={vendorRuleAction === rule.id}
                               onClick={() => void deleteVendorRule(rule)}
-                              className="h-8 rounded-md border-rose-200 px-3 text-xs text-rose-700 hover:bg-rose-50"
+                              className="h-8 rounded-md px-3 text-xs"
                             >
                               Delete
                             </Button>
@@ -701,6 +706,7 @@ function SettingsContent() {
                         <div className="mt-4 flex justify-end">
                           <Button
                             size="sm"
+                            variant="glossy"
                             disabled={vendorRuleAction === rule.id}
                             onClick={() => void saveVendorRule(rule)}
                             className="h-9 rounded-md px-4"
@@ -720,7 +726,7 @@ function SettingsContent() {
               <div className="space-y-6">
                 {/* Processing Settings */}
                 <Card className="ax-glass-card">
-                  <CardHeader className="p-3 lg:p-4">
+                  <CardHeader className="p-5">
                     <div className="flex items-center gap-2">
                       <Settings2 className="h-5 w-5 text-primary" />
                       <div>
@@ -729,7 +735,7 @@ function SettingsContent() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4 p-3 lg:p-4">
+                  <CardContent className="space-y-4 p-5">
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="auto-download">Auto Download</Label>
@@ -770,7 +776,7 @@ function SettingsContent() {
 
                 {/* OCR Detection Language */}
                 <Card className="ax-glass-card">
-                  <CardHeader className="p-3 lg:p-4">
+                  <CardHeader className="p-5">
                     <div className="flex items-center gap-2">
                       <Languages className="h-5 w-5 text-primary" />
                       <div>
@@ -779,7 +785,7 @@ function SettingsContent() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4 p-3 lg:p-4">
+                  <CardContent className="space-y-4 p-5">
                     <div className="space-y-2">
                       <Label htmlFor="language">OCR Language</Label>
                       <Select value={language} onValueChange={handleLanguageChange}>
