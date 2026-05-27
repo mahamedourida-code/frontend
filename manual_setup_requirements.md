@@ -36,6 +36,12 @@ fly secrets set QUICKBOOKS_CLIENT_ID="<intuit production client id>" QUICKBOOKS_
 4. Confirm that the source attachment appears on the created Bill when attachment upload is enabled. If it fails, use **Retry attachment**; AxLiner will not create another Bill.
 5. AxLiner does not authorize payments or perform reconciliation. Those operations remain in QuickBooks.
 
+## Prompt 17 - QuickBooks Receipt Publishing
+
+1. Use **Refresh QuickBooks lists** in a reviewed receipt before publishing so vendors, accounts, and tax codes reflect the connected company.
+2. **Expense** creates an already-paid QuickBooks Purchase; **Bill** creates an unpaid QuickBooks Bill. The reviewer must select the treatment explicitly.
+3. Confirm a first receipt publication and its attached source file in a QuickBooks sandbox before intentionally writing receipts to production.
+
 ## Deployment Responsibility
 
 - Frontend: changes are committed and pushed to the GitHub `frontend` repository so Vercel deploys them.

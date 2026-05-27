@@ -302,7 +302,10 @@ export interface DocumentDuplicateWarning {
 
 export interface VendorRuleFields {
   category_account?: string
+  vendor_ref_id?: string
+  account_ref_id?: string
   tax_code?: string
+  tax_code_ref_id?: string
   currency?: string
   payment_terms?: string
   destination_treatment?: string
@@ -354,6 +357,32 @@ export interface QuickBooksBillPublication {
   quickbooks_bill_id?: string | null
   quickbooks_attachment_id?: string | null
   attachment_status?: 'pending' | 'attached' | 'failed' | 'not_requested' | null
+  failure_details?: Array<{ stage?: string; message?: string; at?: string }>
+  attempted_at?: string | null
+  published_at?: string | null
+  updated_at?: string | null
+}
+
+export type ReceiptPublishingDestination = 'expense' | 'bill'
+
+export interface ReceiptQuickBooksPublishRequest {
+  destination: ReceiptPublishingDestination
+  vendor_ref_id?: string
+  account_ref_id: string
+  tax_code_ref_id?: string
+  payment_account_ref_id?: string
+  payment_type?: 'Cash' | 'Check' | 'CreditCard'
+}
+
+export interface QuickBooksReceiptPublication {
+  id: string
+  destination: ReceiptPublishingDestination
+  remote_entity_type: 'Purchase' | 'Bill'
+  status: 'publishing' | 'published' | 'failed' | 'indeterminate'
+  attempt_count: number
+  quickbooks_remote_id?: string | null
+  quickbooks_attachment_id?: string | null
+  attachment_status?: 'pending' | 'attached' | 'failed' | null
   failure_details?: Array<{ stage?: string; message?: string; at?: string }>
   attempted_at?: string | null
   published_at?: string | null
@@ -415,6 +444,7 @@ export interface JobDocumentRecord {
   metadata?: Record<string, unknown>
   duplicate_warnings?: DocumentDuplicateWarning[]
   vendor_suggestion?: VendorRule | null
+  quickbooks_receipt_publication?: QuickBooksReceiptPublication | null
   status: string
   review_status?: 'needs_review' | 'ready' | 'edited' | 'failed' | 'published' | 'deleted'
   source_access_url?: string | null
@@ -807,6 +837,18 @@ export const ocrApi = {
     const response = await apiClient.post<DocumentReviewResponse & { rule: VendorRule }>(`/api/v1/jobs/${jobId}/documents/${documentId}/vendor-rule`, {
       suggested_fields: suggestedFields,
     })
+    return response.data
+  },
+
+  publishReceiptToQuickBooks: async (
+    jobId: string,
+    documentId: string,
+    request: ReceiptQuickBooksPublishRequest,
+  ): Promise<DocumentReviewResponse> => {
+    const response = await apiClient.post<DocumentReviewResponse>(
+      `/api/v1/jobs/${jobId}/documents/${documentId}/quickbooks/receipt/publish`,
+      request,
+    )
     return response.data
   },
 

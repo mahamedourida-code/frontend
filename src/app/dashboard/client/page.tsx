@@ -7,8 +7,19 @@ import { Separator } from "@/components/ui/separator"
 import { useOCR } from "@/hooks/useOCR"
 import { useAuth } from "@/hooks/useAuth"
 import { toast } from "sonner"
-import { accountsPayableApi, ocrApi } from "@/lib/api-client"
-import type { AppLimits, DocumentMode, JobDocumentRecord, ProcessedFile, RecoverableJobSummary, ResolvedDocumentMode, VendorRuleFields } from "@/lib/api-client"
+import { accountsPayableApi, ocrApi, quickBooksApi } from "@/lib/api-client"
+import type {
+  AppLimits,
+  DocumentMode,
+  JobDocumentRecord,
+  ProcessedFile,
+  QuickBooksConnectionStatus,
+  QuickBooksReferenceItem,
+  ReceiptQuickBooksPublishRequest,
+  RecoverableJobSummary,
+  ResolvedDocumentMode,
+  VendorRuleFields,
+} from "@/lib/api-client"
 import { getApiErrorUi, showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
@@ -174,6 +185,8 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
   const resultPreviewsRef = useRef<Record<string, ResultPreview>>({})
   const [resultSourceTrace, setResultSourceTrace] = useState<Record<string, ResultSourceTrace>>({})
   const [jobDocuments, setJobDocuments] = useState<JobDocumentRecord[]>([])
+  const [quickBooksConnection, setQuickBooksConnection] = useState<QuickBooksConnectionStatus | null>(null)
+  const [quickBooksReferences, setQuickBooksReferences] = useState<QuickBooksReferenceItem[]>([])
   const [overridingDocumentId, setOverridingDocumentId] = useState<string | null>(null)
   const [firstImageUrl, setFirstImageUrl] = useState<string>('')
   const [activePreviewFileId, setActivePreviewFileId] = useState<string>('')
@@ -1613,6 +1626,63 @@ Best regards`
     }
   }, [jobId, router])
 
+  const loadQuickBooksReferences = useCallback(async (sync = false) => {
+    try {
+      let connection = await quickBooksApi.status()
+      if (sync && connection.connected) {
+        connection = await quickBooksApi.sync()
+      }
+      setQuickBooksConnection(connection)
+      if (!connection.connected) {
+        setQuickBooksReferences([])
+        return
+      }
+      const response = await quickBooksApi.references()
+      setQuickBooksReferences(response.items)
+    } catch {
+      setQuickBooksConnection(null)
+      setQuickBooksReferences([])
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!user || !jobDocuments.some(document => (
+      document.resolved_mode === "receipt" ||
+      document.detected_mode === "receipt" ||
+      document.selected_mode === "receipt"
+    ))) return
+    void loadQuickBooksReferences()
+  }, [jobDocuments, loadQuickBooksReferences, user])
+
+  const handlePublishReceipt = useCallback(async (
+    file: any,
+    request: ReceiptQuickBooksPublishRequest,
+  ): Promise<boolean> => {
+    if (!jobId || !file?.document_id) return false
+    const isExpense = request.destination === "expense"
+    const confirmation = window.confirm(
+      isExpense
+        ? "Publish this reviewed receipt as an already-paid QuickBooks expense? This creates a Purchase transaction."
+        : "Publish this reviewed receipt as an unpaid QuickBooks bill? This creates a Bill transaction.",
+    )
+    if (!confirmation) return false
+    try {
+      const response = await ocrApi.publishReceiptToQuickBooks(jobId, file.document_id, request)
+      mergeReviewedDocument(response.document)
+      await reloadDurableDocuments()
+      toast.success(isExpense ? "Receipt published as a QuickBooks expense." : "Receipt published as a QuickBooks bill.")
+      setWorkspaceBanner(null)
+      return true
+    } catch (error: any) {
+      setWorkspaceBanner({
+        title: "Receipt was not published",
+        description: error?.detail || error?.message || "Review the QuickBooks selections and try again.",
+        tone: "error",
+      })
+      return false
+    }
+  }, [jobId, mergeReviewedDocument, reloadDurableDocuments])
+
   
 
   if (authLoading || !user) {
@@ -1685,6 +1755,7 @@ Best regards`
       requires_review: durableDocument?.review_status === "needs_review" || tracedFile.requires_review,
       duplicate_warnings: durableDocument?.duplicate_warnings || [],
       vendor_suggestion: durableDocument?.vendor_suggestion || null,
+      quickbooks_receipt_publication: durableDocument?.quickbooks_receipt_publication || null,
       filename: smartOutputFilename(tracedFile, index, uploadedFiles, effectiveOutputMode),
       input_preview_url: getResultInputPreviewUrl(tracedFile),
     }
@@ -1806,6 +1877,10 @@ Best regards`
         onSendToAccountsPayable={handleSendToAccountsPayable}
         onOverrideDuplicateWarning={handleOverrideDuplicateWarning}
         onSaveVendorRule={handleSaveVendorRule}
+        quickBooksConnection={quickBooksConnection}
+        quickBooksReferences={quickBooksReferences}
+        onRefreshQuickBooksReferences={() => loadQuickBooksReferences(true)}
+        onPublishReceipt={handlePublishReceipt}
         classifiedDocuments={activeDocumentMode === "auto" ? jobDocuments : []}
         overridingDocumentId={overridingDocumentId}
         onOverrideDocumentMode={handleDocumentModeOverride}

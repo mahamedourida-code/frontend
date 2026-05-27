@@ -21,7 +21,19 @@ import {
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
-import type { DocumentDuplicateWarning, DocumentMode, JobDocumentRecord, ResolvedDocumentMode, VendorRule, VendorRuleFields } from "@/lib/api-client"
+import type {
+  DocumentDuplicateWarning,
+  DocumentMode,
+  JobDocumentRecord,
+  QuickBooksConnectionStatus,
+  QuickBooksReceiptPublication,
+  QuickBooksReferenceItem,
+  ReceiptPublishingDestination,
+  ReceiptQuickBooksPublishRequest,
+  ResolvedDocumentMode,
+  VendorRule,
+  VendorRuleFields,
+} from "@/lib/api-client"
 
 export type WorkspaceBanner = {
   title: string
@@ -56,6 +68,7 @@ type ResultFile = {
   reviewed_data?: Record<string, any>
   duplicate_warnings?: DocumentDuplicateWarning[]
   vendor_suggestion?: VendorRule | null
+  quickbooks_receipt_publication?: QuickBooksReceiptPublication | null
   original_image?: string
   metadata?: Record<string, any>
 }
@@ -125,6 +138,10 @@ type ConversionWorkspaceProps = {
   onSendToAccountsPayable?: (file: ResultFile) => void | Promise<void>
   onOverrideDuplicateWarning?: (file: ResultFile, warningId: string) => void | Promise<void>
   onSaveVendorRule?: (file: ResultFile, suggestedFields: VendorRuleFields) => boolean | Promise<boolean>
+  quickBooksConnection?: QuickBooksConnectionStatus | null
+  quickBooksReferences?: QuickBooksReferenceItem[]
+  onRefreshQuickBooksReferences?: () => void | Promise<void>
+  onPublishReceipt?: (file: ResultFile, request: ReceiptQuickBooksPublishRequest) => boolean | Promise<boolean>
   classifiedDocuments?: JobDocumentRecord[]
   overridingDocumentId?: string | null
   onOverrideDocumentMode?: (documentId: string, mode: ResolvedDocumentMode) => void | Promise<void>
@@ -1060,6 +1077,10 @@ export function ResultActions({
   onSendToAccountsPayable,
   onOverrideDuplicateWarning,
   onSaveVendorRule,
+  quickBooksConnection,
+  quickBooksReferences = [],
+  onRefreshQuickBooksReferences,
+  onPublishReceipt,
 }: Pick<
   ConversionWorkspaceProps,
   | "resultFiles"
@@ -1089,6 +1110,10 @@ export function ResultActions({
   | "onSendToAccountsPayable"
   | "onOverrideDuplicateWarning"
   | "onSaveVendorRule"
+  | "quickBooksConnection"
+  | "quickBooksReferences"
+  | "onRefreshQuickBooksReferences"
+  | "onPublishReceipt"
 >) {
   const [comparisonIndex, setComparisonIndex] = useState<number | null>(null)
   const [editingCell, setEditingCell] = useState<{ fileKey: string; row: number; col: number } | null>(null)
@@ -1097,6 +1122,13 @@ export function ResultActions({
   const [reviewedDownloadBusy, setReviewedDownloadBusy] = useState(false)
   const [vendorDrafts, setVendorDrafts] = useState<Record<string, VendorRuleFields>>({})
   const [vendorRuleSavingId, setVendorRuleSavingId] = useState<string | null>(null)
+  const [receiptDestination, setReceiptDestination] = useState<ReceiptPublishingDestination | "">("")
+  const [receiptVendorRefId, setReceiptVendorRefId] = useState("")
+  const [receiptAccountRefId, setReceiptAccountRefId] = useState("")
+  const [receiptTaxCodeRefId, setReceiptTaxCodeRefId] = useState("")
+  const [receiptPaymentAccountRefId, setReceiptPaymentAccountRefId] = useState("")
+  const [receiptPaymentType, setReceiptPaymentType] = useState<"Cash" | "Check" | "CreditCard">("CreditCard")
+  const [receiptPublishing, setReceiptPublishing] = useState(false)
   const safeResultFiles = (resultFiles || []).filter(file => file.review_status !== "deleted")
 
   useEffect(() => {
@@ -1125,8 +1157,6 @@ export function ResultActions({
       return next
     })
   }, [safeResultFiles.map((file) => `${file.file_id || file.filename || ""}:${file.review_status || ""}`).join("|")])
-
-  if (!safeResultFiles.length) return null
 
   const firstResultFile = safeResultFiles[0]
   const reviewedExportOptions =
@@ -1171,6 +1201,15 @@ export function ResultActions({
     ? vendorDrafts[comparisonKey] || initialVendorRuleDraft(comparisonFile)
     : {}
   const comparisonImageUrl = comparisonFile?.input_preview_url || (safeResultFiles.length === 1 ? firstImageUrl : "")
+  const isReceiptComparison = comparisonFile?.document_type === "receipt"
+  const receiptPublication = comparisonFile?.quickbooks_receipt_publication
+  const quickBooksVendors = quickBooksReferences.filter(reference => reference.resource_type === "vendor")
+  const quickBooksAccounts = quickBooksReferences.filter(reference => reference.resource_type === "account")
+  const quickBooksTaxCodes = quickBooksReferences.filter(reference => reference.resource_type === "tax_code")
+  const paidFromAccounts = quickBooksAccounts.filter(reference => {
+    const accountType = String(reference.details?.account_type || "").replace(/\s/g, "").toLowerCase()
+    return accountType === "bank" || accountType === "creditcard"
+  })
   const resultEntries = safeResultFiles.map((file, index) => {
     const fileKey = getResultKey(file, index)
     const badge = getOutputBadge(file)
@@ -1204,6 +1243,31 @@ export function ResultActions({
     setEditingCell(null)
     onEditFile(file, index)
   }
+
+  useEffect(() => {
+    setReceiptDestination("")
+    setReceiptVendorRefId("")
+    setReceiptAccountRefId("")
+    setReceiptTaxCodeRefId("")
+    setReceiptPaymentAccountRefId("")
+    setReceiptPaymentType("CreditCard")
+    if (comparisonFile?.document_type !== "receipt") return
+    const remembered = comparisonFile.vendor_suggestion?.suggested_fields
+    const vendorMatch = quickBooksVendors.find(reference => reference.external_id === remembered?.vendor_ref_id)
+    const accountMatch = quickBooksAccounts.find(reference => (
+      reference.external_id === remembered?.account_ref_id ||
+      reference.display_name === remembered?.category_account
+    ))
+    const taxMatch = quickBooksTaxCodes.find(reference => (
+      reference.external_id === remembered?.tax_code_ref_id ||
+      reference.display_name === remembered?.tax_code
+    ))
+    setReceiptVendorRefId(vendorMatch?.external_id || "")
+    setReceiptAccountRefId(accountMatch?.external_id || "")
+    setReceiptTaxCodeRefId(taxMatch?.external_id || "")
+  }, [comparisonKey, quickBooksReferences])
+
+  if (!safeResultFiles.length) return null
 
   const goToAdjacentResult = (direction: -1 | 1) => {
     if (comparisonIndex === null || !navigableResultEntries.length) return
@@ -1297,6 +1361,25 @@ export function ResultActions({
       await onSaveVendorRule(comparisonFile, comparisonVendorDraft)
     } finally {
       setVendorRuleSavingId(null)
+    }
+  }
+
+  const publishReceipt = async () => {
+    if (!comparisonFile || !receiptDestination || !receiptAccountRefId || !onPublishReceipt) return
+    if (receiptDestination === "bill" && !receiptVendorRefId) return
+    if (receiptDestination === "expense" && !receiptPaymentAccountRefId) return
+    setReceiptPublishing(true)
+    try {
+      await onPublishReceipt(comparisonFile, {
+        destination: receiptDestination,
+        vendor_ref_id: receiptVendorRefId || undefined,
+        account_ref_id: receiptAccountRefId,
+        tax_code_ref_id: receiptTaxCodeRefId || undefined,
+        payment_account_ref_id: receiptDestination === "expense" ? receiptPaymentAccountRefId : undefined,
+        payment_type: receiptDestination === "expense" ? receiptPaymentType : undefined,
+      })
+    } finally {
+      setReceiptPublishing(false)
     }
   }
 
@@ -1739,6 +1822,161 @@ export function ResultActions({
                     )}
                   </div>
                 ) : null}
+                {comparisonFile && isReceiptComparison ? (
+                  <div className="border-b border-border bg-card px-4 py-4">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-semibold text-foreground">QuickBooks destination</p>
+                        <p className="mt-1 max-w-xl text-[11px] text-muted-foreground">
+                          Choose how this reviewed receipt is recorded. Expense records an already-paid purchase; Bill records an unpaid payable.
+                        </p>
+                      </div>
+                      {receiptPublication ? (
+                        <span className="rounded-md border border-border bg-muted px-2 py-1 text-[10px] font-semibold text-foreground">
+                          {receiptPublication.destination === "expense" ? "Expense" : "Bill"} - {receiptPublication.status}
+                        </span>
+                      ) : null}
+                    </div>
+                    {receiptPublication?.status === "published" ? (
+                      <p className="mt-3 text-xs text-foreground">
+                        Published to QuickBooks as {receiptPublication.remote_entity_type}.
+                        {receiptPublication.attachment_status === "attached" ? " Source attached." : " Source attachment pending review."}
+                      </p>
+                    ) : !["ready", "published"].includes(comparisonFile.review_status || "") ? (
+                      <p className="mt-3 text-xs text-muted-foreground">Mark this receipt Ready after review to publish it.</p>
+                    ) : !quickBooksConnection?.connected ? (
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <p className="text-xs text-muted-foreground">Connect QuickBooks before publishing receipts.</p>
+                        <a href="/dashboard/integrations" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-8 rounded-md px-3 text-xs")}>
+                          Open integrations
+                        </a>
+                      </div>
+                    ) : (
+                      <div className="mt-4 space-y-3">
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          {([
+                            ["expense", "Expense", "Already paid"],
+                            ["bill", "Bill", "Pay later"],
+                          ] as Array<[ReceiptPublishingDestination, string, string]>).map(([value, title, subtitle]) => (
+                            <button
+                              type="button"
+                              key={value}
+                              onClick={() => setReceiptDestination(value)}
+                              className={cn(
+                                "rounded-md border p-3 text-left transition",
+                                receiptDestination === value
+                                  ? "border-primary bg-primary/10"
+                                  : "border-border bg-background hover:bg-accent"
+                              )}
+                            >
+                              <span className="block text-xs font-semibold text-foreground">{title}</span>
+                              <span className="mt-0.5 block text-[11px] text-muted-foreground">{subtitle}</span>
+                            </button>
+                          ))}
+                        </div>
+                        {receiptDestination ? (
+                          <div className="grid gap-2 sm:grid-cols-2">
+                            <label className="text-[11px] font-medium text-muted-foreground">
+                              Expense account
+                              <select
+                                value={receiptAccountRefId}
+                                onChange={(event) => setReceiptAccountRefId(event.target.value)}
+                                className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
+                              >
+                                <option value="">Select account</option>
+                                {quickBooksAccounts.map(reference => (
+                                  <option key={reference.external_id} value={reference.external_id}>{reference.display_name}</option>
+                                ))}
+                              </select>
+                            </label>
+                            <label className="text-[11px] font-medium text-muted-foreground">
+                              {receiptDestination === "bill" ? "Vendor" : "Vendor (optional)"}
+                              <select
+                                value={receiptVendorRefId}
+                                onChange={(event) => setReceiptVendorRefId(event.target.value)}
+                                className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
+                              >
+                                <option value="">Select vendor</option>
+                                {quickBooksVendors.map(reference => (
+                                  <option key={reference.external_id} value={reference.external_id}>{reference.display_name}</option>
+                                ))}
+                              </select>
+                            </label>
+                            <label className="text-[11px] font-medium text-muted-foreground">
+                              Tax code (optional)
+                              <select
+                                value={receiptTaxCodeRefId}
+                                onChange={(event) => setReceiptTaxCodeRefId(event.target.value)}
+                                className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
+                              >
+                                <option value="">No tax code selected</option>
+                                {quickBooksTaxCodes.map(reference => (
+                                  <option key={reference.external_id} value={reference.external_id}>{reference.display_name}</option>
+                                ))}
+                              </select>
+                            </label>
+                            {receiptDestination === "expense" ? (
+                              <>
+                                <label className="text-[11px] font-medium text-muted-foreground">
+                                  Paid from
+                                  <select
+                                    value={receiptPaymentAccountRefId}
+                                    onChange={(event) => setReceiptPaymentAccountRefId(event.target.value)}
+                                    className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
+                                  >
+                                    <option value="">Select bank or card account</option>
+                                    {paidFromAccounts.map(reference => (
+                                      <option key={reference.external_id} value={reference.external_id}>{reference.display_name}</option>
+                                    ))}
+                                  </select>
+                                </label>
+                                <label className="text-[11px] font-medium text-muted-foreground">
+                                  Payment type
+                                  <select
+                                    value={receiptPaymentType}
+                                    onChange={(event) => setReceiptPaymentType(event.target.value as "Cash" | "Check" | "CreditCard")}
+                                    className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
+                                  >
+                                    <option value="CreditCard">Credit card</option>
+                                    <option value="Check">Check</option>
+                                    <option value="Cash">Cash</option>
+                                  </select>
+                                </label>
+                              </>
+                            ) : null}
+                          </div>
+                        ) : null}
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={() => void publishReceipt()}
+                            disabled={
+                              receiptPublishing ||
+                              !receiptDestination ||
+                              !receiptAccountRefId ||
+                              (receiptDestination === "bill" && !receiptVendorRefId) ||
+                              (receiptDestination === "expense" && !receiptPaymentAccountRefId)
+                            }
+                            className="h-9 rounded-md px-4 text-xs"
+                          >
+                            {receiptPublishing ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : null}
+                            Publish {receiptDestination || "receipt"}
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => void onRefreshQuickBooksReferences?.()}
+                            className="h-9 rounded-md px-3 text-xs"
+                          >
+                            Refresh QuickBooks lists
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
                 {comparisonFields.length || comparisonRows ? (
                   <div className="text-gray-950">
                     <div className="sticky top-0 z-[1] flex items-center justify-between gap-4 border-b border-border bg-white px-4 py-3">
@@ -2157,6 +2395,10 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                 onSendToAccountsPayable={onSendToAccountsPayable}
                 onOverrideDuplicateWarning={onOverrideDuplicateWarning}
                 onSaveVendorRule={onSaveVendorRule}
+                quickBooksConnection={quickBooksConnection}
+                quickBooksReferences={quickBooksReferences}
+                onRefreshQuickBooksReferences={onRefreshQuickBooksReferences}
+                onPublishReceipt={onPublishReceipt}
               />
           </div>
         </div>
