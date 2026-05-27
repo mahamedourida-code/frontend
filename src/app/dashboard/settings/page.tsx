@@ -684,7 +684,9 @@ function SettingsContent() {
                             ['currency', 'Currency', 'USD'],
                             ['payment_terms', 'Payment terms', 'Net 30'],
                             ['destination_treatment', 'Destination treatment', 'Draft bill'],
-                          ] as Array<[keyof VendorRuleFields, string, string]>).map(([field, label, placeholder]) => (
+                          ] as Array<[keyof VendorRuleFields, string, string]>)
+                            .filter(([field]) => rule.applies_to !== 'receipt' || field !== 'destination_treatment')
+                            .map(([field, label, placeholder]) => (
                             <label key={field} className="space-y-1.5">
                               <span className="block text-xs font-medium text-muted-foreground">{label}</span>
                               <Input
