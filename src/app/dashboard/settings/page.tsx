@@ -124,9 +124,10 @@ function SettingsContent() {
   useEffect(() => {
     const section = searchParams.get('section')
     if (section === 'account' || section === 'billing' || section === 'vendors' || section === 'preferences') {
+      if (section === 'vendors' && !isOwner) return
       setActiveSection(section)
     }
-  }, [searchParams])
+  }, [searchParams, isOwner])
 
   // Sync language with localStorage and listen for changes
   useEffect(() => {
@@ -617,7 +618,7 @@ function SettingsContent() {
               </div>
             )}
 
-            {activeSection === 'vendors' && (
+            {activeSection === 'vendors' && isOwner && (
               <div className="space-y-5">
                 <Card className="ax-glass-card overflow-hidden rounded-xl">
                   <CardHeader className="p-5 sm:p-6">
