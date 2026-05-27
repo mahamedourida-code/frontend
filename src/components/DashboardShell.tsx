@@ -128,10 +128,10 @@ export function DashboardShell({
   const nextActionLabel = activeItem === "process" ? "History" : "Convert Files"
 
   return (
-    <div className="min-h-svh bg-background text-foreground md:grid md:grid-cols-[15.75rem_minmax(0,1fr)]">
+    <div className="min-h-svh bg-background text-foreground">
       <WorkspaceSidebar activeItem={activeItem} user={user} />
 
-      <div className="relative z-10 min-w-0 md:col-start-2">
+      <div className="ax-dashboard-content relative z-10 min-w-0">
         <header className="sticky top-0 z-40 h-16 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
           <div className="relative flex h-full items-center gap-3 px-4 sm:gap-4">
             {showBack && (
