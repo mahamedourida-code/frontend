@@ -157,7 +157,7 @@ export function DashboardShell({
                 <Link
                   href={activeJob.href}
                   className={cn(
-                    "hidden h-9 items-center gap-2 rounded-md border px-3 text-sm font-medium transition-colors sm:inline-flex",
+                    "ax-interactive hidden h-9 items-center gap-2 rounded-md border px-3 text-sm font-medium sm:inline-flex",
                     activeJob.tone === "ready"
                       ? "border-border bg-background text-foreground hover:bg-accent"
                       : "border-foreground bg-foreground text-background hover:bg-foreground/88"

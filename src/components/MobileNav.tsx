@@ -244,7 +244,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 aria-current={item.active ? "page" : undefined}
                 onClick={item.onClick}
                 className={cn(
-                  "h-14 min-w-0 flex-col gap-1 rounded-2xl px-1.5 text-[10px] font-semibold transition-all",
+                  "ax-interactive h-14 min-w-0 flex-col gap-1 rounded-2xl px-1.5 text-[10px] font-semibold",
                   isAuthenticated
                     ? item.active
                       ? "bg-accent text-accent-foreground shadow-sm hover:bg-accent hover:text-accent-foreground"
@@ -266,7 +266,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 variant="ghost"
                 size="sm" 
                 className={cn(
-                  "h-14 min-w-0 flex-col gap-1 rounded-2xl px-1.5 text-[10px] font-semibold transition-all",
+                  "ax-interactive h-14 min-w-0 flex-col gap-1 rounded-2xl px-1.5 text-[10px] font-semibold",
                   isAuthenticated
                     ? isOpen
                       ? "bg-accent text-accent-foreground"
@@ -340,8 +340,8 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                 className={cn(
                                   "h-11 w-full justify-start gap-3 rounded-2xl px-3",
                                   isAuthenticated
-                                    ? "text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                                    : "text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                                    ? "ax-interactive text-foreground hover:bg-accent hover:text-accent-foreground"
+                                    : "ax-interactive text-foreground hover:bg-accent hover:text-accent-foreground"
                                 )}
                               >
                                 {item.icon && <item.icon className="h-5 w-5" />}
@@ -363,7 +363,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                   onClick={() => handleNavigation(child.href)}
                                   className={cn(
                                     "w-full justify-start h-auto py-2 px-3",
-                                    "rounded-2xl transition-colors hover:bg-accent",
+                                    "ax-interactive rounded-2xl hover:bg-accent",
                                     pathname === child.href && "bg-accent"
                                   )}
                                 >
@@ -402,8 +402,8 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                           className={cn(
                             "h-11 w-full justify-start gap-3 rounded-2xl px-3",
                             isAuthenticated
-                              ? "text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                              : "text-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
+                              ? "ax-interactive text-foreground hover:bg-accent hover:text-accent-foreground"
+                              : "ax-interactive text-foreground hover:bg-accent hover:text-accent-foreground",
                             pathname === item.href && "bg-accent"
                           )}
                         >

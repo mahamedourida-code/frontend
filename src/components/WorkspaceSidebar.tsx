@@ -82,7 +82,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                     <Link
                       href={item.href}
                       className={cn(
-                        "group flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[15px] font-semibold transition-colors",
+                        "ax-interactive group flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[15px] font-semibold",
                         activeItem === item.key
                           ? "bg-sidebar-accent text-sidebar-accent-foreground"
                           : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
@@ -105,7 +105,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                             key={subItem.href}
                             href={subItem.href}
                             className={cn(
-                              "flex h-8 items-center gap-2 rounded-md px-2 text-[13px] font-medium transition-colors",
+                              "ax-interactive flex h-8 items-center gap-2 rounded-md px-2 text-[13px] font-medium",
                               selected
                                 ? "bg-sidebar-accent text-sidebar-accent-foreground"
                                 : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
@@ -126,7 +126,7 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
                   key={item.key}
                   href={item.href}
                   className={cn(
-                    "group flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[15px] font-semibold transition-colors",
+                    "ax-interactive group flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[15px] font-semibold",
                     activeItem === item.key
                       ? "bg-sidebar-accent text-sidebar-accent-foreground"
                       : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
