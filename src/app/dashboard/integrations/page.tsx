@@ -12,6 +12,7 @@ import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useAuth } from "@/hooks/useAuth"
+import { useWorkspaces } from "@/hooks/useWorkspaces"
 import {
   quickBooksApi,
   type QuickBooksConnectionStatus,
@@ -50,6 +51,8 @@ function IntegrationsContent() {
   const router = useRouter()
   const params = useSearchParams()
   const { user, loading: authLoading } = useAuth()
+  const { activeWorkspace } = useWorkspaces(user)
+  const isOwner = !activeWorkspace || activeWorkspace.role === "owner"
   const returnHandled = useRef(false)
   const [connection, setConnection] = useState<QuickBooksConnectionStatus>(emptyConnection)
   const [references, setReferences] = useState<QuickBooksReferenceItem[]>([])
@@ -185,23 +188,25 @@ function IntegrationsContent() {
                 </p>
               </div>
 
-              <div className="flex shrink-0 flex-wrap gap-2">
-                {connection.connected ? (
-                  <>
-                    <Button variant="surface" onClick={() => void sync()} disabled={Boolean(busy)}>
-                      <img src="/site-icons/io/database.svg" className="h-4 w-4" alt="" />
-                      {busy === "sync" ? "Syncing..." : "Refresh lists"}
+              {isOwner && (
+                <div className="flex shrink-0 flex-wrap gap-2">
+                  {connection.connected ? (
+                    <>
+                      <Button variant="surface" onClick={() => void sync()} disabled={Boolean(busy)}>
+                        <img src="/site-icons/io/database.svg" className="h-4 w-4" alt="" />
+                        {busy === "sync" ? "Syncing..." : "Refresh lists"}
+                      </Button>
+                      <Button variant="destructive" onClick={() => void disconnect()} disabled={Boolean(busy)}>
+                        {busy === "disconnect" ? "Disconnecting..." : "Disconnect"}
+                      </Button>
+                    </>
+                  ) : (
+                    <Button variant="glossy" onClick={() => void connect()} disabled={Boolean(busy) || loading}>
+                      {busy === "connect" ? "Connecting..." : "Connect QuickBooks"}
                     </Button>
-                    <Button variant="destructive" onClick={() => void disconnect()} disabled={Boolean(busy)}>
-                      {busy === "disconnect" ? "Disconnecting..." : "Disconnect"}
-                    </Button>
-                  </>
-                ) : (
-                  <Button variant="glossy" onClick={() => void connect()} disabled={Boolean(busy) || loading}>
-                    {busy === "connect" ? "Connecting..." : "Connect QuickBooks"}
-                  </Button>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {connection.connected && (
@@ -248,13 +253,13 @@ function IntegrationsContent() {
                     <EmptyState
                       icon={<Database />}
                       title="No reference data cached"
-                      description="Click Refresh QuickBooks lists to load vendors, accounts, and tax codes"
-                      action={
+                      description={isOwner ? "Click Refresh QuickBooks lists to load vendors, accounts, and tax codes" : "Reference data will appear here once the workspace owner syncs QuickBooks"}
+                      action={isOwner ? (
                         <Button variant="surface" size="sm" onClick={() => void sync()} disabled={Boolean(busy)}>
                           <img src="/site-icons/io/database.svg" className="h-4 w-4" alt="" />
                           Refresh
                         </Button>
-                      }
+                      ) : undefined}
                       compact
                     />
                   )}

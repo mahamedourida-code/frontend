@@ -1,9 +1,10 @@
 "use client"
 
-import { Suspense, useState, useEffect } from "react"
+import React, { Suspense, useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/utils/supabase/client"
 import { useAuth } from "@/hooks/useAuth"
+import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { useTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -56,6 +57,8 @@ function SettingsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user, loading: authLoading } = useAuth()
+  const { activeWorkspace } = useWorkspaces(user)
+  const isOwner = !activeWorkspace || activeWorkspace.role === "owner"
   const { theme: currentTheme, setTheme } = useTheme()
   const supabase = createClient()
 
@@ -354,9 +357,9 @@ function SettingsContent() {
       items: [
         { id: 'account', label: 'Account', icon: User },
         { id: 'billing', label: 'Billing', icon: BillingSeal },
-        { id: 'vendors', label: 'Vendor memory', icon: FileSpreadsheet },
+        ...(isOwner ? [{ id: 'vendors', label: 'Vendor memory', icon: FileSpreadsheet }] : []),
         { id: 'preferences', label: 'Preferences', icon: Settings2 },
-      ]
+      ] as Array<{ id: SettingsSection; label: string; icon: React.ComponentType<{ className?: string }> }>
     }
   ]
 

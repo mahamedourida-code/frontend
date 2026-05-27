@@ -487,6 +487,53 @@ export interface EmailIntakeMessage {
   }>
 }
 
+export interface WorkspaceRecord {
+  id: string
+  owner_user_id: string
+  name: string
+  role: 'owner' | 'reviewer'
+  created_at: string
+  updated_at: string
+}
+
+export interface WorkspaceMember {
+  id: string
+  workspace_id: string
+  member_email: string
+  role: 'owner' | 'reviewer'
+  status: 'pending' | 'active' | 'revoked'
+  created_at: string
+  updated_at: string
+}
+
+export interface ClientUploadLink {
+  id: string
+  workspace_id: string
+  label: string
+  expires_at: string
+  max_submissions: number
+  submission_count: number
+  enabled: boolean
+  revoked_at?: string | null
+  created_at: string
+}
+
+export interface ClientUploadSubmission {
+  id: string
+  workspace_id: string
+  status: 'received' | 'queued' | 'rejected' | 'failed'
+  job_id?: string | null
+  job_status?: string | null
+  file_count: number
+  created_at: string
+  documents: Array<{
+    id: string
+    original_filename: string
+    status: string
+    review_status?: DocumentReviewStatus
+  }>
+}
+
 export type DocumentReviewStatus = 'needs_review' | 'ready' | 'edited' | 'failed' | 'published' | 'deleted'
 
 export interface DocumentReviewChange {
@@ -1164,6 +1211,81 @@ export const emailIntakeApi = {
   listMessages: async (workspaceId?: string): Promise<{ messages: EmailIntakeMessage[]; total: number }> => {
     const response = await apiClient.get<{ messages: EmailIntakeMessage[]; total: number }>('/api/v1/email-intake/messages', {
       params: workspaceId ? { workspace_id: workspaceId } : undefined,
+    })
+    return response.data
+  },
+}
+
+export const workspaceApi = {
+  list: async (): Promise<{ workspaces: WorkspaceRecord[]; active_workspace_id?: string | null }> => {
+    const response = await apiClient.get('/api/v1/workspaces')
+    return response.data
+  },
+
+  create: async (name: string): Promise<WorkspaceRecord> => {
+    const response = await apiClient.post<{ workspace: WorkspaceRecord }>('/api/v1/workspaces', { name })
+    return response.data.workspace
+  },
+
+  select: async (workspaceId: string): Promise<WorkspaceRecord> => {
+    const response = await apiClient.put<{ workspace: WorkspaceRecord }>(`/api/v1/workspaces/${workspaceId}/active`)
+    return response.data.workspace
+  },
+
+  members: async (workspaceId: string): Promise<{ members: WorkspaceMember[]; total: number }> => {
+    const response = await apiClient.get(`/api/v1/workspaces/${workspaceId}/members`)
+    return response.data
+  },
+
+  inviteReviewer: async (workspaceId: string, email: string): Promise<WorkspaceMember> => {
+    const response = await apiClient.post<{ member: WorkspaceMember }>(`/api/v1/workspaces/${workspaceId}/members`, { email })
+    return response.data.member
+  },
+
+  revokeReviewer: async (workspaceId: string, membershipId: string): Promise<void> => {
+    await apiClient.delete(`/api/v1/workspaces/${workspaceId}/members/${membershipId}`)
+  },
+
+  acceptInvite: async (token: string): Promise<WorkspaceMember> => {
+    const response = await apiClient.post<{ member: WorkspaceMember }>(`/api/v1/workspaces/invite/${encodeURIComponent(token)}/accept`)
+    return response.data.member
+  },
+}
+
+export const clientIntakeApi = {
+  listLinks: async (workspaceId: string): Promise<{ links: ClientUploadLink[]; total: number }> => {
+    const response = await apiClient.get('/api/v1/client-intake/links', { params: { workspace_id: workspaceId } })
+    return response.data
+  },
+
+  createLink: async (
+    workspaceId: string,
+    data: { label: string; expires_in_hours: number; max_submissions: number },
+  ): Promise<{ link: ClientUploadLink; upload_url: string }> => {
+    const response = await apiClient.post('/api/v1/client-intake/links', { workspace_id: workspaceId, ...data })
+    return response.data
+  },
+
+  revokeLink: async (workspaceId: string, linkId: string): Promise<void> => {
+    await apiClient.delete(`/api/v1/client-intake/links/${linkId}`, { params: { workspace_id: workspaceId } })
+  },
+
+  listSubmissions: async (workspaceId: string): Promise<{ submissions: ClientUploadSubmission[]; total: number }> => {
+    const response = await apiClient.get('/api/v1/client-intake/submissions', { params: { workspace_id: workspaceId } })
+    return response.data
+  },
+
+  getPublicContext: async (token: string): Promise<{ label: string; workspace_name: string; expires_at: string }> => {
+    const response = await apiClient.get(`/api/v1/client-intake/public/${encodeURIComponent(token)}`)
+    return response.data
+  },
+
+  submitPublicFiles: async (token: string, files: File[]): Promise<{ accepted: boolean; submission_id: string; status: string }> => {
+    const formData = new FormData()
+    files.forEach(file => formData.append('files', file))
+    const response = await apiClient.post(`/api/v1/client-intake/public/${encodeURIComponent(token)}/upload`, formData, {
+      headers: { 'Content-Type': undefined },
+      timeout: isMobile ? 120000 : 90000,
     })
     return response.data
   },
