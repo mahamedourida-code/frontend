@@ -95,7 +95,11 @@ export default function RootLayout({
               <div className="relative z-10">
                 {children}
               </div>
-              <Toaster richColors position="top-right" />
+              <Toaster
+                richColors
+                position="top-right"
+                toastOptions={{ duration: 3500, className: "ax-toast ax-interactive" }}
+              />
             </ProcessingStateProvider>
           </AuthProvider>
         </ThemeProvider>
