@@ -2221,12 +2221,16 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     onDeleteBatch,
     onEditFile,
     onPersistCellEdit,
-      onPersistStructuredEdit,
-      onMarkDocumentReady,
-      onSendToAccountsPayable,
-      onOverrideDuplicateWarning,
-      onSaveVendorRule,
-      classifiedDocuments,
+    onPersistStructuredEdit,
+    onMarkDocumentReady,
+    onSendToAccountsPayable,
+    onOverrideDuplicateWarning,
+    onSaveVendorRule,
+    quickBooksConnection,
+    quickBooksReferences,
+    onRefreshQuickBooksReferences,
+    onPublishReceipt,
+    classifiedDocuments,
     overridingDocumentId,
     onOverrideDocumentMode,
   } = props
@@ -2450,16 +2454,16 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
               onDeleteBatch={onDeleteBatch}
               onEditFile={onEditFile}
               onPersistCellEdit={onPersistCellEdit}
-                onPersistStructuredEdit={onPersistStructuredEdit}
-                onMarkDocumentReady={onMarkDocumentReady}
-                onSendToAccountsPayable={onSendToAccountsPayable}
-                onOverrideDuplicateWarning={onOverrideDuplicateWarning}
-                onSaveVendorRule={onSaveVendorRule}
-                quickBooksConnection={quickBooksConnection}
-                quickBooksReferences={quickBooksReferences}
-                onRefreshQuickBooksReferences={onRefreshQuickBooksReferences}
-                onPublishReceipt={onPublishReceipt}
-              />
+              onPersistStructuredEdit={onPersistStructuredEdit}
+              onMarkDocumentReady={onMarkDocumentReady}
+              onSendToAccountsPayable={onSendToAccountsPayable}
+              onOverrideDuplicateWarning={onOverrideDuplicateWarning}
+              onSaveVendorRule={onSaveVendorRule}
+              quickBooksConnection={quickBooksConnection}
+              quickBooksReferences={quickBooksReferences}
+              onRefreshQuickBooksReferences={onRefreshQuickBooksReferences}
+              onPublishReceipt={onPublishReceipt}
+            />
           </div>
         </div>
       </div>
