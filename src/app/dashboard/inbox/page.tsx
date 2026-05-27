@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Check, Copy, Inbox, Link2, RefreshCw, Trash2, UserPlus } from "lucide-react"
+import { Check, Copy, Inbox, Link2, RefreshCw, UserPlus } from "lucide-react"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { EmptyState } from "@/components/dashboard/EmptyState"
@@ -33,6 +33,23 @@ function formatReceivedAt(value: string) {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value))
+}
+
+function formatExpiry(value: string) {
+  const d = new Date(value)
+  const now = new Date()
+  if (d < now) return "Expired"
+  const days = Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  return `${days}d left`
+}
+
+function submissionTone(sub: ClientUploadSubmission): "success" | "processing" | "info" | "error" | "neutral" {
+  const state = sub.job_status || sub.status
+  if (state === "completed" || state === "partially_completed") return "success"
+  if (state === "processing") return "processing"
+  if (state === "queued" || state === "received") return "info"
+  if (state === "rejected" || state === "failed") return "error"
+  return "neutral"
 }
 
 function messageState(message: EmailIntakeMessage) {
@@ -186,143 +203,246 @@ export default function EmailInboxPage() {
           }
         />
 
+        {/* Management cards — stack on mobile, side-by-side on lg */}
         {activeWorkspace?.role === "owner" ? (
-          <Card className="gap-0 py-0">
-            <CardContent className="px-0">
-              <div className="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(18rem,1fr)_minmax(16rem,1fr)]">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Image src="/icons/share.png" alt="" width={20} height={20} className="object-contain opacity-85" loading="lazy" />
-                    <p className="text-sm font-semibold text-foreground">Client upload links</p>
+          <div className="grid gap-4 lg:grid-cols-2">
+
+            {/* Client upload links */}
+            <Card>
+              <CardContent className="p-5">
+                <div className="flex items-center gap-2">
+                  <Image src="/icons/share.png" alt="" width={20} height={20} className="object-contain opacity-85" loading="lazy" />
+                  <p className="text-sm font-semibold text-foreground">Client upload links</p>
+                </div>
+                <p className="mt-1 text-sm text-muted-foreground">Links expire after 7 days and submit files directly to this inbox.</p>
+
+                <div className="mt-4 flex gap-2">
+                  <Input value={linkLabel} onChange={event => setLinkLabel(event.target.value)} placeholder="Client documents" />
+                  <Button variant="glossy" onClick={() => void createClientLink()} disabled={actionBusy === "link"}>
+                    <Link2 className="size-4" />
+                    Create
+                  </Button>
+                </div>
+
+                {newUploadUrl ? (
+                  <div className="mt-3 flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
+                    <p className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">{newUploadUrl}</p>
+                    <Button variant="surface" size="sm" onClick={() => void navigator.clipboard.writeText(newUploadUrl)}>Copy</Button>
                   </div>
-                  <p className="mt-1 text-sm text-muted-foreground">Links expire after 7 days and submit files directly to this inbox.</p>
-                  <div className="mt-4 flex gap-2">
-                    <Input value={linkLabel} onChange={event => setLinkLabel(event.target.value)} placeholder="Client documents" />
-                    <Button variant="glossy" onClick={() => void createClientLink()} disabled={actionBusy === "link"}>
-                      <Link2 className="size-4" />
-                      Create
-                    </Button>
-                  </div>
-                  {newUploadUrl ? (
-                    <div className="mt-3 flex items-center gap-2 rounded-md border border-border bg-muted/40 p-2">
-                      <p className="min-w-0 flex-1 truncate text-xs text-foreground">{newUploadUrl}</p>
-                      <Button variant="surface" size="sm" onClick={() => void navigator.clipboard.writeText(newUploadUrl)}>Copy</Button>
+                ) : null}
+
+                {links.length > 0 ? (
+                  <>
+                    {/* Desktop table */}
+                    <div className="mt-3 hidden overflow-hidden rounded-lg border border-border sm:block">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-border bg-muted/40">
+                            <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Label</th>
+                            <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Submissions</th>
+                            <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Expires</th>
+                            <th className="w-16 px-3 py-2" />
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {links.slice(0, 5).map(link => (
+                            <tr key={link.id} className="border-b border-border/50 last:border-0 hover:bg-accent/40">
+                              <td className="px-3 py-2.5 font-medium text-foreground">{link.label}</td>
+                              <td className="px-3 py-2.5 text-muted-foreground">{link.submission_count}/{link.max_submissions}</td>
+                              <td className="px-3 py-2.5 text-muted-foreground">{formatExpiry(link.expires_at)}</td>
+                              <td className="px-3 py-2.5">
+                                {link.enabled ? (
+                                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
+                                    Revoke
+                                  </Button>
+                                ) : (
+                                  <span className="text-xs text-muted-foreground">Revoked</span>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
-                  ) : null}
-                  <div className="mt-3 space-y-2">
-                    {links.slice(0, 4).map(link => (
-                      <div key={link.id} className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2 text-sm">
-                        <div className="min-w-0">
-                          <p className="truncate font-medium">{link.label}</p>
-                          <p className="text-xs text-muted-foreground">{link.submission_count}/{link.max_submissions} submissions {link.enabled ? "" : "- revoked"}</p>
+
+                    {/* Mobile cards */}
+                    <div className="mt-3 space-y-2 sm:hidden">
+                      {links.slice(0, 5).map(link => (
+                        <div key={link.id} className="flex items-center justify-between gap-3 rounded-xl border border-border px-3 py-3">
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-medium text-foreground">{link.label}</p>
+                            <p className="mt-0.5 text-xs text-muted-foreground">
+                              {link.submission_count}/{link.max_submissions} submissions · {formatExpiry(link.expires_at)}
+                              {!link.enabled ? " · Revoked" : ""}
+                            </p>
+                          </div>
+                          {link.enabled ? (
+                            <Button variant="ghost" size="sm" className="h-7 shrink-0 px-2 text-xs" onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
+                              Revoke
+                            </Button>
+                          ) : null}
                         </div>
-                        {link.enabled ? (
-                          <Button variant="ghost" size="icon" className="size-8" onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
-                            <Trash2 className="size-4" />
-                          </Button>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  </>
+                ) : null}
+              </CardContent>
+            </Card>
+
+            {/* Reviewers */}
+            <Card>
+              <CardContent className="p-5">
+                <div className="flex items-center gap-2">
+                  <Image src="/icons/reviewer.png" alt="" width={20} height={20} className="object-contain opacity-85" loading="lazy" />
+                  <p className="text-sm font-semibold text-foreground">Reviewers</p>
                 </div>
+                <p className="mt-1 text-sm text-muted-foreground">Reviewers can edit and export batches, not manage connections or deletion.</p>
+
+                <div className="mt-4 flex gap-2">
+                  <Input type="email" value={reviewerEmail} onChange={event => setReviewerEmail(event.target.value)} placeholder="reviewer@firm.com" />
+                  <Button variant="surface" onClick={() => void inviteReviewer()} disabled={actionBusy === "reviewer"}>
+                    <UserPlus className="size-4" />
+                    Add
+                  </Button>
+                </div>
+
+                <div className="mt-3 space-y-2">
+                  {members.filter(member => member.role === "reviewer").map(member => (
+                    <div key={member.id} className="flex items-center justify-between rounded-xl border border-border px-3 py-3">
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{member.member_email}</p>
+                        <p className="mt-0.5 text-xs capitalize text-muted-foreground">{member.status}</p>
+                      </div>
+                      {member.status !== "revoked" ? (
+                        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => void revokeReviewer(member.id)} disabled={actionBusy === member.id}>
+                          Remove
+                        </Button>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        ) : null}
+
+        {/* Email address card */}
+        {activeWorkspace?.role === "owner" ? (
+          <Card>
+            <CardContent className="p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <Image src="/icons/reviewer.png" alt="" width={20} height={20} className="object-contain opacity-85" loading="lazy" />
-                    <p className="text-sm font-semibold text-foreground">Reviewers</p>
-                  </div>
-                  <p className="mt-1 text-sm text-muted-foreground">Reviewers can edit and export batches, not manage connections or deletion.</p>
-                  <div className="mt-4 flex gap-2">
-                    <Input type="email" value={reviewerEmail} onChange={event => setReviewerEmail(event.target.value)} placeholder="reviewer@firm.com" />
-                    <Button variant="surface" onClick={() => void inviteReviewer()} disabled={actionBusy === "reviewer"}>
-                      <UserPlus className="size-4" />
-                      Add
-                    </Button>
-                  </div>
-                  <div className="mt-3 space-y-2">
-                    {members.filter(member => member.role === "reviewer").map(member => (
-                      <div key={member.id} className="flex items-center justify-between rounded-md border border-border px-3 py-2 text-sm">
-                        <div>
-                          <p className="font-medium">{member.member_email}</p>
-                          <p className="text-xs text-muted-foreground">{member.status}</p>
-                        </div>
-                        {member.status !== "revoked" ? (
-                          <Button variant="ghost" size="sm" onClick={() => void revokeReviewer(member.id)} disabled={actionBusy === member.id}>Remove</Button>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
+                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Forward documents to</p>
+                  <p className="mt-2 break-all font-mono text-sm font-medium text-foreground">
+                    {address?.address || "Provisioning address…"}
+                  </p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Supported images and PDFs are stored for 30 days and enter the review board with their email origin.
+                  </p>
                 </div>
+                <Button variant="surface" onClick={() => void copyAddress()} disabled={!address} className="shrink-0">
+                  {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+                  {copied ? "Copied!" : "Copy address"}
+                </Button>
               </div>
+              {loadError ? (
+                <p className="mt-3 text-sm text-destructive">{loadError}</p>
+              ) : null}
             </CardContent>
           </Card>
         ) : null}
 
-        {activeWorkspace?.role === "owner" ? <Card className="gap-0 py-0">
-          <CardContent className="px-0">
-            <div className="flex flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-xs font-medium uppercase text-muted-foreground">Forward documents to</p>
-                <p className="mt-2 break-all font-mono text-sm font-medium text-foreground">
-                  {address?.address || "Provisioning address..."}
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Supported images and PDFs are stored for 30 days and enter the review board with their email origin.
-                </p>
-              </div>
-              <Button variant="surface" onClick={() => void copyAddress()} disabled={!address}>
-                {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-                {copied ? "Copied" : "Copy address"}
-              </Button>
-            </div>
-            {loadError ? (
-              <div className="border-t border-border px-5 py-3 text-sm text-destructive">
-                {loadError}
-              </div>
-            ) : null}
-          </CardContent>
-        </Card> : null}
-
+        {/* Client submissions */}
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-foreground">Client submissions</h2>
           <Badge variant="outline">{submissions.reduce((count, submission) => count + submission.file_count, 0)} files</Badge>
         </div>
 
-        <Card className="gap-0 overflow-hidden py-0">
-          <CardContent className="px-0">
+        <Card className="overflow-hidden">
+          <CardContent className="p-0">
             {loading ? (
               <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading submissions" description="Fetching client uploads" /></div>
             ) : submissions.length === 0 ? (
               <div className="py-4"><EmptyState compact icon={<Inbox />} illustration="/illustrations/empty-inbox.png" title="No submissions yet" description="Clients can upload via a shared link you create above." /></div>
             ) : (
-              <div className="divide-y divide-border">
-                {submissions.map(submission => (
-                  <div key={submission.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-                    <div>
-                      <p className="text-sm font-medium">{submission.documents.map(item => item.original_filename).join(", ") || `${submission.file_count} submitted files`}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">{formatReceivedAt(submission.created_at)}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Badge variant="outline">{submission.job_status || submission.status}</Badge>
-                      {submission.job_id ? (
-                        <Button asChild variant="surface" size="sm">
-                          <Link href={`/dashboard/client?job_id=${encodeURIComponent(submission.job_id)}`}>Review</Link>
-                        </Button>
-                      ) : null}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <>
+                {/* Desktop table */}
+                <div className="hidden sm:block">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border bg-muted/40">
+                        <th className="px-5 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Filename</th>
+                        <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Date</th>
+                        <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Files</th>
+                        <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</th>
+                        <th className="px-4 py-2.5" />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {submissions.map(submission => {
+                        const filename = submission.documents[0]?.original_filename || `${submission.file_count} submitted files`
+                        return (
+                          <tr key={submission.id} className="border-b border-border/50 last:border-0 hover:bg-accent/40">
+                            <td className="max-w-[220px] truncate px-5 py-3 font-medium text-foreground">{filename}</td>
+                            <td className="px-4 py-3 text-muted-foreground">{formatReceivedAt(submission.created_at)}</td>
+                            <td className="px-4 py-3 tabular-nums text-muted-foreground">{submission.file_count}</td>
+                            <td className="px-4 py-3">
+                              <StatusBadge tone={submissionTone(submission)}>
+                                {(submission.job_status || submission.status).replace(/_/g, " ")}
+                              </StatusBadge>
+                            </td>
+                            <td className="px-4 py-3">
+                              {submission.job_id ? (
+                                <Button asChild variant="surface" size="sm" className="h-7">
+                                  <Link href={`/dashboard/client?job_id=${encodeURIComponent(submission.job_id)}`}>Review</Link>
+                                </Button>
+                              ) : null}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile card stack */}
+                <div className="divide-y divide-border sm:hidden">
+                  {submissions.map(submission => {
+                    const filename = submission.documents[0]?.original_filename || `${submission.file_count} submitted files`
+                    return (
+                      <div key={submission.id} className="p-5">
+                        <p className="truncate text-sm font-medium text-foreground">{filename}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">{formatReceivedAt(submission.created_at)}</p>
+                        <div className="mt-2.5 flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            <StatusBadge tone={submissionTone(submission)}>
+                              {(submission.job_status || submission.status).replace(/_/g, " ")}
+                            </StatusBadge>
+                            <span className="text-xs text-muted-foreground">{submission.file_count} file{submission.file_count !== 1 ? "s" : ""}</span>
+                          </div>
+                          {submission.job_id ? (
+                            <Button asChild variant="surface" size="sm" className="h-7">
+                              <Link href={`/dashboard/client?job_id=${encodeURIComponent(submission.job_id)}`}>Review</Link>
+                            </Button>
+                          ) : null}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
 
+        {/* Imported documents (email messages) */}
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-foreground">Imported documents</h2>
           <Badge variant="outline">{importCount} files</Badge>
         </div>
 
-        <Card className="gap-0 overflow-hidden py-0">
-          <CardContent className="px-0">
+        <Card className="overflow-hidden">
+          <CardContent className="p-0">
             {loading ? (
               <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading imports" description="Fetching forwarded documents" /></div>
             ) : messages.length === 0 ? (
@@ -332,6 +452,7 @@ export default function EmailInboxPage() {
                 {messages.map((message) => {
                   const state = messageState(message)
                   const documentNames = message.documents.map(document => document.original_filename).join(", ")
+                  const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Processing" ? "processing" : "neutral"
                   return (
                     <div key={message.id} className="grid gap-3 px-5 py-4 lg:grid-cols-[minmax(12rem,1.1fr)_minmax(12rem,1.6fr)_10rem_7rem_auto] lg:items-center">
                       <div className="min-w-0">
@@ -342,13 +463,9 @@ export default function EmailInboxPage() {
                         {documentNames || `${message.attachment_count} attachment${message.attachment_count === 1 ? "" : "s"}`}
                       </p>
                       <p className="text-sm text-muted-foreground">{formatReceivedAt(message.received_at)}</p>
-                      <StatusBadge
-                        tone={state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Processing" ? "processing" : "neutral"}
-                      >
-                        {state}
-                      </StatusBadge>
+                      <StatusBadge tone={tone}>{state}</StatusBadge>
                       {message.job_id ? (
-                        <Button asChild variant="surface" size="sm">
+                        <Button asChild variant="surface" size="sm" className="h-7">
                           <Link href={`/dashboard/client?job_id=${encodeURIComponent(message.job_id)}`}>Review</Link>
                         </Button>
                       ) : (
