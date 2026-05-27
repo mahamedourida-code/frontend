@@ -46,6 +46,14 @@ const statusTone: Record<AccountsPayableStatus, "warning" | "review" | "info" | 
   failed: "error",
 }
 
+const dotColor: Record<"warning" | "review" | "info" | "success" | "error", string> = {
+  warning: "bg-amber-400",
+  review: "bg-violet-400",
+  info: "bg-sky-400",
+  success: "bg-emerald-500",
+  error: "bg-rose-500",
+}
+
 const editableFields: Array<[keyof AccountsPayableDraftData, string, string]> = [
   ["invoice_date", "Invoice date", "YYYY-MM-DD"],
   ["due_date", "Due date", "YYYY-MM-DD"],
@@ -367,29 +375,62 @@ function AccountsPayableContent() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => setFilter("all")}
-            className={cn("rounded-md border px-3 py-2 text-sm font-medium", filter === "all" ? "border-foreground bg-foreground text-background" : "border-border bg-card text-foreground")}
-          >
-            All <span className="ms-1 opacity-70">{items.length}</span>
-          </button>
-          {queueStatuses.map(item => (
-            <button
-              key={item.value}
-              type="button"
-              onClick={() => setFilter(item.value)}
-              className={cn("rounded-md border px-3 py-2 text-sm font-medium", filter === item.value ? "border-foreground bg-foreground text-background" : "border-border bg-card text-foreground")}
-            >
-              {item.label} <span className="ms-1 opacity-70">{counts[item.value]}</span>
-            </button>
-          ))}
-        </div>
-
         <div className="grid gap-4 xl:grid-cols-[minmax(320px,0.8fr)_minmax(560px,1.2fr)]">
-          <Card className="rounded-md border-border shadow-xs">
-            <CardContent className="p-2">
+          <Card className="flex max-h-[700px] flex-col overflow-hidden rounded-md border-border shadow-xs">
+            {/* Filter pills */}
+            <div className="shrink-0 border-b border-border bg-card px-3 py-2.5">
+              <div className="flex flex-wrap gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setFilter("all")}
+                  className={cn(
+                    "ax-interactive inline-flex h-7 items-center gap-1 rounded-full px-3 text-xs font-medium",
+                    filter === "all"
+                      ? "bg-foreground text-background"
+                      : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  All
+                  <span className="tabular-nums opacity-70">{items.length}</span>
+                </button>
+                {[
+                  { value: "needs_coding" as const, label: "Needs coding" },
+                  { value: "needs_review" as const, label: "Needs review" },
+                  { value: "ready_to_publish" as const, label: "Ready" },
+                  { value: "published" as const, label: "Published" },
+                  { value: "failed" as const, label: "Failed" },
+                ].map(pill => (
+                  <button
+                    key={pill.value}
+                    type="button"
+                    onClick={() => setFilter(pill.value)}
+                    className={cn(
+                      "ax-interactive inline-flex h-7 items-center gap-1 rounded-full px-3 text-xs font-medium",
+                      filter === pill.value
+                        ? "bg-foreground text-background"
+                        : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )}
+                  >
+                    {pill.label}
+                    <span className="tabular-nums opacity-70">{counts[pill.value]}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Column header */}
+            <div className="shrink-0 border-b border-border bg-card/95">
+              <div className="flex items-center gap-3 px-4 py-2">
+                <span className="size-4 shrink-0" />
+                <span className="flex-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">Vendor</span>
+                <span className="w-[72px] shrink-0 text-xs font-medium uppercase tracking-wider text-muted-foreground">Date</span>
+                <span className="w-[68px] shrink-0 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">Amount</span>
+                <span className="w-[72px] shrink-0 text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</span>
+              </div>
+            </div>
+
+            {/* Scrollable rows */}
+            <div className="flex-1 overflow-y-auto">
               {loading ? (
                 <EmptyState
                   icon={<Loader2 className="animate-spin" />}
@@ -405,49 +446,72 @@ function AccountsPayableContent() {
                   description="Mark a reviewed invoice Ready, then add it from Convert Files."
                   compact
                 />
-              ) : visibleItems.map(item => (
-                <div
-                  key={item.id}
-                  onClick={() => setActiveId(item.id)}
-                  onKeyDown={event => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault()
-                      setActiveId(item.id)
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  className={cn(
-                    "ax-interactive mb-1 flex w-full items-start gap-3 rounded-md border p-4 text-left last:mb-0",
-                    activeId === item.id ? "border-border bg-accent" : "border-transparent hover:bg-accent/60"
-                  )}
-                >
-                  <span onClick={(event) => event.stopPropagation()} className="mt-1">
-                    <Checkbox
-                      checked={selectedReadyIds.includes(item.id)}
-                      disabled={item.status !== "ready_to_publish"}
-                      onCheckedChange={checked => toggleSelection(item.id, checked === true)}
-                      aria-label={`Select ${item.source_filename}`}
-                    />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold text-foreground">{item.draft_data.vendor || "Vendor missing"}</span>
-                    <span className="mt-1 block truncate text-xs text-muted-foreground">
-                      {item.draft_data.invoice_number || item.source_filename}
+              ) : visibleItems.map(item => {
+                const tone = statusTone[item.status]
+                const isActive = activeId === item.id
+                const isReady = item.status === "ready_to_publish"
+                return (
+                  <div
+                    key={item.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setActiveId(item.id)}
+                    onKeyDown={event => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault()
+                        setActiveId(item.id)
+                      }
+                    }}
+                    className={cn(
+                      "ax-interactive relative flex h-14 w-full items-center gap-3 border-b border-border/50 px-4 text-left last:border-b-0",
+                      isActive ? "bg-accent/50" : "hover:bg-accent/30"
+                    )}
+                  >
+                    {/* Left accent bar */}
+                    <div className={cn(
+                      "absolute inset-y-0 left-0 w-[3px] transition-colors duration-150",
+                      isActive ? "bg-primary" : "bg-transparent"
+                    )} />
+
+                    {/* Status dot or checkbox for ready items */}
+                    <span
+                      className="size-4 shrink-0 flex items-center justify-center"
+                      onClick={isReady ? (e) => e.stopPropagation() : undefined}
+                    >
+                      {isReady ? (
+                        <Checkbox
+                          checked={selectedReadyIds.includes(item.id)}
+                          onCheckedChange={checked => toggleSelection(item.id, checked === true)}
+                          aria-label={`Select ${item.source_filename}`}
+                        />
+                      ) : (
+                        <span className={cn("block size-2 rounded-full", dotColor[tone])} />
+                      )}
                     </span>
-                    <span className="mt-2 flex items-center justify-between gap-2 text-xs">
-                      <StatusBadge tone={statusTone[item.status]}>{statusLabel(item.status)}</StatusBadge>
-                      <span className="font-semibold text-foreground">{amountLabel(item)}</span>
+
+                    {/* Vendor name */}
+                    <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
+                      {item.draft_data.vendor || "Vendor missing"}
                     </span>
-                    {item.quickbooks_publication && item.quickbooks_publication.status !== "published" ? (
-                      <span className="mt-2 block text-xs text-muted-foreground">
-                        QuickBooks: {item.quickbooks_publication.status === "indeterminate" ? "verify in company" : item.quickbooks_publication.status}
-                      </span>
-                    ) : null}
-                  </span>
-                </div>
-              ))}
-            </CardContent>
+
+                    {/* Invoice date */}
+                    <span className="w-[72px] shrink-0 text-xs text-muted-foreground">
+                      {item.draft_data.invoice_date ? String(item.draft_data.invoice_date).slice(0, 10) : "—"}
+                    </span>
+
+                    {/* Amount */}
+                    <span className="w-[68px] shrink-0 text-right text-xs font-mono tabular-nums text-foreground">
+                      {amountLabel(item)}
+                    </span>
+
+                    {/* Status badge */}
+                    <span className="w-[72px] shrink-0">
+                      <StatusBadge tone={tone}>{statusLabel(item.status)}</StatusBadge>
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
           </Card>
 
           <Card className="rounded-md border-border shadow-xs">
