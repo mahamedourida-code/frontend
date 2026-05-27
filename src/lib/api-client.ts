@@ -331,17 +331,33 @@ export type AccountsPayableStatus =
 
 export interface AccountsPayableDraftData {
   vendor?: string
+  vendor_ref_id?: string
   invoice_number?: string
   invoice_date?: string
   due_date?: string
   reference?: string
   account_category?: string
+  account_ref_id?: string
   tax_code?: string
+  tax_code_ref_id?: string
   currency?: string
   subtotal?: unknown
   tax_amount?: unknown
   total?: unknown
   line_items?: Array<Record<string, unknown>>
+}
+
+export interface QuickBooksBillPublication {
+  id: string
+  status: 'publishing' | 'published' | 'failed' | 'indeterminate'
+  attempt_count: number
+  quickbooks_bill_id?: string | null
+  quickbooks_attachment_id?: string | null
+  attachment_status?: 'pending' | 'attached' | 'failed' | 'not_requested' | null
+  failure_details?: Array<{ stage?: string; message?: string; at?: string }>
+  attempted_at?: string | null
+  published_at?: string | null
+  updated_at?: string | null
 }
 
 export interface AccountsPayableItem {
@@ -354,6 +370,7 @@ export interface AccountsPayableItem {
   draft_data: AccountsPayableDraftData
   attachment_visible: boolean
   source_filename: string
+  source_content_type?: string | null
   source_access_url?: string | null
   document_review_status?: string | null
   vendor_suggestion?: VendorRule | null
@@ -361,6 +378,7 @@ export interface AccountsPayableItem {
   created_at: string
   updated_at: string
   published_at?: string | null
+  quickbooks_publication?: QuickBooksBillPublication | null
 }
 
 export interface QuickBooksConnectionStatus {
@@ -999,7 +1017,7 @@ export const accountsPayableApi = {
   update: async (
     itemId: string,
     updates: {
-      draft_data?: Pick<AccountsPayableDraftData, 'vendor' | 'due_date' | 'account_category' | 'tax_code' | 'reference' | 'line_items'>
+      draft_data?: Pick<AccountsPayableDraftData, 'vendor' | 'vendor_ref_id' | 'invoice_date' | 'due_date' | 'account_category' | 'account_ref_id' | 'tax_code' | 'tax_code_ref_id' | 'reference' | 'currency' | 'line_items'>
       attachment_visible?: boolean
       status?: AccountsPayableStatus
       reason?: string
@@ -1009,11 +1027,14 @@ export const accountsPayableApi = {
     return response.data
   },
 
-  bulkPublish: async (itemIds: string[]): Promise<{ items: AccountsPayableItem[]; total: number }> => {
-    const response = await apiClient.post<{ items: AccountsPayableItem[]; total: number }>('/api/v1/accounts-payable/bulk-status', {
+  publish: async (itemId: string): Promise<{ item: AccountsPayableItem }> => {
+    const response = await apiClient.post<{ item: AccountsPayableItem }>(`/api/v1/accounts-payable/${itemId}/publish/quickbooks`)
+    return response.data
+  },
+
+  bulkPublish: async (itemIds: string[]): Promise<{ items: AccountsPayableItem[]; failures: Array<{ item_id: string; detail: string }>; total: number }> => {
+    const response = await apiClient.post<{ items: AccountsPayableItem[]; failures: Array<{ item_id: string; detail: string }>; total: number }>('/api/v1/accounts-payable/publish/quickbooks', {
       item_ids: itemIds,
-      status: 'published',
-      reason: 'Marked published outside AxLiner',
     })
     return response.data
   },

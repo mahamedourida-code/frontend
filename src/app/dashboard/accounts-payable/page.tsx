@@ -14,9 +14,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuth } from "@/hooks/useAuth"
 import {
   accountsPayableApi,
+  quickBooksApi,
   type AccountsPayableDraftData,
   type AccountsPayableItem,
   type AccountsPayableStatus,
+  type QuickBooksConnectionStatus,
+  type QuickBooksReferenceItem,
 } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
 
@@ -39,11 +42,10 @@ const statusStyles: Record<AccountsPayableStatus, string> = {
 }
 
 const editableFields: Array<[keyof AccountsPayableDraftData, string, string]> = [
-  ["vendor", "Vendor", "Vendor name"],
+  ["invoice_date", "Invoice date", "YYYY-MM-DD"],
   ["due_date", "Due date", "YYYY-MM-DD"],
-  ["account_category", "Account / category", "Office supplies"],
-  ["tax_code", "Tax code", "VAT 20%"],
   ["reference", "Reference", "PO or bill reference"],
+  ["currency", "Currency", "USD"],
 ]
 
 function statusLabel(status: AccountsPayableStatus) {
@@ -87,6 +89,9 @@ function AccountsPayableContent() {
   const [selectedReadyIds, setSelectedReadyIds] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [quickBooksConnection, setQuickBooksConnection] = useState<QuickBooksConnectionStatus | null>(null)
+  const [quickBooksReferences, setQuickBooksReferences] = useState<QuickBooksReferenceItem[]>([])
+  const [syncingReferences, setSyncingReferences] = useState(false)
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -111,6 +116,28 @@ function AccountsPayableContent() {
 
   useEffect(() => {
     if (user) void loadQueue()
+  }, [user?.id])
+
+  const loadQuickBooks = async (sync = false) => {
+    try {
+      setSyncingReferences(sync)
+      const status = sync ? await quickBooksApi.sync() : await quickBooksApi.status()
+      setQuickBooksConnection(status)
+      if (status.connected) {
+        const response = await quickBooksApi.references()
+        setQuickBooksReferences(response.items)
+      } else {
+        setQuickBooksReferences([])
+      }
+    } catch {
+      if (sync) toast.error("Could not refresh QuickBooks lists.")
+    } finally {
+      setSyncingReferences(false)
+    }
+  }
+
+  useEffect(() => {
+    if (user) void loadQuickBooks()
   }, [user?.id])
 
   const activeItem = items.find(item => item.id === activeId) || null
@@ -143,6 +170,9 @@ function AccountsPayableContent() {
       : ["description", "quantity", "unit_price", "line_total"]
   )
   const activeLocked = activeItem?.status === "published"
+  const vendors = quickBooksReferences.filter(item => item.resource_type === "vendor" && item.active)
+  const accounts = quickBooksReferences.filter(item => item.resource_type === "account" && item.active)
+  const taxCodes = quickBooksReferences.filter(item => item.resource_type === "tax_code" && item.active)
 
   const mergeItem = (item: AccountsPayableItem) => {
     setItems(current => current.map(existing => existing.id === item.id ? item : existing))
@@ -153,6 +183,20 @@ function AccountsPayableContent() {
 
   const updateDraftField = (field: keyof AccountsPayableDraftData, value: string) => {
     setDraft(current => ({ ...current, [field]: value }))
+  }
+
+  const selectQuickBooksReference = (
+    idField: "vendor_ref_id" | "account_ref_id" | "tax_code_ref_id",
+    labelField: "vendor" | "account_category" | "tax_code",
+    value: string,
+    references: QuickBooksReferenceItem[],
+  ) => {
+    const selected = references.find(item => item.external_id === value)
+    setDraft(current => ({
+      ...current,
+      [idField]: value === "none" ? "" : value,
+      [labelField]: value === "none" ? "" : selected?.display_name || "",
+    }))
   }
 
   const updateLineCell = (rowIndex: number, key: string, value: string) => {
@@ -188,10 +232,15 @@ function AccountsPayableContent() {
       const response = await accountsPayableApi.update(activeItem.id, {
         draft_data: {
           vendor: draft.vendor,
+          vendor_ref_id: draft.vendor_ref_id,
+          invoice_date: draft.invoice_date,
           due_date: draft.due_date,
           account_category: draft.account_category,
+          account_ref_id: draft.account_ref_id,
           tax_code: draft.tax_code,
+          tax_code_ref_id: draft.tax_code_ref_id,
           reference: draft.reference,
+          currency: draft.currency,
           line_items: draft.line_items,
         },
         attachment_visible: attachmentVisible,
@@ -220,14 +269,55 @@ function AccountsPayableContent() {
 
   const publishSelected = async () => {
     if (!selectedReadyIds.length) return
+    if (!window.confirm("Create unpaid Bills in QuickBooks for the selected ready invoices?")) return
     setSaving(true)
     try {
       const response = await accountsPayableApi.bulkPublish(selectedReadyIds)
       setItems(current => current.map(item => response.items.find(updated => updated.id === item.id) || item))
       setSelectedReadyIds([])
-      toast.success("Selected items marked published.")
+      if (response.items.length) toast.success(`${response.items.length} unpaid Bill${response.items.length === 1 ? "" : "s"} created in QuickBooks.`)
+      if (response.failures.length) toast.error(`${response.failures.length} item${response.failures.length === 1 ? "" : "s"} could not be published.`)
     } catch (error: any) {
-      toast.error(error?.detail || error?.message || "Could not update selected items.")
+      toast.error(error?.detail || error?.message || "Could not publish selected items.")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const publishActive = async () => {
+    if (!activeItem || !["ready_to_publish", "published"].includes(activeItem.status)) return
+    const retryAttachment = activeItem.status === "published" && activeItem.quickbooks_publication?.attachment_status === "failed"
+    if (retryAttachment) {
+      if (!window.confirm("Retry attaching the source document to the existing QuickBooks Bill?")) return
+    } else if (!window.confirm("Create one unpaid Bill in QuickBooks from this reviewed invoice?")) {
+      return
+    }
+    setSaving(true)
+    try {
+      if (!retryAttachment) {
+        await accountsPayableApi.update(activeItem.id, {
+          draft_data: {
+            vendor: draft.vendor,
+            vendor_ref_id: draft.vendor_ref_id,
+            invoice_date: draft.invoice_date,
+            due_date: draft.due_date,
+            account_category: draft.account_category,
+            account_ref_id: draft.account_ref_id,
+            tax_code: draft.tax_code,
+            tax_code_ref_id: draft.tax_code_ref_id,
+            reference: draft.reference,
+            currency: draft.currency,
+            line_items: draft.line_items,
+          },
+          attachment_visible: attachmentVisible,
+        })
+      }
+      const response = await accountsPayableApi.publish(activeItem.id)
+      mergeItem(response.item)
+      toast.success(retryAttachment ? "Source document attached in QuickBooks." : "Unpaid Bill created in QuickBooks.")
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || "Could not publish this Bill.")
+      await loadQueue()
     } finally {
       setSaving(false)
     }
@@ -241,14 +331,36 @@ function AccountsPayableContent() {
         <header className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-xl font-semibold tracking-tight text-foreground">Accounts Payable</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Reviewed invoices prepared as draft bill candidates.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Reviewed invoices prepared for unpaid Bill creation in QuickBooks.</p>
           </div>
           {selectedReadyIds.length ? (
-            <Button onClick={() => void publishSelected()} disabled={saving} className="h-9 rounded-md px-4">
-              Mark {selectedReadyIds.length} published externally
+            <Button onClick={() => void publishSelected()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md px-4">
+              Publish {selectedReadyIds.length} to QuickBooks
             </Button>
           ) : null}
         </header>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3 text-sm">
+          <div>
+            <p className="font-medium text-foreground">
+              QuickBooks {quickBooksConnection?.connected ? `connected${quickBooksConnection.company_name ? ` to ${quickBooksConnection.company_name}` : ""}` : "not connected"}
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Select synced vendors and expense accounts before publishing an unpaid Bill.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            {quickBooksConnection?.connected ? (
+              <Button variant="outline" size="sm" onClick={() => void loadQuickBooks(true)} disabled={syncingReferences}>
+                {syncingReferences ? "Refreshing..." : "Refresh lists"}
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" onClick={() => router.push("/dashboard/integrations")}>
+                Connect QuickBooks
+              </Button>
+            )}
+          </div>
+        </div>
 
         <div className="flex flex-wrap gap-2">
           <button
@@ -314,6 +426,11 @@ function AccountsPayableContent() {
                       <span className={cn("rounded-md border px-2 py-1 font-medium", statusStyles[item.status])}>{statusLabel(item.status)}</span>
                       <span className="font-semibold text-foreground">{amountLabel(item)}</span>
                     </span>
+                    {item.quickbooks_publication && item.quickbooks_publication.status !== "published" ? (
+                      <span className="mt-2 block text-xs text-muted-foreground">
+                        QuickBooks: {item.quickbooks_publication.status === "indeterminate" ? "verify in company" : item.quickbooks_publication.status}
+                      </span>
+                    ) : null}
                   </span>
                 </div>
               ))}
@@ -357,6 +474,58 @@ function AccountsPayableContent() {
                   ) : null}
 
                   <div className="grid gap-3 sm:grid-cols-2">
+                    <label className="space-y-1.5">
+                      <Label>QuickBooks vendor</Label>
+                      <Select
+                        value={String(draft.vendor_ref_id || "")}
+                        onValueChange={value => selectQuickBooksReference("vendor_ref_id", "vendor", value, vendors)}
+                        disabled={activeLocked || !quickBooksConnection?.connected}
+                      >
+                        <SelectTrigger className="h-9">
+                          <SelectValue placeholder={vendors.length ? "Select vendor" : "Refresh vendor list"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {vendors.map(vendor => (
+                            <SelectItem key={vendor.external_id} value={vendor.external_id}>{vendor.display_name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </label>
+                    <label className="space-y-1.5">
+                      <Label>Expense account</Label>
+                      <Select
+                        value={String(draft.account_ref_id || "")}
+                        onValueChange={value => selectQuickBooksReference("account_ref_id", "account_category", value, accounts)}
+                        disabled={activeLocked || !quickBooksConnection?.connected}
+                      >
+                        <SelectTrigger className="h-9">
+                          <SelectValue placeholder={accounts.length ? "Select account" : "Refresh account list"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {accounts.map(account => (
+                            <SelectItem key={account.external_id} value={account.external_id}>{account.display_name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </label>
+                    <label className="space-y-1.5">
+                      <Label>Tax code</Label>
+                      <Select
+                        value={String(draft.tax_code_ref_id || "none")}
+                        onValueChange={value => selectQuickBooksReference("tax_code_ref_id", "tax_code", value, taxCodes)}
+                        disabled={activeLocked || !quickBooksConnection?.connected}
+                      >
+                        <SelectTrigger className="h-9">
+                          <SelectValue placeholder="No tax code" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">No tax code</SelectItem>
+                          {taxCodes.map(taxCode => (
+                            <SelectItem key={taxCode.external_id} value={taxCode.external_id}>{taxCode.display_name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </label>
                     {editableFields.map(([field, label, placeholder]) => (
                       <label key={field} className="space-y-1.5">
                         <Label htmlFor={`ap-${field}`}>{label}</Label>
@@ -382,8 +551,25 @@ function AccountsPayableContent() {
                       disabled={activeLocked}
                       onCheckedChange={checked => setAttachmentVisible(checked === true)}
                     />
-                    Show source attachment with draft bill
+                    Attach source document to QuickBooks Bill
                   </label>
+
+                  {activeItem.quickbooks_publication ? (
+                    <div className="rounded-md border border-border bg-muted/30 p-3 text-sm">
+                      <p className="font-medium text-foreground">
+                        QuickBooks publish: {activeItem.quickbooks_publication.status}
+                      </p>
+                      {activeItem.quickbooks_publication.quickbooks_bill_id ? (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Bill ID {activeItem.quickbooks_publication.quickbooks_bill_id}
+                          {activeItem.quickbooks_publication.attachment_status === "attached" ? " - source attached" : ""}
+                        </p>
+                      ) : null}
+                      {activeItem.quickbooks_publication.attachment_status === "failed" ? (
+                        <p className="mt-1 text-xs text-muted-foreground">The Bill exists; publish again to retry only its attachment.</p>
+                      ) : null}
+                    </div>
+                  ) : null}
 
                   <div>
                     <div className="mb-2 flex items-center justify-between gap-3">
@@ -440,18 +626,24 @@ function AccountsPayableContent() {
                   <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-end sm:justify-between">
                     <div className="w-full max-w-[230px] space-y-1.5">
                       <Label>Status</Label>
-                      <Select value={nextStatus} onValueChange={value => setNextStatus(value as AccountsPayableStatus)} disabled={activeLocked}>
-                        <SelectTrigger className="h-9">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {queueStatuses.map(status => (
-                            <SelectItem key={status.value} value={status.value}>
-                              {status.value === "published" ? "Published externally" : status.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      {activeLocked ? (
+                        <div className="flex h-9 items-center rounded-md border border-border bg-muted/30 px-3 text-sm text-foreground">
+                          Published in QuickBooks
+                        </div>
+                      ) : (
+                        <Select value={nextStatus} onValueChange={value => setNextStatus(value as AccountsPayableStatus)}>
+                          <SelectTrigger className="h-9">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {queueStatuses.filter(status => status.value !== "published").map(status => (
+                              <SelectItem key={status.value} value={status.value}>
+                                {status.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {!activeLocked ? (
@@ -462,7 +654,17 @@ function AccountsPayableContent() {
                           <Button onClick={() => void applySelectedStatus()} disabled={saving || nextStatus === activeItem.status} className="h-9 rounded-md">
                             Apply status
                           </Button>
+                          {activeItem.status === "ready_to_publish" ? (
+                            <Button onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md">
+                              Publish to QuickBooks
+                            </Button>
+                          ) : null}
                         </>
+                      ) : null}
+                      {activeItem.status === "published" && activeItem.quickbooks_publication?.attachment_status === "failed" ? (
+                        <Button onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md">
+                          Retry attachment
+                        </Button>
                       ) : null}
                     </div>
                   </div>

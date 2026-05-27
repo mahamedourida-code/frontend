@@ -185,7 +185,7 @@ function IntegrationsContent() {
                   </span>
                 </div>
                 <p className="max-w-xl text-sm leading-6 text-muted-foreground">
-                  Import vendors, accounts, and tax references for later invoice coding. AxLiner does not create or publish QuickBooks bills from this connection.
+                  Import vendors, accounts, and tax references for invoice coding. Only reviewed items that you publish from Accounts Payable create unpaid QuickBooks Bills.
                 </p>
               </div>
 

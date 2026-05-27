@@ -1,103 +1,40 @@
 # Manual Setup Requirements
 
-This file records only work that requires your account access, provider approval, or secret values. Code and Supabase migrations that can be performed through the project tools are not manual steps.
+This file records only account access, provider approval, secret configuration, or intentional live-system actions that cannot be completed safely in code.
 
-## Completed By Implementation Through Prompt 15
+## Prompts 1-14
 
-- Durable Supabase tables and backend APIs for document modes, extraction review, duplicate warnings, vendor memory, Accounts Payable preparation, and QuickBooks connection storage have been implemented or migrated through the connected tooling.
-- Redis remains queue/progress state; Supabase Database and Storage remain durable state.
-- QuickBooks tokens are designed to stay backend-only and encrypted at rest.
-- No QuickBooks bill publishing or automatic payment behavior exists yet.
-
-## Prompt 1 - Canonical Document Modes
-
-No manual action required.
-
-## Prompt 2 - Durable Document And Extraction Persistence
-
-No manual action required. Supabase is the durable metadata/storage source.
-
-## Prompt 3 - Source Pages And Preview Traceability
-
-No manual action required unless the Supabase `jobs` storage bucket is later renamed or its storage policies are manually changed.
-
-## Prompt 4 - Structured Invoice Extraction
-
-No manual action required.
-
-## Prompt 5 - Structured Receipt Extraction
-
-No manual action required.
-
-## Prompt 6 - Bank Statement Canonical Review Output
-
-No manual action required.
-
-## Prompt 7 - Table And Notes Modes
-
-No manual action required.
-
-## Prompt 8 - Auto Detection For Mixed Batches
-
-No manual action required.
-
-## Prompt 9 - Backend Review Editing API
-
-No manual action required after the Supabase migration has been applied.
-
-## Prompt 10 - Spreadsheet Review Board UI
-
-No manual action required.
-
-## Prompt 11 - Reviewed Excel And CSV Exports
-
-No manual action required.
-
-## Prompt 12 - Duplicate Detection
-
-No manual action required.
-
-## Prompt 13 - Vendor Memory
-
-No manual action required. Vendor suggestions remain workspace-scoped and user-approved.
-
-## Prompt 14 - Accounts Payable Queue
-
-No manual action required. This queue prepares reviewed invoice drafts only; it does not publish or pay bills.
+No remaining manual provider steps. Supabase stores durable documents, review state, reviewed exports, duplicate decisions, vendor memory, and the Accounts Payable preparation queue.
 
 ## Prompt 15 - QuickBooks Online Connection
 
-### You Must Do In Intuit
+### Production Setup
 
-1. Create a QuickBooks Online app in the Intuit Developer dashboard and enable the **QuickBooks Online Accounting** scope.
-2. Create or connect an Intuit sandbox company for testing.
-3. Add this exact sandbox redirect URI in the Intuit app:
+1. In Intuit, enable the **QuickBooks Online Accounting** scope and register this production redirect URI:
 
    `https://backend-lively-hill-7043.fly.dev/api/v1/integrations/quickbooks/callback`
 
-4. Copy the sandbox **Client ID** and **Client Secret** from Intuit.
-5. After deployment, sign in to AxLiner, open `/dashboard/integrations`, choose **Connect QuickBooks**, and authorize your sandbox company as a company admin.
-6. Use **Refresh lists** and confirm that vendors, accounts/categories, and tax references are visible.
-7. Use **Disconnect** once in sandbox and confirm Intuit access is revoked, then reconnect if you need the connection for Prompt 16 work.
+2. Keep the production Client ID and Client Secret in Fly secrets only, never frontend settings or Git.
+3. The production connection is authorized from `/dashboard/integrations`; it remains scoped to its owning workspace.
+4. If credentials are rotated or the backend hostname changes, update Fly secrets or the registered redirect URI and reconnect.
 
-### You Must Set As Fly Secrets
+### Fly Secrets
 
-Do not put these values in Git or frontend environment variables:
+These values must remain backend-only:
 
 ```powershell
-fly secrets set QUICKBOOKS_CLIENT_ID="<intuit sandbox client id>" QUICKBOOKS_CLIENT_SECRET="<intuit sandbox client secret>" -a backend-lively-hill-7043
+fly secrets set QUICKBOOKS_CLIENT_ID="<intuit production client id>" QUICKBOOKS_CLIENT_SECRET="<intuit production client secret>" -a backend-lively-hill-7043
 ```
 
-`QUICKBOOKS_TOKEN_ENCRYPTION_KEY` has already been generated and configured as a Fly secret. `QUICKBOOKS_REDIRECT_URI`, environment, and API minor version are already represented in `backend/fly.toml`.
+`QUICKBOOKS_TOKEN_ENCRYPTION_KEY` must remain configured as a Fly secret. `QUICKBOOKS_REDIRECT_URI`, production environment, and API minor version are represented in `backend/fly.toml`.
 
-### Before Production Use
+## Prompt 16 - QuickBooks Unpaid Bill Publishing
 
-1. Create or promote the Intuit production app credentials.
-2. Register the production callback URI in Intuit; keep the same backend callback URL if the backend domain does not change.
-3. Replace Fly secrets with production Client ID and Client Secret.
-4. Set `QUICKBOOKS_ENVIRONMENT=production` and redeploy the backend.
-5. Connect a real QuickBooks company only with the owner's authorization.
-6. Complete QuickBooks review/publishing requirements before exposing bill publishing to customers.
+1. Open `/dashboard/accounts-payable` and use **Refresh lists** once after connecting or whenever QuickBooks vendors/accounts/tax codes change.
+2. Select the QuickBooks vendor and expense account for a reviewed invoice before marking it Ready to publish.
+3. Publishing creates a real **unpaid Bill** in the connected QuickBooks company. Use a deliberate reviewed invoice for the first live publication, or use a sandbox connection for testing.
+4. Confirm that the source attachment appears on the created Bill when attachment upload is enabled. If it fails, use **Retry attachment**; AxLiner will not create another Bill.
+5. AxLiner does not authorize payments or perform reconciliation. Those operations remain in QuickBooks.
 
 ## Deployment Responsibility
 
