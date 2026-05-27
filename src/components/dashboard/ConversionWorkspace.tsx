@@ -1200,6 +1200,9 @@ export function ResultActions({
   const comparisonVendorDraft = comparisonFile
     ? vendorDrafts[comparisonKey] || initialVendorRuleDraft(comparisonFile)
     : {}
+  const visibleVendorRuleInputs = comparisonFile?.document_type === "receipt"
+    ? vendorRuleInputs.filter(field => field.key !== "destination_treatment")
+    : vendorRuleInputs
   const comparisonImageUrl = comparisonFile?.input_preview_url || (safeResultFiles.length === 1 ? firstImageUrl : "")
   const isReceiptComparison = comparisonFile?.document_type === "receipt"
   const receiptPublication = comparisonFile?.quickbooks_receipt_publication
@@ -1358,7 +1361,12 @@ export function ResultActions({
     if (!comparisonFile?.document_id || !onSaveVendorRule) return
     setVendorRuleSavingId(comparisonFile.document_id)
     try {
-      await onSaveVendorRule(comparisonFile, comparisonVendorDraft)
+      await onSaveVendorRule(
+        comparisonFile,
+        comparisonFile.document_type === "receipt"
+          ? { ...comparisonVendorDraft, destination_treatment: undefined }
+          : comparisonVendorDraft
+      )
     } finally {
       setVendorRuleSavingId(null)
     }
@@ -1775,7 +1783,7 @@ export function ResultActions({
                     </div>
                     {comparisonFile.vendor_suggestion ? (
                       <div className="mt-3 flex flex-wrap gap-1.5">
-                        {vendorRuleInputs.map(field => {
+                        {visibleVendorRuleInputs.map(field => {
                           const value = comparisonFile.vendor_suggestion?.suggested_fields[field.key]
                           return value ? (
                             <span key={field.key} className="rounded-md border border-border bg-background px-2 py-1 text-[11px] text-foreground">
@@ -1788,7 +1796,7 @@ export function ResultActions({
                     {comparisonCanRememberVendor ? (
                       <div className="mt-3">
                         <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-                          {vendorRuleInputs.map(field => (
+                          {visibleVendorRuleInputs.map(field => (
                             <label key={field.key} className="text-[11px] font-medium text-muted-foreground">
                               {field.label}
                               <input
