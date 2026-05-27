@@ -14,7 +14,7 @@ import {
   useReactTable,
   RowSelectionState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Download, RefreshCw, FileSpreadsheet, Calendar, DownloadCloud, Trash2, AlertTriangle, CalendarIcon } from "lucide-react"
+import { ArrowUpDown, Download, RefreshCw, FileSpreadsheet, FileText, FileImage, Calendar, DownloadCloud, Trash2, CalendarIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -22,7 +22,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
-import { format, subDays, isAfter, startOfDay } from "date-fns"
+import { format, formatDistanceToNow, subDays, isAfter, startOfDay } from "date-fns"
 import {
   Table,
   TableBody,
@@ -36,10 +36,28 @@ import type { HistoryJob } from "@/hooks/useHistory"
 import { ocrApi } from "@/lib/api-client"
 import { toast } from "sonner"
 import { useAuth } from "@/hooks/useAuth"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
+import { StatusBadge } from "@/components/dashboard/StatusBadge"
+
+function getFileTypeInfo(filename: string | null | undefined) {
+  const ext = filename?.split(".").pop()?.toLowerCase()
+  if (ext === "pdf") return { Icon: FileText, bg: "bg-rose-500/10", fg: "text-rose-600 dark:text-rose-400" }
+  if (["png", "jpg", "jpeg", "webp", "gif", "tiff"].includes(ext || ""))
+    return { Icon: FileImage, bg: "bg-sky-500/10", fg: "text-sky-600 dark:text-sky-400" }
+  return { Icon: FileSpreadsheet, bg: "bg-primary/10", fg: "text-primary" }
+}
+
+function historyStatusTone(status: string | null | undefined): "success" | "error" | "processing" | "info" | "neutral" {
+  if (status === "completed" || status === "partially_completed") return "success"
+  if (status === "failed") return "error"
+  if (status === "processing") return "processing"
+  if (status === "queued") return "info"
+  return "neutral"
+}
 
 function HistoryContent() {
   const { user } = useAuth()
@@ -49,6 +67,7 @@ function HistoryContent() {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
   const [date, setDate] = React.useState<Date | undefined>(undefined)
   const [dateFilter, setDateFilter] = React.useState<"today" | "week" | "month" | "custom" | null>(null)
+  const [focusedRowId, setFocusedRowId] = React.useState<string | null>(null)
 
   // Filter jobs by date
   const filteredJobs = React.useMemo(() => {
@@ -164,69 +183,100 @@ function HistoryContent() {
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
           className="translate-y-[2px]"
+          onClick={(e) => e.stopPropagation()}
         />
       ),
       enableSorting: false,
       enableHiding: false,
     },
     {
-      accessorKey: "filename",
-      header: ({ column }) => {
+      id: "thumbnail",
+      header: () => null,
+      cell: ({ row }) => {
+        const { Icon, bg, fg } = getFileTypeInfo(row.original.filename)
         return (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="h-8 px-2"
-          >
-            Filename
-            <ArrowUpDown className="ml-2 h-3 w-3" />
-          </Button>
+          <div className={cn("flex size-10 shrink-0 items-center justify-center rounded-lg", bg)}>
+            <Icon className={cn("size-5", fg)} />
+          </div>
         )
       },
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "filename",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="h-8 px-2"
+        >
+          Filename
+          <ArrowUpDown className="ml-2 h-3 w-3" />
+        </Button>
+      ),
       cell: ({ row }) => {
-        const filename = row.getValue("filename") as string | null
+        const filename = (row.getValue("filename") as string | null) || "Untitled"
         return (
-          <div className="flex items-center gap-2">
-            <FileSpreadsheet className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium text-sm">{filename || 'Untitled'}</span>
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="block max-w-[220px] cursor-default truncate text-sm font-medium text-foreground">
+                {filename}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs break-all">
+              {filename}
+            </TooltipContent>
+          </Tooltip>
         )
       },
     },
     {
       accessorKey: "saved_at",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="h-8 px-2"
-          >
-            Date
-            <ArrowUpDown className="ml-2 h-3 w-3" />
-          </Button>
-        )
-      },
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="h-8 px-2"
+        >
+          Date
+          <ArrowUpDown className="ml-2 h-3 w-3" />
+        </Button>
+      ),
       cell: ({ row }) => {
-        // Use saved_at if available, otherwise fall back to created_at
-        const date = (row.original as any).saved_at || (row.original as any).created_at
+        const rawDate = row.original.saved_at || row.original.created_at
+        if (!rawDate) return <span className="text-xs text-muted-foreground">—</span>
+        const relative = formatDistanceToNow(new Date(rawDate), { addSuffix: true })
+        const absolute = formatDate(rawDate)
         return (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Calendar className="h-3 w-3" />
-            {formatDate(date)}
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="cursor-default text-sm text-muted-foreground">{relative}</span>
+            </TooltipTrigger>
+            <TooltipContent side="top">{absolute}</TooltipContent>
+          </Tooltip>
         )
       },
+    },
+    {
+      id: "status",
+      header: () => <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</span>,
+      cell: ({ row }) => {
+        const status = row.original.status
+        const label = status === "completed" ? "Ready" : (status?.replace(/_/g, " ") || "Unknown")
+        return <StatusBadge tone={historyStatusTone(status)}>{label}</StatusBadge>
+      },
+      enableSorting: false,
     },
     {
       id: "actions",
       cell: ({ row }) => {
         const job = row.original
         return (
-          <div className="flex items-center justify-end gap-2">
-            {job.status === 'completed' && job.result_url ? (
+          <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+            {job.status === "completed" && job.result_url ? (
               <>
                 <Button
                   variant="surface"
@@ -242,21 +292,18 @@ function HistoryContent() {
                   size="sm"
                   onClick={() => {
                     const jobId = job.original_job_id
-                    if (jobId) {
-                      handleDelete(jobId)
-                    } else {
-                      toast.error('No job ID available')
-                    }
+                    if (jobId) handleDelete(jobId)
+                    else toast.error("No job ID available")
                   }}
                   className="h-8 px-3"
                 >
                   <Trash2 className="h-3 w-3" />
                 </Button>
               </>
-            ) : job.status === 'failed' ? (
+            ) : job.status === "failed" ? (
               <span className="text-xs text-destructive">Failed</span>
             ) : (
-              <span className="text-xs text-muted-foreground">Processing...</span>
+              <span className="text-xs text-muted-foreground">Processing…</span>
             )}
           </div>
         )
@@ -280,6 +327,24 @@ function HistoryContent() {
       rowSelection,
     },
   })
+
+  React.useEffect(() => {
+    if (!focusedRowId) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Delete") return
+      const row = table.getRowModel().rows.find(r => r.id === focusedRowId)
+      if (!row) return
+      const job = row.original
+      const jobId = job.original_job_id
+      if (!jobId) return
+      if (window.confirm(`Delete "${job.filename || "this file"}"? This cannot be undone.`)) {
+        void handleDelete(jobId)
+        setFocusedRowId(null)
+      }
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [focusedRowId, table])
 
   const handleBulkDownload = async () => {
     const selectedRows = table.getFilteredSelectedRowModel().rows
@@ -601,7 +666,11 @@ function HistoryContent() {
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className="h-12"
+                    className={cn(
+                      "h-12 cursor-pointer transition-colors",
+                      focusedRowId === row.id && "bg-accent/40"
+                    )}
+                    onClick={() => setFocusedRowId(prev => prev === row.id ? null : row.id)}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id} className="py-2">
