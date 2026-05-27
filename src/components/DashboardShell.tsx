@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
 import { MobileNav } from "@/components/MobileNav"
+import { CommandPalette } from "@/components/CommandPalette"
 import { DashboardCreditsPill } from "@/components/DashboardCreditsPill"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -60,6 +61,7 @@ export function DashboardShell({
   showBack = true,
 }: DashboardShellProps) {
   const router = useRouter()
+  const [cmdOpen, setCmdOpen] = useState(false)
   const { state: processingState } = useProcessingState()
   const [recoverableJob, setRecoverableJob] = useState<RecoverableJobSummary | null>(null)
   const {
@@ -88,6 +90,17 @@ export function DashboardShell({
       mounted = false
     }
   }, [user?.id])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault()
+        setCmdOpen(prev => !prev)
+      }
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [])
 
   const availableCredits = credits?.available_credits ?? billingStatus?.credits?.available_credits ?? null
   const plan = billingStatus?.plan || "free"
@@ -211,6 +224,7 @@ export function DashboardShell({
       </div>
 
       <MobileNav isAuthenticated={true} user={user} />
+      <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
     </div>
   )
 }
