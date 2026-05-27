@@ -135,7 +135,55 @@
   .animate-fade-in-up {
     animation: fadeInUp 0.5s ease-out forwards;
   }
-  
+
+  /* Calm interaction language — Linear-style 180ms transitions + 0.98 active scale */
+  .ax-interactive {
+    transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+    transition-duration: var(--ax-motion-fast);
+    transition-timing-function: var(--ax-motion-ease);
+  }
+  .ax-interactive:active {
+    transform: scale(0.98);
+  }
+
+  @keyframes ax-row-enter {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .ax-row-enter {
+    animation: ax-row-enter var(--ax-motion-base) var(--ax-motion-ease) both;
+  }
+
+  @keyframes ax-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .ax-fade-in {
+    animation: ax-fade-in var(--ax-motion-base) var(--ax-motion-ease) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ax-interactive,
+    .ax-row-enter,
+    .ax-fade-in {
+      transition: none;
+      animation: none;
+    }
+    .ax-interactive:active {
+      transform: none;
+    }
+  }
+
   /* Gradient text */
   .gradient-text {
     background: var(--gradient-primary);
@@ -257,6 +305,20 @@
   --ax-upgrade-highlight: #e9ff9c;
   --ax-upgrade-base: #d4ff6f;
   --ax-upgrade-depth: #b9ec45;
+  --status-success-bg: hsl(143 70% 94%);
+  --status-success-fg: hsl(143 55% 26%);
+  --status-warning-bg: hsl(38 92% 92%);
+  --status-warning-fg: hsl(28 80% 30%);
+  --status-error-bg: hsl(0 84% 95%);
+  --status-error-fg: hsl(0 72% 38%);
+  --status-info-bg: hsl(204 88% 94%);
+  --status-info-fg: hsl(204 78% 30%);
+  --status-neutral-bg: hsl(220 14% 94%);
+  --status-neutral-fg: hsl(220 13% 30%);
+  --status-review-bg: hsl(258 92% 95%);
+  --status-review-fg: hsl(258 70% 38%);
+  --status-processing-bg: hsl(217 91% 94%);
+  --status-processing-fg: hsl(217 91% 36%);
   --ax-motion-fast: 180ms;
   --ax-motion-base: 320ms;
   --ax-motion-enter: 720ms;
@@ -328,6 +390,20 @@
   --ax-upgrade-highlight: #e9ff9c;
   --ax-upgrade-base: #d4ff6f;
   --ax-upgrade-depth: #b9ec45;
+  --status-success-bg: hsl(143 50% 14%);
+  --status-success-fg: hsl(143 62% 70%);
+  --status-warning-bg: hsl(28 50% 14%);
+  --status-warning-fg: hsl(38 92% 70%);
+  --status-error-bg: hsl(0 50% 16%);
+  --status-error-fg: hsl(0 84% 78%);
+  --status-info-bg: hsl(204 50% 14%);
+  --status-info-fg: hsl(204 88% 72%);
+  --status-neutral-bg: hsl(220 12% 18%);
+  --status-neutral-fg: hsl(138 10% 76%);
+  --status-review-bg: hsl(258 50% 16%);
+  --status-review-fg: hsl(258 80% 78%);
+  --status-processing-bg: hsl(217 50% 16%);
+  --status-processing-fg: hsl(217 91% 72%);
   --font-sans: var(--font-inter), Inter, Arial, Helvetica, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: monospace;
