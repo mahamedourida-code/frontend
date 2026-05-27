@@ -15,7 +15,7 @@ import {
   Settings,
   Upload,
 } from "lucide-react"
-import { motion } from "motion/react"
+import { motion } from "framer-motion"
 import { AxMark } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { Button } from "@/components/ui/button"

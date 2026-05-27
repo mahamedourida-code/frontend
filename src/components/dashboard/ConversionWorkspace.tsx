@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, type ChangeEvent, type DragEvent } from "react"
+import { useCallback, useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "react"
 import {
   AlertCircle,
   ArrowRight,
@@ -666,6 +666,46 @@ export function ResultPreviewPanel({
   "isComplete" | "resultFiles" | "tablePreviewData" | "textPreview" | "firstImageUrl" | "isTextOutput"
 >) {
   const [imagePreviewOpen, setImagePreviewOpen] = useState(false)
+  const [splitRatio, setSplitRatio] = useState(50)
+  const [isResizing, setIsResizing] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const isWideRef = useRef(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1280px)")
+    isWideRef.current = mq.matches
+    const onChange = (e: MediaQueryListEvent) => { isWideRef.current = e.matches }
+    mq.addEventListener("change", onChange)
+    return () => mq.removeEventListener("change", onChange)
+  }, [])
+
+  const onHandleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (!isWideRef.current) return
+    e.preventDefault()
+    setIsResizing(true)
+    document.body.style.userSelect = "none"
+    document.body.style.cursor = "col-resize"
+
+    const container = containerRef.current
+    if (!container) return
+
+    const onMouseMove = (ev: MouseEvent) => {
+      const rect = container.getBoundingClientRect()
+      const ratio = ((ev.clientX - rect.left) / rect.width) * 100
+      setSplitRatio(Math.min(75, Math.max(25, ratio)))
+    }
+
+    const onMouseUp = () => {
+      setIsResizing(false)
+      document.body.style.userSelect = ""
+      document.body.style.cursor = ""
+      window.removeEventListener("mousemove", onMouseMove)
+      window.removeEventListener("mouseup", onMouseUp)
+    }
+
+    window.addEventListener("mousemove", onMouseMove)
+    window.addEventListener("mouseup", onMouseUp)
+  }, [])
 
   if (!isComplete || !resultFiles?.length) {
     return (
@@ -686,28 +726,123 @@ export function ResultPreviewPanel({
   return (
     <>
     <div className="rounded-md border border-border bg-card/50 p-3 backdrop-blur-xl">
-      <div className="grid gap-3 xl:grid-cols-2">
+      <div
+        ref={containerRef}
+        className="flex min-h-[290px] gap-0 xl:gap-0"
+      >
         {firstImageUrl ? (
-          <div>
-            <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Before</p>
+          <>
+            {/* Before pane */}
             <div
-              role="button"
-              tabIndex={0}
-              onClick={() => setImagePreviewOpen(true)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault()
-                  setImagePreviewOpen(true)
-                }
+              className="min-w-0 xl:overflow-hidden"
+              style={{
+                width: isWideRef.current ? `${splitRatio}%` : "100%",
+                transition: isResizing ? "none" : "width 150ms ease",
+                flexShrink: 0,
               }}
-              className="flex min-h-[260px] cursor-zoom-in items-center justify-center overflow-hidden rounded-lg border border-border bg-card/70 outline-none transition hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary"
             >
-              <img src={firstImageUrl} alt="Original uploaded file" className="max-h-[420px] w-full object-contain" />
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Before</p>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => setImagePreviewOpen(true)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault()
+                    setImagePreviewOpen(true)
+                  }
+                }}
+                className="flex min-h-[260px] cursor-zoom-in items-center justify-center overflow-hidden rounded-lg border border-border bg-card/70 outline-none transition hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                <img src={firstImageUrl} alt="Original uploaded file" className="max-h-[420px] w-full object-contain" />
+              </div>
+            </div>
+
+            {/* Drag handle — only visible on xl+ */}
+            <div
+              onMouseDown={onHandleMouseDown}
+              className="group hidden cursor-col-resize flex-col items-center justify-center px-1 xl:flex"
+              aria-hidden
+            >
+              <div className={cn(
+                "flex h-full w-2 flex-col items-center justify-center gap-1 rounded-sm transition-colors duration-150",
+                isResizing ? "bg-accent/50" : "hover:bg-accent/30"
+              )}>
+                <span className="size-0.5 rounded-full bg-muted-foreground/40" />
+                <span className="size-0.5 rounded-full bg-muted-foreground/40" />
+                <span className="size-0.5 rounded-full bg-muted-foreground/40" />
+                <span className="size-0.5 rounded-full bg-muted-foreground/40" />
+                <span className="size-0.5 rounded-full bg-muted-foreground/40" />
+                <span className="size-0.5 rounded-full bg-muted-foreground/40" />
+              </div>
+            </div>
+
+            {/* After pane */}
+            <div className="hidden min-w-0 flex-1 xl:block">
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">After</p>
+              <div className="max-h-[420px] min-h-[260px] overflow-auto rounded-lg border border-border bg-white">
+                {isTextOutput || textPreview ? (
+                  <pre className="min-h-[260px] whitespace-pre-wrap p-4 text-sm font-medium leading-6 text-gray-950">
+                    {textPreview || "Text preview is loading..."}
+                  </pre>
+                ) : tablePreviewData.length ? (
+                  <table className="w-full border-collapse text-sm text-gray-950">
+                    <tbody>
+                      {tablePreviewData.map((row, rowIndex) => (
+                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-emerald-50 font-semibold" : "bg-white"}>
+                          {row.map((cell, cellIndex) => (
+                            <td key={cellIndex} className="border border-gray-200 px-3 py-2 text-left text-gray-950">
+                              {cell || ""}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="flex min-h-[260px] items-center justify-center p-4 text-sm font-semibold text-muted-foreground">
+                    Preview is loading
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        ) : (
+          /* No image — full-width after pane */
+          <div className="flex-1">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">After</p>
+            <div className="max-h-[420px] min-h-[260px] overflow-auto rounded-lg border border-border bg-white">
+              {isTextOutput || textPreview ? (
+                <pre className="min-h-[260px] whitespace-pre-wrap p-4 text-sm font-medium leading-6 text-gray-950">
+                  {textPreview || "Text preview is loading..."}
+                </pre>
+              ) : tablePreviewData.length ? (
+                <table className="w-full border-collapse text-sm text-gray-950">
+                  <tbody>
+                    {tablePreviewData.map((row, rowIndex) => (
+                      <tr key={rowIndex} className={rowIndex === 0 ? "bg-emerald-50 font-semibold" : "bg-white"}>
+                        {row.map((cell, cellIndex) => (
+                          <td key={cellIndex} className="border border-gray-200 px-3 py-2 text-left text-gray-950">
+                            {cell || ""}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="flex min-h-[260px] items-center justify-center p-4 text-sm font-semibold text-muted-foreground">
+                  Preview is loading
+                </div>
+              )}
             </div>
           </div>
-        ) : null}
+        )}
+      </div>
 
-        <div>
+      {/* After pane stacked below Before on small screens */}
+      {firstImageUrl && (
+        <div className="mt-3 xl:hidden">
           <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">After</p>
           <div className="max-h-[420px] min-h-[260px] overflow-auto rounded-lg border border-border bg-white">
             {isTextOutput || textPreview ? (
@@ -735,7 +870,7 @@ export function ResultPreviewPanel({
             )}
           </div>
         </div>
-      </div>
+      )}
     </div>
       {imagePreviewOpen && firstImageUrl ? (
         <div
