@@ -3,8 +3,12 @@
 import { Suspense, useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { ChevronLeft, Loader2 } from "lucide-react"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
+import { EmptyState } from "@/components/dashboard/EmptyState"
+import { PageHeader } from "@/components/dashboard/PageHeader"
+import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -33,12 +37,12 @@ const queueStatuses: Array<{ value: AccountsPayableStatus; label: string }> = [
   { value: "failed", label: "Failed" },
 ]
 
-const statusStyles: Record<AccountsPayableStatus, string> = {
-  needs_coding: "border-amber-200 bg-amber-50 text-amber-900",
-  needs_review: "border-orange-200 bg-orange-50 text-orange-900",
-  ready_to_publish: "border-emerald-200 bg-emerald-50 text-emerald-900",
-  published: "border-border bg-muted text-foreground",
-  failed: "border-rose-200 bg-rose-50 text-rose-900",
+const statusTone: Record<AccountsPayableStatus, "warning" | "review" | "info" | "success" | "error"> = {
+  needs_coding: "warning",
+  needs_review: "review",
+  ready_to_publish: "info",
+  published: "success",
+  failed: "error",
 }
 
 const editableFields: Array<[keyof AccountsPayableDraftData, string, string]> = [
@@ -328,17 +332,15 @@ function AccountsPayableContent() {
   return (
     <DashboardShell activeItem="accounts_payable" title="Accounts Payable" user={user} contentClassName="max-w-none px-3 py-4 sm:px-5 lg:px-6">
       <div className="space-y-4">
-        <header className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h1 className="text-xl font-semibold tracking-tight text-foreground">Accounts Payable</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Reviewed invoices prepared for unpaid Bill creation in QuickBooks.</p>
-          </div>
-          {selectedReadyIds.length ? (
-            <Button onClick={() => void publishSelected()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md px-4">
+        <PageHeader
+          title="Accounts Payable"
+          description="Reviewed invoices ready to publish as QuickBooks Bills"
+          actions={selectedReadyIds.length ? (
+            <Button variant="glossy" onClick={() => void publishSelected()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md px-4">
               Publish {selectedReadyIds.length} to QuickBooks
             </Button>
-          ) : null}
-        </header>
+          ) : undefined}
+        />
 
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3 text-sm">
           <div>
@@ -351,11 +353,12 @@ function AccountsPayableContent() {
           </div>
           <div className="flex gap-2">
             {quickBooksConnection?.connected ? (
-              <Button variant="outline" size="sm" onClick={() => void loadQuickBooks(true)} disabled={syncingReferences}>
+              <Button variant="surface" size="sm" onClick={() => void loadQuickBooks(true)} disabled={syncingReferences}>
+                <img src="/site-icons/io/database.svg" className="h-4 w-4" alt="" />
                 {syncingReferences ? "Refreshing..." : "Refresh lists"}
               </Button>
             ) : (
-              <Button variant="outline" size="sm" onClick={() => router.push("/dashboard/integrations")}>
+              <Button variant="glossy" size="sm" onClick={() => router.push("/dashboard/integrations")}>
                 Connect QuickBooks
               </Button>
             )}
@@ -386,12 +389,19 @@ function AccountsPayableContent() {
           <Card className="rounded-md border-border shadow-xs">
             <CardContent className="p-2">
               {loading ? (
-                <p className="p-4 text-sm text-muted-foreground">Loading queue...</p>
+                <EmptyState
+                  icon={<Loader2 className="animate-spin" />}
+                  title="Loading queue"
+                  description="Fetching invoices ready to publish"
+                  compact
+                />
               ) : visibleItems.length === 0 ? (
-                <div className="p-5">
-                  <p className="text-sm font-semibold text-foreground">No invoices in this queue</p>
-                  <p className="mt-1 text-sm text-muted-foreground">Mark a reviewed invoice Ready, then add it from Convert Files.</p>
-                </div>
+                <EmptyState
+                  icon={<ChevronLeft />}
+                  title="No invoices in this queue"
+                  description="Mark a reviewed invoice Ready, then add it from Convert Files."
+                  compact
+                />
               ) : visibleItems.map(item => (
                 <div
                   key={item.id}
@@ -405,7 +415,7 @@ function AccountsPayableContent() {
                   role="button"
                   tabIndex={0}
                   className={cn(
-                    "mb-1 flex w-full items-start gap-3 rounded-md border px-3 py-3 text-left transition-colors last:mb-0",
+                    "ax-interactive mb-1 flex w-full items-start gap-3 rounded-md border p-4 text-left last:mb-0",
                     activeId === item.id ? "border-border bg-accent" : "border-transparent hover:bg-accent/60"
                   )}
                 >
@@ -423,7 +433,7 @@ function AccountsPayableContent() {
                       {item.draft_data.invoice_number || item.source_filename}
                     </span>
                     <span className="mt-2 flex items-center justify-between gap-2 text-xs">
-                      <span className={cn("rounded-md border px-2 py-1 font-medium", statusStyles[item.status])}>{statusLabel(item.status)}</span>
+                      <StatusBadge tone={statusTone[item.status]}>{statusLabel(item.status)}</StatusBadge>
                       <span className="font-semibold text-foreground">{amountLabel(item)}</span>
                     </span>
                     {item.quickbooks_publication && item.quickbooks_publication.status !== "published" ? (
@@ -438,9 +448,13 @@ function AccountsPayableContent() {
           </Card>
 
           <Card className="rounded-md border-border shadow-xs">
-            <CardContent className="p-4 sm:p-5">
+            <CardContent className="p-5">
               {!activeItem ? (
-                <p className="text-sm text-muted-foreground">Choose an invoice to prepare its draft bill fields.</p>
+                <EmptyState
+                  icon={<ChevronLeft />}
+                  title="Select an invoice"
+                  description="Pick an item from the queue to start coding"
+                />
               ) : (
                 <div className="space-y-5">
                   <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
@@ -450,13 +464,13 @@ function AccountsPayableContent() {
                     </div>
                     <div className="flex items-center gap-2">
                       {activeItem.source_access_url ? (
-                        <Button asChild variant="outline" size="sm" className="h-8 rounded-md">
+                        <Button asChild variant="surface" size="sm" className="h-8 rounded-md">
                           <a href={activeItem.source_access_url} target="_blank" rel="noreferrer">View attachment</a>
                         </Button>
                       ) : null}
-                      <span className={cn("rounded-md border px-2 py-1 text-xs font-medium", statusStyles[activeItem.status])}>
+                      <StatusBadge tone={statusTone[activeItem.status]}>
                         {statusLabel(activeItem.status)}
-                      </span>
+                      </StatusBadge>
                     </div>
                   </div>
 
@@ -575,7 +589,7 @@ function AccountsPayableContent() {
                     <div className="mb-2 flex items-center justify-between gap-3">
                       <p className="text-sm font-semibold text-foreground">Line items</p>
                       {!activeLocked ? (
-                        <Button type="button" variant="outline" size="sm" onClick={addLineItem} className="h-8 rounded-md text-xs">
+                        <Button type="button" variant="surface" size="sm" onClick={addLineItem} className="h-8 rounded-md text-xs">
                           Add line
                         </Button>
                       ) : null}
@@ -602,7 +616,7 @@ function AccountsPayableContent() {
                                       value={String(line[column] ?? "")}
                                       disabled={activeLocked}
                                       onChange={event => updateLineCell(rowIndex, column, event.target.value)}
-                                      className="h-8 min-w-[90px] rounded-sm border border-transparent bg-transparent px-2 text-foreground outline-none focus:border-border focus:bg-background"
+                                      className="ax-interactive h-8 min-w-[90px] rounded-sm border border-transparent bg-transparent px-2 text-foreground outline-none focus:border-border focus:bg-background"
                                     />
                                   </td>
                                 ))}
@@ -648,21 +662,21 @@ function AccountsPayableContent() {
                     <div className="flex flex-wrap gap-2">
                       {!activeLocked ? (
                         <>
-                          <Button variant="outline" onClick={() => void persistDraft()} disabled={saving} className="h-9 rounded-md">
+                          <Button variant="surface" onClick={() => void persistDraft()} disabled={saving} className="h-9 rounded-md">
                             Save draft
                           </Button>
-                          <Button onClick={() => void applySelectedStatus()} disabled={saving || nextStatus === activeItem.status} className="h-9 rounded-md">
+                          <Button variant="reviewed" onClick={() => void applySelectedStatus()} disabled={saving || nextStatus === activeItem.status} className="h-9 rounded-md">
                             Apply status
                           </Button>
                           {activeItem.status === "ready_to_publish" ? (
-                            <Button onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md">
+                            <Button variant="glossy" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md">
                               Publish to QuickBooks
                             </Button>
                           ) : null}
                         </>
                       ) : null}
                       {activeItem.status === "published" && activeItem.quickbooks_publication?.attachment_status === "failed" ? (
-                        <Button onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md">
+                        <Button variant="surface" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md">
                           Retry attachment
                         </Button>
                       ) : null}
