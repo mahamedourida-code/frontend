@@ -154,6 +154,10 @@
     transform: scale(0.98);
   }
 
+  @keyframes ax-march {
+    to { stroke-dashoffset: -12; }
+  }
+
   @keyframes ax-row-enter {
     from {
       opacity: 0;
