@@ -1,15 +1,9 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { createClient } from "@/utils/supabase/client"
+import { useCallback, useEffect, useState } from "react"
+import { workspaceApi, type WorkspaceRecord } from "@/lib/api-client"
 
-export type Workspace = {
-  id: string
-  owner_user_id: string
-  name: string
-  created_at: string
-  updated_at: string
-}
+export type Workspace = WorkspaceRecord
 
 type WorkspaceUser = {
   id?: string | null
@@ -27,7 +21,6 @@ function initialWorkspaceName(user: WorkspaceUser) {
 }
 
 export function useWorkspaces(user: WorkspaceUser) {
-  const supabase = useMemo(() => createClient(), [])
   const userId = user?.id || null
   const [workspaces, setWorkspaces] = useState<Workspace[]>([])
   const [activeWorkspace, setActiveWorkspace] = useState<Workspace | null>(null)
@@ -36,18 +29,9 @@ export function useWorkspaces(user: WorkspaceUser) {
 
   const persistActiveWorkspace = useCallback(async (workspace: Workspace) => {
     if (!userId) return
-
-    const { error: preferenceError } = await supabase
-      .from("workspace_preferences")
-      .upsert({
-        user_id: userId,
-        active_workspace_id: workspace.id,
-        updated_at: new Date().toISOString(),
-      })
-
-    if (preferenceError) throw preferenceError
-    setActiveWorkspace(workspace)
-  }, [supabase, userId])
+    const selected = await workspaceApi.select(workspace.id)
+    setActiveWorkspace(selected)
+  }, [userId])
 
   const refresh = useCallback(async () => {
     if (!userId) {
@@ -61,55 +45,21 @@ export function useWorkspaces(user: WorkspaceUser) {
     setError(null)
 
     try {
-      const { data: workspaceRows, error: workspaceError } = await supabase
-        .from("workspaces")
-        .select("*")
-        .order("created_at", { ascending: true })
-
-      if (workspaceError) throw workspaceError
-
-      let records = (workspaceRows || []) as Workspace[]
+      const response = await workspaceApi.list()
+      let records = response.workspaces
       if (!records.length) {
-        const { data: created, error: createError } = await supabase
-          .from("workspaces")
-          .insert({
-            owner_user_id: userId,
-            name: initialWorkspaceName(user),
-            updated_at: new Date().toISOString(),
-          })
-          .select("*")
-          .single()
-
-        if (createError?.code === "23505") {
-          const { data: existing, error: existingError } = await supabase
-            .from("workspaces")
-            .select("*")
-            .order("created_at", { ascending: true })
-
-          if (existingError) throw existingError
-          records = (existing || []) as Workspace[]
-        } else {
-          if (createError) throw createError
-          records = [created as Workspace]
-        }
+        records = [await workspaceApi.create(initialWorkspaceName(user))]
       }
 
       setWorkspaces(records)
-
-      const { data: preference } = await supabase
-        .from("workspace_preferences")
-        .select("active_workspace_id")
-        .eq("user_id", userId)
-        .maybeSingle()
-
-      const selected = records.find((workspace) => workspace.id === preference?.active_workspace_id) || records[0]
-      await persistActiveWorkspace(selected)
+      const selected = records.find((workspace) => workspace.id === response.active_workspace_id) || records[0]
+      setActiveWorkspace(selected)
     } catch {
       setError("Workspaces are unavailable right now.")
     } finally {
       setIsLoading(false)
     }
-  }, [persistActiveWorkspace, supabase, user, userId])
+  }, [user, userId])
 
   useEffect(() => {
     void refresh()
@@ -119,27 +69,17 @@ export function useWorkspaces(user: WorkspaceUser) {
     if (!userId) return null
 
     const cleanName = name.trim()
-    const { data, error: createError } = await supabase
-      .from("workspaces")
-      .insert({
-        owner_user_id: userId,
-        name: cleanName,
-        updated_at: new Date().toISOString(),
-      })
-      .select("*")
-      .single()
-
-    if (createError) {
-      setError(createError.code === "23505" ? "A workspace with this name already exists." : "Could not create workspace.")
+    try {
+      const workspace = await workspaceApi.create(cleanName)
+      setWorkspaces((current) => [...current, workspace])
+      setActiveWorkspace(workspace)
+      setError(null)
+      return workspace
+    } catch {
+      setError("Could not create workspace.")
       return null
     }
-
-    const workspace = data as Workspace
-    setWorkspaces((current) => [...current, workspace])
-    await persistActiveWorkspace(workspace)
-    setError(null)
-    return workspace
-  }, [persistActiveWorkspace, supabase, userId])
+  }, [userId])
 
   return {
     workspaces,
