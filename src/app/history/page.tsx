@@ -38,6 +38,8 @@ import { toast } from "sonner"
 import { useAuth } from "@/hooks/useAuth"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
+import { EmptyState } from "@/components/dashboard/EmptyState"
+import { PageHeader } from "@/components/dashboard/PageHeader"
 
 function HistoryContent() {
   const { user } = useAuth()
@@ -227,7 +229,7 @@ function HistoryContent() {
             {job.status === 'completed' && job.result_url ? (
               <>
                 <Button
-                  variant="outline"
+                  variant="surface"
                   size="sm"
                   onClick={() => handleDownload(job)}
                   className="h-8 px-3"
@@ -236,7 +238,7 @@ function HistoryContent() {
                   Download
                 </Button>
                 <Button
-                  variant="outline"
+                  variant="destructive"
                   size="sm"
                   onClick={() => {
                     const jobId = job.original_job_id
@@ -246,7 +248,7 @@ function HistoryContent() {
                       toast.error('No job ID available')
                     }
                   }}
-                  className="h-8 px-3 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                  className="h-8 px-3"
                 >
                   <Trash2 className="h-3 w-3" />
                 </Button>
@@ -408,18 +410,18 @@ function HistoryContent() {
       activeItem="history"
       title="Saved Files"
       user={user}
-      actions={
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={refresh}
-          disabled={isLoading}
-          className="h-10 w-10 rounded-full border-border bg-card/70 text-primary hover:bg-card"
-        >
-          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-        </Button>
-      }
     >
+        <PageHeader
+          title="Saved Files"
+          description="Download or delete your processed conversion history"
+          actions={
+            <Button variant="surface" size="sm" onClick={refresh} disabled={isLoading} className="h-9">
+              <RefreshCw className={cn("me-2 size-4", isLoading && "animate-spin")} />
+              Refresh
+            </Button>
+          }
+        />
+
         {/* Error State */}
         {error && (
           <div className="mb-3 lg:mb-4 p-2 lg:p-3 rounded-md border border-destructive/50 bg-destructive/10">
@@ -433,45 +435,45 @@ function HistoryContent() {
             {/* Date Filter */}
             <div className="flex items-center gap-1 lg:gap-2 overflow-x-auto w-full sm:w-auto">
               <Button
-                variant={dateFilter === "today" ? "default" : "outline"}
+                variant={dateFilter === "today" ? "default" : "surface"}
                 size="sm"
                 onClick={() => {
                   setDateFilter("today")
                   setDate(undefined)
                 }}
-                className="h-8 text-xs flex-shrink-0"
+                className="h-8 text-xs flex-shrink-0 ax-interactive"
               >
                 Today
               </Button>
               <Button
-                variant={dateFilter === "week" ? "default" : "outline"}
+                variant={dateFilter === "week" ? "default" : "surface"}
                 size="sm"
                 onClick={() => {
                   setDateFilter("week")
                   setDate(undefined)
                 }}
-                className="h-8 text-xs flex-shrink-0"
+                className="h-8 text-xs flex-shrink-0 ax-interactive"
               >
                 7D
               </Button>
               <Button
-                variant={dateFilter === "month" ? "default" : "outline"}
+                variant={dateFilter === "month" ? "default" : "surface"}
                 size="sm"
                 onClick={() => {
                   setDateFilter("month")
                   setDate(undefined)
                 }}
-                className="h-8 text-xs flex-shrink-0"
+                className="h-8 text-xs flex-shrink-0 ax-interactive"
               >
                 30D
               </Button>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    variant={date ? "default" : "outline"}
+                    variant={date ? "default" : "surface"}
                     size="sm"
                     className={cn(
-                      "h-8 w-[120px] lg:w-[180px] justify-start text-left font-normal text-xs flex-shrink-0",
+                      "ax-interactive h-8 w-[120px] lg:w-[180px] justify-start text-left font-normal text-xs flex-shrink-0",
                       !date && "text-muted-foreground"
                     )}
                   >
@@ -513,7 +515,7 @@ function HistoryContent() {
                   {table.getFilteredSelectedRowModel().rows.length} selected
                 </span>
                 <Button
-                  variant="outline"
+                  variant="surface"
                   size="sm"
                   onClick={handleBulkDownload}
                   className="h-8 text-xs"
@@ -538,7 +540,7 @@ function HistoryContent() {
             {filteredJobs.filter(job => job.status === 'completed' && job.result_url).length > 0 && (
               <>
                 <Button
-                  variant="outline"
+                  variant="ink"
                   size="sm"
                   onClick={handleDownloadAll}
                   className="h-8 text-xs"
@@ -613,14 +615,13 @@ function HistoryContent() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <FileSpreadsheet className="h-8 w-8 text-muted-foreground/50" />
-                      <p className="text-sm font-medium">No saved files yet</p>
-                      <p className="text-xs text-muted-foreground">
-                        Save processed files to see them here
-                      </p>
-                    </div>
+                  <TableCell colSpan={columns.length} className="h-32">
+                    <EmptyState
+                      icon={<FileSpreadsheet />}
+                      title="No saved files yet"
+                      description="Save processed files to see them here"
+                      compact
+                    />
                   </TableCell>
                 </TableRow>
               )}
@@ -632,7 +633,7 @@ function HistoryContent() {
         {filteredJobs.length > 0 && (
           <div className="flex items-center justify-end space-x-2 py-4">
             <Button
-              variant="outline"
+              variant="surface"
               size="sm"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
@@ -641,7 +642,7 @@ function HistoryContent() {
               Previous
             </Button>
             <Button
-              variant="outline"
+              variant="surface"
               size="sm"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}

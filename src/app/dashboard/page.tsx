@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardMiniCharts } from "@/components/dashboard/DashboardMiniCharts"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
+import { PageHeader } from "@/components/dashboard/PageHeader"
 import { cn } from "@/lib/utils"
 import {
   BarChart3,
@@ -456,12 +457,13 @@ export default function DashboardPage() {
   return (
     <DashboardShell activeItem="overview" title="Dashboard" user={user} showBack={false}>
       <div className="space-y-4">
-        <section className="space-y-4 pt-4">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <p className="text-sm font-semibold text-muted-foreground">Volume and processing</p>
+        <PageHeader
+          title="Dashboard"
+          description="Volume and processing activity"
+          actions={
             <Button
+              variant="surface"
               size="sm"
-              variant="outline"
               onClick={fetchDashboardData}
               disabled={loading}
               className="h-9"
@@ -469,7 +471,9 @@ export default function DashboardPage() {
               <RefreshCw className={cn("me-2 size-4", loading && "animate-spin")} />
               Refresh
             </Button>
-          </div>
+          }
+        />
+        <section className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {metricCards.map((item) => {
               const Icon = item.icon
@@ -506,7 +510,7 @@ export default function DashboardPage() {
                 <Tabs value={timeRange} onValueChange={(value) => setTimeRange(value as TimeRange)}>
                   <TabsList>
                     {(["1d", "7d", "30d", "3m"] as TimeRange[]).map((range) => (
-                      <TabsTrigger key={range} value={range}>
+                      <TabsTrigger key={range} value={range} className="ax-interactive">
                         {range === "1d" ? "24h" :
                           range === "7d" ? "7D" :
                             range === "30d" ? "30D" : "3M"}
