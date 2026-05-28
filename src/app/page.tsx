@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import ScrollAnimatedSection from "@/components/ScrollAnimatedSection";
 import { AppLogo } from "@/components/AppIcon";
 import { BrandVisualFrame } from "@/components/BrandVisual";
+import { VideoPlaceholder } from "@/components/landing/VideoPlaceholder";
 
 import NextLink from "next/link";
 import { GoogleOneTap } from "@/components/GoogleOneTap";
@@ -124,11 +125,6 @@ const faqItems = [
   },
 ];
 
-const ownedPipelineCopy = [
-  "AxLiner owns the job queue, file metadata, download permissions, export layer, and recovery flow around every batch. Each file stays tied to a durable owner so status, sharing, and downloads follow the same access model.",
-  "The product is shaped for handwritten tables and batch review, not loose extracted text. Every result is prepared for rows, columns, exception checks, and clean spreadsheet export.",
-  "External infrastructure can sit behind the pipeline, but the workflow, storage model, and user experience stay controlled by AxLiner. That keeps retries, batch recovery, and output delivery predictable for real users.",
-];
 
 type FooterIconProps = {
   className?: string;
@@ -438,6 +434,100 @@ export default function Home() {
             style={{ backgroundColor: "var(--background)" }}
           />
           <div className="relative z-10">
+        {/* ── Alternating feature band (Proposify rhythm) ── */}
+        <div className="bg-primary/[0.03]">
+          <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
+
+            {/* Chapter heading */}
+            <div className="pb-6 pt-20 text-center lg:pt-24">
+              <p className="ax-eyebrow text-primary">How it works</p>
+              <h2 className="ax-h2 mx-auto mt-3 max-w-2xl font-bold text-foreground">
+                The workflow bookkeepers actually want.
+              </h2>
+              <p className="ax-body mx-auto mt-4 max-w-xl text-muted-foreground">
+                Every document type, reviewed by you, before anything touches your books.
+              </p>
+            </div>
+
+            {/* A — text left · video right */}
+            <div className="grid items-center gap-10 border-t border-primary/[0.08] py-16 lg:grid-cols-2 lg:gap-20 lg:py-24">
+              <div data-animate="headline">
+                <p className="ax-eyebrow text-primary">Mixed batches</p>
+                <h3 className="ax-h2 mt-3 max-w-lg font-bold text-foreground">
+                  Throw us the whole folder.
+                </h3>
+                <p className="ax-body mt-5 text-muted-foreground">
+                  Invoices, receipts, bank statements — drop them all at once. AxLiner classifies each file automatically and extracts on the right schema. No sorting, no separate uploads.
+                </p>
+                <Button variant="surface" asChild className="mt-8 h-11 rounded-full px-8 text-sm font-semibold">
+                  <NextLink href="/dashboard/client">See how it works →</NextLink>
+                </Button>
+              </div>
+              <div className="overflow-hidden rounded-2xl bg-primary/[0.07] p-5 sm:p-8" data-animate="stagger">
+                <VideoPlaceholder caption="Auto-detect: 40 mixed files classified in one batch" />
+              </div>
+            </div>
+
+            {/* B — video left · text right */}
+            <div className="grid items-center gap-10 border-t border-primary/[0.08] py-16 lg:grid-cols-2 lg:gap-20 lg:py-24">
+              <div className="order-last overflow-hidden rounded-2xl bg-primary/[0.07] p-5 sm:p-8 lg:order-first" data-animate="stagger">
+                <VideoPlaceholder caption="Review board: source document side-by-side with extracted data" />
+              </div>
+              <div data-animate="headline">
+                <p className="ax-eyebrow text-primary">Review board</p>
+                <h3 className="ax-h2 mt-3 max-w-lg font-bold text-foreground">
+                  See everything before it touches QuickBooks.
+                </h3>
+                <p className="ax-body mt-5 text-muted-foreground">
+                  Every extracted document lands in your review board before export. Original image on the left, editable cells on the right. Click to correct, tab to move on.
+                </p>
+                <Button variant="surface" asChild className="mt-8 h-11 rounded-full px-8 text-sm font-semibold">
+                  <NextLink href="/dashboard/client">Explore the review board →</NextLink>
+                </Button>
+              </div>
+            </div>
+
+            {/* C — text left · video right */}
+            <div className="grid items-center gap-10 border-t border-primary/[0.08] py-16 lg:grid-cols-2 lg:gap-20 lg:py-24">
+              <div data-animate="headline">
+                <p className="ax-eyebrow text-primary">Handwritten specialist</p>
+                <h3 className="ax-h2 mt-3 max-w-lg font-bold text-foreground">
+                  The messy stuff. WhatsApp photos. Handwritten receipts.
+                </h3>
+                <p className="ax-body mt-5 text-muted-foreground">
+                  Other tools claim accuracy on clean PDFs. AxLiner was built for the document your client photographed in bad light and sent over WhatsApp. Per-field confidence flags tell you exactly which cells to check.
+                </p>
+                <Button variant="surface" asChild className="mt-8 h-11 rounded-full px-8 text-sm font-semibold">
+                  <NextLink href="/dashboard/client">Try with a handwritten document →</NextLink>
+                </Button>
+              </div>
+              <div className="overflow-hidden rounded-2xl bg-primary/[0.07] p-5 sm:p-8" data-animate="stagger">
+                <VideoPlaceholder caption="Handwritten receipt → structured spreadsheet with confidence flags" />
+              </div>
+            </div>
+
+            {/* D — video left · text right */}
+            <div className="grid items-center gap-10 border-t border-primary/[0.08] py-16 pb-20 lg:grid-cols-2 lg:gap-20 lg:py-24 lg:pb-28">
+              <div className="order-last overflow-hidden rounded-2xl bg-primary/[0.07] p-5 sm:p-8 lg:order-first" data-animate="stagger">
+                <VideoPlaceholder caption="AP queue: code, review, and publish bills to QuickBooks in one screen" />
+              </div>
+              <div data-animate="headline">
+                <p className="ax-eyebrow text-primary">QuickBooks publishing</p>
+                <h3 className="ax-h2 mt-3 max-w-lg font-bold text-foreground">
+                  Reviewed, coded, posted — without copy-pasting.
+                </h3>
+                <p className="ax-body mt-5 text-muted-foreground">
+                  Connect your QuickBooks Online company. Code invoices with vendor, account, and tax. Publish a draft Bill with the original document attached. If anything fails, retry without creating a duplicate.
+                </p>
+                <Button variant="glossy" asChild className="mt-8 h-11 rounded-xl px-8 text-sm font-bold">
+                  <NextLink href="/dashboard/client">Start free →</NextLink>
+                </Button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
         {/* Why Choose Us Section */}
         <ScrollAnimatedSection id="features" className="relative z-20 pt-16 pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -489,40 +579,6 @@ export default function Home() {
                   </CardContent>
                 </Card>
               ))}
-            </div>
-          </div>
-        </ScrollAnimatedSection>
-        <ScrollAnimatedSection id="owned-ai" className="relative z-20 overflow-hidden px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
-          <div className="mx-auto grid max-w-[1280px] gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
-            <div data-animate="headline">
-              <p className="ax-eyebrow text-primary">Built different</p>
-              <h2 className="ax-h2 mt-3 max-w-xl font-bold text-foreground">
-                Your documents, reviewed by you, posted correctly — once.
-              </h2>
-              <p className="ax-body mt-5 max-w-2xl text-muted-foreground">
-                AxLiner controls queue admission, file ownership, recovery, exports, and download permissions end to end. The accountant stays in the loop before anything touches QuickBooks — that is the difference between a demo wrapper and a product that survives real batch work.
-              </p>
-            </div>
-
-            <div data-animate="stagger" className="space-y-5">
-              <BrandVisualFrame treatment="photo">
-                <Image
-                  src="/server.webp"
-                  alt="AxLiner server processing layer"
-                  width={1100}
-                  height={620}
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                  className="h-[260px] w-full rounded-md object-cover object-center sm:h-[320px] lg:h-[380px]"
-                />
-              </BrandVisualFrame>
-              <div className="grid gap-3 sm:grid-cols-3">
-                {ownedPipelineCopy.map((item, index) => (
-                  <div key={item} className="rounded-md border border-border bg-card p-4 shadow-sm">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">0{index + 1}</p>
-                    <p className="mt-3 text-sm leading-6 text-muted-foreground">{item}</p>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </ScrollAnimatedSection>
