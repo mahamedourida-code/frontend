@@ -4,7 +4,7 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { Database } from "lucide-react"
-import Image from "next/image"
+import { formatDistanceToNow } from "date-fns"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { EmptyState } from "@/components/dashboard/EmptyState"
@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
+import { cn } from "@/lib/utils"
 import {
   quickBooksApi,
   type QuickBooksConnectionStatus,
@@ -35,9 +36,13 @@ const referenceGroups: Array<{
   { key: "tax_code", label: "Tax references" },
 ]
 
-function formatDate(value?: string | null) {
+function formatSynced(value?: string | null) {
   if (!value) return "Not synced"
-  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value))
+  try {
+    return formatDistanceToNow(new Date(value), { addSuffix: true })
+  } catch {
+    return "Not synced"
+  }
 }
 
 export default function IntegrationsPage() {
@@ -174,26 +179,35 @@ function IntegrationsContent() {
           description="Connect AxLiner to QuickBooks Online to publish reviewed invoices and receipts"
         />
 
-        <Card>
-          <CardContent className="p-5">
-            <div className="flex flex-col gap-5 border-b border-border pb-5 sm:flex-row sm:items-start sm:justify-between">
-              <div className="space-y-2">
-                <div className="flex items-center gap-3">
-                  <span className="text-base font-semibold text-foreground">QuickBooks Online</span>
-                  <Image src="/icons/qb-badge.png" alt="QuickBooks" width={80} height={28} className="object-contain" />
-                  <StatusBadge tone={connection.connected ? "success" : "neutral"}>
-                    {connection.connected ? "Connected" : "Not connected"}
-                  </StatusBadge>
-                </div>
-                <p className="max-w-xl text-sm leading-6 text-muted-foreground">
-                  Import vendors, accounts, and tax references for invoice coding. Only reviewed items that you publish from Accounts Payable create unpaid QuickBooks Bills.
-                </p>
-              </div>
+        {!isOwner && (
+          <div className="rounded-lg border border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">You have read-only access.</span>
+            {" "}Ask the workspace owner to manage this connection.
+          </div>
+        )}
 
-              {isOwner && (
-                <div className="flex shrink-0 flex-wrap gap-2">
-                  {connection.connected ? (
-                    <>
+        <Card className={cn("transition-colors", connection.connected && "border-emerald-200 dark:border-emerald-800")}>
+          <CardContent className="p-5">
+            {connection.connected ? (
+              <>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                      QB
+                    </div>
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-lg font-semibold text-foreground">
+                          {connection.company_name || "Connected company"}
+                        </span>
+                        <StatusBadge tone="success">Connected</StatusBadge>
+                      </div>
+                      <p className="mt-0.5 text-xs text-muted-foreground">Realm {connection.realm_id}</p>
+                    </div>
+                  </div>
+
+                  {isOwner && (
+                    <div className="flex shrink-0 flex-wrap gap-2">
                       <Button variant="surface" onClick={() => void sync()} disabled={Boolean(busy)}>
                         <img src="/site-icons/io/database.svg" className="h-4 w-4" alt="" />
                         {busy === "sync" ? "Syncing..." : "Refresh lists"}
@@ -201,33 +215,48 @@ function IntegrationsContent() {
                       <Button variant="destructive" onClick={() => void disconnect()} disabled={Boolean(busy)}>
                         {busy === "disconnect" ? "Disconnecting..." : "Disconnect"}
                       </Button>
-                    </>
-                  ) : (
-                    <Button variant="glossy" onClick={() => void connect()} disabled={Boolean(busy) || loading}>
-                      {busy === "connect" ? "Connecting..." : "Connect QuickBooks"}
-                    </Button>
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
 
-            {connection.connected && (
-              <div className="mt-5 grid gap-4 sm:grid-cols-3">
-                <div>
-                  <p className="text-xs font-medium uppercase text-muted-foreground">Company</p>
-                  <p className="mt-2 truncate text-sm font-medium text-foreground">{connection.company_name || "Connected company"}</p>
-                  <p className="mt-1 truncate text-xs text-muted-foreground">ID {connection.realm_id}</p>
+                <div className="mt-4 grid gap-4 border-t border-border pt-4 sm:grid-cols-3">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Last sync</p>
+                    <p className="mt-1.5 text-sm font-medium text-foreground">{formatSynced(connection.last_synced_at)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Available references</p>
+                    <p className="mt-1.5 text-sm font-medium text-foreground">
+                      {(connection.reference_counts.vendor || 0) + (connection.reference_counts.account || 0) + (connection.reference_counts.tax_code || 0)} records
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">About</p>
+                    <p className="mt-1.5 text-xs leading-5 text-muted-foreground">
+                      Only reviewed items published from Accounts Payable create unpaid QuickBooks Bills.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs font-medium uppercase text-muted-foreground">Last sync</p>
-                  <p className="mt-2 text-sm font-medium text-foreground">{formatDate(connection.last_synced_at)}</p>
+              </>
+            ) : (
+              <div className="flex flex-col items-center gap-4 py-4 text-center">
+                <div className="flex size-12 items-center justify-center rounded-xl bg-muted text-sm font-bold text-muted-foreground">
+                  QB
                 </div>
-                <div>
-                  <p className="text-xs font-medium uppercase text-muted-foreground">Available references</p>
-                  <p className="mt-2 text-sm font-medium text-foreground">
-                    {(connection.reference_counts.vendor || 0) + (connection.reference_counts.account || 0) + (connection.reference_counts.tax_code || 0)} records
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-base font-semibold text-foreground">QuickBooks Online</span>
+                    <StatusBadge tone="neutral">Not connected</StatusBadge>
+                  </div>
+                  <p className="mx-auto max-w-md text-sm leading-6 text-muted-foreground">
+                    Import vendors, accounts, and tax references for invoice coding. Only reviewed items that you publish from Accounts Payable create unpaid QuickBooks Bills.
                   </p>
                 </div>
+                {isOwner && (
+                  <Button variant="glossy" className="mx-auto w-full max-w-xs" onClick={() => void connect()} disabled={Boolean(busy) || loading}>
+                    {busy === "connect" ? "Connecting..." : "Connect QuickBooks"}
+                  </Button>
+                )}
               </div>
             )}
           </CardContent>
@@ -245,7 +274,7 @@ function IntegrationsContent() {
                   {groupedReferences[group.key].length ? (
                     <div className="space-y-0.5">
                       {groupedReferences[group.key].map(item => (
-                        <div key={item.external_id} className="ax-interactive flex items-center justify-between rounded-md px-2 py-2 text-sm hover:bg-accent/50">
+                        <div key={item.external_id} className="ax-interactive flex items-center justify-between rounded-md px-2 py-2 text-sm odd:bg-muted/30 hover:bg-accent/50">
                           <span className="min-w-0 truncate text-foreground">{item.display_name}</span>
                           {!item.active && <span className="ms-2 text-xs text-muted-foreground">Inactive</span>}
                         </div>
