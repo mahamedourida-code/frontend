@@ -268,7 +268,7 @@ export function DashboardShell({
           </div>
         </header>
 
-        <main className={cn("mx-auto w-full max-w-7xl px-4 py-6 pb-24", contentClassName)}>
+        <main className={cn("mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6 pb-24", contentClassName)}>
           {(eyebrow || title) && (
             <div className="sr-only">
               {eyebrow && <span>{eyebrow}</span>}

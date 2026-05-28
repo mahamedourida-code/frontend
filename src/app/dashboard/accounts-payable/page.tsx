@@ -376,7 +376,7 @@ function AccountsPayableContent() {
         </div>
 
         <div className="grid gap-4 xl:grid-cols-[minmax(320px,0.8fr)_minmax(560px,1.2fr)]">
-          <Card className="flex max-h-[700px] flex-col overflow-hidden rounded-md border-border shadow-xs">
+          <Card className="flex max-h-[40vh] xl:max-h-[700px] flex-col overflow-hidden rounded-md border-border shadow-xs">
             {/* Filter pills */}
             <div className="shrink-0 border-b border-border bg-card px-3 py-2.5">
               <div className="flex flex-wrap gap-1.5">

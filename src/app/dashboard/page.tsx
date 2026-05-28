@@ -502,22 +502,24 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
             <Card className="col-span-1 lg:col-span-4">
-              <CardHeader className="flex flex-col gap-3 space-y-0 sm:flex-row sm:items-center sm:justify-between">
+              <CardHeader className="flex flex-col gap-3 space-y-0 sm:flex-row sm:items-center sm:justify-between overflow-hidden">
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="size-4 text-primary" />
                   Processing Activity
                 </CardTitle>
-                <Tabs value={timeRange} onValueChange={(value) => setTimeRange(value as TimeRange)}>
-                  <TabsList>
-                    {(["1d", "7d", "30d", "3m"] as TimeRange[]).map((range) => (
-                      <TabsTrigger key={range} value={range} className="ax-interactive">
-                        {range === "1d" ? "24h" :
-                          range === "7d" ? "7D" :
-                            range === "30d" ? "30D" : "3M"}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </Tabs>
+                <div className="overflow-x-auto">
+                  <Tabs value={timeRange} onValueChange={(value) => setTimeRange(value as TimeRange)}>
+                    <TabsList className="whitespace-nowrap">
+                      {(["1d", "7d", "30d", "3m"] as TimeRange[]).map((range) => (
+                        <TabsTrigger key={range} value={range} className="ax-interactive shrink-0">
+                          {range === "1d" ? "24h" :
+                            range === "7d" ? "7D" :
+                              range === "30d" ? "30D" : "3M"}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                  </Tabs>
+                </div>
               </CardHeader>
               <CardContent className="ps-2">
                 <DashboardChart chartData={chartData} timeRange={timeRange} />
