@@ -386,13 +386,6 @@ export default function Home() {
         {/* Companies Section - Trusted By */}
         <ScrollAnimatedSection id="trusted" className="w-full overflow-hidden py-5">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-4" data-animate="headline">
-              <BrandSectionLabel className="mb-2">
-                <h2 className="text-sm font-semibold text-foreground sm:text-base">
-                  Chosen by experts at top organizations
-                </h2>
-              </BrandSectionLabel>
-            </div>
 
             <div className="relative z-10 overflow-hidden" data-animate="stagger">
               <div
@@ -446,12 +439,14 @@ export default function Home() {
         {/* Why Choose Us Section */}
         <ScrollAnimatedSection id="features" className="relative z-20 pt-16 pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12" data-animate="headline">
-              <BrandSectionLabel className="mb-4">
-                <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                  Solutions
-                </h2>
-              </BrandSectionLabel>
+            <div className="mb-12" data-animate="headline">
+              <p className="ax-eyebrow text-primary">Use cases</p>
+              <h2 className="ax-h2 mt-3 font-bold text-foreground">
+                Works for anyone who touches documents.
+              </h2>
+              <p className="ax-body mt-4 max-w-2xl text-muted-foreground">
+                From solo bookkeepers to construction managers — if you receive documents and need structured data out, AxLiner handles the extraction.
+              </p>
             </div>
 
             <div className="mx-auto grid max-w-[1540px] grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -498,14 +493,12 @@ export default function Home() {
         <ScrollAnimatedSection id="owned-ai" className="relative z-20 overflow-hidden px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
           <div className="mx-auto grid max-w-[1280px] gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
             <div data-animate="headline">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
-                Not a third-party wrapper
-              </p>
-              <h2 className="ax-h2 mt-5 max-w-xl font-semibold text-foreground">
-                Batch conversion infrastructure built for review work.
+              <p className="ax-eyebrow text-primary">Built different</p>
+              <h2 className="ax-h2 mt-3 max-w-xl font-bold text-foreground">
+                Your documents, reviewed by you, posted correctly — once.
               </h2>
               <p className="ax-body mt-5 max-w-2xl text-muted-foreground">
-                AxLiner controls queue admission, file ownership, recovery, exports, and download permissions around the model call. That is the difference between a demo wrapper and a product that can survive real batch work.
+                AxLiner controls queue admission, file ownership, recovery, exports, and download permissions end to end. The accountant stays in the loop before anything touches QuickBooks — that is the difference between a demo wrapper and a product that survives real batch work.
               </p>
             </div>
 
@@ -557,9 +550,9 @@ export default function Home() {
           <div className="container relative z-10 mx-auto max-w-[1540px] px-4 sm:px-6 lg:px-8">
             <div className="grid gap-10 lg:grid-cols-[minmax(360px,0.82fr)_minmax(520px,1.18fr)] lg:items-center">
               <div data-animate="headline">
-                <p className="text-xl font-medium text-foreground">Security & Compliance</p>
-                <h2 className="ax-h2 mt-5 max-w-2xl font-bold text-foreground">
-                  Your Data Security Guaranteed
+                <p className="ax-eyebrow text-primary">Security</p>
+                <h2 className="ax-h2 mt-3 max-w-2xl font-bold text-foreground">
+                  Your data never leaves the review board uninvited.
                 </h2>
 
                 <BrandVisualFrame treatment="photo" className="mt-8 max-w-[500px]">
@@ -576,7 +569,7 @@ export default function Home() {
 
               <div className="lg:pt-8" data-animate="stagger">
                 <p className="ax-body mt-0 max-w-3xl text-foreground">
-                  At AxLiner, your data is treated with utmost care. We build around global data protection expectations and international privacy requirements for document processing workflows.
+                  Documents are processed and deleted after export. No training on your data, no persistent storage beyond your retention window, no third-party sharing. Built around GDPR, SOC 2, and HIPAA-conscious workflows from day one.
                 </p>
 
                 <div className="mt-8 space-y-5">
@@ -595,7 +588,8 @@ export default function Home() {
                 </div>
 
                 <Button
-                  className="mt-9 bg-secondary px-7 py-5 text-base font-semibold text-secondary-foreground shadow-none hover:bg-secondary/80"
+                  variant="surface"
+                  className="mt-9 h-11 px-7 text-sm font-semibold"
                   asChild
                 >
                   <NextLink href="/security">More Information</NextLink>
@@ -603,9 +597,10 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mx-auto mt-16 max-w-[1160px] text-center lg:mt-20" data-animate="headline">
-              <h3 className="ax-h2 font-bold text-foreground">
-                Frequently Asked Questions
+            <div className="mx-auto mt-16 max-w-[928px] lg:mt-20" data-animate="headline">
+              <p className="ax-eyebrow text-primary">FAQ</p>
+              <h3 className="ax-h2 mt-3 font-bold text-foreground">
+                Questions we hear from bookkeepers.
               </h3>
             </div>
 
