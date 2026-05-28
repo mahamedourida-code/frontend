@@ -41,6 +41,7 @@ import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
+import { SkeletonTableRow } from "@/components/dashboard/SkeletonCard"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 
 function getFileTypeInfo(filename: string | null | undefined) {
@@ -653,14 +654,9 @@ function HistoryContent() {
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      <span className="text-sm text-muted-foreground">Loading saved files...</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
+                Array.from({ length: 5 }).map((_, index) => (
+                  <SkeletonTableRow key={`skeleton-${index}`} columns={columns.length} />
+                ))
               ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow

@@ -2,16 +2,17 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { LayoutGroup, motion } from "framer-motion"
 import { useAuth } from "@/hooks/useAuth"
 import { ocrApi } from "@/lib/api-client"
 import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardMiniCharts } from "@/components/dashboard/DashboardMiniCharts"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { PageHeader } from "@/components/dashboard/PageHeader"
+import { SkeletonStatCard } from "@/components/dashboard/SkeletonCard"
 import { cn } from "@/lib/utils"
 import {
   BarChart3,
@@ -34,6 +35,77 @@ const DashboardChart = dynamic(() => import("@/components/DashboardChart"), {
 import { format, subDays, subHours, startOfDay, endOfDay, eachDayOfInterval, eachHourOfInterval } from "date-fns"
 
 type TimeRange = "1d" | "7d" | "30d" | "3m"
+
+const TIME_RANGE_OPTIONS: Array<{ value: TimeRange; label: string }> = [
+  { value: "1d", label: "24h" },
+  { value: "7d", label: "7D" },
+  { value: "30d", label: "30D" },
+  { value: "3m", label: "3M" },
+]
+
+function rangeStartDate(value: TimeRange, now: Date): Date {
+  switch (value) {
+    case "1d":
+      return subHours(now, 24)
+    case "7d":
+      return subDays(now, 7)
+    case "30d":
+      return subDays(now, 30)
+    case "3m":
+      return subDays(now, 90)
+  }
+}
+
+function TimeRangePill({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: TimeRange
+  onChange: (next: TimeRange) => void
+  disabled?: boolean
+}) {
+  return (
+    <LayoutGroup id="dashboard-time-range">
+      <div
+        role="tablist"
+        aria-label="Time range"
+        className={cn(
+          "relative inline-flex items-center rounded-full border border-border bg-muted/50 p-[1px]",
+          disabled && "pointer-events-none opacity-60",
+        )}
+      >
+        {TIME_RANGE_OPTIONS.map((option) => {
+          const active = option.value === value
+          return (
+            <button
+              key={option.value}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => onChange(option.value)}
+              className={cn(
+                "relative z-10 inline-flex h-8 items-center justify-center rounded-full px-4 text-sm font-medium transition-colors",
+                active
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {active && (
+                <motion.span
+                  layoutId="time-range-pill"
+                  className="absolute inset-[1px] -z-10 rounded-full bg-background shadow-sm"
+                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                />
+              )}
+              {option.label}
+            </button>
+          )
+        })}
+      </div>
+    </LayoutGroup>
+  )
+}
 
 interface ProcessingMetadata {
   total_images?: number
@@ -411,7 +483,7 @@ export default function DashboardPage() {
     return data
   }
 
-  if (authLoading || loading) {
+  if (authLoading) {
     return <DashboardRouteLoader label="Loading dashboard" />
   }
 
@@ -454,6 +526,15 @@ export default function DashboardPage() {
     { label: "Active jobs", value: stats.activeJobs.toLocaleString() },
   ]
 
+  const dateRangeLabel = (() => {
+    const now = new Date()
+    const start = rangeStartDate(timeRange, now)
+    if (timeRange === "1d") {
+      return `${format(start, "MMM d, h:mm a")} – ${format(now, "h:mm a")}`
+    }
+    return `${format(start, "MMM d, yyyy")} – ${format(now, "MMM d, yyyy")}`
+  })()
+
   return (
     <DashboardShell activeItem="overview" title="Dashboard" user={user} showBack={false}>
       <div className="space-y-4">
@@ -461,40 +542,50 @@ export default function DashboardPage() {
           title="Dashboard"
           description="Volume and processing activity"
           actions={
-            <Button
-              variant="surface"
-              size="sm"
-              onClick={fetchDashboardData}
-              disabled={loading}
-              className="h-9"
-            >
-              <RefreshCw className={cn("me-2 size-4", loading && "animate-spin")} />
-              Refresh
-            </Button>
+            <div className="flex items-center gap-2">
+              <TimeRangePill value={timeRange} onChange={setTimeRange} disabled={loading} />
+              <Button
+                variant="surface"
+                size="sm"
+                onClick={fetchDashboardData}
+                disabled={loading}
+                className="h-9"
+                aria-label="Refresh dashboard"
+              >
+                <RefreshCw className={cn("size-4", loading && "animate-spin")} />
+              </Button>
+            </div>
           }
         />
+        <p className="text-xs text-muted-foreground" aria-live="polite">
+          Showing {dateRangeLabel}
+        </p>
         <section className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {metricCards.map((item) => {
-              const Icon = item.icon
+            {loading
+              ? Array.from({ length: 4 }).map((_, index) => (
+                  <SkeletonStatCard key={`stat-skeleton-${index}`} />
+                ))
+              : metricCards.map((item) => {
+                  const Icon = item.icon
 
-              return (
-                <Card key={item.title}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      {item.title}
-                    </CardTitle>
-                    <Icon className="size-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
-                    </div>
-                    <p className="text-xs text-muted-foreground">{item.helper}</p>
-                  </CardContent>
-                </Card>
-              )
-            })}
+                  return (
+                    <Card key={item.title}>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                          {item.title}
+                        </CardTitle>
+                        <Icon className="size-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
+                        </div>
+                        <p className="text-xs text-muted-foreground">{item.helper}</p>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
           </div>
         </section>
 
@@ -502,27 +593,26 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
             <Card className="col-span-1 lg:col-span-4">
-              <CardHeader className="flex flex-col gap-3 space-y-0 sm:flex-row sm:items-center sm:justify-between overflow-hidden">
+              <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="size-4 text-primary" />
                   Processing Activity
                 </CardTitle>
-                <div className="overflow-x-auto">
-                  <Tabs value={timeRange} onValueChange={(value) => setTimeRange(value as TimeRange)}>
-                    <TabsList className="whitespace-nowrap">
-                      {(["1d", "7d", "30d", "3m"] as TimeRange[]).map((range) => (
-                        <TabsTrigger key={range} value={range} className="ax-interactive shrink-0">
-                          {range === "1d" ? "24h" :
-                            range === "7d" ? "7D" :
-                              range === "30d" ? "30D" : "3M"}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-                  </Tabs>
-                </div>
               </CardHeader>
               <CardContent className="ps-2">
-                <DashboardChart chartData={chartData} timeRange={timeRange} />
+                {loading ? (
+                  <div className="flex h-[280px] items-end gap-1.5 px-3">
+                    {Array.from({ length: 16 }).map((_, index) => (
+                      <div
+                        key={`chart-skeleton-${index}`}
+                        className="flex-1 animate-pulse rounded-sm bg-accent"
+                        style={{ height: `${30 + ((index * 19) % 60)}%` }}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <DashboardChart chartData={chartData} timeRange={timeRange} />
+                )}
               </CardContent>
             </Card>
 

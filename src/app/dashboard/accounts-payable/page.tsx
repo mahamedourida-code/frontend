@@ -13,6 +13,7 @@ import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Dialog,
   DialogContent,
@@ -468,12 +469,20 @@ function AccountsPayableContent() {
             {/* Scrollable rows */}
             <div className="flex-1 overflow-y-auto">
               {loading ? (
-                <EmptyState
-                  icon={<Loader2 className="animate-spin" />}
-                  title="Loading queue"
-                  description="Fetching invoices ready to publish"
-                  compact
-                />
+                <div role="status" aria-label="Loading queue">
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <div
+                      key={`ap-skeleton-${index}`}
+                      className="relative flex h-14 w-full items-center gap-3 border-b border-border/50 px-4 last:border-b-0"
+                    >
+                      <span className="size-4 shrink-0" />
+                      <Skeleton className="h-3.5 flex-1 max-w-[180px]" />
+                      <Skeleton className="h-3 w-[60px] shrink-0" />
+                      <Skeleton className="h-3 w-[52px] shrink-0" />
+                      <Skeleton className="h-5 w-[64px] shrink-0 rounded-full" />
+                    </div>
+                  ))}
+                </div>
               ) : visibleItems.length === 0 ? (
                 <EmptyState
                   icon={<ChevronLeft />}

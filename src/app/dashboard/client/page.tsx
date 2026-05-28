@@ -2,6 +2,8 @@
 
 import { Suspense, useState, useCallback, useEffect, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { AnimatePresence, motion } from "framer-motion"
+import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useOCR } from "@/hooks/useOCR"
@@ -1870,6 +1872,77 @@ Best regards`
       user={user}
       contentClassName="max-w-none px-3 py-3 sm:px-5 lg:px-6"
     >
+      <AnimatePresence initial={false}>
+        {processingState.status === "processing" ? (
+          <motion.div
+            key="processing-progress"
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-3 rounded-md border border-border bg-card px-4 py-3 shadow-xs"
+            role="status"
+            aria-live="polite"
+          >
+            {(() => {
+              const totalFiles = Math.max(
+                processingState.uploadedFiles?.length ?? 0,
+                uploadedFiles.length,
+              )
+              const doneFiles = Math.min(
+                processingState.processedFiles?.length ?? 0,
+                totalFiles,
+              )
+              const progress = Math.min(100, Math.max(0, processingState.progress ?? 0))
+              const remainingFiles = Math.max(0, totalFiles - doneFiles)
+              const estimatedSeconds = remainingFiles * 5
+              const etaLabel = (() => {
+                if (progress >= 100 || remainingFiles === 0) return "Wrapping up…"
+                if (estimatedSeconds < 60) return `~${Math.max(5, estimatedSeconds)}s remaining`
+                const minutes = Math.ceil(estimatedSeconds / 60)
+                return `~${minutes} min remaining`
+              })()
+              return (
+                <>
+                  <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                    <p className="text-sm text-muted-foreground">
+                      {totalFiles > 0
+                        ? <>Processing <span className="font-semibold text-foreground tabular-nums">{doneFiles}</span> of <span className="font-semibold text-foreground tabular-nums">{totalFiles}</span> {totalFiles === 1 ? "file" : "files"}</>
+                        : "Processing your batch…"}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground tabular-nums" aria-hidden="true">
+                        {etaLabel}
+                      </span>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => void handleCancelProcessing()}
+                        className="h-8 gap-1.5 px-3"
+                      >
+                        <X className="size-3.5" />
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-muted">
+                    <motion.div
+                      className="h-full rounded-full bg-gradient-to-r from-primary to-primary/60"
+                      initial={false}
+                      animate={{ width: `${progress}%` }}
+                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                      aria-valuenow={progress}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      role="progressbar"
+                    />
+                  </div>
+                </>
+              )
+            })()}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
       <ConversionWorkspace
         banner={workspaceBanner ?? creditBanner}
         onDismissBanner={workspaceBanner ? () => setWorkspaceBanner(null) : undefined}
