@@ -523,14 +523,14 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Why Choose Us Section */}
-        <ScrollAnimatedSection id="features" className="relative z-20 pt-16 pb-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-12" data-animate="headline">
-              <h2 className="ax-h2 font-bold text-foreground">
+        {/* Why Choose Us Section — green band, white text */}
+        <ScrollAnimatedSection id="features" className="relative z-20 bg-emerald-700 pt-20 pb-24 lg:pt-24 lg:pb-28">
+          <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
+            <div className="mb-14" data-animate="headline">
+              <h2 className="ax-h2 font-bold text-white">
                 Works for anyone who touches documents.
               </h2>
-              <p className="ax-body mt-4 max-w-2xl text-foreground/70">
+              <p className="ax-body mt-4 max-w-2xl text-white/75">
                 From solo bookkeepers to construction managers — one workflow, every document type.
               </p>
             </div>
