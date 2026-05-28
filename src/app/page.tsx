@@ -331,9 +331,18 @@ export default function Home() {
                 </p>
 
                 <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row lg:items-center">
-                  <Button variant="glossy" asChild className="h-[52px] rounded-xl px-10 text-base font-bold">
-                    <NextLink href="/dashboard/client">Start free</NextLink>
-                  </Button>
+                  <div className="flex flex-col items-center gap-3 lg:items-start">
+                    <Button variant="glossy" asChild className="h-[52px] rounded-xl px-10 text-base font-bold">
+                      <NextLink href="/dashboard/client">Start free</NextLink>
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
+                      className="ax-interactive text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                    >
+                      See how it works ↓
+                    </button>
+                  </div>
 
                   <div className="flex items-center gap-3">
                     <div className="flex -space-x-2">
@@ -436,7 +445,7 @@ export default function Home() {
           />
           <div className="relative z-10">
         {/* ── Alternating feature band (Proposify rhythm) ── */}
-        <div className="bg-primary/[0.03]">
+        <div id="how-it-works" className="bg-primary/[0.03]">
           <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
 
             {/* Chapter heading */}
