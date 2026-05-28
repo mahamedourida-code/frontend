@@ -313,6 +313,8 @@ export interface VendorRuleFields {
   destination_treatment?: string
 }
 
+export type VendorRuleAutoMode = 'suggest' | 'auto_fill' | 'auto_ready'
+
 export interface VendorRule {
   id: string
   owner_user_id: string
@@ -322,6 +324,13 @@ export interface VendorRule {
   applies_to: 'invoice' | 'receipt' | 'both'
   suggested_fields: VendorRuleFields
   enabled: boolean
+  /**
+   * How the rule is applied to new documents from this vendor.
+   * - suggest:    legacy behaviour, surfaces the rule as a suggestion only
+   * - auto_fill:  pre-fills the AP draft on creation, user still confirms
+   * - auto_ready: pre-fills and moves the item straight to Ready to publish
+   */
+  auto_mode?: VendorRuleAutoMode
   source_document_id?: string | null
   approved_at: string
   updated_at: string
@@ -1120,7 +1129,12 @@ export const vendorMemoryApi = {
 
   update: async (
     ruleId: string,
-    updates: { display_name?: string; suggested_fields?: VendorRuleFields; enabled?: boolean },
+    updates: {
+      display_name?: string
+      suggested_fields?: VendorRuleFields
+      enabled?: boolean
+      auto_mode?: VendorRuleAutoMode
+    },
   ): Promise<{ rule: VendorRule }> => {
     const response = await apiClient.patch<{ rule: VendorRule }>(`/api/v1/vendor-rules/${ruleId}`, updates)
     return response.data
@@ -1154,6 +1168,7 @@ export const accountsPayableApi = {
       attachment_visible?: boolean
       status?: AccountsPayableStatus
       reason?: string
+      acknowledge_auto_applied?: boolean
     },
   ): Promise<{ item: AccountsPayableItem }> => {
     const response = await apiClient.patch<{ item: AccountsPayableItem }>(`/api/v1/accounts-payable/${itemId}`, updates)

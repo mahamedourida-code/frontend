@@ -19,7 +19,7 @@ import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { BillingSeal, CreditStack, PlanSwitch } from "@/components/BillingGlyphs"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
-import { billingApi, vendorMemoryApi, type BillingPlanKey, type VendorRule, type VendorRuleFields } from "@/lib/api-client"
+import { billingApi, vendorMemoryApi, type BillingPlanKey, type VendorRule, type VendorRuleAutoMode, type VendorRuleFields } from "@/lib/api-client"
 import {
   User,
   Globe,
@@ -321,6 +321,25 @@ function SettingsContent() {
       toast.success(response.rule.enabled ? "Vendor memory enabled." : "Vendor memory disabled.")
     } catch {
       toast.error("Could not change vendor memory status.")
+    } finally {
+      setVendorRuleAction(null)
+    }
+  }
+
+  const updateVendorRuleAutoMode = async (rule: VendorRule, autoMode: VendorRuleAutoMode) => {
+    if ((rule.auto_mode || "suggest") === autoMode) return
+    setVendorRuleAction(rule.id)
+    try {
+      const response = await vendorMemoryApi.update(rule.id, { auto_mode: autoMode })
+      setVendorRules(current => current.map(item => item.id === rule.id ? response.rule : item))
+      const successCopy: Record<VendorRuleAutoMode, string> = {
+        suggest: "Switched to suggestion only.",
+        auto_fill: "Auto-fill on — confirm still required.",
+        auto_ready: "Auto-fill + mark Ready enabled.",
+      }
+      toast.success(successCopy[autoMode])
+    } catch {
+      toast.error("Could not change auto-apply mode.")
     } finally {
       setVendorRuleAction(null)
     }
@@ -696,6 +715,37 @@ function SettingsContent() {
                             >
                               Delete
                             </Button>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 rounded-md border border-border bg-muted/30 p-3">
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                Auto-apply mode
+                              </p>
+                              <p className="mt-1 text-xs text-foreground">
+                                {(rule.auto_mode || 'suggest') === 'auto_ready'
+                                  ? 'Next invoice from this vendor is pre-filled and marked Ready automatically.'
+                                  : (rule.auto_mode || 'suggest') === 'auto_fill'
+                                    ? 'Next invoice from this vendor is pre-filled. You still confirm before publishing.'
+                                    : 'Next invoice from this vendor surfaces this rule as a suggestion only.'}
+                              </p>
+                            </div>
+                            <Select
+                              value={rule.auto_mode || 'suggest'}
+                              onValueChange={(value) => void updateVendorRuleAutoMode(rule, value as VendorRuleAutoMode)}
+                              disabled={vendorRuleAction === rule.id || !rule.enabled}
+                            >
+                              <SelectTrigger className="h-9 w-full max-w-[260px] sm:w-[260px]">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="suggest">Suggest only</SelectItem>
+                                <SelectItem value="auto_fill">Auto-fill + confirm required</SelectItem>
+                                <SelectItem value="auto_ready">Auto-fill + mark Ready automatically</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </div>
                         </div>
 

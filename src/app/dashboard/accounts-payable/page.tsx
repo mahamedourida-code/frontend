@@ -252,6 +252,23 @@ function AccountsPayableContent() {
   const accounts = quickBooksReferences.filter(item => item.resource_type === "account" && item.active)
   const taxCodes = quickBooksReferences.filter(item => item.resource_type === "tax_code" && item.active)
 
+  /** P3 — vendor-rule pre-fill metadata stamped on creation. */
+  const autoAppliedRule = (() => {
+    const meta = activeItem?.metadata as Record<string, unknown> | undefined
+    if (!meta || typeof meta !== "object") return null
+    const block = meta["auto_applied_rule"] as Record<string, unknown> | undefined
+    if (!block || typeof block !== "object") return null
+    const fields = Array.isArray(block.applied_fields)
+      ? (block.applied_fields as unknown[]).filter((entry): entry is string => typeof entry === "string")
+      : []
+    return {
+      ruleId: typeof block.rule_id === "string" ? block.rule_id : null,
+      ruleName: typeof block.rule_name === "string" ? block.rule_name : "Saved vendor",
+      mode: (block.mode === "auto_ready" ? "auto_ready" : "auto_fill") as "auto_fill" | "auto_ready",
+      appliedFields: fields,
+    }
+  })()
+
   const mergeItem = (item: AccountsPayableItem) => {
     setItems(current => current.map(existing => existing.id === item.id ? item : existing))
     if (item.status !== "ready_to_publish") {
@@ -337,6 +354,48 @@ function AccountsPayableContent() {
   const applySelectedStatus = async () => {
     if (!activeItem || nextStatus === activeItem.status) return
     await persistDraft(nextStatus)
+  }
+
+  /**
+   * P3 — override the vendor-rule pre-fill. Clears the applied fields in the
+   * local draft, persists them as empty strings, and tells the backend to
+   * strip the auto_applied_rule metadata so the notice doesn't reappear.
+   */
+  const overrideAutoFill = async () => {
+    if (!activeItem || !autoAppliedRule) return
+    const fields = autoAppliedRule.appliedFields as Array<keyof AccountsPayableDraftData>
+    if (!fields.length) return
+    setSaving(true)
+    const clearedDraft: AccountsPayableDraftData = { ...draft }
+    for (const field of fields) {
+      ;(clearedDraft as Record<string, unknown>)[field as string] = ""
+    }
+    setDraft(clearedDraft)
+    try {
+      const response = await accountsPayableApi.update(activeItem.id, {
+        draft_data: {
+          vendor: clearedDraft.vendor,
+          vendor_ref_id: clearedDraft.vendor_ref_id,
+          invoice_date: clearedDraft.invoice_date,
+          due_date: clearedDraft.due_date,
+          account_category: clearedDraft.account_category,
+          account_ref_id: clearedDraft.account_ref_id,
+          tax_code: clearedDraft.tax_code,
+          tax_code_ref_id: clearedDraft.tax_code_ref_id,
+          reference: clearedDraft.reference,
+          currency: clearedDraft.currency,
+          line_items: clearedDraft.line_items,
+        },
+        attachment_visible: attachmentVisible,
+        acknowledge_auto_applied: true,
+      })
+      mergeItem(response.item)
+      toast.success("Vendor rule pre-fill cleared. Code this invoice manually.")
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || "Could not override the vendor rule.")
+    } finally {
+      setSaving(false)
+    }
   }
 
   const toggleSelection = (itemId: string, checked: boolean) => {
@@ -668,7 +727,32 @@ function AccountsPayableContent() {
                     </div>
                   </div>
 
-                  {activeItem.vendor_suggestion ? (
+                  {autoAppliedRule ? (
+                    <div className="flex flex-wrap items-start justify-between gap-3 rounded-md border-2 border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900/60 dark:bg-emerald-950/40">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+                          {autoAppliedRule.mode === "auto_ready" ? "Pre-filled & marked ready" : "Pre-filled by vendor rule"}
+                        </p>
+                        <p className="mt-1 text-sm font-semibold text-emerald-900 dark:text-emerald-100">
+                          {autoAppliedRule.ruleName}
+                        </p>
+                        {autoAppliedRule.appliedFields.length ? (
+                          <p className="mt-1 text-xs text-emerald-900/80 dark:text-emerald-100/80">
+                            Applied {autoAppliedRule.appliedFields.length} field{autoAppliedRule.appliedFields.length === 1 ? "" : "s"}: {autoAppliedRule.appliedFields.map((field) => field.replaceAll("_", " ")).join(", ")}
+                          </p>
+                        ) : null}
+                      </div>
+                      <Button
+                        variant="surface"
+                        size="sm"
+                        disabled={saving || activeLocked}
+                        onClick={() => void overrideAutoFill()}
+                        className="h-8 shrink-0 rounded-md px-3 text-xs"
+                      >
+                        Override
+                      </Button>
+                    </div>
+                  ) : activeItem.vendor_suggestion ? (
                     <div className="rounded-md border border-border bg-muted/30 p-3">
                       <p className="text-xs font-semibold text-foreground">Remembered suggestions</p>
                       <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">

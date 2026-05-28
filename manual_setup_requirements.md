@@ -64,6 +64,33 @@ fly secrets set RESEND_API_KEY="<resend api key>" RESEND_WEBHOOK_SECRET="<resend
 - Backend: changes are committed and pushed to `olmocr-backend`, then deployed from `backend/` using Fly CLI.
 - Provider secrets are never committed. They are set with Fly secrets or provider dashboards.
 
+## Prompt P3 - Vendor Rule Auto-Apply Mode
+
+The `vendor_rules` table needs a new `auto_mode` column. The backend defaults the value to `'suggest'` (current behaviour) for any rule that does not yet carry the column, but new writes will fail until the column exists with the right CHECK constraint.
+
+### Supabase migration
+
+Run once against the production Supabase project (`iawkqvdtktnvxqgpupvt`) — either via the Supabase SQL editor or `supabase db push` with a migration file containing:
+
+```sql
+ALTER TABLE public.vendor_rules
+  ADD COLUMN IF NOT EXISTS auto_mode TEXT NOT NULL DEFAULT 'suggest';
+
+ALTER TABLE public.vendor_rules
+  DROP CONSTRAINT IF EXISTS vendor_rules_auto_mode_check;
+
+ALTER TABLE public.vendor_rules
+  ADD CONSTRAINT vendor_rules_auto_mode_check
+  CHECK (auto_mode IN ('suggest', 'auto_fill', 'auto_ready'));
+```
+
+Existing rules will keep the legacy "suggest" behaviour. Power-user vendors are upgraded from the **Vendor memory** card in `/dashboard/settings` (toggle between *Suggest only*, *Auto-fill + confirm required*, and *Auto-fill + mark Ready automatically*).
+
+### Workspace setup
+
+1. Open `/dashboard/settings` → **Vendor memory** and pick the auto-apply mode per vendor. Only switch a vendor to **Auto-fill + mark Ready automatically** after several invoices have published cleanly with the same coding.
+2. After backend deploy, the next Accounts Payable item created from a matching vendor's reviewed invoice will be pre-filled. The review board surfaces a **Pre-filled by vendor rule** notice with a one-click **Override** that clears the pre-filled fields and tells the backend to stop showing the notice on that item.
+
 ## Rule For Later Prompts
 
 After each later prompt, append a new section here only if it adds a manual provider step, API credential, dashboard configuration, compliance action, or user authorization step. If a prompt needs no manual action, do not add a section.
