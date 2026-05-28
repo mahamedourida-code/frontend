@@ -1,0 +1,11 @@
+⚠ Your project has `@next/font` installed as a dependency, please use the built-in `next/font` instead. The `@next/font` package will be removed in Next.js 14. You can migrate by running `npx --yes @next/codemod@latest built-in-next-font .`. Read more: https://nextjs.org/docs/messages/built-in-next-font
+[browser] [GSI_LOGGER]: FedCM get() rejects with NetworkError: Error retrieving a token. 
+    at _.H (https://accounts.google.com/gsi/client:86:89)
+    at _.Au.la (https://accounts.google.com/gsi/client:346:251)
+    at Object.la (https://accounts.google.com/gsi/client:348:497)
+    at <unknown> (https://accounts.google.com/gsi/client:306:897) (https://accounts.google.com/gsi/client:86:89)
+[browser] [GSI_LOGGER]: FedCM get() rejects with NetworkError: Error retrieving a token. 
+    at _.H (https://accounts.google.com/gsi/client:86:89)
+    at _.Au.la (https://accounts.google.com/gsi/client:346:251)
+    at Object.la (https://accounts.google.com/gsi/client:348:497)
+    at <unknown> (https://accounts.google.com/gsi/client:306:897) (https://accounts.google.com/gsi/client:86:89)

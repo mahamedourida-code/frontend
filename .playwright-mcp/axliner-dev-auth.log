@@ -1,0 +1,17 @@
+
+> axliner@0.1.0 dev
+> next dev --turbopack --hostname 127.0.0.1 --port 3015
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://127.0.0.1:3015
+- Network:       http://127.0.0.1:3015
+- Environments: .env.local
+✓ Ready in 615ms
+- Experiments (use with caution):
+  · staleTimes
+
+ GET / 200 in 892ms (next.js: 114ms, proxy.ts: 227ms, application-code: 551ms)
+ GET /sign-up?next=%2Fdashboard%2Fclient 200 in 568ms (next.js: 526ms, proxy.ts: 10ms, application-code: 31ms)
+ GET /sign-in?next=%2Fdashboard%2Fclient 200 in 733ms (next.js: 622ms, proxy.ts: 9ms, application-code: 101ms)
+ GET /auth/confirm?next=%2Fdashboard%2Fclient 307 in 485ms (next.js: 450ms, proxy.ts: 9ms, application-code: 26ms)
+ GET /?error=auth_confirm_error 200 in 170ms (next.js: 4ms, proxy.ts: 7ms, application-code: 159ms)

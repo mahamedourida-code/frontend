@@ -1,0 +1,38 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - main [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - link "AxLiner home" [ref=e8] [cursor=pointer]:
+            - /url: /
+            - img "AxLiner" [ref=e9]
+          - link "Sign up" [ref=e13] [cursor=pointer]:
+            - /url: /sign-up?next=%2Fdashboard%2Fclient
+        - generic [ref=e15]:
+          - heading "Sign in to AxLiner" [level=1] [ref=e16]
+          - paragraph [ref=e17]: Continue to your batch conversion workspace.
+          - generic [ref=e18]:
+            - button "Continue with Google" [ref=e19]:
+              - img
+              - text: Continue with Google
+            - generic [ref=e24]: or
+            - generic [ref=e25]:
+              - generic [ref=e26]:
+                - generic [ref=e27]: Email address
+                - textbox "Email address" [ref=e28]:
+                  - /placeholder: name@company.com
+              - button "Email me a secure link" [ref=e29]
+          - paragraph [ref=e30]:
+            - text: Don't have an account?
+            - link "Sign up" [ref=e31] [cursor=pointer]:
+              - /url: /sign-up?next=%2Fdashboard%2Fclient
+      - complementary [ref=e32]:
+        - generic [ref=e33]:
+          - paragraph [ref=e34]: Trusted by accounting teams
+          - blockquote [ref=e36]: "\"AxLiner gives our bookkeeping team clean Excel files from handwritten expense sheets before month-end review starts.\""
+          - generic [ref=e37]:
+            - paragraph [ref=e38]: Mara Ellis
+            - paragraph [ref=e39]: Senior Bookkeeper, Ledger North
+          - paragraph [ref=e41]: Convert handwritten tables, bank notes, invoices, and paper forms into Excel files your team can review.
+  - region "Notifications alt+T"

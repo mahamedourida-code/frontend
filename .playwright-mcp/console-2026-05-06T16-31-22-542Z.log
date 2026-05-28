@@ -1,0 +1,6 @@
+[    2283ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://backend-lively-hill-7043.fly.dev/api/v1/jobs/recover/latest:0
+[    2284ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://backend-lively-hill-7043.fly.dev/api/v1/config/limits:0
+[    2284ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://backend-lively-hill-7043.fly.dev/api/v1/:0
+[    2356ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://backend-lively-hill-7043.fly.dev/api/v1/jobs/recover/latest:0
+[    2373ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://backend-lively-hill-7043.fly.dev/api/v1/config/limits:0
+[    2390ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://backend-lively-hill-7043.fly.dev/api/v1/:0

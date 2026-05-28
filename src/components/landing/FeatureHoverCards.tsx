@@ -12,16 +12,15 @@ type SolutionCard = {
   description: string
 }
 
-/* one per card — matches solutionCards order */
 const CARD_TINTS = [
-  "bg-emerald-100",   // Accounting
-  "bg-blue-100",      // Banking
-  "bg-slate-200",     // Backoffice
-  "bg-amber-100",     // Construction
-  "bg-rose-100",      // CPG Brands
-  "bg-violet-100",    // FinTech
-  "bg-teal-100",      // Healthcare
-  "bg-orange-100",    // Real Estate
+  "bg-emerald-100",
+  "bg-blue-100",
+  "bg-slate-200",
+  "bg-amber-100",
+  "bg-rose-100",
+  "bg-violet-100",
+  "bg-teal-100",
+  "bg-orange-100",
 ]
 
 /* ── Single card ──────────────────────────────────────────────── */
@@ -29,7 +28,7 @@ const CARD_TINTS = [
 function HoverCard({ card, index, tint }: { card: SolutionCard; index: number; tint: string }) {
   const ref = useRef<HTMLDivElement>(null)
 
-  /* framer-motion 3D tilt */
+  /* 3D tilt */
   const rawX = useMotionValue(0)
   const rawY = useMotionValue(0)
   const rotateY = useSpring(useTransform(rawX, [-0.5, 0.5], [-5, 5]), { stiffness: 280, damping: 28 })
@@ -45,10 +44,10 @@ function HoverCard({ card, index, tint }: { card: SolutionCard; index: number; t
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 36 }}
+      initial={{ opacity: 0, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1], delay: index * 0.055 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: index * 0.055 }}
     >
       <motion.div
         ref={ref}
@@ -57,47 +56,51 @@ function HoverCard({ card, index, tint }: { card: SolutionCard; index: number; t
         onMouseMove={onMove}
         onMouseLeave={onLeave}
       >
-        {/* ── Illustration ── */}
-        <div className="absolute inset-0 flex items-center justify-center px-8 pb-20 pt-8">
+        {/* ── Illustration: zooms out + moves down on hover ── */}
+        <div className="absolute inset-0 flex items-center justify-center px-8 pb-28 pt-8">
           <img
             src={card.asset}
             alt={card.title}
-            className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.07]"
+            className={cn(
+              "h-full w-full object-contain",
+              "transition-transform duration-[400ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]",
+              "group-hover:scale-[0.82] group-hover:translate-y-[12%]",
+            )}
           />
         </div>
 
-        {/* ── Always-visible: gradient + big title ── */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/48 to-transparent px-6 pb-6 pt-28">
+        {/* ── Persistent gradient at bottom ── */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+
+        {/* ── Text area: description expands from 0 height above title ── */}
+        <div className="absolute inset-x-0 bottom-0 px-5 pb-5">
+
+          {/* Description — grid-rows expand from 0 to full height on hover */}
+          <div className={cn(
+            "grid overflow-hidden",
+            "grid-rows-[0fr] group-hover:grid-rows-[1fr]",
+            "transition-[grid-template-rows] duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+          )}>
+            <div className="min-h-0">
+              <p className="pb-3 pt-0 text-[15px] font-medium leading-relaxed text-white/85">
+                {card.description}
+              </p>
+              <p className="mb-3 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-white/45">
+                Discover
+                <svg viewBox="0 0 10 10" fill="none" className="size-2.5" aria-hidden>
+                  <path d="M1 5h8M6 2l3 3-3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </p>
+            </div>
+          </div>
+
+          {/* Title — always visible */}
           <h3 className="text-[22px] font-bold leading-snug text-white">
             {card.title}
           </h3>
         </div>
 
-        {/* ── Hover reveal: slides UP from below ──
-             starts translate-y-full (100% of this div's own height below the card bottom)
-             → on group-hover slides to translate-y-0 (fully visible)
-             overflow-hidden on parent clips it until revealed             */}
-        <div className={cn(
-          "absolute inset-x-0 bottom-0",
-          "translate-y-full group-hover:translate-y-0",
-          "transition-transform duration-[300ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]",
-          "bg-black/90 px-6 py-6",
-        )}>
-          <h3 className="text-[22px] font-bold leading-snug text-white">
-            {card.title}
-          </h3>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/82">
-            {card.description}
-          </p>
-          <p className="mt-4 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-white/45">
-            Discover
-            <svg viewBox="0 0 10 10" fill="none" className="size-2.5" aria-hidden>
-              <path d="M1 5h8M6 2l3 3-3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </p>
-        </div>
-
-        {/* ── Invisible full-card link ── */}
+        {/* Full-card link */}
         <Link href={card.href} className="absolute inset-0 z-10" aria-label={`Discover ${card.title}`} />
       </motion.div>
     </motion.div>
@@ -113,14 +116,9 @@ type FeatureHoverCardsProps = {
 
 export function FeatureHoverCards({ cards, className }: FeatureHoverCardsProps) {
   return (
-    <div className={cn("grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4", className)}>
+    <div className={cn("grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4", className)}>
       {cards.map((card, i) => (
-        <HoverCard
-          key={card.title}
-          card={card}
-          index={i}
-          tint={CARD_TINTS[i % CARD_TINTS.length]}
-        />
+        <HoverCard key={card.title} card={card} index={i} tint={CARD_TINTS[i % CARD_TINTS.length]} />
       ))}
     </div>
   )

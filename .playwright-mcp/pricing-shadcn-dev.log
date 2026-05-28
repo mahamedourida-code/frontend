@@ -1,0 +1,14 @@
+
+> axliner@0.1.0 dev
+> next dev --turbopack -p 3000
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.20.10.3:3000
+- Environments: .env.local
+✓ Ready in 808ms
+- Experiments (use with caution):
+  · staleTimes
+
+ GET /pricing 200 in 1018ms (next.js: 125ms, proxy.ts: 274ms, application-code: 618ms)
+[?25h

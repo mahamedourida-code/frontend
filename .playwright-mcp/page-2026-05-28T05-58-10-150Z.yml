@@ -1,0 +1,548 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e4]:
+    - navigation [ref=e5]:
+      - generic [ref=e6]:
+        - link "AxLiner home" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img "AxLiner" [ref=e8]
+        - navigation "Main" [ref=e13]:
+          - list [ref=e15]:
+            - listitem [ref=e16]:
+              - button "Solutions" [ref=e17]:
+                - text: Solutions
+                - img [ref=e18]
+            - listitem [ref=e20]:
+              - link "How AxLiner's Built" [ref=e21] [cursor=pointer]:
+                - /url: /how-axliner-is-built
+            - listitem [ref=e22]:
+              - link "Benchmarks" [ref=e23] [cursor=pointer]:
+                - /url: /benchmarks
+            - listitem [ref=e24]:
+              - link "Pricing" [ref=e25] [cursor=pointer]:
+                - /url: /pricing
+            - listitem [ref=e26]:
+              - link "Blogs" [ref=e27] [cursor=pointer]:
+                - /url: /blogs
+        - generic [ref=e28]:
+          - link "Log in" [ref=e29] [cursor=pointer]:
+            - /url: /sign-in?next=%2Fdashboard%2Fclient
+          - link "Sign up" [ref=e30] [cursor=pointer]:
+            - /url: /sign-up?next=%2Fdashboard%2Fclient
+    - main [ref=e31]:
+      - generic [ref=e33]:
+        - generic [ref=e36]:
+          - generic [ref=e37]:
+            - heading "Bulk accounting documents to Excel" [level=1] [ref=e38]
+            - paragraph [ref=e39]: Convert invoices, bank statements, forms, and handwritten financial tables from images or PDFs into structured spreadsheets in minutes. Review extracted rows quickly and export clean Excel files without manual entry.
+            - generic [ref=e40]:
+              - link "Try It" [ref=e41] [cursor=pointer]:
+                - /url: /dashboard/client
+              - generic [ref=e42]:
+                - generic [ref=e43]:
+                  - img "User 1" [ref=e44]
+                  - img "User 2" [ref=e45]
+                  - img "User 3" [ref=e46]
+                  - img "User 4" [ref=e47]
+                  - img "User 5" [ref=e48]
+                - generic [ref=e50]:
+                  - paragraph [ref=e51]: 5,000+
+                  - paragraph [ref=e52]: active teams
+          - img "AxLiner document conversion illustration" [ref=e56]
+        - generic [ref=e58]:
+          - generic [ref=e60]:
+            - generic [ref=e61]:
+              - generic [ref=e62]:
+                - img "Sarah Mitchell" [ref=e63]
+                - generic [ref=e64]:
+                  - paragraph [ref=e65]: Sarah Mitchell
+                  - paragraph [ref=e66]: "@sarahmitchell"
+                - img [ref=e67]
+              - paragraph [ref=e70]: Our invoice batches move faster now. We review the extracted rows, fix the few edge cases, and get the Excel handoff out sooner.
+            - generic [ref=e71]:
+              - generic [ref=e72]:
+                - img "David Chen" [ref=e73]
+                - generic [ref=e74]:
+                  - paragraph [ref=e75]: David Chen
+                  - paragraph [ref=e76]: "@davidchen"
+                - img [ref=e77]
+              - paragraph [ref=e80]: Handwritten table batches finally feel manageable. The review set is much easier than retyping rows from scans.
+            - generic [ref=e81]:
+              - generic [ref=e82]:
+                - img "Emily Rodriguez" [ref=e83]
+                - generic [ref=e84]:
+                  - paragraph [ref=e85]: Emily Rodriguez
+                  - paragraph [ref=e86]: "@emilyrodriguez"
+                - img [ref=e87]
+              - paragraph [ref=e90]: Game changer for our data entry team.
+            - generic [ref=e91]:
+              - generic [ref=e92]:
+                - img "Michael Thompson" [ref=e93]
+                - generic [ref=e94]:
+                  - paragraph [ref=e95]: Michael Thompson
+                  - paragraph [ref=e96]: "@mikethompson"
+                - img [ref=e97]
+              - paragraph [ref=e100]: AxLiner keeps the table structure clear enough for review. That saves our team from rebuilding every spreadsheet by hand.
+            - generic [ref=e101]:
+              - generic [ref=e102]:
+                - img "Jessica Park" [ref=e103]
+                - generic [ref=e104]:
+                  - paragraph [ref=e105]: Jessica Park
+                  - paragraph [ref=e106]: "@jessicapark"
+                - img [ref=e107]
+              - paragraph [ref=e110]: AxLiner has become an essential tool in our workflow. The accuracy on complex forms is outstanding.
+            - generic [ref=e111]:
+              - generic [ref=e112]:
+                - img "Sarah Mitchell" [ref=e113]
+                - generic [ref=e114]:
+                  - paragraph [ref=e115]: Sarah Mitchell
+                  - paragraph [ref=e116]: "@sarahmitchell"
+                - img [ref=e117]
+              - paragraph [ref=e120]: Our invoice batches move faster now. We review the extracted rows, fix the few edge cases, and get the Excel handoff out sooner.
+            - generic [ref=e121]:
+              - generic [ref=e122]:
+                - img "David Chen" [ref=e123]
+                - generic [ref=e124]:
+                  - paragraph [ref=e125]: David Chen
+                  - paragraph [ref=e126]: "@davidchen"
+                - img [ref=e127]
+              - paragraph [ref=e130]: Handwritten table batches finally feel manageable. The review set is much easier than retyping rows from scans.
+            - generic [ref=e131]:
+              - generic [ref=e132]:
+                - img "Emily Rodriguez" [ref=e133]
+                - generic [ref=e134]:
+                  - paragraph [ref=e135]: Emily Rodriguez
+                  - paragraph [ref=e136]: "@emilyrodriguez"
+                - img [ref=e137]
+              - paragraph [ref=e140]: Game changer for our data entry team.
+            - generic [ref=e141]:
+              - generic [ref=e142]:
+                - img "Michael Thompson" [ref=e143]
+                - generic [ref=e144]:
+                  - paragraph [ref=e145]: Michael Thompson
+                  - paragraph [ref=e146]: "@mikethompson"
+                - img [ref=e147]
+              - paragraph [ref=e150]: AxLiner keeps the table structure clear enough for review. That saves our team from rebuilding every spreadsheet by hand.
+            - generic [ref=e151]:
+              - generic [ref=e152]:
+                - img "Jessica Park" [ref=e153]
+                - generic [ref=e154]:
+                  - paragraph [ref=e155]: Jessica Park
+                  - paragraph [ref=e156]: "@jessicapark"
+                - img [ref=e157]
+              - paragraph [ref=e160]: AxLiner has become an essential tool in our workflow. The accuracy on complex forms is outstanding.
+            - generic [ref=e161]:
+              - generic [ref=e162]:
+                - img "Sarah Mitchell" [ref=e163]
+                - generic [ref=e164]:
+                  - paragraph [ref=e165]: Sarah Mitchell
+                  - paragraph [ref=e166]: "@sarahmitchell"
+                - img [ref=e167]
+              - paragraph [ref=e170]: Our invoice batches move faster now. We review the extracted rows, fix the few edge cases, and get the Excel handoff out sooner.
+            - generic [ref=e171]:
+              - generic [ref=e172]:
+                - img "David Chen" [ref=e173]
+                - generic [ref=e174]:
+                  - paragraph [ref=e175]: David Chen
+                  - paragraph [ref=e176]: "@davidchen"
+                - img [ref=e177]
+              - paragraph [ref=e180]: Handwritten table batches finally feel manageable. The review set is much easier than retyping rows from scans.
+            - generic [ref=e181]:
+              - generic [ref=e182]:
+                - img "Emily Rodriguez" [ref=e183]
+                - generic [ref=e184]:
+                  - paragraph [ref=e185]: Emily Rodriguez
+                  - paragraph [ref=e186]: "@emilyrodriguez"
+                - img [ref=e187]
+              - paragraph [ref=e190]: Game changer for our data entry team.
+            - generic [ref=e191]:
+              - generic [ref=e192]:
+                - img "Michael Thompson" [ref=e193]
+                - generic [ref=e194]:
+                  - paragraph [ref=e195]: Michael Thompson
+                  - paragraph [ref=e196]: "@mikethompson"
+                - img [ref=e197]
+              - paragraph [ref=e200]: AxLiner keeps the table structure clear enough for review. That saves our team from rebuilding every spreadsheet by hand.
+            - generic [ref=e201]:
+              - generic [ref=e202]:
+                - img "Jessica Park" [ref=e203]
+                - generic [ref=e204]:
+                  - paragraph [ref=e205]: Jessica Park
+                  - paragraph [ref=e206]: "@jessicapark"
+                - img [ref=e207]
+              - paragraph [ref=e210]: AxLiner has become an essential tool in our workflow. The accuracy on complex forms is outstanding.
+          - generic [ref=e212]:
+            - generic [ref=e213]:
+              - generic [ref=e214]:
+                - img "Robert Williams" [ref=e215]
+                - generic [ref=e216]:
+                  - paragraph [ref=e217]: Robert Williams
+                  - paragraph [ref=e218]: "@robertwilliams"
+                - img [ref=e219]
+              - paragraph [ref=e222]: We upload handwritten paperwork in a batch, inspect the result cards, and spend time on exceptions instead of typing every line again.
+            - generic [ref=e223]:
+              - generic [ref=e224]:
+                - img "Amanda Foster" [ref=e225]
+                - generic [ref=e226]:
+                  - paragraph [ref=e227]: Amanda Foster
+                  - paragraph [ref=e228]: "@amandafoster"
+                - img [ref=e229]
+              - paragraph [ref=e232]: AxLiner makes document digitization insanely fast and accurate. Our team productivity has doubled.
+            - generic [ref=e233]:
+              - generic [ref=e234]:
+                - img "Chris Anderson" [ref=e235]
+                - generic [ref=e236]:
+                  - paragraph [ref=e237]: Chris Anderson
+                  - paragraph [ref=e238]: "@chrisanderson"
+                - img [ref=e239]
+              - paragraph [ref=e242]: "The workflow is direct: add files, review the spreadsheet outputs, download the corrected batch."
+            - generic [ref=e243]:
+              - generic [ref=e244]:
+                - img "Rachel Martinez" [ref=e245]
+                - generic [ref=e246]:
+                  - paragraph [ref=e247]: Rachel Martinez
+                  - paragraph [ref=e248]: "@rachelmartinez"
+                - img [ref=e249]
+              - paragraph [ref=e252]: I've been using AxLiner exclusively for the past month. The results speak for themselves. Outstanding tool that delivers on its promises every single time.
+            - generic [ref=e253]:
+              - generic [ref=e254]:
+                - img "James Wilson" [ref=e255]
+                - generic [ref=e256]:
+                  - paragraph [ref=e257]: James Wilson
+                  - paragraph [ref=e258]: "@jameswilson"
+                - img [ref=e259]
+              - paragraph [ref=e262]: It saves the slow part of data entry without hiding the review step.
+            - generic [ref=e263]:
+              - generic [ref=e264]:
+                - img "Robert Williams" [ref=e265]
+                - generic [ref=e266]:
+                  - paragraph [ref=e267]: Robert Williams
+                  - paragraph [ref=e268]: "@robertwilliams"
+                - img [ref=e269]
+              - paragraph [ref=e272]: We upload handwritten paperwork in a batch, inspect the result cards, and spend time on exceptions instead of typing every line again.
+            - generic [ref=e273]:
+              - generic [ref=e274]:
+                - img "Amanda Foster" [ref=e275]
+                - generic [ref=e276]:
+                  - paragraph [ref=e277]: Amanda Foster
+                  - paragraph [ref=e278]: "@amandafoster"
+                - img [ref=e279]
+              - paragraph [ref=e282]: AxLiner makes document digitization insanely fast and accurate. Our team productivity has doubled.
+            - generic [ref=e283]:
+              - generic [ref=e284]:
+                - img "Chris Anderson" [ref=e285]
+                - generic [ref=e286]:
+                  - paragraph [ref=e287]: Chris Anderson
+                  - paragraph [ref=e288]: "@chrisanderson"
+                - img [ref=e289]
+              - paragraph [ref=e292]: "The workflow is direct: add files, review the spreadsheet outputs, download the corrected batch."
+            - generic [ref=e293]:
+              - generic [ref=e294]:
+                - img "Rachel Martinez" [ref=e295]
+                - generic [ref=e296]:
+                  - paragraph [ref=e297]: Rachel Martinez
+                  - paragraph [ref=e298]: "@rachelmartinez"
+                - img [ref=e299]
+              - paragraph [ref=e302]: I've been using AxLiner exclusively for the past month. The results speak for themselves. Outstanding tool that delivers on its promises every single time.
+            - generic [ref=e303]:
+              - generic [ref=e304]:
+                - img "James Wilson" [ref=e305]
+                - generic [ref=e306]:
+                  - paragraph [ref=e307]: James Wilson
+                  - paragraph [ref=e308]: "@jameswilson"
+                - img [ref=e309]
+              - paragraph [ref=e312]: It saves the slow part of data entry without hiding the review step.
+            - generic [ref=e313]:
+              - generic [ref=e314]:
+                - img "Robert Williams" [ref=e315]
+                - generic [ref=e316]:
+                  - paragraph [ref=e317]: Robert Williams
+                  - paragraph [ref=e318]: "@robertwilliams"
+                - img [ref=e319]
+              - paragraph [ref=e322]: We upload handwritten paperwork in a batch, inspect the result cards, and spend time on exceptions instead of typing every line again.
+            - generic [ref=e323]:
+              - generic [ref=e324]:
+                - img "Amanda Foster" [ref=e325]
+                - generic [ref=e326]:
+                  - paragraph [ref=e327]: Amanda Foster
+                  - paragraph [ref=e328]: "@amandafoster"
+                - img [ref=e329]
+              - paragraph [ref=e332]: AxLiner makes document digitization insanely fast and accurate. Our team productivity has doubled.
+            - generic [ref=e333]:
+              - generic [ref=e334]:
+                - img "Chris Anderson" [ref=e335]
+                - generic [ref=e336]:
+                  - paragraph [ref=e337]: Chris Anderson
+                  - paragraph [ref=e338]: "@chrisanderson"
+                - img [ref=e339]
+              - paragraph [ref=e342]: "The workflow is direct: add files, review the spreadsheet outputs, download the corrected batch."
+            - generic [ref=e343]:
+              - generic [ref=e344]:
+                - img "Rachel Martinez" [ref=e345]
+                - generic [ref=e346]:
+                  - paragraph [ref=e347]: Rachel Martinez
+                  - paragraph [ref=e348]: "@rachelmartinez"
+                - img [ref=e349]
+              - paragraph [ref=e352]: I've been using AxLiner exclusively for the past month. The results speak for themselves. Outstanding tool that delivers on its promises every single time.
+            - generic [ref=e353]:
+              - generic [ref=e354]:
+                - img "James Wilson" [ref=e355]
+                - generic [ref=e356]:
+                  - paragraph [ref=e357]: James Wilson
+                  - paragraph [ref=e358]: "@jameswilson"
+                - img [ref=e359]
+              - paragraph [ref=e362]: It saves the slow part of data entry without hiding the review step.
+      - generic [ref=e363]:
+        - generic [ref=e367]:
+          - img "Company 1" [ref=e370]
+          - img "Company 2" [ref=e373]
+          - img "Company 3" [ref=e376]
+          - img "Company 4" [ref=e379]
+          - img "Company 5" [ref=e382]
+          - img "Company 6" [ref=e385]
+          - img "Company 7" [ref=e388]
+          - img "Company 8" [ref=e391]
+          - img "Company 9" [ref=e394]
+          - img "Company 1" [ref=e397]
+          - img "Company 2" [ref=e400]
+          - img "Company 3" [ref=e403]
+          - img "Company 4" [ref=e406]
+          - img "Company 5" [ref=e409]
+          - img "Company 6" [ref=e412]
+          - img "Company 7" [ref=e415]
+          - img "Company 8" [ref=e418]
+          - img "Company 9" [ref=e421]
+          - img "Company 1" [ref=e424]
+          - img "Company 2" [ref=e427]
+          - img "Company 3" [ref=e430]
+          - img "Company 4" [ref=e433]
+          - img "Company 5" [ref=e436]
+          - img "Company 6" [ref=e439]
+          - img "Company 7" [ref=e442]
+          - img "Company 8" [ref=e445]
+          - img "Company 9" [ref=e448]
+          - img "Company 1" [ref=e451]
+          - img "Company 2" [ref=e454]
+          - img "Company 3" [ref=e457]
+          - img "Company 4" [ref=e460]
+          - img "Company 5" [ref=e463]
+          - img "Company 6" [ref=e466]
+          - img "Company 7" [ref=e469]
+          - img "Company 8" [ref=e472]
+          - img "Company 9" [ref=e475]
+          - img "Company 1" [ref=e478]
+          - img "Company 2" [ref=e481]
+          - img "Company 3" [ref=e484]
+          - img "Company 4" [ref=e487]
+          - img "Company 5" [ref=e490]
+          - img "Company 6" [ref=e493]
+          - img "Company 7" [ref=e496]
+          - img "Company 8" [ref=e499]
+          - img "Company 9" [ref=e502]
+          - img "Company 1" [ref=e505]
+          - img "Company 2" [ref=e508]
+          - img "Company 3" [ref=e511]
+          - img "Company 4" [ref=e514]
+          - img "Company 5" [ref=e517]
+          - img "Company 6" [ref=e520]
+          - img "Company 7" [ref=e523]
+          - img "Company 8" [ref=e526]
+          - img "Company 9" [ref=e529]
+          - img "Company 1" [ref=e532]
+          - img "Company 2" [ref=e535]
+          - img "Company 3" [ref=e538]
+          - img "Company 4" [ref=e541]
+          - img "Company 5" [ref=e544]
+          - img "Company 6" [ref=e547]
+          - img "Company 7" [ref=e550]
+          - img "Company 8" [ref=e553]
+          - img "Company 9" [ref=e556]
+          - img "Company 1" [ref=e559]
+          - img "Company 2" [ref=e562]
+          - img "Company 3" [ref=e565]
+          - img "Company 4" [ref=e568]
+          - img "Company 5" [ref=e571]
+          - img "Company 6" [ref=e574]
+          - img "Company 7" [ref=e577]
+          - img "Company 8" [ref=e580]
+          - img "Company 9" [ref=e583]
+          - img "Company 1" [ref=e586]
+          - img "Company 2" [ref=e589]
+          - img "Company 3" [ref=e592]
+          - img "Company 4" [ref=e595]
+          - img "Company 5" [ref=e598]
+          - img "Company 6" [ref=e601]
+          - img "Company 7" [ref=e604]
+          - img "Company 8" [ref=e607]
+          - img "Company 9" [ref=e610]
+          - img "Company 1" [ref=e613]
+          - img "Company 2" [ref=e616]
+          - img "Company 3" [ref=e619]
+          - img "Company 4" [ref=e622]
+          - img "Company 5" [ref=e625]
+          - img "Company 6" [ref=e628]
+          - img "Company 7" [ref=e631]
+          - img "Company 8" [ref=e634]
+          - img "Company 9" [ref=e637]
+        - generic [ref=e639]:
+          - generic [ref=e642]:
+            - generic [ref=e646]:
+              - generic [ref=e647]: Accounting
+              - generic [ref=e648]: Automate the most time-consuming parts of accounting workflows. Extract clean spreadsheet data from receipts, invoices, bank statements, and expense reports so teams can reduce manual entry and focus on review.
+              - link "Discover More" [ref=e649] [cursor=pointer]:
+                - /url: /solutions/accounting
+                - generic [ref=e650]: Discover More
+            - generic [ref=e657]:
+              - generic [ref=e658]: Banking
+              - generic [ref=e659]: Modernize document-heavy financial operations with structured extraction for checks, loan applications, statements, onboarding packets, and KYC documents while keeping every row ready for downstream review.
+              - link "Discover More" [ref=e660] [cursor=pointer]:
+                - /url: /solutions/banking
+                - generic [ref=e661]: Discover More
+            - generic [ref=e668]:
+              - generic [ref=e669]: Backoffice Automation
+              - generic [ref=e670]: Remove repetitive data entry from internal operations. Turn invoices, forms, receipts, and handwritten tables into usable Excel files that can feed finance, admin, and operations workflows.
+              - link "Discover More" [ref=e671] [cursor=pointer]:
+                - /url: /solutions/backoffice-automation
+                - generic [ref=e672]: Discover More
+            - generic [ref=e679]:
+              - generic [ref=e680]: Construction
+              - generic [ref=e681]: Convert site notes, delivery forms, checklists, material logs, and handwritten field tables into clean spreadsheets so project teams can keep records current without retyping paperwork.
+              - link "Discover More" [ref=e682] [cursor=pointer]:
+                - /url: /solutions/construction
+                - generic [ref=e683]: Discover More
+            - generic [ref=e690]:
+              - generic [ref=e691]: CPG Brands
+              - generic [ref=e692]: Process retail forms, inventory sheets, distributor paperwork, purchase records, and field reports into structured data that merchandising and operations teams can compare quickly.
+              - link "Discover More" [ref=e693] [cursor=pointer]:
+                - /url: /solutions/cpg-brands
+                - generic [ref=e694]: Discover More
+            - generic [ref=e701]:
+              - generic [ref=e702]: FinTech
+              - generic [ref=e703]: Build document intake flows for financial products without asking users or operators to key in every table manually. Extract page-level data into spreadsheets that are easy to validate.
+              - link "Discover More" [ref=e704] [cursor=pointer]:
+                - /url: /solutions/fintech
+                - generic [ref=e705]: Discover More
+            - generic [ref=e712]:
+              - generic [ref=e713]: Healthcare
+              - generic [ref=e714]: Digitize handwritten logs, intake forms, lab sheets, inventory notes, and administrative records while preserving the table structure needed for review, reporting, and internal handoff.
+              - link "Discover More" [ref=e715] [cursor=pointer]:
+                - /url: /solutions/healthcare
+                - generic [ref=e716]: Discover More
+            - generic [ref=e723]:
+              - generic [ref=e724]: Real Estate
+              - generic [ref=e725]: Turn lease packets, inspection forms, closing checklists, rent rolls, and property records into organized spreadsheets for brokers, managers, and operations teams.
+              - link "Discover More" [ref=e726] [cursor=pointer]:
+                - /url: /solutions/real-estate
+                - generic [ref=e727]: Discover More
+          - generic [ref=e735]:
+            - generic [ref=e736]:
+              - generic [ref=e737]: Handwritten Text Recognition Accuracy
+              - paragraph [ref=e738]: Based on 10,000+ real-world samples
+            - generic [ref=e739]:
+              - img [ref=e743]:
+                - generic [ref=e747]:
+                  - generic [ref=e749]: AxLiner
+                  - generic [ref=e751]: AWS Textract
+                  - generic [ref=e753]: Google Vision
+                  - generic [ref=e755]: Azure Vision
+                - generic [ref=e756]:
+                  - generic [ref=e757]:
+                    - generic [ref=e759]: "0"
+                    - generic [ref=e761]: "20"
+                    - generic [ref=e763]: "40"
+                    - generic [ref=e765]: "60"
+                    - generic [ref=e767]: "80"
+                    - generic [ref=e769]: "100"
+                  - generic [ref=e770]: Accuracy (%)
+              - generic [ref=e773]: Tested on IAM Handwriting Database v3.0
+      - heading "Frequently Asked Questions" [level=3] [ref=e786]
+    - contentinfo [ref=e787]:
+      - generic [ref=e790]:
+        - generic [ref=e791]:
+          - generic [ref=e792]:
+            - link "AxLiner home" [ref=e793] [cursor=pointer]:
+              - /url: /
+              - img "AxLiner" [ref=e794]
+            - heading "Turn handwritten paperwork into review-ready Excel batches." [level=2] [ref=e798]
+            - paragraph [ref=e799]: Handwritten documents go in. Reviewable Excel files come out. AxLiner keeps the batch, ownership, and download flow clear for teams that live in spreadsheets.
+            - generic [ref=e800]:
+              - link "Try It" [ref=e801] [cursor=pointer]:
+                - /url: /dashboard/client
+              - link "See Pricing" [ref=e802] [cursor=pointer]:
+                - /url: /pricing
+              - generic [ref=e803]:
+                - link "LinkedIn" [ref=e804] [cursor=pointer]:
+                  - /url: https://www.linkedin.com
+                  - img [ref=e805]
+                - link "YouTube" [ref=e807] [cursor=pointer]:
+                  - /url: https://www.youtube.com
+                  - img [ref=e808]
+          - generic [ref=e811]:
+            - generic [ref=e812]:
+              - heading "Product" [level=4] [ref=e813]
+              - list [ref=e814]:
+                - listitem [ref=e815]:
+                  - link "Convert files" [ref=e816] [cursor=pointer]:
+                    - /url: /dashboard/client
+                - listitem [ref=e817]:
+                  - link "Pricing" [ref=e818] [cursor=pointer]:
+                    - /url: /pricing
+                - listitem [ref=e819]:
+                  - link "Benchmarks" [ref=e820] [cursor=pointer]:
+                    - /url: /benchmarks
+                - listitem [ref=e821]:
+                  - link "Security" [ref=e822] [cursor=pointer]:
+                    - /url: /security
+            - generic [ref=e823]:
+              - heading "Solutions" [level=4] [ref=e824]
+              - list [ref=e825]:
+                - listitem [ref=e826]:
+                  - link "Accounting" [ref=e827] [cursor=pointer]:
+                    - /url: /solutions/accounting
+                - listitem [ref=e828]:
+                  - link "Banking" [ref=e829] [cursor=pointer]:
+                    - /url: /solutions/banking
+                - listitem [ref=e830]:
+                  - link "Backoffice" [ref=e831] [cursor=pointer]:
+                    - /url: /solutions/backoffice-automation
+                - listitem [ref=e832]:
+                  - link "Healthcare" [ref=e833] [cursor=pointer]:
+                    - /url: /solutions/healthcare
+            - generic [ref=e834]:
+              - heading "Resources" [level=4] [ref=e835]
+              - list [ref=e836]:
+                - listitem [ref=e837]:
+                  - link "Blogs" [ref=e838] [cursor=pointer]:
+                    - /url: /blogs
+                - listitem [ref=e839]:
+                  - link "How it works" [ref=e840] [cursor=pointer]:
+                    - /url: /how-axliner-is-built
+                - listitem [ref=e841]:
+                  - link "Contact" [ref=e842] [cursor=pointer]:
+                    - /url: /contact
+                - listitem [ref=e843]:
+                  - link "Try AxLiner" [ref=e844] [cursor=pointer]:
+                    - /url: /dashboard/client
+            - generic [ref=e845]:
+              - heading "Legal" [level=4] [ref=e846]
+              - list [ref=e847]:
+                - listitem [ref=e848]:
+                  - link "Privacy" [ref=e849] [cursor=pointer]:
+                    - /url: /privacy-policy
+                - listitem [ref=e850]:
+                  - link "Terms" [ref=e851] [cursor=pointer]:
+                    - /url: /terms-of-service
+                - listitem [ref=e852]:
+                  - link "EULA" [ref=e853] [cursor=pointer]:
+                    - /url: /end-user-license-agreement
+                - listitem [ref=e854]:
+                  - link "Data deletion" [ref=e855] [cursor=pointer]:
+                    - /url: /data-deletion
+                - listitem [ref=e856]:
+                  - link "Billing" [ref=e857] [cursor=pointer]:
+                    - /url: /dashboard/settings
+        - generic [ref=e858]:
+          - paragraph [ref=e859]: © 2026 AxLiner. All rights reserved.
+          - paragraph [ref=e860]: Made with care in Alaska. Secure document processing for spreadsheet teams.
+  - region "Notifications alt+T"
+  - generic [ref=e861]: "0"

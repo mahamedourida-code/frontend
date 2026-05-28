@@ -1,0 +1,2 @@
+[    2119ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://api.usevelo.ai/api/v1/auth/session/refresh:0
+[    2121ms] [LOG] No session found, clearing stores @ https://app.usevelo.ai/ingest/static/posthog-recorder.js?v=1.360.1:0

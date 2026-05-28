@@ -1,0 +1,13 @@
+
+> axliner@0.1.0 dev
+> next dev --turbopack --hostname 127.0.0.1 --port 3020
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://127.0.0.1:3020
+- Network:       http://127.0.0.1:3020
+- Environments: .env.local
+✓ Ready in 482ms
+- Experiments (use with caution):
+  · staleTimes
+
+ GET /pricing 200 in 1774ms (next.js: 1062ms, proxy.ts: 235ms, application-code: 477ms)

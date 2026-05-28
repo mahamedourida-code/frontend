@@ -1,0 +1,686 @@
+- generic [ref=e1]:
+  - dialog "Cookie banner" [active] [ref=e2]:
+    - generic [ref=e3]:
+      - paragraph [ref=e5]: This website uses cookies that are stored in your browser. These cookies are used to collect information about how you interact with our website and allow us to remember you. We use this information in order to improve and customize your browsing experience and for analytics and metrics about our visitors both on this website and other media. To find out more about the cookies we use, see our Privacy Policy
+      - paragraph [ref=e6]: If you decline, your information won’t be tracked when you visit this website. A single cookie will be used in your browser to remember your preference not to be tracked.
+      - generic [ref=e9]:
+        - button "Accept" [ref=e10] [cursor=pointer]
+        - button "Decline" [ref=e11] [cursor=pointer]
+  - generic [ref=e13]:
+    - banner [ref=e14]:
+      - generic [ref=e15]:
+        - link "Proposify logo" [ref=e18] [cursor=pointer]:
+          - /url: https://www.proposify.com/
+          - img "Proposify logo" [ref=e20]
+        - generic [ref=e21]:
+          - list [ref=e24]:
+            - listitem [ref=e25]:
+              - link "Product " [ref=e26] [cursor=pointer]:
+                - /url: https://www.proposify.com/product-overview
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - list:
+                        - listitem:
+                          - link "Product Overview Get a complete view of Proposify's proposal management platform and capabilities.":
+                            - /url: https://www.proposify.com/product-overview
+                            - generic:
+                              - img
+                            - generic:
+                              - generic: Product Overview
+                              - generic: Get a complete view of Proposify's proposal management platform and capabilities.
+                        - listitem:
+                          - link "Automate Your Workflows Streamline your document workflow with templates, AI, automation, and team collaboration tools.":
+                            - /url: https://www.proposify.com/document-automation
+                            - generic:
+                              - img
+                            - generic:
+                              - generic: Automate Your Workflows
+                              - generic: Streamline your document workflow with templates, AI, automation, and team collaboration tools.
+                    - generic:
+                      - list:
+                        - listitem:
+                          - link "Create and send Build beautiful, branded proposals and quotes with our intuitive drag-and-drop editor.":
+                            - /url: https://www.proposify.com/document-creation-software
+                            - generic:
+                              - img
+                            - generic:
+                              - generic: Create and send
+                              - generic: Build beautiful, branded proposals and quotes with our intuitive drag-and-drop editor.
+                        - listitem:
+                          - link "Integrations Connect Proposify seamlessly with your existing CRM and business tools.":
+                            - /url: https://www.proposify.com/integrations
+                            - generic:
+                              - img
+                            - generic:
+                              - generic: Integrations
+                              - generic: Connect Proposify seamlessly with your existing CRM and business tools.
+                        - listitem:
+                          - link "Track and Close Monitor proposal engagement and accelerate your sales cycle with real-time insights.":
+                            - /url: https://www.proposify.com/document-tracking-software
+                            - generic:
+                              - img
+                            - generic:
+                              - generic: Track and Close
+                              - generic: Monitor proposal engagement and accelerate your sales cycle with real-time insights.
+                        - listitem:
+                          - link "API Build custom integrations and extend Proposify's functionality with our developer resources.":
+                            - /url: https://apidocs.proposify.com/
+                            - generic:
+                              - img
+                            - generic:
+                              - generic: API
+                              - generic: Build custom integrations and extend Proposify's functionality with our developer resources.
+            - listitem [ref=e27]:
+              - link "Solutions " [ref=e28] [cursor=pointer]:
+                - /url: javascript:;
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - list:
+                        - listitem:
+                          - link "USE CASES":
+                            - /url: javascript:;
+                            - generic:
+                              - img
+                            - generic: USE CASES
+                          - list:
+                            - listitem:
+                              - link "Proposals":
+                                - /url: https://www.proposify.com/proposal-software
+                            - listitem:
+                              - link "Quotes":
+                                - /url: https://www.proposify.com/quoting-software
+                            - listitem:
+                              - link "eSignatures":
+                                - /url: https://www.proposify.com/electronic-signature-software
+                            - listitem:
+                              - link "Contracts":
+                                - /url: https://www.proposify.com/contract-management-software
+                        - listitem:
+                          - link "INDUSTRIES":
+                            - /url: javascript:;
+                            - generic:
+                              - img
+                            - generic: INDUSTRIES
+                          - list:
+                            - listitem:
+                              - link "Consultants":
+                                - /url: https://www.proposify.com/industries/professional-services-and-consulting
+                            - listitem:
+                              - link "Landscaping":
+                                - /url: https://www.proposify.com/industries/landscaping
+                            - listitem:
+                              - link "Janitorial":
+                                - /url: https://www.proposify.com/industries/cleaning-janitorial
+                            - listitem:
+                              - link "Construction":
+                                - /url: https://www.proposify.com/industries/infrastructure-and-construction
+                            - listitem:
+                              - link "See more >":
+                                - /url: https://www.proposify.com/industries
+                        - listitem:
+                          - link "ROLES":
+                            - /url: javascript:;
+                            - generic:
+                              - img
+                            - generic: ROLES
+                          - list:
+                            - listitem:
+                              - link "Sales":
+                                - /url: https://www.proposify.com/solutions/sales-leaders
+                            - listitem:
+                              - link "Marketing":
+                                - /url: https://www.proposify.com/solutions/marketing
+                            - listitem:
+                              - link "Operations":
+                                - /url: https://www.proposify.com/solutions/operations
+                    - generic:
+                      - generic:
+                        - list:
+                          - listitem:
+                            - link "How Fern Grew Revenue 200% with Proposify How Fern Grew Revenue 200% with Proposify":
+                              - /url: https://www.proposify.com/customers/fern
+                              - generic:
+                                - img "How Fern Grew Revenue 200% with Proposify"
+                              - generic: How Fern Grew Revenue 200% with Proposify
+                          - listitem:
+                            - link "How Proposify Removed the Barriers to this Consulting Firm’s Growth How Proposify Removed the Barriers to this Consulting Firm’s Growth":
+                              - /url: https://www.proposify.com/customers/seraph
+                              - generic:
+                                - img "How Proposify Removed the Barriers to this Consulting Firm’s Growth"
+                              - generic: How Proposify Removed the Barriers to this Consulting Firm’s Growth
+                          - listitem:
+                            - link "How Proposify helped EverLine increase their close rates dramatically and tailor follow-ups for 59 franchises How Proposify helped EverLine increase their close rates dramatically and tailor follow-ups for 59 franchises":
+                              - /url: https://www.proposify.com/customers/everline
+                              - generic:
+                                - img "How Proposify helped EverLine increase their close rates dramatically and tailor follow-ups for 59 franchises"
+                              - generic: How Proposify helped EverLine increase their close rates dramatically and tailor follow-ups for 59 franchises
+            - listitem [ref=e29]:
+              - link "Templates" [ref=e30] [cursor=pointer]:
+                - /url: https://www.proposify.com/proposal-templates
+            - listitem [ref=e31]:
+              - link "Pricing" [ref=e32] [cursor=pointer]:
+                - /url: https://www.proposify.com/pricing
+            - listitem [ref=e33]:
+              - link "Resources " [ref=e34] [cursor=pointer]:
+                - /url: https://www.proposify.com/resources
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - list:
+                        - listitem:
+                          - link "LEARN":
+                            - /url: javascript:;
+                            - generic:
+                              - img
+                            - generic: LEARN
+                          - list:
+                            - listitem:
+                              - link "Case Studies":
+                                - /url: https://www.proposify.com/customers
+                            - listitem:
+                              - link "Demo Center":
+                                - /url: https://www.proposify.com/resources/product-tour
+                            - listitem:
+                              - link "Webinars":
+                                - /url: https://www.proposify.com/resources/webinars
+                            - listitem:
+                              - link "Blog":
+                                - /url: https://www.proposify.com/blog
+                            - listitem:
+                              - link "Videos":
+                                - /url: https://www.proposify.com/resources/videos
+                            - listitem:
+                              - link "Newsletter":
+                                - /url: https://www.proposify.com/newsletter
+                            - listitem:
+                              - link "See more >":
+                                - /url: https://www.proposify.com/resources
+                        - listitem:
+                          - link "SUPPORT":
+                            - /url: javascript:;
+                            - generic:
+                              - img
+                            - generic: SUPPORT
+                          - list:
+                            - listitem:
+                              - link "Knowledge base":
+                                - /url: https://support.proposify.com/hc/en-us
+                            - listitem:
+                              - link "Getting started guide":
+                                - /url: https://www.proposify.com/getting-started
+                            - listitem:
+                              - link "Product updates":
+                                - /url: https://www.proposify.com/blog/tag/product
+                            - listitem:
+                              - link "Security":
+                                - /url: https://www.proposify.com/platform/security
+                            - listitem:
+                              - link "Professional Services":
+                                - /url: https://www.proposify.com/platform/professional-design-services
+                            - listitem:
+                              - link "Contact support":
+                                - /url: https://support.proposify.com/hc/en-us/requests/new
+                    - generic:
+                      - generic:
+                        - text: jinja
+                        - generic:
+                          - 'img "Image{width=1200,height=945,url=''https://5261428.fs1.hubspotusercontent-na1.net/hubfs/5261428/SOP%202026%20Email%20Header.png'',altText=''SOP 2026 Email Header'',fileId=211860979856}"'
+                          - paragraph: State of Proposals 2026 Report
+                          - paragraph: We’ve dug deep into our data and extracted the information that sales and marketing leaders can use to make their proposals better and boost their business.
+                        - generic:
+                          - link "Read more":
+                            - /url: https://www.proposify.com/state-of-proposals
+            - listitem [ref=e35]:
+              - link "Log in" [ref=e36] [cursor=pointer]:
+                - /url: https://fe.proposify.com/sign-in
+          - navigation "Navigation Menu" [ref=e38]:
+            - menu [ref=e39]:
+              - menuitem "Book a demo" [ref=e40] [cursor=pointer]
+              - menuitem "Sign Up Free" [ref=e41] [cursor=pointer]
+    - main [ref=e42]:
+      - generic [ref=e44]:
+        - generic [ref=e46]:
+          - generic:
+            - img
+          - generic [ref=e50]:
+            - generic [ref=e52]:
+              - heading "Professional, branded proposals from conversation to close." [level=1] [ref=e53]
+              - paragraph [ref=e54]: Proposify gives your team the control and visibility to quickly create, track, and sign winning proposals while increasing your team's close rate.
+              - list [ref=e55]:
+                - listitem [ref=e56]:
+                  - link "Start free trial" [ref=e58] [cursor=pointer]:
+                    - /url: https://cta-service-cms2.hubspot.com/web-interactives/public/v1/track/click?encryptedPayload=AVxigLJE90AWOP75ukNb0AigX%2FY%2BqJsoYC0zzqBWgJenGCGnnwZId4nmca%2BIDqcmCy1pigvuZdgAX1h9ytc6D8SBCz02KORN3JVp1KIoT6E7eoKUW4lIBS9cL6X8lwn9mVrIBRmj6biJTGWzX%2BpzOdAEUz1aY1yjjxAlw5m73qnUmEoO%2BTNuFK0LVg%3D%3D&portalId=5261428&webInteractiveContentId=168417696582&webInteractiveId=332450923672&containerType=EMBEDDED&pageUrl=https%3A%2F%2Fwww.proposify.com%2F&pageTitle=Proposify+-+Proposal+Software+to+Streamline+Your+Sales+Process&referrer=&userAgent=Mozilla%2F5.0+%28Windows+NT+10.0%3B+Win64%3B+x64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F148.0.0.0+Safari%2F537.36&hutk=7515ce437c368ada4e839f4e7076a4c4&hssc=63846064.1.1779947829816&hstc=63846064.7515ce437c368ada4e839f4e7076a4c4.1779947829816.1779947829816.1779947829816.1&pageId=179749016337&analyticsPageId=179749016337&hsfp=a1d99b77ea9f3c48734b2b29bafed094&canonicalUrl=https%3A%2F%2Fwww.proposify.com&contentType=standard-page
+                - listitem [ref=e59]:
+                  - link "Book a demo" [ref=e61] [cursor=pointer]:
+                    - /url: https://cta-service-cms2.hubspot.com/web-interactives/public/v1/track/click?encryptedPayload=AVxigLJzPzCt7kEYfb1q8%2Ff8qqHS4rWjRl8KSKIDXP2Zqa41WkyehxZSBfuXvra%2F4PhH%2FuS523%2FlwRFWTK%2FttXRY%2Fcz8LU%2FjzXTIAv6Ff09WIJ549VFkSySuWre7Da20vXKYxD9cWYV45NeQMRB8X%2BCad60LYAQ1XdqVMfEo4Uhs6vZMBg%3D%3D&portalId=5261428&webInteractiveContentId=168417696582&webInteractiveId=332450923672&containerType=EMBEDDED&pageUrl=https%3A%2F%2Fwww.proposify.com%2F&pageTitle=Proposify+-+Proposal+Software+to+Streamline+Your+Sales+Process&referrer=&userAgent=Mozilla%2F5.0+%28Windows+NT+10.0%3B+Win64%3B+x64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F148.0.0.0+Safari%2F537.36&hutk=7515ce437c368ada4e839f4e7076a4c4&hssc=63846064.1.1779947829816&hstc=63846064.7515ce437c368ada4e839f4e7076a4c4.1779947829816.1779947829816.1779947829816.1&pageId=179749016337&analyticsPageId=179749016337&hsfp=a1d99b77ea9f3c48734b2b29bafed094&canonicalUrl=https%3A%2F%2Fwww.proposify.com&contentType=standard-page
+            - link "See how it works in 3 minutes" [ref=e64] [cursor=pointer]:
+              - /url: https://www.youtube.com/watch?v=zpxLAG8a25k
+              - img [ref=e67]
+              - generic [ref=e1663]:
+                - img [ref=e1665]
+                - generic [ref=e1669]: See how it works in 3 minutes
+        - generic [ref=e1672]:
+          - generic [ref=e1675]:
+            - heading "8,976 companies are crushing their close rates with Proposify." [level=2] [ref=e1676]
+            - paragraph [ref=e1677]: Our customers know the easiest way to close more deals is with a streamlined process and professional, competitive sales documents.
+          - generic [ref=e1680]:
+            - img "PostMedia logo" [ref=e1683]
+            - img "BluSky logo" [ref=e1686]
+            - img "Paradox logo" [ref=e1689]
+            - img "WSI logo" [ref=e1692]
+            - img "Everline logo" [ref=e1695]
+        - generic [ref=e1698]:
+          - generic [ref=e1701]:
+            - generic [ref=e1705]:
+              - heading "2x close rate" [level=2] [ref=e1706]:
+                - generic [ref=e1707]: 2x
+                - text: close rate
+              - paragraph [ref=e1708]: Proposify customers enjoy a close rate 2x the industry average.
+            - generic [ref=e1712]:
+              - heading "17 minutes" [level=2] [ref=e1713]:
+                - generic [ref=e1714]: "17"
+                - text: minutes
+              - paragraph [ref=e1715]: On average Proposify proposals are created in 17 minutes or less.
+            - generic [ref=e1719]:
+              - heading "24 hr" [level=2] [ref=e1720]:
+                - generic [ref=e1721]: "24"
+                - text: hr
+              - paragraph [ref=e1722]: 43% of proposals sent through Proposify are won within 24 hours of opening.
+          - list [ref=e1726]:
+            - listitem [ref=e1727]:
+              - link "Get started free" [ref=e1729] [cursor=pointer]:
+                - /url: https://cta-service-cms2.hubspot.com/web-interactives/public/v1/track/click?encryptedPayload=AVxigLIuJkSnoqBdrLjo3Fvn7NHBc21ro6yqG%2BQC9H83HvSQWYmrqWHIeEFINSN9FWFKwYImTpHBe534xmz2YxIUnQ2wzeYcYPKjDKUqRXHXEsYL5AnfZjXZcgdFdM9zRZ%2FOkWQauy%2F%2FPLaGAYQZgYhYguiF7gGdOWQTGF2iiRyFg%2F%2BHVoA2Rk5g1g%3D%3D&portalId=5261428&webInteractiveContentId=168417696582&webInteractiveId=332450923672&containerType=EMBEDDED&pageUrl=https%3A%2F%2Fwww.proposify.com%2F&pageTitle=Proposify+-+Proposal+Software+to+Streamline+Your+Sales+Process&referrer=&userAgent=Mozilla%2F5.0+%28Windows+NT+10.0%3B+Win64%3B+x64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F148.0.0.0+Safari%2F537.36&hutk=7515ce437c368ada4e839f4e7076a4c4&hssc=63846064.1.1779947829816&hstc=63846064.7515ce437c368ada4e839f4e7076a4c4.1779947829816.1779947829816.1779947829816.1&pageId=179749016337&analyticsPageId=179749016337&hsfp=a1d99b77ea9f3c48734b2b29bafed094&canonicalUrl=https%3A%2F%2Fwww.proposify.com&contentType=standard-page
+            - listitem [ref=e1730]:
+              - link "Book a demo" [ref=e1732] [cursor=pointer]:
+                - /url: https://cta-service-cms2.hubspot.com/web-interactives/public/v1/track/click?encryptedPayload=AVxigLInsjzNvLO2NegtqRnMpJ3hTs4eTFpJx%2BTpNaXgN5M8XFTDb4iT81rmsVwjCuOEhvCRw4UBQSWaxZE1V3o6ky1EqGKxxr0fNjqWimqmP7KttRVQXo9Q6x5rZrtOh2M24hSThKTKxDaj%2BmS0O2BMhcD284usxB10%2BSDqRRjSC1%2FyiQ%3D%3D&portalId=5261428&webInteractiveContentId=168417696582&webInteractiveId=332450923672&containerType=EMBEDDED&pageUrl=https%3A%2F%2Fwww.proposify.com%2F&pageTitle=Proposify+-+Proposal+Software+to+Streamline+Your+Sales+Process&referrer=&userAgent=Mozilla%2F5.0+%28Windows+NT+10.0%3B+Win64%3B+x64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F148.0.0.0+Safari%2F537.36&hutk=7515ce437c368ada4e839f4e7076a4c4&hssc=63846064.1.1779947829816&hstc=63846064.7515ce437c368ada4e839f4e7076a4c4.1779947829816.1779947829816.1779947829816.1&pageId=179749016337&analyticsPageId=179749016337&hsfp=a1d99b77ea9f3c48734b2b29bafed094&canonicalUrl=https%3A%2F%2Fwww.proposify.com&contentType=standard-page
+        - heading "Accelerate your pipeline with proposal software designed for busy teams who want to win." [level=2] [ref=e1740]
+        - generic [ref=e1748]:
+          - heading "On-brand, professional documents that leave your competition in the dust." [level=2] [ref=e1749]:
+            - text: On-brand, professional
+            - text: documents that leave your competition in the dust.
+          - paragraph [ref=e1750]: Not a designer? No problem. Customize design-friendly, drag-and-drop templates to create beautifully branded quotes, proposals, and agreements.
+          - paragraph [ref=e1751]: They'll elevate your brand, reinforce your professionalism, and help your company stand out (way out) from the competition.
+          - list [ref=e1752]:
+            - listitem [ref=e1753]:
+              - link "Try for free" [ref=e1755] [cursor=pointer]:
+                - /url: https://cta-service-cms2.hubspot.com/web-interactives/public/v1/track/click?encryptedPayload=AVxigLKYLMYkSaf9Hnebm3bgtY37dz5wDtoU6isQ2M7jv25rSH9lKBS3BtOJqC23LWuxIpDpiDrDLJAxkEN6cq39kZUsNrPTxnHbPNT4dt%2FV2cO4YTX%2FM67K7UN5Q16tBpxts06nXt0WnOBzmDtJAe8vAo8O5%2BNCUUil%2BuSGRGvzJOOYgWAQJuTVow%3D%3D&portalId=5261428&webInteractiveContentId=168417696582&webInteractiveId=332450923672&containerType=EMBEDDED&pageUrl=https%3A%2F%2Fwww.proposify.com%2F&pageTitle=Proposify+-+Proposal+Software+to+Streamline+Your+Sales+Process&referrer=&userAgent=Mozilla%2F5.0+%28Windows+NT+10.0%3B+Win64%3B+x64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F148.0.0.0+Safari%2F537.36&hutk=7515ce437c368ada4e839f4e7076a4c4&hssc=63846064.1.1779947829816&hstc=63846064.7515ce437c368ada4e839f4e7076a4c4.1779947829816.1779947829816.1779947829816.1&pageId=179749016337&analyticsPageId=179749016337&hsfp=a1d99b77ea9f3c48734b2b29bafed094&canonicalUrl=https%3A%2F%2Fwww.proposify.com&contentType=standard-page
+        - generic [ref=e1771]:
+          - heading "Unclog the bottlenecks that are slowing your sales cycle." [level=2] [ref=e1772]
+          - paragraph [ref=e1773]: Stop getting in your own way. Minimize the approvals process without losing control of what your reps are sending out the door with standardized, pre-approved content.
+          - paragraph [ref=e1774]: Champion your sellers by making it easy for them to create and send on-brand, error-free documents in minutes.
+          - list [ref=e1775]:
+            - listitem [ref=e1776]:
+              - link "Try for free" [ref=e1778] [cursor=pointer]:
+                - /url: https://cta-service-cms2.hubspot.com/web-interactives/public/v1/track/click?encryptedPayload=AVxigLKYLMYkSaf9Hnebm3bgtY37dz5wDtoU6isQ2M7jv25rSH9lKBS3BtOJqC23LWuxIpDpiDrDLJAxkEN6cq39kZUsNrPTxnHbPNT4dt%2FV2cO4YTX%2FM67K7UN5Q16tBpxts06nXt0WnOBzmDtJAe8vAo8O5%2BNCUUil%2BuSGRGvzJOOYgWAQJuTVow%3D%3D&portalId=5261428&webInteractiveContentId=168417696582&webInteractiveId=332450923672&containerType=EMBEDDED&pageUrl=https%3A%2F%2Fwww.proposify.com%2F&pageTitle=Proposify+-+Proposal+Software+to+Streamline+Your+Sales+Process&referrer=&userAgent=Mozilla%2F5.0+%28Windows+NT+10.0%3B+Win64%3B+x64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F148.0.0.0+Safari%2F537.36&hutk=7515ce437c368ada4e839f4e7076a4c4&hssc=63846064.1.1779947829816&hstc=63846064.7515ce437c368ada4e839f4e7076a4c4.1779947829816.1779947829816.1779947829816.1&pageId=179749016337&analyticsPageId=179749016337&hsfp=a1d99b77ea9f3c48734b2b29bafed094&canonicalUrl=https%3A%2F%2Fwww.proposify.com&contentType=standard-page
+        - generic [ref=e1786]:
+          - heading "Eliminate inefficient workflows." [level=2] [ref=e1787]
+          - paragraph [ref=e1788]: You're losing time and deals if your reps are constantly bogged down in old Word Docs, PDF libraries, and multi-thread emails.
+          - paragraph [ref=e1789]: Set up a centralized content library and reusable templates so reps can find what they need when they need it and send winning proposals quickly—ahead of the competition.
+          - list [ref=e1790]:
+            - listitem [ref=e1791]:
+              - link "Try for free" [ref=e1793] [cursor=pointer]:
+                - /url: https://cta-service-cms2.hubspot.com/web-interactives/public/v1/track/click?encryptedPayload=AVxigLKYLMYkSaf9Hnebm3bgtY37dz5wDtoU6isQ2M7jv25rSH9lKBS3BtOJqC23LWuxIpDpiDrDLJAxkEN6cq39kZUsNrPTxnHbPNT4dt%2FV2cO4YTX%2FM67K7UN5Q16tBpxts06nXt0WnOBzmDtJAe8vAo8O5%2BNCUUil%2BuSGRGvzJOOYgWAQJuTVow%3D%3D&portalId=5261428&webInteractiveContentId=168417696582&webInteractiveId=332450923672&containerType=EMBEDDED&pageUrl=https%3A%2F%2Fwww.proposify.com%2F&pageTitle=Proposify+-+Proposal+Software+to+Streamline+Your+Sales+Process&referrer=&userAgent=Mozilla%2F5.0+%28Windows+NT+10.0%3B+Win64%3B+x64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F148.0.0.0+Safari%2F537.36&hutk=7515ce437c368ada4e839f4e7076a4c4&hssc=63846064.1.1779947829816&hstc=63846064.7515ce437c368ada4e839f4e7076a4c4.1779947829816.1779947829816.1779947829816.1&pageId=179749016337&analyticsPageId=179749016337&hsfp=a1d99b77ea9f3c48734b2b29bafed094&canonicalUrl=https%3A%2F%2Fwww.proposify.com&contentType=standard-page
+        - generic [ref=e1809]:
+          - heading "Stop losing big deals because of small errors." [level=2] [ref=e1810]
+          - paragraph [ref=e1811]: Something as simple as a wrong name, address, or, worst of all, incorrect pricing can impact your close rates.
+          - paragraph [ref=e1812]: Proposify pulls data directly from your CRM to eliminate embarrassing typos caused by human error and rogue sellers. Plus, you can lock down important proposal elements so reps can’t edit them.
+          - list [ref=e1813]:
+            - listitem [ref=e1814]:
+              - link "Try for free" [ref=e1816] [cursor=pointer]:
+                - /url: https://cta-service-cms2.hubspot.com/web-interactives/public/v1/track/click?encryptedPayload=AVxigLKYLMYkSaf9Hnebm3bgtY37dz5wDtoU6isQ2M7jv25rSH9lKBS3BtOJqC23LWuxIpDpiDrDLJAxkEN6cq39kZUsNrPTxnHbPNT4dt%2FV2cO4YTX%2FM67K7UN5Q16tBpxts06nXt0WnOBzmDtJAe8vAo8O5%2BNCUUil%2BuSGRGvzJOOYgWAQJuTVow%3D%3D&portalId=5261428&webInteractiveContentId=168417696582&webInteractiveId=332450923672&containerType=EMBEDDED&pageUrl=https%3A%2F%2Fwww.proposify.com%2F&pageTitle=Proposify+-+Proposal+Software+to+Streamline+Your+Sales+Process&referrer=&userAgent=Mozilla%2F5.0+%28Windows+NT+10.0%3B+Win64%3B+x64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F148.0.0.0+Safari%2F537.36&hutk=7515ce437c368ada4e839f4e7076a4c4&hssc=63846064.1.1779947829816&hstc=63846064.7515ce437c368ada4e839f4e7076a4c4.1779947829816.1779947829816.1779947829816.1&pageId=179749016337&analyticsPageId=179749016337&hsfp=a1d99b77ea9f3c48734b2b29bafed094&canonicalUrl=https%3A%2F%2Fwww.proposify.com&contentType=standard-page
+        - generic [ref=e1824]:
+          - heading "Speed up the signature process 3x faster." [level=2] [ref=e1825]
+          - paragraph [ref=e1826]: Print/sign/scan is for delays and dinosaurs, not modern deals. Esignatures let your prospects sign any time from any device so you can get the deal done and get on with business.
+          - list [ref=e1827]:
+            - listitem [ref=e1828]:
+              - link "Try for free" [ref=e1830] [cursor=pointer]:
+                - /url: https://cta-service-cms2.hubspot.com/web-interactives/public/v1/track/click?encryptedPayload=AVxigLKYLMYkSaf9Hnebm3bgtY37dz5wDtoU6isQ2M7jv25rSH9lKBS3BtOJqC23LWuxIpDpiDrDLJAxkEN6cq39kZUsNrPTxnHbPNT4dt%2FV2cO4YTX%2FM67K7UN5Q16tBpxts06nXt0WnOBzmDtJAe8vAo8O5%2BNCUUil%2BuSGRGvzJOOYgWAQJuTVow%3D%3D&portalId=5261428&webInteractiveContentId=168417696582&webInteractiveId=332450923672&containerType=EMBEDDED&pageUrl=https%3A%2F%2Fwww.proposify.com%2F&pageTitle=Proposify+-+Proposal+Software+to+Streamline+Your+Sales+Process&referrer=&userAgent=Mozilla%2F5.0+%28Windows+NT+10.0%3B+Win64%3B+x64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F148.0.0.0+Safari%2F537.36&hutk=7515ce437c368ada4e839f4e7076a4c4&hssc=63846064.1.1779947829816&hstc=63846064.7515ce437c368ada4e839f4e7076a4c4.1779947829816.1779947829816.1779947829816.1&pageId=179749016337&analyticsPageId=179749016337&hsfp=a1d99b77ea9f3c48734b2b29bafed094&canonicalUrl=https%3A%2F%2Fwww.proposify.com&contentType=standard-page
+        - generic [ref=e1846]:
+          - heading "Track prospect engagement and get ahead of deal killing objections." [level=2] [ref=e1847]
+          - paragraph [ref=e1848]: Gain total visibility into how prospects are interacting with your sales docs. Get notifications when they open the proposal and detailed analytics on the time spent on each section. With this knowledge at your fingertips, you can tailor follow-up strategies and seize opportunities for quicker closes.
+          - list [ref=e1849]:
+            - listitem [ref=e1850]:
+              - link "Try for free" [ref=e1852] [cursor=pointer]:
+                - /url: https://cta-service-cms2.hubspot.com/web-interactives/public/v1/track/click?encryptedPayload=AVxigLKYLMYkSaf9Hnebm3bgtY37dz5wDtoU6isQ2M7jv25rSH9lKBS3BtOJqC23LWuxIpDpiDrDLJAxkEN6cq39kZUsNrPTxnHbPNT4dt%2FV2cO4YTX%2FM67K7UN5Q16tBpxts06nXt0WnOBzmDtJAe8vAo8O5%2BNCUUil%2BuSGRGvzJOOYgWAQJuTVow%3D%3D&portalId=5261428&webInteractiveContentId=168417696582&webInteractiveId=332450923672&containerType=EMBEDDED&pageUrl=https%3A%2F%2Fwww.proposify.com%2F&pageTitle=Proposify+-+Proposal+Software+to+Streamline+Your+Sales+Process&referrer=&userAgent=Mozilla%2F5.0+%28Windows+NT+10.0%3B+Win64%3B+x64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F148.0.0.0+Safari%2F537.36&hutk=7515ce437c368ada4e839f4e7076a4c4&hssc=63846064.1.1779947829816&hstc=63846064.7515ce437c368ada4e839f4e7076a4c4.1779947829816.1779947829816.1779947829816.1&pageId=179749016337&analyticsPageId=179749016337&hsfp=a1d99b77ea9f3c48734b2b29bafed094&canonicalUrl=https%3A%2F%2Fwww.proposify.com&contentType=standard-page
+        - generic [ref=e1858]:
+          - generic [ref=e1860]:
+            - heading "Proposify fits right in with your existing tech stack." [level=2] [ref=e1861]
+            - paragraph [ref=e1862]: Our proposal software integrates effortlessly with most major sales, invoicing, and CRM platforms to ensure it stays the single source of truth. See our integration library to learn more.
+            - paragraph [ref=e1863]:
+              - link "See our full list of integrations" [ref=e1864] [cursor=pointer]:
+                - /url: /platform/integrations
+          - generic [ref=e1866]:
+            - generic [ref=e1868]:
+              - generic:
+                - img "HubSpot Logo"
+            - generic [ref=e1870]:
+              - generic:
+                - img "Salesforce Logo"
+            - generic [ref=e1872]:
+              - generic:
+                - img "Zoho Logo"
+            - generic [ref=e1874]:
+              - generic:
+                - img "Pipedrive Logo"
+            - generic [ref=e1876]:
+              - generic:
+                - img "Gong Logo"
+            - generic [ref=e1878]:
+              - generic:
+                - img "Vidyard Logo"
+            - generic [ref=e1880]:
+              - generic:
+                - img "Zapier Logo"
+            - generic [ref=e1882]:
+              - generic:
+                - img "Intercom Logo"
+            - generic [ref=e1884]:
+              - generic:
+                - img "Stripe Logo"
+        - generic [ref=e1887]:
+          - generic [ref=e1890]:
+            - heading "Don't take our word for it." [level=2] [ref=e1891]
+            - paragraph [ref=e1892]: Proposify is the leading proposal software on G2, Capterra, and other review sites.
+          - generic [ref=e1895]:
+            - generic [ref=e1896]:
+              - generic:
+                - img "G2 2025 Winter - Enterprise - Leader"
+            - generic [ref=e1897]:
+              - generic:
+                - img "G2 2024 - Top 50 Sales Product Badge"
+            - generic [ref=e1898]:
+              - generic:
+                - img "G2 2025 Winter - Mid-Market - Leader"
+        - generic [ref=e1901]:
+          - generic [ref=e1906]:
+            - generic [ref=e1910]:
+              - generic [ref=e1911]:
+                - img [ref=e1912]
+                - img [ref=e1914]
+                - img [ref=e1916]
+                - img [ref=e1918]
+                - img [ref=e1920]
+              - generic [ref=e1922]: Fantastic Business Partner with RockStar Service
+              - paragraph [ref=e1924]: "\"We had a dedicated Proposify Rep who took the time to dig into the details of how our business functions, plus the needs of our emploiyees using the platform. Then they offered training classes to roll things out to the entire team, videos specific to our templates, etc. Absolutely above and beyond service.\""
+              - generic [ref=e1926]:
+                - img "Katy M. Senior Account Manager" [ref=e1929]
+                - generic [ref=e1931]:
+                  - text: Katy M.
+                  - generic [ref=e1932]: Senior Account Manager
+            - generic [ref=e1936]:
+              - generic [ref=e1937]:
+                - img [ref=e1938]
+                - img [ref=e1940]
+                - img [ref=e1942]
+                - img [ref=e1944]
+                - img [ref=e1946]
+              - generic [ref=e1948]: OBSESSED!
+              - paragraph [ref=e1950]: "\"I love the simplicity Proposify offers. Not only is it easy to modify my proposals, it's a clean look for my customers and makes our SOW very definable. I love the ability to look at metrics as well as to who is viewing my proposal and when.\""
+              - generic [ref=e1952]:
+                - img "Aubrey E, Vice President of Sales" [ref=e1955]
+                - generic [ref=e1957]:
+                  - text: Aubrey E.
+                  - generic [ref=e1958]: Vice President of Sales
+            - generic [ref=e1962]:
+              - generic [ref=e1963]:
+                - img [ref=e1964]
+                - img [ref=e1966]
+                - img [ref=e1968]
+                - img [ref=e1970]
+                - img [ref=e1972]
+              - generic [ref=e1974]: Wonderful Software
+              - paragraph [ref=e1976]: "\"It's very user friendly and extremely easy for the client to follow. I love how customizable it is an how impressive it looks when I send my proposals to clients.\""
+              - generic [ref=e1978]:
+                - img "Teresa K., Sales manager" [ref=e1981]
+                - generic [ref=e1983]:
+                  - text: Teresa K.
+                  - generic [ref=e1984]: Sales manager
+          - list [ref=e1988]:
+            - listitem [ref=e1989]:
+              - link "Get started for free" [ref=e1990] [cursor=pointer]:
+                - /url: https://app.proposify.com/register
+            - listitem [ref=e1991]:
+              - link "Book a demo" [ref=e1993] [cursor=pointer]:
+                - /url: https://cta-service-cms2.hubspot.com/web-interactives/public/v1/track/click?encryptedPayload=AVxigLInsjzNvLO2NegtqRnMpJ3hTs4eTFpJx%2BTpNaXgN5M8XFTDb4iT81rmsVwjCuOEhvCRw4UBQSWaxZE1V3o6ky1EqGKxxr0fNjqWimqmP7KttRVQXo9Q6x5rZrtOh2M24hSThKTKxDaj%2BmS0O2BMhcD284usxB10%2BSDqRRjSC1%2FyiQ%3D%3D&portalId=5261428&webInteractiveContentId=168417696582&webInteractiveId=332450923672&containerType=EMBEDDED&pageUrl=https%3A%2F%2Fwww.proposify.com%2F&pageTitle=Proposify+-+Proposal+Software+to+Streamline+Your+Sales+Process&referrer=&userAgent=Mozilla%2F5.0+%28Windows+NT+10.0%3B+Win64%3B+x64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F148.0.0.0+Safari%2F537.36&hutk=7515ce437c368ada4e839f4e7076a4c4&hssc=63846064.1.1779947829816&hstc=63846064.7515ce437c368ada4e839f4e7076a4c4.1779947829816.1779947829816.1779947829816.1&pageId=179749016337&analyticsPageId=179749016337&hsfp=a1d99b77ea9f3c48734b2b29bafed094&canonicalUrl=https%3A%2F%2Fwww.proposify.com&contentType=standard-page
+        - generic [ref=e1996]:
+          - generic [ref=e1999]:
+            - heading "Design the proposal dreams (and deals) are made of." [level=2] [ref=e2000]:
+              - text: Design the proposal dreams (and deals)
+              - text: are made of.
+            - paragraph [ref=e2001]: Unlimited flexibility to design beautiful proposal templates customized to your unique brand. No time to design your own? No problem. Our Professional Services team will build an interactive template based on your brand and our best practices.
+          - generic [ref=e2004]:
+            - generic [ref=e2005]:
+              - img "Accounting Proposal Template Thumbnail" [ref=e2007]
+              - img "Advertising Proposal Template Thumbnail" [ref=e2009]
+              - img "AdWords & PPC Proposal Template Thumbnail" [ref=e2011]
+              - img "Architecture Proposal Template Thumbnail" [ref=e2013]
+              - img "Audio Visual Proposal Template Thumbnail" [ref=e2015]
+              - img "Branding Proposal Template Thumbnail" [ref=e2017]
+              - img "Business Consulting Proposal Template Thumbnail" [ref=e2019]
+              - img "Catering Proposal Template Thumbnail" [ref=e2021]
+              - img "Catering Quote Template Thumbnail" [ref=e2023]
+              - img "Accounting Proposal Template Thumbnail" [ref=e2025]
+              - img "Advertising Proposal Template Thumbnail" [ref=e2027]
+              - img "AdWords & PPC Proposal Template Thumbnail" [ref=e2029]
+              - img "Architecture Proposal Template Thumbnail" [ref=e2031]
+              - img "Audio Visual Proposal Template Thumbnail" [ref=e2033]
+              - img "Branding Proposal Template Thumbnail" [ref=e2035]
+              - img "Business Consulting Proposal Template Thumbnail" [ref=e2037]
+              - img "Catering Proposal Template Thumbnail" [ref=e2039]
+              - img "Catering Quote Template Thumbnail" [ref=e2041]
+              - img "Accounting Proposal Template Thumbnail" [ref=e2043]
+              - img "Advertising Proposal Template Thumbnail" [ref=e2045]
+              - img "AdWords & PPC Proposal Template Thumbnail" [ref=e2047]
+              - img "Architecture Proposal Template Thumbnail" [ref=e2049]
+              - img "Audio Visual Proposal Template Thumbnail" [ref=e2051]
+              - img "Branding Proposal Template Thumbnail" [ref=e2053]
+              - img "Business Consulting Proposal Template Thumbnail" [ref=e2055]
+              - img "Catering Proposal Template Thumbnail" [ref=e2057]
+              - img "Catering Quote Template Thumbnail" [ref=e2059]
+              - img "Accounting Proposal Template Thumbnail" [ref=e2061]
+              - img "Advertising Proposal Template Thumbnail" [ref=e2063]
+              - img "AdWords & PPC Proposal Template Thumbnail" [ref=e2065]
+              - img "Architecture Proposal Template Thumbnail" [ref=e2067]
+              - img "Audio Visual Proposal Template Thumbnail" [ref=e2069]
+              - img "Branding Proposal Template Thumbnail" [ref=e2071]
+              - img "Business Consulting Proposal Template Thumbnail" [ref=e2073]
+              - img "Catering Proposal Template Thumbnail" [ref=e2075]
+              - img "Catering Quote Template Thumbnail" [ref=e2077]
+            - generic [ref=e2078]:
+              - img "Cleaning Services Proposal Template Thumbnail" [ref=e2080]
+              - img "Commercial Lease Proposal Template Thumbnail" [ref=e2082]
+              - img "Concrete Proposal Template Thumbnail" [ref=e2084]
+              - img "Construction Bid Template Thumbnail" [ref=e2086]
+              - img "Construction Equipment Proposal Template Thumbnail" [ref=e2088]
+              - img "Construction Job Template Thumbnail" [ref=e2090]
+              - img "Construction Proposal Template Thumbnail" [ref=e2092]
+              - img "Construction Quote Template Thumbnail" [ref=e2094]
+              - img "Content Marketing Proposal Template Thumbnail" [ref=e2096]
+              - img "Contractor Proposal Template Thumbnail" [ref=e2098]
+              - img "Corporate Photography Template Thumbnail" [ref=e2100]
+              - img "Cleaning Services Proposal Template Thumbnail" [ref=e2102]
+              - img "Commercial Lease Proposal Template Thumbnail" [ref=e2104]
+              - img "Concrete Proposal Template Thumbnail" [ref=e2106]
+              - img "Construction Bid Template Thumbnail" [ref=e2108]
+              - img "Construction Equipment Proposal Template Thumbnail" [ref=e2110]
+              - img "Construction Job Template Thumbnail" [ref=e2112]
+              - img "Construction Proposal Template Thumbnail" [ref=e2114]
+              - img "Construction Quote Template Thumbnail" [ref=e2116]
+              - img "Content Marketing Proposal Template Thumbnail" [ref=e2118]
+              - img "Contractor Proposal Template Thumbnail" [ref=e2120]
+              - img "Corporate Photography Template Thumbnail" [ref=e2122]
+              - img "Cleaning Services Proposal Template Thumbnail" [ref=e2124]
+              - img "Commercial Lease Proposal Template Thumbnail" [ref=e2126]
+              - img "Concrete Proposal Template Thumbnail" [ref=e2128]
+              - img "Construction Bid Template Thumbnail" [ref=e2130]
+              - img "Construction Equipment Proposal Template Thumbnail" [ref=e2132]
+              - img "Construction Job Template Thumbnail" [ref=e2134]
+              - img "Construction Proposal Template Thumbnail" [ref=e2136]
+              - img "Construction Quote Template Thumbnail" [ref=e2138]
+              - img "Content Marketing Proposal Template Thumbnail" [ref=e2140]
+              - img "Contractor Proposal Template Thumbnail" [ref=e2142]
+              - img "Corporate Photography Template Thumbnail" [ref=e2144]
+              - img "Cleaning Services Proposal Template Thumbnail" [ref=e2146]
+              - img "Commercial Lease Proposal Template Thumbnail" [ref=e2148]
+              - img "Concrete Proposal Template Thumbnail" [ref=e2150]
+              - img "Construction Bid Template Thumbnail" [ref=e2152]
+              - img "Construction Equipment Proposal Template Thumbnail" [ref=e2154]
+              - img "Construction Job Template Thumbnail" [ref=e2156]
+              - img "Construction Proposal Template Thumbnail" [ref=e2158]
+              - img "Construction Quote Template Thumbnail" [ref=e2160]
+              - img "Content Marketing Proposal Template Thumbnail" [ref=e2162]
+              - img "Contractor Proposal Template Thumbnail" [ref=e2164]
+              - img "Corporate Photography Template Thumbnail" [ref=e2166]
+        - generic [ref=e2175]:
+          - generic:
+            - generic:
+              - generic:
+                - img "We Treat logo"
+          - generic [ref=e2176]:
+            - paragraph [ref=e2178]: "\"Proposify is a game changer for us. It gives my company the ability to portray the complexity of our value proposition to our clients in a beautiful and impressive way, using a multi-page proposal that is flexible with so many features. Since launching our customized proposal template our close rate seems to have doubled. Definitely pay for the design service, well worth the money."
+            - generic [ref=e2180]:
+              - img "Jennings Staley, Chief Executive Officer at We Treat" [ref=e2183]
+              - generic [ref=e2185]:
+                - text: Jennings Staley
+                - generic [ref=e2186]: Chief Executive Officer at We Treat
+        - generic [ref=e2192]:
+          - generic [ref=e2194]:
+            - heading "Our software is awesome but our people are awesomer." [level=2] [ref=e2195]
+            - paragraph [ref=e2196]: Yes, that's a word, and yes, our Customer Success team is really all THAT. We get literal love letters about how the team didn’t just save the day, they saved the DEAL. Real people ready to answer your questions, optimize your sales workflow, offer a video walkthrough, or guidance on customizing your template. They answer to a high calling and it’s all about helping you get the most out of Proposify. Awesome, right?
+          - img "Proposify Support" [ref=e2200]
+        - generic [ref=e2208]:
+          - generic [ref=e2212]:
+            - generic [ref=e2213]:
+              - img [ref=e2214]
+              - img [ref=e2216]
+              - img [ref=e2218]
+              - img [ref=e2220]
+              - img [ref=e2222]
+            - generic [ref=e2224]: Streamlined!
+            - paragraph [ref=e2226]: “The ease of use and the ability to track proposals in process. We are able to quickly generate proposals that are easy for our clients to review and sign. The tracking aspects help us forecast wins. Saving time on proposal generation has kept our salespeople out of the office and in front of prospects more”
+            - generic [ref=e2228]:
+              - img "Francis L., Service Sales Manager" [ref=e2231]
+              - generic [ref=e2233]:
+                - text: Francis L.
+                - generic [ref=e2234]: Service Sales Manager
+          - generic [ref=e2238]:
+            - generic [ref=e2239]:
+              - img [ref=e2240]
+              - img [ref=e2242]
+              - img [ref=e2244]
+              - img [ref=e2246]
+              - img [ref=e2248]
+            - generic [ref=e2250]: Simple to create professional and e-signable proposals
+            - paragraph [ref=e2252]: “With the library of content and the simple drag-and-drop nature of Proposify, I can quickly create a wide variety of documents and proposals that look extremely professional. It is simple to add a signature or initial field. I can knock out proposals in a minute that used to take 15 minutes.”
+            - generic [ref=e2254]:
+              - img "Jake M., Vice President of Sales" [ref=e2257]
+              - generic [ref=e2259]:
+                - text: Jake M.
+                - generic [ref=e2260]: Vice President of Sales
+          - generic [ref=e2264]:
+            - generic [ref=e2265]:
+              - img [ref=e2266]
+              - img [ref=e2268]
+              - img [ref=e2270]
+              - img [ref=e2272]
+              - img [ref=e2274]
+            - generic [ref=e2276]: Radically streamlined proposals for my company
+            - paragraph [ref=e2278]: “Proposify has radically streamlined proposals for my company and we get proposals to our clients 10x faster. In addition, they look much more professional and have many tools to help make the proposals look great.”
+            - generic [ref=e2280]:
+              - img "Michael Evan B., Austin Branch Manager" [ref=e2283]
+              - generic [ref=e2285]:
+                - text: Michael Evan B.
+                - generic [ref=e2286]: Austin Branch Manager
+        - generic [ref=e2293]:
+          - heading "Don't waste another deal-breaking moment. Turn chaos into close." [level=2] [ref=e2294]:
+            - text: Don't waste another deal-breaking moment.
+            - generic [ref=e2295]:
+              - text: Turn chaos into
+              - generic [ref=e2296]: close.
+          - list [ref=e2297]:
+            - listitem [ref=e2298]:
+              - link "Start free trial" [ref=e2300] [cursor=pointer]:
+                - /url: https://cta-service-cms2.hubspot.com/web-interactives/public/v1/track/click?encryptedPayload=AVxigLJE90AWOP75ukNb0AigX%2FY%2BqJsoYC0zzqBWgJenGCGnnwZId4nmca%2BIDqcmCy1pigvuZdgAX1h9ytc6D8SBCz02KORN3JVp1KIoT6E7eoKUW4lIBS9cL6X8lwn9mVrIBRmj6biJTGWzX%2BpzOdAEUz1aY1yjjxAlw5m73qnUmEoO%2BTNuFK0LVg%3D%3D&portalId=5261428&webInteractiveContentId=168417696582&webInteractiveId=332450923672&containerType=EMBEDDED&pageUrl=https%3A%2F%2Fwww.proposify.com%2F&pageTitle=Proposify+-+Proposal+Software+to+Streamline+Your+Sales+Process&referrer=&userAgent=Mozilla%2F5.0+%28Windows+NT+10.0%3B+Win64%3B+x64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F148.0.0.0+Safari%2F537.36&hutk=7515ce437c368ada4e839f4e7076a4c4&hssc=63846064.1.1779947829816&hstc=63846064.7515ce437c368ada4e839f4e7076a4c4.1779947829816.1779947829816.1779947829816.1&pageId=179749016337&analyticsPageId=179749016337&hsfp=a1d99b77ea9f3c48734b2b29bafed094&canonicalUrl=https%3A%2F%2Fwww.proposify.com&contentType=standard-page
+            - listitem [ref=e2301]:
+              - link "Book a demo" [ref=e2303] [cursor=pointer]:
+                - /url: https://cta-service-cms2.hubspot.com/web-interactives/public/v1/track/click?encryptedPayload=AVxigLJzPzCt7kEYfb1q8%2Ff8qqHS4rWjRl8KSKIDXP2Zqa41WkyehxZSBfuXvra%2F4PhH%2FuS523%2FlwRFWTK%2FttXRY%2Fcz8LU%2FjzXTIAv6Ff09WIJ549VFkSySuWre7Da20vXKYxD9cWYV45NeQMRB8X%2BCad60LYAQ1XdqVMfEo4Uhs6vZMBg%3D%3D&portalId=5261428&webInteractiveContentId=168417696582&webInteractiveId=332450923672&containerType=EMBEDDED&pageUrl=https%3A%2F%2Fwww.proposify.com%2F&pageTitle=Proposify+-+Proposal+Software+to+Streamline+Your+Sales+Process&referrer=&userAgent=Mozilla%2F5.0+%28Windows+NT+10.0%3B+Win64%3B+x64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F148.0.0.0+Safari%2F537.36&hutk=7515ce437c368ada4e839f4e7076a4c4&hssc=63846064.1.1779947829816&hstc=63846064.7515ce437c368ada4e839f4e7076a4c4.1779947829816.1779947829816.1779947829816.1&pageId=179749016337&analyticsPageId=179749016337&hsfp=a1d99b77ea9f3c48734b2b29bafed094&canonicalUrl=https%3A%2F%2Fwww.proposify.com&contentType=standard-page
+        - generic [ref=e2307]:
+          - button [ref=e2308]:
+            - img [ref=e2309]
+          - generic [ref=e2311]:
+            - generic [ref=e2312]: "Leaving money on the table with proposals? Get our data-backed hacks to smarter selling: 2026 State of Proposals."
+            - link "Learn more " [ref=e2314] [cursor=pointer]:
+              - /url: https://www.proposify.com/state-of-proposals
+    - contentinfo [ref=e2316]:
+      - generic [ref=e2317]:
+        - generic [ref=e2318]:
+          - img "Proposify logo" [ref=e2321]
+          - navigation "Navigation Menu" [ref=e2324]:
+            - menu [ref=e2325]:
+              - menuitem "Platform" [ref=e2326] [cursor=pointer]
+              - menu [ref=e2327]:
+                - menuitem "Proposal Automation" [ref=e2328] [cursor=pointer]
+                - menuitem "Quoting" [ref=e2329] [cursor=pointer]
+                - menuitem "Contract Management" [ref=e2330] [cursor=pointer]
+                - menuitem "E-Signatures & Forms" [ref=e2331] [cursor=pointer]
+                - menuitem "Integrations" [ref=e2332] [cursor=pointer]
+                - menuitem "API" [ref=e2333] [cursor=pointer]
+                - menuitem "Security" [ref=e2334] [cursor=pointer]
+                - menuitem "Our Professional Services" [ref=e2335] [cursor=pointer]
+              - menuitem "Solutions" [ref=e2336] [cursor=pointer]
+              - menu [ref=e2337]:
+                - menuitem "Sales" [ref=e2338] [cursor=pointer]
+                - menuitem "Marketing" [ref=e2339] [cursor=pointer]
+                - menuitem "IT/Operations" [ref=e2340] [cursor=pointer]
+              - menuitem "Compare" [ref=e2341] [cursor=pointer]
+              - menu [ref=e2342]:
+                - menuitem "PandaDoc" [ref=e2343] [cursor=pointer]
+                - menuitem "DocuSign" [ref=e2344] [cursor=pointer]
+                - menuitem "Qwilr" [ref=e2345] [cursor=pointer]
+                - menuitem "Better Proposals" [ref=e2346] [cursor=pointer]
+                - menuitem "Conga" [ref=e2347] [cursor=pointer]
+              - menuitem "Resources" [ref=e2348] [cursor=pointer]
+              - menu [ref=e2349]:
+                - menuitem "Blog" [ref=e2350] [cursor=pointer]
+                - menuitem "Templates" [ref=e2351] [cursor=pointer]
+                - menuitem "Webinars" [ref=e2352] [cursor=pointer]
+                - menuitem "Books & Guides" [ref=e2353] [cursor=pointer]
+                - menuitem "Knowledge Base" [ref=e2354] [cursor=pointer]
+                - menuitem "Status" [ref=e2355] [cursor=pointer]
+                - menuitem "AI Proposal Generator" [ref=e2356] [cursor=pointer]
+              - menuitem "Company" [ref=e2357] [cursor=pointer]
+              - menu [ref=e2358]:
+                - menuitem "About" [ref=e2359] [cursor=pointer]
+                - menuitem "Diversity" [ref=e2360] [cursor=pointer]
+                - menuitem "Careers" [ref=e2361] [cursor=pointer]
+                - menuitem "Customers" [ref=e2362] [cursor=pointer]
+        - generic [ref=e2363]:
+          - generic [ref=e2364]:
+            - generic [ref=e2365]: ©2026 Proposify Inc. All rights reserved.
+            - navigation "Navigation Menu" [ref=e2367]:
+              - menu [ref=e2368]:
+                - menuitem "Contact Us" [ref=e2369] [cursor=pointer]
+                - menuitem "Privacy Policy" [ref=e2370] [cursor=pointer]
+                - menuitem "Terms & Conditions" [ref=e2371] [cursor=pointer]
+                - menuitem "Status" [ref=e2372] [cursor=pointer]
+          - navigation "Navigation Menu" [ref=e2375]:
+            - menu [ref=e2376]:
+              - menuitem "Linkedin" [ref=e2377] [cursor=pointer]:
+                - img [ref=e2378]
+              - menuitem "Facebook" [ref=e2380] [cursor=pointer]:
+                - img [ref=e2381]
+              - menuitem "Instagram" [ref=e2383] [cursor=pointer]:
+                - img [ref=e2384]
+    - generic: $1.99/additional send $8/month/additional seat Minimum seat count of 10 required Pricing starts at $1,500
+  - region "Chat Widget" [ref=e2386]:
+    - iframe [ref=e2387]:
+      - button "Open live chat" [ref=f18e3] [cursor=pointer]:
+        - generic [ref=f18e4]:
+          - img [ref=f18e6]
+          - generic [ref=f18e11]: Ask me anything…
+        - img [ref=f18e13]

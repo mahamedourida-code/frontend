@@ -1,0 +1,421 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - link "AxLiner home" [ref=e8] [cursor=pointer]:
+        - /url: /
+        - img "AxLiner" [ref=e9]
+    - main [ref=e13]:
+      - generic [ref=e15]:
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - heading "Handwritten images to Excel in seconds" [level=1] [ref=e20]
+            - paragraph [ref=e21]: Upload handwritten tables, class notes, invoices, receipts, paper forms, and screenshots from any workflow. AxLiner reads the structure, preserves the rows and columns, and gives you clean Excel files you can review, edit, share, or use in reporting without retyping everything by hand.
+            - generic [ref=e22]:
+              - button "Try It" [ref=e23]
+              - generic [ref=e24]:
+                - generic [ref=e25]:
+                  - img "User 1" [ref=e26]
+                  - img "User 2" [ref=e27]
+                  - img "User 3" [ref=e28]
+                  - img "User 4" [ref=e29]
+                  - img "User 5" [ref=e30]
+                - generic [ref=e32]:
+                  - paragraph [ref=e33]: 5,000+
+                  - paragraph [ref=e34]: active teams
+          - img "AxLiner document conversion illustration" [ref=e38]
+        - heading "Try It" [level=2] [ref=e44]
+      - region "Ink to spreadsheet cinematic" [ref=e45]:
+        - img [ref=e46]
+      - generic [ref=e47]:
+        - generic [ref=e51]:
+          - heading "Chosen by experts at top organizations" [level=2] [ref=e54]
+          - generic [ref=e56]:
+            - img "Company 1" [ref=e59]
+            - img "Company 2" [ref=e62]
+            - img "Company 3" [ref=e65]
+            - img "Company 4" [ref=e68]
+            - img "Company 5" [ref=e71]
+            - img "Company 6" [ref=e74]
+            - img "Company 7" [ref=e77]
+            - img "Company 8" [ref=e80]
+            - img "Company 9" [ref=e83]
+            - img "Company 1" [ref=e86]
+            - img "Company 2" [ref=e89]
+            - img "Company 3" [ref=e92]
+            - img "Company 4" [ref=e95]
+            - img "Company 5" [ref=e98]
+            - img "Company 6" [ref=e101]
+            - img "Company 7" [ref=e104]
+            - img "Company 8" [ref=e107]
+            - img "Company 9" [ref=e110]
+            - img "Company 1" [ref=e113]
+            - img "Company 2" [ref=e116]
+            - img "Company 3" [ref=e119]
+            - img "Company 4" [ref=e122]
+            - img "Company 5" [ref=e125]
+            - img "Company 6" [ref=e128]
+            - img "Company 7" [ref=e131]
+            - img "Company 8" [ref=e134]
+            - img "Company 9" [ref=e137]
+            - img "Company 1" [ref=e140]
+            - img "Company 2" [ref=e143]
+            - img "Company 3" [ref=e146]
+            - img "Company 4" [ref=e149]
+            - img "Company 5" [ref=e152]
+            - img "Company 6" [ref=e155]
+            - img "Company 7" [ref=e158]
+            - img "Company 8" [ref=e161]
+            - img "Company 9" [ref=e164]
+            - img "Company 1" [ref=e167]
+            - img "Company 2" [ref=e170]
+            - img "Company 3" [ref=e173]
+            - img "Company 4" [ref=e176]
+            - img "Company 5" [ref=e179]
+            - img "Company 6" [ref=e182]
+            - img "Company 7" [ref=e185]
+            - img "Company 8" [ref=e188]
+            - img "Company 9" [ref=e191]
+            - img "Company 1" [ref=e194]
+            - img "Company 2" [ref=e197]
+            - img "Company 3" [ref=e200]
+            - img "Company 4" [ref=e203]
+            - img "Company 5" [ref=e206]
+            - img "Company 6" [ref=e209]
+            - img "Company 7" [ref=e212]
+            - img "Company 8" [ref=e215]
+            - img "Company 9" [ref=e218]
+            - img "Company 1" [ref=e221]
+            - img "Company 2" [ref=e224]
+            - img "Company 3" [ref=e227]
+            - img "Company 4" [ref=e230]
+            - img "Company 5" [ref=e233]
+            - img "Company 6" [ref=e236]
+            - img "Company 7" [ref=e239]
+            - img "Company 8" [ref=e242]
+            - img "Company 9" [ref=e245]
+            - img "Company 1" [ref=e248]
+            - img "Company 2" [ref=e251]
+            - img "Company 3" [ref=e254]
+            - img "Company 4" [ref=e257]
+            - img "Company 5" [ref=e260]
+            - img "Company 6" [ref=e263]
+            - img "Company 7" [ref=e266]
+            - img "Company 8" [ref=e269]
+            - img "Company 9" [ref=e272]
+            - img "Company 1" [ref=e275]
+            - img "Company 2" [ref=e278]
+            - img "Company 3" [ref=e281]
+            - img "Company 4" [ref=e284]
+            - img "Company 5" [ref=e287]
+            - img "Company 6" [ref=e290]
+            - img "Company 7" [ref=e293]
+            - img "Company 8" [ref=e296]
+            - img "Company 9" [ref=e299]
+            - img "Company 1" [ref=e302]
+            - img "Company 2" [ref=e305]
+            - img "Company 3" [ref=e308]
+            - img "Company 4" [ref=e311]
+            - img "Company 5" [ref=e314]
+            - img "Company 6" [ref=e317]
+            - img "Company 7" [ref=e320]
+            - img "Company 8" [ref=e323]
+            - img "Company 9" [ref=e326]
+        - generic [ref=e328]:
+          - generic [ref=e330]:
+            - heading "Solutions" [level=2] [ref=e333]
+            - generic [ref=e334]:
+              - generic [ref=e338]:
+                - generic [ref=e339]: Accounting
+                - generic [ref=e340]: Automate the most time-consuming parts of accounting workflows. Extract clean spreadsheet data from receipts, invoices, bank statements, and expense reports so teams can reduce manual entry and focus on review.
+                - link "Discover More" [ref=e341] [cursor=pointer]:
+                  - /url: /solutions/accounting
+                  - generic [ref=e342]: Discover More
+              - generic [ref=e349]:
+                - generic [ref=e350]: Banking
+                - generic [ref=e351]: Modernize document-heavy financial operations with structured extraction for checks, loan applications, statements, onboarding packets, and KYC documents while keeping every row ready for downstream review.
+                - link "Discover More" [ref=e352] [cursor=pointer]:
+                  - /url: /solutions/banking
+                  - generic [ref=e353]: Discover More
+              - generic [ref=e360]:
+                - generic [ref=e361]: Backoffice Automation
+                - generic [ref=e362]: Remove repetitive data entry from internal operations. Turn invoices, forms, receipts, and handwritten tables into usable Excel files that can feed finance, admin, and operations workflows.
+                - link "Discover More" [ref=e363] [cursor=pointer]:
+                  - /url: /solutions/backoffice-automation
+                  - generic [ref=e364]: Discover More
+              - generic [ref=e371]:
+                - generic [ref=e372]: Construction
+                - generic [ref=e373]: Convert site notes, delivery forms, checklists, material logs, and handwritten field tables into clean spreadsheets so project teams can keep records current without retyping paperwork.
+                - link "Discover More" [ref=e374] [cursor=pointer]:
+                  - /url: /solutions/construction
+                  - generic [ref=e375]: Discover More
+              - generic [ref=e382]:
+                - generic [ref=e383]: CPG Brands
+                - generic [ref=e384]: Process retail forms, inventory sheets, distributor paperwork, purchase records, and field reports into structured data that merchandising and operations teams can compare quickly.
+                - link "Discover More" [ref=e385] [cursor=pointer]:
+                  - /url: /solutions/cpg-brands
+                  - generic [ref=e386]: Discover More
+              - generic [ref=e393]:
+                - generic [ref=e394]: FinTech
+                - generic [ref=e395]: Build document intake flows for financial products without asking users or operators to key in every table manually. Extract page-level data into spreadsheets that are easy to validate.
+                - link "Discover More" [ref=e396] [cursor=pointer]:
+                  - /url: /solutions/fintech
+                  - generic [ref=e397]: Discover More
+              - generic [ref=e404]:
+                - generic [ref=e405]: Healthcare
+                - generic [ref=e406]: Digitize handwritten logs, intake forms, lab sheets, inventory notes, and administrative records while preserving the table structure needed for review, reporting, and internal handoff.
+                - link "Discover More" [ref=e407] [cursor=pointer]:
+                  - /url: /solutions/healthcare
+                  - generic [ref=e408]: Discover More
+              - generic [ref=e415]:
+                - generic [ref=e416]: Real Estate
+                - generic [ref=e417]: Turn lease packets, inspection forms, closing checklists, rent rolls, and property records into organized spreadsheets for brokers, managers, and operations teams.
+                - link "Discover More" [ref=e418] [cursor=pointer]:
+                  - /url: /solutions/real-estate
+                  - generic [ref=e419]: Discover More
+          - generic [ref=e425]:
+            - generic [ref=e426]:
+              - heading "Benchmarks" [level=2] [ref=e428]
+              - paragraph [ref=e429]: Benchmarked against major cloud providers on real-world handwritten documents and complex table structures.
+            - generic [ref=e432]:
+              - generic [ref=e433]:
+                - generic [ref=e434]: Comprehensive Performance Metrics
+                - paragraph [ref=e435]: Average across all test scenarios
+              - table [ref=e438]:
+                - rowgroup [ref=e439]:
+                  - row "Metric AxLiner Industry Avg" [ref=e440]:
+                    - columnheader "Metric" [ref=e441]
+                    - columnheader "AxLiner" [ref=e442]
+                    - columnheader "Industry Avg" [ref=e443]
+                - rowgroup [ref=e444]:
+                  - row "Character Error Rate 3.2% 5.8%" [ref=e445]:
+                    - cell "Character Error Rate" [ref=e446]
+                    - cell "3.2%" [ref=e447]
+                    - cell "5.8%" [ref=e448]
+                  - row "Word Recognition 99.5% 95.1%" [ref=e449]:
+                    - cell "Word Recognition" [ref=e450]
+                    - cell "99.5%" [ref=e451]
+                    - cell "95.1%" [ref=e452]
+                  - row "Table Structure 99.1% 92.3%" [ref=e453]:
+                    - cell "Table Structure" [ref=e454]
+                    - cell "99.1%" [ref=e455]
+                    - cell "92.3%" [ref=e456]
+                  - row "Noisy Image Handling 94.7% 87.2%" [ref=e457]:
+                    - cell "Noisy Image Handling" [ref=e458]
+                    - cell "94.7%" [ref=e459]
+                    - cell "87.2%" [ref=e460]
+                  - row "Mixed Font Recognition 97.9% 94.6%" [ref=e461]:
+                    - cell "Mixed Font Recognition" [ref=e462]
+                    - cell "97.9%" [ref=e463]
+                    - cell "94.6%" [ref=e464]
+                  - row "Processing Speed 0.8s/page 2.1s/page" [ref=e465]:
+                    - cell "Processing Speed" [ref=e466]
+                    - cell "0.8s/page" [ref=e467]
+                    - cell "2.1s/page" [ref=e468]
+          - generic [ref=e470]:
+            - generic [ref=e471]:
+              - paragraph [ref=e472]: Not a third-party wrapper
+              - heading "OCR infrastructure controlled around your batch workflow." [level=2] [ref=e473]
+              - paragraph [ref=e474]: AxLiner controls queue admission, file ownership, recovery, exports, and download permissions around the model call. That is the difference between a demo wrapper and a product that can survive real batch work.
+            - generic [ref=e475]:
+              - img "AxLiner server processing layer" [ref=e477]
+              - generic [ref=e478]:
+                - generic [ref=e479]:
+                  - paragraph [ref=e480]: "01"
+                  - paragraph [ref=e481]: AxLiner owns the job queue, file metadata, download permissions, export layer, and recovery flow around every batch. Each file stays tied to a durable owner so status, sharing, and downloads follow the same access model.
+                - generic [ref=e482]:
+                  - paragraph [ref=e483]: "02"
+                  - paragraph [ref=e484]: The product is shaped for handwritten tables and spreadsheet review, not a generic OCR wrapper stitched into a landing page. Every result is prepared for rows, columns, review, and clean export instead of loose extracted text.
+                - generic [ref=e485]:
+                  - paragraph [ref=e486]: "03"
+                  - paragraph [ref=e487]: External infrastructure can sit behind the pipeline, but the workflow, storage model, and user experience stay controlled by AxLiner. That keeps retries, batch recovery, and output delivery predictable for real users.
+      - generic [ref=e489]:
+        - generic [ref=e492]:
+          - heading "How AxLiner's Engine Is Built" [level=2] [ref=e496]
+          - generic [ref=e497]:
+            - generic [ref=e498]:
+              - generic [ref=e500]:
+                - generic [ref=e501]:
+                  - paragraph [ref=e502]: Model stack
+                  - generic [ref=e503]: Fine-tuned VLM for handwritten tables
+                  - generic [ref=e504]: AxLiner's OCR path is shaped around a 7B vision-language model in the Qwen2-VL family, adapted for document images, table recovery, and spreadsheet-ready output.
+                - generic [ref=e505]: Qwen2-VL-7B style base
+              - generic [ref=e506]:
+                - generic [ref=e507]:
+                  - generic [ref=e508]: "01"
+                  - generic [ref=e509]:
+                    - paragraph [ref=e510]: Vision encoder
+                    - paragraph [ref=e511]: Document pages are normalized into visual tokens so handwriting, ruled tables, stamps, and noisy phone captures stay readable.
+                - generic [ref=e512]:
+                  - generic [ref=e513]: "02"
+                  - generic [ref=e514]:
+                    - paragraph [ref=e515]: Instruction tuning
+                    - paragraph [ref=e516]: The model is tuned with OCR-style prompts, table reconstruction targets, and cell-aware extraction examples instead of generic chat answers.
+                - generic [ref=e517]:
+                  - generic [ref=e518]: "03"
+                  - generic [ref=e519]:
+                    - paragraph [ref=e520]: Schema alignment
+                    - paragraph [ref=e521]: Rows, headers, merged cells, totals, and column boundaries are rebuilt before export so the output behaves like a spreadsheet.
+                - generic [ref=e522]:
+                  - generic [ref=e523]: "04"
+                  - generic [ref=e524]:
+                    - paragraph [ref=e525]: Batch orchestration
+                    - paragraph [ref=e526]: Redis-backed jobs, deterministic file metadata, and retry-safe workers keep multi-file processing recoverable.
+            - generic [ref=e528]:
+              - generic [ref=e529]:
+                - generic [ref=e530]: Extraction telemetry
+                - generic [ref=e531]: Compact signals inspired by operator dashboards, not generic AI cards.
+              - generic [ref=e532]:
+                - generic [ref=e533]:
+                  - generic [ref=e534]:
+                    - generic [ref=e535]: Vision
+                    - generic [ref=e536]: page patches, rotation, noise cleanup
+                    - generic [ref=e537]: ready
+                  - generic [ref=e538]:
+                    - generic [ref=e539]: Language
+                    - generic [ref=e540]: handwriting tokens and table prompts
+                    - generic [ref=e541]: tuned
+                  - generic [ref=e542]:
+                    - generic [ref=e543]: Export
+                    - generic [ref=e544]: cell graph to spreadsheet schema
+                    - generic [ref=e545]: xlsx
+                - generic [ref=e556]:
+                  - generic [ref=e557]: image
+                  - generic [ref=e558]: tokens
+                  - generic [ref=e559]: xlsx
+          - paragraph [ref=e561]: "Designed for operators: the model work, queue logic, and export layer are all shaped around the spreadsheet people need after upload."
+        - generic [ref=e563]:
+          - generic [ref=e564]:
+            - generic [ref=e565]:
+              - paragraph [ref=e566]: Security & Compliance
+              - heading "Your Data Security Guaranteed" [level=2] [ref=e567]
+              - img "Secure digital document processing" [ref=e569]
+            - generic [ref=e570]:
+              - paragraph [ref=e571]: At AxLiner, your data is treated with utmost care. We build around global data protection expectations and international privacy requirements for document processing workflows.
+              - generic [ref=e572]:
+                - generic [ref=e576]: ISO 27001-aligned security controls
+                - generic [ref=e580]: Built for GDPR, SOC 2, CCPA and HIPAA-conscious workflows
+                - generic [ref=e584]: Secure infrastructure across Supabase, Fly.io and Vercel
+              - link "More Information" [ref=e585] [cursor=pointer]:
+                - /url: /privacy-policy
+          - heading "Frequently Asked Questions" [level=3] [ref=e587]
+          - generic [ref=e588]:
+            - group [ref=e589]:
+              - generic "Can I convert PDFs and images in the same batch?" [ref=e590] [cursor=pointer]:
+                - generic [ref=e591]: Can I convert PDFs and images in the same batch?
+              - paragraph [ref=e596]: Yes. PDFs are prepared page by page for processing, while images are handled directly. The final result keeps the batch together so you can download the generated outputs from one job.
+            - group [ref=e597]:
+              - generic "When are credits used?" [ref=e598] [cursor=pointer]:
+                - generic [ref=e599]: When are credits used?
+            - group [ref=e603]:
+              - generic "How long are result files available?" [ref=e604] [cursor=pointer]:
+                - generic [ref=e605]: How long are result files available?
+            - group [ref=e609]:
+              - generic "Is anonymous conversion limited?" [ref=e610] [cursor=pointer]:
+                - generic [ref=e611]: Is anonymous conversion limited?
+            - group [ref=e615]:
+              - generic "What happens if a large batch is interrupted?" [ref=e616] [cursor=pointer]:
+                - generic [ref=e617]: What happens if a large batch is interrupted?
+    - contentinfo [ref=e621]:
+      - generic [ref=e622]:
+        - generic [ref=e623]:
+          - generic [ref=e624]:
+            - link "AxLiner home" [ref=e625] [cursor=pointer]:
+              - /url: /
+              - img "AxLiner" [ref=e626]
+            - paragraph [ref=e630]: Handwritten documents go in. Reviewable Excel files come out. AxLiner keeps the batch, ownership, and download flow clear for teams that live in spreadsheets.
+            - generic [ref=e631]:
+              - generic [ref=e632]:
+                - img [ref=e633]
+                - paragraph [ref=e636]: Private by design
+                - paragraph [ref=e637]: Owner-bound jobs, signed downloads, and clear file access.
+              - generic [ref=e638]:
+                - img [ref=e639]
+                - paragraph [ref=e642]: Batch-ready
+                - paragraph [ref=e643]: Recover active jobs and review many outputs from one run.
+              - generic [ref=e644]:
+                - img [ref=e645]
+                - paragraph [ref=e647]: Excel-first
+                - paragraph [ref=e648]: Tables stay readable, editable, and ready for handoff.
+            - generic [ref=e649]:
+              - link "Try It" [ref=e650] [cursor=pointer]:
+                - /url: /dashboard/client
+              - link "See Pricing" [ref=e651] [cursor=pointer]:
+                - /url: /pricing
+          - generic [ref=e652]:
+            - generic [ref=e653]:
+              - heading "Product" [level=4] [ref=e654]
+              - list [ref=e655]:
+                - listitem [ref=e656]:
+                  - link "Convert files" [ref=e657] [cursor=pointer]:
+                    - /url: /dashboard/client
+                - listitem [ref=e658]:
+                  - link "Pricing" [ref=e659] [cursor=pointer]:
+                    - /url: /pricing
+                - listitem [ref=e660]:
+                  - link "Benchmarks" [ref=e661] [cursor=pointer]:
+                    - /url: /benchmarks
+                - listitem [ref=e662]:
+                  - link "Security" [ref=e663] [cursor=pointer]:
+                    - /url: "#security"
+            - generic [ref=e664]:
+              - heading "Solutions" [level=4] [ref=e665]
+              - list [ref=e666]:
+                - listitem [ref=e667]:
+                  - link "Accounting" [ref=e668] [cursor=pointer]:
+                    - /url: /solutions/accounting
+                - listitem [ref=e669]:
+                  - link "Banking" [ref=e670] [cursor=pointer]:
+                    - /url: /solutions/banking
+                - listitem [ref=e671]:
+                  - link "Backoffice" [ref=e672] [cursor=pointer]:
+                    - /url: /solutions/backoffice-automation
+                - listitem [ref=e673]:
+                  - link "Healthcare" [ref=e674] [cursor=pointer]:
+                    - /url: /solutions/healthcare
+            - generic [ref=e675]:
+              - heading "Resources" [level=4] [ref=e676]
+              - list [ref=e677]:
+                - listitem [ref=e678]:
+                  - link "Blogs" [ref=e679] [cursor=pointer]:
+                    - /url: /blogs
+                - listitem [ref=e680]:
+                  - link "How it works" [ref=e681] [cursor=pointer]:
+                    - /url: /how-axliner-is-built
+                - listitem [ref=e682]:
+                  - link "Contact" [ref=e683] [cursor=pointer]:
+                    - /url: mailto:contact@axliner.com
+                - listitem [ref=e684]:
+                  - link "Try AxLiner" [ref=e685] [cursor=pointer]:
+                    - /url: /dashboard/client
+            - generic [ref=e686]:
+              - heading "Legal" [level=4] [ref=e687]
+              - list [ref=e688]:
+                - listitem [ref=e689]:
+                  - link "Privacy" [ref=e690] [cursor=pointer]:
+                    - /url: /privacy-policy
+                - listitem [ref=e691]:
+                  - link "Terms" [ref=e692] [cursor=pointer]:
+                    - /url: /terms-of-service
+                - listitem [ref=e693]:
+                  - link "Data deletion" [ref=e694] [cursor=pointer]:
+                    - /url: /data-deletion
+                - listitem [ref=e695]:
+                  - link "Billing" [ref=e696] [cursor=pointer]:
+                    - /url: /dashboard/settings
+        - generic [ref=e697]:
+          - paragraph [ref=e698]: © 2026 AxLiner. All rights reserved.
+          - paragraph [ref=e699]: Made with care in Alaska. Secure document processing for spreadsheet teams.
+    - generic [ref=e701]:
+      - button "Home" [ref=e702]:
+        - img
+        - generic [ref=e703]: Home
+      - button "Try It" [ref=e704]:
+        - img
+        - generic [ref=e705]: Try It
+      - button "Pricing" [ref=e706]:
+        - img
+        - generic [ref=e707]: Pricing
+      - button "Menu" [ref=e708]:
+        - img
+        - generic [ref=e709]: Menu
+  - region "Notifications alt+T"

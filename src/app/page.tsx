@@ -444,90 +444,79 @@ export default function Home() {
             style={{ backgroundColor: "var(--background)" }}
           />
           <div className="relative z-10">
-        {/* ── Alternating feature band (Proposify rhythm) ── */}
-        <div id="how-it-works" className="bg-primary/[0.03]">
+        {/* ── Alternating feature band ── */}
+        <div id="how-it-works" className="bg-emerald-700">
           <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
 
-            {/* Chapter heading */}
-            <div className="pb-6 pt-20 text-center lg:pt-24">
-              <p className="ax-eyebrow text-primary">How it works</p>
-              <h2 className="ax-h2 mx-auto mt-3 max-w-2xl font-bold text-foreground">
-                The workflow bookkeepers actually want.
-              </h2>
-              <p className="ax-body mx-auto mt-4 max-w-xl text-muted-foreground">
-                Every document type, reviewed by you, before anything touches your books.
-              </p>
-            </div>
-
             {/* A — text left · video right */}
-            <div className="grid items-center gap-10 border-t border-primary/[0.08] py-16 lg:grid-cols-2 lg:gap-20 lg:py-24">
+            <div className="grid items-center gap-10 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
               <div data-animate="headline">
-                <h3 className="ax-h2 max-w-lg font-bold text-foreground">
+                <h3 className="ax-h2 max-w-lg font-bold text-white">
                   Throw us the whole folder.
                 </h3>
-                <p className="ax-body mt-5 text-muted-foreground">
+                <p className="ax-body mt-5 text-white/80">
                   Invoices, receipts, bank statements — drop them all at once. AxLiner classifies each file automatically and extracts on the right schema. No sorting, no separate uploads.
                 </p>
-                <Button variant="surface" asChild className="mt-8 h-11 rounded-full px-8 text-sm font-semibold">
-                  <NextLink href="/dashboard/client">See how it works →</NextLink>
-                </Button>
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border border-white/40 bg-white/10 px-8 text-sm font-semibold text-white transition-colors hover:bg-white/20">
+                  See how it works →
+                </NextLink>
               </div>
-              <div className="overflow-hidden rounded-2xl bg-primary/[0.07] p-5 sm:p-8" data-animate="stagger">
+              <div className="overflow-hidden rounded-2xl bg-white/10 p-5 sm:p-8" data-animate="stagger">
                 <VideoPlaceholder caption="Auto-detect: 40 mixed files classified in one batch" />
               </div>
             </div>
 
             {/* B — video left · text right */}
-            <div className="grid items-center gap-10 border-t border-primary/[0.08] py-16 lg:grid-cols-2 lg:gap-20 lg:py-24">
-              <div className="order-last overflow-hidden rounded-2xl bg-primary/[0.07] p-5 sm:p-8 lg:order-first" data-animate="stagger">
+            <div className="grid items-center gap-10 border-t border-white/15 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
+              <div className="order-last overflow-hidden rounded-2xl bg-white/10 p-5 sm:p-8 lg:order-first" data-animate="stagger">
                 <VideoPlaceholder caption="Review board: source document side-by-side with extracted data" />
               </div>
               <div data-animate="headline">
-                <h3 className="ax-h2 max-w-lg font-bold text-foreground">
+                <h3 className="ax-h2 max-w-lg font-bold text-white">
                   See everything before it touches QuickBooks.
                 </h3>
-                <p className="ax-body mt-5 text-muted-foreground">
+                <p className="ax-body mt-5 text-white/80">
                   Every extracted document lands in your review board before export. Original image on the left, editable cells on the right. Click to correct, tab to move on.
                 </p>
-                <Button variant="surface" asChild className="mt-8 h-11 rounded-full px-8 text-sm font-semibold">
-                  <NextLink href="/dashboard/client">Explore the review board →</NextLink>
-                </Button>
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border border-white/40 bg-white/10 px-8 text-sm font-semibold text-white transition-colors hover:bg-white/20">
+                  Explore the review board →
+                </NextLink>
               </div>
             </div>
 
             {/* C — text left · video right */}
-            <div className="grid items-center gap-10 border-t border-primary/[0.08] py-16 lg:grid-cols-2 lg:gap-20 lg:py-24">
+            <div className="grid items-center gap-10 border-t border-white/15 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
               <div data-animate="headline">
-                <h3 className="ax-h2 max-w-lg font-bold text-foreground">
+                <h3 className="ax-h2 max-w-lg font-bold text-white">
                   The messy stuff. WhatsApp photos. Handwritten receipts.
                 </h3>
-                <p className="ax-body mt-5 text-muted-foreground">
+                <p className="ax-body mt-5 text-white/80">
                   Other tools claim accuracy on clean PDFs. AxLiner was built for the document your client photographed in bad light and sent over WhatsApp. Per-field confidence flags tell you exactly which cells to check.
                 </p>
-                <Button variant="surface" asChild className="mt-8 h-11 rounded-full px-8 text-sm font-semibold">
-                  <NextLink href="/dashboard/client">Try with a handwritten document →</NextLink>
-                </Button>
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border border-white/40 bg-white/10 px-8 text-sm font-semibold text-white transition-colors hover:bg-white/20">
+                  Try with a handwritten document →
+                </NextLink>
               </div>
-              <div className="overflow-hidden rounded-2xl bg-primary/[0.07] p-5 sm:p-8" data-animate="stagger">
+              <div className="overflow-hidden rounded-2xl bg-white/10 p-5 sm:p-8" data-animate="stagger">
                 <VideoPlaceholder caption="Handwritten receipt → structured spreadsheet with confidence flags" />
               </div>
             </div>
 
             {/* D — video left · text right */}
-            <div className="grid items-center gap-10 border-t border-primary/[0.08] py-16 pb-20 lg:grid-cols-2 lg:gap-20 lg:py-24 lg:pb-28">
-              <div className="order-last overflow-hidden rounded-2xl bg-primary/[0.07] p-5 sm:p-8 lg:order-first" data-animate="stagger">
+            <div className="grid items-center gap-10 border-t border-white/15 py-20 pb-28 lg:grid-cols-2 lg:gap-20 lg:py-28 lg:pb-36">
+              <div className="order-last overflow-hidden rounded-2xl bg-white/10 p-5 sm:p-8 lg:order-first" data-animate="stagger">
                 <VideoPlaceholder caption="AP queue: code, review, and publish bills to QuickBooks in one screen" />
               </div>
               <div data-animate="headline">
-                <h3 className="ax-h2 max-w-lg font-bold text-foreground">
+                <h3 className="ax-h2 max-w-lg font-bold text-white">
                   Reviewed, coded, posted — without copy-pasting.
                 </h3>
-                <p className="ax-body mt-5 text-muted-foreground">
+                <p className="ax-body mt-5 text-white/80">
                   Connect your QuickBooks Online company. Code invoices with vendor, account, and tax. Publish a draft Bill with the original document attached. If anything fails, retry without creating a duplicate.
                 </p>
-                <Button variant="glossy" asChild className="mt-8 h-11 rounded-xl px-8 text-sm font-bold">
-                  <NextLink href="/dashboard/client">Start free →</NextLink>
-                </Button>
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-xl bg-white px-8 text-sm font-bold text-emerald-700 transition-colors hover:bg-white/90">
+                  Start free →
+                </NextLink>
               </div>
             </div>
 
@@ -538,16 +527,15 @@ export default function Home() {
         <ScrollAnimatedSection id="features" className="relative z-20 pt-16 pb-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-12" data-animate="headline">
-              <p className="ax-eyebrow text-primary">Use cases</p>
-              <h2 className="ax-h2 mt-3 font-bold text-foreground">
+              <h2 className="ax-h2 font-bold text-foreground">
                 Works for anyone who touches documents.
               </h2>
-              <p className="ax-body mt-4 max-w-2xl text-muted-foreground">
-                From solo bookkeepers to construction managers — if you receive documents and need structured data out, AxLiner handles the extraction.
+              <p className="ax-body mt-4 max-w-2xl text-foreground/70">
+                From solo bookkeepers to construction managers — one workflow, every document type.
               </p>
             </div>
 
-            <FeatureHoverCards cards={solutionCards} className="mx-auto max-w-[1540px]" />
+            <FeatureHoverCards cards={solutionCards} className="w-full" />
           </div>
         </ScrollAnimatedSection>
           </div>

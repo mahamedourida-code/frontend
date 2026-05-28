@@ -1,0 +1,703 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e7] [cursor=pointer]:
+    - img [ref=e8]
+  - alert [ref=e11]
+  - generic [ref=e13]:
+    - navigation [ref=e14]:
+      - generic [ref=e16]:
+        - link "AxLiner home" [ref=e18] [cursor=pointer]:
+          - /url: /
+          - img "AxLiner" [ref=e19]
+        - navigation "Main" [ref=e24]:
+          - list [ref=e26]:
+            - listitem [ref=e27]:
+              - button "Solutions" [ref=e28]:
+                - text: Solutions
+                - img [ref=e29]
+            - listitem [ref=e31]:
+              - link "How AxLiner's Built" [ref=e32] [cursor=pointer]:
+                - /url: /how-axliner-is-built
+            - listitem [ref=e33]:
+              - link "Benchmarks" [ref=e34] [cursor=pointer]:
+                - /url: /benchmarks
+            - listitem [ref=e35]:
+              - link "Pricing" [ref=e36] [cursor=pointer]:
+                - /url: /pricing
+            - listitem [ref=e37]:
+              - link "Blogs" [ref=e38] [cursor=pointer]:
+                - /url: /blogs
+        - generic [ref=e39]:
+          - button "Toggle theme" [ref=e40]:
+            - img
+            - generic [ref=e41]: Toggle theme
+          - link "Sign Up" [ref=e42] [cursor=pointer]:
+            - /url: /sign-up?next=%2Fdashboard%2Fclient
+          - link "Sign in" [ref=e43] [cursor=pointer]:
+            - /url: /sign-in?next=%2Fdashboard%2Fclient
+    - main [ref=e44]:
+      - generic [ref=e46]:
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - heading "Handwritten images to Excel in seconds" [level=1] [ref=e51]
+            - paragraph [ref=e52]: Upload handwritten tables, class notes, invoices, receipts, paper forms, and screenshots from any workflow. AxLiner reads the structure, preserves the rows and columns, and gives you clean Excel files you can review, edit, share, or use in reporting without retyping everything by hand.
+            - generic [ref=e53]:
+              - button "Try It" [ref=e54]
+              - generic [ref=e55]:
+                - generic [ref=e56]:
+                  - img "User 1" [ref=e57]
+                  - img "User 2" [ref=e58]
+                  - img "User 3" [ref=e59]
+                  - img "User 4" [ref=e60]
+                  - img "User 5" [ref=e61]
+                - generic [ref=e63]:
+                  - paragraph [ref=e64]: 5,000+
+                  - paragraph [ref=e65]: active teams
+          - img "AxLiner document conversion illustration" [ref=e69]
+        - generic [ref=e71]:
+          - generic [ref=e73]:
+            - generic [ref=e74]:
+              - generic [ref=e75]:
+                - img "Sarah Mitchell" [ref=e76]
+                - generic [ref=e77]:
+                  - paragraph [ref=e78]: Sarah Mitchell
+                  - paragraph [ref=e79]: "@sarahmitchell"
+                - img [ref=e80]
+              - paragraph [ref=e83]: AxLiner has completely transformed how we process invoices. What used to take hours now takes minutes. The accuracy is incredible!
+            - generic [ref=e84]:
+              - generic [ref=e85]:
+                - img "David Chen" [ref=e86]
+                - generic [ref=e87]:
+                  - paragraph [ref=e88]: David Chen
+                  - paragraph [ref=e89]: "@davidchen"
+                - img [ref=e90]
+              - paragraph [ref=e93]: Best OCR tool I've ever used. The handwritten table recognition is mind-blowing. We've processed thousands of documents with near-perfect accuracy.
+            - generic [ref=e94]:
+              - generic [ref=e95]:
+                - img "Emily Rodriguez" [ref=e96]
+                - generic [ref=e97]:
+                  - paragraph [ref=e98]: Emily Rodriguez
+                  - paragraph [ref=e99]: "@emilyrodriguez"
+                - img [ref=e100]
+              - paragraph [ref=e103]: Game changer for our data entry team.
+            - generic [ref=e104]:
+              - generic [ref=e105]:
+                - img "Michael Thompson" [ref=e106]
+                - generic [ref=e107]:
+                  - paragraph [ref=e108]: Michael Thompson
+                  - paragraph [ref=e109]: "@mikethompson"
+                - img [ref=e110]
+              - paragraph [ref=e113]: I was skeptical at first, but AxLiner exceeded all expectations. The table structure preservation is phenomenal. We've saved thousands of hours in manual data entry.
+            - generic [ref=e114]:
+              - generic [ref=e115]:
+                - img "Jessica Park" [ref=e116]
+                - generic [ref=e117]:
+                  - paragraph [ref=e118]: Jessica Park
+                  - paragraph [ref=e119]: "@jessicapark"
+                - img [ref=e120]
+              - paragraph [ref=e123]: AxLiner has become an essential tool in our workflow. The accuracy on complex forms is outstanding.
+            - generic [ref=e124]:
+              - generic [ref=e125]:
+                - img "Sarah Mitchell" [ref=e126]
+                - generic [ref=e127]:
+                  - paragraph [ref=e128]: Sarah Mitchell
+                  - paragraph [ref=e129]: "@sarahmitchell"
+                - img [ref=e130]
+              - paragraph [ref=e133]: AxLiner has completely transformed how we process invoices. What used to take hours now takes minutes. The accuracy is incredible!
+            - generic [ref=e134]:
+              - generic [ref=e135]:
+                - img "David Chen" [ref=e136]
+                - generic [ref=e137]:
+                  - paragraph [ref=e138]: David Chen
+                  - paragraph [ref=e139]: "@davidchen"
+                - img [ref=e140]
+              - paragraph [ref=e143]: Best OCR tool I've ever used. The handwritten table recognition is mind-blowing. We've processed thousands of documents with near-perfect accuracy.
+            - generic [ref=e144]:
+              - generic [ref=e145]:
+                - img "Emily Rodriguez" [ref=e146]
+                - generic [ref=e147]:
+                  - paragraph [ref=e148]: Emily Rodriguez
+                  - paragraph [ref=e149]: "@emilyrodriguez"
+                - img [ref=e150]
+              - paragraph [ref=e153]: Game changer for our data entry team.
+            - generic [ref=e154]:
+              - generic [ref=e155]:
+                - img "Michael Thompson" [ref=e156]
+                - generic [ref=e157]:
+                  - paragraph [ref=e158]: Michael Thompson
+                  - paragraph [ref=e159]: "@mikethompson"
+                - img [ref=e160]
+              - paragraph [ref=e163]: I was skeptical at first, but AxLiner exceeded all expectations. The table structure preservation is phenomenal. We've saved thousands of hours in manual data entry.
+            - generic [ref=e164]:
+              - generic [ref=e165]:
+                - img "Jessica Park" [ref=e166]
+                - generic [ref=e167]:
+                  - paragraph [ref=e168]: Jessica Park
+                  - paragraph [ref=e169]: "@jessicapark"
+                - img [ref=e170]
+              - paragraph [ref=e173]: AxLiner has become an essential tool in our workflow. The accuracy on complex forms is outstanding.
+            - generic [ref=e174]:
+              - generic [ref=e175]:
+                - img "Sarah Mitchell" [ref=e176]
+                - generic [ref=e177]:
+                  - paragraph [ref=e178]: Sarah Mitchell
+                  - paragraph [ref=e179]: "@sarahmitchell"
+                - img [ref=e180]
+              - paragraph [ref=e183]: AxLiner has completely transformed how we process invoices. What used to take hours now takes minutes. The accuracy is incredible!
+            - generic [ref=e184]:
+              - generic [ref=e185]:
+                - img "David Chen" [ref=e186]
+                - generic [ref=e187]:
+                  - paragraph [ref=e188]: David Chen
+                  - paragraph [ref=e189]: "@davidchen"
+                - img [ref=e190]
+              - paragraph [ref=e193]: Best OCR tool I've ever used. The handwritten table recognition is mind-blowing. We've processed thousands of documents with near-perfect accuracy.
+            - generic [ref=e194]:
+              - generic [ref=e195]:
+                - img "Emily Rodriguez" [ref=e196]
+                - generic [ref=e197]:
+                  - paragraph [ref=e198]: Emily Rodriguez
+                  - paragraph [ref=e199]: "@emilyrodriguez"
+                - img [ref=e200]
+              - paragraph [ref=e203]: Game changer for our data entry team.
+            - generic [ref=e204]:
+              - generic [ref=e205]:
+                - img "Michael Thompson" [ref=e206]
+                - generic [ref=e207]:
+                  - paragraph [ref=e208]: Michael Thompson
+                  - paragraph [ref=e209]: "@mikethompson"
+                - img [ref=e210]
+              - paragraph [ref=e213]: I was skeptical at first, but AxLiner exceeded all expectations. The table structure preservation is phenomenal. We've saved thousands of hours in manual data entry.
+            - generic [ref=e214]:
+              - generic [ref=e215]:
+                - img "Jessica Park" [ref=e216]
+                - generic [ref=e217]:
+                  - paragraph [ref=e218]: Jessica Park
+                  - paragraph [ref=e219]: "@jessicapark"
+                - img [ref=e220]
+              - paragraph [ref=e223]: AxLiner has become an essential tool in our workflow. The accuracy on complex forms is outstanding.
+          - generic [ref=e225]:
+            - generic [ref=e226]:
+              - generic [ref=e227]:
+                - img "Robert Williams" [ref=e228]
+                - generic [ref=e229]:
+                  - paragraph [ref=e230]: Robert Williams
+                  - paragraph [ref=e231]: "@robertwilliams"
+                - img [ref=e232]
+              - paragraph [ref=e235]: The reason I chose AxLiner is the consistent accuracy and speed. Processing handwritten documents has never been easier. This tool has revolutionized our data extraction workflow and saved us countless hours of manual work.
+            - generic [ref=e236]:
+              - generic [ref=e237]:
+                - img "Amanda Foster" [ref=e238]
+                - generic [ref=e239]:
+                  - paragraph [ref=e240]: Amanda Foster
+                  - paragraph [ref=e241]: "@amandafoster"
+                - img [ref=e242]
+              - paragraph [ref=e245]: AxLiner makes document digitization insanely fast and accurate. Our team productivity has doubled.
+            - generic [ref=e246]:
+              - generic [ref=e247]:
+                - img "Chris Anderson" [ref=e248]
+                - generic [ref=e249]:
+                  - paragraph [ref=e250]: Chris Anderson
+                  - paragraph [ref=e251]: "@chrisanderson"
+                - img [ref=e252]
+              - paragraph [ref=e255]: The UX is incredibly intuitive. Just upload your images and get perfect Excel files in seconds.
+            - generic [ref=e256]:
+              - generic [ref=e257]:
+                - img "Rachel Martinez" [ref=e258]
+                - generic [ref=e259]:
+                  - paragraph [ref=e260]: Rachel Martinez
+                  - paragraph [ref=e261]: "@rachelmartinez"
+                - img [ref=e262]
+              - paragraph [ref=e265]: I've been using AxLiner exclusively for the past month. The results speak for themselves. Outstanding tool that delivers on its promises every single time.
+            - generic [ref=e266]:
+              - generic [ref=e267]:
+                - img "James Wilson" [ref=e268]
+                - generic [ref=e269]:
+                  - paragraph [ref=e270]: James Wilson
+                  - paragraph [ref=e271]: "@jameswilson"
+                - img [ref=e272]
+              - paragraph [ref=e275]: AxLiner's OCR accuracy beats everything else I've tried.
+            - generic [ref=e276]:
+              - generic [ref=e277]:
+                - img "Robert Williams" [ref=e278]
+                - generic [ref=e279]:
+                  - paragraph [ref=e280]: Robert Williams
+                  - paragraph [ref=e281]: "@robertwilliams"
+                - img [ref=e282]
+              - paragraph [ref=e285]: The reason I chose AxLiner is the consistent accuracy and speed. Processing handwritten documents has never been easier. This tool has revolutionized our data extraction workflow and saved us countless hours of manual work.
+            - generic [ref=e286]:
+              - generic [ref=e287]:
+                - img "Amanda Foster" [ref=e288]
+                - generic [ref=e289]:
+                  - paragraph [ref=e290]: Amanda Foster
+                  - paragraph [ref=e291]: "@amandafoster"
+                - img [ref=e292]
+              - paragraph [ref=e295]: AxLiner makes document digitization insanely fast and accurate. Our team productivity has doubled.
+            - generic [ref=e296]:
+              - generic [ref=e297]:
+                - img "Chris Anderson" [ref=e298]
+                - generic [ref=e299]:
+                  - paragraph [ref=e300]: Chris Anderson
+                  - paragraph [ref=e301]: "@chrisanderson"
+                - img [ref=e302]
+              - paragraph [ref=e305]: The UX is incredibly intuitive. Just upload your images and get perfect Excel files in seconds.
+            - generic [ref=e306]:
+              - generic [ref=e307]:
+                - img "Rachel Martinez" [ref=e308]
+                - generic [ref=e309]:
+                  - paragraph [ref=e310]: Rachel Martinez
+                  - paragraph [ref=e311]: "@rachelmartinez"
+                - img [ref=e312]
+              - paragraph [ref=e315]: I've been using AxLiner exclusively for the past month. The results speak for themselves. Outstanding tool that delivers on its promises every single time.
+            - generic [ref=e316]:
+              - generic [ref=e317]:
+                - img "James Wilson" [ref=e318]
+                - generic [ref=e319]:
+                  - paragraph [ref=e320]: James Wilson
+                  - paragraph [ref=e321]: "@jameswilson"
+                - img [ref=e322]
+              - paragraph [ref=e325]: AxLiner's OCR accuracy beats everything else I've tried.
+            - generic [ref=e326]:
+              - generic [ref=e327]:
+                - img "Robert Williams" [ref=e328]
+                - generic [ref=e329]:
+                  - paragraph [ref=e330]: Robert Williams
+                  - paragraph [ref=e331]: "@robertwilliams"
+                - img [ref=e332]
+              - paragraph [ref=e335]: The reason I chose AxLiner is the consistent accuracy and speed. Processing handwritten documents has never been easier. This tool has revolutionized our data extraction workflow and saved us countless hours of manual work.
+            - generic [ref=e336]:
+              - generic [ref=e337]:
+                - img "Amanda Foster" [ref=e338]
+                - generic [ref=e339]:
+                  - paragraph [ref=e340]: Amanda Foster
+                  - paragraph [ref=e341]: "@amandafoster"
+                - img [ref=e342]
+              - paragraph [ref=e345]: AxLiner makes document digitization insanely fast and accurate. Our team productivity has doubled.
+            - generic [ref=e346]:
+              - generic [ref=e347]:
+                - img "Chris Anderson" [ref=e348]
+                - generic [ref=e349]:
+                  - paragraph [ref=e350]: Chris Anderson
+                  - paragraph [ref=e351]: "@chrisanderson"
+                - img [ref=e352]
+              - paragraph [ref=e355]: The UX is incredibly intuitive. Just upload your images and get perfect Excel files in seconds.
+            - generic [ref=e356]:
+              - generic [ref=e357]:
+                - img "Rachel Martinez" [ref=e358]
+                - generic [ref=e359]:
+                  - paragraph [ref=e360]: Rachel Martinez
+                  - paragraph [ref=e361]: "@rachelmartinez"
+                - img [ref=e362]
+              - paragraph [ref=e365]: I've been using AxLiner exclusively for the past month. The results speak for themselves. Outstanding tool that delivers on its promises every single time.
+            - generic [ref=e366]:
+              - generic [ref=e367]:
+                - img "James Wilson" [ref=e368]
+                - generic [ref=e369]:
+                  - paragraph [ref=e370]: James Wilson
+                  - paragraph [ref=e371]: "@jameswilson"
+                - img [ref=e372]
+              - paragraph [ref=e375]: AxLiner's OCR accuracy beats everything else I've tried.
+      - region "Ink to spreadsheet cinematic" [ref=e376]:
+        - img [ref=e377]
+      - generic [ref=e378]:
+        - generic [ref=e382]:
+          - heading "Chosen by experts at top organizations" [level=2] [ref=e385]
+          - generic [ref=e387]:
+            - img "Company 1" [ref=e390]
+            - img "Company 2" [ref=e393]
+            - img "Company 3" [ref=e396]
+            - img "Company 4" [ref=e399]
+            - img "Company 5" [ref=e402]
+            - img "Company 6" [ref=e405]
+            - img "Company 7" [ref=e408]
+            - img "Company 8" [ref=e411]
+            - img "Company 9" [ref=e414]
+            - img "Company 1" [ref=e417]
+            - img "Company 2" [ref=e420]
+            - img "Company 3" [ref=e423]
+            - img "Company 4" [ref=e426]
+            - img "Company 5" [ref=e429]
+            - img "Company 6" [ref=e432]
+            - img "Company 7" [ref=e435]
+            - img "Company 8" [ref=e438]
+            - img "Company 9" [ref=e441]
+            - img "Company 1" [ref=e444]
+            - img "Company 2" [ref=e447]
+            - img "Company 3" [ref=e450]
+            - img "Company 4" [ref=e453]
+            - img "Company 5" [ref=e456]
+            - img "Company 6" [ref=e459]
+            - img "Company 7" [ref=e462]
+            - img "Company 8" [ref=e465]
+            - img "Company 9" [ref=e468]
+            - img "Company 1" [ref=e471]
+            - img "Company 2" [ref=e474]
+            - img "Company 3" [ref=e477]
+            - img "Company 4" [ref=e480]
+            - img "Company 5" [ref=e483]
+            - img "Company 6" [ref=e486]
+            - img "Company 7" [ref=e489]
+            - img "Company 8" [ref=e492]
+            - img "Company 9" [ref=e495]
+            - img "Company 1" [ref=e498]
+            - img "Company 2" [ref=e501]
+            - img "Company 3" [ref=e504]
+            - img "Company 4" [ref=e507]
+            - img "Company 5" [ref=e510]
+            - img "Company 6" [ref=e513]
+            - img "Company 7" [ref=e516]
+            - img "Company 8" [ref=e519]
+            - img "Company 9" [ref=e522]
+            - img "Company 1" [ref=e525]
+            - img "Company 2" [ref=e528]
+            - img "Company 3" [ref=e531]
+            - img "Company 4" [ref=e534]
+            - img "Company 5" [ref=e537]
+            - img "Company 6" [ref=e540]
+            - img "Company 7" [ref=e543]
+            - img "Company 8" [ref=e546]
+            - img "Company 9" [ref=e549]
+            - img "Company 1" [ref=e552]
+            - img "Company 2" [ref=e555]
+            - img "Company 3" [ref=e558]
+            - img "Company 4" [ref=e561]
+            - img "Company 5" [ref=e564]
+            - img "Company 6" [ref=e567]
+            - img "Company 7" [ref=e570]
+            - img "Company 8" [ref=e573]
+            - img "Company 9" [ref=e576]
+            - img "Company 1" [ref=e579]
+            - img "Company 2" [ref=e582]
+            - img "Company 3" [ref=e585]
+            - img "Company 4" [ref=e588]
+            - img "Company 5" [ref=e591]
+            - img "Company 6" [ref=e594]
+            - img "Company 7" [ref=e597]
+            - img "Company 8" [ref=e600]
+            - img "Company 9" [ref=e603]
+            - img "Company 1" [ref=e606]
+            - img "Company 2" [ref=e609]
+            - img "Company 3" [ref=e612]
+            - img "Company 4" [ref=e615]
+            - img "Company 5" [ref=e618]
+            - img "Company 6" [ref=e621]
+            - img "Company 7" [ref=e624]
+            - img "Company 8" [ref=e627]
+            - img "Company 9" [ref=e630]
+            - img "Company 1" [ref=e633]
+            - img "Company 2" [ref=e636]
+            - img "Company 3" [ref=e639]
+            - img "Company 4" [ref=e642]
+            - img "Company 5" [ref=e645]
+            - img "Company 6" [ref=e648]
+            - img "Company 7" [ref=e651]
+            - img "Company 8" [ref=e654]
+            - img "Company 9" [ref=e657]
+        - generic [ref=e659]:
+          - generic [ref=e661]:
+            - heading "Solutions" [level=2] [ref=e664]
+            - generic [ref=e665]:
+              - generic [ref=e669]:
+                - generic [ref=e670]: Accounting
+                - generic [ref=e671]: Automate the most time-consuming parts of accounting workflows. Extract clean spreadsheet data from receipts, invoices, bank statements, and expense reports so teams can reduce manual entry and focus on review.
+                - link "Discover More" [ref=e672] [cursor=pointer]:
+                  - /url: /solutions/accounting
+                  - generic [ref=e673]: Discover More
+              - generic [ref=e680]:
+                - generic [ref=e681]: Banking
+                - generic [ref=e682]: Modernize document-heavy financial operations with structured extraction for checks, loan applications, statements, onboarding packets, and KYC documents while keeping every row ready for downstream review.
+                - link "Discover More" [ref=e683] [cursor=pointer]:
+                  - /url: /solutions/banking
+                  - generic [ref=e684]: Discover More
+              - generic [ref=e691]:
+                - generic [ref=e692]: Backoffice Automation
+                - generic [ref=e693]: Remove repetitive data entry from internal operations. Turn invoices, forms, receipts, and handwritten tables into usable Excel files that can feed finance, admin, and operations workflows.
+                - link "Discover More" [ref=e694] [cursor=pointer]:
+                  - /url: /solutions/backoffice-automation
+                  - generic [ref=e695]: Discover More
+              - generic [ref=e702]:
+                - generic [ref=e703]: Construction
+                - generic [ref=e704]: Convert site notes, delivery forms, checklists, material logs, and handwritten field tables into clean spreadsheets so project teams can keep records current without retyping paperwork.
+                - link "Discover More" [ref=e705] [cursor=pointer]:
+                  - /url: /solutions/construction
+                  - generic [ref=e706]: Discover More
+              - generic [ref=e713]:
+                - generic [ref=e714]: CPG Brands
+                - generic [ref=e715]: Process retail forms, inventory sheets, distributor paperwork, purchase records, and field reports into structured data that merchandising and operations teams can compare quickly.
+                - link "Discover More" [ref=e716] [cursor=pointer]:
+                  - /url: /solutions/cpg-brands
+                  - generic [ref=e717]: Discover More
+              - generic [ref=e724]:
+                - generic [ref=e725]: FinTech
+                - generic [ref=e726]: Build document intake flows for financial products without asking users or operators to key in every table manually. Extract page-level data into spreadsheets that are easy to validate.
+                - link "Discover More" [ref=e727] [cursor=pointer]:
+                  - /url: /solutions/fintech
+                  - generic [ref=e728]: Discover More
+              - generic [ref=e735]:
+                - generic [ref=e736]: Healthcare
+                - generic [ref=e737]: Digitize handwritten logs, intake forms, lab sheets, inventory notes, and administrative records while preserving the table structure needed for review, reporting, and internal handoff.
+                - link "Discover More" [ref=e738] [cursor=pointer]:
+                  - /url: /solutions/healthcare
+                  - generic [ref=e739]: Discover More
+              - generic [ref=e746]:
+                - generic [ref=e747]: Real Estate
+                - generic [ref=e748]: Turn lease packets, inspection forms, closing checklists, rent rolls, and property records into organized spreadsheets for brokers, managers, and operations teams.
+                - link "Discover More" [ref=e749] [cursor=pointer]:
+                  - /url: /solutions/real-estate
+                  - generic [ref=e750]: Discover More
+          - generic [ref=e756]:
+            - generic [ref=e757]:
+              - heading "Benchmarks" [level=2] [ref=e759]
+              - paragraph [ref=e760]: Benchmarked against major cloud providers on real-world handwritten documents and complex table structures.
+            - generic [ref=e761]:
+              - generic [ref=e762]:
+                - generic [ref=e763]:
+                  - generic [ref=e764]: Handwritten Text Recognition Accuracy
+                  - paragraph [ref=e765]: Based on 10,000+ real-world samples
+                - generic [ref=e766]:
+                  - img [ref=e770]:
+                    - generic [ref=e774]:
+                      - generic [ref=e776]: AxLiner
+                      - generic [ref=e778]: AWS Textract
+                      - generic [ref=e780]: Google Vision
+                      - generic [ref=e782]: Azure Vision
+                    - generic [ref=e783]:
+                      - generic [ref=e784]:
+                        - generic [ref=e786]: "0"
+                        - generic [ref=e788]: "20"
+                        - generic [ref=e790]: "40"
+                        - generic [ref=e792]: "60"
+                        - generic [ref=e794]: "80"
+                        - generic [ref=e796]: "100"
+                      - generic [ref=e797]: Accuracy (%)
+                  - generic [ref=e811]: Tested on IAM Handwriting Database v3.0
+              - generic [ref=e812]:
+                - generic [ref=e813]:
+                  - generic [ref=e814]: Comprehensive Performance Metrics
+                  - paragraph [ref=e815]: Average across all test scenarios
+                - table [ref=e818]:
+                  - rowgroup [ref=e819]:
+                    - row "Metric AxLiner Industry Avg" [ref=e820]:
+                      - columnheader "Metric" [ref=e821]
+                      - columnheader "AxLiner" [ref=e822]
+                      - columnheader "Industry Avg" [ref=e823]
+                  - rowgroup [ref=e824]:
+                    - row "Character Error Rate 3.2% 5.8%" [ref=e825]:
+                      - cell "Character Error Rate" [ref=e826]
+                      - cell "3.2%" [ref=e827]
+                      - cell "5.8%" [ref=e828]
+                    - row "Word Recognition 99.5% 95.1%" [ref=e829]:
+                      - cell "Word Recognition" [ref=e830]
+                      - cell "99.5%" [ref=e831]
+                      - cell "95.1%" [ref=e832]
+                    - row "Table Structure 99.1% 92.3%" [ref=e833]:
+                      - cell "Table Structure" [ref=e834]
+                      - cell "99.1%" [ref=e835]
+                      - cell "92.3%" [ref=e836]
+                    - row "Noisy Image Handling 94.7% 87.2%" [ref=e837]:
+                      - cell "Noisy Image Handling" [ref=e838]
+                      - cell "94.7%" [ref=e839]
+                      - cell "87.2%" [ref=e840]
+                    - row "Mixed Font Recognition 97.9% 94.6%" [ref=e841]:
+                      - cell "Mixed Font Recognition" [ref=e842]
+                      - cell "97.9%" [ref=e843]
+                      - cell "94.6%" [ref=e844]
+                    - row "Processing Speed 0.8s/page 2.1s/page" [ref=e845]:
+                      - cell "Processing Speed" [ref=e846]
+                      - cell "0.8s/page" [ref=e847]
+                      - cell "2.1s/page" [ref=e848]
+          - generic [ref=e850]:
+            - generic [ref=e851]:
+              - paragraph [ref=e852]: Not a third-party wrapper
+              - heading "OCR infrastructure controlled around your batch workflow." [level=2] [ref=e853]
+              - paragraph [ref=e854]: AxLiner controls queue admission, file ownership, recovery, exports, and download permissions around the model call. That is the difference between a demo wrapper and a product that can survive real batch work.
+            - generic [ref=e855]:
+              - img "AxLiner server processing layer" [ref=e857]
+              - generic [ref=e858]:
+                - generic [ref=e859]:
+                  - paragraph [ref=e860]: "01"
+                  - paragraph [ref=e861]: AxLiner owns the job queue, file metadata, download permissions, export layer, and recovery flow around every batch. Each file stays tied to a durable owner so status, sharing, and downloads follow the same access model.
+                - generic [ref=e862]:
+                  - paragraph [ref=e863]: "02"
+                  - paragraph [ref=e864]: The product is shaped for handwritten tables and spreadsheet review, not a generic OCR wrapper stitched into a landing page. Every result is prepared for rows, columns, review, and clean export instead of loose extracted text.
+                - generic [ref=e865]:
+                  - paragraph [ref=e866]: "03"
+                  - paragraph [ref=e867]: External infrastructure can sit behind the pipeline, but the workflow, storage model, and user experience stay controlled by AxLiner. That keeps retries, batch recovery, and output delivery predictable for real users.
+      - generic [ref=e869]:
+        - generic [ref=e872]:
+          - heading "How AxLiner's Engine Is Built" [level=2] [ref=e876]
+          - generic [ref=e877]:
+            - generic [ref=e878]:
+              - generic [ref=e880]:
+                - generic [ref=e881]:
+                  - paragraph [ref=e882]: Model stack
+                  - generic [ref=e883]: Fine-tuned VLM for handwritten tables
+                  - generic [ref=e884]: AxLiner's OCR path is shaped around a 7B vision-language model in the Qwen2-VL family, adapted for document images, table recovery, and spreadsheet-ready output.
+                - generic [ref=e885]: Qwen2-VL-7B style base
+              - generic [ref=e886]:
+                - generic [ref=e887]:
+                  - generic [ref=e888]: "01"
+                  - generic [ref=e889]:
+                    - paragraph [ref=e890]: Vision encoder
+                    - paragraph [ref=e891]: Document pages are normalized into visual tokens so handwriting, ruled tables, stamps, and noisy phone captures stay readable.
+                - generic [ref=e892]:
+                  - generic [ref=e893]: "02"
+                  - generic [ref=e894]:
+                    - paragraph [ref=e895]: Instruction tuning
+                    - paragraph [ref=e896]: The model is tuned with OCR-style prompts, table reconstruction targets, and cell-aware extraction examples instead of generic chat answers.
+                - generic [ref=e897]:
+                  - generic [ref=e898]: "03"
+                  - generic [ref=e899]:
+                    - paragraph [ref=e900]: Schema alignment
+                    - paragraph [ref=e901]: Rows, headers, merged cells, totals, and column boundaries are rebuilt before export so the output behaves like a spreadsheet.
+                - generic [ref=e902]:
+                  - generic [ref=e903]: "04"
+                  - generic [ref=e904]:
+                    - paragraph [ref=e905]: Batch orchestration
+                    - paragraph [ref=e906]: Redis-backed jobs, deterministic file metadata, and retry-safe workers keep multi-file processing recoverable.
+            - generic [ref=e908]:
+              - generic [ref=e909]:
+                - generic [ref=e910]: Extraction telemetry
+                - generic [ref=e911]: Compact signals inspired by operator dashboards, not generic AI cards.
+              - generic [ref=e912]:
+                - generic [ref=e913]:
+                  - generic [ref=e914]:
+                    - generic [ref=e915]: Vision
+                    - generic [ref=e916]: page patches, rotation, noise cleanup
+                    - generic [ref=e917]: ready
+                  - generic [ref=e918]:
+                    - generic [ref=e919]: Language
+                    - generic [ref=e920]: handwriting tokens and table prompts
+                    - generic [ref=e921]: tuned
+                  - generic [ref=e922]:
+                    - generic [ref=e923]: Export
+                    - generic [ref=e924]: cell graph to spreadsheet schema
+                    - generic [ref=e925]: xlsx
+                - generic [ref=e936]:
+                  - generic [ref=e937]: image
+                  - generic [ref=e938]: tokens
+                  - generic [ref=e939]: xlsx
+          - paragraph [ref=e941]: "Designed for operators: the model work, queue logic, and export layer are all shaped around the spreadsheet people need after upload."
+        - generic [ref=e943]:
+          - generic [ref=e944]:
+            - generic [ref=e945]:
+              - paragraph [ref=e946]: Security & Compliance
+              - heading "Your Data Security Guaranteed" [level=2] [ref=e947]
+              - img "Secure digital document processing" [ref=e949]
+            - generic [ref=e950]:
+              - paragraph [ref=e951]: At AxLiner, your data is treated with utmost care. We build around global data protection expectations and international privacy requirements for document processing workflows.
+              - generic [ref=e952]:
+                - generic [ref=e956]: ISO 27001-aligned security controls
+                - generic [ref=e960]: Built for GDPR, SOC 2, CCPA and HIPAA-conscious workflows
+                - generic [ref=e964]: Secure infrastructure across Supabase, Fly.io and Vercel
+              - link "More Information" [ref=e965] [cursor=pointer]:
+                - /url: /privacy-policy
+          - heading "Frequently Asked Questions" [level=3] [ref=e967]
+          - generic [ref=e968]:
+            - group [ref=e969]:
+              - generic "Can I convert PDFs and images in the same batch?" [ref=e970] [cursor=pointer]:
+                - generic [ref=e971]: Can I convert PDFs and images in the same batch?
+              - paragraph [ref=e976]: Yes. PDFs are prepared page by page for processing, while images are handled directly. The final result keeps the batch together so you can download the generated outputs from one job.
+            - group [ref=e977]:
+              - generic "When are credits used?" [ref=e978] [cursor=pointer]:
+                - generic [ref=e979]: When are credits used?
+            - group [ref=e983]:
+              - generic "How long are result files available?" [ref=e984] [cursor=pointer]:
+                - generic [ref=e985]: How long are result files available?
+            - group [ref=e989]:
+              - generic "Is anonymous conversion limited?" [ref=e990] [cursor=pointer]:
+                - generic [ref=e991]: Is anonymous conversion limited?
+            - group [ref=e995]:
+              - generic "What happens if a large batch is interrupted?" [ref=e996] [cursor=pointer]:
+                - generic [ref=e997]: What happens if a large batch is interrupted?
+    - contentinfo [ref=e1001]:
+      - generic [ref=e1002]:
+        - generic [ref=e1003]:
+          - generic [ref=e1004]:
+            - link "AxLiner home" [ref=e1005] [cursor=pointer]:
+              - /url: /
+              - img "AxLiner" [ref=e1006]
+            - paragraph [ref=e1010]: Handwritten documents go in. Reviewable Excel files come out. AxLiner keeps the batch, ownership, and download flow clear for teams that live in spreadsheets.
+            - generic [ref=e1011]:
+              - generic [ref=e1012]:
+                - img [ref=e1013]
+                - paragraph [ref=e1016]: Private by design
+                - paragraph [ref=e1017]: Owner-bound jobs, signed downloads, and clear file access.
+              - generic [ref=e1018]:
+                - img [ref=e1019]
+                - paragraph [ref=e1022]: Batch-ready
+                - paragraph [ref=e1023]: Recover active jobs and review many outputs from one run.
+              - generic [ref=e1024]:
+                - img [ref=e1025]
+                - paragraph [ref=e1027]: Excel-first
+                - paragraph [ref=e1028]: Tables stay readable, editable, and ready for handoff.
+            - generic [ref=e1029]:
+              - link "Try It" [ref=e1030] [cursor=pointer]:
+                - /url: /dashboard/client
+              - link "See Pricing" [ref=e1031] [cursor=pointer]:
+                - /url: /pricing
+          - generic [ref=e1032]:
+            - generic [ref=e1033]:
+              - heading "Product" [level=4] [ref=e1034]
+              - list [ref=e1035]:
+                - listitem [ref=e1036]:
+                  - link "Convert files" [ref=e1037] [cursor=pointer]:
+                    - /url: /dashboard/client
+                - listitem [ref=e1038]:
+                  - link "Pricing" [ref=e1039] [cursor=pointer]:
+                    - /url: /pricing
+                - listitem [ref=e1040]:
+                  - link "Benchmarks" [ref=e1041] [cursor=pointer]:
+                    - /url: /benchmarks
+                - listitem [ref=e1042]:
+                  - link "Security" [ref=e1043] [cursor=pointer]:
+                    - /url: "#security"
+            - generic [ref=e1044]:
+              - heading "Solutions" [level=4] [ref=e1045]
+              - list [ref=e1046]:
+                - listitem [ref=e1047]:
+                  - link "Accounting" [ref=e1048] [cursor=pointer]:
+                    - /url: /solutions/accounting
+                - listitem [ref=e1049]:
+                  - link "Banking" [ref=e1050] [cursor=pointer]:
+                    - /url: /solutions/banking
+                - listitem [ref=e1051]:
+                  - link "Backoffice" [ref=e1052] [cursor=pointer]:
+                    - /url: /solutions/backoffice-automation
+                - listitem [ref=e1053]:
+                  - link "Healthcare" [ref=e1054] [cursor=pointer]:
+                    - /url: /solutions/healthcare
+            - generic [ref=e1055]:
+              - heading "Resources" [level=4] [ref=e1056]
+              - list [ref=e1057]:
+                - listitem [ref=e1058]:
+                  - link "Blogs" [ref=e1059] [cursor=pointer]:
+                    - /url: /blogs
+                - listitem [ref=e1060]:
+                  - link "How it works" [ref=e1061] [cursor=pointer]:
+                    - /url: /how-axliner-is-built
+                - listitem [ref=e1062]:
+                  - link "Contact" [ref=e1063] [cursor=pointer]:
+                    - /url: mailto:contact@axliner.com
+                - listitem [ref=e1064]:
+                  - link "Try AxLiner" [ref=e1065] [cursor=pointer]:
+                    - /url: /dashboard/client
+            - generic [ref=e1066]:
+              - heading "Legal" [level=4] [ref=e1067]
+              - list [ref=e1068]:
+                - listitem [ref=e1069]:
+                  - link "Privacy" [ref=e1070] [cursor=pointer]:
+                    - /url: /privacy-policy
+                - listitem [ref=e1071]:
+                  - link "Terms" [ref=e1072] [cursor=pointer]:
+                    - /url: /terms-of-service
+                - listitem [ref=e1073]:
+                  - link "Data deletion" [ref=e1074] [cursor=pointer]:
+                    - /url: /data-deletion
+                - listitem [ref=e1075]:
+                  - link "Billing" [ref=e1076] [cursor=pointer]:
+                    - /url: /dashboard/settings
+        - generic [ref=e1077]:
+          - paragraph [ref=e1078]: © 2026 AxLiner. All rights reserved.
+          - paragraph [ref=e1079]: Made with care in Alaska. Secure document processing for spreadsheet teams.
+  - region "Notifications alt+T"
+  - generic [ref=e1080]: "0"

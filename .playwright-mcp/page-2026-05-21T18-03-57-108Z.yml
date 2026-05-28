@@ -1,0 +1,1076 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - link "Tella home" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img [ref=e6]
+        - navigation [ref=e19]:
+          - list [ref=e20]:
+            - listitem [ref=e21]:
+              - button "Features" [ref=e22] [cursor=pointer]:
+                - text: Features
+                - img [ref=e24]
+            - listitem [ref=e26]:
+              - link "Teams" [ref=e27] [cursor=pointer]:
+                - /url: /teams
+            - listitem [ref=e28]:
+              - link "Pricing" [ref=e29] [cursor=pointer]:
+                - /url: /pricing
+        - generic [ref=e30]:
+          - link "Log in" [ref=e31] [cursor=pointer]:
+            - /url: https://www.tella.tv/api/login
+          - link "Sign up" [ref=e32] [cursor=pointer]:
+            - /url: https://www.tella.tv/api/signup
+            - button "Sign up" [ref=e33]
+    - main [ref=e34]:
+      - generic [ref=e35]:
+        - generic [ref=e37]:
+          - heading "Pricing" [level=1] [ref=e39]
+          - generic [ref=e40]:
+            - generic [ref=e41]:
+              - generic [ref=e42]:
+                - generic [ref=e43]: Monthly
+                - button [ref=e44] [cursor=pointer]
+                - generic [ref=e45]: Annual50% off
+              - generic [ref=e47]:
+                - generic [ref=e48]: "Users:"
+                - generic [ref=e49]:
+                  - button "Decrease users" [ref=e50] [cursor=pointer]:
+                    - img [ref=e51]
+                  - spinbutton [ref=e52]: "1"
+                  - button "Increase users" [ref=e53] [cursor=pointer]:
+                    - img [ref=e54]
+            - generic [ref=e56]:
+              - generic [ref=e57]:
+                - generic [ref=e58]:
+                  - heading "Free" [level=3] [ref=e60]
+                  - generic [ref=e61]:
+                    - generic [ref=e63]:
+                      - text: $
+                      - generic [ref=e65]:
+                        - generic [ref=e66]: "0"
+                        - generic [ref=e67]: "1"
+                        - generic [ref=e68]: "2"
+                        - generic [ref=e69]: "3"
+                        - generic [ref=e70]: "4"
+                        - generic [ref=e71]: "5"
+                        - generic [ref=e72]: "6"
+                        - generic [ref=e73]: "7"
+                        - generic [ref=e74]: "8"
+                        - generic [ref=e75]: "9"
+                    - generic [ref=e76]: per user/month
+                  - paragraph [ref=e77]: Get started with recording and sharing, on us.
+                - separator [ref=e78]
+                - generic [ref=e79]:
+                  - generic [ref=e80]:
+                    - img [ref=e81]
+                    - text: Record screen, cam & mic
+                  - generic [ref=e84]:
+                    - img [ref=e85]
+                    - text: Edit videos with AI
+                  - generic [ref=e88]:
+                    - img [ref=e89]
+                    - text: Share instantly
+                  - generic [ref=e92]:
+                    - img [ref=e93]
+                    - text: 7-day video expiry
+                  - generic [ref=e96]:
+                    - img [ref=e97]
+                    - text: Migration support
+                - link "Record for free" [ref=e101] [cursor=pointer]:
+                  - /url: https://www.tella.tv/api/signup
+              - generic [ref=e102]:
+                - generic [ref=e103]:
+                  - heading "Pro" [level=3] [ref=e105]
+                  - generic [ref=e106]:
+                    - generic [ref=e108]:
+                      - text: $
+                      - generic [ref=e110]:
+                        - generic [ref=e111]: "0"
+                        - generic [ref=e112]: "1"
+                        - generic [ref=e113]: "2"
+                        - generic [ref=e114]: "3"
+                        - generic [ref=e115]: "4"
+                        - generic [ref=e116]: "5"
+                        - generic [ref=e117]: "6"
+                        - generic [ref=e118]: "7"
+                        - generic [ref=e119]: "8"
+                        - generic [ref=e120]: "9"
+                      - generic [ref=e122]:
+                        - generic [ref=e123]: "0"
+                        - generic [ref=e124]: "1"
+                        - generic [ref=e125]: "2"
+                        - generic [ref=e126]: "3"
+                        - generic [ref=e127]: "4"
+                        - generic [ref=e128]: "5"
+                        - generic [ref=e129]: "6"
+                        - generic [ref=e130]: "7"
+                        - generic [ref=e131]: "8"
+                        - generic [ref=e132]: "9"
+                    - generic [ref=e133]: per user/month
+                  - paragraph [ref=e134]: Everything you need to create and share professional videos.
+                - separator [ref=e135]
+                - generic [ref=e136]:
+                  - generic [ref=e137]:
+                    - img [ref=e138]
+                    - text: Everything in Free
+                  - generic [ref=e141]:
+                    - img [ref=e142]
+                    - text: Unlimited videos
+                  - generic [ref=e145]:
+                    - img [ref=e146]
+                    - text: 106 languages
+                  - generic [ref=e149]:
+                    - img [ref=e150]
+                    - text: Export in 4K
+                  - generic [ref=e153]:
+                    - img [ref=e154]
+                    - text: Team collaboration
+                  - generic [ref=e157]:
+                    - img [ref=e158]
+                    - text: Track analytics
+                - link "Buy now" [ref=e162] [cursor=pointer]:
+                  - /url: https://www.tella.tv/api/signup?redirectTo=/settings/billing
+              - generic [ref=e163]:
+                - generic [ref=e164]:
+                  - heading "Premium" [level=3] [ref=e166]
+                  - generic [ref=e167]:
+                    - generic [ref=e169]:
+                      - text: $
+                      - generic [ref=e171]:
+                        - generic [ref=e172]: "0"
+                        - generic [ref=e173]: "1"
+                        - generic [ref=e174]: "2"
+                        - generic [ref=e175]: "3"
+                        - generic [ref=e176]: "4"
+                        - generic [ref=e177]: "5"
+                        - generic [ref=e178]: "6"
+                        - generic [ref=e179]: "7"
+                        - generic [ref=e180]: "8"
+                        - generic [ref=e181]: "9"
+                      - generic [ref=e183]:
+                        - generic [ref=e184]: "0"
+                        - generic [ref=e185]: "1"
+                        - generic [ref=e186]: "2"
+                        - generic [ref=e187]: "3"
+                        - generic [ref=e188]: "4"
+                        - generic [ref=e189]: "5"
+                        - generic [ref=e190]: "6"
+                        - generic [ref=e191]: "7"
+                        - generic [ref=e192]: "8"
+                        - generic [ref=e193]: "9"
+                    - generic [ref=e194]: per user/month
+                  - paragraph [ref=e195]: Advanced features for teams who need more control.
+                - separator [ref=e196]
+                - generic [ref=e197]:
+                  - generic [ref=e198]:
+                    - img [ref=e199]
+                    - text: Everything in Pro
+                  - generic [ref=e202]:
+                    - img [ref=e203]
+                    - text: Add a custom domain
+                  - generic [ref=e206]:
+                    - img [ref=e207]
+                    - text: Domain restriction
+                  - generic [ref=e210]:
+                    - img [ref=e211]
+                    - text: Remove Tella branding
+                  - generic [ref=e214]:
+                    - img [ref=e215]
+                    - text: Export at 60 FPS
+                  - generic [ref=e218]:
+                    - img [ref=e219]
+                    - text: Advanced analytics
+                - link "Buy now" [ref=e223] [cursor=pointer]:
+                  - /url: https://www.tella.tv/api/signup?redirectTo=/settings/billing
+              - generic [ref=e224]:
+                - generic [ref=e225]:
+                  - heading "Enterprise" [level=3] [ref=e227]
+                  - generic [ref=e229]: Custom
+                  - paragraph [ref=e230]: Custom solutions for teams with specific requirements.
+                - separator [ref=e231]
+                - generic [ref=e232]:
+                  - generic [ref=e233]:
+                    - img [ref=e234]
+                    - text: Everything in Premium
+                  - generic [ref=e237]:
+                    - img [ref=e238]
+                    - text: SSO & SCIM
+                  - generic [ref=e241]:
+                    - img [ref=e242]
+                    - text: Shared Slack channel
+                  - generic [ref=e245]:
+                    - img [ref=e246]
+                    - text: Personalized onboarding
+                  - generic [ref=e249]:
+                    - img [ref=e250]
+                    - text: Volume discounts
+                - link "Contact sales" [ref=e254] [cursor=pointer]:
+                  - /url: mailto:sales@tella.com
+        - generic [ref=e258]:
+          - generic [ref=e259]:
+            - generic [ref=e260]:
+              - generic [ref=e261]:
+                - img "Raf Gaito" [ref=e262]
+                - generic:
+                  - generic: Raf Gaito
+                  - generic: YouTuber
+              - generic [ref=e263]:
+                - generic [ref=e264]: If I'm growing quickly on YouTube, I owe it also to Tella
+                - img [ref=e265]
+                - generic [ref=e267]: Mar 12, 2026
+            - generic [ref=e268]:
+              - generic [ref=e269]:
+                - img "Antoine Sudan" [ref=e270]
+                - generic:
+                  - generic: Antoine Sudan
+                  - generic: Founder of WEDO
+              - generic [ref=e271]:
+                - generic [ref=e272]: Tella has transformed how we sell.
+                - img [ref=e273]
+                - generic [ref=e275]: Feb 28, 2026
+            - generic [ref=e276]:
+              - generic [ref=e277]:
+                - img "Josh Hayman" [ref=e278]
+                - generic:
+                  - generic: Josh Hayman
+                  - generic: Co-founder of Interact
+              - generic [ref=e279]:
+                - generic [ref=e280]: We're super happy to have found Tella
+                - img [ref=e281]
+                - generic [ref=e283]: Jan 15, 2026
+            - generic [ref=e284]:
+              - generic [ref=e285]:
+                - img "Mani Yadla" [ref=e286]
+                - generic:
+                  - generic: Mani Yadla
+                  - generic: Engineer at Fairblock
+              - generic [ref=e287]:
+                - generic [ref=e288]: It's simple, does exactly what you need, and feels really well made.
+                - img [ref=e289]
+                - generic [ref=e291]: Dec 3, 2025
+            - generic [ref=e292]:
+              - generic [ref=e293]:
+                - img "Mike Futia" [ref=e294]
+                - generic:
+                  - generic: Mike Futia
+                  - generic: Founder of AI Automation Made Easy
+              - generic [ref=e295]:
+                - generic [ref=e296]: Best new tool for recording is Tella
+                - img [ref=e297]
+                - generic [ref=e299]: Nov 19, 2025
+            - generic [ref=e300]:
+              - generic [ref=e301]:
+                - img "Steven Tey" [ref=e302]
+                - generic:
+                  - generic: Steven Tey
+                  - generic: Founder of Dub
+              - generic [ref=e303]:
+                - generic [ref=e304]: Signed up for it earlier this year and never looked back.
+                - img [ref=e305]
+                - generic [ref=e307]: Oct 7, 2025
+            - generic [ref=e308]:
+              - generic [ref=e309]:
+                - img "TG" [ref=e310]
+                - generic:
+                  - generic: TG
+                  - generic: Partnerships at Ship 30 for 30
+              - generic [ref=e311]:
+                - generic [ref=e312]: I love Tella
+                - img [ref=e313]
+                - generic [ref=e315]: Sep 22, 2025
+            - generic [ref=e316]:
+              - generic [ref=e317]:
+                - img "Elizabeth Lin" [ref=e318]
+                - generic:
+                  - generic: Elizabeth Lin
+                  - generic: Founder of Design Is a Party
+              - generic [ref=e319]:
+                - generic [ref=e320]: Highly recommend checking it out
+                - img [ref=e321]
+                - generic [ref=e323]: Aug 14, 2025
+            - generic [ref=e324]:
+              - generic [ref=e325]:
+                - img "David Paffenholz" [ref=e326]
+                - generic:
+                  - generic: David Paffenholz
+                  - generic: Co-founder of Juicebox
+              - generic [ref=e327]:
+                - generic [ref=e328]: Tella is awesome!
+                - img [ref=e329]
+                - generic [ref=e331]: Jul 30, 2025
+          - generic [ref=e332]:
+            - generic [ref=e333]:
+              - generic [ref=e334]:
+                - img "Raf Gaito" [ref=e335]
+                - generic:
+                  - generic: Raf Gaito
+                  - generic: YouTuber
+              - generic [ref=e336]:
+                - generic [ref=e337]: If I'm growing quickly on YouTube, I owe it also to Tella
+                - img [ref=e338]
+                - generic [ref=e340]: Mar 12, 2026
+            - generic [ref=e341]:
+              - generic [ref=e342]:
+                - img "Antoine Sudan" [ref=e343]
+                - generic:
+                  - generic: Antoine Sudan
+                  - generic: Founder of WEDO
+              - generic [ref=e344]:
+                - generic [ref=e345]: Tella has transformed how we sell.
+                - img [ref=e346]
+                - generic [ref=e348]: Feb 28, 2026
+            - generic [ref=e349]:
+              - generic [ref=e350]:
+                - img "Josh Hayman" [ref=e351]
+                - generic:
+                  - generic: Josh Hayman
+                  - generic: Co-founder of Interact
+              - generic [ref=e352]:
+                - generic [ref=e353]: We're super happy to have found Tella
+                - img [ref=e354]
+                - generic [ref=e356]: Jan 15, 2026
+            - generic [ref=e357]:
+              - generic [ref=e358]:
+                - img "Mani Yadla" [ref=e359]
+                - generic:
+                  - generic: Mani Yadla
+                  - generic: Engineer at Fairblock
+              - generic [ref=e360]:
+                - generic [ref=e361]: It's simple, does exactly what you need, and feels really well made.
+                - img [ref=e362]
+                - generic [ref=e364]: Dec 3, 2025
+            - generic [ref=e365]:
+              - generic [ref=e366]:
+                - img "Mike Futia" [ref=e367]
+                - generic:
+                  - generic: Mike Futia
+                  - generic: Founder of AI Automation Made Easy
+              - generic [ref=e368]:
+                - generic [ref=e369]: Best new tool for recording is Tella
+                - img [ref=e370]
+                - generic [ref=e372]: Nov 19, 2025
+            - generic [ref=e373]:
+              - generic [ref=e374]:
+                - img "Steven Tey" [ref=e375]
+                - generic:
+                  - generic: Steven Tey
+                  - generic: Founder of Dub
+              - generic [ref=e376]:
+                - generic [ref=e377]: Signed up for it earlier this year and never looked back.
+                - img [ref=e378]
+                - generic [ref=e380]: Oct 7, 2025
+            - generic [ref=e381]:
+              - generic [ref=e382]:
+                - img "TG" [ref=e383]
+                - generic:
+                  - generic: TG
+                  - generic: Partnerships at Ship 30 for 30
+              - generic [ref=e384]:
+                - generic [ref=e385]: I love Tella
+                - img [ref=e386]
+                - generic [ref=e388]: Sep 22, 2025
+            - generic [ref=e389]:
+              - generic [ref=e390]:
+                - img "Elizabeth Lin" [ref=e391]
+                - generic:
+                  - generic: Elizabeth Lin
+                  - generic: Founder of Design Is a Party
+              - generic [ref=e392]:
+                - generic [ref=e393]: Highly recommend checking it out
+                - img [ref=e394]
+                - generic [ref=e396]: Aug 14, 2025
+            - generic [ref=e397]:
+              - generic [ref=e398]:
+                - img "David Paffenholz" [ref=e399]
+                - generic:
+                  - generic: David Paffenholz
+                  - generic: Co-founder of Juicebox
+              - generic [ref=e400]:
+                - generic [ref=e401]: Tella is awesome!
+                - img [ref=e402]
+                - generic [ref=e404]: Jul 30, 2025
+      - generic [ref=e407]:
+        - heading "Compare plans" [level=2] [ref=e409]:
+          - generic [ref=e410]: Compare plans
+        - generic [ref=e411]:
+          - generic [ref=e412]:
+            - generic [ref=e414]:
+              - generic [ref=e415]: Free
+              - generic [ref=e416]: $0 / month
+              - link "Record for free" [ref=e417] [cursor=pointer]:
+                - /url: https://www.tella.tv/api/signup
+            - generic [ref=e418]:
+              - generic [ref=e419]: Pro
+              - generic [ref=e420]: $13 / month
+              - link "Buy now" [ref=e421] [cursor=pointer]:
+                - /url: https://www.tella.tv/api/signup?redirectTo=/settings/billing
+            - generic [ref=e422]:
+              - generic [ref=e423]: Premium
+              - generic [ref=e424]: $19 / month
+              - link "Buy now" [ref=e425] [cursor=pointer]:
+                - /url: https://www.tella.tv/api/signup?redirectTo=/settings/billing
+            - generic [ref=e426]:
+              - generic [ref=e427]: Enterprise
+              - generic [ref=e428]: Custom pricing
+              - link "Contact sales" [ref=e429] [cursor=pointer]:
+                - /url: mailto:sales@tella.com
+          - generic [ref=e430]:
+            - generic [ref=e431]: Recording
+            - generic [ref=e432]:
+              - generic [ref=e433]: Screen recording
+              - img [ref=e435]
+              - img [ref=e439]
+              - img [ref=e443]
+              - img [ref=e447]
+            - generic [ref=e450]:
+              - generic [ref=e451]: Webcam recording
+              - img [ref=e453]
+              - img [ref=e457]
+              - img [ref=e461]
+              - img [ref=e465]
+            - generic [ref=e468]:
+              - generic [ref=e469]: Microphone recording
+              - img [ref=e471]
+              - img [ref=e475]
+              - img [ref=e479]
+              - img [ref=e483]
+            - generic [ref=e486]:
+              - generic [ref=e487]: System audio recording
+              - img [ref=e489]
+              - img [ref=e493]
+              - img [ref=e497]
+              - img [ref=e501]
+            - generic [ref=e504]:
+              - generic [ref=e505]: Teleprompter
+              - img [ref=e507]
+              - img [ref=e511]
+              - img [ref=e515]
+              - img [ref=e519]
+            - generic [ref=e522]:
+              - generic [ref=e523]: Recording resolution
+              - generic [ref=e525]: Up to 4K
+              - generic [ref=e527]: Up to 4K
+              - generic [ref=e529]: Up to 4K
+              - generic [ref=e531]: Up to 4K
+            - generic [ref=e532]:
+              - generic [ref=e533]:
+                - text: Recording length
+                - generic [ref=e534]:
+                  - img [ref=e535]
+                  - generic: Limit for one clip. Combine multiple clips for longer.
+              - generic [ref=e538]: 2 hours
+              - generic [ref=e540]: 6 hours
+              - generic [ref=e542]: 6 hours
+              - generic [ref=e544]: 6 hours
+            - generic [ref=e545]:
+              - generic [ref=e546]: Transcription
+              - generic [ref=e548]: 106 languages
+              - generic [ref=e550]: 106 languages
+              - generic [ref=e552]: 106 languages
+              - generic [ref=e554]: 106 languages
+          - generic [ref=e555]:
+            - generic [ref=e556]: Editing
+            - generic [ref=e557]:
+              - generic [ref=e558]: Timeline editing
+              - img [ref=e560]
+              - img [ref=e564]
+              - img [ref=e568]
+              - img [ref=e572]
+            - generic [ref=e575]:
+              - generic [ref=e576]: Transcript editing
+              - img [ref=e578]
+              - img [ref=e582]
+              - img [ref=e586]
+              - img [ref=e590]
+            - generic [ref=e593]:
+              - generic [ref=e594]: AI mistakes finder
+              - img [ref=e596]
+              - img [ref=e600]
+              - img [ref=e604]
+              - img [ref=e608]
+            - generic [ref=e611]:
+              - generic [ref=e612]: Buffer removal
+              - img [ref=e614]
+              - img [ref=e618]
+              - img [ref=e622]
+              - img [ref=e626]
+            - generic [ref=e629]:
+              - generic [ref=e630]: Silence removal
+              - img [ref=e632]
+              - img [ref=e636]
+              - img [ref=e640]
+              - img [ref=e644]
+            - generic [ref=e647]:
+              - generic [ref=e648]: Filler word removal
+              - img [ref=e650]
+              - img [ref=e654]
+              - img [ref=e658]
+              - img [ref=e662]
+            - generic [ref=e665]:
+              - generic [ref=e666]: Layout editing
+              - img [ref=e668]
+              - img [ref=e672]
+              - img [ref=e676]
+              - img [ref=e680]
+            - generic [ref=e683]:
+              - generic [ref=e684]: Auto Layouts
+              - img [ref=e686]
+              - img [ref=e690]
+              - img [ref=e694]
+              - img [ref=e698]
+            - generic [ref=e701]:
+              - generic [ref=e702]: Zoom effects
+              - img [ref=e704]
+              - img [ref=e708]
+              - img [ref=e712]
+              - img [ref=e716]
+            - generic [ref=e719]:
+              - generic [ref=e720]: Auto Zoom
+              - img [ref=e722]
+              - img [ref=e726]
+              - img [ref=e730]
+              - img [ref=e734]
+            - generic [ref=e737]:
+              - generic [ref=e738]: Blur
+              - img [ref=e740]
+              - img [ref=e744]
+              - img [ref=e748]
+              - img [ref=e752]
+            - generic [ref=e755]:
+              - generic [ref=e756]: Highlight
+              - img [ref=e758]
+              - img [ref=e762]
+              - img [ref=e766]
+              - img [ref=e770]
+            - generic [ref=e773]:
+              - generic [ref=e774]: Backgrounds
+              - img [ref=e776]
+              - img [ref=e780]
+              - img [ref=e784]
+              - img [ref=e788]
+            - generic [ref=e791]:
+              - generic [ref=e792]: Borders
+              - img [ref=e794]
+              - img [ref=e798]
+              - img [ref=e802]
+              - img [ref=e806]
+            - generic [ref=e809]:
+              - generic [ref=e810]: Subtitle editing
+              - img [ref=e812]
+              - img [ref=e816]
+              - img [ref=e820]
+              - img [ref=e824]
+            - generic [ref=e827]:
+              - generic [ref=e828]: Subtitle styling
+              - img [ref=e830]
+              - img [ref=e834]
+              - img [ref=e838]
+              - img [ref=e842]
+            - generic [ref=e845]:
+              - generic [ref=e846]: Screen cropping
+              - img [ref=e848]
+              - img [ref=e852]
+              - img [ref=e856]
+              - img [ref=e860]
+            - generic [ref=e863]:
+              - generic [ref=e864]: Camera reframing
+              - img [ref=e866]
+              - img [ref=e870]
+              - img [ref=e874]
+              - img [ref=e878]
+            - generic [ref=e881]:
+              - generic [ref=e882]: Audio level editing
+              - img [ref=e884]
+              - img [ref=e888]
+              - img [ref=e892]
+              - img [ref=e896]
+            - generic [ref=e899]:
+              - generic [ref=e900]: AI audio enhancement
+              - img [ref=e902]
+              - img [ref=e906]
+              - img [ref=e910]
+              - img [ref=e914]
+            - generic [ref=e917]:
+              - generic [ref=e918]: Background music
+              - img [ref=e920]
+              - img [ref=e924]
+              - img [ref=e928]
+              - img [ref=e932]
+            - generic [ref=e935]:
+              - generic [ref=e936]: Adjust canvas size
+              - img [ref=e938]
+              - img [ref=e942]
+              - img [ref=e946]
+              - img [ref=e950]
+            - generic [ref=e953]:
+              - generic [ref=e954]: Logo overlay
+              - img [ref=e956]
+              - img [ref=e960]
+              - img [ref=e964]
+              - img [ref=e968]
+          - generic [ref=e971]:
+            - generic [ref=e972]: Sharing & storage
+            - generic [ref=e973]:
+              - generic [ref=e974]: Video expiry
+              - generic [ref=e976]: 7 days
+              - generic [ref=e978]: Unlimited
+              - generic [ref=e980]: Unlimited
+              - generic [ref=e982]: Unlimited
+            - generic [ref=e983]:
+              - generic [ref=e984]: Video hosting
+              - img [ref=e986]
+              - img [ref=e990]
+              - img [ref=e994]
+              - img [ref=e998]
+            - generic [ref=e1001]:
+              - generic [ref=e1002]: Embedded player
+              - img [ref=e1004]
+              - img [ref=e1008]
+              - img [ref=e1012]
+              - img [ref=e1016]
+            - generic [ref=e1019]:
+              - generic [ref=e1020]: Custom branding
+              - img [ref=e1022]
+              - img [ref=e1026]
+              - img [ref=e1030]
+              - img [ref=e1034]
+            - generic [ref=e1037]:
+              - generic [ref=e1038]: Custom domain
+              - img [ref=e1040]
+              - img [ref=e1042]
+              - img [ref=e1044]
+              - img [ref=e1048]
+            - generic [ref=e1051]:
+              - generic [ref=e1052]: Password protection
+              - img [ref=e1054]
+              - img [ref=e1058]
+              - img [ref=e1062]
+              - img [ref=e1066]
+            - generic [ref=e1069]:
+              - generic [ref=e1070]:
+                - text: Domain restriction
+                - generic [ref=e1071]:
+                  - img [ref=e1072]
+                  - generic: Restricts which domains embedded videos can be accessed on.
+              - img [ref=e1075]
+              - img [ref=e1077]
+              - img [ref=e1079]
+              - img [ref=e1083]
+            - generic [ref=e1086]:
+              - generic [ref=e1087]:
+                - text: White-label
+                - generic [ref=e1088]:
+                  - img [ref=e1089]
+                  - generic: Remove Tella branding from video pages.
+              - img [ref=e1092]
+              - img [ref=e1094]
+              - img [ref=e1096]
+              - img [ref=e1100]
+            - generic [ref=e1103]:
+              - generic [ref=e1104]:
+                - text: Title & description
+                - generic [ref=e1105]:
+                  - img [ref=e1106]
+                  - generic: AI generated, manually editable
+              - img [ref=e1109]
+              - img [ref=e1113]
+              - img [ref=e1117]
+              - img [ref=e1121]
+            - generic [ref=e1124]:
+              - generic [ref=e1125]:
+                - text: Video chapters
+                - generic [ref=e1126]:
+                  - img [ref=e1127]
+                  - generic: AI generated, manually editable
+              - img [ref=e1130]
+              - img [ref=e1134]
+              - img [ref=e1138]
+              - img [ref=e1142]
+            - generic [ref=e1145]:
+              - generic [ref=e1146]: Comments
+              - img [ref=e1148]
+              - img [ref=e1152]
+              - img [ref=e1156]
+              - img [ref=e1160]
+            - generic [ref=e1163]:
+              - generic [ref=e1164]: Reactions
+              - img [ref=e1166]
+              - img [ref=e1170]
+              - img [ref=e1174]
+              - img [ref=e1178]
+            - generic [ref=e1181]:
+              - generic [ref=e1182]: Call-to-action buttons
+              - img [ref=e1184]
+              - img [ref=e1188]
+              - img [ref=e1192]
+              - img [ref=e1196]
+            - generic [ref=e1199]:
+              - generic [ref=e1200]: Playback speed control
+              - img [ref=e1202]
+              - img [ref=e1206]
+              - img [ref=e1210]
+              - img [ref=e1214]
+            - generic [ref=e1217]:
+              - generic [ref=e1218]:
+                - text: AI document generation
+                - generic [ref=e1219]:
+                  - img [ref=e1220]
+                  - generic: Create docs from your videos.
+              - img [ref=e1223]
+              - img [ref=e1227]
+              - img [ref=e1231]
+              - img [ref=e1235]
+          - generic [ref=e1238]:
+            - generic [ref=e1239]: Download
+            - generic [ref=e1240]:
+              - generic [ref=e1241]: Video export
+              - img [ref=e1243]
+              - img [ref=e1247]
+              - img [ref=e1251]
+              - img [ref=e1255]
+            - generic [ref=e1258]:
+              - generic [ref=e1259]: Audio export
+              - img [ref=e1261]
+              - img [ref=e1265]
+              - img [ref=e1269]
+              - img [ref=e1273]
+            - generic [ref=e1276]:
+              - generic [ref=e1277]: Separate clips export
+              - img [ref=e1279]
+              - img [ref=e1283]
+              - img [ref=e1287]
+              - img [ref=e1291]
+            - generic [ref=e1294]:
+              - generic [ref=e1295]: Raw recordings export
+              - img [ref=e1297]
+              - img [ref=e1299]
+              - img [ref=e1303]
+              - img [ref=e1307]
+            - generic [ref=e1310]:
+              - generic [ref=e1311]: Thumbnail export
+              - img [ref=e1313]
+              - img [ref=e1317]
+              - img [ref=e1321]
+              - img [ref=e1325]
+            - generic [ref=e1328]:
+              - generic [ref=e1329]: Subtitles export
+              - img [ref=e1331]
+              - img [ref=e1335]
+              - img [ref=e1339]
+              - img [ref=e1343]
+            - generic [ref=e1346]:
+              - generic [ref=e1347]: Playback speed & timelapse
+              - img [ref=e1349]
+              - img [ref=e1353]
+              - img [ref=e1357]
+              - img [ref=e1361]
+            - generic [ref=e1364]:
+              - generic [ref=e1365]: 4K
+              - img [ref=e1367]
+              - img [ref=e1369]
+              - img [ref=e1373]
+              - img [ref=e1377]
+            - generic [ref=e1380]:
+              - generic [ref=e1381]: 60 FPS
+              - img [ref=e1383]
+              - generic [ref=e1385]: Up to 5 mins
+              - img [ref=e1387]
+              - img [ref=e1391]
+          - generic [ref=e1394]:
+            - generic [ref=e1395]: Analytics
+            - generic [ref=e1396]:
+              - generic [ref=e1397]: Total views
+              - img [ref=e1399]
+              - img [ref=e1401]
+              - img [ref=e1405]
+              - img [ref=e1409]
+            - generic [ref=e1412]:
+              - generic [ref=e1413]: Unique viewers
+              - img [ref=e1415]
+              - img [ref=e1417]
+              - img [ref=e1421]
+              - img [ref=e1425]
+            - generic [ref=e1428]:
+              - generic [ref=e1429]: Watch time
+              - img [ref=e1431]
+              - img [ref=e1433]
+              - img [ref=e1437]
+              - img [ref=e1441]
+            - generic [ref=e1444]:
+              - generic [ref=e1445]: Engagement
+              - img [ref=e1447]
+              - img [ref=e1449]
+              - img [ref=e1453]
+              - img [ref=e1457]
+            - generic [ref=e1460]:
+              - generic [ref=e1461]: Conversion funnels
+              - img [ref=e1463]
+              - img [ref=e1465]
+              - img [ref=e1469]
+              - img [ref=e1473]
+            - generic [ref=e1476]:
+              - generic [ref=e1477]: Individual viewers
+              - img [ref=e1479]
+              - generic [ref=e1481]: Last 5
+              - img [ref=e1483]
+              - img [ref=e1487]
+            - generic [ref=e1490]:
+              - generic [ref=e1491]: Traffic sources
+              - img [ref=e1493]
+              - generic [ref=e1495]: Top 5
+              - img [ref=e1497]
+              - img [ref=e1501]
+            - generic [ref=e1504]:
+              - generic [ref=e1505]: Viewer locations
+              - img [ref=e1507]
+              - generic [ref=e1509]: Top 5
+              - img [ref=e1511]
+              - img [ref=e1515]
+            - generic [ref=e1518]:
+              - generic [ref=e1519]: History
+              - img [ref=e1521]
+              - generic [ref=e1523]: Up to 30 days
+              - generic [ref=e1525]: All time
+              - generic [ref=e1527]: All time
+          - generic [ref=e1528]:
+            - generic [ref=e1529]: Organization & collaboration
+            - generic [ref=e1530]:
+              - generic [ref=e1531]: User management
+              - img [ref=e1533]
+              - img [ref=e1537]
+              - img [ref=e1541]
+              - img [ref=e1545]
+            - generic [ref=e1548]:
+              - generic [ref=e1549]: Personal playlists
+              - img [ref=e1551]
+              - img [ref=e1555]
+              - img [ref=e1559]
+              - img [ref=e1563]
+            - generic [ref=e1566]:
+              - generic [ref=e1567]: Shared playlists
+              - img [ref=e1569]
+              - img [ref=e1573]
+              - img [ref=e1577]
+              - img [ref=e1581]
+            - generic [ref=e1584]:
+              - generic [ref=e1585]: Team playlists
+              - img [ref=e1587]
+              - img [ref=e1591]
+              - img [ref=e1595]
+              - img [ref=e1599]
+            - generic [ref=e1602]:
+              - generic [ref=e1603]: Public playlists
+              - img [ref=e1605]
+              - img [ref=e1609]
+              - img [ref=e1613]
+              - img [ref=e1617]
+          - generic [ref=e1620]:
+            - generic [ref=e1621]: Apps & integrations
+            - generic [ref=e1622]:
+              - generic [ref=e1623]: Native macOS recorder
+              - img [ref=e1625]
+              - img [ref=e1629]
+              - img [ref=e1633]
+              - img [ref=e1637]
+            - generic [ref=e1640]:
+              - generic [ref=e1641]: Native Windows recorder
+              - img [ref=e1643]
+              - img [ref=e1647]
+              - img [ref=e1651]
+              - img [ref=e1655]
+            - generic [ref=e1658]:
+              - generic [ref=e1659]: Chrome extension
+              - img [ref=e1661]
+              - img [ref=e1665]
+              - img [ref=e1669]
+              - img [ref=e1673]
+            - generic [ref=e1676]:
+              - generic [ref=e1677]: Slack integration
+              - img [ref=e1679]
+              - img [ref=e1683]
+              - img [ref=e1687]
+              - img [ref=e1691]
+            - generic [ref=e1694]:
+              - generic [ref=e1695]: Notion integration
+              - img [ref=e1697]
+              - img [ref=e1701]
+              - img [ref=e1705]
+              - img [ref=e1709]
+            - generic [ref=e1712]:
+              - generic [ref=e1713]: Linear integration
+              - img [ref=e1715]
+              - img [ref=e1719]
+              - img [ref=e1723]
+              - img [ref=e1727]
+          - generic [ref=e1730]:
+            - generic [ref=e1731]: Support & security
+            - generic [ref=e1732]:
+              - generic [ref=e1733]: Email support
+              - generic [ref=e1735]: Help centre
+              - img [ref=e1737]
+              - img [ref=e1741]
+              - img [ref=e1745]
+            - generic [ref=e1748]:
+              - generic [ref=e1749]: Priority support
+              - img [ref=e1751]
+              - img [ref=e1753]
+              - img [ref=e1755]
+              - img [ref=e1759]
+            - generic [ref=e1762]:
+              - generic [ref=e1763]: Shared Slack channel
+              - img [ref=e1765]
+              - img [ref=e1767]
+              - img [ref=e1769]
+              - img [ref=e1771]
+            - generic [ref=e1774]:
+              - generic [ref=e1775]: SSO / SAML
+              - img [ref=e1777]
+              - img [ref=e1779]
+              - img [ref=e1781]
+              - img [ref=e1783]
+            - generic [ref=e1786]:
+              - generic [ref=e1787]: SCIM
+              - img [ref=e1789]
+              - img [ref=e1791]
+              - img [ref=e1793]
+              - img [ref=e1795]
+            - generic [ref=e1798]:
+              - generic [ref=e1799]: Loom migration tool
+              - img [ref=e1801]
+              - img [ref=e1805]
+              - img [ref=e1809]
+              - img [ref=e1813]
+            - generic [ref=e1816]:
+              - generic [ref=e1817]: Batch import tool
+              - img [ref=e1819]
+              - img [ref=e1823]
+              - img [ref=e1827]
+              - img [ref=e1831]
+      - generic [ref=e1836]:
+        - heading "FAQ" [level=2] [ref=e1837]
+        - generic [ref=e1838]:
+          - generic [ref=e1839]:
+            - button "Should I upgrade to Pro or Premium?" [ref=e1840] [cursor=pointer]:
+              - generic [ref=e1841]: Should I upgrade to Pro or Premium?
+              - img [ref=e1842]
+            - generic [ref=e1844]: If you are planning to share lots of videos with your audience — users, customers, followers — you should upgrade to Tella Premium. If not, Tella Pro should be enough. You can also change plans any time.
+          - generic [ref=e1845]:
+            - button "Do you offer SSO and/or SCIM?" [ref=e1846] [cursor=pointer]:
+              - generic [ref=e1847]: Do you offer SSO and/or SCIM?
+              - img [ref=e1848]
+            - paragraph [ref=e1851]:
+              - text: Yes, we offer SSO and/or SCIM as an add on.
+              - link "Reach out to our team" [ref=e1852] [cursor=pointer]:
+                - /url: mailto:sales@tella.com
+              - text: to learn more.
+          - generic [ref=e1853]:
+            - button "Do you offer any education discounts?" [ref=e1854] [cursor=pointer]:
+              - generic [ref=e1855]: Do you offer any education discounts?
+              - img [ref=e1856]
+            - paragraph [ref=e1859]:
+              - text: Yes, check out our
+              - link "Tella for Education" [ref=e1860] [cursor=pointer]:
+                - /url: /for-education
+              - text: program.
+          - generic [ref=e1861]:
+            - button "Do you offer any nonprofit discounts?" [ref=e1862] [cursor=pointer]:
+              - generic [ref=e1863]: Do you offer any nonprofit discounts?
+              - img [ref=e1864]
+            - paragraph [ref=e1867]:
+              - text: Yes, check out our
+              - link "Tella for Good" [ref=e1868] [cursor=pointer]:
+                - /url: /for-nonprofit
+              - text: program.
+          - generic [ref=e1869]:
+            - button "Can I cancel at any time?" [ref=e1870] [cursor=pointer]:
+              - generic [ref=e1871]: Can I cancel at any time?
+              - img [ref=e1872]
+            - generic [ref=e1874]: Yes, you can cancel at any time. Your subscription will stop at the end of that billing period. So if you're on a monthly subscription and you cancel in March, you won't be charged for April onwards.
+      - generic [ref=e1876]:
+        - heading "Record better videos, faster" [level=1] [ref=e1877]
+        - link "Start now" [ref=e1879] [cursor=pointer]:
+          - /url: https://www.tella.tv/api/signup
+          - button "Start now" [ref=e1880]
+    - contentinfo [ref=e1881]:
+      - generic [ref=e1882]:
+        - generic [ref=e1883]:
+          - link "Tella home" [ref=e1885] [cursor=pointer]:
+            - /url: /
+            - img [ref=e1886]
+          - generic [ref=e1892]:
+            - generic [ref=e1893]: Features
+            - generic [ref=e1894]:
+              - link "Recorder" [ref=e1895] [cursor=pointer]:
+                - /url: /recorder
+              - link "Editor" [ref=e1896] [cursor=pointer]:
+                - /url: /editor
+              - link "Sharing" [ref=e1897] [cursor=pointer]:
+                - /url: /sharing
+              - link "Analytics" [ref=e1898] [cursor=pointer]:
+                - /url: /video-analytics
+              - link "See all" [ref=e1899] [cursor=pointer]:
+                - /url: /features
+          - generic [ref=e1900]:
+            - generic [ref=e1901]: Apps
+            - generic [ref=e1902]:
+              - link "macOS app" [ref=e1903] [cursor=pointer]:
+                - /url: /mac
+              - link "Windows app" [ref=e1904] [cursor=pointer]:
+                - /url: /windows
+              - link "Chrome extension" [ref=e1905] [cursor=pointer]:
+                - /url: /chrome
+          - generic [ref=e1906]:
+            - generic [ref=e1907]: Tella for
+            - generic [ref=e1908]:
+              - link "Teams" [ref=e1909] [cursor=pointer]:
+                - /url: /teams
+              - link "Education" [ref=e1910] [cursor=pointer]:
+                - /url: /for-education
+              - link "Nonprofit" [ref=e1911] [cursor=pointer]:
+                - /url: /for-nonprofit
+              - link "See all" [ref=e1912] [cursor=pointer]:
+                - /url: /solutions
+          - generic [ref=e1913]:
+            - generic [ref=e1914]: Resources
+            - generic [ref=e1915]:
+              - link "Help Center" [ref=e1916] [cursor=pointer]:
+                - /url: https://tella.com/help
+                - text: Help Center
+                - img [ref=e1917]
+              - link "Blog" [ref=e1919] [cursor=pointer]:
+                - /url: /blog
+              - link "Community" [ref=e1920] [cursor=pointer]:
+                - /url: https://community.tella.tv/
+                - text: Community
+                - img [ref=e1921]
+              - link "Switch from Loom" [ref=e1923] [cursor=pointer]:
+                - /url: /switch
+              - link "See all" [ref=e1924] [cursor=pointer]:
+                - /url: /resources
+          - generic [ref=e1925]:
+            - generic [ref=e1926]: Company
+            - generic [ref=e1927]:
+              - link "Jobs" [ref=e1928] [cursor=pointer]:
+                - /url: /careers
+              - link "Affiliates" [ref=e1929] [cursor=pointer]:
+                - /url: /affiliate-program
+              - link "Contact" [ref=e1930] [cursor=pointer]:
+                - /url: /contact
+              - link "Status" [ref=e1931] [cursor=pointer]:
+                - /url: https://status.tella.com/
+                - text: Status
+                - img [ref=e1932]
+        - generic [ref=e1934]:
+          - generic [ref=e1935]: © Tella HQ Inc. 2026
+          - generic [ref=e1936]:
+            - link "Terms" [ref=e1937] [cursor=pointer]:
+              - /url: /legal/terms-of-service
+            - link "Privacy Policy" [ref=e1938] [cursor=pointer]:
+              - /url: /legal/privacy-policy
+            - link "DPA" [ref=e1939] [cursor=pointer]:
+              - /url: /legal/data-processing-agreement
+            - link "LLMs" [ref=e1940] [cursor=pointer]:
+              - /url: /llms.txt
+  - alert [ref=e1941]

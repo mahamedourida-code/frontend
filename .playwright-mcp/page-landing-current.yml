@@ -1,0 +1,14 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e4]:
+    - navigation [ref=e5]:
+      - generic [ref=e7]
+    - main [ref=e12]:
+      - generic [ref=e14]
+      - generic [ref=e399]
+      - generic [ref=e701]
+      - generic [ref=e893]
+    - contentinfo [ref=e1013]:
+      - generic [ref=e1014]
+  - region "Notifications alt+T"
+  - generic [ref=e1049]: "0"
