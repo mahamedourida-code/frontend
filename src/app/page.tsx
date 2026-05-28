@@ -14,16 +14,6 @@ import { GoogleOneTap } from "@/components/GoogleOneTap";
 import { MarketingNavBar } from "@/components/MarketingNavBar";
 import { useAuth } from "@/hooks/useAuth";
 
-const BenchmarkAccuracyChart = dynamic(
-  () => import("@/components/landing/BenchmarkAccuracyChart"),
-  {
-    ssr: false,
-    loading: () => (
-      <Card className="h-full min-h-[430px] border-border bg-card/80 shadow-sm backdrop-blur-md" />
-    ),
-  }
-);
-
 const TestimonialsMarquee = dynamic(
   () => import("@/components/landing/TestimonialsMarquee"),
   { ssr: false }
@@ -166,7 +156,6 @@ const footerColumns = [
     links: [
       { label: "Convert files", href: "/dashboard/client" },
       { label: "Pricing", href: "/pricing" },
-      { label: "Benchmarks", href: "/benchmarks" },
       { label: "Security", href: "/security" },
     ],
   },
@@ -183,7 +172,6 @@ const footerColumns = [
     title: "Resources",
     links: [
       { label: "Blogs", href: "/blogs" },
-      { label: "How it works", href: "/how-axliner-is-built" },
       { label: "Contact", href: "/contact" },
       { label: "Try AxLiner", href: "/dashboard/client" },
     ],
@@ -218,7 +206,6 @@ export default function Home() {
   const topBackgroundSectionRef = useRef<HTMLDivElement>(null);
   const topBackgroundRef = useRef<HTMLDivElement>(null);
   const contrastSectionRef = useRef<HTMLDivElement>(null);
-  const benchmarkBandRef = useRef<HTMLDivElement>(null);
   const securityBandRef = useRef<HTMLDivElement>(null);
 
   const { user } = useAuth();
@@ -270,7 +257,7 @@ export default function Home() {
       if (cancelled) return;
 
       ctx = gsap.context(() => {
-        [benchmarkBandRef.current, securityBandRef.current].forEach((band) => {
+        [securityBandRef.current].forEach((band) => {
           if (!band) return;
 
           gsap.fromTo(
@@ -337,10 +324,10 @@ export default function Home() {
           <div className="relative z-10 container mx-auto max-w-[1500px] px-4 sm:px-5 lg:px-9">
             <div className="grid min-h-[500px] items-center gap-14 lg:min-h-[535px] lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)] lg:gap-16">
               <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:translate-x-8 lg:text-left xl:translate-x-10">
-                <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight text-black dark:text-white sm:text-5xl lg:text-6xl">
+                <h1 className="ax-h1 font-semibold text-black dark:text-white">
                   Bulk accounting documents to Excel
                 </h1>
-                <p className="mt-8 text-base leading-8 text-foreground sm:text-lg lg:text-xl">
+                <p className="ax-body mt-6 text-foreground">
                   Convert invoices, bank statements, forms, and handwritten financial tables from images or PDFs into structured spreadsheets in minutes. Review extracted rows quickly and export clean Excel files without manual entry.
                 </p>
 
@@ -508,104 +495,16 @@ export default function Home() {
             </div>
           </div>
         </ScrollAnimatedSection>
-        {/* Benchmark Section */}
-        <ScrollAnimatedSection id="benchmarks" className="relative z-20 overflow-hidden pb-16 pt-16">
-          <div
-            ref={benchmarkBandRef}
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-0"
-            style={{
-              backgroundColor: "var(--background)",
-              boxShadow: "0 -24px 60px rgb(0 0 0 / 0.06)",
-              clipPath:
-                "polygon(0 4%, 12% 2.8%, 25% 4.6%, 40% 2.4%, 58% 4.3%, 75% 2.7%, 100% 4%, 100% 100%, 0 100%)",
-            }}
-          />
-          <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-12" data-animate="headline">
-                <BrandSectionLabel className="mb-4">
-                  <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                    Benchmarks
-                  </h2>
-                </BrandSectionLabel>
-
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Benchmarked against major cloud providers on real-world handwritten documents and complex table structures.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-                <BenchmarkAccuracyChart />
-
-                {/* Performance Metrics Table */}
-                <Card className="border-border bg-card shadow-sm" data-animate="stagger">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-semibold">Comprehensive Performance Metrics</CardTitle>
-                    <p className="text-sm text-muted-foreground">Average across all test scenarios</p>
-                  </CardHeader>
-                  <CardContent>
-                      <div className="overflow-hidden rounded-md border border-border bg-background">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-border/50 bg-muted/30">
-                            <th className="text-left p-3 font-medium">Metric</th>
-                            <th className="text-right p-3 font-medium text-primary">AxLiner</th>
-                            <th className="text-right p-3 font-medium text-muted-foreground">Industry Avg</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr className="border-b border-border/50">
-                            <td className="p-3 text-muted-foreground">Character Error Rate</td>
-                            <td className="p-3 text-right font-semibold text-primary">3.2%</td>
-                            <td className="p-3 text-right text-muted-foreground">5.8%</td>
-                          </tr>
-                          <tr className="border-b border-border/50">
-                            <td className="p-3 text-muted-foreground">Word Recognition</td>
-                            <td className="p-3 text-right font-semibold text-primary">99.5%</td>
-                            <td className="p-3 text-right text-muted-foreground">95.1%</td>
-                          </tr>
-                          <tr className="border-b border-border/50">
-                            <td className="p-3 text-muted-foreground">Table Structure</td>
-                            <td className="p-3 text-right font-semibold text-primary">99.1%</td>
-                            <td className="p-3 text-right text-muted-foreground">92.3%</td>
-                          </tr>
-                          <tr className="border-b border-border/50">
-                            <td className="p-3 text-muted-foreground">Noisy Image Handling</td>
-                            <td className="p-3 text-right font-semibold text-primary">94.7%</td>
-                            <td className="p-3 text-right text-muted-foreground">87.2%</td>
-                          </tr>
-                          <tr className="border-b border-border/50">
-                            <td className="p-3 text-muted-foreground">Mixed Font Recognition</td>
-                            <td className="p-3 text-right font-semibold text-primary">97.9%</td>
-                            <td className="p-3 text-right text-muted-foreground">94.6%</td>
-                          </tr>
-                          <tr>
-                            <td className="p-3 text-muted-foreground">Processing Speed</td>
-                            <td className="p-3 text-right font-semibold text-primary">0.8s/page</td>
-                            <td className="p-3 text-right text-muted-foreground">2.1s/page</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-            </div>
-          </div>
-        </ScrollAnimatedSection>
-
         <ScrollAnimatedSection id="owned-ai" className="relative z-20 overflow-hidden px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
           <div className="mx-auto grid max-w-[1280px] gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
             <div data-animate="headline">
               <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
                 Not a third-party wrapper
               </p>
-              <h2 className="mt-5 max-w-xl text-3xl font-semibold leading-tight tracking-normal text-foreground sm:text-4xl lg:text-5xl">
+              <h2 className="ax-h2 mt-5 max-w-xl font-semibold text-foreground">
                 Batch conversion infrastructure built for review work.
               </h2>
-              <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground">
+              <p className="ax-body mt-5 max-w-2xl text-muted-foreground">
                 AxLiner controls queue admission, file ownership, recovery, exports, and download permissions around the model call. That is the difference between a demo wrapper and a product that can survive real batch work.
               </p>
             </div>
@@ -643,106 +542,6 @@ export default function Home() {
             style={{ backgroundColor: "var(--background)" }}
           />
           <div className="relative z-10">
-        {/* AI Engine Section */}
-        <ScrollAnimatedSection id="ai-engine" className="py-14">
-          <div className="container mx-auto max-w-[1460px] px-4 sm:px-6 lg:px-8">
-            <div className="mx-auto">
-              <div className="mx-auto mb-12 max-w-4xl text-center" data-animate="headline">
-                <BrandSectionLabel className="mb-5">
-                  <span className="h-2 w-2 rounded-full bg-primary" />
-                  <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                    How AxLiner's Engine Is Built
-                  </h2>
-                </BrandSectionLabel>
-              </div>
-
-              {/* Main Content */}
-              <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(380px,0.82fr)] lg:items-start">
-                <Card className="overflow-hidden border-border bg-card shadow-sm" data-animate="stagger">
-                  <CardHeader className="border-b border-border">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Model stack</p>
-                        <CardTitle className="mt-1 text-2xl">Fine-tuned VLM for handwritten tables</CardTitle>
-                        <CardDescription className="mt-3 max-w-3xl text-sm leading-6">
-                          AxLiner's OCR path is shaped around a 7B vision-language model in the Qwen2-VL family, adapted for document images, table recovery, and spreadsheet-ready output.
-                        </CardDescription>
-                      </div>
-                      <span className="rounded-md border border-border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-                        Qwen2-VL-7B style base
-                      </span>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    {[
-                      ["01", "Vision encoder", "Document pages are normalized into visual tokens so handwriting, ruled tables, stamps, and noisy phone captures stay readable."],
-                      ["02", "Instruction tuning", "The model is tuned with OCR-style prompts, table reconstruction targets, and cell-aware extraction examples instead of generic chat answers."],
-                      ["03", "Schema alignment", "Rows, headers, merged cells, totals, and column boundaries are rebuilt before export so the output behaves like a spreadsheet."],
-                      ["04", "Batch orchestration", "Redis-backed jobs, deterministic file metadata, and retry-safe workers keep multi-file processing recoverable."],
-                    ].map(([step, title, copy]) => (
-                      <div key={step} className="grid gap-4 border-b border-border p-5 last:border-b-0 sm:grid-cols-[72px_1fr] sm:items-center">
-                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border bg-background text-sm font-semibold text-primary">
-                          {step}
-                        </span>
-                        <div>
-                          <p className="font-semibold text-foreground">{title}</p>
-                          <p className="mt-1 text-sm leading-6 text-muted-foreground">{copy}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-
-                <div className="space-y-4" data-animate="stagger">
-                  <Card className="overflow-hidden border-border bg-card shadow-sm">
-                    <CardHeader className="border-b border-border pb-4">
-                      <CardTitle className="text-base">Extraction telemetry</CardTitle>
-                      <CardDescription>Compact signals inspired by operator dashboards, not generic AI cards.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-5 p-5">
-                      <div className="rounded-md border border-border bg-background p-4">
-                        <div className="grid grid-cols-[110px_1fr_auto] gap-3 border-b border-border py-3 text-sm first:pt-0">
-                          <span className="font-semibold text-foreground">Vision</span>
-                          <span className="text-muted-foreground">page patches, rotation, noise cleanup</span>
-                          <span className="font-semibold text-primary">ready</span>
-                        </div>
-                        <div className="grid grid-cols-[110px_1fr_auto] gap-3 border-b border-border py-3 text-sm">
-                          <span className="font-semibold text-foreground">Language</span>
-                          <span className="text-muted-foreground">handwriting tokens and table prompts</span>
-                          <span className="font-semibold text-primary">tuned</span>
-                        </div>
-                        <div className="grid grid-cols-[110px_1fr_auto] gap-3 py-3 text-sm">
-                          <span className="font-semibold text-foreground">Export</span>
-                          <span className="text-muted-foreground">cell graph to spreadsheet schema</span>
-                          <span className="font-semibold text-primary">xlsx</span>
-                        </div>
-                      </div>
-                      <div className="rounded-md border border-border bg-muted p-4">
-                        <div className="flex items-end gap-1.5">
-                          {[36, 58, 44, 78, 70, 96, 66, 84].map((height, index) => (
-                            <span key={index} className="w-full rounded-sm bg-primary/75" style={{ height: `${height}px` }} />
-                          ))}
-                        </div>
-                        <div className="mt-4 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                          <span>image</span>
-                          <span>tokens</span>
-                          <span>xlsx</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-
-              {/* Footer Note */}
-              <div className="mt-12 text-center" data-animate="stagger">
-                <p className="text-sm text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-                  <span className="font-semibold text-foreground">Designed for operators:</span> the model work, queue logic, and export layer are all shaped around the spreadsheet people need after upload.
-                </p>
-              </div>
-            </div>
-          </div>
-        </ScrollAnimatedSection>
         <ScrollAnimatedSection id="security" className="relative z-10 overflow-hidden py-16 lg:py-20">
           <div
             ref={securityBandRef}
@@ -759,7 +558,7 @@ export default function Home() {
             <div className="grid gap-10 lg:grid-cols-[minmax(360px,0.82fr)_minmax(520px,1.18fr)] lg:items-center">
               <div data-animate="headline">
                 <p className="text-xl font-medium text-foreground">Security & Compliance</p>
-                <h2 className="mt-5 max-w-2xl text-3xl font-bold leading-tight text-foreground sm:text-4xl lg:text-5xl">
+                <h2 className="ax-h2 mt-5 max-w-2xl font-bold text-foreground">
                   Your Data Security Guaranteed
                 </h2>
 
@@ -776,7 +575,7 @@ export default function Home() {
               </div>
 
               <div className="lg:pt-8" data-animate="stagger">
-                <p className="max-w-3xl text-lg leading-8 text-foreground sm:text-xl">
+                <p className="ax-body mt-0 max-w-3xl text-foreground">
                   At AxLiner, your data is treated with utmost care. We build around global data protection expectations and international privacy requirements for document processing workflows.
                 </p>
 
@@ -805,7 +604,7 @@ export default function Home() {
             </div>
 
             <div className="mx-auto mt-16 max-w-[1160px] text-center lg:mt-20" data-animate="headline">
-              <h3 className="text-3xl font-bold leading-tight text-foreground sm:text-4xl lg:text-5xl">
+              <h3 className="ax-h2 font-bold text-foreground">
                 Frequently Asked Questions
               </h3>
             </div>
@@ -825,7 +624,7 @@ export default function Home() {
                     </span>
                   </summary>
                   <div className="pb-7 pr-10">
-                    <p className="text-base leading-8 text-muted-foreground">{item.answer}</p>
+                    <p className="ax-body text-muted-foreground">{item.answer}</p>
                   </div>
                 </details>
               ))}
@@ -858,10 +657,10 @@ export default function Home() {
               >
                 <AppLogo className="h-8 w-auto" />
               </NextLink>
-              <h2 className="mt-7 max-w-xl text-3xl font-semibold leading-tight text-white sm:text-4xl">
+              <h2 className="ax-h2 mt-7 max-w-xl font-semibold text-white">
                 Turn handwritten paperwork into review-ready Excel batches.
               </h2>
-              <p className="mt-5 max-w-xl text-base font-medium leading-7 text-white/82">
+              <p className="ax-body mt-5 max-w-xl font-medium text-white/82">
                 Handwritten documents go in. Reviewable Excel files come out. AxLiner keeps the batch, ownership, and download flow clear for teams that live in spreadsheets.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-3">
