@@ -523,8 +523,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Why Choose Us Section — green band, white text */}
-        <ScrollAnimatedSection id="features" className="relative z-20 bg-emerald-700 pt-20 pb-24 lg:pt-24 lg:pb-28">
+        {/* Why Choose Us Section — black band, white text */}
+        <ScrollAnimatedSection id="features" className="relative z-20 bg-neutral-950 pt-20 pb-24 lg:pt-24 lg:pb-28">
           <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
             <div className="mb-14" data-animate="headline">
               <h2 className="ax-h2 font-bold text-white">

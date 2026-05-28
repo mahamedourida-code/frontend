@@ -12,7 +12,7 @@ type SolutionCard = {
   description: string
 }
 
-/* Pastel card backgrounds — one per solution */
+/* Pastel card backgrounds — one per solution. Sit against the dark section bg. */
 const CARD_TINTS = [
   "bg-emerald-200",
   "bg-sky-200",
@@ -29,7 +29,7 @@ const CARD_TINTS = [
 function HoverCard({ card, index, tint }: { card: SolutionCard; index: number; tint: string }) {
   const ref = useRef<HTMLDivElement>(null)
 
-  /* framer-motion 3D tilt */
+  /* 3D tilt — applied to the whole cell */
   const rawX = useMotionValue(0)
   const rawY = useMotionValue(0)
   const rotateY = useSpring(useTransform(rawX, [-0.5, 0.5], [-4, 4]), { stiffness: 260, damping: 26 })
@@ -52,42 +52,25 @@ function HoverCard({ card, index, tint }: { card: SolutionCard; index: number; t
     >
       <motion.div
         ref={ref}
-        className={cn("group relative h-[560px] overflow-hidden rounded-2xl", tint)}
         style={{ rotateX, rotateY, transformPerspective: 900 }}
+        className="group relative h-[580px] overflow-hidden"
         onMouseMove={onMove}
         onMouseLeave={onLeave}
       >
-        {/* ── Illustration: fills card by default, shrinks DOWN + scales on hover ── */}
-        <div className={cn(
-          "absolute inset-0 flex items-center justify-center px-7 pb-7 pt-28",
-          "transition-transform duration-[420ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]",
-          "group-hover:scale-[0.78] group-hover:translate-y-[20%]",
-        )}>
-          <img
-            src={card.asset}
-            alt={card.title}
-            className="h-full w-full object-contain"
-          />
-        </div>
-
-        {/* ── Persistent dark gradient at TOP ── */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-52 bg-gradient-to-b from-black/85 via-black/45 to-transparent" />
-
-        {/* ── Text area at TOP — title always visible, description expands down ── */}
-        <div className="absolute inset-x-0 top-0 px-6 pt-6">
+        {/* ── Text — sits on the SECTION background (visible because image card is below it) ── */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 px-6 pt-7">
           {/* Title — always visible */}
-          <h3 className="text-[22px] font-bold leading-snug text-white">
+          <h3 className="text-[24px] font-bold leading-tight text-white">
             {card.title}
           </h3>
 
-          {/* Description — expands downward from below title on hover */}
+          {/* Description — expands DOWN from below the title on hover */}
           <div className={cn(
-            "grid overflow-hidden",
-            "grid-rows-[0fr] group-hover:grid-rows-[1fr]",
-            "transition-[grid-template-rows] duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+            "grid grid-rows-[0fr] group-hover:grid-rows-[1fr]",
+            "transition-[grid-template-rows] duration-[340ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
           )}>
-            <div className="min-h-0">
-              <p className="pt-3 text-[14px] font-medium leading-relaxed text-white/85">
+            <div className="min-h-0 overflow-hidden">
+              <p className="pt-3 text-[14px] font-medium leading-relaxed text-white/80">
                 {card.description}
               </p>
               <p className="mt-3 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">
@@ -100,8 +83,25 @@ function HoverCard({ card, index, tint }: { card: SolutionCard; index: number; t
           </div>
         </div>
 
+        {/* ── Image card — sits below title initially, slides DOWN + shrinks on hover ──
+             Pushed down → reveals more of the section bg above where text appears.        */}
+        <div className={cn(
+          "absolute inset-x-0 bottom-0 top-[88px] rounded-2xl",
+          tint,
+          "transition-transform duration-[440ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]",
+          "origin-top group-hover:translate-y-[72px] group-hover:scale-[0.94]",
+        )}>
+          <div className="flex h-full w-full items-center justify-center p-8">
+            <img
+              src={card.asset}
+              alt={card.title}
+              className="h-full w-full object-contain"
+            />
+          </div>
+        </div>
+
         {/* Full-card link */}
-        <Link href={card.href} className="absolute inset-0 z-10" aria-label={`Discover ${card.title}`} />
+        <Link href={card.href} className="absolute inset-0 z-20" aria-label={`Discover ${card.title}`} />
       </motion.div>
     </motion.div>
   )
