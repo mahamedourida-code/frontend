@@ -462,8 +462,7 @@ export default function Home() {
             {/* A — text left · video right */}
             <div className="grid items-center gap-10 border-t border-primary/[0.08] py-16 lg:grid-cols-2 lg:gap-20 lg:py-24">
               <div data-animate="headline">
-                <p className="ax-eyebrow text-primary">Mixed batches</p>
-                <h3 className="ax-h2 mt-3 max-w-lg font-bold text-foreground">
+                <h3 className="ax-h2 max-w-lg font-bold text-foreground">
                   Throw us the whole folder.
                 </h3>
                 <p className="ax-body mt-5 text-muted-foreground">
@@ -484,8 +483,7 @@ export default function Home() {
                 <VideoPlaceholder caption="Review board: source document side-by-side with extracted data" />
               </div>
               <div data-animate="headline">
-                <p className="ax-eyebrow text-primary">Review board</p>
-                <h3 className="ax-h2 mt-3 max-w-lg font-bold text-foreground">
+                <h3 className="ax-h2 max-w-lg font-bold text-foreground">
                   See everything before it touches QuickBooks.
                 </h3>
                 <p className="ax-body mt-5 text-muted-foreground">
@@ -500,8 +498,7 @@ export default function Home() {
             {/* C — text left · video right */}
             <div className="grid items-center gap-10 border-t border-primary/[0.08] py-16 lg:grid-cols-2 lg:gap-20 lg:py-24">
               <div data-animate="headline">
-                <p className="ax-eyebrow text-primary">Handwritten specialist</p>
-                <h3 className="ax-h2 mt-3 max-w-lg font-bold text-foreground">
+                <h3 className="ax-h2 max-w-lg font-bold text-foreground">
                   The messy stuff. WhatsApp photos. Handwritten receipts.
                 </h3>
                 <p className="ax-body mt-5 text-muted-foreground">
@@ -522,8 +519,7 @@ export default function Home() {
                 <VideoPlaceholder caption="AP queue: code, review, and publish bills to QuickBooks in one screen" />
               </div>
               <div data-animate="headline">
-                <p className="ax-eyebrow text-primary">QuickBooks publishing</p>
-                <h3 className="ax-h2 mt-3 max-w-lg font-bold text-foreground">
+                <h3 className="ax-h2 max-w-lg font-bold text-foreground">
                   Reviewed, coded, posted — without copy-pasting.
                 </h3>
                 <p className="ax-body mt-5 text-muted-foreground">
