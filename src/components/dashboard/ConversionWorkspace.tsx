@@ -906,6 +906,120 @@ function getResultKey(file: ResultFile, index: number) {
   return file.file_id || `result-${index}`
 }
 
+const DOT_COLOR: Record<string, string> = {
+  needs_review: "bg-amber-400",
+  ready: "bg-emerald-500",
+  failed: "bg-rose-500",
+  edited: "bg-primary",
+  published: "bg-sky-400",
+}
+
+function DocumentNavStrip({
+  entries,
+  activeIndex,
+  onSelect,
+}: {
+  entries: Array<{ file: ResultFile; index: number; badge: { state: string } }>
+  activeIndex: number | null
+  onSelect: (index: number) => void
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+
+  const checkScroll = () => {
+    const el = scrollRef.current
+    if (!el) return
+    setCanScrollLeft(el.scrollLeft > 4)
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4)
+  }
+
+  useEffect(() => {
+    checkScroll()
+    const el = scrollRef.current
+    if (!el) return
+    el.addEventListener("scroll", checkScroll, { passive: true })
+    const ro = new ResizeObserver(checkScroll)
+    ro.observe(el)
+    return () => {
+      el.removeEventListener("scroll", checkScroll)
+      ro.disconnect()
+    }
+  }, [entries.length])
+
+  useEffect(() => {
+    if (activeIndex === null) return
+    const el = scrollRef.current
+    const card = el?.children[activeIndex] as HTMLElement | undefined
+    card?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" })
+  }, [activeIndex])
+
+  if (entries.length <= 1) return null
+
+  return (
+    <div className="relative mb-4">
+      {canScrollLeft && (
+        <button
+          type="button"
+          onClick={() => scrollRef.current?.scrollBy({ left: -200, behavior: "smooth" })}
+          aria-label="Scroll left"
+          className="absolute left-0 top-1/2 z-10 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card/90 shadow-sm backdrop-blur hover:bg-accent"
+        >
+          <ChevronLeft className="h-3.5 w-3.5" />
+        </button>
+      )}
+      {canScrollRight && (
+        <button
+          type="button"
+          onClick={() => scrollRef.current?.scrollBy({ left: 200, behavior: "smooth" })}
+          aria-label="Scroll right"
+          className="absolute right-0 top-1/2 z-10 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card/90 shadow-sm backdrop-blur hover:bg-accent"
+        >
+          <ChevronRight className="h-3.5 w-3.5" />
+        </button>
+      )}
+
+      <div
+        ref={scrollRef}
+        className="flex gap-2 overflow-x-auto snap-x snap-mandatory px-1 py-1"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {entries.map(({ file, index, badge }) => {
+          const isActive = activeIndex === index
+          return (
+            <button
+              key={file.file_id || index}
+              type="button"
+              onClick={() => onSelect(index)}
+              aria-label={`Document ${index + 1}`}
+              className={cn(
+                "relative flex-none snap-start overflow-hidden rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                isActive ? "border-primary" : "border-border hover:border-primary/50"
+              )}
+              style={{ width: 56, height: 72 }}
+            >
+              {file.input_preview_url ? (
+                <img src={file.input_preview_url} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-muted">
+                  <FileImage className="h-4 w-4 text-muted-foreground" />
+                </div>
+              )}
+              <span className="absolute left-0.5 top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-sm bg-card/80 px-0.5 text-[9px] font-bold text-foreground backdrop-blur">
+                {index + 1}
+              </span>
+              <span className={cn(
+                "absolute bottom-0.5 right-0.5 size-2.5 rounded-full border border-white/60 shadow-sm",
+                DOT_COLOR[badge.state] || "bg-muted-foreground"
+              )} />
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 function getOutputBadge(file: ResultFile) {
   const rawConfidence =
     file.confidence_score ??
@@ -1656,6 +1770,12 @@ export function ResultActions({
             </button>
           ))}
         </div>
+
+        <DocumentNavStrip
+          entries={resultEntries}
+          activeIndex={comparisonIndex}
+          onSelect={openComparison}
+        />
 
         <div className={cn(
           "grid gap-4",
