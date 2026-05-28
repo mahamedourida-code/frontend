@@ -16,31 +16,36 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { AppLogo } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { WorkspaceSwitcher } from "@/components/WorkspaceSwitcher"
-import { industrySolutions } from "@/lib/industry-solutions"
-import { 
-  Menu, 
+import {
+  Menu,
   ChevronRight,
   Home,
-  Target, 
   LogIn,
   Activity,
   Upload,
   History,
   Settings,
   LogOut,
-  HelpCircle,
   FileText,
-  FileSpreadsheet,
   LayoutDashboard,
   ReceiptText,
   Building2,
-  Inbox
+  Inbox,
+  BookOpen,
+  Download,
+  Eye,
+  FolderOpen,
+  Layers,
+  Link2,
+  ArrowUpRight,
+  ScanLine,
+  Users,
+  Workflow,
 } from "lucide-react"
 
 interface MobileNavProps {
@@ -69,7 +74,8 @@ type MobileNavItem = {
 
 export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInClick, user }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [solutionsOpen, setSolutionsOpen] = useState(false)
+  const [bookkeepersOpen, setBookkeepersOpen] = useState(false)
+  const [practicesOpen, setPracticesOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
 
@@ -170,15 +176,30 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       show: !isAuthenticated
     },
     {
-      label: "Solutions",
-      icon: FileSpreadsheet,
+      label: "For Bookkeepers",
+      icon: Eye,
       show: !isAuthenticated,
-      children: industrySolutions.map((solution) => ({
-        label: solution.title,
-        href: `/solutions/${solution.slug}`,
-        iconSrc: solution.cardAsset,
-        description: solution.eyebrow
-      }))
+      children: [
+        { label: "Document extraction", href: "/dashboard/client", icon: ScanLine, description: "Invoices, receipts, bank statements, handwritten" },
+        { label: "Review board", href: "/dashboard/client", icon: Eye, description: "Source image + editable cells side by side" },
+        { label: "Mixed batch auto-detect", href: "/dashboard/auto-detect", icon: Layers, description: "Drop a whole folder — each file classified" },
+        { label: "Export to Excel / CSV", href: "/dashboard/client", icon: Download, description: "One file or full batch, clean output" },
+        { label: "QuickBooks publishing", href: "/dashboard/integrations", icon: ArrowUpRight, description: "Draft Bill posted with original doc attached" },
+        { label: "Client upload links", href: "/dashboard/inbox", icon: Link2, description: "Clients submit without an account" },
+      ]
+    },
+    {
+      label: "For Accounting Practices",
+      icon: Users,
+      show: !isAuthenticated,
+      children: [
+        { label: "Batch processing", href: "/dashboard/client", icon: FolderOpen, description: "Up to 50 files, mixed types, one job" },
+        { label: "Team reviewer access", href: "/dashboard/settings", icon: Users, description: "Invite colleagues — they review, you publish" },
+        { label: "AP queue + QuickBooks", href: "/dashboard/accounts-payable", icon: ReceiptText, description: "Code, approve, and bulk-publish bills" },
+        { label: "Vendor memory rules", href: "/dashboard/settings", icon: BookOpen, description: "Auto-fill coding for recurring suppliers" },
+        { label: "Inbox & client intake", href: "/dashboard/inbox", icon: Inbox, description: "Watch folder, email forwarding, intake links" },
+        { label: "Workflows", href: "/dashboard/workflows", icon: Workflow, description: "Routing rules for multi-step review" },
+      ]
     },
     {
       label: "Pricing",
@@ -187,19 +208,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       show: !isAuthenticated
     },
     {
-      label: "Benchmarks",
-      href: "/benchmarks",
-      icon: HelpCircle,
-      show: !isAuthenticated
-    },
-    {
-      label: "How AxLiner's Built",
-      href: "/how-axliner-is-built",
-      icon: Activity,
-      show: !isAuthenticated
-    },
-    {
-      label: "Blogs",
+      label: "Blog",
       href: "/blogs",
       icon: FileText,
       show: !isAuthenticated
@@ -329,11 +338,15 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                     .filter(item => item.show !== false)
                     .map((item, index) => {
                       if (item.children) {
+                        const isBookkeepers = item.label === "For Bookkeepers"
+                        const isPractices = item.label === "For Accounting Practices"
+                        const isOpen = isBookkeepers ? bookkeepersOpen : isPractices ? practicesOpen : false
+                        const setOpen = isBookkeepers ? setBookkeepersOpen : isPractices ? setPracticesOpen : () => {}
                         return (
                           <Collapsible
                             key={index}
-                            open={solutionsOpen}
-                            onOpenChange={setSolutionsOpen}
+                            open={isOpen}
+                            onOpenChange={setOpen}
                           >
                             <CollapsibleTrigger asChild>
                               <Button
@@ -347,11 +360,11 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                               >
                                 {item.icon && <item.icon className="h-5 w-5" />}
                                 <span className="flex-1 text-left text-sm md:text-base">{item.label}</span>
-                                <ChevronRight 
+                                <ChevronRight
                                   className={cn(
                                     "h-4 w-4 transition-transform",
-                                    solutionsOpen && "rotate-90"
-                                  )} 
+                                    isOpen && "rotate-90"
+                                  )}
                                 />
                               </Button>
                             </CollapsibleTrigger>
@@ -415,37 +428,6 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                     })}
                 </nav>
 
-                {/* Quick Links Section */}
-                {!isAuthenticated && (
-                  <>
-                    <Separator className="my-3 bg-border" />
-                    <div className="px-4">
-                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground mb-2">
-                        Quick Links
-                      </p>
-                      <div className="space-y-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleSectionClick("features")}
-                          className="h-10 w-full justify-start gap-3 rounded-2xl px-2 hover:bg-accent"
-                        >
-                          <Target className="h-5 w-5" />
-                          <span className="text-sm md:text-base">Features</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleNavigation("/benchmarks")}
-                          className="h-10 w-full justify-start gap-3 rounded-2xl px-2 hover:bg-accent"
-                        >
-                          <HelpCircle className="h-5 w-5" />
-                          <span className="text-sm md:text-base">Benchmarks</span>
-                        </Button>
-                      </div>
-                    </div>
-                  </>
-                )}
               </div>
 
               {/* Footer Actions */}
