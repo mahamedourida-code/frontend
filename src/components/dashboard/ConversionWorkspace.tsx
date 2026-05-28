@@ -20,7 +20,10 @@ import {
 } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
+import { ConfidenceDot } from "@/components/dashboard/ConfidenceDot"
+import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
 import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
+import { getRowConfidenceTier, isHandwrittenDocument } from "@/lib/handwritten"
 import { cn } from "@/lib/utils"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
 import type {
@@ -990,12 +993,13 @@ function DocumentNavStrip({
       >
         {entries.map(({ file, index, badge }) => {
           const isActive = activeIndex === index
+          const handwritten = isHandwrittenDocument(file)
           return (
             <button
               key={file.file_id || index}
               type="button"
               onClick={() => onSelect(index)}
-              aria-label={`Document ${index + 1}`}
+              aria-label={`Document ${index + 1}${handwritten ? ", handwritten" : ""}`}
               className={cn(
                 "relative flex-none snap-start overflow-hidden rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                 isActive ? "border-primary" : "border-border hover:border-primary/50"
@@ -1012,6 +1016,9 @@ function DocumentNavStrip({
               <span className="absolute left-0.5 top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-sm bg-card/80 px-0.5 text-[9px] font-bold text-foreground backdrop-blur">
                 {index + 1}
               </span>
+              {handwritten ? (
+                <HandwrittenBadge variant="corner" className="absolute right-0.5 top-0.5" />
+              ) : null}
               <span className={cn(
                 "absolute bottom-0.5 right-0.5 size-2.5 rounded-full border border-white/60 shadow-sm",
                 DOT_COLOR[badge.state] || "bg-muted-foreground"
@@ -1840,6 +1847,7 @@ export function ResultActions({
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-1.5">
+                  {isHandwrittenDocument(file) ? <HandwrittenBadge /> : null}
                   <span className={cn("rounded-md border px-2 py-1 text-[10px] font-semibold", badge.className)}>
                     {badge.label}
                   </span>
@@ -2298,7 +2306,10 @@ export function ResultActions({
                   <div className="text-gray-950">
                     <div className="sticky top-0 z-[1] flex items-center justify-between gap-4 border-b border-border bg-white px-4 py-3">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold">{comparisonSummary?.identity || comparisonFile.filename || "Document"}</p>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="truncate text-sm font-semibold">{comparisonSummary?.identity || comparisonFile.filename || "Document"}</p>
+                          {isHandwrittenDocument(comparisonFile) ? <HandwrittenBadge variant="label" /> : null}
+                        </div>
                         <p className="mt-0.5 text-xs text-gray-500">{formatDocumentType(comparisonFile.document_type)}</p>
                       </div>
                       <span className={cn("rounded-md border px-2 py-1 text-[10px] font-semibold", getOutputBadge(comparisonFile).className)}>
@@ -2367,8 +2378,26 @@ export function ResultActions({
                 ) : comparisonTable.length ? (
                   <table className="w-full min-w-[680px] border-collapse text-sm text-gray-950">
                     <tbody>
-                      {comparisonTable.map((row, rowIndex) => (
+                      {comparisonTable.map((row, rowIndex) => {
+                        const isHandwrittenRow = isHandwrittenDocument(comparisonFile) && rowIndex > 0
+                        const rowTier = isHandwrittenRow ? getRowConfidenceTier(comparisonFile, rowIndex) : null
+                        return (
                         <tr key={rowIndex} className={rowIndex === 0 ? "bg-primary text-primary-foreground" : rowIndex % 2 === 0 ? "bg-emerald-50" : "bg-white"}>
+                          {isHandwrittenDocument(comparisonFile) ? (
+                            <td
+                              className={cn(
+                                "w-7 border border-gray-200 px-1.5 text-center align-middle",
+                                rowIndex === 0 ? "border-white/20" : "",
+                              )}
+                              aria-hidden={rowIndex === 0}
+                            >
+                              {rowIndex === 0 ? (
+                                <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-primary-foreground/85">·</span>
+                              ) : (
+                                <ConfidenceDot tier={rowTier} size={8} withRing />
+                              )}
+                            </td>
+                          ) : null}
                           {Array.from({ length: comparisonColumnCount }).map((_, cellIndex) => {
                             const isEditing =
                               editingCell !== null &&
@@ -2414,7 +2443,8 @@ export function ResultActions({
                             )
                           })}
                         </tr>
-                      ))}
+                        )
+                      })}
                     </tbody>
                   </table>
                 ) : (
