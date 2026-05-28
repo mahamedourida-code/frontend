@@ -263,6 +263,8 @@ export interface ProcessedFile {
   document_mode?: DocumentMode
   requires_review?: boolean
   confidence_score?: number
+  is_handwritten?: boolean
+  row_confidence?: number[]
   review_flags?: Array<Record<string, unknown>>
   created_at: string
 }

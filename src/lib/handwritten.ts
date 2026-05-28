@@ -39,7 +39,10 @@ function readMetadataFlag(metadata: Record<string, unknown> | null | undefined, 
 export function isHandwrittenDocument(file: HandwrittenCandidate): boolean {
   if (!file) return false
 
-  // Explicit backend flag (forward-compatible).
+  // Top-level backend flag (P1 — populated by simple_batch.py).
+  if (typeof file.is_handwritten === "boolean") return file.is_handwritten
+
+  // Metadata-level overrides (forward-compatible).
   const explicit =
     readMetadataFlag(file.metadata ?? undefined, "is_handwritten") ??
     readMetadataFlag(file.metadata ?? undefined, "handwritten")
@@ -50,7 +53,7 @@ export function isHandwrittenDocument(file: HandwrittenCandidate): boolean {
     if (method.includes("handwritten") || method.includes("hand_written")) return true
   }
 
-  // Review flags can carry a typed signal once backend emits them.
+  // Review flags can carry a typed signal.
   if (Array.isArray(file.review_flags)) {
     for (const flag of file.review_flags) {
       if (!flag || typeof flag !== "object") continue
@@ -75,14 +78,29 @@ export function getConfidenceTier(score: number | null | undefined): ConfidenceT
 }
 
 /**
- * Per-row confidence tier. When backend returns per-cell confidence, plumb
- * it through this helper. For now falls back to the document-level score.
+ * Per-row confidence tier. Reads the backend-supplied `row_confidence` array
+ * when present (populated for handwritten docs by simple_batch.py), and falls
+ * back to the document-level score when the row index is out of range or no
+ * per-row signal exists.
+ *
+ * NOTE: the comparison table renders a header row at `rowIndex === 0`. The
+ * data row at `rowIndex === N` therefore maps to `row_confidence[N - 1]`.
  */
 export function getRowConfidenceTier(
   file: HandwrittenCandidate,
-  _rowIndex: number,
+  rowIndex: number,
 ): ConfidenceTier | null {
   if (!file) return null
+
+  const rowScores = (file as { row_confidence?: number[] }).row_confidence
+  if (Array.isArray(rowScores) && rowScores.length) {
+    const dataIndex = rowIndex - 1 // header row offset
+    if (dataIndex >= 0 && dataIndex < rowScores.length) {
+      const tier = getConfidenceTier(rowScores[dataIndex])
+      if (tier) return tier
+    }
+  }
+
   const score =
     typeof (file as any).confidence_score === "number"
       ? (file as any).confidence_score
