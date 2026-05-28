@@ -413,12 +413,15 @@ function SettingsContent() {
                             key={item.id}
                             onClick={() => setActiveSection(item.id as SettingsSection)}
                             className={cn(
-                              "ax-interactive w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm",
+                              "ax-interactive relative w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm",
                               activeSection === item.id
                                 ? "bg-accent text-accent-foreground font-medium shadow-sm"
                                 : "text-muted-foreground hover:text-foreground hover:bg-accent"
                             )}
                           >
+                            {activeSection === item.id && (
+                              <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-primary" />
+                            )}
                             <Icon className="h-4 w-4 shrink-0" />
                             <span>{item.label}</span>
                           </button>
@@ -439,8 +442,10 @@ function SettingsContent() {
                 {/* Profile Information */}
                 <Card className="ax-glass-card">
                   <CardHeader className="p-5">
-                    <div className="flex items-center gap-2">
-                      <User className="h-5 w-5 text-primary" />
+                    <div className="flex items-center gap-3">
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                        <User className="h-5 w-5 text-primary" />
+                      </div>
                       <div>
                         <CardTitle className="text-base lg:text-lg">Profile Information</CardTitle>
                         <CardDescription className="text-xs lg:text-sm">Update your personal details</CardDescription>
@@ -622,14 +627,21 @@ function SettingsContent() {
               <div className="space-y-5">
                 <Card className="ax-glass-card overflow-hidden rounded-xl">
                   <CardHeader className="p-5 sm:p-6">
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-3">
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                        <FileSpreadsheet className="h-5 w-5 text-primary" />
+                      </div>
                       <div>
-                        <CardTitle className="text-lg">Vendor memory</CardTitle>
+                        <div className="flex items-center gap-2">
+                          <CardTitle className="text-lg">Vendor memory</CardTitle>
+                          <span className="rounded border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400">
+                            Owner only
+                          </span>
+                        </div>
                         <CardDescription className="mt-1 max-w-xl leading-5">
                           Rules saved after confirmed invoice or receipt review. AxLiner shows these as suggestions and never posts them automatically.
                         </CardDescription>
                       </div>
-                      <FileSpreadsheet className="h-6 w-6 shrink-0 text-primary" />
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3 p-5 pt-0 sm:p-6 sm:pt-0">
@@ -732,8 +744,10 @@ function SettingsContent() {
                 {/* Processing Settings */}
                 <Card className="ax-glass-card">
                   <CardHeader className="p-5">
-                    <div className="flex items-center gap-2">
-                      <Settings2 className="h-5 w-5 text-primary" />
+                    <div className="flex items-center gap-3">
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                        <Settings2 className="h-5 w-5 text-primary" />
+                      </div>
                       <div>
                         <CardTitle>Processing Settings</CardTitle>
                         <CardDescription>Configure automatic actions</CardDescription>
@@ -782,8 +796,10 @@ function SettingsContent() {
                 {/* OCR Detection Language */}
                 <Card className="ax-glass-card">
                   <CardHeader className="p-5">
-                    <div className="flex items-center gap-2">
-                      <Languages className="h-5 w-5 text-primary" />
+                    <div className="flex items-center gap-3">
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                        <Languages className="h-5 w-5 text-primary" />
+                      </div>
                       <div>
                         <CardTitle>OCR Detection Language</CardTitle>
                         <CardDescription>Set the language for text recognition</CardDescription>

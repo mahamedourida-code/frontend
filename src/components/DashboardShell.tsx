@@ -2,8 +2,9 @@
 
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { ArrowRight, ChevronLeft, Clock3, Loader2 } from "lucide-react"
+import { useRouter, usePathname } from "next/navigation"
+import { ArrowRight, ChevronLeft, ChevronRight, Clock3, Loader2 } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
@@ -61,6 +62,7 @@ export function DashboardShell({
   showBack = true,
 }: DashboardShellProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const [cmdOpen, setCmdOpen] = useState(false)
   const { state: processingState } = useProcessingState()
   const [recoverableJob, setRecoverableJob] = useState<RecoverableJobSummary | null>(null)
@@ -140,6 +142,29 @@ export function DashboardShell({
   const nextActionHref = activeItem === "process" ? "/history" : "/dashboard/client"
   const nextActionLabel = activeItem === "process" ? "History" : "Convert Files"
 
+  const breadcrumb = useMemo(() => {
+    const PAGE_LABELS: Record<string, string> = {
+      "": "Overview",
+      client: "Convert Files",
+      inbox: "Inbox",
+      "accounts-payable": "Accounts Payable",
+      integrations: "Integrations",
+      settings: "Settings",
+      "auto-detect": "Auto Detect",
+      "bank-statements": "Bank Statements",
+      invoices: "Invoices",
+      receipts: "Receipts",
+      notes: "Notes",
+      workflows: "Workflows",
+      "upload-type": "Upload",
+    }
+    if (pathname.startsWith("/dashboard")) {
+      const slug = pathname.split("/")[2] || ""
+      return { parent: "Dashboard", current: PAGE_LABELS[slug] || title }
+    }
+    return { parent: null, current: title }
+  }, [pathname, title])
+
   return (
     <div className="min-h-svh bg-background text-foreground">
       <WorkspaceSidebar activeItem={activeItem} user={user} />
@@ -161,8 +186,39 @@ export function DashboardShell({
               </>
             )}
 
+            {/* Mobile: page title only */}
             <div className="me-auto min-w-0 md:hidden">
               <div className="truncate text-sm font-medium">{title}</div>
+            </div>
+
+            {/* Desktop: breadcrumb + ⌘K pill */}
+            <div className="me-auto hidden min-w-0 items-center gap-3 md:flex">
+              <div className="flex items-center gap-1.5 text-sm">
+                {breadcrumb.parent && (
+                  <>
+                    <span className="text-muted-foreground">{breadcrumb.parent}</span>
+                    <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/60" />
+                  </>
+                )}
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={pathname}
+                    initial={{ opacity: 0, x: -6 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    className="font-medium text-foreground"
+                  >
+                    {breadcrumb.current}
+                  </motion.span>
+                </AnimatePresence>
+              </div>
+              <button
+                onClick={() => setCmdOpen(true)}
+                className="ax-interactive inline-flex h-7 items-center gap-1.5 rounded-md border border-border bg-muted/50 px-2.5 text-xs text-muted-foreground hover:text-foreground"
+              >
+                <span>⌘K</span>
+              </button>
             </div>
 
             <div className="ms-auto flex min-w-0 items-center gap-2">
