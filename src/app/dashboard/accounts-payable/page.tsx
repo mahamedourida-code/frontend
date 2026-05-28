@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useMemo, useState } from "react"
+import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { AnimatePresence, motion } from "framer-motion"
@@ -16,6 +16,7 @@ import { MotionButton } from "@/components/ui/motion-button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
+import { PublishSuccessBurst } from "@/components/dashboard/PublishSuccessBurst"
 import { SpotlightCard } from "@/components/dashboard/SpotlightCard"
 import {
   Dialog,
@@ -158,6 +159,17 @@ function AccountsPayableContent() {
   const [publishDialogOpen, setPublishDialogOpen] = useState(false)
   const [publishing, setPublishing] = useState(false)
   const [publishResult, setPublishResult] = useState<{ succeeded: number; failed: Array<{ vendor: string; reason?: string }> } | null>(null)
+  const [showSuccessBurst, setShowSuccessBurst] = useState(false)
+  const [burstOrigin, setBurstOrigin] = useState<{ x: number; y: number } | null>(null)
+  const publishTriggerRef = useRef<HTMLButtonElement | null>(null)
+  const confirmPublishRef = useRef<HTMLButtonElement | null>(null)
+  const burstTimeoutRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (burstTimeoutRef.current) window.clearTimeout(burstTimeoutRef.current)
+    }
+  }, [])
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -365,7 +377,17 @@ function AccountsPayableContent() {
         failed: failedRows,
       })
       setSelectedReadyIds(current => current.filter(id => failedIds.has(id)))
-      if (response.items.length) toast.success(`${response.items.length} unpaid Bill${response.items.length === 1 ? "" : "s"} created in QuickBooks.`)
+      if (response.items.length) {
+        toast.success(`${response.items.length} unpaid Bill${response.items.length === 1 ? "" : "s"} created in QuickBooks.`)
+        const anchor = confirmPublishRef.current || publishTriggerRef.current
+        if (anchor) {
+          const rect = anchor.getBoundingClientRect()
+          setBurstOrigin({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 })
+          setShowSuccessBurst(true)
+          if (burstTimeoutRef.current) window.clearTimeout(burstTimeoutRef.current)
+          burstTimeoutRef.current = window.setTimeout(() => setShowSuccessBurst(false), 2500)
+        }
+      }
       if (response.failures.length) toast.error(`${response.failures.length} item${response.failures.length === 1 ? "" : "s"} could not be published.`)
     } catch (error: any) {
       toast.error(error?.detail || error?.message || "Could not publish selected items.")
@@ -423,7 +445,7 @@ function AccountsPayableContent() {
           title="Accounts Payable"
           description="Reviewed invoices ready to publish as QuickBooks Bills"
           actions={selectedReadyIds.length ? (
-            <MotionButton variant="glossy" onClick={openPublishDialog} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md px-4">
+            <MotionButton ref={publishTriggerRef} variant="glossy" onClick={openPublishDialog} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md px-4">
               <Image src="/icons/qb-badge.png" alt="" width={16} height={16} className="mr-1 object-contain" />
               Publish {selectedReadyIds.length} {selectedReadyIds.length === 1 ? "bill" : "bills"}
             </MotionButton>
@@ -966,6 +988,7 @@ function AccountsPayableContent() {
                   Cancel
                 </Button>
                 <MotionButton
+                  ref={confirmPublishRef}
                   variant="glossy"
                   onClick={() => void confirmPublishSelected()}
                   disabled={publishing || !quickBooksConnection?.connected || !selectedReadyIds.length}
@@ -988,6 +1011,8 @@ function AccountsPayableContent() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <PublishSuccessBurst show={showSuccessBurst} origin={burstOrigin} />
     </DashboardShell>
   )
 }

@@ -13,6 +13,7 @@ import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardMiniCharts } from "@/components/dashboard/DashboardMiniCharts"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { PageHeader } from "@/components/dashboard/PageHeader"
+import { GlowOrb } from "@/components/dashboard/GlowOrb"
 import { SkeletonStatCard } from "@/components/dashboard/SkeletonCard"
 import { SpotlightCard } from "@/components/dashboard/SpotlightCard"
 import { cn } from "@/lib/utils"
@@ -654,14 +655,15 @@ export default function DashboardPage() {
               transition={{ delay: 0.3, duration: 0.4 }}
               viewport={{ once: true }}
             >
-              <Card>
-                <CardHeader>
+              <Card className="relative overflow-hidden">
+                <GlowOrb size={120} opacity={0.3} className="-top-10 -left-10" />
+                <CardHeader className="relative">
                   <CardTitle className="flex items-center gap-2">
                     <TrendingUp className="size-4 text-primary" />
                     Processing Activity
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="ps-2">
+                <CardContent className="relative ps-2">
                   {loading ? (
                     <div className="flex h-[280px] items-end gap-1.5 px-3">
                       {Array.from({ length: 16 }).map((_, index) => (

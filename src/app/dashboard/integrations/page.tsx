@@ -13,6 +13,7 @@ import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
 import { Card, CardContent } from "@/components/ui/card"
+import { GlowOrb } from "@/components/dashboard/GlowOrb"
 import { SpotlightCard } from "@/components/dashboard/SpotlightCard"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
@@ -189,8 +190,9 @@ function IntegrationsContent() {
         )}
 
         <SpotlightCard className="rounded-md">
-        <Card className={cn("transition-colors", connection.connected && "border-emerald-200 dark:border-emerald-800")}>
-          <CardContent className="p-5">
+        <Card className={cn("relative overflow-hidden transition-colors", connection.connected && "border-emerald-200 dark:border-emerald-800")}>
+          {connection.connected ? <GlowOrb size={100} opacity={0.25} className="-right-8 top-1/2 -translate-y-1/2" /> : null}
+          <CardContent className="relative p-5">
             {connection.connected ? (
               <>
                 <div className="flex items-start justify-between gap-4">

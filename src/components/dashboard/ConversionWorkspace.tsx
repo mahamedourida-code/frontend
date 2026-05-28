@@ -20,6 +20,7 @@ import {
 } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
+import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
 import { cn } from "@/lib/utils"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
 import type {
@@ -482,6 +483,7 @@ export function UploadDropzone({
                         {pdf ? <FileText className="h-5 w-5 text-primary" /> : <FileImage className="h-5 w-5 text-primary" />}
                       </div>
                     )}
+                    {isProcessing ? <ProcessingScanOverlay /> : null}
                     <Button
                       type="button"
                       variant="ghost"
@@ -600,6 +602,7 @@ export function SelectedFilesTray({
                     {pdf ? <FileText className="h-5 w-5 text-primary" /> : <FileImage className="h-5 w-5 text-primary" />}
                   </div>
                 )}
+                {isProcessing ? <ProcessingScanOverlay /> : null}
                 <Button
                   variant="ghost"
                   size="icon"
