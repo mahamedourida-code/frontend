@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { ArrowRight, ChevronLeft, ChevronRight, Clock3, Loader2 } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
@@ -63,6 +63,7 @@ export function DashboardShell({
 }: DashboardShellProps) {
   const router = useRouter()
   const pathname = usePathname()
+  const prefersReducedMotion = useReducedMotion()
   const [cmdOpen, setCmdOpen] = useState(false)
   const { state: processingState } = useProcessingState()
   const [recoverableJob, setRecoverableJob] = useState<RecoverableJobSummary | null>(null)
@@ -275,7 +276,34 @@ export function DashboardShell({
               <h1>{title}</h1>
             </div>
           )}
-          {children}
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={pathname}
+              className="flex flex-1 flex-col min-h-0"
+              initial={
+                prefersReducedMotion
+                  ? { opacity: 0 }
+                  : { opacity: 0, y: 8, filter: "blur(2px)" }
+              }
+              animate={
+                prefersReducedMotion
+                  ? { opacity: 1 }
+                  : { opacity: 1, y: 0, filter: "blur(0px)" }
+              }
+              exit={
+                prefersReducedMotion
+                  ? { opacity: 0 }
+                  : { opacity: 0, y: -6, filter: "blur(1px)" }
+              }
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0.1 }
+                  : { duration: 0.2, ease: [0.16, 1, 0.3, 1] }
+              }
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
 

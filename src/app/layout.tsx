@@ -5,6 +5,7 @@ import "../styles/mobile-nav.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ProcessingStateProvider } from "@/contexts/ProcessingStateContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { CustomCursor } from "@/components/CustomCursor";
 import { Toaster } from "sonner";
 
 const inter = Inter({
@@ -95,6 +96,7 @@ export default function RootLayout({
               <div className="relative z-10">
                 {children}
               </div>
+              <CustomCursor />
               <Toaster
                 richColors
                 position="top-right"

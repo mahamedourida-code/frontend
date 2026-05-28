@@ -189,6 +189,20 @@
   .ax-dashboard-content div.text-muted-foreground {
     font-weight: inherit;
   }
+  /* ── Custom cursor ──────────────────────────────────────────
+     Hides the native cursor when CustomCursor mounts on devices
+     with a fine pointer. Inputs keep their text caret so the
+     editor experience inside fields stays usable. */
+  .custom-cursor-active,
+  .custom-cursor-active *:not(input):not(textarea):not([contenteditable="true"]) {
+    cursor: none !important;
+  }
+  @media (pointer: coarse) {
+    .custom-cursor-active,
+    .custom-cursor-active * {
+      cursor: auto !important;
+    }
+  }
   /* Section vertical rhythm — 80px mobile / 112px desktop */
   .ax-section {
     padding-top: 5rem;

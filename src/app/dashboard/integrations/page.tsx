@@ -13,6 +13,7 @@ import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
 import { Card, CardContent } from "@/components/ui/card"
+import { SpotlightCard } from "@/components/dashboard/SpotlightCard"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { cn } from "@/lib/utils"
@@ -187,6 +188,7 @@ function IntegrationsContent() {
           </div>
         )}
 
+        <SpotlightCard className="rounded-md">
         <Card className={cn("transition-colors", connection.connected && "border-emerald-200 dark:border-emerald-800")}>
           <CardContent className="p-5">
             {connection.connected ? (
@@ -262,6 +264,7 @@ function IntegrationsContent() {
             )}
           </CardContent>
         </Card>
+        </SpotlightCard>
 
         {connection.connected && (
           <div className="grid gap-4 lg:grid-cols-3">

@@ -14,6 +14,7 @@ import { DashboardMiniCharts } from "@/components/dashboard/DashboardMiniCharts"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { SkeletonStatCard } from "@/components/dashboard/SkeletonCard"
+import { SpotlightCard } from "@/components/dashboard/SpotlightCard"
 import { cn } from "@/lib/utils"
 import {
   BarChart3,
@@ -94,16 +95,18 @@ function AnimatedStatCard({ title, helper, Icon, value }: AnimatedStatCardProps)
 
   return (
     <motion.div variants={STAT_CARD_VARIANTS}>
-      <Card ref={ref as React.Ref<HTMLDivElement>}>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">{title}</CardTitle>
-          <Icon className="size-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold tabular-nums">{display}</div>
-          <p className="text-xs text-muted-foreground">{helper}</p>
-        </CardContent>
-      </Card>
+      <SpotlightCard className="rounded-md">
+        <Card ref={ref as React.Ref<HTMLDivElement>}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{title}</CardTitle>
+            <Icon className="size-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold tabular-nums">{display}</div>
+            <p className="text-xs text-muted-foreground">{helper}</p>
+          </CardContent>
+        </Card>
+      </SpotlightCard>
     </motion.div>
   )
 }

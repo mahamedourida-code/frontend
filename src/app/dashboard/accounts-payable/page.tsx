@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { DashboardShell } from "@/components/DashboardShell"
@@ -15,6 +16,7 @@ import { MotionButton } from "@/components/ui/motion-button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
+import { SpotlightCard } from "@/components/dashboard/SpotlightCard"
 import {
   Dialog,
   DialogContent,
@@ -530,75 +532,94 @@ function AccountsPayableContent() {
                   description="Mark a reviewed invoice Ready, then add it from Convert Files."
                   compact
                 />
-              ) : visibleItems.map(item => {
-                const tone = statusTone[item.status]
-                const isActive = activeId === item.id
-                const isReady = item.status === "ready_to_publish"
-                return (
-                  <div
-                    key={item.id}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setActiveId(item.id)}
-                    onKeyDown={event => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault()
-                        setActiveId(item.id)
-                      }
-                    }}
-                    className={cn(
-                      "ax-interactive relative flex h-14 w-full items-center gap-3 border-b border-border/50 px-4 text-left last:border-b-0",
-                      isActive ? "bg-accent/50" : "hover:bg-accent/30"
-                    )}
-                  >
-                    {/* Left accent bar */}
-                    <div className={cn(
-                      "absolute inset-y-0 left-0 w-[3px] transition-colors duration-150",
-                      isActive ? "bg-primary" : "bg-transparent"
-                    )} />
+              ) : (
+                <AnimatePresence initial={false}>
+                  {visibleItems.map(item => {
+                    const tone = statusTone[item.status]
+                    const isActive = activeId === item.id
+                    const isReady = item.status === "ready_to_publish"
+                    return (
+                      <motion.div
+                        key={item.id}
+                        layout
+                        initial={{ opacity: 0, x: -12, height: 0 }}
+                        animate={{ opacity: 1, x: 0, height: "auto" }}
+                        exit={{ opacity: 0, x: -10, height: 0, marginBottom: 0 }}
+                        transition={{ duration: 0.18, ease: "easeOut" }}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setActiveId(item.id)}
+                        onKeyDown={event => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault()
+                            setActiveId(item.id)
+                          }
+                        }}
+                        className={cn(
+                          "ax-interactive relative flex h-14 w-full items-center gap-3 border-b border-border/50 px-4 text-left last:border-b-0",
+                          !isActive && "hover:bg-accent/30",
+                        )}
+                      >
+                        {/* Sliding highlight — glides between rows like Linear */}
+                        {isActive && (
+                          <motion.div
+                            layoutId="ap-row-highlight"
+                            className="absolute inset-0 -z-10 bg-accent/50"
+                            transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                          />
+                        )}
 
-                    {/* Status dot or checkbox for ready items */}
-                    <span
-                      className="size-4 shrink-0 flex items-center justify-center"
-                      onClick={isReady ? (e) => e.stopPropagation() : undefined}
-                    >
-                      {isReady ? (
-                        <Checkbox
-                          checked={selectedReadyIds.includes(item.id)}
-                          onCheckedChange={checked => toggleSelection(item.id, checked === true)}
-                          aria-label={`Select ${item.source_filename}`}
-                        />
-                      ) : (
-                        <span className={cn("block size-2 rounded-full", dotColor[tone])} />
-                      )}
-                    </span>
+                        {/* Left accent bar (kept; sits above the sliding highlight) */}
+                        <div className={cn(
+                          "absolute inset-y-0 left-0 w-[3px] transition-colors duration-150",
+                          isActive ? "bg-primary" : "bg-transparent"
+                        )} />
 
-                    {/* Vendor name */}
-                    <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
-                      {item.draft_data.vendor || "Vendor missing"}
-                    </span>
+                        {/* Status dot or checkbox for ready items */}
+                        <span
+                          className="size-4 shrink-0 flex items-center justify-center"
+                          onClick={isReady ? (e) => e.stopPropagation() : undefined}
+                        >
+                          {isReady ? (
+                            <Checkbox
+                              checked={selectedReadyIds.includes(item.id)}
+                              onCheckedChange={checked => toggleSelection(item.id, checked === true)}
+                              aria-label={`Select ${item.source_filename}`}
+                            />
+                          ) : (
+                            <span className={cn("block size-2 rounded-full", dotColor[tone])} />
+                          )}
+                        </span>
 
-                    {/* Invoice date */}
-                    <span className="w-[72px] shrink-0 text-xs text-muted-foreground">
-                      {item.draft_data.invoice_date ? String(item.draft_data.invoice_date).slice(0, 10) : "—"}
-                    </span>
+                        {/* Vendor name */}
+                        <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
+                          {item.draft_data.vendor || "Vendor missing"}
+                        </span>
 
-                    {/* Amount */}
-                    <span className="w-[68px] shrink-0 text-right text-xs font-mono tabular-nums text-foreground">
-                      {amountLabel(item)}
-                    </span>
+                        {/* Invoice date */}
+                        <span className="w-[72px] shrink-0 text-xs text-muted-foreground">
+                          {item.draft_data.invoice_date ? String(item.draft_data.invoice_date).slice(0, 10) : "—"}
+                        </span>
 
-                    {/* Status badge */}
-                    <span className="w-[72px] shrink-0">
-                      <StatusBadge tone={tone}>{statusLabel(item.status)}</StatusBadge>
-                    </span>
-                  </div>
-                )
-              })}
+                        {/* Amount */}
+                        <span className="w-[68px] shrink-0 text-right text-xs font-mono tabular-nums text-foreground">
+                          {amountLabel(item)}
+                        </span>
+
+                        {/* Status badge */}
+                        <span className="w-[72px] shrink-0">
+                          <StatusBadge tone={tone}>{statusLabel(item.status)}</StatusBadge>
+                        </span>
+                      </motion.div>
+                    )
+                  })}
+                </AnimatePresence>
+              )}
             </div>
           </Card>
 
-          <Card className="rounded-md border-border shadow-xs">
+          <SpotlightCard className="rounded-md">
+            <Card className="rounded-md border-border shadow-xs">
             <CardContent className="p-5">
               {!activeItem ? (
                 <EmptyState
@@ -859,6 +880,7 @@ function AccountsPayableContent() {
               )}
             </CardContent>
           </Card>
+          </SpotlightCard>
         </div>
       </div>
 
