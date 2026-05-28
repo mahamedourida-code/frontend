@@ -15,7 +15,7 @@ import {
   Settings,
   Upload,
 } from "lucide-react"
-import { motion } from "framer-motion"
+import { LayoutGroup, motion } from "framer-motion"
 import { AxMark } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { Button } from "@/components/ui/button"
@@ -27,6 +27,8 @@ type SidebarItemKey = "overview" | "process" | "inbox" | "accounts_payable" | "i
 
 interface WorkspaceSidebarProps {
   activeItem: SidebarItemKey
+  unreadCount?: number
+  notifications?: Partial<Record<SidebarItemKey, boolean>>
   user?: {
     id?: string | null
     email?: string | null
@@ -66,7 +68,7 @@ function setSidebarCssVar(px: number) {
   document.documentElement.style.setProperty("--sidebar-w", `${px}px`)
 }
 
-export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
+export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications, user }: WorkspaceSidebarProps) {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
   const didMount = useRef(false)
@@ -133,111 +135,165 @@ export function WorkspaceSidebar({ activeItem, user }: WorkspaceSidebarProps) {
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-2 pb-3">
-          <div className="space-y-1.5">
-            {sidebarItems.map((item, index) => {
-              const Icon = item.icon
-              const isActive = activeItem === item.key
-              const isProcess = item.key === "process"
+          <LayoutGroup id="ax-sidebar-nav">
+            <div className="space-y-1.5">
+              {sidebarItems.map((item, index) => {
+                const Icon = item.icon
+                const isActive = activeItem === item.key
+                const isProcess = item.key === "process"
+                const showDot = Boolean(notifications?.[item.key])
+                const inboxBadgeVisible = item.key === "inbox" && unreadCount > 0
+                const inboxBadgeLabel = unreadCount > 99 ? "99+" : String(unreadCount)
 
-              if (collapsed) {
-                return (
-                  <Tooltip key={item.key}>
-                    <TooltipTrigger asChild>
+                if (collapsed) {
+                  return (
+                    <Tooltip key={item.key}>
+                      <TooltipTrigger asChild>
+                        <Link
+                          href={item.href}
+                          className={cn(
+                            "ax-interactive relative flex h-10 w-full items-center justify-center rounded-lg",
+                            isActive
+                              ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                              : "text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
+                          )}
+                        >
+                          {isActive && (
+                            <motion.span
+                              layoutId="sidebar-active-indicator"
+                              className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-[2px] bg-primary"
+                              transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                            />
+                          )}
+                          <span className="relative">
+                            <Icon className={cn("size-[18px] shrink-0", isActive ? "text-foreground" : "text-muted-foreground")} />
+                            {showDot && (
+                              <span className="absolute -right-0.5 -top-0.5 size-1.5 rounded-full bg-amber-400 ring-2 ring-sidebar" aria-hidden="true" />
+                            )}
+                            {inboxBadgeVisible && (
+                              <span className="absolute -right-1 -top-1 inline-flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold leading-none text-primary-foreground ring-2 ring-sidebar">
+                                {inboxBadgeLabel}
+                              </span>
+                            )}
+                          </span>
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        {item.label}
+                        {inboxBadgeVisible ? ` · ${inboxBadgeLabel}` : ""}
+                      </TooltipContent>
+                    </Tooltip>
+                  )
+                }
+
+                if (isProcess) {
+                  return (
+                    <div key={item.key}>
                       <Link
                         href={item.href}
                         className={cn(
-                          "ax-interactive flex h-10 w-full items-center justify-center rounded-lg",
+                          "ax-interactive group relative flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[15px] font-semibold",
                           isActive
                             ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                            : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                            : "text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
                         )}
                       >
-                        <Icon className={cn("size-[18px] shrink-0", isActive ? "text-foreground" : "text-muted-foreground")} />
+                        {isActive && (
+                          <motion.span
+                            layoutId="sidebar-active-indicator"
+                            className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-[2px] bg-primary"
+                            transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                          />
+                        )}
+                        <span className="relative">
+                          <Icon className={cn("size-[18px] shrink-0", isActive ? "text-foreground" : "text-muted-foreground group-hover:text-sidebar-accent-foreground")} />
+                          {showDot && (
+                            <span className="absolute -right-0.5 -top-0.5 size-1.5 rounded-full bg-amber-400 ring-2 ring-sidebar" aria-hidden="true" />
+                          )}
+                        </span>
+                        <motion.span
+                          className="truncate"
+                          initial={{ opacity: 0, x: -6 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.16, ease: [0.2, 0, 0, 1], delay: index * 0.04 }}
+                        >
+                          {item.label}
+                        </motion.span>
                       </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">{item.label}</TooltipContent>
-                  </Tooltip>
-                )
-              }
-
-              if (isProcess) {
-                return (
-                  <div key={item.key}>
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        "ax-interactive group flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[15px] font-semibold",
-                        isActive
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                          : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      )}
-                    >
-                      <Icon className={cn("size-[18px] shrink-0", isActive ? "text-foreground" : "text-muted-foreground group-hover:text-sidebar-accent-foreground")} />
-                      <motion.span
-                        className="truncate"
-                        initial={{ opacity: 0, x: -6 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.16, ease: [0.2, 0, 0, 1], delay: index * 0.04 }}
-                      >
-                        {item.label}
-                      </motion.span>
-                    </Link>
-                    <div className="ms-6 mt-1 space-y-1 border-s border-sidebar-border pb-2 ps-2">
-                      {processSubItems.map((sub, subIdx) => {
-                        const SubIcon = sub.icon
-                        const selected = pathname === sub.href
-                        return (
-                          <Link
-                            key={sub.href}
-                            href={sub.href}
-                            className={cn(
-                              "ax-interactive flex h-8 items-center gap-2 rounded-md px-2 text-[13px] font-medium",
-                              selected
-                                ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                                : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                            )}
-                          >
-                            <SubIcon className={cn("size-4 shrink-0", selected ? "text-foreground" : "text-muted-foreground")} />
-                            <motion.span
-                              className="truncate"
-                              initial={{ opacity: 0, x: -6 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.16, ease: [0.2, 0, 0, 1], delay: (index + subIdx + 1) * 0.04 }}
+                      <div className="ms-6 mt-1 space-y-1 border-s border-sidebar-border pb-2 ps-2">
+                        {processSubItems.map((sub, subIdx) => {
+                          const SubIcon = sub.icon
+                          const selected = pathname === sub.href
+                          return (
+                            <Link
+                              key={sub.href}
+                              href={sub.href}
+                              className={cn(
+                                "ax-interactive flex h-8 items-center gap-2 rounded-md px-2 text-[13px] font-medium",
+                                selected
+                                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                                  : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
+                              )}
                             >
-                              {sub.label}
-                            </motion.span>
-                          </Link>
-                        )
-                      })}
+                              <SubIcon className={cn("size-4 shrink-0", selected ? "text-foreground" : "text-muted-foreground")} />
+                              <motion.span
+                                className="truncate"
+                                initial={{ opacity: 0, x: -6 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.16, ease: [0.2, 0, 0, 1], delay: (index + subIdx + 1) * 0.04 }}
+                              >
+                                {sub.label}
+                              </motion.span>
+                            </Link>
+                          )
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )
-              }
+                  )
+                }
 
-              return (
-                <Link
-                  key={item.key}
-                  href={item.href}
-                  className={cn(
-                    "ax-interactive group flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[15px] font-semibold",
-                    isActive
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                  )}
-                >
-                  <Icon className={cn("size-[18px] shrink-0", isActive ? "text-foreground" : "text-muted-foreground group-hover:text-sidebar-accent-foreground")} />
-                  <motion.span
-                    className="truncate"
-                    initial={{ opacity: 0, x: -6 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.16, ease: [0.2, 0, 0, 1], delay: index * 0.04 }}
+                return (
+                  <Link
+                    key={item.key}
+                    href={item.href}
+                    className={cn(
+                      "ax-interactive group relative flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[15px] font-semibold",
+                      isActive
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
+                    )}
                   >
-                    {item.label}
-                  </motion.span>
-                </Link>
-              )
-            })}
-          </div>
+                    {isActive && (
+                      <motion.span
+                        layoutId="sidebar-active-indicator"
+                        className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-[2px] bg-primary"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                      />
+                    )}
+                    <span className="relative">
+                      <Icon className={cn("size-[18px] shrink-0", isActive ? "text-foreground" : "text-muted-foreground group-hover:text-sidebar-accent-foreground")} />
+                      {showDot && (
+                        <span className="absolute -right-0.5 -top-0.5 size-1.5 rounded-full bg-amber-400 ring-2 ring-sidebar" aria-hidden="true" />
+                      )}
+                    </span>
+                    <motion.span
+                      className="truncate"
+                      initial={{ opacity: 0, x: -6 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.16, ease: [0.2, 0, 0, 1], delay: index * 0.04 }}
+                    >
+                      {item.label}
+                    </motion.span>
+                    {inboxBadgeVisible && (
+                      <span className="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold leading-none text-primary-foreground">
+                        {inboxBadgeLabel}
+                      </span>
+                    )}
+                  </Link>
+                )
+              })}
+            </div>
+          </LayoutGroup>
         </nav>
 
         {/* Credits card — hidden when collapsed */}

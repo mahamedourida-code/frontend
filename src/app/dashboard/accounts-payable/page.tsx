@@ -13,6 +13,14 @@ import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -105,6 +113,9 @@ function AccountsPayableContent() {
   const [quickBooksConnection, setQuickBooksConnection] = useState<QuickBooksConnectionStatus | null>(null)
   const [quickBooksReferences, setQuickBooksReferences] = useState<QuickBooksReferenceItem[]>([])
   const [syncingReferences, setSyncingReferences] = useState(false)
+  const [publishDialogOpen, setPublishDialogOpen] = useState(false)
+  const [publishing, setPublishing] = useState(false)
+  const [publishResult, setPublishResult] = useState<{ succeeded: number; failed: Array<{ vendor: string; reason?: string }> } | null>(null)
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -280,20 +291,45 @@ function AccountsPayableContent() {
       : current.filter(id => id !== itemId))
   }
 
-  const publishSelected = async () => {
+  const openPublishDialog = () => {
     if (!selectedReadyIds.length) return
-    if (!window.confirm("Create unpaid Bills in QuickBooks for the selected ready invoices?")) return
-    setSaving(true)
+    setPublishResult(null)
+    setPublishDialogOpen(true)
+  }
+
+  const closePublishDialog = () => {
+    if (publishing) return
+    setPublishDialogOpen(false)
+    setPublishResult(null)
+  }
+
+  const confirmPublishSelected = async () => {
+    if (!selectedReadyIds.length) return
+    setPublishing(true)
+    setPublishResult(null)
     try {
       const response = await accountsPayableApi.bulkPublish(selectedReadyIds)
+      const failedIds = new Set(response.failures.map(failure => failure.item_id))
       setItems(current => current.map(item => response.items.find(updated => updated.id === item.id) || item))
-      setSelectedReadyIds([])
+      const failedRows = response.failures.map(failure => {
+        const item = items.find(candidate => candidate.id === failure.item_id)
+        return {
+          vendor: item?.draft_data.vendor || "Vendor missing",
+          reason: failure.detail || undefined,
+        }
+      })
+      setPublishResult({
+        succeeded: response.items.length,
+        failed: failedRows,
+      })
+      setSelectedReadyIds(current => current.filter(id => failedIds.has(id)))
       if (response.items.length) toast.success(`${response.items.length} unpaid Bill${response.items.length === 1 ? "" : "s"} created in QuickBooks.`)
       if (response.failures.length) toast.error(`${response.failures.length} item${response.failures.length === 1 ? "" : "s"} could not be published.`)
     } catch (error: any) {
       toast.error(error?.detail || error?.message || "Could not publish selected items.")
+      setPublishResult({ succeeded: 0, failed: [{ vendor: "Bulk publish request failed", reason: error?.detail || error?.message }] })
     } finally {
-      setSaving(false)
+      setPublishing(false)
     }
   }
 
@@ -345,9 +381,9 @@ function AccountsPayableContent() {
           title="Accounts Payable"
           description="Reviewed invoices ready to publish as QuickBooks Bills"
           actions={selectedReadyIds.length ? (
-            <Button variant="glossy" onClick={() => void publishSelected()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md px-4">
+            <Button variant="glossy" onClick={openPublishDialog} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md px-4">
               <Image src="/icons/qb-badge.png" alt="" width={16} height={16} className="mr-1 object-contain" />
-              Publish {selectedReadyIds.length} to QuickBooks
+              Publish {selectedReadyIds.length} {selectedReadyIds.length === 1 ? "bill" : "bills"}
             </Button>
           ) : undefined}
         />
@@ -755,6 +791,111 @@ function AccountsPayableContent() {
           </Card>
         </div>
       </div>
+
+      <Dialog
+        open={publishDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) closePublishDialog()
+        }}
+      >
+        <DialogContent className="gap-5 rounded-md sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5 text-base font-semibold">
+              <Image src="/icons/qb-badge.png" alt="" width={20} height={20} className="object-contain" />
+              {publishResult ? "Publish complete" : `Publish ${selectedReadyIds.length} ${selectedReadyIds.length === 1 ? "bill" : "bills"} to QuickBooks`}
+            </DialogTitle>
+            <DialogDescription className="text-sm leading-6">
+              {publishResult
+                ? "The bulk publish finished. Failed items remain in the queue and can be retried."
+                : `You are publishing ${selectedReadyIds.length} draft ${selectedReadyIds.length === 1 ? "bill" : "bills"} to QuickBooks Online. This cannot be undone.`}
+            </DialogDescription>
+          </DialogHeader>
+
+          {publishResult ? (
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-muted/40 px-3 py-2.5 text-sm">
+                <StatusBadge tone="success">{publishResult.succeeded} published</StatusBadge>
+                {publishResult.failed.length > 0 ? (
+                  <StatusBadge tone="error">{publishResult.failed.length} failed</StatusBadge>
+                ) : (
+                  <span className="text-xs font-medium text-muted-foreground">All selected bills landed in QuickBooks.</span>
+                )}
+              </div>
+              {publishResult.failed.length > 0 ? (
+                <div className="rounded-md border border-border">
+                  <p className="border-b border-border bg-muted/30 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Failed items
+                  </p>
+                  <ul className="max-h-[200px] divide-y divide-border overflow-y-auto">
+                    {publishResult.failed.map((row, index) => (
+                      <li key={`${row.vendor}-${index}`} className="px-3 py-2.5 text-sm">
+                        <p className="font-medium text-foreground">{row.vendor}</p>
+                        {row.reason ? (
+                          <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{row.reason}</p>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+          ) : (
+            <div className="rounded-md border border-border">
+              <p className="border-b border-border bg-muted/30 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Selected bills
+              </p>
+              <ul className="max-h-[260px] divide-y divide-border overflow-y-auto">
+                {selectedReadyIds.map((id) => {
+                  const item = items.find(candidate => candidate.id === id)
+                  if (!item) return null
+                  return (
+                    <li key={id} className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm">
+                      <span className="min-w-0 truncate font-medium text-foreground">
+                        {item.draft_data.vendor || "Vendor missing"}
+                      </span>
+                      <span className="shrink-0 font-mono text-xs tabular-nums text-foreground">
+                        {amountLabel(item)}
+                      </span>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          )}
+
+          <DialogFooter>
+            {publishResult ? (
+              <Button variant="glossy" onClick={closePublishDialog} className="h-9 rounded-md px-4">
+                Close
+              </Button>
+            ) : (
+              <>
+                <Button variant="surface" onClick={closePublishDialog} disabled={publishing} className="h-9 rounded-md px-4">
+                  Cancel
+                </Button>
+                <Button
+                  variant="glossy"
+                  onClick={() => void confirmPublishSelected()}
+                  disabled={publishing || !quickBooksConnection?.connected || !selectedReadyIds.length}
+                  className="h-9 rounded-md px-4"
+                >
+                  {publishing ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Publishing...
+                    </>
+                  ) : (
+                    <>
+                      <Image src="/icons/qb-badge.png" alt="" width={16} height={16} className="object-contain" />
+                      Confirm publish
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardShell>
   )
 }

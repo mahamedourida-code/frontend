@@ -1,10 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { Check, ChevronDown, Headset, LogOut, Settings, UsersRound } from "lucide-react"
-import { AxMark } from "@/components/AppIcon"
+import { CheckCircle2, ChevronDown, LogOut, Plus } from "lucide-react"
+import { AnimatePresence, motion } from "framer-motion"
+
 import {
   Dialog,
   DialogContent,
@@ -17,16 +16,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useWorkspaces } from "@/hooks/useWorkspaces"
+import { useWorkspaces, type Workspace } from "@/hooks/useWorkspaces"
 import { cn } from "@/lib/utils"
 
 type WorkspaceSwitcherProps = {
@@ -42,11 +37,76 @@ type WorkspaceSwitcherProps = {
   menuSide?: "right" | "bottom"
 }
 
+const TRIGGER_NAME_LIMIT = 14
+
+function truncate(value: string, limit: number) {
+  if (value.length <= limit) return value
+  return `${value.slice(0, limit - 1).trimEnd()}…`
+}
+
+function initialLetter(value: string | null | undefined) {
+  if (!value) return "W"
+  const trimmed = value.trim()
+  return trimmed.length ? trimmed[0]!.toUpperCase() : "W"
+}
+
+function WorkspaceAvatar({
+  name,
+  size = 24,
+  className,
+}: {
+  name: string | null | undefined
+  size?: number
+  className?: string
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      style={{ width: size, height: size }}
+      className={cn(
+        "inline-flex shrink-0 items-center justify-center rounded-full bg-primary/20 text-[11px] font-semibold uppercase leading-none text-primary",
+        size >= 28 && "text-[13px]",
+        className,
+      )}
+    >
+      {initialLetter(name)}
+    </span>
+  )
+}
+
+function RoleBadge({ role }: { role: Workspace["role"] }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex h-[18px] items-center rounded-full px-2 text-[10px] font-semibold uppercase tracking-[0.04em]",
+        role === "owner"
+          ? "bg-primary/12 text-primary"
+          : "bg-muted text-muted-foreground",
+      )}
+    >
+      {role}
+    </span>
+  )
+}
+
 export function WorkspaceSwitcher({ user, onSignOut, menuSide = "right" }: WorkspaceSwitcherProps) {
-  const { workspaces, activeWorkspace, isLoading, error, createWorkspace, selectWorkspace } = useWorkspaces(user || null)
+  const {
+    workspaces,
+    activeWorkspace,
+    isLoading,
+    error,
+    createWorkspace,
+    selectWorkspace,
+  } = useWorkspaces(user || null)
+
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const [workspaceName, setWorkspaceName] = useState("")
   const [creating, setCreating] = useState(false)
+
+  const triggerName = activeWorkspace?.name || (isLoading ? "Loading…" : "Workspace")
+  const triggerLabel = truncate(triggerName, TRIGGER_NAME_LIMIT)
+  const accountEmail = user?.email || ""
 
   const handleCreateWorkspace = async () => {
     if (workspaceName.trim().length < 2) return
@@ -61,87 +121,132 @@ export function WorkspaceSwitcher({ user, onSignOut, menuSide = "right" }: Works
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <DropdownMenuTrigger asChild>
-          <button className="flex h-14 w-full items-center gap-3 rounded-lg px-2 text-start text-foreground transition-colors hover:bg-sidebar-accent">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-md">
-              <AxMark className="h-7 w-auto" />
-            </span>
+          <button
+            type="button"
+            className="ax-interactive flex h-14 w-full items-center gap-3 rounded-lg px-2 text-start text-foreground hover:bg-sidebar-accent"
+          >
+            <WorkspaceAvatar name={triggerName} />
             <span className="min-w-0 flex-1 truncate text-[15px] font-semibold tracking-tight">
-              {isLoading ? "Loading workspace" : activeWorkspace?.name || "Workspace"}
+              {triggerLabel}
             </span>
-            <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+            <ChevronDown
+              className={cn(
+                "size-4 shrink-0 text-muted-foreground transition-transform duration-[var(--ax-motion-fast,180ms)]",
+                menuOpen && "rotate-180",
+              )}
+            />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-[266px] rounded-lg border-border p-1.5 shadow-lg" side={menuSide} align="start" sideOffset={8}>
-          <DropdownMenuItem asChild className="h-10 rounded-md px-3 text-[15px] font-semibold">
-            <Link href="/dashboard/settings">
-              <Settings className="size-[18px] text-muted-foreground" />
-              Settings
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild className="h-10 rounded-md px-3 text-[15px] font-semibold">
-            <Link href="/dashboard/settings?section=account">
-              <UsersRound className="size-[18px] text-muted-foreground" />
-              Add &amp; manage members
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="h-10 gap-2 rounded-md px-3 text-[15px] font-semibold">
-              <Headset className="me-2 size-[18px] text-muted-foreground" />
-              Help &amp; support
-            </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="w-52 rounded-lg border-border p-1.5 shadow-lg">
-              <DropdownMenuItem asChild className="h-9 rounded-md text-sm font-medium">
-                <Link href="/contact">Contact support</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="h-9 rounded-md text-sm font-medium">
-                <Link href="/security">Security</Link>
-              </DropdownMenuItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
+
+        <DropdownMenuContent
+          className="min-w-[220px] rounded-lg border-border p-1.5 shadow-lg"
+          side={menuSide}
+          align="start"
+          sideOffset={8}
+        >
+          {/* Account header */}
+          <div className="px-2 pb-1.5 pt-1">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              Signed in as
+            </p>
+            <p
+              className="mt-0.5 truncate text-xs text-muted-foreground"
+              title={accountEmail || undefined}
+            >
+              {accountEmail || "Unknown account"}
+            </p>
+          </div>
+
           <DropdownMenuSeparator />
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="h-10 gap-2 rounded-md px-3 text-[15px] font-semibold">
-              <Image src="/icons/workspace-switcher.png" alt="" width={18} height={18} className="me-2 object-contain opacity-70" loading="lazy" />
-              Workspaces
-            </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="w-60 rounded-lg border-border p-1.5 shadow-lg">
-              <DropdownMenuLabel className="px-2 py-2 text-xs font-medium text-muted-foreground">
-                Your workspaces
-              </DropdownMenuLabel>
-              {workspaces.map((workspace) => (
-                <DropdownMenuItem
-                  key={workspace.id}
-                  onSelect={() => {
-                    void selectWorkspace(workspace)
-                  }}
-                  className="h-9 gap-2 rounded-md text-sm font-medium"
-                >
-                  <span className="truncate">{workspace.name}</span>
-                  <Check className={cn("ms-auto size-4", activeWorkspace?.id === workspace.id ? "opacity-100" : "opacity-0")} />
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="h-9 rounded-md text-sm font-medium"
-                onSelect={() => {
-                  setDialogOpen(true)
-                }}
+
+          {/* Workspaces */}
+          <p className="px-2 pb-1 pt-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Workspaces
+          </p>
+
+          <AnimatePresence initial={false}>
+            {menuOpen && (
+              <motion.div
+                key="workspace-list"
+                className="space-y-0.5"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.12 }}
               >
-                Add workspace
-              </DropdownMenuItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
+                {isLoading && workspaces.length === 0 ? (
+                  <p className="px-2 py-2 text-xs text-muted-foreground">Loading workspaces…</p>
+                ) : workspaces.length === 0 ? (
+                  <p className="px-2 py-2 text-xs text-muted-foreground">No workspaces yet.</p>
+                ) : (
+                  workspaces.map((workspace, index) => {
+                    const isActive = activeWorkspace?.id === workspace.id
+                    return (
+                      <motion.div
+                        key={workspace.id}
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.03, duration: 0.15 }}
+                      >
+                        <DropdownMenuItem
+                          onSelect={() => {
+                            void selectWorkspace(workspace)
+                          }}
+                          className={cn(
+                            "flex h-10 items-center gap-2.5 rounded-md px-2 text-sm font-medium",
+                            isActive && "bg-sidebar-accent/60",
+                          )}
+                        >
+                          <WorkspaceAvatar name={workspace.name} />
+                          <span className="min-w-0 flex-1 truncate text-foreground">
+                            {workspace.name}
+                          </span>
+                          <RoleBadge role={workspace.role} />
+                          <CheckCircle2
+                            className={cn(
+                              "size-4 shrink-0 text-primary transition-opacity",
+                              isActive ? "opacity-100" : "opacity-0",
+                            )}
+                          />
+                        </DropdownMenuItem>
+                      </motion.div>
+                    )
+                  })
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <DropdownMenuSeparator />
+
           <DropdownMenuItem
-            variant="destructive"
-            className="h-10 rounded-md px-3 text-[15px] font-semibold text-foreground data-[variant=destructive]:text-foreground data-[variant=destructive]:*:[svg]:!text-muted-foreground"
+            className="h-9 gap-2 rounded-md px-2 text-sm font-medium"
             onSelect={(event) => {
               event.preventDefault()
+              setMenuOpen(false)
+              setDialogOpen(true)
+            }}
+          >
+            <span className="inline-flex size-6 items-center justify-center rounded-full border border-dashed border-border text-muted-foreground">
+              <Plus className="size-3.5" />
+            </span>
+            Create workspace
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            variant="destructive"
+            className="h-9 gap-2 rounded-md px-2 text-sm font-medium text-destructive data-[variant=destructive]:text-destructive"
+            onSelect={(event) => {
+              event.preventDefault()
+              setMenuOpen(false)
               onSignOut()
             }}
           >
-            <LogOut className="size-[18px] text-muted-foreground" />
+            <LogOut className="size-4" />
             Sign out
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -174,7 +279,7 @@ export function WorkspaceSwitcher({ user, onSignOut, menuSide = "right" }: Works
               Cancel
             </Button>
             <Button onClick={() => void handleCreateWorkspace()} disabled={creating || workspaceName.trim().length < 2}>
-              {creating ? "Adding..." : "Add workspace"}
+              {creating ? "Adding…" : "Add workspace"}
             </Button>
           </DialogFooter>
         </DialogContent>
