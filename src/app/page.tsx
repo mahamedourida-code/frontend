@@ -4,11 +4,12 @@ import { useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import ScrollAnimatedSection from "@/components/ScrollAnimatedSection";
 import { AppLogo } from "@/components/AppIcon";
 import { BrandVisualFrame } from "@/components/BrandVisual";
 import { VideoPlaceholder } from "@/components/landing/VideoPlaceholder";
+import { FeatureHoverCards } from "@/components/landing/FeatureHoverCards";
 
 import NextLink from "next/link";
 import { GoogleOneTap } from "@/components/GoogleOneTap";
@@ -541,45 +542,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="mx-auto grid max-w-[1540px] grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {solutionCards.map((solution) => (
-                <Card
-                  key={solution.title}
-                  data-animate="stagger"
-                  className="group flex min-h-[560px] overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md"
-                >
-                  <CardContent className="flex h-full w-full flex-col p-7 sm:p-8">
-                    <BrandVisualFrame treatment="document" className="flex h-56 items-center justify-center sm:h-64">
-                      <img
-                        src={solution.asset}
-                        alt=""
-                        className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.04]"
-                      />
-                    </BrandVisualFrame>
-
-                    <div className="mt-10 flex flex-1 flex-col">
-                      <CardTitle className="text-2xl font-semibold tracking-normal text-foreground">
-                        {solution.title}
-                      </CardTitle>
-                      <CardDescription className="mt-5 text-[15px] leading-7 text-muted-foreground">
-                        {solution.description}
-                      </CardDescription>
-
-                      <NextLink
-                        href={solution.href}
-                        className="mt-auto flex items-end justify-between gap-4 pt-12 text-left text-sm font-medium text-foreground transition-colors hover:text-primary"
-                      >
-                        <span>Discover More</span>
-                        <span className="relative block h-10 w-10 text-primary transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
-                          <span className="absolute bottom-2 right-1 h-[4px] w-9 origin-right rotate-[-45deg] rounded-full bg-current" />
-                          <span className="absolute right-1 top-1 h-8 w-8 border-r-[4px] border-t-[4px] border-current" />
-                        </span>
-                      </NextLink>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <FeatureHoverCards cards={solutionCards} className="mx-auto max-w-[1540px]" />
           </div>
         </ScrollAnimatedSection>
           </div>
