@@ -20,6 +20,7 @@ import {
 } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
+import { BankReconciliationPanel } from "@/components/dashboard/BankReconciliationPanel"
 import { ConfidenceDot } from "@/components/dashboard/ConfidenceDot"
 import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
 import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
@@ -2370,6 +2371,9 @@ export function ResultActions({
                     ) : (
                       <p className="p-4 text-sm text-gray-500">No line rows detected.</p>
                     )}
+                    {comparisonFile.document_type === "bank_statement" ? (
+                      <BankReconciliationPanel data={reviewData(comparisonFile)} />
+                    ) : null}
                   </div>
                 ) : isTextOutput || comparisonText ? (
                   <pre className="min-h-[420px] whitespace-pre-wrap p-5 text-left text-sm leading-7 text-gray-950">
