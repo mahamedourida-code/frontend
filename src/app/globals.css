@@ -131,6 +131,12 @@
   .animate-shimmer {
     animation: shimmer 2s linear infinite;
   }
+
+  .ax-skeleton {
+    background: linear-gradient(90deg, hsl(var(--muted)) 0%, hsl(var(--accent)) 50%, hsl(var(--muted)) 100%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s linear infinite;
+  }
   
   .animate-fade-in-up {
     animation: fadeInUp 0.5s ease-out forwards;
