@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import ScrollAnimatedSection from "@/components/ScrollAnimatedSection";
 import { AppLogo } from "@/components/AppIcon";
-import { BrandSectionLabel, BrandVisualFrame } from "@/components/BrandVisual";
+import { BrandVisualFrame } from "@/components/BrandVisual";
 
 import NextLink from "next/link";
 import { GoogleOneTap } from "@/components/GoogleOneTap";
@@ -324,16 +324,18 @@ export default function Home() {
           <div className="relative z-10 container mx-auto max-w-[1500px] px-4 sm:px-5 lg:px-9">
             <div className="grid min-h-[500px] items-center gap-14 lg:min-h-[535px] lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)] lg:gap-16">
               <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:translate-x-8 lg:text-left xl:translate-x-10">
-                <h1 className="ax-h1 font-semibold text-black dark:text-white">
-                  Bulk accounting documents to Excel
+                <h1 className="ax-h1 font-bold text-black dark:text-white">
+                  Invoices, receipts, bank statements —{" "}
+                  <br className="hidden sm:block" />
+                  reviewed by you, posted to QuickBooks correctly.
                 </h1>
-                <p className="ax-body mt-6 text-foreground">
-                  Convert invoices, bank statements, forms, and handwritten financial tables from images or PDFs into structured spreadsheets in minutes. Review extracted rows quickly and export clean Excel files without manual entry.
+                <p className="ax-body mt-6 text-foreground/80">
+                  AxLiner extracts every document type you receive in one mixed batch, shows you the data to verify before anything touches your books, and handles the messy ones — handwritten notes, WhatsApp photos, scanned receipts.
                 </p>
 
                 <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row lg:items-center">
                   <Button variant="glossy" asChild className="h-[52px] rounded-xl px-10 text-base font-bold">
-                    <NextLink href="/dashboard/client">Try It</NextLink>
+                    <NextLink href="/dashboard/client">Start free</NextLink>
                   </Button>
 
                   <div className="flex items-center gap-3">
@@ -352,7 +354,7 @@ export default function Home() {
                     <div className="h-9 w-px bg-border" />
                     <div className="text-left">
                       <p className="text-sm font-bold leading-none text-foreground">5,000+</p>
-                      <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">active teams</p>
+                      <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">bookkeepers & accountants</p>
                     </div>
                   </div>
                 </div>
@@ -652,11 +654,11 @@ export default function Home() {
               >
                 <AppLogo className="h-8 w-auto" />
               </NextLink>
-              <h2 className="ax-h2 mt-7 max-w-xl font-semibold text-white">
-                Turn handwritten paperwork into review-ready Excel batches.
+              <h2 className="ax-h2 mt-7 max-w-xl font-bold text-white">
+                Every document type. One batch. Reviewed by you.
               </h2>
               <p className="ax-body mt-5 max-w-xl font-medium text-white/82">
-                Handwritten documents go in. Reviewable Excel files come out. AxLiner keeps the batch, ownership, and download flow clear for teams that live in spreadsheets.
+                No per-client minimums. No surprise price increases. No black-box auto-posting. AxLiner puts the accountant back in control — before anything touches QuickBooks.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Button asChild variant="glossy" className="px-7 py-5 font-semibold">

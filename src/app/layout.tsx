@@ -19,9 +19,9 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Handwritten Files to Excel | AxLiner Batch Conversion",
-  description: "Convert handwritten invoices, bank statements, table photos, PDFs, and image batches into reviewable Excel outputs with AxLiner.",
-  keywords: ["handwritten files to excel", "image to excel", "bank statement to excel", "invoice table extraction", "batch file conversion", "handwritten OCR", "table extractor", "Axliner"],
+  title: "AxLiner — Invoice & Document Review for Bookkeepers",
+  description: "Process invoices, receipts, bank statements, and handwritten documents in one batch. Review everything before it touches QuickBooks. No per-client minimums.",
+  keywords: ["invoice processing", "bookkeeper software", "document OCR", "QuickBooks invoice import", "bank statement extraction", "accounts payable automation", "handwritten OCR", "Axliner"],
   robots: {
     index: true,
     follow: true,
@@ -44,8 +44,8 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.json',
   openGraph: {
-    title: "Handwritten Files to Excel | AxLiner Batch Conversion",
-    description: "Add handwritten file batches, review spreadsheet outputs, fix exceptions, and download corrected Excel files with AxLiner.",
+    title: "AxLiner — Invoice & Document Review for Bookkeepers",
+    description: "Process invoices, receipts, bank statements, and handwritten documents in one batch. Reviewed by you before QuickBooks.",
     url: "https://axliner.com/",
     siteName: "Axliner",
     type: "website",
@@ -60,8 +60,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Handwritten Files to Excel | AxLiner Batch Conversion",
-    description: "Add handwritten file batches, review spreadsheet outputs, fix exceptions, and download corrected Excel files with AxLiner.",
+    title: "AxLiner — Invoice & Document Review for Bookkeepers",
+    description: "Process invoices, receipts, bank statements, and handwritten documents in one batch. Reviewed by you before QuickBooks.",
     images: ['https://axliner.com/crop.png'],
   },
 };
