@@ -326,7 +326,7 @@ export default function Home() {
                   <br className="hidden sm:block" />
                   reviewed by you, posted to QuickBooks correctly.
                 </h1>
-                <p className="ax-body mt-6 text-foreground/80">
+                <p className="ax-body mt-6 font-semibold text-foreground">
                   AxLiner extracts every document type you receive in one mixed batch, shows you the data to verify before anything touches your books, and handles the messy ones — handwritten notes, WhatsApp photos, scanned receipts.
                 </p>
 
@@ -445,7 +445,7 @@ export default function Home() {
           />
           <div className="relative z-10">
         {/* ── Alternating feature band ── */}
-        <div id="how-it-works" className="bg-emerald-700">
+        <div id="how-it-works" className="bg-neutral-950">
           <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
 
             {/* A — text left · video right */}
@@ -454,7 +454,7 @@ export default function Home() {
                 <h3 className="ax-h2 max-w-lg font-bold text-white">
                   Throw us the whole folder.
                 </h3>
-                <p className="ax-body mt-5 text-white/80">
+                <p className="ax-body mt-5 font-semibold text-white">
                   Invoices, receipts, bank statements — drop them all at once. AxLiner classifies each file automatically and extracts on the right schema. No sorting, no separate uploads.
                 </p>
                 <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border border-white/40 bg-white/10 px-8 text-sm font-semibold text-white transition-colors hover:bg-white/20">
@@ -475,7 +475,7 @@ export default function Home() {
                 <h3 className="ax-h2 max-w-lg font-bold text-white">
                   See everything before it touches QuickBooks.
                 </h3>
-                <p className="ax-body mt-5 text-white/80">
+                <p className="ax-body mt-5 font-semibold text-white">
                   Every extracted document lands in your review board before export. Original image on the left, editable cells on the right. Click to correct, tab to move on.
                 </p>
                 <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border border-white/40 bg-white/10 px-8 text-sm font-semibold text-white transition-colors hover:bg-white/20">
@@ -490,7 +490,7 @@ export default function Home() {
                 <h3 className="ax-h2 max-w-lg font-bold text-white">
                   The messy stuff. WhatsApp photos. Handwritten receipts.
                 </h3>
-                <p className="ax-body mt-5 text-white/80">
+                <p className="ax-body mt-5 font-semibold text-white">
                   Other tools claim accuracy on clean PDFs. AxLiner was built for the document your client photographed in bad light and sent over WhatsApp. Per-field confidence flags tell you exactly which cells to check.
                 </p>
                 <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border border-white/40 bg-white/10 px-8 text-sm font-semibold text-white transition-colors hover:bg-white/20">
@@ -511,10 +511,10 @@ export default function Home() {
                 <h3 className="ax-h2 max-w-lg font-bold text-white">
                   Reviewed, coded, posted — without copy-pasting.
                 </h3>
-                <p className="ax-body mt-5 text-white/80">
+                <p className="ax-body mt-5 font-semibold text-white">
                   Connect your QuickBooks Online company. Code invoices with vendor, account, and tax. Publish a draft Bill with the original document attached. If anything fails, retry without creating a duplicate.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-xl bg-white px-8 text-sm font-bold text-emerald-700 transition-colors hover:bg-white/90">
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-xl bg-white px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-white/90">
                   Start free →
                 </NextLink>
               </div>
@@ -530,7 +530,7 @@ export default function Home() {
               <h2 className="ax-h2 font-bold text-white">
                 Works for anyone who touches documents.
               </h2>
-              <p className="ax-body mt-4 max-w-2xl text-white/75">
+              <p className="ax-body mt-4 max-w-2xl font-semibold text-white">
                 From solo bookkeepers to construction managers — one workflow, every document type.
               </p>
             </div>

@@ -157,11 +157,11 @@
     line-height: 1.2;
     letter-spacing: -0.01em;
   }
-  /* Body copy — 17px base, 1.72 leading (tighter than Tailwind's
-     leading-8 which is a loose 2.0 ratio) */
+  /* Body copy — 17px base, 1.72 leading, semibold weight (gras feel) */
   .ax-body {
-    font-size: clamp(1rem, 1.1vw, 1.0625rem);
-    line-height: 1.72;
+    font-size: clamp(1.0625rem, 1.15vw, 1.125rem);
+    line-height: 1.65;
+    font-weight: 500;
   }
   /* Section vertical rhythm — 80px mobile / 112px desktop */
   .ax-section {
