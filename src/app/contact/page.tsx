@@ -25,7 +25,7 @@ export default function ContactPage() {
           <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-normal text-foreground sm:text-5xl">
             Reach the AxLiner team with the document problem in front of you.
           </h1>
-          <p className="mt-5 text-xl leading-8 text-foreground/76">
+          <p className="mt-5 text-xl font-semibold leading-7 text-foreground">
             Write to us for product questions, billing questions, privacy requests, or help with a conversion batch.
             A useful message explains what you uploaded, what output you expected, and whether the issue happened in
             Table mode or Bank statement mode.

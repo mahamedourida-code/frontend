@@ -22,12 +22,12 @@ export default function DataDeletionPage() {
           <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-normal sm:text-5xl">
             Delete AxLiner account data with a clear request.
           </h1>
-          <p className="mt-5 text-xl leading-8 text-foreground/76">
+          <p className="mt-5 text-xl font-semibold leading-7 text-foreground">
             AxLiner processes documents for conversion and keeps the account, job, file, and billing metadata needed
             to deliver the service. This page explains how to request deletion and what happens after the request is
             confirmed.
           </p>
-          <p className="mt-4 text-sm font-semibold text-foreground/58">Last updated: May 22, 2026</p>
+          <p className="mt-4 text-sm font-semibold text-foreground">Last updated: May 22, 2026</p>
         </header>
 
         <section className="mt-10 border-t border-border pt-9">
