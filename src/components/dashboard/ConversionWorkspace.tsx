@@ -19,6 +19,7 @@ import {
   X,
 } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
+import { MotionButton } from "@/components/ui/motion-button"
 import { cn } from "@/lib/utils"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
 import type {
@@ -2664,7 +2665,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                         Cancel
                       </Button>
                     ) : null}
-                    <Button
+                    <MotionButton
                       variant="glossy"
                       size="lg"
                       onClick={onConvert}
@@ -2673,7 +2674,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                     >
                       {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
                       {isProcessing ? "Converting" : processLabel}
-                    </Button>
+                    </MotionButton>
                   </div>
                 </div>
               ) : null}

@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { Button } from "@/components/ui/button"
+import { MotionButton } from "@/components/ui/motion-button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
@@ -253,9 +254,9 @@ function IntegrationsContent() {
                   </p>
                 </div>
                 {isOwner && (
-                  <Button variant="glossy" className="mx-auto w-full max-w-xs" onClick={() => void connect()} disabled={Boolean(busy) || loading}>
+                  <MotionButton variant="glossy" className="mx-auto w-full max-w-xs" onClick={() => void connect()} disabled={Boolean(busy) || loading}>
                     {busy === "connect" ? "Connecting..." : "Connect QuickBooks"}
-                  </Button>
+                  </MotionButton>
                 )}
               </div>
             )}

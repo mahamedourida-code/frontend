@@ -19,6 +19,7 @@ import { LayoutGroup, motion } from "framer-motion"
 import { AxMark } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { Button } from "@/components/ui/button"
+import { MotionButton } from "@/components/ui/motion-button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { WorkspaceSwitcher } from "@/components/WorkspaceSwitcher"
 import { cn } from "@/lib/utils"
@@ -124,12 +125,12 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications, u
               <TooltipContent side="right">Upload</TooltipContent>
             </Tooltip>
           ) : (
-            <Button asChild variant="glossy" className="h-10 w-[11.25rem] justify-center rounded-lg text-[15px] font-bold">
+            <MotionButton asChild variant="glossy" className="h-10 w-[11.25rem] justify-center rounded-lg text-[15px] font-bold">
               <Link href="/dashboard/client#upload-files">
                 <Upload className="size-4" />
                 Upload
               </Link>
-            </Button>
+            </MotionButton>
           )}
         </div>
 

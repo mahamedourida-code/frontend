@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { Button } from "@/components/ui/button"
+import { MotionButton } from "@/components/ui/motion-button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -23,7 +24,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAuth } from "@/hooks/useAuth"
 import {
@@ -69,6 +69,45 @@ const editableFields: Array<[keyof AccountsPayableDraftData, string, string]> = 
   ["reference", "Reference", "PO or bill reference"],
   ["currency", "Currency", "USD"],
 ]
+
+const inlineFieldClass =
+  "h-9 rounded-lg transition-[border-color,box-shadow] duration-150 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-0"
+
+function FieldLabel({
+  htmlFor,
+  dirty,
+  children,
+}: {
+  htmlFor?: string
+  dirty?: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <label
+        htmlFor={htmlFor}
+        className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground"
+      >
+        {children}
+      </label>
+      {dirty ? (
+        <span
+          aria-label="Unsaved change"
+          title="Unsaved change"
+          className="size-1.5 shrink-0 rounded-full bg-amber-400 shadow-[0_0_0_2px_hsl(var(--background))]"
+        />
+      ) : null}
+    </div>
+  )
+}
+
+function valuesDiffer(a: unknown, b: unknown) {
+  const normalize = (value: unknown) => {
+    if (value === undefined || value === null) return ""
+    return String(value)
+  }
+  return normalize(a) !== normalize(b)
+}
 
 function statusLabel(status: AccountsPayableStatus) {
   return queueStatuses.find(item => item.value === status)?.label || status
@@ -382,10 +421,10 @@ function AccountsPayableContent() {
           title="Accounts Payable"
           description="Reviewed invoices ready to publish as QuickBooks Bills"
           actions={selectedReadyIds.length ? (
-            <Button variant="glossy" onClick={openPublishDialog} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md px-4">
+            <MotionButton variant="glossy" onClick={openPublishDialog} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md px-4">
               <Image src="/icons/qb-badge.png" alt="" width={16} height={16} className="mr-1 object-contain" />
               Publish {selectedReadyIds.length} {selectedReadyIds.length === 1 ? "bill" : "bills"}
-            </Button>
+            </MotionButton>
           ) : undefined}
         />
 
@@ -599,15 +638,20 @@ function AccountsPayableContent() {
                     </div>
                   ) : null}
 
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <label className="space-y-1.5">
-                      <Label>QuickBooks vendor</Label>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <FieldLabel
+                        htmlFor="ap-vendor-ref"
+                        dirty={valuesDiffer(draft.vendor_ref_id, activeItem.draft_data.vendor_ref_id)}
+                      >
+                        QuickBooks vendor
+                      </FieldLabel>
                       <Select
                         value={String(draft.vendor_ref_id || "")}
                         onValueChange={value => selectQuickBooksReference("vendor_ref_id", "vendor", value, vendors)}
                         disabled={activeLocked || !quickBooksConnection?.connected}
                       >
-                        <SelectTrigger className="h-9">
+                        <SelectTrigger id="ap-vendor-ref" className={inlineFieldClass}>
                           <SelectValue placeholder={vendors.length ? "Select vendor" : "Refresh vendor list"} />
                         </SelectTrigger>
                         <SelectContent>
@@ -616,15 +660,20 @@ function AccountsPayableContent() {
                           ))}
                         </SelectContent>
                       </Select>
-                    </label>
-                    <label className="space-y-1.5">
-                      <Label>Expense account</Label>
+                    </div>
+                    <div className="space-y-1.5">
+                      <FieldLabel
+                        htmlFor="ap-account-ref"
+                        dirty={valuesDiffer(draft.account_ref_id, activeItem.draft_data.account_ref_id)}
+                      >
+                        Expense account
+                      </FieldLabel>
                       <Select
                         value={String(draft.account_ref_id || "")}
                         onValueChange={value => selectQuickBooksReference("account_ref_id", "account_category", value, accounts)}
                         disabled={activeLocked || !quickBooksConnection?.connected}
                       >
-                        <SelectTrigger className="h-9">
+                        <SelectTrigger id="ap-account-ref" className={inlineFieldClass}>
                           <SelectValue placeholder={accounts.length ? "Select account" : "Refresh account list"} />
                         </SelectTrigger>
                         <SelectContent>
@@ -633,15 +682,20 @@ function AccountsPayableContent() {
                           ))}
                         </SelectContent>
                       </Select>
-                    </label>
-                    <label className="space-y-1.5">
-                      <Label>Tax code</Label>
+                    </div>
+                    <div className="space-y-1.5">
+                      <FieldLabel
+                        htmlFor="ap-tax-ref"
+                        dirty={valuesDiffer(draft.tax_code_ref_id, activeItem.draft_data.tax_code_ref_id)}
+                      >
+                        Tax code
+                      </FieldLabel>
                       <Select
                         value={String(draft.tax_code_ref_id || "none")}
                         onValueChange={value => selectQuickBooksReference("tax_code_ref_id", "tax_code", value, taxCodes)}
                         disabled={activeLocked || !quickBooksConnection?.connected}
                       >
-                        <SelectTrigger className="h-9">
+                        <SelectTrigger id="ap-tax-ref" className={inlineFieldClass}>
                           <SelectValue placeholder="No tax code" />
                         </SelectTrigger>
                         <SelectContent>
@@ -651,23 +705,30 @@ function AccountsPayableContent() {
                           ))}
                         </SelectContent>
                       </Select>
-                    </label>
+                    </div>
                     {editableFields.map(([field, label, placeholder]) => (
-                      <label key={field} className="space-y-1.5">
-                        <Label htmlFor={`ap-${field}`}>{label}</Label>
+                      <div key={field} className="space-y-1.5">
+                        <FieldLabel
+                          htmlFor={`ap-${field}`}
+                          dirty={valuesDiffer(draft[field], activeItem.draft_data[field])}
+                        >
+                          {label}
+                        </FieldLabel>
                         <Input
                           id={`ap-${field}`}
                           value={String(draft[field] || "")}
                           onChange={event => updateDraftField(field, event.target.value)}
                           placeholder={placeholder}
                           disabled={activeLocked}
-                          className="h-9"
+                          className={inlineFieldClass}
                         />
-                      </label>
+                      </div>
                     ))}
-                    <div className="rounded-md border border-border px-3 py-2.5">
-                      <p className="text-xs text-muted-foreground">Invoice total</p>
-                      <p className="mt-1 text-sm font-semibold text-foreground">{amountLabel(activeItem)}</p>
+                    <div className="space-y-1.5">
+                      <FieldLabel>Invoice total</FieldLabel>
+                      <div className="flex h-9 items-center rounded-lg border border-border bg-muted/40 px-3 text-sm font-semibold text-foreground">
+                        {amountLabel(activeItem)}
+                      </div>
                     </div>
                   </div>
 
@@ -749,16 +810,16 @@ function AccountsPayableContent() {
                     )}
                   </div>
 
-                  <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-end sm:justify-between">
+                  <div className="sticky bottom-0 z-10 -mx-5 -mb-5 flex flex-col gap-3 border-t border-border bg-background/95 px-5 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:relative sm:bottom-auto sm:mx-0 sm:mb-0 sm:flex-row sm:items-end sm:justify-between sm:bg-transparent sm:px-0 sm:py-4 sm:backdrop-blur-0 sm:supports-[backdrop-filter]:bg-transparent">
                     <div className="w-full max-w-[230px] space-y-1.5">
-                      <Label>Status</Label>
+                      <FieldLabel htmlFor="ap-next-status">Status</FieldLabel>
                       {activeLocked ? (
-                        <div className="flex h-9 items-center rounded-md border border-border bg-muted/30 px-3 text-sm text-foreground">
+                        <div className="flex h-9 items-center rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground">
                           Published in QuickBooks
                         </div>
                       ) : (
                         <Select value={nextStatus} onValueChange={value => setNextStatus(value as AccountsPayableStatus)}>
-                          <SelectTrigger className="h-9">
+                          <SelectTrigger id="ap-next-status" className={inlineFieldClass}>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -774,21 +835,21 @@ function AccountsPayableContent() {
                     <div className="flex flex-wrap gap-2">
                       {!activeLocked ? (
                         <>
-                          <Button variant="surface" onClick={() => void persistDraft()} disabled={saving} className="h-9 rounded-md">
+                          <MotionButton variant="glossy" onClick={() => void persistDraft()} disabled={saving} className="h-9 rounded-lg">
                             Save draft
-                          </Button>
-                          <Button variant="reviewed" onClick={() => void applySelectedStatus()} disabled={saving || nextStatus === activeItem.status} className="h-9 rounded-md">
+                          </MotionButton>
+                          <Button variant="reviewed" onClick={() => void applySelectedStatus()} disabled={saving || nextStatus === activeItem.status} className="h-9 rounded-lg">
                             Apply status
                           </Button>
                           {activeItem.status === "ready_to_publish" ? (
-                            <Button variant="glossy" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md">
+                            <MotionButton variant="glossy" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-lg">
                               Publish to QuickBooks
-                            </Button>
+                            </MotionButton>
                           ) : null}
                         </>
                       ) : null}
                       {activeItem.status === "published" && activeItem.quickbooks_publication?.attachment_status === "failed" ? (
-                        <Button variant="surface" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md">
+                        <Button variant="surface" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-lg">
                           Retry attachment
                         </Button>
                       ) : null}
@@ -874,15 +935,15 @@ function AccountsPayableContent() {
 
           <DialogFooter>
             {publishResult ? (
-              <Button variant="glossy" onClick={closePublishDialog} className="h-9 rounded-md px-4">
+              <MotionButton variant="glossy" onClick={closePublishDialog} className="h-9 rounded-md px-4">
                 Close
-              </Button>
+              </MotionButton>
             ) : (
               <>
                 <Button variant="surface" onClick={closePublishDialog} disabled={publishing} className="h-9 rounded-md px-4">
                   Cancel
                 </Button>
-                <Button
+                <MotionButton
                   variant="glossy"
                   onClick={() => void confirmPublishSelected()}
                   disabled={publishing || !quickBooksConnection?.connected || !selectedReadyIds.length}
@@ -899,7 +960,7 @@ function AccountsPayableContent() {
                       Confirm publish
                     </>
                   )}
-                </Button>
+                </MotionButton>
               </>
             )}
           </DialogFooter>

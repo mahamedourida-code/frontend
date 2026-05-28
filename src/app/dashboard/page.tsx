@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { LayoutGroup, motion } from "framer-motion"
+import { LayoutGroup, motion, type Variants } from "framer-motion"
 import { useAuth } from "@/hooks/useAuth"
+import { useCountUp } from "@/hooks/useCountUp"
 import { ocrApi } from "@/lib/api-client"
 import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
@@ -54,6 +55,57 @@ function rangeStartDate(value: TimeRange, now: Date): Date {
     case "3m":
       return subDays(now, 90)
   }
+}
+
+const STAT_GRID_VARIANTS: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.09 } },
+}
+
+const STAT_CARD_VARIANTS: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.38, ease: [0.16, 1, 0.3, 1] },
+  },
+}
+
+type AnimatedStatCardProps = {
+  title: string
+  helper: string
+  Icon: React.ComponentType<{ className?: string }>
+  value: string | number
+}
+
+function AnimatedStatCard({ title, helper, Icon, value }: AnimatedStatCardProps) {
+  const numericTarget = typeof value === "number" ? value : 0
+  const { value: countValue, ref } = useCountUp(numericTarget, {
+    duration: 1.2,
+    ease: "easeOut",
+    startOnView: true,
+    enabled: typeof value === "number",
+  })
+
+  const display =
+    typeof value === "number"
+      ? Math.round(countValue).toLocaleString()
+      : value
+
+  return (
+    <motion.div variants={STAT_CARD_VARIANTS}>
+      <Card ref={ref as React.Ref<HTMLDivElement>}>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">{title}</CardTitle>
+          <Icon className="size-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold tabular-nums">{display}</div>
+          <p className="text-xs text-muted-foreground">{helper}</p>
+        </CardContent>
+      </Card>
+    </motion.div>
+  )
 }
 
 function TimeRangePill({
@@ -561,60 +613,68 @@ export default function DashboardPage() {
           Showing {dateRangeLabel}
         </p>
         <section className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {loading
-              ? Array.from({ length: 4 }).map((_, index) => (
-                  <SkeletonStatCard key={`stat-skeleton-${index}`} />
-                ))
-              : metricCards.map((item) => {
-                  const Icon = item.icon
-
-                  return (
-                    <Card key={item.title}>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                          {item.title}
-                        </CardTitle>
-                        <Icon className="size-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">
-                          {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
-                        </div>
-                        <p className="text-xs text-muted-foreground">{item.helper}</p>
-                      </CardContent>
-                    </Card>
-                  )
-                })}
-          </div>
+          {loading ? (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <SkeletonStatCard key={`stat-skeleton-${index}`} />
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              key={`stat-grid-${timeRange}`}
+              className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+              variants={STAT_GRID_VARIANTS}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-30px" }}
+            >
+              {metricCards.map((item) => (
+                <AnimatedStatCard
+                  key={item.title}
+                  title={item.title}
+                  helper={item.helper}
+                  Icon={item.icon}
+                  value={item.value}
+                />
+              ))}
+            </motion.div>
+          )}
         </section>
 
         <DashboardMiniCharts chartData={chartData} stats={stats} />
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
-            <Card className="col-span-1 lg:col-span-4">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="size-4 text-primary" />
-                  Processing Activity
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="ps-2">
-                {loading ? (
-                  <div className="flex h-[280px] items-end gap-1.5 px-3">
-                    {Array.from({ length: 16 }).map((_, index) => (
-                      <div
-                        key={`chart-skeleton-${index}`}
-                        className="flex-1 animate-pulse rounded-sm bg-accent"
-                        style={{ height: `${30 + ((index * 19) % 60)}%` }}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <DashboardChart chartData={chartData} timeRange={timeRange} />
-                )}
-              </CardContent>
-            </Card>
+            <motion.div
+              className="col-span-1 lg:col-span-4"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.4 }}
+              viewport={{ once: true }}
+            >
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="size-4 text-primary" />
+                    Processing Activity
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="ps-2">
+                  {loading ? (
+                    <div className="flex h-[280px] items-end gap-1.5 px-3">
+                      {Array.from({ length: 16 }).map((_, index) => (
+                        <div
+                          key={`chart-skeleton-${index}`}
+                          className="flex-1 animate-pulse rounded-sm bg-accent"
+                          style={{ height: `${30 + ((index * 19) % 60)}%` }}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <DashboardChart chartData={chartData} timeRange={timeRange} />
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
 
             <Card className="col-span-1 lg:col-span-3">
               <CardHeader>
