@@ -136,7 +136,7 @@ function AnimatedPrice({ formatted }: { formatted: string }) {
 
 function CompareTick() {
   return (
-    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-foreground/10 bg-foreground text-background">
+    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-700 text-white">
       <svg aria-hidden="true" viewBox="0 0 16 16" className="h-3.5 w-3.5 fill-none stroke-current stroke-[2.4]">
         <path d="M3.2 8.4 6.4 11.5 12.9 4.8" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
@@ -146,8 +146,8 @@ function CompareTick() {
 
 function CompareCellValue({ value }: { value: ComparisonCell }) {
   if (value === true) return <CompareTick />
-  if (value === false) return <span className="text-base text-muted-foreground/60">-</span>
-  return <span>{value}</span>
+  if (value === false) return <span className="text-base font-semibold text-neutral-400">-</span>
+  return <span className="font-semibold text-neutral-900">{value}</span>
 }
 
 function PricingFallback() {
@@ -406,19 +406,23 @@ function PricingContent() {
 
       <section className="mx-auto max-w-[1480px] px-4 pb-16 pt-28 sm:px-6 lg:px-8 lg:pt-32">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="text-5xl font-semibold tracking-normal text-foreground sm:text-6xl">Pricing</h1>
+          <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-700">Plans &amp; pricing</p>
+          <h1 className="mt-4 text-5xl font-bold leading-[1.05] tracking-tight text-neutral-900 sm:text-6xl">Pricing</h1>
+          <p className="mx-auto mt-5 max-w-xl text-lg font-semibold leading-7 text-neutral-900">
+            Simple plans for solo bookkeepers and accounting practices. Pick monthly or annual — change anytime.
+          </p>
 
-          <div className="mt-8 inline-flex rounded-full border border-border bg-card p-1 shadow-sm">
+          <div className="mt-8 inline-flex rounded-full border-2 border-neutral-900 bg-white p-1 shadow-sm">
             {(["month", "year"] as BillingMode[]).map((mode) => (
               <button
                 key={mode}
                 type="button"
                 onClick={() => setBillingMode(mode)}
                 className={cn(
-                  "rounded-full px-6 py-2 text-sm font-semibold transition",
+                  "rounded-full px-6 py-2 text-sm font-bold transition",
                   billingMode === mode
-                    ? "bg-foreground text-background shadow-sm"
-                    : "text-muted-foreground hover:bg-muted"
+                    ? "bg-neutral-900 text-white shadow-sm"
+                    : "text-neutral-900 hover:bg-emerald-100"
                 )}
               >
                 {mode === "month" ? "Monthly" : "Annually"}
@@ -427,21 +431,21 @@ function PricingContent() {
           </div>
 
           {!user && !loading && (
-            <div className="mx-auto mt-6 flex w-fit flex-wrap items-center justify-center gap-3 rounded-full border border-border bg-card px-4 py-2 text-sm text-muted-foreground shadow-sm">
+            <div className="mx-auto mt-6 flex w-fit flex-wrap items-center justify-center gap-3 rounded-full border border-neutral-900/15 bg-emerald-100 px-4 py-2 text-sm font-semibold text-neutral-900 shadow-sm">
               <span>
-                Create a free account for <span className="font-semibold text-foreground">{freeCreditsLabel}</span>.
+                Create a free account for <span className="font-bold text-emerald-800">{freeCreditsLabel}</span>.
               </span>
-              <Link href="/sign-up?next=%2Fdashboard%2Fclient" className="font-semibold text-foreground underline underline-offset-4">
+              <Link href="/sign-up?next=%2Fdashboard%2Fclient" className="font-bold text-emerald-700 underline underline-offset-4 hover:text-emerald-800">
                 Start free
               </Link>
             </div>
           )}
 
           {isFreeAccount && (
-            <div className="mx-auto mt-6 flex w-fit items-center gap-4 rounded-full border border-border bg-card px-5 py-3 shadow-sm">
-              <CreditStack className="h-6 w-6 text-foreground" />
-              <span className="text-sm font-semibold text-muted-foreground">
-                <span className="text-foreground">{accountCredits.toLocaleString()}</span> credits left
+            <div className="mx-auto mt-6 flex w-fit items-center gap-4 rounded-full border border-neutral-900/15 bg-white px-5 py-3 shadow-sm">
+              <CreditStack className="h-6 w-6 text-emerald-700" />
+              <span className="text-sm font-bold text-neutral-900">
+                <span className="text-emerald-700">{accountCredits.toLocaleString()}</span> credits left
               </span>
               <Button
                 size="sm"
@@ -457,8 +461,8 @@ function PricingContent() {
 
         {statusPanel && (
           <div className={cn("mx-auto mt-8 max-w-4xl rounded-md border p-5 text-center shadow-sm", statusPanel.tone)}>
-            <p className="text-base font-semibold text-foreground">{statusPanel.title}</p>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">{statusPanel.text}</p>
+            <p className="text-base font-bold text-neutral-900">{statusPanel.title}</p>
+            <p className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{statusPanel.text}</p>
           </div>
         )}
 
@@ -478,8 +482,8 @@ function PricingContent() {
               ? (
                 <Card className="rounded-2xl border-border bg-card shadow-sm md:col-span-2 xl:col-span-4">
                   <CardContent className="p-8 text-center">
-                    <p className="text-xl font-semibold text-foreground">Pricing is temporarily unavailable</p>
-                    <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+                    <p className="text-xl font-bold text-neutral-900">Pricing is temporarily unavailable</p>
+                    <p className="mx-auto mt-3 max-w-2xl text-sm font-semibold leading-6 text-neutral-900">
                       Plan data comes from the billing backend. Refresh this page in a moment, or contact support if the plan catalog stays unavailable.
                     </p>
                     <Button
@@ -509,38 +513,38 @@ function PricingContent() {
                   <article
                     key={plan.plan}
                     className={cn(
-                      "flex h-full min-h-[560px] flex-col rounded-2xl border bg-card p-6 shadow-sm transition",
-                      isPopular ? "border-foreground shadow-md" : "border-border"
+                      "flex h-full min-h-[560px] flex-col rounded-2xl border-2 bg-white p-6 shadow-sm transition",
+                      isPopular ? "border-emerald-700 shadow-md" : "border-neutral-900/15"
                     )}
                   >
                     <div className="flex min-h-[96px] items-start justify-between gap-4">
                       <div>
-                        <p className="text-xl font-semibold text-foreground">{presentation.name}</p>
-                        <p className="mt-2 max-w-[220px] text-sm leading-6 text-muted-foreground">{presentation.description}</p>
+                        <p className="text-xl font-bold text-neutral-900">{presentation.name}</p>
+                        <p className="mt-2 max-w-[220px] text-sm font-semibold leading-6 text-neutral-900">{presentation.description}</p>
                       </div>
                       {isPopular && (
-                        <span className="rounded-full bg-foreground px-3 py-1 text-xs font-semibold text-background">
+                        <span className="rounded-full bg-emerald-700 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-white">
                           Popular
                         </span>
                       )}
                     </div>
 
                     <div className="mt-8 min-h-[92px]">
-                      <div className="text-5xl font-semibold tracking-normal text-foreground">
+                      <div className="text-5xl font-bold tracking-tight text-neutral-900">
                         <AnimatedPrice formatted={presentation.priceFormatted} />
                       </div>
-                      <p className="mt-2 text-sm font-medium text-muted-foreground">{intervalLabel}</p>
+                      <p className="mt-2 text-sm font-bold uppercase tracking-[0.14em] text-emerald-700">{intervalLabel}</p>
                     </div>
 
-                    <div className="mt-6 rounded-2xl border border-border bg-muted/50 p-4">
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Included</p>
-                      <p className="mt-2 text-lg font-semibold text-foreground">{presentation.included}</p>
+                    <div className="mt-6 rounded-2xl border-2 border-neutral-900/10 bg-emerald-100 p-4">
+                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-800">Included</p>
+                      <p className="mt-2 text-lg font-bold text-neutral-900">{presentation.included}</p>
                     </div>
 
                     <Button
                       className={cn(
-                        "mt-6 h-11 w-full rounded-full text-sm font-semibold",
-                        isPopular ? "bg-foreground text-background hover:bg-foreground/90" : ""
+                        "mt-6 h-11 w-full rounded-full text-sm font-bold",
+                        isPopular ? "bg-emerald-700 text-white hover:bg-emerald-800" : "border-2 border-neutral-900 bg-white text-neutral-900 hover:bg-neutral-900 hover:text-white"
                       )}
                       variant={isPopular ? "default" : "outline"}
                       disabled={Boolean(isLoading || (isPaid && !plan.checkout_available))}
@@ -555,10 +559,10 @@ function PricingContent() {
                             : "Start free"}
                     </Button>
 
-                    <ul className="mt-7 flex-1 space-y-3 border-t border-border pt-6">
+                    <ul className="mt-7 flex-1 space-y-3 border-t border-neutral-900/10 pt-6">
                       {featureRows.map((feature) => (
-                        <li key={feature} className="flex items-start gap-3 text-sm leading-6 text-muted-foreground">
-                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground" />
+                        <li key={feature} className="flex items-start gap-3 text-sm font-semibold leading-6 text-neutral-900">
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-700" />
                           <span>{feature}</span>
                         </li>
                       ))}
@@ -601,13 +605,14 @@ function PricingContent() {
         {comparisonPlans.length > 0 && (
           <section className="mx-auto mt-20 max-w-[1260px]">
             <div className="mb-10 text-center">
-              <h2 className="text-4xl font-semibold tracking-normal text-foreground">Compare plans</h2>
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-700">Side by side</p>
+              <h2 className="mt-3 text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl">Compare plans</h2>
             </div>
 
             <Table className="min-w-[940px] border-separate border-spacing-0" containerClassName="lg:overflow-visible">
               <TableHeader className="sticky top-[72px] z-20 bg-background shadow-[0_1px_0_var(--border)]">
                 <TableRow className="border-border hover:bg-transparent">
-                  <TableHead className="w-[26%] border-b border-border px-4 pb-6 pt-3 text-sm font-semibold text-muted-foreground lg:px-6">
+                  <TableHead className="w-[26%] border-b-2 border-neutral-900 px-4 pb-6 pt-3 text-sm font-bold uppercase tracking-[0.12em] text-neutral-900 lg:px-6">
                     Features
                   </TableHead>
                   {comparisonPlans.map((plan) => {
@@ -616,15 +621,15 @@ function PricingContent() {
                     return (
                       <TableHead
                         key={`${plan.plan}-${plan.interval}`}
-                        className="min-w-[170px] border-b border-border px-4 pb-6 pt-3 align-top lg:px-5"
+                        className="min-w-[170px] border-b-2 border-neutral-900 px-4 pb-6 pt-3 align-top lg:px-5"
                       >
                         <div className="flex min-h-[192px] flex-col items-start whitespace-normal">
-                          <p className="text-lg font-semibold text-foreground">{presentation.name}</p>
-                          <p className="mt-3 text-sm font-medium text-muted-foreground">{presentation.included}</p>
-                          <div className="mt-5 text-3xl font-semibold tracking-normal text-foreground">
+                          <p className="text-lg font-bold text-neutral-900">{presentation.name}</p>
+                          <p className="mt-3 text-sm font-semibold text-neutral-900">{presentation.included}</p>
+                          <div className="mt-5 text-3xl font-bold tracking-tight text-neutral-900">
                             <AnimatedPrice formatted={presentation.priceFormatted} />
                           </div>
-                          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                          <p className="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-emerald-700">
                             {plan.interval === "year" ? "per year" : plan.interval === "month" ? "per month" : "free"}
                           </p>
                           <Button
@@ -650,26 +655,23 @@ function PricingContent() {
               <TableBody>
                 {comparisonGroups.map((group) => (
                   <Fragment key={group.title}>
-                    <TableRow className="border-border bg-muted/35 hover:bg-muted/35">
+                    <TableRow className="border-border bg-emerald-100 hover:bg-emerald-100">
                       <TableCell
                         colSpan={comparisonPlans.length + 1}
-                        className="border-b border-border px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-foreground lg:px-6"
+                        className="border-b border-neutral-900/10 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-emerald-800 lg:px-6"
                       >
                         {group.title}
                       </TableCell>
                     </TableRow>
                     {group.rows.map((row) => (
-                      <TableRow key={row.label} className="border-border hover:bg-muted/20">
-                        <TableCell className="border-b border-border px-4 py-5 text-sm font-semibold text-foreground lg:px-6">
+                      <TableRow key={row.label} className="border-border hover:bg-emerald-100/40">
+                        <TableCell className="border-b border-neutral-900/10 px-4 py-5 text-sm font-bold text-neutral-900 lg:px-6">
                           {row.label}
                         </TableCell>
                         {row.values.map((value, index) => (
                           <TableCell
                             key={`${row.label}-${index}`}
-                            className={cn(
-                              "border-b border-border px-4 py-5 text-sm font-medium lg:px-5",
-                              row.emphasis ? "text-foreground" : "text-muted-foreground"
-                            )}
+                            className="border-b border-neutral-900/10 px-4 py-5 text-sm font-semibold text-neutral-900 lg:px-5"
                           >
                             <CompareCellValue value={value} />
                           </TableCell>

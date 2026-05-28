@@ -24,206 +24,232 @@ export type BlogPost = {
 
 export const blogPosts: BlogPost[] = [
   {
-    slug: "handwritten-paper-tables-to-excel",
-    title: "How to Turn Handwritten Paper Tables Into Excel Without Retyping",
+    slug: "why-your-best-clients-quietly-leave",
+    title: "Why your best clients quietly leave — and how to spot it three months before they do",
     description:
-      "A practical guide for converting handwritten paper tables, notes, receipts, and forms into clean Excel spreadsheets without hours of manual typing.",
-    eyebrow: "Handwritten OCR",
-    date: "May 7, 2026",
-    readTime: "7 min read",
-    image: "/subsolution/accounting.jpg",
-    imageAlt: "Accounting paperwork prepared for handwritten table extraction",
-    supportingImage: "/subsolution/backoffice-automation.webp",
-    supportingImageAlt: "Backoffice documents ready for spreadsheet automation",
-    authorName: "Anna Kowalska",
-    authorRole: "Handwritten document workflow specialist",
-    authorImage: "/testimonials/alex_finn.jpg",
-    authorImageAlt: "Anna Kowalska, handwritten document workflow specialist",
-    keywords: [
-      "handwritten paper to Excel",
-      "handwritten table OCR",
-      "convert paper tables to spreadsheet",
-      "hand-filled forms to Excel",
-    ],
-    intro:
-      "Handwritten paperwork still runs through real businesses every day, even in teams that already use modern dashboards, AI assistants, and cloud software. A delivery sheet signed in the field, a class table written by hand, a receipt batch, or a paper form filled with a pen can all become spreadsheet work later. The slow part is rarely taking the photo or scanning the page. The slow part is rebuilding the rows, columns, totals, names, and notes by hand while trying not to lose the context that made the paper useful in the first place.",
-    sections: [
-      {
-        title: "Start with the table, not just the text",
-        body: [
-          "Basic OCR can read words, but handwritten tables need more than loose text. The useful result is a spreadsheet where totals, dates, names, quantities, and notes land in the right cells. Before uploading, make sure the page is flat, the table edges are visible, and shadows do not cover the handwriting. If the original page has checkmarks, crossed-out numbers, margin notes, or repeated headers, keep them visible because those details often explain how the spreadsheet should be reviewed after extraction.",
-          "If the paper has several small tables, keep the whole page in frame instead of cropping too tightly around a single box. The shape of the page helps the system understand where one row ends and another begins. That structure matters because a spreadsheet is not only a container for recognized words. It is a working file where column order, repeated labels, subtotal lines, and blank cells all help the person who reviews the result decide what is correct.",
-        ],
-      },
-      {
-        title: "Use batches when the work is repetitive",
-        body: [
-          "Most manual data entry becomes painful because the same job repeats. One handwritten inventory page is manageable. Fifty hand-filled sheets from a week of operations become a backlog, especially when the person who understands the paperwork is also the person expected to type it. Batch conversion lets a team upload the paperwork together, wait for processing, then review the outputs instead of typing every row into Excel from scratch.",
-          "That workflow is especially useful for invoices, receipts, classroom notes, field logs, checklists, inspection sheets, and forms where the format changes a little but the final destination is still a spreadsheet. A batch process also makes review calmer. Instead of opening one image, typing it, saving it, and repeating the same movement again, the reviewer can move through a stack of extracted files and focus attention on handwriting that looks uncertain, totals that need checking, or rows that should be merged.",
-        ],
-      },
-      {
-        title: "Review like an operator, not a typist",
-        body: [
-          "The best process is not blind automation. It is faster review. Once the handwritten page becomes an XLSX file, the person who knows the data can scan for unusual numbers, correct unclear handwriting, and send the spreadsheet into reporting, accounting, inventory, or client records. That is a better use of human judgment because the reviewer is checking meaning, not acting like a keyboard extension for paper.",
-          "That keeps the human in the right place: checking context, fixing edge cases, and deciding what the data means. A messy handwritten sheet will always need some judgment, but it should not require someone to copy the same paper line into a cell over and over. The stronger workflow is simple: capture the page, preserve the table, extract the spreadsheet, and let the person review the parts that deserve attention.",
-        ],
-      },
-    ],
-    takeaway:
-      "For handwritten paper, the goal is not only recognition. The goal is a clean spreadsheet that keeps the structure of the original page and gives people less typing to do.",
-  },
-  {
-    slug: "batch-processing-handwritten-forms",
-    title: "A Simple Batch Workflow for Handwritten Forms, Notes, and Scanned Paper",
-    description:
-      "Learn how SaaS teams and operations teams handle handwritten forms in batches so users can upload mixed paper documents and receive clean spreadsheet results.",
-    eyebrow: "Batch processing",
-    date: "May 7, 2026",
+      "Client churn in a bookkeeping practice rarely starts with a complaint. It starts with a quiet shift the firm misses for a quarter. Here is what those early signals look like in 2026.",
+    eyebrow: "Client retention",
+    date: "May 22, 2026",
     readTime: "8 min read",
-    image: "/subsolution/Construction.png",
-    imageAlt: "Construction field paperwork used for handwritten form processing",
-    supportingImage: "/subsolution/healthcare.jpg",
-    supportingImageAlt: "Healthcare administrative forms prepared for structured extraction",
-    authorName: "Tomasz Nowak",
-    authorRole: "Batch OCR operations analyst",
-    authorImage: "/testimonials/tom_blomfield.jpg",
-    authorImageAlt: "Tomasz Nowak, batch OCR operations analyst",
-    keywords: [
-      "batch handwritten forms",
-      "scan handwritten notes to Excel",
-      "paper form OCR workflow",
-      "handwritten document processing",
-    ],
-    intro:
-      "People do not upload perfect files. They upload phone photos, scanned PDFs, receipts, field notes, hand-filled forms, and mixed batches from a busy day. A good document product should accept that reality and still make the next step obvious. The user should not need to understand OCR models, PDF rendering, queue workers, or file storage rules. They should understand one thing: the paperwork they collected can become a clean output they can review and download.",
-    sections: [
-      {
-        title: "Keep upload simple",
-        body: [
-          "The upload step should feel forgiving. Users should be able to drag images and PDFs together, see what was accepted, and understand what will happen before they start conversion. If a PDF has five pages, treating those pages like individual document images is often the cleanest mental model. It mirrors what people already expect from scanning: every page is a unit of work, every page may need review, and every page should be traceable back to the original file.",
-          "That is how modern SaaS products reduce friction: the user brings the paper, the system prepares the pages, and the interface keeps the batch visible. The product should show enough information to build trust without turning the upload area into a technical control panel. File name, page count, preview, output type, and clear status are usually enough. Anything more should appear only when the user needs it.",
-        ],
-      },
-      {
-        title: "Show progress around the job, not the file input",
-        body: [
-          "After the batch starts, users care about trust. They want to know that the job is still running, that completed pages are not lost, and that they can come back if the browser reloads. Durable job status is more important than decorative progress text. A batch workflow should survive navigation, mobile sleep, and slow networks because real users often start a job and then switch tabs, answer a message, or move to another task.",
-          "For handwritten forms, this matters because a batch may include easy printed tables and harder pen-written lines. Some pages finish quickly, while others need more processing time. The interface should explain that difference without making the user feel stuck. Completed pages should stay completed, failed pages should be clear, and retry should not repeat work that already succeeded.",
-        ],
-      },
-      {
-        title: "Deliver outputs that are easy to inspect",
-        body: [
-          "The best output is not a mysterious download button. Users should see the original page preview beside the extracted result, then download a spreadsheet or text file when they are ready. This makes the product feel controlled and professional. It also reduces support questions because the user can see what the system read, compare it with the original, and decide whether the result is ready for the next workflow.",
-          "For teams handling construction logs, healthcare forms, backoffice records, or finance paperwork, a clear review step builds confidence before the data moves into another system. If the product turns a mixed batch into outputs that are named clearly, grouped correctly, and easy to download, users do not experience automation as a black box. They experience it as a faster version of the work they already understand.",
-        ],
-      },
-    ],
-    takeaway:
-      "Batch processing works when upload, progress, recovery, review, and download all feel connected. That is what turns messy handwritten paper into a reliable spreadsheet workflow.",
-  },
-  {
-    slug: "manual-data-entry-in-the-ai-era",
-    title: "Why Manual Data Entry Still Hurts Teams in the AI Era",
-    description:
-      "AI is everywhere, but workers still move information from PDFs, scanned forms, emails, and paper into spreadsheets by hand. The cost is time, trust, and data quality.",
-    eyebrow: "Data entry",
-    date: "May 8, 2026",
-    readTime: "9 min read",
     image: "/blogs/tata.png",
-    imageAlt: "Office team reviewing paper data and digital records",
-    supportingImage: "/subsolution/backoffice-automation.webp",
-    supportingImageAlt: "Backoffice automation workflow with business documents",
-    authorName: "Marek Zielinski",
-    authorRole: "Operations data researcher",
-    authorImage: "/testimonials/alvaro_cintas.jpg",
-    authorImageAlt: "Marek Zielinski, operations data researcher",
+    imageAlt: "Bookkeeping team reviewing a client relationship at risk of churn",
+    supportingImage: "/subsolution/accounting.jpg",
+    supportingImageAlt: "Quiet client account showing reduced engagement over a quarter",
+    authorName: "Anna Kowalska",
+    authorRole: "Practice growth advisor",
+    authorImage: "/testimonials/alex_finn.jpg",
+    authorImageAlt: "Anna Kowalska, practice growth advisor",
     keywords: [
-      "manual data entry problems",
-      "data entry automation",
-      "AI era data entry",
-      "paper documents to spreadsheet",
-      "document data extraction",
+      "client retention bookkeeping",
+      "accounting firm churn",
+      "client churn signals",
+      "accounting practice growth 2026",
     ],
     intro:
-      "The strange thing about the AI era is that many teams are surrounded by intelligent software and still spend hours moving information from one place to another by hand. A company can have a modern CRM, an analytics dashboard, a chat assistant, and a cloud accounting system, but the work can still begin with someone copying numbers from a PDF, typing values from a scanned form, or rebuilding a handwritten table inside Excel. The problem is not that people do not know automation exists. The problem is that business information often arrives in formats that ordinary software cannot use cleanly.",
+      "Most firms lose their best clients quietly. There is no angry email, no exit meeting, no formal review. The relationship simply cools — slower replies, shorter messages, a missed quarterly call, a request that quietly moves to another provider. By the time the partner notices, the offboarding letter is already drafted. The hard truth is that churn signals usually appear three months before the client actually leaves, and most practices are not built to catch them.",
     sections: [
       {
-        title: "The bottleneck is still the first mile of data",
+        title: "The first signal is in the email thread, not the engagement letter",
         body: [
-          "Data entry survives because the first mile of data is messy. Customers send PDFs. Field teams take phone photos. Vendors attach scanned invoices. Schools and clinics still collect hand-filled forms. Construction, logistics, healthcare, real estate, accounting, and local services all create information in places where perfect digital forms are not realistic. The moment that information needs to become a report, a spreadsheet, or a system record, a human is often asked to bridge the gap.",
-          "That bridge is expensive. Gartner has estimated that poor data quality costs organizations an average of $12.9 million a year. A 2025 Parseur and QuestionPro survey reported that workers spend more than nine hours a week on repetitive data entry and that the cost can reach $28,500 per employee per year in the United States. Quickbase has also reported that many workers lose more than 10 hours a week chasing information and another 10 hours on administrative manual work. The exact number changes by industry, but the pattern is consistent: manual transfer creates a hidden tax on work.",
+          "Healthy clients send messy emails. They forward an invoice with a one-line note. They ask a payroll question on Friday afternoon. They tell you something personal — a new hire, a holiday, a tax worry. That informal stream is the real heartbeat of the relationship. When a client is preparing to leave, the email rhythm changes before the financials do. Replies become shorter and more formal. Personal context disappears. The client stops including you on the small stuff and starts treating you like a compliance vendor.",
+          "Most firms do not track this because it does not show up on a dashboard. But anyone running a 50-client book can name the three accounts where the tone has shifted. The discipline is to write those names down once a month. A simple list, kept honestly, will surface churn risk earlier than any retention software. The shift is not in the numbers. The shift is in the writing.",
         ],
       },
       {
-        title: "AI does not help if the data never becomes usable",
+        title: "The second signal is the question they stopped asking",
         body: [
-          "Generative AI made it easier to summarize text, answer questions, and draft content, but those abilities do not automatically solve operational data entry. If the original data is trapped inside handwriting, scanned tables, low-quality PDFs, or inconsistent attachments, the team still needs a reliable way to convert that material into structured records. AI can help after the data is readable, but reporting, forecasting, reconciliation, and search all depend on the data being clean enough to trust.",
-          "This is why manual data entry remains visible inside modern companies. The expensive part is not only typing. It is checking whether the typed value is right, finding the source document again, correcting a row after someone notices a mistake, and explaining why the dashboard does not match the paperwork. IBM's 2024 breach research put the global average cost of a data breach at $4.88 million, which is a different problem, but it points to the same operational truth: messy information flows are not harmless. When data moves through weak processes, cost and risk travel with it.",
+          "Engaged clients ask forward-looking questions. Should I incorporate. Should I take a dividend now or in January. Should I hire a contractor or an employee. Those questions mean the client sees you as part of their decision making. When a client stops asking forward-looking questions and only asks for documents — the trial balance, last year's return, the export — they are quietly preparing to hand the relationship to someone else. They want their file, clean and current, because they are about to share it.",
+          "This is the single most reliable churn signal in a small practice and the one most firms miss. Document requests without context are a tell. The defensive response is to deliver the document and ask a forward-looking question back. Not a sales question. A real one. What changed. What are you planning. If the client engages, the relationship is recoverable. If the reply is polite and brief, the file is already on its way out.",
         ],
       },
       {
-        title: "The practical answer is not full automation everywhere",
+        title: "The third signal is your own internal flinching",
         body: [
-          "The most realistic answer is not to promise that every document will be perfect and every human will disappear from the process. Teams need a workflow that removes repetitive typing while keeping review clear. That means accepting mixed files, preserving the original page, extracting the useful structure, showing the result, and letting the person who understands the work confirm the output. In other words, the product should automate the transfer and make the review easier.",
-          "The companies that handle this well do not treat data entry as a tiny clerical task. They treat it as an intake problem, a quality problem, and a speed problem. They ask where the information starts, who needs to trust it, what output format is useful, and what happens when something fails. That framing is more useful than saying AI will fix everything. The real win is simple: fewer hours retyping, fewer silent errors, faster review, and cleaner data for the systems that come next.",
+          "Practice owners know which clients they avoid. The folder you do not want to open on Monday. The name in the inbox that makes you sigh. That flinch is data. It usually means one of three things: the work has drifted from the original scope, the fee has not moved in three years, or the relationship has lost the warmth it had at the start. All three predict churn — but only the first two are usually addressed. The third quietly compounds.",
+          "The discipline is to name the flinch out loud, in writing, in a one-page client review every quarter. Not a financial review of the client's books. A relationship review of the engagement. Where has scope crept. Where has the fee fallen behind the work. Where has the relationship gone quiet. Firms that do this find that one honest conversation reopens the door more often than they expect — and that the clients who refuse the conversation were already gone in everything but name.",
+        ],
+      },
+      {
+        title: "What the best practices are doing differently in 2026",
+        body: [
+          "The firms growing well in 2026 are not the ones with the cleanest tech stack. They are the ones treating retention as a deliberate practice. They run a quarterly client temperature check — fifteen minutes per client, no agenda, no upsell, just an honest call. They keep a one-page record of every relationship. They re-price annually, transparently, with reasoning. And they fire the bottom 10 percent every year without apology, which makes room for the relationships they actually want.",
+          "None of this is technology. None of it requires new software. It requires the partner to do the unglamorous work of looking at the client list with cold eyes once a quarter. Most firms will not do this. The ones that do will keep the clients that matter, lose the ones that were going to leave anyway, and stop being surprised in December by churn that was visible in September.",
         ],
       },
     ],
     takeaway:
-      "Manual data entry is still alive because business documents are still messy. AI becomes more useful when the first mile is handled: capture the paper, extract the structure, and give people a result they can trust.",
+      "The best clients leave quietly because nobody is watching for the quiet signals. A one-page relationship review every quarter catches three months of warning that financial dashboards never will.",
   },
   {
-    slug: "structured-data-before-ai-search-and-reporting",
-    title: "Clean Structured Data Comes Before Better Search, Reporting, and AI",
+    slug: "end-of-the-timesheet",
+    title: "The end of the timesheet: how forward-looking firms are pricing in 2026",
     description:
-      "Before a team can improve dashboards, search results, AI answers, or financial reporting, it needs document data that is clean, searchable, and structured.",
-    eyebrow: "Structured data",
-    date: "May 8, 2026",
-    readTime: "8 min read",
-    image: "/blogs/cardo.svg",
-    imageAlt: "Structured document data card illustration",
+      "Hourly billing is not dying because it is unfair. It is dying because it punishes the firm for getting faster. Here is what is replacing it inside the practices that are growing.",
+    eyebrow: "Pricing trends",
+    date: "May 19, 2026",
+    readTime: "9 min read",
+    image: "/subsolution/accounting.jpg",
+    imageAlt: "Accounting partner reviewing a value-based engagement letter",
     supportingImage: "/subsolution/banking.webp",
-    supportingImageAlt: "Banking records prepared for structured reporting",
-    authorName: "Piotr Wozniak",
-    authorRole: "Data quality and reporting strategist",
-    authorImage: "/testimonials/catalin.jpg",
-    authorImageAlt: "Piotr Wozniak, data quality and reporting strategist",
+    supportingImageAlt: "Modern pricing model dashboard for accounting practice",
+    authorName: "Tomasz Nowak",
+    authorRole: "Practice pricing consultant",
+    authorImage: "/testimonials/tom_blomfield.jpg",
+    authorImageAlt: "Tomasz Nowak, practice pricing consultant",
     keywords: [
-      "structured data for AI",
-      "document data extraction",
-      "clean data for reporting",
-      "OCR data quality",
-      "spreadsheet data preparation",
+      "value pricing accounting",
+      "end of timesheets",
+      "accounting firm pricing 2026",
+      "fixed fee bookkeeping",
     ],
     intro:
-      "Every company wants better dashboards, smarter search, cleaner reporting, and AI tools that answer questions with confidence. The less glamorous requirement is structured data. If the source information is scattered across scanned documents, paper forms, handwritten notes, disconnected spreadsheets, and file names that only one employee understands, the final layer will always feel weaker than expected. Search cannot find what was never extracted. Reporting cannot summarize values that were typed inconsistently. AI cannot reason cleanly over information that remains locked inside images.",
+      "The timesheet was invented to bill lawyers in the 1950s. Accounting borrowed it because the alternative felt unscientific. Seventy years later, every honest practice owner knows the problem: the hour is a unit of input, not value, and the more efficient the firm becomes, the less it earns. In 2026, the firms that are growing have stopped tracking hours as a billing instrument. They still track them — for capacity planning — but they have moved billing somewhere else entirely.",
     sections: [
       {
-        title: "Search needs fields, not just files",
+        title: "Why hourly billing punishes the firm that gets better",
         body: [
-          "A folder full of PDFs may look organized, but it is often not searchable in the way operations teams need. A file name might contain a customer name or month, but the important details usually live inside the document: invoice number, service date, item code, handwritten note, location, signature, quantity, or total. If those fields are not extracted, people end up searching by memory. They ask who handled the file, when it arrived, or which folder someone might have used.",
-          "Structured extraction changes that. When document information becomes fields, a team can filter, compare, and retrieve records without opening every file. This matters for accounting teams checking invoices, real estate teams reading lease details, healthcare administrators reviewing intake forms, and any department that receives business documents in inconsistent formats. Good search starts with making the inside of the document available to the system.",
+          "Imagine two bookkeepers. One has refined her month-end process to four hours per client. The other still takes twelve. If both bill at $80 an hour, the efficient one earns a third of the income for the same outcome. The timesheet, presented as fairness, is actually a tax on competence. It rewards slowness and disguises skill as effort. Every junior who learns the work faster than expected gets reprimanded by the billing model, because the value delivered does not change but the invoice does.",
+          "The deeper damage is in the client conversation. Hourly bills force a quiet negotiation every month — was this really six hours, did the call need to be that long, can the bookkeeper write off some of it. That negotiation is corrosive. It signals to the client that the work is a meter running and that the firm benefits from inefficiency. No senior partner would say this, but every junior bookkeeper feels it the first time a client questions a line item.",
         ],
       },
       {
-        title: "Reporting fails when source data is inconsistent",
+        title: "What value pricing actually means in practice",
         body: [
-          "A dashboard is only as credible as the input behind it. If one person types a supplier name one way, another person abbreviates it, and a third person leaves it blank because the handwriting was unclear, the final report becomes a negotiation instead of a decision tool. The chart may look polished, but someone still has to reconcile the source rows, explain outliers, and clean the spreadsheet before leadership can trust it.",
-          "This is why structured document processing is a reporting issue, not only an OCR issue. The goal is not to recognize characters for their own sake. The goal is to put values into consistent columns, preserve enough source context for review, and reduce the number of manual corrections before the data reaches a dashboard. When the source layer improves, every later layer becomes easier: search, reporting, audit, forecasting, and customer support.",
+          "Value pricing is not 'guess a number that sounds bigger than the hours.' It is a different conversation entirely. The firm scopes the engagement in writing: what is delivered, when, with what level of involvement. The price is fixed at the start of the year, broken into monthly retainers, and reviewed annually. Scope creep is renegotiated, not absorbed. The client knows the cost. The firm knows the income. The hour disappears from both sides of the conversation.",
+          "The hard part is the scoping document. Most practices write engagement letters that are vague by design — the firm protects itself by being broad. Value pricing requires the opposite. Each deliverable is named, each cadence is set, each exception is priced. The work to write this honestly is significant the first time and trivial after the third. Firms that adopt value pricing universally describe the engagement letter rewrite as the moment the practice felt different.",
         ],
       },
       {
-        title: "AI works better when the ground truth is organized",
+        title: "The three pricing tiers that work for a small practice",
         body: [
-          "AI systems can summarize and reason across large amounts of text, but they still need reliable ground truth. A model can be impressive in a demo and still struggle in a real workflow if the documents feeding it are incomplete, duplicated, poorly named, or manually typed with errors. Clean structured data gives AI something more stable to work with. It turns a pile of documents into a dataset that can be checked, joined, filtered, and reviewed.",
-          "The practical lesson is simple: before investing in more advanced AI layers, teams should look at the document intake layer. Where does the data come from? Which fields are repeatedly retyped? Which documents arrive as scans or photos? Which reports require manual cleanup every week? Answering those questions often reveals the fastest path to better AI outcomes: organize the source data first, then build smarter workflows on top of it.",
+          "The cleanest structure for a bookkeeping or compliance practice is three tiers — usually called something like Essential, Active, and Advisory. Essential covers monthly close, payroll, sales tax, and the year-end pack. Active adds quarterly advisory calls and a written summary. Advisory adds forecast work, KPI dashboards, and unlimited email access. The price difference is meaningful — often 2x between tiers — and the deliverables are distinct, not bundled.",
+          "The decision the client makes is no longer 'how many hours will this take.' It is 'how involved do I want my accountant to be.' That is a much better question. It moves the relationship away from a meter and toward a choice. It also makes upsell honest. A client moving from Essential to Active is not being squeezed. They are choosing more involvement, at a transparent price, with a written scope. Practices report 30 to 50 percent of clients self-select into a higher tier within the first year when the tiering is offered this clearly.",
+        ],
+      },
+      {
+        title: "What to do with the hours you still track",
+        body: [
+          "Stopping hourly billing does not mean stopping time tracking. The best firms still track every hour — internally, for capacity and pricing intelligence, not for the client invoice. The data tells the partner which clients are unprofitable, which junior is bottlenecking, which service lines are mispriced, and where automation has already paid back. The timesheet becomes a management tool instead of a billing instrument, and that is where it was always more useful.",
+          "The transition is rarely smooth. Long-tenured clients will resist the change at first because hourly bills, despite being worse for them, feel safer. The firms that succeed give clients a written before-and-after comparison: same scope, same deliverables, fixed price replacing variable invoices, no surprises. Most clients agree within one cycle. The ones who refuse to move are usually the ones whose hours were under-priced anyway, and losing them is part of the cleanup.",
         ],
       },
     ],
     takeaway:
-      "Better AI and better reporting start before the dashboard. They start when document data becomes structured, searchable, and clean enough for people and systems to trust.",
+      "The timesheet is leaving the billing conversation because it taxes competence and signals the wrong incentives. The firms that price the scope instead of the hour are quietly outearning the ones that did not change.",
+  },
+  {
+    slug: "bookkeeper-at-9pm-on-sunday",
+    title: "What being a bookkeeper actually looks like at 9pm on a Sunday",
+    description:
+      "The public version of bookkeeping is a clean dashboard. The private version is a Sunday-night batch of receipts, a client message at 9pm, and a quiet anxiety about the month-end on Wednesday. This is the part that nobody writes about.",
+    eyebrow: "Daily life",
+    date: "May 14, 2026",
+    readTime: "7 min read",
+    image: "/subsolution/backoffice-automation.webp",
+    supportingImage: "/subsolution/healthcare.jpg",
+    supportingImageAlt: "Mid-week backlog of bookkeeping work waiting for review",
+    imageAlt: "Solo bookkeeper finishing a client batch on a Sunday evening",
+    authorName: "Marek Zielinski",
+    authorRole: "Solo bookkeeper, twelve years",
+    authorImage: "/testimonials/alvaro_cintas.jpg",
+    authorImageAlt: "Marek Zielinski, solo bookkeeper for twelve years",
+    keywords: [
+      "bookkeeper life",
+      "solo bookkeeper workload",
+      "bookkeeping burnout",
+      "small practice realities",
+    ],
+    intro:
+      "The conferences and the LinkedIn posts do not tell you this part. They show a partner in a clean office with a coffee, talking about advisory services and tech stacks. The reality of running a small bookkeeping practice in 2026 is closer to a Sunday evening at the kitchen table, finishing one last client's receipts because Monday is already overbooked. That gap — between how the profession is presented and how it is actually lived — is worth naming honestly.",
+    sections: [
+      {
+        title: "The week does not end on Friday",
+        body: [
+          "A bookkeeper running thirty to fifty clients does not finish on Friday. The week ends when the inbox is at a stopping point — and the inbox is never at a stopping point during the first week of a month. The Sunday-evening shift is not a sign of poor planning. It is a structural feature of running a small practice where the month-end cliff hits everyone at the same time, the deliverables are not optional, and the client expects the report to land on the second business day even though the client only sent the bank feed on the first.",
+          "The bookkeepers who burn out in this profession are not the ones who work hard. They are the ones who pretend they do not have to. The Sunday session is not a confession. It is the job. The healthier framing is to plan for it: a defined window, a specific scope, a real break afterward. Pretending it does not happen is what makes it spread into the rest of the week.",
+        ],
+      },
+      {
+        title: "The client message at 9pm",
+        body: [
+          "Some clients message at 9pm. Not many, but enough to matter. The instinct is to reply quickly, because the relationship feels personal and the work is small. That instinct is what destroys the boundary. Once a client learns the bookkeeper replies in the evening, they will message in the evening — not because they are demanding but because they are also working in the evening and the bookkeeper is the only professional service they can reach.",
+          "The fix is not to set an out-of-office. The fix is to be unreachable for three hours a day, reliably, without explanation. No reply. Not even a 'will get back to you tomorrow.' Silence at night, replies in the morning. Clients adjust within a week. The bookkeepers who do this universally report that no client has ever left over it, and that the evening work that does happen is now done without interruption, which is what made it possible to do at all.",
+        ],
+      },
+      {
+        title: "The Wednesday month-end anxiety",
+        body: [
+          "Every small practice has a Wednesday month-end where four or five clients close at once. The anxiety starts on Sunday. The plan looks workable on paper and falls apart the moment one bank feed breaks or one client sends receipts late. That anxiety is not a weakness. It is the cost of a deliverable model that compresses fifty firms' month-ends into the same three days. The way out is not better time management. The way out is staggering the deliverable dates across the month with client agreement.",
+          "Practices that do this — moving five clients to a 10th close, five to a 15th, five to a 20th — describe the change as the largest single quality-of-life improvement they have made in years. Clients almost never resist, because the deliverable date is meaningful only to the bookkeeper. The board meeting was always going to be later than that. The conversation feels uncomfortable at first and becomes routine within two cycles. The Wednesday anxiety becomes a Monday-Tuesday-Wednesday-Thursday-Friday rhythm where no single day carries the full month.",
+        ],
+      },
+      {
+        title: "What separates the practices that last",
+        body: [
+          "The bookkeepers still in the profession at year fifteen are not the ones with the most technical skill. They are the ones who built a practice that does not require Sunday evenings as a structural feature. That usually means fewer clients than the spreadsheet would suggest, higher fees than felt comfortable when set, written scope on every engagement, and a willingness to fire the bottom 10 percent every year. It is not a glamorous formula. It is just what works when the work is real.",
+          "The profession will keep adding tools, integrations, AI features, and dashboards. None of those change the Sunday evening unless the underlying practice is built to not need it. Software does not save a practice that overbooks itself. It just helps an overbooked practice run slightly faster toward burnout. The discipline is older than any tech stack: scope honestly, price for the scope, deliver on time, and be unreachable at night. Everything else is the marketing layer.",
+        ],
+      },
+    ],
+    takeaway:
+      "The Sunday-evening shift is not a personal failing. It is the structural cost of an overbooked practice. The fix is not productivity. It is fewer clients, higher fees, written scope, and three reliable hours of silence every night.",
+  },
+  {
+    slug: "what-stays-human-in-bookkeeping",
+    title: "AI is changing what 'bookkeeping' means — what stays human in 2026",
+    description:
+      "Half the work bookkeepers did five years ago is being automated away. The other half is becoming more important, and harder to hire for. Here is the line, and why it matters for the firms staying ahead.",
+    eyebrow: "Profession in 2026",
+    date: "May 9, 2026",
+    readTime: "10 min read",
+    image: "/blogs/cardo.svg",
+    imageAlt: "Illustration of automated bookkeeping workflow handing off to a human reviewer",
+    supportingImage: "/subsolution/banking.webp",
+    supportingImageAlt: "Modern accounting practice working alongside AI tooling",
+    authorName: "Piotr Wozniak",
+    authorRole: "Senior practice strategist",
+    authorImage: "/testimonials/catalin.jpg",
+    authorImageAlt: "Piotr Wozniak, senior practice strategist",
+    keywords: [
+      "AI in bookkeeping",
+      "future of accounting profession",
+      "automation bookkeeping 2026",
+      "human work in accounting",
+    ],
+    intro:
+      "The honest version of the AI-and-accounting conversation is not that the profession is disappearing. It is that the profession is splitting. The data-entry layer is being automated faster than most firms acknowledge. The judgment layer is becoming more valuable than the firms have priced. The bookkeepers who will own the next decade are the ones who can describe the difference clearly — to themselves, to their juniors, and to their clients.",
+    sections: [
+      {
+        title: "What is genuinely being automated",
+        body: [
+          "Bank feed categorisation, invoice extraction, expense matching, basic reconciliation, payroll calculation, simple compliance filings — these are no longer human work in any well-run practice. They were human work in 2020. They are software work in 2026, and a junior bookkeeper trained primarily on these tasks is now training on tasks that the software does faster, cheaper, and with better audit trail. The honest answer to 'are these skills still valuable' is: they are necessary but no longer differentiating.",
+          "The firms still billing for these tasks at human rates are surviving on relationships, not value. That is a fragile position. The clients eventually notice — usually when a younger competitor demonstrates the same output for a third of the fee. The defensive move is not to keep charging for what is being automated. It is to move up the work and reprice the engagement around the layer that stays human.",
+        ],
+      },
+      {
+        title: "What is becoming more human, not less",
+        body: [
+          "Several parts of bookkeeping are becoming more human and more valuable, not less. The first is judgment on edge cases — the receipt that does not match a vendor, the journal entry that needs a human to decide which account, the transaction that is technically correct and operationally suspicious. AI tools surface these faster than ever, which means a bookkeeper spends less time finding the problem and more time deciding what it means. That is judgment work. It does not scale by adding more software.",
+          "The second is the client conversation. The board-meeting prep, the 'should I incorporate' question, the 'are we hiring too fast' worry. Clients are increasingly bringing these to their bookkeeper because their bookkeeper is the only outside advisor who actually sees the numbers every month. Software does not have that relationship. It cannot. And the value of that relationship has gone up sharply because the surrounding work has been automated — the bookkeeper now has more time per client, and that time is what the client is really paying for.",
+        ],
+      },
+      {
+        title: "The trap of trying to automate the relationship",
+        body: [
+          "A common mistake in 2026 is to take the time freed by automation and pour it back into more clients at the same fee. That is the wrong move. The market is moving in the opposite direction. Clients are paying more per relationship and expecting fewer transactional interactions. The firms doing well are running smaller books at higher fees, with more time per client, not larger books at flat fees. That requires a pricing change before it requires a staffing change.",
+          "The other trap is using AI tooling as a marketing veneer without changing the underlying engagement. A firm can buy every tool, automate every workflow, and still bill hourly for the time the tools removed. The client sees the tools, sees the bill, and quietly looks for an alternative. The internal restructuring — pricing, scope, deliverables — has to happen alongside the tool adoption, or the tools become an unpaid productivity gift to the client.",
+        ],
+      },
+      {
+        title: "What the next five years probably look like",
+        body: [
+          "The 2030 picture is not 'no bookkeepers.' It is fewer bookkeepers, paid more per relationship, doing less of the data work and more of the judgment work. The juniors entering the profession now will spend almost no time on categorisation. They will spend time on review, on client communication, on edge cases, on understanding the business they serve. That requires a different training arc, a different career ladder, and a different conversation with the client about what the firm actually does.",
+          "Firms preparing for this are doing three things now. They are repricing engagements around judgment and advisory, not throughput. They are training juniors on client conversation from year one, not year five. And they are letting go of clients who only want a data-entry service, because those clients will leave for software within two years anyway and the relationship was never going to deepen. None of this is dramatic. It is just the quiet restructuring of a profession that is being remade in plain view.",
+        ],
+      },
+    ],
+    takeaway:
+      "The bookkeepers winning the next decade are not the ones with the most tools. They are the ones who priced the judgment layer, let the automation handle the throughput, and built relationships that software cannot replicate.",
   },
 ];
 

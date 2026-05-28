@@ -165,16 +165,28 @@
   }
 
   /* ── Marketing prose rule ───────────────────────────────────
-     Bumps muted body copy to medium weight site-wide on marketing
+     Bumps muted body copy to semibold weight site-wide on marketing
      pages by scoping to <main> descendants that don't live inside
      a dashboard shell. Dashboard pages use the .ax-dashboard-content
      wrapper which neutralizes this. */
   main p.text-muted-foreground,
+  main li.text-muted-foreground,
+  main span.text-muted-foreground,
+  main div.text-muted-foreground,
   main p.text-foreground\/70,
-  main p.text-foreground\/80 {
-    font-weight: 500;
+  main p.text-foreground\/76,
+  main p.text-foreground\/78,
+  main p.text-foreground\/80,
+  main p.text-foreground\/82,
+  main p.text-black\/70,
+  main p.text-black\/80,
+  main ul.text-muted-foreground li {
+    font-weight: 600;
   }
-  .ax-dashboard-content p.text-muted-foreground {
+  .ax-dashboard-content p.text-muted-foreground,
+  .ax-dashboard-content li.text-muted-foreground,
+  .ax-dashboard-content span.text-muted-foreground,
+  .ax-dashboard-content div.text-muted-foreground {
     font-weight: inherit;
   }
   /* Section vertical rhythm — 80px mobile / 112px desktop */
