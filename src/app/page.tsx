@@ -152,8 +152,10 @@ const footerColumns = [
     title: "Product",
     links: [
       { label: "Convert files", href: "/dashboard/client" },
-      { label: "Pricing", href: "/pricing" },
-      { label: "Security", href: "/security" },
+      { label: "Review board", href: "/dashboard/client" },
+      { label: "AP queue", href: "/dashboard/accounts-payable" },
+      { label: "Inbox", href: "/dashboard/inbox" },
+      { label: "Integrations", href: "/dashboard/integrations" },
     ],
   },
   {
@@ -161,26 +163,37 @@ const footerColumns = [
     links: [
       { label: "Accounting", href: "/solutions/accounting" },
       { label: "Banking", href: "/solutions/banking" },
-      { label: "Backoffice", href: "/solutions/backoffice-automation" },
       { label: "Healthcare", href: "/solutions/healthcare" },
+      { label: "Construction", href: "/solutions/construction" },
+      { label: "Real Estate", href: "/solutions/real-estate" },
     ],
   },
   {
     title: "Resources",
     links: [
-      { label: "Blogs", href: "/blogs" },
+      { label: "Blog", href: "/blogs" },
+      { label: "Pricing", href: "/pricing" },
+      { label: "Security", href: "/security" },
+      { label: "Handwritten to Excel", href: "/handwritten-to-excel" },
+      { label: "Image to Excel", href: "/image-to-excel" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
       { label: "Contact", href: "/contact" },
       { label: "Try AxLiner", href: "/dashboard/client" },
+      { label: "Sign in", href: "/sign-in" },
+      { label: "Sign up free", href: "/sign-up" },
     ],
   },
   {
     title: "Legal",
     links: [
-      { label: "Privacy", href: "/privacy-policy" },
-      { label: "Terms", href: "/terms-of-service" },
+      { label: "Privacy Policy", href: "/privacy-policy" },
+      { label: "Terms of Service", href: "/terms-of-service" },
       { label: "EULA", href: "/end-user-license-agreement" },
-      { label: "Data deletion", href: "/data-deletion" },
-      { label: "Billing", href: "/dashboard/settings" },
+      { label: "Data Deletion", href: "/data-deletion" },
     ],
   },
 ];
@@ -445,76 +458,76 @@ export default function Home() {
           />
           <div className="relative z-10">
         {/* ── Alternating feature band ── */}
-        <div id="how-it-works" className="bg-neutral-950">
+        <div id="how-it-works" className="bg-emerald-100">
           <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
 
             {/* A — text left · video right */}
             <div className="grid items-center gap-10 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
               <div data-animate="headline">
-                <h3 className="ax-h2 max-w-lg font-bold text-white">
+                <h3 className="ax-h2 max-w-lg font-bold text-neutral-900">
                   Throw us the whole folder.
                 </h3>
-                <p className="ax-body mt-5 font-semibold text-white">
+                <p className="ax-body mt-5 font-semibold text-neutral-900">
                   Invoices, receipts, bank statements — drop them all at once. AxLiner classifies each file automatically and extracts on the right schema. No sorting, no separate uploads.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border border-white/40 bg-white/10 px-8 text-sm font-semibold text-white transition-colors hover:bg-white/20">
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border-2 border-emerald-700 bg-transparent px-8 text-sm font-bold text-emerald-700 transition-colors hover:bg-emerald-700 hover:text-white">
                   See how it works →
                 </NextLink>
               </div>
-              <div className="overflow-hidden rounded-2xl bg-white/10 p-5 sm:p-8" data-animate="stagger">
+              <div className="overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-emerald-300/40 sm:p-8" data-animate="stagger">
                 <VideoPlaceholder caption="Auto-detect: 40 mixed files classified in one batch" />
               </div>
             </div>
 
             {/* B — video left · text right */}
-            <div className="grid items-center gap-10 border-t border-white/15 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
-              <div className="order-last overflow-hidden rounded-2xl bg-white/10 p-5 sm:p-8 lg:order-first" data-animate="stagger">
+            <div className="grid items-center gap-10 border-t border-emerald-300/60 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
+              <div className="order-last overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-emerald-300/40 sm:p-8 lg:order-first" data-animate="stagger">
                 <VideoPlaceholder caption="Review board: source document side-by-side with extracted data" />
               </div>
               <div data-animate="headline">
-                <h3 className="ax-h2 max-w-lg font-bold text-white">
+                <h3 className="ax-h2 max-w-lg font-bold text-neutral-900">
                   See everything before it touches QuickBooks.
                 </h3>
-                <p className="ax-body mt-5 font-semibold text-white">
+                <p className="ax-body mt-5 font-semibold text-neutral-900">
                   Every extracted document lands in your review board before export. Original image on the left, editable cells on the right. Click to correct, tab to move on.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border border-white/40 bg-white/10 px-8 text-sm font-semibold text-white transition-colors hover:bg-white/20">
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border-2 border-emerald-700 bg-transparent px-8 text-sm font-bold text-emerald-700 transition-colors hover:bg-emerald-700 hover:text-white">
                   Explore the review board →
                 </NextLink>
               </div>
             </div>
 
             {/* C — text left · video right */}
-            <div className="grid items-center gap-10 border-t border-white/15 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
+            <div className="grid items-center gap-10 border-t border-emerald-300/60 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
               <div data-animate="headline">
-                <h3 className="ax-h2 max-w-lg font-bold text-white">
+                <h3 className="ax-h2 max-w-lg font-bold text-neutral-900">
                   The messy stuff. WhatsApp photos. Handwritten receipts.
                 </h3>
-                <p className="ax-body mt-5 font-semibold text-white">
+                <p className="ax-body mt-5 font-semibold text-neutral-900">
                   Other tools claim accuracy on clean PDFs. AxLiner was built for the document your client photographed in bad light and sent over WhatsApp. Per-field confidence flags tell you exactly which cells to check.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border border-white/40 bg-white/10 px-8 text-sm font-semibold text-white transition-colors hover:bg-white/20">
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border-2 border-emerald-700 bg-transparent px-8 text-sm font-bold text-emerald-700 transition-colors hover:bg-emerald-700 hover:text-white">
                   Try with a handwritten document →
                 </NextLink>
               </div>
-              <div className="overflow-hidden rounded-2xl bg-white/10 p-5 sm:p-8" data-animate="stagger">
+              <div className="overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-emerald-300/40 sm:p-8" data-animate="stagger">
                 <VideoPlaceholder caption="Handwritten receipt → structured spreadsheet with confidence flags" />
               </div>
             </div>
 
             {/* D — video left · text right */}
-            <div className="grid items-center gap-10 border-t border-white/15 py-20 pb-28 lg:grid-cols-2 lg:gap-20 lg:py-28 lg:pb-36">
-              <div className="order-last overflow-hidden rounded-2xl bg-white/10 p-5 sm:p-8 lg:order-first" data-animate="stagger">
+            <div className="grid items-center gap-10 border-t border-emerald-300/60 py-20 pb-28 lg:grid-cols-2 lg:gap-20 lg:py-28 lg:pb-36">
+              <div className="order-last overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-emerald-300/40 sm:p-8 lg:order-first" data-animate="stagger">
                 <VideoPlaceholder caption="AP queue: code, review, and publish bills to QuickBooks in one screen" />
               </div>
               <div data-animate="headline">
-                <h3 className="ax-h2 max-w-lg font-bold text-white">
+                <h3 className="ax-h2 max-w-lg font-bold text-neutral-900">
                   Reviewed, coded, posted — without copy-pasting.
                 </h3>
-                <p className="ax-body mt-5 font-semibold text-white">
+                <p className="ax-body mt-5 font-semibold text-neutral-900">
                   Connect your QuickBooks Online company. Code invoices with vendor, account, and tax. Publish a draft Bill with the original document attached. If anything fails, retry without creating a duplicate.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-xl bg-white px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-white/90">
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-xl bg-emerald-700 px-8 text-sm font-bold text-white transition-colors hover:bg-emerald-800">
                   Start free →
                 </NextLink>
               </div>
@@ -524,13 +537,13 @@ export default function Home() {
         </div>
 
         {/* Why Choose Us Section — black band, white text */}
-        <ScrollAnimatedSection id="features" className="relative z-20 bg-neutral-950 pt-20 pb-24 lg:pt-24 lg:pb-28">
+        <ScrollAnimatedSection id="features" className="relative z-20 bg-emerald-100 pt-20 pb-24 lg:pt-24 lg:pb-28">
           <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
             <div className="mb-14" data-animate="headline">
-              <h2 className="ax-h2 font-bold text-white">
+              <h2 className="ax-h2 font-bold text-neutral-900">
                 Works for anyone who touches documents.
               </h2>
-              <p className="ax-body mt-4 max-w-2xl font-semibold text-white">
+              <p className="ax-body mt-4 max-w-2xl font-semibold text-neutral-900">
                 From solo bookkeepers to construction managers — one workflow, every document type.
               </p>
             </div>
@@ -644,93 +657,120 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="ax-immersive-backdrop relative z-10 border-t border-white/10 text-white">
-        <Image
-          src="/buttom.png"
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover object-center"
+      {/* ── Deep CTA band — last pitch before footer ── */}
+      <section className="relative z-10 overflow-hidden bg-neutral-950">
+        {/* Soft emerald glow */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse at 50% 0%, rgba(16,185,129,0.18), transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(16,185,129,0.10), transparent 50%)",
+          }}
         />
-        <div className="ax-footer-overlay" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_16%,rgba(231,255,235,0.24),transparent_30%)]" />
 
-        <div className="relative z-10 mx-auto max-w-[1540px] px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(620px,1fr)] lg:items-start">
-            <div className="max-w-2xl">
+        <div className="relative z-10 mx-auto max-w-[1280px] px-4 py-24 sm:px-6 lg:px-8 lg:py-32">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="ax-eyebrow text-emerald-400">Start free today</p>
+            <h2 className="ax-h2 mt-4 font-bold tracking-tight text-white">
+              Take back control of your document workflow.
+            </h2>
+            <p className="ax-body mt-6 font-semibold text-white">
+              Invoices, receipts, bank statements, handwritten notes — reviewed by you, posted correctly. No per-client minimums, no surprise pricing.
+            </p>
+
+            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <NextLink
-                href="/"
-                aria-label="AxLiner home"
-                className="inline-flex rounded-md border border-white/25 bg-white px-3 py-2 text-foreground shadow-lg shadow-black/15 transition-transform hover:-translate-y-0.5"
+                href="/dashboard/client"
+                className="inline-flex h-14 items-center rounded-xl bg-emerald-500 px-10 text-base font-bold text-neutral-950 shadow-[0_8px_28px_-8px_rgba(16,185,129,0.5)] transition-all hover:bg-emerald-400 hover:shadow-[0_12px_32px_-8px_rgba(16,185,129,0.6)]"
               >
-                <AppLogo className="h-8 w-auto" />
+                Start free →
               </NextLink>
-              <h2 className="ax-h2 mt-7 max-w-xl font-bold text-white">
-                Every document type. One batch. Reviewed by you.
-              </h2>
-              <p className="ax-body mt-5 max-w-xl font-medium text-white/82">
-                No per-client minimums. No surprise price increases. No black-box auto-posting. AxLiner puts the accountant back in control — before anything touches QuickBooks.
-              </p>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <Button asChild variant="glossy" className="px-7 py-5 font-semibold">
-                  <NextLink href="/dashboard/client">Try It</NextLink>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="border-white/28 bg-black/10 px-7 py-5 font-semibold text-white backdrop-blur-sm hover:bg-white/12 hover:text-white"
-                >
-                  <NextLink href="/pricing">See Pricing</NextLink>
-                </Button>
-                <div className="flex items-center gap-2 ps-1">
-                  {footerSocialLinks.map(({ label, href, Icon }) => (
-                    <a
-                      key={label}
-                      href={href}
-                      aria-label={label}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/22 bg-white/10 text-white backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white/18"
-                    >
-                      <Icon className="h-5 w-5" />
-                    </a>
-                  ))}
-                </div>
-              </div>
+              <NextLink
+                href="/pricing"
+                className="inline-flex h-14 items-center rounded-xl border-2 border-white/25 px-10 text-base font-bold text-white transition-colors hover:bg-white/10"
+              >
+                See pricing
+              </NextLink>
             </div>
 
-            <div className="rounded-md border border-white/16 bg-black/20 p-5 shadow-2xl shadow-black/15 backdrop-blur-md sm:p-7">
-              <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
-                {footerColumns.map((column) => (
-                  <div key={column.title}>
-                    <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/64">
-                      {column.title}
-                    </h4>
-                    <ul className="mt-4 space-y-3 text-sm font-semibold text-white/90">
-                      {column.links.map((link) => (
-                        <li key={`${column.title}-${link.label}`}>
-                          {link.href.startsWith("mailto:") ? (
-                            <a href={link.href} className="transition-colors hover:text-white">
-                              {link.label}
-                            </a>
-                          ) : (
-                            <NextLink href={link.href} className="transition-colors hover:text-white">
-                              {link.label}
-                            </NextLink>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
+            <p className="mt-8 text-sm font-semibold text-white/55">
+              No credit card · 50 free conversions · Cancel anytime
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Clean Proposify-style footer ── */}
+      <footer className="relative z-10 border-t border-neutral-200 bg-white">
+        <div className="mx-auto max-w-[1480px] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2.4fr)] lg:gap-16">
+            {/* Logo column */}
+            <div>
+              <NextLink href="/" aria-label="AxLiner home" className="inline-flex items-center">
+                <AppLogo className="h-9 w-auto text-foreground" />
+              </NextLink>
+              <p className="mt-6 max-w-xs text-[15px] font-semibold leading-relaxed text-neutral-900">
+                Invoice & document review for bookkeepers and accounting practices.
+              </p>
+            </div>
+
+            {/* Link columns */}
+            <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:grid-cols-5 lg:gap-8">
+              {footerColumns.map((column) => (
+                <div key={column.title}>
+                  <h4 className="text-[15px] font-bold text-emerald-700">
+                    {column.title}
+                  </h4>
+                  <ul className="mt-5 space-y-3.5">
+                    {column.links.map((link) => (
+                      <li key={`${column.title}-${link.label}`}>
+                        <NextLink
+                          href={link.href}
+                          className="text-[14px] font-semibold text-neutral-900 transition-colors hover:text-emerald-700"
+                        >
+                          {link.label}
+                        </NextLink>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="mt-12 flex flex-col gap-4 border-t border-white/16 pt-6 text-xs font-medium text-white/70 sm:flex-row sm:items-center sm:justify-between">
-            <p>&copy; 2026 AxLiner. All rights reserved.</p>
-            <p>Made with care in Alaska. Secure document processing for spreadsheet teams.</p>
+          {/* Bottom row */}
+          <div className="mt-16 flex flex-col gap-6 border-t border-neutral-200 pt-8 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-[13px] font-semibold text-neutral-900">
+              © 2026 AxLiner Inc. All rights reserved.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-6">
+              <NextLink href="/contact" className="text-[13px] font-semibold text-neutral-900 transition-colors hover:text-emerald-700">
+                Contact Us
+              </NextLink>
+              <NextLink href="/privacy-policy" className="text-[13px] font-semibold text-neutral-900 transition-colors hover:text-emerald-700">
+                Privacy Policy
+              </NextLink>
+              <NextLink href="/end-user-license-agreement" className="text-[13px] font-semibold text-neutral-900 transition-colors hover:text-emerald-700">
+                Terms & Conditions
+              </NextLink>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {footerSocialLinks.map(({ label, href, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-700 text-white transition-all hover:-translate-y-0.5 hover:bg-emerald-800"
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </footer>

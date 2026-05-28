@@ -61,87 +61,66 @@ const practiceLinks: AudienceLink[] = [
 
 /* ── Mega-dropdown panel ─────────────────────────────────────── */
 
-type PanelProps = {
-  links: AudienceLink[];
-  headline: string;
-  body: string;
-  signupHref?: string;
-};
-
-function AudiencePanel({ links, headline, body, signupHref = "/sign-up?next=%2Fdashboard%2Fclient" }: PanelProps) {
+/* ── Link row used inside both halves of the merged panel ── */
+function FeatureLinkRow({ link, index }: { link: AudienceLink; index: number }) {
   return (
-    <div className="grid w-[680px] grid-cols-[1.08fr_0.92fr] overflow-hidden rounded-xl">
+    <Link
+      href={link.href}
+      style={{ animationDelay: `${index * 28}ms` }}
+      className={cn(
+        "group flex items-start gap-3 rounded-lg px-3 py-2.5",
+        "ax-interactive ax-fade-in hover:bg-accent",
+      )}
+    >
+      <span className="mt-[1px] flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-background shadow-xs transition-[border-color,background] duration-[180ms] group-hover:border-primary/30 group-hover:bg-primary/5">
+        <link.Icon className="size-[15px] text-muted-foreground transition-[color,transform] duration-[180ms] group-hover:translate-x-px group-hover:text-primary" />
+      </span>
+      <div className="min-w-0">
+        <p className="text-[13.5px] font-semibold leading-none text-foreground">{link.label}</p>
+        <p className="mt-[5px] text-[12px] leading-snug text-muted-foreground">{link.description}</p>
+      </div>
+    </Link>
+  );
+}
 
-      {/* ── Left: feature links ── */}
-      <div className="space-y-px p-3">
-        {links.map((link, i) => (
-          <Link
-            key={link.label}
-            href={link.href}
-            style={{ animationDelay: `${i * 32}ms` }}
-            className={cn(
-              "group flex items-start gap-3 rounded-lg px-3 py-2.5",
-              "ax-interactive ax-fade-in hover:bg-accent",
-            )}
-          >
-            {/* icon */}
-            <span className="mt-[1px] flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-background shadow-xs transition-[border-color,background] duration-[180ms] group-hover:border-primary/30 group-hover:bg-primary/5">
-              <link.Icon className="size-[15px] text-muted-foreground transition-[color,transform] duration-[180ms] group-hover:translate-x-px group-hover:text-primary" />
-            </span>
+/* ── Merged audience mega-panel ── */
+function MergedAudiencePanel() {
+  return (
+    <div className="w-[820px] overflow-hidden rounded-xl">
 
-            {/* copy */}
-            <div className="min-w-0">
-              <p className="text-[13.5px] font-semibold leading-none text-foreground">
-                {link.label}
-              </p>
-              <p className="mt-[5px] text-[12px] leading-snug text-muted-foreground">
-                {link.description}
-              </p>
-            </div>
-          </Link>
-        ))}
+      {/* Top: two columns of feature links */}
+      <div className="grid grid-cols-2 divide-x divide-border">
+        {/* Left column — solo bookkeepers */}
+        <div className="space-y-px p-4">
+          <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
+            Solo Bookkeepers
+          </p>
+          {bookkeeperLinks.map((link, i) => (
+            <FeatureLinkRow key={link.label} link={link} index={i} />
+          ))}
+        </div>
 
-        {/* footer link */}
-        <div className="px-3 pt-3">
-          <Link
-            href="/pricing"
-            className="inline-flex items-center gap-1 text-[12px] font-semibold text-primary ax-interactive hover:opacity-75"
-          >
-            View pricing
-            <ArrowUpRight className="size-3" />
-          </Link>
+        {/* Right column — accounting practices */}
+        <div className="space-y-px p-4">
+          <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
+            Accounting Practices
+          </p>
+          {practiceLinks.map((link, i) => (
+            <FeatureLinkRow key={link.label} link={link} index={i + 6} />
+          ))}
         </div>
       </div>
 
-      {/* ── Right: positioning panel ── */}
-      <div className="flex flex-col justify-between border-l border-border bg-muted/35 px-5 py-5">
-        <div>
-          {/* editorial quote headline */}
-          <p
-            className="text-[15px] font-bold leading-[1.35] tracking-[-0.01em] text-foreground"
-            style={{ fontVariantNumeric: "tabular-nums" }}
-          >
-            {headline}
-          </p>
-
-          {/* divider */}
-          <div className="my-4 h-px w-8 bg-primary/40 rounded-full" />
-
-          {/* body */}
-          <p className="text-[13px] leading-relaxed text-muted-foreground">
-            {body}
-          </p>
-        </div>
-
-        {/* CTA */}
-        <Button
-          variant="glossy"
-          asChild
-          className="mt-6 h-9 w-full text-[13px] font-bold"
+      {/* Bottom: horizontal CTA strip */}
+      <div className="flex items-center justify-between gap-6 border-t border-border bg-muted/40 px-5 py-4">
+        <p
+          className="text-[13.5px] font-bold leading-snug tracking-[-0.005em] text-foreground"
+          style={{ fontVariantNumeric: "tabular-nums" }}
         >
-          <Link href={signupHref}>
-            Start free →
-          </Link>
+          &ldquo;Built for solo bookkeepers and firms alike — without per-client minimums.&rdquo;
+        </p>
+        <Button variant="glossy" asChild className="h-9 shrink-0 px-5 text-[13px] font-bold">
+          <Link href="/sign-up?next=%2Fdashboard%2Fclient">Start free →</Link>
         </Button>
       </div>
     </div>
@@ -208,31 +187,13 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
           <NavigationMenu>
             <NavigationMenuList className="gap-0">
 
-              {/* Audience 1 */}
+              {/* Audience — merged into one consistent dropdown */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger className={audienceTrigger}>
-                  For Bookkeepers
+                  For Accountants &amp; Bookkeepers
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <AudiencePanel
-                    links={bookkeeperLinks}
-                    headline='"Built for the bookkeeper Dext priced out."'
-                    body="Process every invoice, receipt, and bank statement a client sends — reviewed by you, posted correctly. No per-client minimums. No surprise renewals."
-                  />
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-
-              {/* Audience 2 */}
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className={audienceTrigger}>
-                  For Accounting Practices
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <AudiencePanel
-                    links={practiceLinks}
-                    headline='"One review board for your whole practice."'
-                    body="Invite reviewers, assign documents, and publish bills to QuickBooks — without anyone touching the books until you say so."
-                  />
+                  <MergedAudiencePanel />
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
