@@ -145,23 +145,23 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
     return () => window.removeEventListener("scroll", update);
   }, []);
 
-  /* shared flat-link style */
+  /* shared flat-link style — bigger, bolder for visual consistency with body copy */
   const flatLink = cn(
     navigationMenuTriggerStyle(),
-    "rounded-none bg-transparent px-3.5 text-[14.5px] font-medium text-foreground/80",
-    "transition-colors hover:bg-transparent hover:text-foreground",
+    "rounded-none bg-transparent px-3.5 text-[15.5px] font-bold text-foreground",
+    "transition-colors hover:bg-transparent hover:text-emerald-700",
     "focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent",
   );
 
   /* audience trigger style — adds sliding underline on open */
   const audienceTrigger = cn(
-    "relative h-9 rounded-none bg-transparent px-3.5 text-[14.5px] font-medium",
-    "text-foreground/80 transition-colors hover:bg-transparent hover:text-foreground",
+    "relative h-9 rounded-none bg-transparent px-3.5 text-[15.5px] font-bold",
+    "text-foreground transition-colors hover:bg-transparent hover:text-emerald-700",
     "focus:bg-transparent focus:ring-0",
-    "data-[state=open]:bg-transparent data-[state=open]:text-foreground",
+    "data-[state=open]:bg-transparent data-[state=open]:text-emerald-700",
     /* underline: a pseudo-element via after: Tailwind arbitrary */
-    "after:absolute after:inset-x-3.5 after:bottom-0 after:h-[1.5px] after:origin-left",
-    "after:scale-x-0 after:rounded-full after:bg-primary after:transition-transform after:duration-[140ms] after:ease-out",
+    "after:absolute after:inset-x-3.5 after:bottom-0 after:h-[2px] after:origin-left",
+    "after:scale-x-0 after:rounded-full after:bg-emerald-700 after:transition-transform after:duration-[140ms] after:ease-out",
     "data-[state=open]:after:scale-x-100",
   );
 
@@ -179,7 +179,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
 
         {/* Logo */}
         <Link href="/" aria-label="AxLiner home" className="flex-shrink-0">
-          <AppLogo />
+          <AppLogo className="h-7 w-auto" />
         </Link>
 
         {/* Desktop nav ─────────────────── */}
@@ -217,9 +217,9 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
         {/* Right actions ───────────────── */}
         <div className="hidden items-center gap-2 lg:flex">
           {loading ? (
-            <div className="h-11 w-[192px]" aria-hidden="true" />
+            <div className="h-9 w-[170px]" aria-hidden="true" />
           ) : isAuthenticated ? (
-            <Button variant="ink" asChild className="h-10 rounded-xl px-6 text-[14px] font-semibold">
+            <Button variant="ink" asChild className="h-9 rounded-lg px-4 text-[13.5px] font-bold">
               <Link href="/dashboard">Dashboard</Link>
             </Button>
           ) : (
@@ -227,14 +227,14 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
               <Button
                 asChild
                 variant="ghost"
-                className="h-10 rounded-xl px-5 text-[14px] font-medium text-foreground/80 hover:text-foreground"
+                className="h-9 rounded-lg px-3.5 text-[13.5px] font-semibold text-foreground hover:text-emerald-700"
               >
                 <Link href="/sign-in?next=%2Fdashboard%2Fclient">Log in</Link>
               </Button>
               <Button
                 variant="ink"
                 asChild
-                className="h-10 rounded-xl px-6 text-[14px] font-semibold"
+                className="h-9 rounded-lg px-4 text-[13.5px] font-bold"
               >
                 <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign up free</Link>
               </Button>
