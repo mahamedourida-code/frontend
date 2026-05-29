@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -33,7 +33,8 @@ import {
 } from "@/components/ui/table"
 import { useHistory } from "@/hooks/useHistory"
 import type { HistoryJob } from "@/hooks/useHistory"
-import { ocrApi } from "@/lib/api-client"
+import { clientIntakeApi, ocrApi } from "@/lib/api-client"
+import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { toast } from "sonner"
 import { useAuth } from "@/hooks/useAuth"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -62,7 +63,10 @@ function historyStatusTone(status: string | null | undefined): "success" | "erro
 
 function HistoryContent() {
   const { user } = useAuth()
+  const { activeWorkspace } = useWorkspaces(user)
   const { jobs, isLoading, error, refresh } = useHistory()
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
@@ -70,11 +74,31 @@ function HistoryContent() {
   const [dateFilter, setDateFilter] = React.useState<"today" | "week" | "month" | "custom" | null>(null)
   const [focusedRowId, setFocusedRowId] = React.useState<string | null>(null)
 
-  // Filter jobs by date
-  const filteredJobs = React.useMemo(() => {
-    if (!dateFilter && !date) return jobs
+  // P11 — client filter from the dashboard Clients tab
+  const clientId = searchParams.get("client")
+  const clientName = searchParams.get("clientName")
+  const [clientJobIds, setClientJobIds] = React.useState<Set<string> | null>(null)
+  React.useEffect(() => {
+    if (!clientId || !activeWorkspace?.id) {
+      setClientJobIds(null)
+      return
+    }
+    void clientIntakeApi.analytics(activeWorkspace.id)
+      .then((response) => {
+        const match = response.clients.find((c) => c.link_id === clientId)
+        setClientJobIds(new Set(match?.job_ids || []))
+      })
+      .catch(() => setClientJobIds(new Set()))
+  }, [clientId, activeWorkspace?.id])
 
-    return jobs.filter(job => {
+  // Filter jobs by date (and by client when a client filter is active)
+  const filteredJobs = React.useMemo(() => {
+    const base = clientJobIds
+      ? jobs.filter(job => clientJobIds.has(String(job.original_job_id || "")) || clientJobIds.has(String(job.id || "")))
+      : jobs
+    if (!dateFilter && !date) return base
+
+    return base.filter(job => {
       const jobDate = new Date(job.saved_at || job.created_at || '')
       const today = startOfDay(new Date())
       
@@ -93,7 +117,7 @@ function HistoryContent() {
       
       return true
     })
-  }, [jobs, dateFilter, date])
+  }, [jobs, dateFilter, date, clientJobIds])
 
   const handleDownload = async (job: HistoryJob) => {
     try {
@@ -487,6 +511,19 @@ function HistoryContent() {
             </Button>
           }
         />
+
+        {/* P11 — client filter chip */}
+        {clientId && (
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
+            <span className="font-medium text-foreground">
+              Filtered to <span className="text-primary">{clientName || "client"}</span>
+              {clientJobIds ? ` · ${filteredJobs.length} file${filteredJobs.length === 1 ? "" : "s"}` : " · loading…"}
+            </span>
+            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => router.push("/history")}>
+              Clear filter
+            </Button>
+          </div>
+        )}
 
         {/* Error State */}
         {error && (

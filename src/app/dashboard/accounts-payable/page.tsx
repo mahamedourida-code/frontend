@@ -1,7 +1,7 @@
 "use client"
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft, Loader2 } from "lucide-react"
@@ -29,9 +29,11 @@ import {
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAuth } from "@/hooks/useAuth"
+import { useWorkspaces } from "@/hooks/useWorkspaces"
 import {
   accountingDestinationApi,
   accountsPayableApi,
+  clientIntakeApi,
   quickBooksApi,
   xeroApi,
   type AccountingDestination,
@@ -155,7 +157,12 @@ export default function AccountsPayablePage() {
 
 function AccountsPayableContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user, loading: authLoading } = useAuth()
+  const { activeWorkspace } = useWorkspaces(user)
+  const clientId = searchParams.get("client")
+  const clientName = searchParams.get("clientName")
+  const [clientJobIds, setClientJobIds] = useState<Set<string> | null>(null)
   const [items, setItems] = useState<AccountsPayableItem[]>([])
   const [filter, setFilter] = useState<QueueFilter>("all")
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -321,16 +328,34 @@ function AccountsPayableContent() {
     [items],
   )
 
+  // P11 — resolve a client filter (?client=<linkId>) to its job_ids
+  useEffect(() => {
+    if (!clientId || !activeWorkspace?.id) {
+      setClientJobIds(null)
+      return
+    }
+    void clientIntakeApi.analytics(activeWorkspace.id)
+      .then((response) => {
+        const match = response.clients.find((c) => c.link_id === clientId)
+        setClientJobIds(new Set(match?.job_ids || []))
+      })
+      .catch(() => setClientJobIds(new Set()))
+  }, [clientId, activeWorkspace?.id])
+
   const visibleItems = useMemo(() => {
+    let base: AccountsPayableItem[]
     if (filter === "all") {
-      // Default view hides discarded items so they don't clutter the queue.
-      return items.filter(item => item.status !== "discarded")
+      base = items.filter(item => item.status !== "discarded")
+    } else if (filter === "duplicates") {
+      base = items.filter(item => hasActiveDuplicate(item))
+    } else {
+      base = items.filter(item => item.status === filter)
     }
-    if (filter === "duplicates") {
-      return items.filter(item => hasActiveDuplicate(item))
+    if (clientJobIds) {
+      base = base.filter(item => clientJobIds.has(String(item.job_id || "")))
     }
-    return items.filter(item => item.status === filter)
-  }, [items, filter])
+    return base
+  }, [items, filter, clientJobIds])
   const lineItems = Array.isArray(draft.line_items) ? draft.line_items : []
   const lineColumns = (
     Array.from(new Set(lineItems.flatMap(line => Object.keys(line)))).slice(0, 6).length
@@ -665,6 +690,19 @@ function AccountsPayableContent() {
             </MotionButton>
           ) : undefined}
         />
+
+        {/* P11 — client filter chip */}
+        {clientId ? (
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
+            <span className="font-medium text-foreground">
+              Filtered to <span className="text-primary">{clientName || "client"}</span>
+              {clientJobIds ? ` · ${visibleItems.length} item${visibleItems.length === 1 ? "" : "s"}` : " · loading…"}
+            </span>
+            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => router.push("/dashboard/accounts-payable")}>
+              Clear filter
+            </Button>
+          </div>
+        ) : null}
 
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3 text-sm">
           <div>

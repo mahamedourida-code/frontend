@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { LayoutGroup, motion, type Variants } from "framer-motion"
 import { useAuth } from "@/hooks/useAuth"
 import { useCountUp } from "@/hooks/useCountUp"
+import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { ocrApi } from "@/lib/api-client"
 import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
@@ -14,6 +15,7 @@ import { DashboardMiniCharts } from "@/components/dashboard/DashboardMiniCharts"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { GlowOrb } from "@/components/dashboard/GlowOrb"
+import { ClientsTab } from "@/components/dashboard/ClientsTab"
 import { SkeletonStatCard } from "@/components/dashboard/SkeletonCard"
 import { SpotlightCard } from "@/components/dashboard/SpotlightCard"
 import { cn } from "@/lib/utils"
@@ -209,6 +211,8 @@ interface DashboardStats {
 export default function DashboardPage() {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
+  const { activeWorkspace } = useWorkspaces(user)
+  const [view, setView] = useState<"overview" | "clients">("overview")
   const [timeRange, setTimeRange] = useState<TimeRange>("7d")
   const [chartData, setChartData] = useState<ProcessingData[]>([])
   const [stats, setStats] = useState<DashboardStats>({
@@ -598,21 +602,45 @@ export default function DashboardPage() {
           title="Dashboard"
           description="Volume and processing activity"
           actions={
-            <div className="flex items-center gap-2">
-              <TimeRangePill value={timeRange} onChange={setTimeRange} disabled={loading} />
-              <Button
-                variant="surface"
-                size="sm"
-                onClick={fetchDashboardData}
-                disabled={loading}
-                className="h-9"
-                aria-label="Refresh dashboard"
-              >
-                <RefreshCw className={cn("size-4", loading && "animate-spin")} />
-              </Button>
-            </div>
+            view === "overview" ? (
+              <div className="flex items-center gap-2">
+                <TimeRangePill value={timeRange} onChange={setTimeRange} disabled={loading} />
+                <Button
+                  variant="surface"
+                  size="sm"
+                  onClick={fetchDashboardData}
+                  disabled={loading}
+                  className="h-9"
+                  aria-label="Refresh dashboard"
+                >
+                  <RefreshCw className={cn("size-4", loading && "animate-spin")} />
+                </Button>
+              </div>
+            ) : undefined
           }
         />
+
+        {/* P11 — Overview / Clients tab switch */}
+        <div className="inline-flex rounded-lg border border-border bg-muted/40 p-0.5">
+          {(["overview", "clients"] as const).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setView(tab)}
+              className={cn(
+                "ax-interactive rounded-md px-4 py-1.5 text-sm font-semibold capitalize transition-colors",
+                view === tab ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {view === "clients" ? (
+          <ClientsTab workspaceId={activeWorkspace?.id} />
+        ) : (
+        <>
         <p className="text-xs text-muted-foreground" aria-live="polite">
           Showing {dateRangeLabel}
         </p>
@@ -698,6 +726,8 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
         </div>
+        </>
+        )}
       </div>
     </DashboardShell>
   )

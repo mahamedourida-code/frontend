@@ -591,6 +591,21 @@ export interface ClientUploadLink {
   created_at: string
 }
 
+export interface ClientAnalyticsRow {
+  link_id: string
+  name: string
+  documents_this_month: number
+  total_documents: number
+  success_rate: number | null
+  avg_turnaround_hours: number | null
+  last_submission_at: string | null
+  days_since_last: number | null
+  is_late: boolean
+  never_submitted: boolean
+  enabled: boolean
+  job_ids: string[]
+}
+
 export interface ClientUploadSubmission {
   id: string
   workspace_id: string
@@ -1478,6 +1493,13 @@ export const clientIntakeApi = {
 
   getPublicStatus: async (token: string): Promise<ClientStatusView> => {
     const response = await apiClient.get<ClientStatusView>(`/api/v1/client-intake/public/${encodeURIComponent(token)}/status`)
+    return response.data
+  },
+
+  analytics: async (workspaceId: string, lateDays = 14): Promise<{ clients: ClientAnalyticsRow[]; total: number }> => {
+    const response = await apiClient.get<{ clients: ClientAnalyticsRow[]; total: number }>('/api/v1/client-intake/analytics', {
+      params: { workspace_id: workspaceId, late_days: lateDays },
+    })
     return response.data
   },
 
