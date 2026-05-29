@@ -417,6 +417,21 @@ export interface QuickBooksReceiptPublication {
   updated_at?: string | null
 }
 
+export interface PurchaseOrder {
+  id: string
+  po_number: string
+  po_date?: string | null
+  total: number
+  remaining_amount?: number | null
+  currency?: string | null
+  status: 'open' | 'closed'
+  vendor_name?: string | null
+  vendor_key?: string | null
+  over_by?: string | null
+}
+
+export type PurchaseOrderMatchStatus = 'matched' | 'exceeds' | 'unmatched'
+
 export interface AccountsPayableItem {
   id: string
   owner_user_id: string
@@ -433,6 +448,9 @@ export interface AccountsPayableItem {
   vendor_suggestion?: VendorRule | null
   metadata?: Record<string, unknown>
   duplicate_warnings?: AccountsPayableDuplicateWarning[]
+  matched_po_id?: string | null
+  matched_po?: PurchaseOrder | null
+  po_match_status?: PurchaseOrderMatchStatus
   created_at: string
   updated_at: string
   published_at?: string | null
@@ -1259,6 +1277,30 @@ export const accountsPayableApi = {
     const response = await apiClient.post<{ item: AccountsPayableItem }>(
       `/api/v1/accounts-payable/${itemId}/discard`,
       { reason },
+    )
+    return response.data
+  },
+
+  listPurchaseOrders: async (vendor?: string): Promise<{ purchase_orders: PurchaseOrder[]; total: number }> => {
+    const response = await apiClient.get<{ purchase_orders: PurchaseOrder[]; total: number }>(
+      '/api/v1/accounts-payable/purchase-orders',
+      { params: vendor ? { vendor } : undefined },
+    )
+    return response.data
+  },
+
+  importPurchaseOrders: async (csvText: string, workspaceId?: string): Promise<{ imported: number }> => {
+    const response = await apiClient.post<{ imported: number }>(
+      '/api/v1/accounts-payable/purchase-orders/import',
+      { csv_text: csvText, workspace_id: workspaceId },
+    )
+    return response.data
+  },
+
+  matchPurchaseOrder: async (itemId: string, poId: string | null): Promise<{ item: AccountsPayableItem }> => {
+    const response = await apiClient.post<{ item: AccountsPayableItem }>(
+      `/api/v1/accounts-payable/${itemId}/match-po`,
+      { po_id: poId },
     )
     return response.data
   },

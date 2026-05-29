@@ -39,6 +39,7 @@ import {
   type AccountsPayableDuplicateWarning,
   type AccountsPayableItem,
   type AccountsPayableStatus,
+  type PurchaseOrder,
   type QuickBooksConnectionStatus,
   type QuickBooksReferenceItem,
 } from "@/lib/api-client"
@@ -167,6 +168,12 @@ function AccountsPayableContent() {
   const [quickBooksConnection, setQuickBooksConnection] = useState<QuickBooksConnectionStatus | null>(null)
   const [quickBooksReferences, setQuickBooksReferences] = useState<QuickBooksReferenceItem[]>([])
   const [destination, setDestination] = useState<AccountingDestination>("quickbooks")
+  const [poDialogOpen, setPoDialogOpen] = useState(false)
+  const [poList, setPoList] = useState<PurchaseOrder[]>([])
+  const [poLoading, setPoLoading] = useState(false)
+  const [poImportOpen, setPoImportOpen] = useState(false)
+  const [poCsv, setPoCsv] = useState("")
+  const [poBusy, setPoBusy] = useState(false)
   const [syncingReferences, setSyncingReferences] = useState(false)
   const [publishDialogOpen, setPublishDialogOpen] = useState(false)
   const [publishing, setPublishing] = useState(false)
@@ -239,6 +246,52 @@ function AccountsPayableContent() {
       })
       .catch(() => void loadQuickBooks(false, "quickbooks"))
   }, [user?.id])
+
+  // P9 — purchase order matching
+  const openPoDialog = async () => {
+    setPoDialogOpen(true)
+    setPoLoading(true)
+    try {
+      const vendorName = String(draft.vendor || "").trim() || undefined
+      const response = await accountsPayableApi.listPurchaseOrders(vendorName)
+      setPoList(response.purchase_orders)
+    } catch {
+      toast.error("Could not load purchase orders.")
+    } finally {
+      setPoLoading(false)
+    }
+  }
+
+  const matchPo = async (poId: string | null) => {
+    if (!activeItem) return
+    setPoBusy(true)
+    try {
+      const response = await accountsPayableApi.matchPurchaseOrder(activeItem.id, poId)
+      mergeItem(response.item)
+      setPoDialogOpen(false)
+      toast.success(poId ? "Purchase order matched." : "Purchase order unlinked.")
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || "Could not match the purchase order.")
+    } finally {
+      setPoBusy(false)
+    }
+  }
+
+  const importPos = async () => {
+    if (!poCsv.trim()) return
+    setPoBusy(true)
+    try {
+      const result = await accountsPayableApi.importPurchaseOrders(poCsv)
+      toast.success(`Imported ${result.imported} purchase order${result.imported === 1 ? "" : "s"}.`)
+      setPoCsv("")
+      setPoImportOpen(false)
+      if (poDialogOpen) await openPoDialog()
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || "Could not import purchase orders.")
+    } finally {
+      setPoBusy(false)
+    }
+  }
 
   const activeItem = items.find(item => item.id === activeId) || null
 
@@ -555,6 +608,11 @@ function AccountsPayableContent() {
 
   const publishActive = async () => {
     if (!activeItem || !["ready_to_publish", "published"].includes(activeItem.status)) return
+    // P9 — confirm before publishing an invoice that exceeds its matched PO.
+    if (activeItem.po_match_status === "exceeds" && activeItem.matched_po) {
+      const over = activeItem.matched_po.over_by ? ` by ${activeItem.matched_po.over_by}` : ""
+      if (!window.confirm(`This invoice exceeds PO ${activeItem.matched_po.po_number}${over}. Publish anyway?`)) return
+    }
     const retryAttachment = activeItem.status === "published" && activeItem.quickbooks_publication?.attachment_status === "failed"
     if (retryAttachment) {
       if (!window.confirm("Retry attaching the source document to the existing QuickBooks Bill?")) return
@@ -699,6 +757,7 @@ function AccountsPayableContent() {
                 <span className="flex-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">Vendor</span>
                 <span className="w-[72px] shrink-0 text-xs font-medium uppercase tracking-wider text-muted-foreground">Date</span>
                 <span className="w-[68px] shrink-0 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">Amount</span>
+                <span className="hidden w-[78px] shrink-0 text-xs font-medium uppercase tracking-wider text-muted-foreground sm:block">PO</span>
                 <span className="w-[72px] shrink-0 text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</span>
               </div>
             </div>
@@ -809,6 +868,22 @@ function AccountsPayableContent() {
                         {/* Amount */}
                         <span className="w-[68px] shrink-0 text-right text-xs font-mono tabular-nums text-foreground">
                           {amountLabel(item)}
+                        </span>
+
+                        {/* P9 — PO match status */}
+                        <span className="hidden w-[78px] shrink-0 sm:block">
+                          <span
+                            className={cn(
+                              "inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-semibold",
+                              item.po_match_status === "exceeds"
+                                ? "border-amber-300 bg-amber-50 text-amber-900"
+                                : item.po_match_status === "matched"
+                                  ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                                  : "border-border bg-muted/50 text-muted-foreground",
+                            )}
+                          >
+                            {item.po_match_status === "exceeds" ? "Exceeds" : item.po_match_status === "matched" ? "Matched" : "Unmatched"}
+                          </span>
                         </span>
 
                         {/* Status badge */}
@@ -989,12 +1064,23 @@ function AccountsPayableContent() {
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-1.5">
-                      <FieldLabel
-                        htmlFor="ap-vendor-ref"
-                        dirty={valuesDiffer(draft.vendor_ref_id, activeItem.draft_data.vendor_ref_id)}
-                      >
-                        {labels.vendor}
-                      </FieldLabel>
+                      <div className="flex items-center justify-between gap-2">
+                        <FieldLabel
+                          htmlFor="ap-vendor-ref"
+                          dirty={valuesDiffer(draft.vendor_ref_id, activeItem.draft_data.vendor_ref_id)}
+                        >
+                          {labels.vendor}
+                        </FieldLabel>
+                        {!activeLocked ? (
+                          <button
+                            type="button"
+                            onClick={() => void openPoDialog()}
+                            className="ax-interactive text-[11px] font-semibold text-primary underline-offset-2 hover:underline"
+                          >
+                            {activeItem.matched_po ? "Change PO" : "Match PO"}
+                          </button>
+                        ) : null}
+                      </div>
                       <Select
                         value={String(draft.vendor_ref_id || "")}
                         onValueChange={value => selectQuickBooksReference("vendor_ref_id", "vendor", value, vendors)}
@@ -1009,6 +1095,27 @@ function AccountsPayableContent() {
                           ))}
                         </SelectContent>
                       </Select>
+                      {activeItem.matched_po ? (
+                        <div className={cn(
+                          "mt-1.5 rounded-md border px-2.5 py-1.5 text-[11px]",
+                          activeItem.po_match_status === "exceeds"
+                            ? "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200"
+                            : "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200",
+                        )}>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-semibold">PO {activeItem.matched_po.po_number}</span>
+                            <button type="button" onClick={() => void matchPo(null)} className="font-semibold underline-offset-2 hover:underline">
+                              Unlink
+                            </button>
+                          </div>
+                          <p className="mt-0.5">
+                            PO total {activeItem.matched_po.currency || ""} {Number(activeItem.matched_po.total).toFixed(2)}
+                            {activeItem.po_match_status === "exceeds" && activeItem.matched_po.over_by
+                              ? ` · Over PO amount by ${activeItem.matched_po.over_by}`
+                              : ""}
+                          </p>
+                        </div>
+                      ) : null}
                     </div>
                     <div className="space-y-1.5">
                       <FieldLabel
@@ -1314,6 +1421,95 @@ function AccountsPayableContent() {
                 </MotionButton>
               </>
             )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* P9 — Match PO dialog */}
+      <Dialog open={poDialogOpen} onOpenChange={setPoDialogOpen}>
+        <DialogContent className="gap-4 rounded-md sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-base font-semibold">Match a purchase order</DialogTitle>
+            <DialogDescription className="text-sm leading-6">
+              Open POs{draft.vendor ? ` for ${draft.vendor}` : ""}. Selecting one links it to this invoice.
+            </DialogDescription>
+          </DialogHeader>
+
+          {poLoading ? (
+            <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
+              <Loader2 className="mr-2 size-4 animate-spin" /> Loading purchase orders…
+            </div>
+          ) : poList.length === 0 ? (
+            <div className="rounded-md border border-border bg-muted/30 p-5 text-center">
+              <p className="text-sm font-semibold text-foreground">No open purchase orders</p>
+              <p className="mt-1 text-xs text-muted-foreground">Import a CSV of open POs to start matching.</p>
+              <Button variant="surface" size="sm" className="mt-3" onClick={() => { setPoDialogOpen(false); setPoImportOpen(true) }}>
+                Import POs (CSV)
+              </Button>
+            </div>
+          ) : (
+            <div className="max-h-[320px] space-y-2 overflow-y-auto">
+              {poList.map((po) => {
+                const invTotal = Number(String((draft.total ?? "")).replace(/[^\d.-]/g, "")) || 0
+                const exceeds = invTotal > Number(po.total)
+                return (
+                  <button
+                    key={po.id}
+                    type="button"
+                    onClick={() => void matchPo(po.id)}
+                    disabled={poBusy}
+                    className="ax-interactive flex w-full items-center justify-between gap-3 rounded-md border border-border bg-card px-3 py-2.5 text-left hover:border-primary/40 hover:bg-accent/40"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-foreground">PO {po.po_number}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {po.vendor_name || "—"}{po.po_date ? ` · ${po.po_date}` : ""}
+                      </p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <p className="font-mono text-sm tabular-nums text-foreground">{po.currency || ""} {Number(po.total).toFixed(2)}</p>
+                      {po.remaining_amount != null ? (
+                        <p className="text-[11px] text-muted-foreground">Remaining {Number(po.remaining_amount).toFixed(2)}</p>
+                      ) : null}
+                      {exceeds ? <p className="text-[11px] font-semibold text-amber-700">Invoice exceeds PO</p> : null}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-between">
+            <Button variant="ghost" size="sm" onClick={() => { setPoDialogOpen(false); setPoImportOpen(true) }}>
+              Import POs (CSV)
+            </Button>
+            <Button variant="surface" size="sm" onClick={() => setPoDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* P9 — CSV import dialog */}
+      <Dialog open={poImportOpen} onOpenChange={setPoImportOpen}>
+        <DialogContent className="gap-4 rounded-md sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-base font-semibold">Import purchase orders</DialogTitle>
+            <DialogDescription className="text-sm leading-6">
+              Paste CSV with a header row. Columns: <span className="font-mono">po_number, vendor, date, total, remaining, currency</span>. Existing PO numbers are updated.
+            </DialogDescription>
+          </DialogHeader>
+          <textarea
+            value={poCsv}
+            onChange={(event) => setPoCsv(event.target.value)}
+            placeholder={"po_number,vendor,date,total,remaining,currency\nPO-1001,Acme Ltd,2026-05-01,1200.00,1200.00,USD"}
+            rows={8}
+            className="w-full rounded-md border border-border bg-background p-3 font-mono text-xs outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+          />
+          <DialogFooter>
+            <Button variant="surface" onClick={() => setPoImportOpen(false)} disabled={poBusy} className="h-9 rounded-md px-4">Cancel</Button>
+            <MotionButton variant="glossy" onClick={() => void importPos()} disabled={poBusy || !poCsv.trim()} className="h-9 rounded-md px-4">
+              {poBusy ? <Loader2 className="size-4 animate-spin" /> : null}
+              Import
+            </MotionButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>

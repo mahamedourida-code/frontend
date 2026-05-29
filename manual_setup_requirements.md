@@ -200,6 +200,23 @@ Connecting Xero auto-switches the destination to Xero; you can switch back any t
 - Xero "Bills" are created as **DRAFT ACCPAY invoices** — the reviewer/owner approves them inside Xero, matching the "reviewed by you before it posts" model.
 - Source-document attachment to the Xero Bill is **not yet wired** (QuickBooks has it). The Bill is created with line coding; attaching the original file is the next increment if needed.
 
+## Prompt P9 - Purchase Order Matching
+
+No provider credentials or secrets. The `purchase_orders` table and the `accounts_payable_items.matched_po_id` column are deployed.
+
+### Importing open POs (workspace owner action)
+
+There is no live PO sync yet, so open POs are loaded by CSV:
+
+1. In the AP coding form, click **Match PO** next to the vendor field, then **Import POs (CSV)** (also reachable from the empty state).
+2. Paste a CSV with a header row. Recognised columns (case-insensitive): `po_number` (required), `vendor`, `date`, `total`, `remaining`, `currency`. Rows without a `po_number` are skipped; existing PO numbers in the workspace are updated in place.
+3. Matching uses the normalised vendor name — POs whose vendor matches the invoice's vendor are shown first, with all open POs as a fallback so a slightly different name still lets the reviewer pick.
+
+### Deferred
+
+- **Live QBO/Xero PO sync** is not yet implemented (the `source` column already supports `qbo`/`xero` for when it lands). Today POs come from CSV import.
+- Matching is at the **document/total level** (2-way: invoice ↔ PO total), not line-level 3-way (PO ↔ receipt ↔ invoice). The "Exceeds" flag fires when the invoice total is greater than the PO total, and publish asks for confirmation before proceeding.
+
 ## Rule For Later Prompts
 
 After each later prompt, append a new section here only if it adds a manual provider step, API credential, dashboard configuration, compliance action, or user authorization step. If a prompt needs no manual action, do not add a section.
