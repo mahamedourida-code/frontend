@@ -342,6 +342,23 @@ export type AccountsPayableStatus =
   | 'ready_to_publish'
   | 'published'
   | 'failed'
+  | 'discarded'
+
+export interface AccountsPayableDuplicateWarning {
+  id: string
+  type: 'vendor_amount_date'
+  code: string
+  message: string
+  matched_item_id?: string
+  matched_document_id?: string
+  matched_job_id?: string
+  matched_status?: AccountsPayableStatus
+  matched_filename?: string
+  matched_created_at?: string
+  fields?: { vendor?: string; amount?: string; date?: string } | Record<string, unknown>
+  dismissed?: boolean
+  detected_at?: string
+}
 
 export interface AccountsPayableDraftData {
   vendor?: string
@@ -415,6 +432,7 @@ export interface AccountsPayableItem {
   document_review_status?: string | null
   vendor_suggestion?: VendorRule | null
   metadata?: Record<string, unknown>
+  duplicate_warnings?: AccountsPayableDuplicateWarning[]
   created_at: string
   updated_at: string
   published_at?: string | null
@@ -1146,9 +1164,15 @@ export const vendorMemoryApi = {
 }
 
 export const accountsPayableApi = {
-  list: async (status?: AccountsPayableStatus): Promise<{ items: AccountsPayableItem[]; total: number }> => {
+  list: async (
+    status?: AccountsPayableStatus,
+    options?: { duplicatesOnly?: boolean },
+  ): Promise<{ items: AccountsPayableItem[]; total: number }> => {
+    const params: Record<string, string | boolean> = {}
+    if (status) params.status = status
+    if (options?.duplicatesOnly) params.duplicates_only = true
     const response = await apiClient.get<{ items: AccountsPayableItem[]; total: number }>('/api/v1/accounts-payable', {
-      params: status ? { status } : undefined,
+      params: Object.keys(params).length ? params : undefined,
     })
     return response.data
   },
@@ -1177,6 +1201,26 @@ export const accountsPayableApi = {
 
   publish: async (itemId: string): Promise<{ item: AccountsPayableItem }> => {
     const response = await apiClient.post<{ item: AccountsPayableItem }>(`/api/v1/accounts-payable/${itemId}/publish/quickbooks`)
+    return response.data
+  },
+
+  dismissDuplicate: async (
+    itemId: string,
+    warningId: string,
+    reason?: string,
+  ): Promise<{ item: AccountsPayableItem }> => {
+    const response = await apiClient.post<{ item: AccountsPayableItem }>(
+      `/api/v1/accounts-payable/${itemId}/duplicate/dismiss`,
+      { warning_id: warningId, reason },
+    )
+    return response.data
+  },
+
+  discard: async (itemId: string, reason?: string): Promise<{ item: AccountsPayableItem }> => {
+    const response = await apiClient.post<{ item: AccountsPayableItem }>(
+      `/api/v1/accounts-payable/${itemId}/discard`,
+      { reason },
+    )
     return response.data
   },
 

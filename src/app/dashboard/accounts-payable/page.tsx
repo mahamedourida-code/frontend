@@ -33,6 +33,7 @@ import {
   accountsPayableApi,
   quickBooksApi,
   type AccountsPayableDraftData,
+  type AccountsPayableDuplicateWarning,
   type AccountsPayableItem,
   type AccountsPayableStatus,
   type QuickBooksConnectionStatus,
@@ -40,7 +41,7 @@ import {
 } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
 
-type QueueFilter = "all" | AccountsPayableStatus
+type QueueFilter = "all" | "duplicates" | AccountsPayableStatus
 
 const queueStatuses: Array<{ value: AccountsPayableStatus; label: string }> = [
   { value: "needs_coding", label: "Needs coding" },
@@ -48,22 +49,29 @@ const queueStatuses: Array<{ value: AccountsPayableStatus; label: string }> = [
   { value: "ready_to_publish", label: "Ready to publish" },
   { value: "published", label: "Published" },
   { value: "failed", label: "Failed" },
+  { value: "discarded", label: "Discarded" },
 ]
 
-const statusTone: Record<AccountsPayableStatus, "warning" | "review" | "info" | "success" | "error"> = {
+const statusTone: Record<AccountsPayableStatus, "warning" | "review" | "info" | "success" | "error" | "neutral"> = {
   needs_coding: "warning",
   needs_review: "review",
   ready_to_publish: "info",
   published: "success",
   failed: "error",
+  discarded: "neutral",
 }
 
-const dotColor: Record<"warning" | "review" | "info" | "success" | "error", string> = {
+function hasActiveDuplicate(item: AccountsPayableItem) {
+  return (item.duplicate_warnings || []).some((warning) => !warning.dismissed)
+}
+
+const dotColor: Record<"warning" | "review" | "info" | "success" | "error" | "neutral", string> = {
   warning: "bg-amber-400",
   review: "bg-violet-400",
   info: "bg-sky-400",
   success: "bg-emerald-500",
   error: "bg-rose-500",
+  neutral: "bg-muted-foreground/50",
 }
 
 const editableFields: Array<[keyof AccountsPayableDraftData, string, string]> = [
@@ -161,6 +169,9 @@ function AccountsPayableContent() {
   const [publishResult, setPublishResult] = useState<{ succeeded: number; failed: Array<{ vendor: string; reason?: string }> } | null>(null)
   const [showSuccessBurst, setShowSuccessBurst] = useState(false)
   const [burstOrigin, setBurstOrigin] = useState<{ x: number; y: number } | null>(null)
+  const [dismissDraft, setDismissDraft] = useState<{ warningId: string; reason: string } | null>(null)
+  const [dismissing, setDismissing] = useState(false)
+  const [discarding, setDiscarding] = useState(false)
   const publishTriggerRef = useRef<HTMLButtonElement | null>(null)
   const confirmPublishRef = useRef<HTMLButtonElement | null>(null)
   const burstTimeoutRef = useRef<number | null>(null)
@@ -229,7 +240,7 @@ function AccountsPayableContent() {
 
   const counts = useMemo(() => {
     return items.reduce((current, item) => {
-      current[item.status] += 1
+      current[item.status] = (current[item.status] || 0) + 1
       return current
     }, {
       needs_coding: 0,
@@ -237,10 +248,25 @@ function AccountsPayableContent() {
       ready_to_publish: 0,
       published: 0,
       failed: 0,
+      discarded: 0,
     } as Record<AccountsPayableStatus, number>)
   }, [items])
 
-  const visibleItems = filter === "all" ? items : items.filter(item => item.status === filter)
+  const duplicateCount = useMemo(
+    () => items.filter(item => hasActiveDuplicate(item)).length,
+    [items],
+  )
+
+  const visibleItems = useMemo(() => {
+    if (filter === "all") {
+      // Default view hides discarded items so they don't clutter the queue.
+      return items.filter(item => item.status !== "discarded")
+    }
+    if (filter === "duplicates") {
+      return items.filter(item => hasActiveDuplicate(item))
+    }
+    return items.filter(item => item.status === filter)
+  }, [items, filter])
   const lineItems = Array.isArray(draft.line_items) ? draft.line_items : []
   const lineColumns = (
     Array.from(new Set(lineItems.flatMap(line => Object.keys(line)))).slice(0, 6).length
@@ -398,6 +424,54 @@ function AccountsPayableContent() {
     }
   }
 
+  /**
+   * P4 — dismiss a single duplicate warning with a reviewer-supplied reason.
+   * Keeps the AP item at its current status; clears the banner for that
+   * warning_id permanently.
+   */
+  const dismissDuplicateWarning = async () => {
+    if (!activeItem || !dismissDraft) return
+    setDismissing(true)
+    try {
+      const response = await accountsPayableApi.dismissDuplicate(
+        activeItem.id,
+        dismissDraft.warningId,
+        dismissDraft.reason.trim() || undefined,
+      )
+      mergeItem(response.item)
+      toast.success("Duplicate warning dismissed.")
+      setDismissDraft(null)
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || "Could not dismiss the warning.")
+    } finally {
+      setDismissing(false)
+    }
+  }
+
+  /**
+   * P4 — discard the AP item (the reviewer confirmed it is a duplicate).
+   * Backend marks status='discarded'; we drop it from the active queue UI.
+   */
+  const discardActive = async () => {
+    if (!activeItem) return
+    if (!window.confirm("Discard this draft bill? It will be marked as a confirmed duplicate.")) return
+    setDiscarding(true)
+    try {
+      const response = await accountsPayableApi.discard(activeItem.id, "duplicate_confirmed")
+      mergeItem(response.item)
+      // Move focus to the next non-discarded item.
+      setActiveId(current => {
+        const remaining = items.filter(item => item.id !== activeItem.id && item.status !== "discarded")
+        return remaining[0]?.id || null
+      })
+      toast.success("Draft bill discarded.")
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || "Could not discard the item.")
+    } finally {
+      setDiscarding(false)
+    }
+  }
+
   const toggleSelection = (itemId: string, checked: boolean) => {
     setSelectedReadyIds(current => checked
       ? Array.from(new Set([...current, itemId]))
@@ -552,12 +626,28 @@ function AccountsPayableContent() {
                   All
                   <span className="tabular-nums opacity-70">{items.length}</span>
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setFilter("duplicates")}
+                  className={cn(
+                    "ax-interactive inline-flex h-7 items-center gap-1 rounded-full px-3 text-xs font-medium",
+                    filter === "duplicates"
+                      ? "bg-amber-500 text-white"
+                      : duplicateCount > 0
+                        ? "bg-amber-100 text-amber-900 hover:bg-amber-200"
+                        : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  Duplicates
+                  <span className="tabular-nums opacity-80">{duplicateCount}</span>
+                </button>
                 {[
                   { value: "needs_coding" as const, label: "Needs coding" },
                   { value: "needs_review" as const, label: "Needs review" },
                   { value: "ready_to_publish" as const, label: "Ready" },
                   { value: "published" as const, label: "Published" },
                   { value: "failed" as const, label: "Failed" },
+                  { value: "discarded" as const, label: "Discarded" },
                 ].map(pill => (
                   <button
                     key={pill.value}
@@ -672,6 +762,15 @@ function AccountsPayableContent() {
                           )}
                         </span>
 
+                        {/* P4 — active duplicate flag on the row */}
+                        {hasActiveDuplicate(item) ? (
+                          <span
+                            aria-label="Possible duplicate"
+                            title="Possible duplicate"
+                            className="size-1.5 shrink-0 rounded-full bg-amber-500 shadow-[0_0_0_2px_hsl(var(--background))]"
+                          />
+                        ) : null}
+
                         {/* Vendor name */}
                         <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
                           {item.draft_data.vendor || "Vendor missing"}
@@ -726,6 +825,104 @@ function AccountsPayableContent() {
                       </StatusBadge>
                     </div>
                   </div>
+
+                  {/* P4 — Cross-batch duplicate banner */}
+                  {(activeItem.duplicate_warnings || []).filter(w => !w.dismissed).map((warning) => (
+                    <div
+                      key={warning.id}
+                      className="rounded-md border-2 border-amber-300 bg-amber-50 p-3 dark:border-amber-900/60 dark:bg-amber-950/40"
+                    >
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-300">
+                            Possible duplicate
+                          </p>
+                          <p className="mt-1 text-sm font-semibold text-amber-950 dark:text-amber-100">
+                            {warning.message}
+                          </p>
+                          <p className="mt-2 text-xs leading-5 text-amber-900/90 dark:text-amber-100/90">
+                            Matched draft: <span className="font-semibold">{warning.matched_filename || "earlier invoice"}</span>
+                            {warning.fields && typeof warning.fields === "object" ? (
+                              <>
+                                {" — "}
+                                {(warning.fields as { vendor?: string }).vendor || ""}
+                                {", "}
+                                {(warning.fields as { amount?: string }).amount || ""}
+                                {", "}
+                                {(warning.fields as { date?: string }).date || ""}
+                              </>
+                            ) : null}
+                            {warning.matched_status ? (
+                              <> · Status: <span className="font-semibold">{statusLabel(warning.matched_status)}</span></>
+                            ) : null}
+                          </p>
+                          {warning.matched_item_id ? (
+                            <button
+                              type="button"
+                              onClick={() => setActiveId(warning.matched_item_id || null)}
+                              className="ax-interactive mt-2 inline-flex items-center gap-1 text-xs font-semibold text-amber-900 underline underline-offset-2 hover:text-amber-700 dark:text-amber-200"
+                            >
+                              Open the original →
+                            </button>
+                          ) : null}
+                        </div>
+                        <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+                          <Button
+                            variant="surface"
+                            size="sm"
+                            onClick={() => setDismissDraft({ warningId: warning.id, reason: "" })}
+                            disabled={dismissing || discarding || activeLocked}
+                            className="h-8 rounded-md px-3 text-xs"
+                          >
+                            Dismiss…
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => void discardActive()}
+                            disabled={dismissing || discarding || activeLocked}
+                            className="h-8 rounded-md px-3 text-xs"
+                          >
+                            Discard this one
+                          </Button>
+                        </div>
+                      </div>
+                      {dismissDraft?.warningId === warning.id ? (
+                        <div className="mt-3 flex flex-col gap-2 rounded-md border border-amber-200 bg-white/80 p-2.5 dark:bg-amber-950/60">
+                          <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-900 dark:text-amber-200">
+                            Reason for dismissal (optional)
+                          </p>
+                          <Input
+                            value={dismissDraft.reason}
+                            onChange={(event) => setDismissDraft(current => current ? { ...current, reason: event.target.value } : current)}
+                            placeholder="e.g. legitimate second invoice from this vendor"
+                            disabled={dismissing}
+                            className="h-9 rounded-md"
+                          />
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="surface"
+                              size="sm"
+                              onClick={() => setDismissDraft(null)}
+                              disabled={dismissing}
+                              className="h-8 rounded-md px-3 text-xs"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              variant="glossy"
+                              size="sm"
+                              onClick={() => void dismissDuplicateWarning()}
+                              disabled={dismissing}
+                              className="h-8 rounded-md px-3 text-xs"
+                            >
+                              {dismissing ? "Dismissing…" : "Dismiss warning"}
+                            </Button>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  ))}
 
                   {autoAppliedRule ? (
                     <div className="flex flex-wrap items-start justify-between gap-3 rounded-md border-2 border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900/60 dark:bg-emerald-950/40">
