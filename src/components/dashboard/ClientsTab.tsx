@@ -70,19 +70,21 @@ export function ClientsTab({ workspaceId }: { workspaceId?: string }) {
     <Card>
       <CardContent className="p-0">
         {/* Controls */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-border px-4 py-3">
           <div className="flex items-center gap-2">
-            <Users className="size-4 text-muted-foreground" />
-            <span className="text-sm font-semibold text-foreground">Clients</span>
+            <span className="inline-flex size-7 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+              <Users className="size-4" />
+            </span>
+            <span className="text-sm font-bold text-foreground">Clients</span>
             {lateCount > 0 ? (
-              <span className="inline-flex items-center gap-1 rounded-md border border-amber-300 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-900">
+              <span className="inline-flex items-center gap-1 rounded-md border border-amber-300 bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
                 <AlertTriangle className="size-3" />
                 {lateCount} late
               </span>
             ) : null}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">Late after</span>
+            <span className="text-xs font-semibold text-muted-foreground">Late after</span>
             <div className="inline-flex rounded-lg border border-border bg-muted/40 p-0.5">
               {LATE_THRESHOLDS.map((days) => (
                 <button
@@ -90,8 +92,10 @@ export function ClientsTab({ workspaceId }: { workspaceId?: string }) {
                   type="button"
                   onClick={() => setLateDays(days)}
                   className={cn(
-                    "ax-interactive rounded-md px-2.5 py-1 text-xs font-semibold transition-colors",
-                    lateDays === days ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                    "ax-interactive rounded-md px-2.5 py-1 text-xs font-bold transition-colors",
+                    lateDays === days
+                      ? "bg-emerald-700 text-white shadow-sm"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {days}d
@@ -133,14 +137,14 @@ export function ClientsTab({ workspaceId }: { workspaceId?: string }) {
               clients.map((client) => (
                 <TableRow
                   key={client.link_id}
-                  className="ax-interactive cursor-pointer"
+                  className="ax-interactive cursor-pointer hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20"
                   onClick={() => router.push(`/history?client=${encodeURIComponent(client.link_id)}&clientName=${encodeURIComponent(client.name)}`)}
                 >
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-foreground">{client.name}</span>
+                      <span className="font-bold text-foreground">{client.name}</span>
                       {client.is_late ? (
-                        <span className="inline-flex items-center gap-1 rounded-md border border-amber-300 bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-900">
+                        <span className="inline-flex items-center gap-1 rounded-md border border-amber-300 bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
                           <Clock className="size-2.5" />
                           Late
                         </span>

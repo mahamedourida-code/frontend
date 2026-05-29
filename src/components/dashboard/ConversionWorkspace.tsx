@@ -11,6 +11,7 @@ import {
   FileSpreadsheet,
   FileText,
   FolderUp,
+  Languages,
   Loader2,
   RotateCcw,
   Save,
@@ -2360,7 +2361,8 @@ export function ResultActions({
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
                         {invoiceLanguage !== "en" ? (
-                          <span className="rounded-md border border-border bg-muted/60 px-2 py-1 text-[10px] font-semibold text-muted-foreground">
+                          <span className="inline-flex items-center gap-1 rounded-md border border-emerald-700/30 bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-200">
+                            <Languages className="size-2.5" />
                             {invoiceLanguageName(invoiceLanguage)} schema
                           </span>
                         ) : null}
@@ -2371,16 +2373,16 @@ export function ResultActions({
                     </div>
                     {/* P10 — language auto-detection suggestion */}
                     {showLanguageSuggestion && suggestedLanguage ? (
-                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-amber-900">
-                        <span className="text-xs font-medium">
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-amber-300 bg-amber-50 px-4 py-2.5 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-semibold">
+                          <Languages className="size-3.5 shrink-0" />
                           This looks like a {invoiceLanguageName(suggestedLanguage)} invoice. Switch the field labels?
                         </span>
                         <span className="flex items-center gap-2">
                           <Button
                             type="button"
                             size="sm"
-                            variant="outline"
-                            className="h-7 border-amber-300 bg-white px-2.5 text-[11px] text-amber-950 hover:bg-amber-100"
+                            className="h-7 bg-emerald-700 px-2.5 text-[11px] font-bold text-white hover:bg-emerald-800"
                             onClick={() => {
                               writeInvoiceLanguage(suggestedLanguage)
                               setInvoiceLanguage(suggestedLanguage)
@@ -2390,7 +2392,7 @@ export function ResultActions({
                           </Button>
                           <button
                             type="button"
-                            className="text-[11px] font-semibold underline-offset-2 hover:underline"
+                            className="text-[11px] font-bold underline-offset-2 hover:underline"
                             onClick={() => setDismissedLanguageSuggestion(suggestedLanguage)}
                           >
                             Dismiss
