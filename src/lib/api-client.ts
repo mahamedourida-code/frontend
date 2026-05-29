@@ -589,6 +589,19 @@ export interface ClientUploadSubmission {
   }>
 }
 
+export type ClientStatusStage = 'received' | 'processing' | 'reviewed' | 'done'
+
+export interface ClientStatusView {
+  label: string
+  workspace_name: string
+  submissions: Array<{
+    id: string
+    submitted_at: string
+    file_count: number
+    documents: Array<{ filename: string; stage: ClientStatusStage }>
+  }>
+}
+
 export type DocumentReviewStatus = 'needs_review' | 'ready' | 'edited' | 'failed' | 'published' | 'deleted'
 
 export interface DocumentReviewChange {
@@ -1364,6 +1377,11 @@ export const clientIntakeApi = {
 
   getPublicContext: async (token: string): Promise<{ label: string; workspace_name: string; expires_at: string }> => {
     const response = await apiClient.get(`/api/v1/client-intake/public/${encodeURIComponent(token)}`)
+    return response.data
+  },
+
+  getPublicStatus: async (token: string): Promise<ClientStatusView> => {
+    const response = await apiClient.get<ClientStatusView>(`/api/v1/client-intake/public/${encodeURIComponent(token)}/status`)
     return response.data
   },
 

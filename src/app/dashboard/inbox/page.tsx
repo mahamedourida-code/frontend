@@ -364,9 +364,20 @@ export default function EmailInboxPage() {
                 </div>
 
                 {newUploadUrl ? (
-                  <div className="mt-3 flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
-                    <p className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">{newUploadUrl}</p>
-                    <Button variant="surface" size="sm" onClick={() => void navigator.clipboard.writeText(newUploadUrl)}>Copy</Button>
+                  <div className="mt-3 space-y-2">
+                    <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
+                      <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Upload</span>
+                      <p className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">{newUploadUrl}</p>
+                      <Button variant="surface" size="sm" onClick={() => void navigator.clipboard.writeText(newUploadUrl)}>Copy</Button>
+                    </div>
+                    <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
+                      <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Status</span>
+                      <p className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">{newUploadUrl.replace("/upload/", "/status/")}</p>
+                      <Button variant="surface" size="sm" onClick={() => void navigator.clipboard.writeText(newUploadUrl.replace("/upload/", "/status/"))}>Copy</Button>
+                    </div>
+                    <p className="text-[11px] leading-4 text-muted-foreground">
+                      Share the upload link to collect documents; share the status link so the client can track progress without emailing you.
+                    </p>
                   </div>
                 ) : null}
 
