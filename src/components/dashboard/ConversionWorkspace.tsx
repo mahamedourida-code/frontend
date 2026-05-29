@@ -25,6 +25,16 @@ import { ConfidenceDot } from "@/components/dashboard/ConfidenceDot"
 import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
 import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
 import { getRowConfidenceTier, isHandwrittenDocument } from "@/lib/handwritten"
+import {
+  columnLabel,
+  detectInvoiceLanguage,
+  fieldLabel,
+  invoiceLanguageName,
+  readInvoiceAutoDetect,
+  readInvoiceLanguage,
+  writeInvoiceLanguage,
+  type InvoiceLanguage,
+} from "@/lib/invoice-schema"
 import { cn } from "@/lib/utils"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
 import type {
@@ -1165,11 +1175,17 @@ function resultSummary(file: ResultFile) {
   }
 }
 
-function structuredRows(file: ResultFile): { columns: string[]; rows: any[][]; pathRoot?: string } | null {
+function structuredRows(file: ResultFile, language: InvoiceLanguage = "en"): { columns: string[]; rows: any[][]; pathRoot?: string } | null {
   const data = reviewData(file)
   if (file.document_type === "invoice" || file.document_type === "receipt") {
     return {
-      columns: ["Description", "Quantity", "Unit price", "Tax", "Line total"],
+      columns: [
+        columnLabel("description", language, "Description"),
+        columnLabel("quantity", language, "Quantity"),
+        columnLabel("unit_price", language, "Unit price"),
+        columnLabel("tax_rate", language, "Tax"),
+        columnLabel("line_total", language, "Line total"),
+      ],
       rows: Array.isArray(data.line_items)
         ? data.line_items.map((row: Record<string, any>) => [
             row.description || "",
@@ -1184,7 +1200,14 @@ function structuredRows(file: ResultFile): { columns: string[]; rows: any[][]; p
   }
   if (file.document_type === "bank_statement") {
     return {
-      columns: ["Date", "Description", "Reference", "Debit", "Credit", "Balance"],
+      columns: [
+        columnLabel("date", language, "Date"),
+        columnLabel("description", language, "Description"),
+        columnLabel("reference", language, "Reference"),
+        columnLabel("debit", language, "Debit"),
+        columnLabel("credit", language, "Credit"),
+        columnLabel("balance", language, "Balance"),
+      ],
       rows: Array.isArray(data.transactions)
         ? data.transactions.map((row: Record<string, any>) => [
             row.date || "",
@@ -1211,7 +1234,7 @@ function structuredRowPaths(file: ResultFile) {
   return []
 }
 
-function structuredFields(file: ResultFile): Array<{ label: string; path: string; value: string }> {
+function structuredFields(file: ResultFile, language: InvoiceLanguage = "en"): Array<{ label: string; path: string; value: string }> {
   const data = reviewData(file)
   const byMode: Record<string, Array<[string, string]>> = {
     invoice: [
@@ -1229,7 +1252,7 @@ function structuredFields(file: ResultFile): Array<{ label: string; path: string
     ],
   }
   return (byMode[file.document_type || ""] || []).map(([label, path]) => ({
-    label,
+    label: fieldLabel(path, language, label),
     path,
     value: String(data[path] || ""),
   }))
@@ -1396,6 +1419,18 @@ export function ResultActions({
   const [receiptPaymentAccountRefId, setReceiptPaymentAccountRefId] = useState("")
   const [receiptPaymentType, setReceiptPaymentType] = useState<"Cash" | "Check" | "CreditCard">("CreditCard")
   const [receiptPublishing, setReceiptPublishing] = useState(false)
+  // P10 — invoice schema language (display labels only)
+  const [invoiceLanguage, setInvoiceLanguage] = useState<InvoiceLanguage>("en")
+  const [dismissedLanguageSuggestion, setDismissedLanguageSuggestion] = useState<InvoiceLanguage | null>(null)
+  useEffect(() => {
+    setInvoiceLanguage(readInvoiceLanguage())
+    const onChange = (event: Event) => {
+      const detail = (event as CustomEvent).detail as InvoiceLanguage
+      if (detail) setInvoiceLanguage(detail)
+    }
+    window.addEventListener("invoice-schema-language", onChange)
+    return () => window.removeEventListener("invoice-schema-language", onChange)
+  }, [])
   const safeResultFiles = (resultFiles || []).filter(file => file.review_status !== "deleted")
 
   useEffect(() => {
@@ -1446,10 +1481,19 @@ export function ResultActions({
   const comparisonTable = comparisonKey
     ? editedTables[comparisonKey] || (comparisonLoaded ? tablePreviewData : [])
     : []
-  const comparisonFields = comparisonFile ? structuredFields(comparisonFile) : []
-  const comparisonRows = comparisonFile ? structuredRows(comparisonFile) : null
+  const comparisonFields = comparisonFile ? structuredFields(comparisonFile, invoiceLanguage) : []
+  const comparisonRows = comparisonFile ? structuredRows(comparisonFile, invoiceLanguage) : null
   const comparisonRowPaths = comparisonFile ? structuredRowPaths(comparisonFile) : []
   const comparisonSummary = comparisonFile ? resultSummary(comparisonFile) : null
+  // P10 — suggest a schema language when auto-detect finds non-English tax fields.
+  const suggestedLanguage = comparisonFile && readInvoiceAutoDetect()
+    ? detectInvoiceLanguage(reviewData(comparisonFile))
+    : null
+  const showLanguageSuggestion = Boolean(
+    suggestedLanguage &&
+    suggestedLanguage !== invoiceLanguage &&
+    suggestedLanguage !== dismissedLanguageSuggestion,
+  )
   const comparisonText = comparisonLoaded ? textPreview : ""
   const comparisonColumnCount = Math.max(1, ...comparisonTable.map(row => row.length))
   const editedCount = Object.keys(editedTables).length
@@ -2313,10 +2357,46 @@ export function ResultActions({
                         </div>
                         <p className="mt-0.5 text-xs text-gray-500">{formatDocumentType(comparisonFile.document_type)}</p>
                       </div>
-                      <span className={cn("rounded-md border px-2 py-1 text-[10px] font-semibold", getOutputBadge(comparisonFile).className)}>
-                        {getOutputBadge(comparisonFile).label}
-                      </span>
+                      <div className="flex shrink-0 items-center gap-2">
+                        {invoiceLanguage !== "en" ? (
+                          <span className="rounded-md border border-border bg-muted/60 px-2 py-1 text-[10px] font-semibold text-muted-foreground">
+                            {invoiceLanguageName(invoiceLanguage)} schema
+                          </span>
+                        ) : null}
+                        <span className={cn("rounded-md border px-2 py-1 text-[10px] font-semibold", getOutputBadge(comparisonFile).className)}>
+                          {getOutputBadge(comparisonFile).label}
+                        </span>
+                      </div>
                     </div>
+                    {/* P10 — language auto-detection suggestion */}
+                    {showLanguageSuggestion && suggestedLanguage ? (
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-amber-900">
+                        <span className="text-xs font-medium">
+                          This looks like a {invoiceLanguageName(suggestedLanguage)} invoice. Switch the field labels?
+                        </span>
+                        <span className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="h-7 border-amber-300 bg-white px-2.5 text-[11px] text-amber-950 hover:bg-amber-100"
+                            onClick={() => {
+                              writeInvoiceLanguage(suggestedLanguage)
+                              setInvoiceLanguage(suggestedLanguage)
+                            }}
+                          >
+                            Switch to {invoiceLanguageName(suggestedLanguage)}
+                          </Button>
+                          <button
+                            type="button"
+                            className="text-[11px] font-semibold underline-offset-2 hover:underline"
+                            onClick={() => setDismissedLanguageSuggestion(suggestedLanguage)}
+                          >
+                            Dismiss
+                          </button>
+                        </span>
+                      </div>
+                    ) : null}
                     {comparisonFields.length ? (
                       <div className="grid gap-px border-b border-border bg-border sm:grid-cols-2">
                         {comparisonFields.map(field => (

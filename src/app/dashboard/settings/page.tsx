@@ -21,6 +21,14 @@ import { BillingSeal, CreditStack, PlanSwitch } from "@/components/BillingGlyphs
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { billingApi, vendorMemoryApi, type BillingPlanKey, type VendorRule, type VendorRuleAutoMode, type VendorRuleFields } from "@/lib/api-client"
 import {
+  INVOICE_LANGUAGES,
+  readInvoiceAutoDetect,
+  readInvoiceLanguage,
+  writeInvoiceAutoDetect,
+  writeInvoiceLanguage,
+  type InvoiceLanguage,
+} from "@/lib/invoice-schema"
+import {
   User,
   Globe,
   Settings2,
@@ -109,6 +117,13 @@ function SettingsContent() {
     }
     return false
   })
+  // P10 — invoice schema language preference
+  const [invoiceLanguage, setInvoiceLanguageState] = useState<InvoiceLanguage>('en')
+  const [invoiceAutoDetect, setInvoiceAutoDetectState] = useState(true)
+  useEffect(() => {
+    setInvoiceLanguageState(readInvoiceLanguage())
+    setInvoiceAutoDetectState(readInvoiceAutoDetect())
+  }, [])
 
   // Prevent hydration mismatch for theme
   useEffect(() => {
@@ -837,6 +852,54 @@ function SettingsContent() {
                           setAutoSave(checked)
                           localStorage.setItem('autoSave', checked.toString())
                           toast.success(checked ? 'Auto-save enabled' : 'Auto-save disabled')
+                        }}
+                      />
+                    </div>
+                    <Separator />
+                    {/* P10 — Invoice schema language */}
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="invoice-language">Invoice language</Label>
+                        <p className="text-xs text-muted-foreground">
+                          Adapts review-board field labels (TVA, Montant HT/TTC, Fournisseur…). Display only — the OCR language is set below.
+                        </p>
+                      </div>
+                      <Select
+                        value={invoiceLanguage}
+                        onValueChange={(value) => {
+                          const lang = value as InvoiceLanguage
+                          setInvoiceLanguageState(lang)
+                          writeInvoiceLanguage(lang)
+                          toast.success('Invoice schema language updated')
+                        }}
+                      >
+                        <SelectTrigger id="invoice-language" className="h-9 w-full sm:w-[200px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {INVOICE_LANGUAGES.map((lang) => (
+                            <SelectItem key={lang.value} value={lang.value}>
+                              {lang.flag} {lang.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Separator />
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="invoice-autodetect">Auto-detect invoice language</Label>
+                        <p className="text-xs text-muted-foreground">
+                          Suggest switching the schema when an invoice contains another language&apos;s tax fields
+                        </p>
+                      </div>
+                      <Switch
+                        id="invoice-autodetect"
+                        checked={invoiceAutoDetect}
+                        onCheckedChange={(checked) => {
+                          setInvoiceAutoDetectState(checked)
+                          writeInvoiceAutoDetect(checked)
+                          toast.success(checked ? 'Auto-detect enabled' : 'Auto-detect disabled')
                         }}
                       />
                     </div>
