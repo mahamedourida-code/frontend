@@ -1300,6 +1300,60 @@ export const quickBooksApi = {
   },
 }
 
+export type AccountingDestination = 'quickbooks' | 'xero'
+
+export const xeroApi = {
+  status: async (workspaceId?: string): Promise<QuickBooksConnectionStatus> => {
+    const response = await apiClient.get<QuickBooksConnectionStatus>('/api/v1/integrations/xero/status', {
+      params: workspaceId ? { workspace_id: workspaceId } : undefined,
+    })
+    return response.data
+  },
+
+  connect: async (workspaceId?: string): Promise<{ authorization_url: string }> => {
+    const response = await apiClient.post<{ authorization_url: string }>('/api/v1/integrations/xero/connect', {
+      workspace_id: workspaceId,
+    })
+    return response.data
+  },
+
+  sync: async (workspaceId?: string): Promise<QuickBooksConnectionStatus> => {
+    const response = await apiClient.post<QuickBooksConnectionStatus>('/api/v1/integrations/xero/sync', {
+      workspace_id: workspaceId,
+    })
+    return response.data
+  },
+
+  references: async (resourceType?: QuickBooksReferenceItem['resource_type']): Promise<{ items: QuickBooksReferenceItem[]; total: number }> => {
+    const response = await apiClient.get<{ items: QuickBooksReferenceItem[]; total: number }>('/api/v1/integrations/xero/reference-data', {
+      params: resourceType ? { resource_type: resourceType } : undefined,
+    })
+    return response.data
+  },
+
+  disconnect: async (): Promise<QuickBooksConnectionStatus> => {
+    const response = await apiClient.delete<QuickBooksConnectionStatus>('/api/v1/integrations/xero')
+    return response.data
+  },
+}
+
+export const accountingDestinationApi = {
+  get: async (workspaceId?: string): Promise<AccountingDestination> => {
+    const response = await apiClient.get<{ destination: AccountingDestination }>('/api/v1/integrations/destination', {
+      params: workspaceId ? { workspace_id: workspaceId } : undefined,
+    })
+    return response.data.destination
+  },
+
+  set: async (destination: AccountingDestination, workspaceId?: string): Promise<AccountingDestination> => {
+    const response = await apiClient.put<{ destination: AccountingDestination }>('/api/v1/integrations/destination', {
+      destination,
+      workspace_id: workspaceId,
+    })
+    return response.data.destination
+  },
+}
+
 export const emailIntakeApi = {
   getAddress: async (workspaceId?: string): Promise<EmailIntakeAddress> => {
     const response = await apiClient.get<EmailIntakeAddress>('/api/v1/email-intake/address', {

@@ -151,6 +151,55 @@ When you are ready to ship the poller, the implementation lives in `backend/app/
 
 Until then, the connection UI is fully usable — useful for QA and screenshots — but no files arrive from the watched folder.
 
+## Prompt P8 - Xero Accounting Connector
+
+The backend connector, Supabase schema (`xero_connections`, `xero_oauth_states`, `xero_reference_data`, `xero_bill_publications`, and `workspaces.accounting_destination`), Integrations card, destination selector, and destination-aware AP coding form are all deployed. The **Connect Xero** button works once the Xero app is registered and secrets are written.
+
+### 1. Generate the token encryption key
+
+Xero access + refresh tokens are stored Fernet-encrypted with their own key (independent of QuickBooks and Connected Sources):
+
+```powershell
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+### 2. Register the Xero app
+
+1. Open the [Xero developer portal](https://developer.xero.com/app/manage) → **New app** → *Web app*.
+2. Set the OAuth 2.0 redirect URI:
+
+   `https://backend-lively-hill-7043.fly.dev/api/v1/integrations/xero/callback`
+
+3. The connector requests these scopes (already coded, no portal config needed): `offline_access accounting.transactions accounting.contacts accounting.settings`.
+4. Copy the **Client id** and generate a **Client secret**.
+
+### 3. Write the Fly secrets
+
+```powershell
+fly secrets set `
+  XERO_CLIENT_ID="<xero client id>" `
+  XERO_CLIENT_SECRET="<xero client secret>" `
+  XERO_REDIRECT_URI="https://backend-lively-hill-7043.fly.dev/api/v1/integrations/xero/callback" `
+  XERO_TOKEN_ENCRYPTION_KEY="<fernet key from step 1>" `
+  -a backend-lively-hill-7043
+```
+
+Once these land, the **Connect Xero** card in `/dashboard/integrations` activates. The OAuth handshake exchanges the code, reads the organisation tenant from `/connections`, stores encrypted tokens, and syncs contacts (suppliers) + chart of accounts + tax rates into the coding form.
+
+### 4. Per-workspace destination
+
+The Integrations page has a **Accounting destination** toggle (QuickBooks / Xero). It is stored on `workspaces.accounting_destination` and drives:
+- which connector the AP coding form reads its dropdowns from
+- the field labels (QuickBooks "vendor / expense account / tax code" vs Xero "contact / account / tax rate")
+- which API the **Publish** button targets (a draft ACCPAY invoice in Xero, or an unpaid Bill in QuickBooks)
+
+Connecting Xero auto-switches the destination to Xero; you can switch back any time. Connecting both lets you keep QuickBooks clients and Xero clients in separate workspaces.
+
+### Notes / deferred
+
+- Xero "Bills" are created as **DRAFT ACCPAY invoices** — the reviewer/owner approves them inside Xero, matching the "reviewed by you before it posts" model.
+- Source-document attachment to the Xero Bill is **not yet wired** (QuickBooks has it). The Bill is created with line coding; attaching the original file is the next increment if needed.
+
 ## Rule For Later Prompts
 
 After each later prompt, append a new section here only if it adds a manual provider step, API credential, dashboard configuration, compliance action, or user authorization step. If a prompt needs no manual action, do not add a section.

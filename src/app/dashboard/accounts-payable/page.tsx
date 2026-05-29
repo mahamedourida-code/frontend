@@ -30,8 +30,11 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAuth } from "@/hooks/useAuth"
 import {
+  accountingDestinationApi,
   accountsPayableApi,
   quickBooksApi,
+  xeroApi,
+  type AccountingDestination,
   type AccountsPayableDraftData,
   type AccountsPayableDuplicateWarning,
   type AccountsPayableItem,
@@ -163,6 +166,7 @@ function AccountsPayableContent() {
   const [saving, setSaving] = useState(false)
   const [quickBooksConnection, setQuickBooksConnection] = useState<QuickBooksConnectionStatus | null>(null)
   const [quickBooksReferences, setQuickBooksReferences] = useState<QuickBooksReferenceItem[]>([])
+  const [destination, setDestination] = useState<AccountingDestination>("quickbooks")
   const [syncingReferences, setSyncingReferences] = useState(false)
   const [publishDialogOpen, setPublishDialogOpen] = useState(false)
   const [publishing, setPublishing] = useState(false)
@@ -207,26 +211,33 @@ function AccountsPayableContent() {
     if (user) void loadQueue()
   }, [user?.id])
 
-  const loadQuickBooks = async (sync = false) => {
+  const loadQuickBooks = async (sync = false, dest: AccountingDestination = destination) => {
+    const connector = dest === "xero" ? xeroApi : quickBooksApi
     try {
       setSyncingReferences(sync)
-      const status = sync ? await quickBooksApi.sync() : await quickBooksApi.status()
+      const status = sync ? await connector.sync() : await connector.status()
       setQuickBooksConnection(status)
       if (status.connected) {
-        const response = await quickBooksApi.references()
+        const response = await connector.references()
         setQuickBooksReferences(response.items)
       } else {
         setQuickBooksReferences([])
       }
     } catch {
-      if (sync) toast.error("Could not refresh QuickBooks lists.")
+      if (sync) toast.error(`Could not refresh ${dest === "xero" ? "Xero" : "QuickBooks"} lists.`)
     } finally {
       setSyncingReferences(false)
     }
   }
 
   useEffect(() => {
-    if (user) void loadQuickBooks()
+    if (!user) return
+    void accountingDestinationApi.get()
+      .then((dest) => {
+        setDestination(dest)
+        void loadQuickBooks(false, dest)
+      })
+      .catch(() => void loadQuickBooks(false, "quickbooks"))
   }, [user?.id])
 
   const activeItem = items.find(item => item.id === activeId) || null
@@ -277,6 +288,18 @@ function AccountsPayableContent() {
   const vendors = quickBooksReferences.filter(item => item.resource_type === "vendor" && item.active)
   const accounts = quickBooksReferences.filter(item => item.resource_type === "account" && item.active)
   const taxCodes = quickBooksReferences.filter(item => item.resource_type === "tax_code" && item.active)
+
+  // P8 — destination-aware copy so the coding form reads correctly for Xero.
+  const isXero = destination === "xero"
+  const destName = isXero ? "Xero" : "QuickBooks"
+  const labels = {
+    vendor: isXero ? "Xero contact" : "QuickBooks vendor",
+    vendorPlaceholder: isXero ? "Select contact" : "Select vendor",
+    vendorRefresh: isXero ? "Refresh contact list" : "Refresh vendor list",
+    account: isXero ? "Account" : "Expense account",
+    taxCode: isXero ? "Tax rate" : "Tax code",
+    publish: isXero ? "Publish to Xero" : "Publish to QuickBooks",
+  }
 
   /** P3 — vendor-rule pre-fill metadata stamped on creation. */
   const autoAppliedRule = (() => {
@@ -588,10 +611,12 @@ function AccountsPayableContent() {
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3 text-sm">
           <div>
             <p className="font-medium text-foreground">
-              QuickBooks {quickBooksConnection?.connected ? `connected${quickBooksConnection.company_name ? ` to ${quickBooksConnection.company_name}` : ""}` : "not connected"}
+              {destName} {quickBooksConnection?.connected ? `connected${quickBooksConnection.company_name ? ` to ${quickBooksConnection.company_name}` : ""}` : "not connected"}
             </p>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              Select synced vendors and expense accounts before publishing an unpaid Bill.
+              {isXero
+                ? "Select synced contacts and accounts before publishing a draft Bill to Xero."
+                : "Select synced vendors and expense accounts before publishing an unpaid Bill."}
             </p>
           </div>
           <div className="flex gap-2">
@@ -968,7 +993,7 @@ function AccountsPayableContent() {
                         htmlFor="ap-vendor-ref"
                         dirty={valuesDiffer(draft.vendor_ref_id, activeItem.draft_data.vendor_ref_id)}
                       >
-                        QuickBooks vendor
+                        {labels.vendor}
                       </FieldLabel>
                       <Select
                         value={String(draft.vendor_ref_id || "")}
@@ -976,7 +1001,7 @@ function AccountsPayableContent() {
                         disabled={activeLocked || !quickBooksConnection?.connected}
                       >
                         <SelectTrigger id="ap-vendor-ref" className={inlineFieldClass}>
-                          <SelectValue placeholder={vendors.length ? "Select vendor" : "Refresh vendor list"} />
+                          <SelectValue placeholder={vendors.length ? labels.vendorPlaceholder : labels.vendorRefresh} />
                         </SelectTrigger>
                         <SelectContent>
                           {vendors.map(vendor => (
@@ -990,7 +1015,7 @@ function AccountsPayableContent() {
                         htmlFor="ap-account-ref"
                         dirty={valuesDiffer(draft.account_ref_id, activeItem.draft_data.account_ref_id)}
                       >
-                        Expense account
+                        {labels.account}
                       </FieldLabel>
                       <Select
                         value={String(draft.account_ref_id || "")}
@@ -1012,7 +1037,7 @@ function AccountsPayableContent() {
                         htmlFor="ap-tax-ref"
                         dirty={valuesDiffer(draft.tax_code_ref_id, activeItem.draft_data.tax_code_ref_id)}
                       >
-                        Tax code
+                        {labels.taxCode}
                       </FieldLabel>
                       <Select
                         value={String(draft.tax_code_ref_id || "none")}
@@ -1139,7 +1164,7 @@ function AccountsPayableContent() {
                       <FieldLabel htmlFor="ap-next-status">Status</FieldLabel>
                       {activeLocked ? (
                         <div className="flex h-9 items-center rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground">
-                          Published in QuickBooks
+                          Published in {destName}
                         </div>
                       ) : (
                         <Select value={nextStatus} onValueChange={value => setNextStatus(value as AccountsPayableStatus)}>
@@ -1167,7 +1192,7 @@ function AccountsPayableContent() {
                           </Button>
                           {activeItem.status === "ready_to_publish" ? (
                             <MotionButton variant="glossy" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-lg">
-                              Publish to QuickBooks
+                              {labels.publish}
                             </MotionButton>
                           ) : null}
                         </>
