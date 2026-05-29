@@ -21,7 +21,7 @@ import {
 import { Button, buttonVariants } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
 import { BankReconciliationPanel } from "@/components/dashboard/BankReconciliationPanel"
-import { ConfidenceDot } from "@/components/dashboard/ConfidenceDot"
+import { ConfidenceDot, ConfidenceLegend } from "@/components/dashboard/ConfidenceDot"
 import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
 import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
 import { getRowConfidenceTier, isHandwrittenDocument } from "@/lib/handwritten"
@@ -1483,6 +1483,7 @@ export function ResultActions({
     : []
   const comparisonFields = comparisonFile ? structuredFields(comparisonFile, invoiceLanguage) : []
   const comparisonRows = comparisonFile ? structuredRows(comparisonFile, invoiceLanguage) : null
+  const comparisonHandwritten = comparisonFile ? isHandwrittenDocument(comparisonFile) : false
   const comparisonRowPaths = comparisonFile ? structuredRowPaths(comparisonFile) : []
   const comparisonSummary = comparisonFile ? resultSummary(comparisonFile) : null
   // P10 — suggest a schema language when auto-detect finds non-English tax fields.
@@ -2416,38 +2417,51 @@ export function ResultActions({
                       </div>
                     ) : null}
                     {comparisonRows?.rows.length ? (
-                      <table className="w-full min-w-[640px] border-collapse text-xs">
-                        <thead className="sticky top-[61px] bg-gray-50 text-gray-600">
-                          <tr>
-                            {comparisonRows.columns.map(column => (
-                              <th key={column} className="border-b border-border px-3 py-2 text-left font-medium">{column}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {comparisonRows.rows.map((row, rowIndex) => (
-                            <tr key={rowIndex} className="odd:bg-white even:bg-gray-50/70">
-                              {row.map((value, cellIndex) => (
-                                <td key={cellIndex} className="border-b border-border px-2 py-1.5">
-                                  <input
-                                    defaultValue={String(value || "")}
-                                    onBlur={(event) => {
-                                      if (event.target.value !== String(value || "") && comparisonRows.pathRoot && comparisonRowPaths[cellIndex]) {
-                                        void updateStructuredValue(
-                                          comparisonFile,
-                                          [comparisonRows.pathRoot, rowIndex, comparisonRowPaths[cellIndex]],
-                                          event.target.value,
-                                        )
-                                      }
-                                    }}
-                                    className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-xs text-gray-950 outline-none focus:border-primary/35 focus:bg-white focus:ring-2 focus:ring-primary/15"
-                                  />
-                                </td>
+                      <>
+                        {comparisonHandwritten ? (
+                          <ConfidenceLegend className="border-b border-border bg-gray-50/60 px-3 py-2" />
+                        ) : null}
+                        <table className="w-full min-w-[640px] border-collapse text-xs">
+                          <thead className="sticky top-[61px] bg-gray-50 text-gray-600">
+                            <tr>
+                              {comparisonHandwritten ? (
+                                <th className="w-7 border-b border-border px-2 py-2" aria-label="Confidence" />
+                              ) : null}
+                              {comparisonRows.columns.map(column => (
+                                <th key={column} className="border-b border-border px-3 py-2 text-left font-medium">{column}</th>
                               ))}
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {comparisonRows.rows.map((row, rowIndex) => (
+                              <tr key={rowIndex} className="odd:bg-white even:bg-gray-50/70">
+                                {comparisonHandwritten ? (
+                                  <td className="border-b border-border px-2 py-1.5 text-center align-middle">
+                                    <ConfidenceDot tier={getRowConfidenceTier(comparisonFile, rowIndex + 1)} size={8} withRing />
+                                  </td>
+                                ) : null}
+                                {row.map((value, cellIndex) => (
+                                  <td key={cellIndex} className="border-b border-border px-2 py-1.5">
+                                    <input
+                                      defaultValue={String(value || "")}
+                                      onBlur={(event) => {
+                                        if (event.target.value !== String(value || "") && comparisonRows.pathRoot && comparisonRowPaths[cellIndex]) {
+                                          void updateStructuredValue(
+                                            comparisonFile,
+                                            [comparisonRows.pathRoot, rowIndex, comparisonRowPaths[cellIndex]],
+                                            event.target.value,
+                                          )
+                                        }
+                                      }}
+                                      className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-xs text-gray-950 outline-none focus:border-primary/35 focus:bg-white focus:ring-2 focus:ring-primary/15"
+                                    />
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </>
                     ) : (
                       <p className="p-4 text-sm text-gray-500">No line rows detected.</p>
                     )}
@@ -2460,6 +2474,10 @@ export function ResultActions({
                     {comparisonText || "Text preview is loading..."}
                   </pre>
                 ) : comparisonTable.length ? (
+                  <>
+                  {comparisonHandwritten ? (
+                    <ConfidenceLegend className="border-b border-border bg-gray-50/60 px-3 py-2" />
+                  ) : null}
                   <table className="w-full min-w-[680px] border-collapse text-sm text-gray-950">
                     <tbody>
                       {comparisonTable.map((row, rowIndex) => {
@@ -2531,6 +2549,7 @@ export function ResultActions({
                       })}
                     </tbody>
                   </table>
+                  </>
                 ) : (
                   <div className="flex min-h-[420px] items-center justify-center gap-2 text-sm font-semibold text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin text-primary" />
