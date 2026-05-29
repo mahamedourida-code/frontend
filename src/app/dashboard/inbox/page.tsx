@@ -4,7 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Check, Copy, Inbox, Link2, RefreshCw, UserPlus } from "lucide-react"
+import { AlertTriangle, Check, Copy, FolderInput, Inbox, Link2, Plug, PlugZap, RefreshCw, UserPlus, X } from "lucide-react"
+import { useSearchParams } from "next/navigation"
+import { toast } from "sonner"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { EmptyState } from "@/components/dashboard/EmptyState"
@@ -18,10 +20,13 @@ import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import {
   clientIntakeApi,
+  connectedSourcesApi,
   emailIntakeApi,
   workspaceApi,
   type ClientUploadLink,
   type ClientUploadSubmission,
+  type ConnectedSource,
+  type ConnectedSourceProvider,
   type EmailIntakeAddress,
   type EmailIntakeMessage,
   type WorkspaceMember,
@@ -52,6 +57,30 @@ function submissionTone(sub: ClientUploadSubmission): "success" | "processing" |
   return "neutral"
 }
 
+const SOURCE_LABEL: Record<"direct_upload" | "email" | "client_link" | "google_drive" | "dropbox", string> = {
+  direct_upload: "Direct upload",
+  email: "Email",
+  client_link: "Client link",
+  google_drive: "Google Drive",
+  dropbox: "Dropbox",
+}
+
+const SOURCE_TINT: Record<"direct_upload" | "email" | "client_link" | "google_drive" | "dropbox", string> = {
+  direct_upload: "border-border bg-muted/50 text-foreground",
+  email: "border-violet-200 bg-violet-50 text-violet-900 dark:border-violet-900/60 dark:bg-violet-950/40 dark:text-violet-200",
+  client_link: "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200",
+  google_drive: "border-blue-200 bg-blue-50 text-blue-900 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-200",
+  dropbox: "border-sky-200 bg-sky-50 text-sky-900 dark:border-sky-900/60 dark:bg-sky-950/40 dark:text-sky-200",
+}
+
+function SourceBadge({ kind }: { kind: keyof typeof SOURCE_LABEL }) {
+  return (
+    <span className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-semibold", SOURCE_TINT[kind])}>
+      {SOURCE_LABEL[kind]}
+    </span>
+  )
+}
+
 function messageState(message: EmailIntakeMessage) {
   const state = message.job_status || message.status
   if (state === "completed" || state === "partially_completed") return "Ready"
@@ -70,6 +99,14 @@ export default function EmailInboxPage() {
   const [links, setLinks] = useState<ClientUploadLink[]>([])
   const [submissions, setSubmissions] = useState<ClientUploadSubmission[]>([])
   const [members, setMembers] = useState<WorkspaceMember[]>([])
+  const [connectedSources, setConnectedSources] = useState<ConnectedSource[]>([])
+  const [providersConfigured, setProvidersConfigured] = useState<Record<ConnectedSourceProvider, boolean>>({
+    google_drive: false,
+    dropbox: false,
+  })
+  const [connectingProvider, setConnectingProvider] = useState<ConnectedSourceProvider | null>(null)
+  const [folderDraft, setFolderDraft] = useState<{ id: string; value: string } | null>(null)
+  const searchParams = useSearchParams()
   const [newUploadUrl, setNewUploadUrl] = useState<string | null>(null)
   const [linkLabel, setLinkLabel] = useState("Client documents")
   const [reviewerEmail, setReviewerEmail] = useState("")
@@ -96,18 +133,26 @@ export default function EmailInboxPage() {
       setMessages(received.messages)
       setSubmissions(clientUploads.submissions)
       if (activeWorkspace.role === "owner") {
-        const [intake, currentLinks, currentMembers] = await Promise.all([
+        const [intake, currentLinks, currentMembers, sources] = await Promise.all([
           emailIntakeApi.getAddress(activeWorkspace.id),
           clientIntakeApi.listLinks(activeWorkspace.id),
           workspaceApi.members(activeWorkspace.id),
+          connectedSourcesApi.list(activeWorkspace.id).catch(() => ({
+            sources: [] as ConnectedSource[],
+            total: 0,
+            providers_configured: { google_drive: false, dropbox: false } as Record<ConnectedSourceProvider, boolean>,
+          })),
         ])
         setAddress(intake)
         setLinks(currentLinks.links)
         setMembers(currentMembers.members)
+        setConnectedSources(sources.sources)
+        setProvidersConfigured(sources.providers_configured)
       } else {
         setAddress(null)
         setLinks([])
         setMembers([])
+        setConnectedSources([])
       }
     } catch {
       setLoadError("Inbox is unavailable right now. Refresh after your workspace is ready.")
@@ -180,6 +225,100 @@ export default function EmailInboxPage() {
     try {
       await workspaceApi.revokeReviewer(activeWorkspace.id, membershipId)
       setMembers(current => current.map(member => member.id === membershipId ? { ...member, status: "revoked" } : member))
+    } finally {
+      setActionBusy(null)
+    }
+  }
+
+  // P6 — show a one-off toast when the OAuth callback hands the user back here.
+  useEffect(() => {
+    const connected = searchParams.get("connected")
+    if (!connected) return
+    const statusParam = searchParams.get("status")
+    const reason = searchParams.get("reason")
+    if (statusParam === "connected") {
+      toast.success(
+        connected === "google_drive"
+          ? "Google Drive connected. Pick a folder to watch."
+          : connected === "dropbox"
+            ? "Dropbox connected. Pick a folder to watch."
+            : "Connection complete.",
+      )
+      void loadInbox()
+    } else if (connected === "error") {
+      toast.error(reason ? `Could not connect: ${reason.replace(/_/g, " ")}` : "OAuth connection failed.")
+    }
+    // Clear the query params so a refresh doesn't replay the toast.
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href)
+      url.searchParams.delete("connected")
+      url.searchParams.delete("status")
+      url.searchParams.delete("reason")
+      window.history.replaceState({}, "", url.toString())
+    }
+  }, [searchParams, loadInbox])
+
+  const startConnectProvider = async (provider: ConnectedSourceProvider) => {
+    if (!activeWorkspace) return
+    if (!providersConfigured[provider]) {
+      toast.error(
+        provider === "google_drive"
+          ? "Google Drive OAuth is not configured on this deployment yet."
+          : "Dropbox OAuth is not configured on this deployment yet.",
+      )
+      return
+    }
+    setConnectingProvider(provider)
+    try {
+      const redirect = typeof window !== "undefined" ? window.location.origin + "/dashboard/inbox" : undefined
+      const result = await connectedSourcesApi.startConnect(activeWorkspace.id, provider, redirect)
+      window.location.href = result.authorization_url
+    } catch (error: any) {
+      toast.error(error?.detail || "Could not start the connection.")
+    } finally {
+      setConnectingProvider(null)
+    }
+  }
+
+  const disconnectSource = async (sourceId: string) => {
+    if (!window.confirm("Disconnect this folder watch? Files already pulled stay in the inbox.")) return
+    setActionBusy(sourceId)
+    try {
+      await connectedSourcesApi.disconnect(sourceId)
+      setConnectedSources(current => current.map(source => source.id === sourceId ? { ...source, status: "disconnected" } : source))
+      toast.success("Disconnected.")
+    } catch (error: any) {
+      toast.error(error?.detail || "Could not disconnect.")
+    } finally {
+      setActionBusy(null)
+    }
+  }
+
+  const triggerSync = async (sourceId: string) => {
+    setActionBusy(sourceId)
+    try {
+      const response = await connectedSourcesApi.triggerSync(sourceId)
+      setConnectedSources(current => current.map(source => source.id === sourceId ? response.source : source))
+      toast.message("Sync requested.")
+    } catch (error: any) {
+      toast.error(error?.detail || "Could not run a sync now.")
+    } finally {
+      setActionBusy(null)
+    }
+  }
+
+  const saveWatchedFolder = async (sourceId: string) => {
+    if (!folderDraft || folderDraft.id !== sourceId) return
+    setActionBusy(sourceId)
+    try {
+      const response = await connectedSourcesApi.updateFolder(sourceId, {
+        watched_folder: folderDraft.value.trim(),
+      })
+      setConnectedSources(current => current.map(source => source.id === sourceId ? response.source : source))
+      setFolderDraft(null)
+      toast.success("Watched folder updated.")
+    } catch (error: any) {
+      toast.error(error?.detail || "Could not save the folder.")
     } finally {
       setActionBusy(null)
     }
@@ -352,6 +491,130 @@ export default function EmailInboxPage() {
           </Card>
         ) : null}
 
+        {/* P6 — Connected sources (Google Drive / Dropbox watch folders) */}
+        {activeWorkspace?.role === "owner" ? (
+          <Card>
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Connected sources</p>
+                  <p className="mt-1 max-w-prose text-sm text-muted-foreground">
+                    Watch a Google Drive or Dropbox folder. New files drop into this inbox automatically — no manual upload from the client.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {(["google_drive", "dropbox"] as ConnectedSourceProvider[]).map((provider) => {
+                  const source = connectedSources.find(item => item.provider === provider && item.status !== "disconnected")
+                  const configured = providersConfigured[provider]
+                  const label = provider === "google_drive" ? "Google Drive" : "Dropbox"
+                  return (
+                    <div key={provider} className="rounded-xl border border-border bg-card/60 p-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5">
+                          <span className={cn(
+                            "inline-flex size-9 items-center justify-center rounded-md",
+                            provider === "google_drive" ? "bg-blue-500/10 text-blue-600" : "bg-sky-500/10 text-sky-600",
+                          )}>
+                            <FolderInput className="size-4.5" />
+                          </span>
+                          <div>
+                            <p className="text-sm font-semibold text-foreground">{label}</p>
+                            {source?.account_email ? (
+                              <p className="truncate text-xs text-muted-foreground">{source.account_email}</p>
+                            ) : (
+                              <p className="text-xs text-muted-foreground">
+                                {configured ? "Not connected" : "OAuth not configured"}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        {source ? (
+                          <StatusBadge tone={source.status === "connected" ? "success" : source.status === "error" ? "error" : "neutral"}>
+                            {source.status}
+                          </StatusBadge>
+                        ) : null}
+                      </div>
+
+                      {source && source.status === "connected" ? (
+                        <>
+                          <div className="mt-3 space-y-1.5">
+                            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Watched folder</p>
+                            {folderDraft?.id === source.id ? (
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  value={folderDraft.value}
+                                  onChange={(event) => setFolderDraft({ id: source.id, value: event.target.value })}
+                                  placeholder={provider === "google_drive" ? "AxLiner intake" : "/AxLiner intake"}
+                                  className="h-9"
+                                />
+                                <Button size="sm" variant="glossy" onClick={() => void saveWatchedFolder(source.id)} disabled={actionBusy === source.id} className="shrink-0">
+                                  Save
+                                </Button>
+                                <Button size="sm" variant="ghost" onClick={() => setFolderDraft(null)} className="shrink-0">
+                                  <X className="size-3.5" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-between gap-3">
+                                <p className="min-w-0 truncate text-sm font-medium text-foreground">
+                                  {source.watched_folder || <span className="text-muted-foreground">No folder set</span>}
+                                </p>
+                                <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setFolderDraft({ id: source.id, value: source.watched_folder || "" })}>
+                                  Edit
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                          <div className="mt-3 flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                            <span>
+                              Last sync: {source.last_synced_at ? formatReceivedAt(source.last_synced_at) : "never"}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <Button size="sm" variant="surface" className="h-7 px-2 text-xs" onClick={() => void triggerSync(source.id)} disabled={actionBusy === source.id}>
+                                <RefreshCw className={cn("size-3", actionBusy === source.id && "animate-spin")} />
+                                Sync now
+                              </Button>
+                              <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-destructive" onClick={() => void disconnectSource(source.id)} disabled={actionBusy === source.id}>
+                                Disconnect
+                              </Button>
+                            </div>
+                          </div>
+                          {source.last_sync_status === "pending_implementation" ? (
+                            <p className="mt-3 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-2 text-[11px] leading-4 text-amber-900">
+                              <AlertTriangle className="mt-0.5 size-3 shrink-0" />
+                              Folder polling is queued — files will start arriving once the scheduled poller lands.
+                            </p>
+                          ) : null}
+                        </>
+                      ) : (
+                        <div className="mt-3">
+                          <Button
+                            variant="glossy"
+                            size="sm"
+                            className="w-full"
+                            onClick={() => void startConnectProvider(provider)}
+                            disabled={!configured || connectingProvider === provider}
+                          >
+                            {connectingProvider === provider ? <RefreshCw className="size-3.5 animate-spin" /> : configured ? <PlugZap className="size-3.5" /> : <Plug className="size-3.5" />}
+                            {configured ? `Connect ${label}` : "Setup pending"}
+                          </Button>
+                          {!configured ? (
+                            <p className="mt-2 text-[11px] leading-4 text-muted-foreground">
+                              The provider OAuth app must be registered before this button works. See <span className="font-mono">manual_setup_requirements.md → Prompt P6</span>.
+                            </p>
+                          ) : null}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
+
         {/* Client submissions */}
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-foreground">Client submissions</h2>
@@ -372,6 +635,7 @@ export default function EmailInboxPage() {
                     <thead>
                       <tr className="border-b border-border bg-muted/40">
                         <th className="px-5 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Filename</th>
+                        <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Source</th>
                         <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Date</th>
                         <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Files</th>
                         <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</th>
@@ -384,6 +648,9 @@ export default function EmailInboxPage() {
                         return (
                           <tr key={submission.id} className="border-b border-border/50 last:border-0 hover:bg-accent/40">
                             <td className="max-w-[220px] truncate px-5 py-3 font-medium text-foreground">{filename}</td>
+                            <td className="px-4 py-3">
+                              <SourceBadge kind="client_link" />
+                            </td>
                             <td className="px-4 py-3 text-muted-foreground">{formatReceivedAt(submission.created_at)}</td>
                             <td className="px-4 py-3 tabular-nums text-muted-foreground">{submission.file_count}</td>
                             <td className="px-4 py-3">
@@ -454,7 +721,7 @@ export default function EmailInboxPage() {
                   const documentNames = message.documents.map(document => document.original_filename).join(", ")
                   const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Processing" ? "processing" : "neutral"
                   return (
-                    <div key={message.id} className="grid gap-3 px-5 py-4 lg:grid-cols-[minmax(12rem,1.1fr)_minmax(12rem,1.6fr)_10rem_7rem_auto] lg:items-center">
+                    <div key={message.id} className="grid gap-3 px-5 py-4 lg:grid-cols-[minmax(11rem,1.1fr)_minmax(11rem,1.5fr)_8rem_10rem_7rem_auto] lg:items-center">
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium text-foreground">{message.sender || "Unknown sender"}</p>
                         <p className="mt-1 truncate text-xs text-muted-foreground">{message.source_email_reference}</p>
@@ -462,6 +729,7 @@ export default function EmailInboxPage() {
                       <p className="truncate text-sm text-foreground">
                         {documentNames || `${message.attachment_count} attachment${message.attachment_count === 1 ? "" : "s"}`}
                       </p>
+                      <SourceBadge kind="email" />
                       <p className="text-sm text-muted-foreground">{formatReceivedAt(message.received_at)}</p>
                       <StatusBadge tone={tone}>{state}</StatusBadge>
                       {message.job_id ? (

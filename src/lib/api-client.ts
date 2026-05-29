@@ -489,6 +489,32 @@ export interface JobDocumentsResponse {
   total: number
 }
 
+export type ConnectedSourceProvider = 'google_drive' | 'dropbox'
+
+export type DocumentSourceKind = 'direct_upload' | 'email' | 'client_link' | 'google_drive' | 'dropbox'
+
+export interface ConnectedSource {
+  id: string
+  workspace_id: string
+  provider: ConnectedSourceProvider
+  status: 'pending' | 'connected' | 'error' | 'disconnected'
+  display_label?: string | null
+  watched_folder?: string | null
+  watched_folder_id?: string | null
+  account_email?: string | null
+  last_synced_at?: string | null
+  last_sync_status?: string | null
+  last_sync_error?: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface ConnectedSourcesListResponse {
+  sources: ConnectedSource[]
+  total: number
+  providers_configured: Record<ConnectedSourceProvider, boolean>
+}
+
 export interface EmailIntakeAddress {
   id: string
   workspace_id: string
@@ -1348,6 +1374,50 @@ export const clientIntakeApi = {
       headers: { 'Content-Type': undefined },
       timeout: isMobile ? 120000 : 90000,
     })
+    return response.data
+  },
+}
+
+export const connectedSourcesApi = {
+  list: async (workspaceId: string): Promise<ConnectedSourcesListResponse> => {
+    const response = await apiClient.get<ConnectedSourcesListResponse>('/api/v1/connected-sources', {
+      params: { workspace_id: workspaceId },
+    })
+    return response.data
+  },
+
+  startConnect: async (
+    workspaceId: string,
+    provider: ConnectedSourceProvider,
+    redirectAfter?: string,
+  ): Promise<{ authorization_url: string }> => {
+    const response = await apiClient.post<{ authorization_url: string }>('/api/v1/connected-sources/connect', {
+      workspace_id: workspaceId,
+      provider,
+      redirect_after: redirectAfter,
+    })
+    return response.data
+  },
+
+  updateFolder: async (
+    sourceId: string,
+    payload: { watched_folder?: string; watched_folder_id?: string; display_label?: string },
+  ): Promise<{ source: ConnectedSource }> => {
+    const response = await apiClient.patch<{ source: ConnectedSource }>(
+      `/api/v1/connected-sources/${sourceId}`,
+      payload,
+    )
+    return response.data
+  },
+
+  disconnect: async (sourceId: string): Promise<void> => {
+    await apiClient.delete(`/api/v1/connected-sources/${sourceId}`)
+  },
+
+  triggerSync: async (sourceId: string): Promise<{ source: ConnectedSource }> => {
+    const response = await apiClient.post<{ source: ConnectedSource }>(
+      `/api/v1/connected-sources/${sourceId}/sync`,
+    )
     return response.data
   },
 }

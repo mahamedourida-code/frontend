@@ -91,6 +91,66 @@ Existing rules will keep the legacy "suggest" behaviour. Power-user vendors are 
 1. Open `/dashboard/settings` → **Vendor memory** and pick the auto-apply mode per vendor. Only switch a vendor to **Auto-fill + mark Ready automatically** after several invoices have published cleanly with the same coding.
 2. After backend deploy, the next Accounts Payable item created from a matching vendor's reviewed invoice will be pre-filled. The review board surfaces a **Pre-filled by vendor rule** notice with a one-click **Override** that clears the pre-filled fields and tells the backend to stop showing the notice on that item.
 
+## Prompt P6 - Connected Sources (Google Drive / Dropbox Watch Folders)
+
+The backend route and Supabase schema are deployed. The **Connect** buttons stay disabled in the UI until provider OAuth apps are registered and secrets are written. The UI shows "Setup pending" with a pointer to this section.
+
+### 1. Generate the token encryption key
+
+Connected source access + refresh tokens are stored Fernet-encrypted. Generate one key per environment and treat it like a database password — losing it means every connected workspace has to reconnect.
+
+```powershell
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+### 2. Register the Google Cloud OAuth client
+
+1. Open the [Google Cloud console](https://console.cloud.google.com/) → APIs & Services → **OAuth consent screen** → set the app to *External* (or *Internal* if your workspace is Google Workspace) and add `…/auth/drive.readonly`, `openid`, `email` as scopes.
+2. APIs & Services → **Credentials** → **Create credentials → OAuth client ID** → *Web application*.
+3. Add the redirect URI:
+
+   `https://backend-lively-hill-7043.fly.dev/api/v1/connected-sources/google_drive/callback`
+
+4. Copy the **Client ID** and **Client secret**.
+
+### 3. Register the Dropbox app
+
+1. Open the [Dropbox app console](https://www.dropbox.com/developers/apps) → **Create app** → *Scoped access* → *Full Dropbox* (or *App folder* if you want stricter sandboxing).
+2. Permissions tab → enable `files.metadata.read` and `files.content.read`.
+3. Settings tab → add the redirect URI:
+
+   `https://backend-lively-hill-7043.fly.dev/api/v1/connected-sources/dropbox/callback`
+
+4. Copy the **App key** and **App secret**.
+
+### 4. Write the Fly secrets
+
+```powershell
+fly secrets set `
+  GOOGLE_DRIVE_CLIENT_ID="<google client id>" `
+  GOOGLE_DRIVE_CLIENT_SECRET="<google client secret>" `
+  GOOGLE_DRIVE_REDIRECT_URI="https://backend-lively-hill-7043.fly.dev/api/v1/connected-sources/google_drive/callback" `
+  DROPBOX_APP_KEY="<dropbox app key>" `
+  DROPBOX_APP_SECRET="<dropbox app secret>" `
+  DROPBOX_REDIRECT_URI="https://backend-lively-hill-7043.fly.dev/api/v1/connected-sources/dropbox/callback" `
+  CONNECTED_SOURCES_TOKEN_ENCRYPTION_KEY="<fernet key from step 1>" `
+  -a backend-lively-hill-7043
+```
+
+Once these land, the **Connect** buttons activate in `/dashboard/inbox` and the OAuth handshake works end-to-end (code exchange → encrypted token storage → account email lookup → redirect back to the inbox).
+
+### 5. Pending: file polling
+
+The Connect, Disconnect, Edit folder, and Sync now buttons are wired and the schema is in place, but the periodic worker that pulls new files from each connected folder is **not yet implemented**. The current **Sync now** action records the timestamp and surfaces an amber notice in the card: *"Folder polling is queued — files will start arriving once the scheduled poller lands."*
+
+When you are ready to ship the poller, the implementation lives in `backend/app/services/connected_sources_service.py` (the `manual_sync_stub` function is the placeholder). The minimum cut needs:
+
+- Celery beat task that wakes every N minutes per connected source
+- Token refresh helpers for both providers (refresh tokens are already stored in `encrypted_refresh_token`)
+- A `pull_new_files` routine that lists files in `watched_folder` modified since `last_synced_at`, downloads each, and hands them to the existing batch ingest pipeline with `source_kind` set to the matching provider so the inbox table shows the right badge
+
+Until then, the connection UI is fully usable — useful for QA and screenshots — but no files arrive from the watched folder.
+
 ## Rule For Later Prompts
 
 After each later prompt, append a new section here only if it adds a manual provider step, API credential, dashboard configuration, compliance action, or user authorization step. If a prompt needs no manual action, do not add a section.
