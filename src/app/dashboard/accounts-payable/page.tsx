@@ -4,7 +4,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { AnimatePresence, motion } from "framer-motion"
-import { ChevronLeft, Loader2 } from "lucide-react"
+import { ChevronLeft, FileText, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
@@ -909,17 +909,20 @@ function AccountsPayableContent() {
                         </span>
 
                         {/* P9 — PO match status */}
-                        <span className="hidden w-[78px] shrink-0 sm:block">
+                        <span className="hidden w-[88px] shrink-0 sm:block">
                           <span
                             className={cn(
-                              "inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-semibold",
+                              "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-bold",
                               item.po_match_status === "exceeds"
-                                ? "border-amber-300 bg-amber-50 text-amber-900"
+                                ? "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200"
                                 : item.po_match_status === "matched"
-                                  ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                                  ? "border-emerald-700/30 bg-emerald-50 text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-200"
                                   : "border-border bg-muted/50 text-muted-foreground",
                             )}
                           >
+                            {item.po_match_status !== "unmatched" ? (
+                              <span className={cn("size-1.5 rounded-full", item.po_match_status === "exceeds" ? "bg-amber-500" : "bg-emerald-600")} />
+                            ) : null}
                             {item.po_match_status === "exceeds" ? "Exceeds" : item.po_match_status === "matched" ? "Matched" : "Unmatched"}
                           </span>
                         </span>
@@ -1113,8 +1116,9 @@ function AccountsPayableContent() {
                           <button
                             type="button"
                             onClick={() => void openPoDialog()}
-                            className="ax-interactive text-[11px] font-semibold text-primary underline-offset-2 hover:underline"
+                            className="ax-interactive inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 underline-offset-2 hover:text-emerald-800 hover:underline"
                           >
+                            <FileText className="size-3" />
                             {activeItem.matched_po ? "Change PO" : "Match PO"}
                           </button>
                         ) : null}
@@ -1467,20 +1471,25 @@ function AccountsPayableContent() {
       <Dialog open={poDialogOpen} onOpenChange={setPoDialogOpen}>
         <DialogContent className="gap-4 rounded-md sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-base font-semibold">Match a purchase order</DialogTitle>
-            <DialogDescription className="text-sm leading-6">
+            <DialogTitle className="flex items-center gap-2 text-base font-bold">
+              <span className="inline-flex size-6 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                <FileText className="size-3.5" />
+              </span>
+              Match a purchase order
+            </DialogTitle>
+            <DialogDescription className="text-sm font-medium leading-6">
               Open POs{draft.vendor ? ` for ${draft.vendor}` : ""}. Selecting one links it to this invoice.
             </DialogDescription>
           </DialogHeader>
 
           {poLoading ? (
-            <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
+            <div className="flex items-center justify-center py-8 text-sm font-semibold text-muted-foreground">
               <Loader2 className="mr-2 size-4 animate-spin" /> Loading purchase orders…
             </div>
           ) : poList.length === 0 ? (
-            <div className="rounded-md border border-border bg-muted/30 p-5 text-center">
-              <p className="text-sm font-semibold text-foreground">No open purchase orders</p>
-              <p className="mt-1 text-xs text-muted-foreground">Import a CSV of open POs to start matching.</p>
+            <div className="rounded-xl border-2 border-border bg-muted/30 p-5 text-center">
+              <p className="text-sm font-bold text-foreground">No open purchase orders</p>
+              <p className="mt-1 text-xs font-semibold text-muted-foreground">Import a CSV of open POs to start matching.</p>
               <Button variant="surface" size="sm" className="mt-3" onClick={() => { setPoDialogOpen(false); setPoImportOpen(true) }}>
                 Import POs (CSV)
               </Button>
@@ -1496,20 +1505,25 @@ function AccountsPayableContent() {
                     type="button"
                     onClick={() => void matchPo(po.id)}
                     disabled={poBusy}
-                    className="ax-interactive flex w-full items-center justify-between gap-3 rounded-md border border-border bg-card px-3 py-2.5 text-left hover:border-primary/40 hover:bg-accent/40"
+                    className={cn(
+                      "ax-interactive flex w-full items-center justify-between gap-3 rounded-lg border-2 bg-card px-3 py-2.5 text-left transition-colors",
+                      exceeds
+                        ? "border-amber-200 hover:border-amber-400 hover:bg-amber-50/60 dark:border-amber-900/50"
+                        : "border-border hover:border-emerald-700/40 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20",
+                    )}
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-foreground">PO {po.po_number}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="truncate text-sm font-bold text-foreground">PO {po.po_number}</p>
+                      <p className="text-xs font-semibold text-muted-foreground">
                         {po.vendor_name || "—"}{po.po_date ? ` · ${po.po_date}` : ""}
                       </p>
                     </div>
                     <div className="shrink-0 text-right">
-                      <p className="font-mono text-sm tabular-nums text-foreground">{po.currency || ""} {Number(po.total).toFixed(2)}</p>
+                      <p className="font-mono text-sm font-semibold tabular-nums text-foreground">{po.currency || ""} {Number(po.total).toFixed(2)}</p>
                       {po.remaining_amount != null ? (
-                        <p className="text-[11px] text-muted-foreground">Remaining {Number(po.remaining_amount).toFixed(2)}</p>
+                        <p className="text-[11px] font-medium text-muted-foreground">Remaining {Number(po.remaining_amount).toFixed(2)}</p>
                       ) : null}
-                      {exceeds ? <p className="text-[11px] font-semibold text-amber-700">Invoice exceeds PO</p> : null}
+                      {exceeds ? <p className="text-[11px] font-bold text-amber-700">Invoice exceeds PO</p> : null}
                     </div>
                   </button>
                 )
@@ -1530,9 +1544,14 @@ function AccountsPayableContent() {
       <Dialog open={poImportOpen} onOpenChange={setPoImportOpen}>
         <DialogContent className="gap-4 rounded-md sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-base font-semibold">Import purchase orders</DialogTitle>
-            <DialogDescription className="text-sm leading-6">
-              Paste CSV with a header row. Columns: <span className="font-mono">po_number, vendor, date, total, remaining, currency</span>. Existing PO numbers are updated.
+            <DialogTitle className="flex items-center gap-2 text-base font-bold">
+              <span className="inline-flex size-6 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                <FileText className="size-3.5" />
+              </span>
+              Import purchase orders
+            </DialogTitle>
+            <DialogDescription className="text-sm font-medium leading-6">
+              Paste CSV with a header row. Columns: <span className="rounded bg-muted px-1 font-mono text-[12px] text-foreground">po_number, vendor, date, total, remaining, currency</span>. Existing PO numbers are updated.
             </DialogDescription>
           </DialogHeader>
           <textarea
