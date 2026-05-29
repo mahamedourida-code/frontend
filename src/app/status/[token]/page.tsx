@@ -49,6 +49,7 @@ function StageTimeline({ stage }: { stage: ClientStatusStage }) {
     <div className="flex items-center">
       {STAGES.map((step, index) => {
         const reached = index <= current
+        const isCurrent = index === current
         const isLast = index === STAGES.length - 1
         return (
           <div key={step.key} className={cn("flex items-center", !isLast && "flex-1")}>
@@ -57,8 +58,9 @@ function StageTimeline({ stage }: { stage: ClientStatusStage }) {
                 className={cn(
                   "inline-flex size-7 items-center justify-center rounded-full border-2 text-[11px] font-bold transition-colors",
                   reached
-                    ? "border-primary bg-primary text-primary-foreground"
+                    ? "border-emerald-700 bg-emerald-700 text-white"
                     : "border-border bg-card text-muted-foreground",
+                  isCurrent && "ring-2 ring-emerald-700/25 ring-offset-1 ring-offset-background",
                 )}
               >
                 {reached ? <Check className="size-3.5" strokeWidth={3} /> : index + 1}
@@ -75,8 +77,8 @@ function StageTimeline({ stage }: { stage: ClientStatusStage }) {
             {!isLast ? (
               <span
                 className={cn(
-                  "mx-1.5 mb-5 h-0.5 flex-1 rounded-full transition-colors",
-                  index < current ? "bg-primary" : "bg-border",
+                  "mx-1.5 mb-5 h-[3px] flex-1 rounded-full transition-colors",
+                  index < current ? "bg-emerald-700" : "bg-border",
                 )}
               />
             ) : null}
@@ -143,12 +145,12 @@ export default function ClientStatusPage() {
       style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="mx-auto max-w-2xl px-5 py-6 sm:px-6 sm:py-10">
-        <header className="flex items-center justify-between">
+        <header className="flex items-center justify-between border-b-2 border-foreground/10 pb-4">
           <AppLogo className="h-6 w-auto sm:h-7" />
           <button
             type="button"
             onClick={() => void load(true)}
-            className="ax-interactive inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-semibold text-foreground"
+            className="ax-interactive inline-flex h-9 items-center gap-1.5 rounded-lg border-2 border-border bg-card px-3 text-xs font-bold text-foreground hover:border-emerald-700/40 hover:text-emerald-700"
           >
             <RefreshCw className={cn("size-3.5", refreshing && "animate-spin")} />
             Refresh
@@ -156,39 +158,58 @@ export default function ClientStatusPage() {
         </header>
 
         <div className="mt-6">
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-700">
             {view?.workspace_name}
           </p>
           <h1 className="mt-1.5 text-[26px] font-bold leading-tight tracking-tight text-foreground sm:text-3xl">
             {view?.label || "Document status"}
           </h1>
-          <p className="mt-2 text-[15px] font-medium leading-6 text-muted-foreground">
+          <p className="mt-2 text-[15px] font-semibold leading-6 text-muted-foreground">
             Track where your documents are. This page updates as they are reviewed — no login needed.
           </p>
         </div>
 
         {submissions.length === 0 ? (
-          <div className="mt-10 rounded-2xl border border-border bg-card p-8 text-center">
-            <p className="text-base font-semibold text-foreground">Nothing here yet</p>
-            <p className="mt-2 text-sm text-muted-foreground">
+          <div className="mt-10 rounded-2xl border-2 border-border bg-card p-8 text-center">
+            <p className="text-base font-bold text-foreground">Nothing here yet</p>
+            <p className="mt-2 text-sm font-semibold text-muted-foreground">
               Once documents are sent through this link, their status appears here.
             </p>
           </div>
         ) : (
           <div className="mt-7 space-y-4">
             {submissions.map((submission) =>
-              submission.documents.map((doc, docIndex) => (
+              submission.documents.map((doc, docIndex) => {
+                const done = doc.stage === "done"
+                return (
                 <article
                   key={`${submission.id}-${docIndex}`}
-                  className="rounded-2xl border border-border bg-card p-5 shadow-sm"
+                  className={cn(
+                    "rounded-2xl border-2 p-5 shadow-sm transition-colors",
+                    done ? "border-emerald-700/30 bg-emerald-50/60 dark:bg-emerald-950/20" : "border-border bg-card",
+                  )}
                 >
                   <div className="flex items-start gap-3">
-                    <span className="mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <span className="mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
                       <FileText className="size-4.5" />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-bold text-foreground">{doc.filename}</p>
-                      <p className="mt-1 text-[13px] font-medium leading-5 text-muted-foreground">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="truncate text-sm font-bold text-foreground">{doc.filename}</p>
+                        <span
+                          className={cn(
+                            "shrink-0 rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide",
+                            done
+                              ? "border-emerald-700/30 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200"
+                              : doc.stage === "reviewed"
+                                ? "border-emerald-700/20 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300"
+                                : "border-border bg-muted/50 text-muted-foreground",
+                          )}
+                        >
+                          {STAGES.find((s) => s.key === doc.stage)?.label}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-[13px] font-semibold leading-5 text-muted-foreground">
                         {stageSentence(doc.stage, doc.filename, submission.submitted_at)}
                       </p>
                     </div>
@@ -197,13 +218,14 @@ export default function ClientStatusPage() {
                     <StageTimeline stage={doc.stage} />
                   </div>
                 </article>
-              )),
+                )
+              }),
             )}
           </div>
         )}
 
-        <p className="mt-8 text-center text-[11px] font-medium text-muted-foreground">
-          Powered by AxLiner · This link is private to your documents
+        <p className="mt-8 text-center text-[11px] font-semibold text-muted-foreground">
+          Powered by <span className="text-emerald-700">AxLiner</span> · This link is private to your documents
         </p>
       </div>
     </main>

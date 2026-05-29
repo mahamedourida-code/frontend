@@ -165,11 +165,11 @@ export default function ClientUploadPage() {
           <AppLogo className="h-7 w-auto" />
         </header>
         <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-          <div className="flex size-20 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <div className="flex size-20 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-4 ring-emerald-700/10 dark:bg-emerald-900/40 dark:text-emerald-300">
             <Check className="size-10" strokeWidth={2.5} />
           </div>
           <p className="mt-6 text-2xl font-bold tracking-tight text-foreground">Files received</p>
-          <p className="mt-3 max-w-sm text-base leading-7 text-muted-foreground">
+          <p className="mt-3 max-w-sm text-base font-semibold leading-7 text-muted-foreground">
             Your documents were sent to{" "}
             <span className="font-semibold text-foreground">{context?.workspace_name}</span>. The bookkeeper will pick
             them up from the review inbox.
@@ -222,22 +222,22 @@ export default function ClientUploadPage() {
 
       {/* Header */}
       <header className="px-5 pb-3 pt-5 sm:px-6 sm:pt-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between border-b-2 border-foreground/10 pb-4">
           <AppLogo className="h-6 w-auto sm:h-7" />
           {expiresLabel ? (
-            <span className="rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">
+            <span className="rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-bold text-muted-foreground">
               Expires {expiresLabel}
             </span>
           ) : null}
         </div>
         <div className="mt-4">
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-700">
             {context?.workspace_name || "Document upload"}
           </p>
           <h1 className="mt-1.5 text-[26px] font-bold leading-tight tracking-tight text-foreground sm:text-3xl">
             {context?.label || "Send your documents"}
           </h1>
-          <p className="mt-2 text-[15px] font-medium leading-6 text-muted-foreground">
+          <p className="mt-2 text-[15px] font-semibold leading-6 text-muted-foreground">
             Take photos of receipts, invoices, statements, or upload PDFs. Everything is encrypted in transit.
           </p>
         </div>
@@ -251,11 +251,11 @@ export default function ClientUploadPage() {
             <button
               type="button"
               onClick={() => cameraInputRef.current?.click()}
-              className="ax-interactive flex min-h-[148px] w-full flex-col items-center justify-center gap-3 rounded-3xl bg-foreground px-6 py-7 text-background shadow-lg shadow-foreground/20 active:scale-[0.98]"
+              className="ax-interactive flex min-h-[148px] w-full flex-col items-center justify-center gap-3 rounded-3xl bg-emerald-700 px-6 py-7 text-white shadow-lg shadow-emerald-700/25 active:scale-[0.98]"
             >
               <Camera className="size-9" strokeWidth={2} />
               <span className="text-lg font-bold tracking-tight">Take a photo</span>
-              <span className="text-[13px] font-medium opacity-80">Opens your phone camera</span>
+              <span className="text-[13px] font-semibold opacity-90">Opens your phone camera</span>
             </button>
             {/* Secondary CTA — pick from library / browse files */}
             <button
@@ -369,7 +369,7 @@ export default function ClientUploadPage() {
           onClick={() => void submit()}
           disabled={!staged.length || submitting}
           className={cn(
-            "ax-interactive inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-foreground text-base font-bold text-background shadow-lg shadow-foreground/25 active:scale-[0.99]",
+            "ax-interactive inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-700 text-base font-bold text-white shadow-lg shadow-emerald-700/25 active:scale-[0.99]",
             (submitting || !staged.length) && "opacity-60",
           )}
         >
