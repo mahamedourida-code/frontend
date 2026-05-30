@@ -44,7 +44,7 @@ const testimonialSet = [
 
 function AuthFallback() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-4">
+    <main className="ax-page-bg flex min-h-screen items-center justify-center px-4">
       <div className="h-12 w-12 animate-spin rounded-full border-4 border-border border-t-primary" />
     </main>
   )
@@ -143,7 +143,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
   if (loading) return <AuthFallback />
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="ax-page-bg min-h-screen text-foreground">
       <div className="grid min-h-screen lg:grid-cols-[minmax(560px,1.08fr)_minmax(460px,0.92fr)]">
         <section className="flex min-h-screen flex-col px-6 py-6 sm:px-10 lg:px-16">
           <header className="flex items-center justify-between">

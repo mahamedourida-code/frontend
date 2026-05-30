@@ -527,7 +527,7 @@ export default function Home() {
                 <p className="ax-body mt-5 font-semibold text-neutral-900">
                   Connect your QuickBooks Online company. Code invoices with vendor, account, and tax. Publish a draft Bill with the original document attached. If anything fails, retry without creating a duplicate.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-xl bg-emerald-700 px-8 text-sm font-bold text-white transition-colors hover:bg-emerald-800">
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full bg-emerald-700 px-8 text-sm font-bold text-white transition-colors hover:bg-emerald-800">
                   Start free →
                 </NextLink>
               </div>
@@ -682,7 +682,7 @@ export default function Home() {
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <NextLink
                 href="/dashboard/client"
-                className="inline-flex h-14 items-center rounded-xl bg-emerald-500 px-10 text-base font-bold text-neutral-950 shadow-[0_8px_28px_-8px_rgba(16,185,129,0.5)] transition-all hover:bg-emerald-400 hover:shadow-[0_12px_32px_-8px_rgba(16,185,129,0.6)]"
+                className="inline-flex h-14 items-center rounded-full bg-emerald-500 px-10 text-base font-bold text-neutral-950 shadow-[0_8px_28px_-8px_rgba(16,185,129,0.5)] transition-all hover:bg-emerald-400 hover:shadow-[0_12px_32px_-8px_rgba(16,185,129,0.6)]"
               >
                 Start free →
               </NextLink>

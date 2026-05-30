@@ -167,7 +167,7 @@ export function DashboardShell({
   }, [pathname, title])
 
   return (
-    <div className="min-h-svh bg-background text-foreground">
+    <div className="ax-page-bg min-h-svh text-foreground">
       <WorkspaceSidebar activeItem={activeItem} user={user} />
 
       <div className="ax-dashboard-content relative z-10 min-w-0">
