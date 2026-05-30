@@ -10,10 +10,12 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "border border-border bg-card text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground active:translate-y-px",
-        critical: "bg-primary text-primary-foreground hover:bg-primary/90 active:translate-y-px",
-        // Primary green CTA — flat brand green (matches landing CTAs), white text.
+        critical:
+          "bg-[var(--brand-green)] text-[var(--brand-green-fg)] hover:bg-[var(--brand-green-hover)] active:translate-y-px",
+        // Primary green CTA — fixed brand green (the landing background-green),
+        // identical in light & dark so every green button matches.
         glossy:
-          "bg-primary text-primary-foreground shadow-[0_1px_2px_rgba(0,0,0,0.12)] hover:bg-[color-mix(in_srgb,var(--primary)_88%,#000)] active:translate-y-px",
+          "bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-[0_1px_2px_rgba(0,0,0,0.12)] hover:bg-[var(--brand-green-hover)] active:translate-y-px",
         // Black/ink CTA — high-contrast solid that inverts cleanly in dark mode.
         ink:
           "border border-foreground/80 bg-foreground bg-[linear-gradient(180deg,color-mix(in_srgb,var(--foreground)_86%,#fff)_0%,var(--foreground)_72%)] text-background shadow-[0_1px_2px_rgba(0,0,0,0.18)] hover:brightness-110 active:translate-y-px",

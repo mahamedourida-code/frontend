@@ -21,15 +21,15 @@ export function DashboardCreditsPill({ credits, className }: DashboardCreditsPil
     <Link
       href="/pricing"
       className={cn(
-        "inline-flex h-9 items-center gap-2 rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
+        "inline-flex h-9 items-center gap-2 rounded-full border border-border bg-card px-3.5 text-sm font-semibold text-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
         className
       )}
     >
-      <CreditStack className="size-4 shrink-0 text-primary" />
-      <span className="font-semibold text-primary">
+      <CreditStack className="size-4 shrink-0 text-foreground" />
+      <span className="text-foreground">
         {typeof availableCredits === "number" ? availableCredits.toLocaleString() : isLoading ? "..." : "-"}
       </span>
-      <span className="text-xs text-muted-foreground">credits</span>
+      <span className="text-xs font-medium text-muted-foreground">credits</span>
     </Link>
   )
 }

@@ -187,8 +187,13 @@
   .ax-dashboard-content li.text-muted-foreground,
   .ax-dashboard-content span.text-muted-foreground,
   .ax-dashboard-content div.text-muted-foreground {
-    font-weight: inherit;
+    font-weight: 500;
   }
+  /* Dashboard headings carry a touch more size & weight than defaults, so the
+     app pages read with the same confidence as the marketing typography. */
+  .ax-dashboard-content h1 { font-weight: 700; letter-spacing: -0.02em; }
+  .ax-dashboard-content h2 { font-weight: 700; letter-spacing: -0.015em; }
+  .ax-dashboard-content h3 { font-weight: 600; letter-spacing: -0.01em; }
   /* Section vertical rhythm — 80px mobile / 112px desktop */
   .ax-section {
     padding-top: 5rem;
@@ -353,6 +358,11 @@
   --popover-foreground: hsl(222 47% 11%);
   --primary: hsl(160 84% 39%);
   --primary-foreground: hsl(164 80% 9%);
+  /* Fixed brand green for buttons — identical in light & dark (the landing
+     background-green family). Buttons must NEVER swap to the dark-mode green. */
+  --brand-green: hsl(160 84% 39%);
+  --brand-green-hover: hsl(160 84% 34%);
+  --brand-green-fg: hsl(164 80% 9%);
   --secondary: hsl(220 14% 96%);
   --secondary-foreground: hsl(222 47% 11%);
   --muted: hsl(220 14% 96%);

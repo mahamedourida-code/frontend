@@ -175,7 +175,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
           : "border-transparent bg-transparent",
       )}
     >
-      <div className="mx-auto flex h-full max-w-[1480px] items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-4 sm:px-6 lg:px-8">
 
         {/* Logo */}
         <Link href="/" aria-label="AxLiner home" className="flex-shrink-0">

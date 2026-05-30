@@ -345,7 +345,7 @@ export default function Home() {
 
                 <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row lg:items-center">
                   <div className="flex flex-col items-center gap-3 lg:items-start">
-                    <Button variant="glossy" asChild className="h-[52px] rounded-xl px-10 text-base font-bold">
+                    <Button variant="glossy" asChild className="h-[52px] rounded-full px-10 text-base font-bold">
                       <NextLink href="/dashboard/client">Start free</NextLink>
                     </Button>
                     <button
@@ -527,7 +527,7 @@ export default function Home() {
                 <p className="ax-body mt-5 font-semibold text-neutral-900">
                   Connect your QuickBooks Online company. Code invoices with vendor, account, and tax. Publish a draft Bill with the original document attached. If anything fails, retry without creating a duplicate.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full bg-emerald-700 px-8 text-sm font-bold text-white transition-colors hover:bg-emerald-800">
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full bg-emerald-500 px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-emerald-400">
                   Start free →
                 </NextLink>
               </div>

@@ -189,12 +189,12 @@ export function DashboardShell({
 
             {/* Mobile: page title only */}
             <div className="me-auto min-w-0 md:hidden">
-              <div className="truncate text-sm font-medium">{title}</div>
+              <div className="truncate text-[15px] font-semibold">{title}</div>
             </div>
 
             {/* Desktop: breadcrumb + ⌘K pill */}
             <div className="me-auto hidden min-w-0 items-center gap-3 md:flex">
-              <div className="flex items-center gap-1.5 text-sm">
+              <div className="flex items-center gap-1.5 text-[15px]">
                 {breadcrumb.parent && (
                   <>
                     <span className="text-muted-foreground">{breadcrumb.parent}</span>
@@ -208,7 +208,7 @@ export function DashboardShell({
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.15, ease: "easeOut" }}
-                    className="font-medium text-foreground"
+                    className="font-semibold text-foreground"
                   >
                     {breadcrumb.current}
                   </motion.span>
@@ -243,8 +243,8 @@ export function DashboardShell({
                 </Link>
               )}
 
-              <div className="hidden h-9 items-center gap-2 rounded-md border border-border bg-background px-3 text-sm font-medium sm:inline-flex">
-                <BillingSeal className="size-4 text-primary" />
+              <div className="hidden h-9 items-center gap-2 rounded-full border border-border bg-card px-3.5 text-sm font-semibold text-foreground sm:inline-flex">
+                <BillingSeal className="size-4 text-foreground" />
                 <span>{billingLoading && !billingStatus ? "Plan" : formatPlan(plan)}</span>
               </div>
 
@@ -255,7 +255,11 @@ export function DashboardShell({
                 <Button asChild size="sm" variant="outline">
                   <Link href="/dashboard/settings?section=billing">Manage billing</Link>
                 </Button>
-              ) : null}
+              ) : (
+                <Button asChild variant="lime" className="h-9 px-5 text-[13px] font-bold">
+                  <Link href="/pricing">Upgrade</Link>
+                </Button>
+              )}
 
               <Button asChild size="sm" variant="outline" className="hidden lg:inline-flex">
                 <Link href={nextActionHref}>
