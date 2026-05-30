@@ -14,7 +14,6 @@ import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardMiniCharts } from "@/components/dashboard/DashboardMiniCharts"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { PageHeader } from "@/components/dashboard/PageHeader"
-import { GlowOrb } from "@/components/dashboard/GlowOrb"
 import { ClientsTab } from "@/components/dashboard/ClientsTab"
 import { SkeletonStatCard } from "@/components/dashboard/SkeletonCard"
 import { SpotlightCard } from "@/components/dashboard/SpotlightCard"
@@ -684,7 +683,6 @@ export default function DashboardPage() {
               viewport={{ once: true }}
             >
               <Card className="relative overflow-hidden">
-                <GlowOrb size={120} opacity={0.3} className="-top-10 -left-10" />
                 <CardHeader className="relative">
                   <CardTitle className="flex items-center gap-2">
                     <TrendingUp className="size-4 text-primary" />

@@ -22,7 +22,6 @@ import { Button } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { WorkspaceSwitcher } from "@/components/WorkspaceSwitcher"
-import { GlowOrb } from "@/components/dashboard/GlowOrb"
 import { cn } from "@/lib/utils"
 
 type SidebarItemKey = "overview" | "process" | "inbox" | "accounts_payable" | "integrations" | "history" | "pricing" | "settings"
@@ -302,7 +301,6 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications, u
         {!collapsed && (
           <div className="px-3 pb-4 pt-3">
             <div className="relative overflow-hidden rounded-xl border border-sidebar-border bg-card px-3.5 pb-3.5 pt-4 shadow-xs">
-              <GlowOrb size={80} opacity={0.6} className="-bottom-6 -right-6" />
               <div className="relative">
                 <p className="text-[15px] font-bold text-foreground">More batch capacity</p>
                 <p className="mt-1.5 text-[13px] leading-[1.45rem] text-muted-foreground">

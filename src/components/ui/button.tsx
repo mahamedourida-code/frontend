@@ -9,20 +9,25 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "border border-border bg-card text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground",
-        critical: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "border border-border bg-card text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground active:translate-y-px",
+        critical: "bg-primary text-primary-foreground hover:bg-primary/90 active:translate-y-px",
+        // Primary green CTA — solid fill with a subtle top sheen and soft brand shadow.
         glossy:
-          "border-0 bg-transparent bg-[url('/generated_buttons/actions/primary.png')] bg-[length:100%_100%] bg-center bg-no-repeat text-white drop-shadow-[0_2px_3px_rgba(7,151,101,0.2)] hover:brightness-[1.04]",
+          "border border-[color-mix(in_srgb,var(--primary)_72%,#000)] bg-primary bg-[linear-gradient(180deg,color-mix(in_srgb,var(--primary)_88%,#fff)_0%,var(--primary)_52%,color-mix(in_srgb,var(--primary)_92%,#000)_100%)] text-primary-foreground shadow-[0_1px_1px_rgba(0,0,0,0.05),0_3px_8px_-2px_color-mix(in_srgb,var(--primary)_50%,transparent)] hover:brightness-[1.06] active:translate-y-px active:brightness-95",
+        // Black/ink CTA — high-contrast solid that inverts cleanly in dark mode.
         ink:
-          "border-0 bg-transparent bg-[url('/generated_buttons/actions/ink.png')] bg-[length:100%_100%] bg-center bg-no-repeat text-white drop-shadow-[0_2px_3px_rgba(15,23,42,0.22)] hover:brightness-110",
+          "border border-foreground/80 bg-foreground bg-[linear-gradient(180deg,color-mix(in_srgb,var(--foreground)_86%,#fff)_0%,var(--foreground)_72%)] text-background shadow-[0_1px_2px_rgba(0,0,0,0.18)] hover:brightness-110 active:translate-y-px",
+        // Upgrade — uses the dedicated buto.png artwork.
         lime:
-          "border-0 bg-transparent bg-[url('/generated_buttons/actions/upgrade.png')] bg-[length:100%_100%] bg-center bg-no-repeat text-[#111b16] drop-shadow-[0_2px_3px_rgba(80,108,22,0.14)] hover:brightness-[1.03]",
+          "border-0 bg-transparent bg-[url('/buto.png')] bg-[length:100%_100%] bg-center bg-no-repeat text-[#0f2a1e] font-bold hover:brightness-[1.03] active:translate-y-px",
+        // Confirm/reviewed action — same ink treatment as `ink`.
         reviewed:
-          "border-0 bg-transparent bg-[url('/generated_buttons/actions/reviewed.png')] bg-[length:100%_100%] bg-center bg-no-repeat text-white drop-shadow-[0_2px_3px_rgba(15,23,42,0.22)] hover:brightness-110",
+          "border border-foreground/80 bg-foreground bg-[linear-gradient(180deg,color-mix(in_srgb,var(--foreground)_86%,#fff)_0%,var(--foreground)_72%)] text-background shadow-[0_1px_2px_rgba(0,0,0,0.18)] hover:brightness-110 active:translate-y-px",
+        // Neutral secondary surface button.
         surface:
-          "border-0 bg-card bg-[url('/generated_buttons/actions/secondary.png')] bg-[length:100%_100%] bg-center bg-no-repeat text-foreground drop-shadow-[0_1px_2px_rgba(15,23,42,0.08)] hover:brightness-[0.985]",
+          "border border-border bg-card text-foreground shadow-[0_1px_1px_rgba(0,0,0,0.03)] hover:bg-accent hover:text-accent-foreground active:translate-y-px",
         destructive:
-          "border-0 bg-transparent bg-[url('/generated_buttons/actions/danger.png')] bg-[length:100%_100%] bg-center bg-no-repeat text-white drop-shadow-[0_2px_3px_rgba(202,50,20,0.2)] hover:brightness-[0.97] focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
+          "bg-destructive text-white shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:brightness-95 active:translate-y-px focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
         outline:
           "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         secondary:

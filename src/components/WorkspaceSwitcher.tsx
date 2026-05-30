@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { AxMark } from "@/components/AppIcon"
 import { Input } from "@/components/ui/input"
 import { useWorkspaces, type Workspace } from "@/hooks/useWorkspaces"
 import { cn } from "@/lib/utils"
@@ -127,7 +128,7 @@ export function WorkspaceSwitcher({ user, onSignOut, menuSide = "right" }: Works
             type="button"
             className="ax-interactive flex h-14 w-full items-center gap-3 rounded-lg px-2 text-start text-foreground hover:bg-sidebar-accent"
           >
-            <WorkspaceAvatar name={triggerName} />
+            <AxMark className="h-6 w-auto shrink-0" />
             <span className="min-w-0 flex-1 truncate text-[15px] font-semibold tracking-tight">
               {triggerLabel}
             </span>
