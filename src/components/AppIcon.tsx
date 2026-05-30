@@ -6,16 +6,23 @@ interface AppIconProps {
   size?: number
 }
 
-// Symbol mark (the "Ax" triangle) — used as the app/icon glyph
+// Apply a sensible default height only when the caller didn't set one,
+// so next/image never renders at full intrinsic size.
+function withHeight(className: string, fallback: string) {
+  return /\bh-/.test(className) ? className : `${fallback} ${className}`.trim()
+}
+
+// Symbol mark (the "Ax" glyph) — used as the square app/icon glyph.
 export function AppIcon({ className = '', size = 24 }: AppIconProps) {
   return (
     <Image
-      src="/logo.png"
+      src="/favicon.svg"
       alt="AxLiner"
       width={size}
       height={size}
       className={className}
       priority
+      unoptimized
     />
   )
 }
@@ -24,46 +31,44 @@ export function AppIcon({ className = '', size = 24 }: AppIconProps) {
 export function AppIconMinimal({ className = '', size = 24 }: AppIconProps) {
   return (
     <Image
-      src="/logo.png"
+      src="/favicon.svg"
       alt="AxLiner"
       width={size}
       height={size}
       className={className}
       priority
+      unoptimized
     />
   )
-}
-
-// Apply a sensible default height only when the caller didn't set one,
-// so next/image never renders at full intrinsic size.
-function withHeight(className: string, fallback: string) {
-  return /\bh-/.test(className) ? className : `${fallback} ${className}`.trim()
 }
 
 // Symbol mark for tight slots (e.g. dashboard sidebar). Sized via className (h-7 w-auto).
 export function AxMark({ className = '' }: { className?: string }) {
   return (
     <Image
-      src="/logo.png"
+      src="/favicon.svg"
       alt="Ax"
-      width={391}
-      height={382}
+      width={128}
+      height={128}
       className={withHeight(className, 'h-7 w-auto')}
       priority
+      unoptimized
     />
   )
 }
 
-// Full wordmark logo (symbol + "AxLiner"). Sized via className (h-8 w-auto).
+// Full brand logo (symbol + "AxLiner" wordmark) for site chrome on all pages.
+// Sized via className (h-8 w-auto).
 export function AppLogo({ className = '' }: { className?: string }) {
   return (
     <Image
-      src="/loga.png"
+      src="/loga.svg"
       alt="AxLiner"
-      width={1238}
-      height={309}
+      width={655}
+      height={160}
       className={withHeight(className, 'h-8 w-auto')}
       priority
+      unoptimized
     />
   )
 }
