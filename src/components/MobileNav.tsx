@@ -304,7 +304,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
               )}>
                 <div className="flex items-center gap-2">
                   <SheetTitle className="sr-only">AxLiner</SheetTitle>
-                  <AppLogo className="h-8 w-auto text-foreground" />
+                  <AppLogo className="h-7 w-auto" />
                   <div className="ms-auto">
                     <ThemeToggle />
                   </div>

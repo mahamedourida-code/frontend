@@ -11,9 +11,9 @@ const buttonVariants = cva(
       variant: {
         default: "border border-border bg-card text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground active:translate-y-px",
         critical: "bg-primary text-primary-foreground hover:bg-primary/90 active:translate-y-px",
-        // Primary green CTA — solid fill with a subtle top sheen and soft brand shadow.
+        // Primary green CTA — flat brand green (matches landing CTAs), white text.
         glossy:
-          "border border-[color-mix(in_srgb,var(--primary)_72%,#000)] bg-primary bg-[linear-gradient(180deg,color-mix(in_srgb,var(--primary)_88%,#fff)_0%,var(--primary)_52%,color-mix(in_srgb,var(--primary)_92%,#000)_100%)] text-primary-foreground shadow-[0_1px_1px_rgba(0,0,0,0.05),0_3px_8px_-2px_color-mix(in_srgb,var(--primary)_50%,transparent)] hover:brightness-[1.06] active:translate-y-px active:brightness-95",
+          "bg-primary text-primary-foreground shadow-[0_1px_2px_rgba(0,0,0,0.12)] hover:bg-[color-mix(in_srgb,var(--primary)_88%,#000)] active:translate-y-px",
         // Black/ink CTA — high-contrast solid that inverts cleanly in dark mode.
         ink:
           "border border-foreground/80 bg-foreground bg-[linear-gradient(180deg,color-mix(in_srgb,var(--foreground)_86%,#fff)_0%,var(--foreground)_72%)] text-background shadow-[0_1px_2px_rgba(0,0,0,0.18)] hover:brightness-110 active:translate-y-px",

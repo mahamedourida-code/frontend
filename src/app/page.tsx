@@ -708,7 +708,7 @@ export default function Home() {
             {/* Logo column */}
             <div>
               <NextLink href="/" aria-label="AxLiner home" className="inline-flex items-center">
-                <AppLogo className="h-9 w-auto text-foreground" />
+                <AppLogo className="h-8 w-auto" />
               </NextLink>
               <p className="mt-6 max-w-xs text-[15px] font-semibold leading-relaxed text-neutral-900">
                 Invoice & document review for bookkeepers and accounting practices.
