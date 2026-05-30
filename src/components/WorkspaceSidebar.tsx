@@ -116,7 +116,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications, u
           {collapsed ? (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button asChild variant="glossy" size="icon" className="h-10 w-10 rounded-lg">
+                <Button asChild variant="glossy" size="icon" className="h-10 w-10">
                   <Link href="/dashboard/client#upload-files" aria-label="Upload files">
                     <Upload className="size-4" />
                   </Link>
@@ -125,7 +125,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications, u
               <TooltipContent side="right">Upload</TooltipContent>
             </Tooltip>
           ) : (
-            <MotionButton asChild variant="glossy" className="h-10 w-[11.25rem] justify-center rounded-lg text-[15px] font-bold">
+            <MotionButton asChild variant="glossy" className="h-10 w-[11.25rem] justify-center text-[15px] font-bold">
               <Link href="/dashboard/client#upload-files">
                 <Upload className="size-4" />
                 Upload
@@ -306,7 +306,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications, u
                 <p className="mt-1.5 text-[13px] leading-[1.45rem] text-muted-foreground">
                   Process larger file sets and keep more monthly credits available.
                 </p>
-                <Button asChild variant="lime" className="mt-4 h-11 w-full justify-center rounded-xl text-[15px] font-bold">
+                <Button asChild variant="lime" className="mt-4 h-12 w-full justify-center text-[15px] font-bold">
                   <Link href="/pricing">Upgrade</Link>
                 </Button>
               </div>

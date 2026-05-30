@@ -219,7 +219,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
           {loading ? (
             <div className="h-9 w-[170px]" aria-hidden="true" />
           ) : isAuthenticated ? (
-            <Button variant="ink" asChild className="h-9 rounded-lg px-4 text-[13.5px] font-bold">
+            <Button variant="ink" asChild className="h-9 px-4 text-[13.5px] font-bold">
               <Link href="/dashboard">Dashboard</Link>
             </Button>
           ) : (
@@ -227,14 +227,14 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
               <Button
                 asChild
                 variant="ghost"
-                className="h-9 rounded-lg px-3.5 text-[13.5px] font-semibold text-foreground hover:text-emerald-700"
+                className="h-9 px-3.5 text-[13.5px] font-semibold text-foreground hover:text-emerald-700"
               >
                 <Link href="/sign-in?next=%2Fdashboard%2Fclient">Log in</Link>
               </Button>
               <Button
                 variant="ink"
                 asChild
-                className="h-9 rounded-lg px-4 text-[13.5px] font-bold"
+                className="h-9 px-4 text-[13.5px] font-bold"
               >
                 <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign up free</Link>
               </Button>

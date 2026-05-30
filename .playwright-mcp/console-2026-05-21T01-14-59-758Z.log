@@ -1,3 +1,0 @@
-[    1046ms] Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'includes')
-    at t (https://assets.lemonsqueezy.com/1de9a3f195c14d38b1f954328e4079236e499490/static/customer.js:7:1241)
-    at <anonymous> (https://assets.lemonsqueezy.com/1de9a3f195c14d38b1f954328e4079236e499490/static/customer.js:7:660)
