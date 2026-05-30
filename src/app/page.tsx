@@ -527,7 +527,7 @@ export default function Home() {
                 <p className="ax-body mt-5 font-semibold text-neutral-900">
                   Connect your QuickBooks Online company. Code invoices with vendor, account, and tax. Publish a draft Bill with the original document attached. If anything fails, retry without creating a duplicate.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full bg-emerald-500 px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-emerald-400">
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full bg-[var(--brand-green)] px-8 text-sm font-bold text-[var(--brand-green-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_1px_3px_0_rgba(0,0,0,0.12)] transition-colors hover:bg-[var(--brand-green-hover)]">
                   Start free →
                 </NextLink>
               </div>
@@ -682,7 +682,7 @@ export default function Home() {
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <NextLink
                 href="/dashboard/client"
-                className="inline-flex h-14 items-center rounded-full bg-emerald-500 px-10 text-base font-bold text-neutral-950 shadow-[0_8px_28px_-8px_rgba(16,185,129,0.5)] transition-all hover:bg-emerald-400 hover:shadow-[0_12px_32px_-8px_rgba(16,185,129,0.6)]"
+                className="inline-flex h-14 items-center rounded-full bg-[var(--brand-green)] px-10 text-base font-bold text-[var(--brand-green-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_6px_22px_-8px_rgba(16,185,129,0.55)] transition-all hover:bg-[var(--brand-green-hover)]"
               >
                 Start free →
               </NextLink>

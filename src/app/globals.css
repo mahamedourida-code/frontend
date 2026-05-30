@@ -358,11 +358,14 @@
   --popover-foreground: hsl(222 47% 11%);
   --primary: hsl(160 84% 39%);
   --primary-foreground: hsl(164 80% 9%);
-  /* Fixed brand green for buttons — identical in light & dark (the landing
-     background-green family). Buttons must NEVER swap to the dark-mode green. */
-  --brand-green: hsl(160 84% 39%);
-  --brand-green-hover: hsl(160 84% 34%);
-  --brand-green-fg: hsl(164 80% 9%);
+  /* Fixed brand green for buttons — the soft mint that backgrounds the landing
+     "Throw us the whole folder." band (emerald-100). Identical in light & dark;
+     buttons must NEVER swap to the dark-mode green. A brighter emerald ring +
+     soft shadow give the pale fill its "definition" (Tella-style). */
+  --brand-green: #d1fae5;        /* emerald-100 — section background, button fill */
+  --brand-green-hover: #a7f3d0;  /* emerald-200 */
+  --brand-green-fg: #064e3b;     /* emerald-900 — dark green label */
+  --brand-green-ring: #10b981;   /* emerald-500 — 1px definition ring */
   --secondary: hsl(220 14% 96%);
   --secondary-foreground: hsl(222 47% 11%);
   --muted: hsl(220 14% 96%);
