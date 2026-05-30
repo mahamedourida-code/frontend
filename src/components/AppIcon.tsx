@@ -6,10 +6,11 @@ interface AppIconProps {
   size?: number
 }
 
+// Symbol mark (the "Ax" triangle) — used as the app/icon glyph
 export function AppIcon({ className = '', size = 24 }: AppIconProps) {
   return (
     <Image
-      src="/crop.png"
+      src="/logo.png"
       alt="AxLiner"
       width={size}
       height={size}
@@ -19,11 +20,11 @@ export function AppIcon({ className = '', size = 24 }: AppIconProps) {
   )
 }
 
-// Alternative minimal version (same as main icon now)
+// Alternative minimal version (same symbol)
 export function AppIconMinimal({ className = '', size = 24 }: AppIconProps) {
   return (
     <Image
-      src="/crop.png"
+      src="/logo.png"
       alt="AxLiner"
       width={size}
       height={size}
@@ -33,35 +34,36 @@ export function AppIconMinimal({ className = '', size = 24 }: AppIconProps) {
   )
 }
 
+// Apply a sensible default height only when the caller didn't set one,
+// so next/image never renders at full intrinsic size.
+function withHeight(className: string, fallback: string) {
+  return /\bh-/.test(className) ? className : `${fallback} ${className}`.trim()
+}
+
+// Symbol mark for tight slots (e.g. dashboard sidebar). Sized via className (h-7 w-auto).
 export function AxMark({ className = '' }: { className?: string }) {
   return (
-    <svg
-      viewBox="400 330 170 110"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      role="img"
-      aria-label="Ax"
-    >
-      <path d="M452.288 356.68H451.776L425.92 429H410.176L443.84 338.504H460.608L494.144 429H477.76L452.288 356.68ZM476.096 406.216H428.352V392.776H476.096V406.216ZM563.831 363.08L537.847 400.712L529.015 391.88L547.063 363.08H563.831ZM499.575 429L525.943 390.984L534.263 402.248L516.471 429H499.575ZM516.599 363.08L533.111 389.96L539.383 394.568L563.959 429H546.935L530.167 403.784L523.255 398.152L499.703 363.08H516.599Z" fill="#18E399" />
-    </svg>
+    <Image
+      src="/logo.png"
+      alt="Ax"
+      width={391}
+      height={382}
+      className={withHeight(className, 'h-7 w-auto')}
+      priority
+    />
   )
 }
 
-// Logo version with app name
+// Full wordmark logo (symbol + "AxLiner"). Sized via className (h-8 w-auto).
 export function AppLogo({ className = '' }: { className?: string }) {
   return (
-    <svg
-      viewBox="400 330 490 110"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={`h-8 w-auto ${className}`}
-      role="img"
-      aria-label="AxLiner"
-    >
-      <path d="M452.288 356.68H451.776L425.92 429H410.176L443.84 338.504H460.608L494.144 429H477.76L452.288 356.68ZM476.096 406.216H428.352V392.776H476.096V406.216ZM563.831 363.08L537.847 400.712L529.015 391.88L547.063 363.08H563.831ZM499.575 429L525.943 390.984L534.263 402.248L516.471 429H499.575ZM516.599 363.08L533.111 389.96L539.383 394.568L563.959 429H546.935L530.167 403.784L523.255 398.152L499.703 363.08H516.599Z" fill="#18E399" />
-      <path d="M590.531 338.504H606.531V415.56H645.699V429H590.531V338.504ZM669.501 363.08V429H654.013V363.08H669.501ZM653.501 337.096H669.885V353.352H653.501V337.096ZM702.754 429H687.266V363.08H702.754L702.626 371.4C704.589 368.243 706.978 365.853 709.794 364.232C712.61 362.611 716.194 361.8 720.546 361.8C727.885 361.8 733.773 363.848 738.21 367.944C742.647 371.955 744.866 378.739 744.866 388.296V429H729.378V388.424C729.378 383.304 728.311 379.677 726.178 377.544C724.13 375.325 721.058 374.216 716.962 374.216C713.89 374.216 711.287 374.771 709.154 375.88C707.021 376.989 705.399 378.739 704.29 381.128C703.266 383.432 702.754 386.461 702.754 390.216V429ZM767.121 390.088H805.649C805.478 384.968 804.113 381 801.553 378.184C798.993 375.283 795.281 373.832 790.417 373.832C784.614 373.832 780.39 375.581 777.745 379.08C775.1 382.579 773.777 388.253 773.777 396.104C773.777 403.955 775.057 409.629 777.617 413.128C780.262 416.541 784.828 418.248 791.313 418.248C795.836 418.248 799.036 417.608 800.913 416.328C802.79 415.048 803.985 413.171 804.497 410.696H820.497C819.9 414.536 818.449 417.949 816.145 420.936C813.841 423.837 810.641 426.141 806.545 427.848C802.449 429.469 797.372 430.28 791.313 430.28C780.561 430.28 772.369 427.336 766.737 421.448C761.19 415.56 758.417 407.155 758.417 396.232C758.417 385.139 761.19 376.648 766.737 370.76C772.369 364.787 780.262 361.8 790.417 361.8C796.646 361.8 802.022 363.08 806.545 365.64C811.153 368.2 814.737 372.04 817.297 377.16C819.857 382.195 821.137 388.509 821.137 396.104V400.84H766.993L767.121 390.088ZM850.754 429H835.266V363.08H850.754L850.626 372.808C852.503 369.48 854.807 367.048 857.538 365.512C860.269 363.891 863.682 363.08 867.778 363.08H872.898V375.496H864.706C860.013 375.496 856.514 376.733 854.21 379.208C851.906 381.683 850.754 385.651 850.754 391.112V429Z" fill="currentColor" />
-      <path d="M669 353.35V337.1H873V353.35H669Z" fill="currentColor" />
-    </svg>
+    <Image
+      src="/loga.png"
+      alt="AxLiner"
+      width={1238}
+      height={309}
+      className={withHeight(className, 'h-8 w-auto')}
+      priority
+    />
   )
 }

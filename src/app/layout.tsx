@@ -34,11 +34,11 @@ export const metadata: Metadata = {
       { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
     shortcut: '/favicon.svg',
-    apple: '/crop.png',
+    apple: '/icon-192.png',
     other: [
       {
         rel: 'apple-touch-icon',
-        url: '/crop.png',
+        url: '/icon-192.png',
       },
     ],
   },
@@ -51,10 +51,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: 'https://axliner.com/crop.png',
-        width: 512,
-        height: 512,
-        alt: 'Axliner Logo',
+        url: 'https://axliner.com/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'AxLiner',
       },
     ],
   },
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "AxLiner — Invoice & Document Review for Bookkeepers",
     description: "Process invoices, receipts, bank statements, and handwritten documents in one batch. Reviewed by you before QuickBooks.",
-    images: ['https://axliner.com/crop.png'],
+    images: ['https://axliner.com/og-image.png'],
   },
 };
 

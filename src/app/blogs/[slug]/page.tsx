@@ -76,7 +76,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
       name: "AxLiner",
       logo: {
         "@type": "ImageObject",
-        url: "https://www.axliner.com/crop.png",
+        url: "https://www.axliner.com/og-image.png",
       },
     },
     mainEntityOfPage: `https://www.axliner.com/blogs/${post.slug}`,
