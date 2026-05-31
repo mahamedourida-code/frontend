@@ -3,7 +3,7 @@
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-import { ArrowRight, ChevronLeft, ChevronRight, Clock3, Loader2 } from "lucide-react"
+import { ArrowRight, ChevronLeft, ChevronRight, Clock3, Loader2, Search } from "lucide-react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -192,8 +192,8 @@ export function DashboardShell({
               <div className="truncate text-[15px] font-semibold">{title}</div>
             </div>
 
-            {/* Desktop: breadcrumb + ⌘K pill */}
-            <div className="me-auto hidden min-w-0 items-center gap-3 md:flex">
+            {/* Desktop LEFT: breadcrumb — "where in my workspace" */}
+            <div className="hidden min-w-0 items-center md:flex">
               <div className="flex items-center gap-1.5 text-[15px]">
                 {breadcrumb.parent && (
                   <>
@@ -214,15 +214,52 @@ export function DashboardShell({
                   </motion.span>
                 </AnimatePresence>
               </div>
+
+              {/* ── B2 MOUNT POINT: global topic mega-menus ──────────────────
+                  Place 2–3 click/hover dropdowns here (Automations · Insights ·
+                  Connections). Render them as a sibling group right after the
+                  breadcrumb so they read as global shortcuts, not workspace nav.
+                  Leave this slot empty until B2 fills it in. */}
+              {/* <nav aria-label="Global topics" className="ms-3 hidden items-center gap-1 lg:flex">
+                    …B2 topic menus go here…
+                  </nav> */}
+            </div>
+
+            {/* CENTER: global ⌘K search — "find anything, anywhere" */}
+            <div className="ms-auto me-auto hidden min-w-0 flex-1 justify-center px-2 md:flex lg:max-w-sm">
               <button
                 onClick={() => setCmdOpen(true)}
-                className="ax-interactive inline-flex h-7 items-center gap-1.5 rounded-md border border-border bg-muted/50 px-2.5 text-xs text-muted-foreground hover:text-foreground"
+                aria-label="Open command palette"
+                className="ax-interactive group inline-flex h-9 w-full max-w-xs items-center gap-2 rounded-full border border-border bg-muted/40 px-3.5 text-sm text-muted-foreground transition-colors hover:border-border hover:bg-muted/70 hover:text-foreground"
               >
-                <span>⌘K</span>
+                <Search className="size-4 shrink-0 opacity-70" />
+                <span className="truncate">Search…</span>
+                <kbd className="ms-auto hidden shrink-0 rounded-md border border-border bg-background px-1.5 py-0.5 font-sans text-[10px] font-medium text-muted-foreground sm:inline-flex">
+                  ⌘K
+                </kbd>
               </button>
             </div>
 
             <div className="ms-auto flex min-w-0 items-center gap-2">
+              {/* Mobile: compact ⌘K search trigger (full bar lives on md+) */}
+              <button
+                onClick={() => setCmdOpen(true)}
+                aria-label="Open command palette"
+                className="ax-interactive inline-flex size-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground md:hidden"
+              >
+                <Search className="size-4" />
+              </button>
+
+              {/* ── B3 MOUNT POINT: notifications bell + panel ──────────────
+                  Drop the bell trigger (with unread badge) + dropdown here.
+                  Keep it a single rounded-full icon button to match the cluster. */}
+              {/* <NotificationsBell /> */}
+
+              {/* ── B4 MOUNT POINT: help & "what's new" menu ────────────────
+                  Drop the "?" menu trigger + dropdown here (shortcuts, docs,
+                  contact, changelog dot). Single rounded-full icon button. */}
+              {/* <HelpMenu /> */}
+
               {activeJob && (
                 <Link
                   href={activeJob.href}
