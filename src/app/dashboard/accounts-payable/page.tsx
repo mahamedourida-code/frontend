@@ -15,6 +15,7 @@ import { AnomalyChip, AnomalyDot } from "@/components/dashboard/AnomalyChip"
 import { ReviewScoreBadge } from "@/components/dashboard/ReviewScoreBadge"
 import { duplicateCopy, missingVatCopy, overPoCopy } from "@/lib/anomaly-reasons"
 import { computeReviewScore, REVIEW_LEVEL_WEIGHT } from "@/lib/review-score"
+import { deriveMissingInfo } from "@/lib/missing-info"
 import { Button } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -52,7 +53,7 @@ import {
 } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
 
-type QueueFilter = "all" | "duplicates" | AccountsPayableStatus
+type QueueFilter = "all" | "duplicates" | "missing_info" | AccountsPayableStatus
 
 const queueStatuses: Array<{ value: AccountsPayableStatus; label: string }> = [
   { value: "needs_coding", label: "Needs coding" },
@@ -355,6 +356,20 @@ function AccountsPayableContent() {
     [items],
   )
 
+  // C10 — "Missing information" derived per item (no due date, no VAT where
+  // expected, no total, unreadable field). Pure derivation over draft_data;
+  // drives the filter chip count and the per-row "Missing info" chip.
+  const missingInfo = useMemo(() => {
+    const map = new Map<string, ReturnType<typeof deriveMissingInfo>>()
+    for (const item of items) map.set(item.id, deriveMissingInfo(item))
+    return map
+  }, [items])
+
+  const missingInfoCount = useMemo(
+    () => items.filter(item => item.status !== "discarded" && missingInfo.get(item.id)?.missing).length,
+    [items, missingInfo],
+  )
+
   // C1 — composite Review Score per item, computed once over the queue.
   // Drives the row badge, the detail badge, and the "needs you first" sort.
   const reviewScores = useMemo(() => {
@@ -383,6 +398,8 @@ function AccountsPayableContent() {
       base = items.filter(item => item.status !== "discarded")
     } else if (filter === "duplicates") {
       base = items.filter(item => hasActiveDuplicate(item))
+    } else if (filter === "missing_info") {
+      base = items.filter(item => item.status !== "discarded" && missingInfo.get(item.id)?.missing)
     } else {
       base = items.filter(item => item.status === filter)
     }
@@ -400,7 +417,7 @@ function AccountsPayableContent() {
         return weight !== 0 ? weight : a.index - b.index
       })
       .map(({ item }) => item)
-  }, [items, filter, clientJobIds, reviewScores])
+  }, [items, filter, clientJobIds, reviewScores, missingInfo])
   const lineItems = Array.isArray(draft.line_items) ? draft.line_items : []
   const lineColumns = (
     Array.from(new Set(lineItems.flatMap(line => Object.keys(line)))).slice(0, 6).length
@@ -841,6 +858,22 @@ function AccountsPayableContent() {
                   Duplicates
                   <span className="tabular-nums opacity-80">{duplicateCount}</span>
                 </button>
+                {/* C10 — Missing-info group: documents lacking an expected field. */}
+                <button
+                  type="button"
+                  onClick={() => setFilter("missing_info")}
+                  className={cn(
+                    "ax-interactive inline-flex h-7 items-center gap-1 rounded-full px-3 text-xs font-medium",
+                    filter === "missing_info"
+                      ? "bg-amber-500 text-white"
+                      : missingInfoCount > 0
+                        ? "bg-amber-100 text-amber-900 hover:bg-amber-200"
+                        : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  Missing info
+                  <span className="tabular-nums opacity-80">{missingInfoCount}</span>
+                </button>
                 {[
                   { value: "needs_coding" as const, label: "Needs coding" },
                   { value: "needs_review" as const, label: "Needs review" },
@@ -980,9 +1013,25 @@ function AccountsPayableContent() {
                           )
                         })() : null}
 
-                        {/* Vendor name */}
-                        <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
-                          {item.draft_data.vendor || "Vendor missing"}
+                        {/* Vendor name + C10 missing-info chip */}
+                        <span className="flex min-w-0 flex-1 items-center gap-2">
+                          <span className="min-w-0 truncate text-sm font-medium text-foreground">
+                            {item.draft_data.vendor || "Vendor missing"}
+                          </span>
+                          {(() => {
+                            const missing = missingInfo.get(item.id)
+                            return missing?.missing && missing.copy ? (
+                              <span className="shrink-0" onClick={(e) => e.stopPropagation()}>
+                                <AnomalyChip
+                                  tone={missing.copy.tone}
+                                  title={missing.copy.title}
+                                  reason={missing.copy.reason}
+                                  label="Missing info"
+                                  className="hidden h-5 px-2 sm:inline-flex"
+                                />
+                              </span>
+                            ) : null
+                          })()}
                         </span>
 
                         {/* Invoice date */}
@@ -1062,6 +1111,19 @@ function AccountsPayableContent() {
                         score={reviewScores.get(activeItem.id) ?? computeReviewScore(activeItem)}
                         side="bottom"
                       />
+                      {(() => {
+                        // C10 — derive over the live draft so the chip clears as fields are filled.
+                        const missing = deriveMissingInfo({ ...activeItem, draft_data: draft })
+                        return missing.missing && missing.copy ? (
+                          <AnomalyChip
+                            tone={missing.copy.tone}
+                            title={missing.copy.title}
+                            reason={missing.copy.reason}
+                            label="Missing info"
+                            side="bottom"
+                          />
+                        ) : null
+                      })()}
                       <StatusBadge tone={statusTone[activeItem.status]}>
                         {statusLabel(activeItem.status)}
                       </StatusBadge>
