@@ -103,7 +103,7 @@ export default function ClientUploadPage() {
   // camera input when getUserMedia is unavailable (older browsers, no HTTPS,
   // permission denied) so the client is never blocked.
   const openCamera = useCallback(() => {
-    if (typeof navigator !== "undefined" && navigator.mediaDevices?.getUserMedia) {
+    if (typeof navigator !== "undefined" && typeof navigator.mediaDevices?.getUserMedia === "function") {
       setCameraOpen(true)
     } else {
       cameraInputRef.current?.click()

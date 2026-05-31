@@ -107,7 +107,7 @@ export function CameraCapture({ onCapture, onClose, onUnavailable }: CameraCaptu
     let cancelled = false
 
     async function start() {
-      if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      if (typeof navigator === "undefined" || typeof navigator.mediaDevices?.getUserMedia !== "function") {
         onUnavailable()
         return
       }
