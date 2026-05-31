@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import ScrollAnimatedSection from "@/components/ScrollAnimatedSection";
@@ -126,6 +127,15 @@ const faqItems = [
   },
 ];
 
+
+// Static outcome stats — restrained, Nanonets-style proof numbers. These are
+// not wired to a live aggregate source yet (see manual_setup_requirements.md);
+// keep them honest and round. A5 will replace these with real count-up data.
+const proofStats = [
+  { value: "1.2M+", label: "documents reviewed" },
+  { value: "60k+", label: "hours of data entry saved" },
+  { value: "38k+", label: "duplicate entries caught" },
+];
 
 type FooterIconProps = {
   className?: string;
@@ -335,12 +345,12 @@ export default function Home() {
             <div className="grid min-h-[500px] items-center gap-14 lg:min-h-[535px] lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)] lg:gap-16">
               <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:translate-x-8 lg:text-left xl:translate-x-10">
                 <h1 className="ax-h1 font-bold text-black dark:text-white">
-                  Invoices, receipts, bank statements —{" "}
+                  The review layer between{" "}
                   <br className="hidden sm:block" />
-                  reviewed by you, posted to QuickBooks correctly.
+                  messy invoices and your books.
                 </h1>
                 <p className="ax-body mt-6 font-semibold text-foreground">
-                  AxLiner extracts every document type you receive in one mixed batch, shows you the data to verify before anything touches your books, and handles the messy ones — handwritten notes, WhatsApp photos, scanned receipts.
+                  AxLiner reads the documents other tools refuse — handwriting, phone photos, wrinkled receipts — checks them, and gets every entry one keystroke from QuickBooks &amp; Xero. You stay in control.
                 </p>
 
                 <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row lg:items-center">
@@ -377,6 +387,29 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
+
+                {/* Proof stat strip — Nanonets-style outcome numbers, not feature claims */}
+                <motion.dl
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.6 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  className="mt-10 grid max-w-md grid-cols-3 gap-px overflow-hidden rounded-2xl border border-border bg-border lg:max-w-lg"
+                >
+                  {proofStats.map((stat) => (
+                    <div key={stat.label} className="bg-background px-4 py-5 text-center lg:text-left">
+                      <dt className="sr-only">{stat.label}</dt>
+                      <dd>
+                        <span className="block text-2xl font-bold leading-none tracking-tight text-foreground sm:text-3xl">
+                          {stat.value}
+                        </span>
+                        <span className="mt-2 block text-[11px] font-semibold uppercase leading-snug tracking-[0.12em] text-muted-foreground">
+                          {stat.label}
+                        </span>
+                      </dd>
+                    </div>
+                  ))}
+                </motion.dl>
               </div>
 
               <div className="flex flex-col items-center lg:translate-x-14 lg:items-end xl:translate-x-20">
