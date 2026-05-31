@@ -26,6 +26,7 @@ import { getApiErrorUi, showApiErrorToast, showBatchLimitToast } from "@/lib/api
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { WorkspaceFilesPanel } from "@/components/dashboard/WorkspaceFilesPanel"
+import { ProcessingStages } from "@/components/dashboard/ProcessingStages"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import {
   ConversionWorkspace,
@@ -1925,6 +1926,11 @@ Best regards`
                       </Button>
                     </div>
                   </div>
+                  <ProcessingStages
+                    progress={progress}
+                    isComplete={progress >= 100 || remainingFiles === 0}
+                    className="mt-3"
+                  />
                   <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-muted">
                     <motion.div
                       className="h-full rounded-full bg-gradient-to-r from-primary to-primary/60"
