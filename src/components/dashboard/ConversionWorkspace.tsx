@@ -26,7 +26,9 @@ import { ConfidenceDot, ConfidenceLegend } from "@/components/dashboard/Confiden
 import { AnomalyChip } from "@/components/dashboard/AnomalyChip"
 import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
 import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
+import { SourceHighlightOverlay } from "@/components/dashboard/SourceHighlightOverlay"
 import { duplicateCopy } from "@/lib/anomaly-reasons"
+import { reconciliationTotalCopy } from "@/lib/source-highlight"
 import { getRowConfidenceTier, isHandwrittenDocument } from "@/lib/handwritten"
 import {
   columnLabel,
@@ -1410,6 +1412,9 @@ export function ResultActions({
 >) {
   const [comparisonIndex, setComparisonIndex] = useState<number | null>(null)
   const [editingCell, setEditingCell] = useState<{ fileKey: string; row: number; col: number } | null>(null)
+  // C2 — source highlighting: the field value currently hovered/focused, so we
+  // can text-match it against the document and float a source excerpt.
+  const [activeSource, setActiveSource] = useState<{ value: string; label: string } | null>(null)
   const [editedTables, setEditedTables] = useState<Record<string, any[][]>>({})
   const [resultFilter, setResultFilter] = useState<ResultFilter>("all")
   const [reviewedDownloadBusy, setReviewedDownloadBusy] = useState(false)
@@ -1499,6 +1504,22 @@ export function ResultActions({
     suggestedLanguage !== dismissedLanguageSuggestion,
   )
   const comparisonText = comparisonLoaded ? textPreview : ""
+  // C2 — the document's own OCR/markdown text we text-match field values
+  // against. Prefer the rendered text preview; fall back to any source text
+  // stored on the reviewed data (notes / bank statements). Empty → no boxes.
+  const comparisonSourceText = (() => {
+    if (!comparisonFile) return ""
+    const data = reviewData(comparisonFile)
+    const stored = typeof data.readable_text === "string"
+      ? data.readable_text
+      : typeof data.raw_text === "string"
+        ? data.raw_text
+        : ""
+    return [comparisonText, stored].filter(Boolean).join("\n")
+  })()
+  // C2 — "why" for a flagged total (line items vs. stated total), reusing the
+  // C7 anomaly-chip voice. Null when it reconciles or can't be checked.
+  const comparisonTotalCopy = comparisonFile ? reconciliationTotalCopy(reviewData(comparisonFile)) : null
   const comparisonColumnCount = Math.max(1, ...comparisonTable.map(row => row.length))
   const editedCount = Object.keys(editedTables).length
   const unresolvedDuplicateCount = safeResultFiles.reduce(
@@ -1591,6 +1612,11 @@ export function ResultActions({
       setEditingCell(null)
     }
   }, [comparisonIndex, safeResultFiles.length])
+
+  // C2 — clear any source highlight when the comparison closes or switches docs.
+  useEffect(() => {
+    setActiveSource(null)
+  }, [comparisonIndex])
 
   if (!safeResultFiles.length) return null
 
@@ -2122,12 +2148,19 @@ export function ResultActions({
             ) : null}
 
             <div className="grid max-h-[84vh] gap-3 overflow-auto pt-12 lg:grid-cols-[0.92fr_1.08fr]">
-              <div className="flex min-h-[420px] items-center justify-center overflow-hidden rounded-md border border-border bg-white">
+              <div className="relative flex min-h-[420px] items-center justify-center overflow-hidden rounded-md border border-border bg-white">
                 {comparisonImageUrl ? (
                   <img src={comparisonImageUrl} alt="Input preview" className="max-h-[74vh] w-full object-contain" />
                 ) : (
                   <div className="text-sm font-semibold text-muted-foreground">Input preview unavailable</div>
                 )}
+                {/* C2 — source highlight: shows where the hovered field's value
+                    appears in the document text, anchored over the preview. */}
+                <SourceHighlightOverlay
+                  value={activeSource?.value ?? null}
+                  label={activeSource?.label ?? null}
+                  sourceText={comparisonSourceText}
+                />
               </div>
 
               <div key={comparisonKey} className="max-h-[74vh] min-h-[420px] overflow-auto rounded-md border border-border bg-white">
@@ -2432,9 +2465,34 @@ export function ResultActions({
                     ) : null}
                     {comparisonFields.length ? (
                       <div className="grid gap-px border-b border-border bg-border sm:grid-cols-2">
-                        {comparisonFields.map(field => (
-                          <label key={field.path} className="bg-white px-3 py-2.5">
-                            <span className="mb-1 block text-[11px] font-medium text-gray-500">{field.label}</span>
+                        {comparisonFields.map(field => {
+                          // C2 — flagged total carries a "why" chip (reconciliation gap).
+                          const totalCopy = field.path === "total" ? comparisonTotalCopy : null
+                          // C2 — hovering/focusing a field highlights its source on the document.
+                          const showSource = () => {
+                            if (field.value) setActiveSource({ value: field.value, label: field.label })
+                          }
+                          return (
+                          <label
+                            key={field.path}
+                            className="bg-white px-3 py-2.5"
+                            onMouseEnter={showSource}
+                            onMouseLeave={() => setActiveSource(null)}
+                            onFocus={showSource}
+                          >
+                            <span className="mb-1 flex items-center gap-1.5 text-[11px] font-medium text-gray-500">
+                              {field.label}
+                              {totalCopy ? (
+                                <AnomalyChip
+                                  tone={totalCopy.tone}
+                                  title={totalCopy.title}
+                                  reason={totalCopy.reason}
+                                  label="Why"
+                                  side="top"
+                                  className="h-5"
+                                />
+                              ) : null}
+                            </span>
                             <input
                               defaultValue={field.value}
                               onBlur={(event) => {
@@ -2445,7 +2503,8 @@ export function ResultActions({
                               className="ax-interactive h-8 w-full rounded-md border border-transparent bg-gray-50 px-2 text-sm font-medium text-gray-950 outline-none focus:border-primary/35 focus:bg-white focus:ring-2 focus:ring-primary/15"
                             />
                           </label>
-                        ))}
+                          )
+                        })}
                       </div>
                     ) : null}
                     {comparisonRows?.rows.length ? (
@@ -2472,10 +2531,22 @@ export function ResultActions({
                                     <ConfidenceDot tier={getRowConfidenceTier(comparisonFile, rowIndex + 1)} size={8} withRing />
                                   </td>
                                 ) : null}
-                                {row.map((value, cellIndex) => (
-                                  <td key={cellIndex} className="border-b border-border px-2 py-1.5">
+                                {row.map((value, cellIndex) => {
+                                  const cellText = String(value || "")
+                                  const cellLabel = comparisonRows.columns[cellIndex] || "Cell"
+                                  const showCellSource = () => {
+                                    if (cellText) setActiveSource({ value: cellText, label: cellLabel })
+                                  }
+                                  return (
+                                  <td
+                                    key={cellIndex}
+                                    className="border-b border-border px-2 py-1.5"
+                                    onMouseEnter={showCellSource}
+                                    onMouseLeave={() => setActiveSource(null)}
+                                    onFocus={showCellSource}
+                                  >
                                     <input
-                                      defaultValue={String(value || "")}
+                                      defaultValue={cellText}
                                       onBlur={(event) => {
                                         if (event.target.value !== String(value || "") && comparisonRows.pathRoot && comparisonRowPaths[cellIndex]) {
                                           void updateStructuredValue(
@@ -2488,7 +2559,8 @@ export function ResultActions({
                                       className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-xs text-gray-950 outline-none focus:border-primary/35 focus:bg-white focus:ring-2 focus:ring-primary/15"
                                     />
                                   </td>
-                                ))}
+                                  )
+                                })}
                               </tr>
                             ))}
                           </tbody>
