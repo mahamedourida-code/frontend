@@ -13,6 +13,7 @@ import { VideoPlaceholder } from "@/components/landing/VideoPlaceholder";
 import { FeatureHoverCards } from "@/components/landing/FeatureHoverCards";
 import { MessyRealityShowcase } from "@/components/landing/MessyRealityShowcase";
 import { VerifiableShowcase } from "@/components/landing/VerifiableShowcase";
+import { OutcomeStats } from "@/components/landing/OutcomeStats";
 
 import NextLink from "next/link";
 import { GoogleOneTap } from "@/components/GoogleOneTap";
@@ -598,6 +599,9 @@ export default function Home() {
 
         {/* ── Verifiable, not invisible — black-box AI vs AxLiner ── */}
         <VerifiableShowcase />
+
+        {/* ── Outcome stat band (A5) — animated count-up social proof ── */}
+        <OutcomeStats />
 
         <div className="relative isolate overflow-hidden">
           <div

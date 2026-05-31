@@ -225,6 +225,27 @@ No provider credentials or secrets. One environment note:
 2. If a client opens the link over plain `http://` (e.g. a custom proxy or a LAN preview), the live camera silently falls back to the device's **native camera/file picker** — the page is never blocked, it just loses the live "move closer / too dark / hold steady / got it" cues. Keep client upload links on HTTPS to retain the guided experience.
 3. First open prompts the OS camera-permission dialog. If the client denies it, the page falls back to the native file picker automatically.
 
+## Prompt A5 - Marketing Outcome Stat Band (figures are placeholders)
+
+The animated count-up band in `src/components/landing/OutcomeStats.tsx` (rendered on the public
+landing page) shows four outcome figures — **1.2M+ invoices reviewed · 78% pre-coded by memory ·
+38k+ duplicates caught · 60k+ hours saved**. These are **tasteful static marketing targets**, kept
+consistent with the hero proof strip so they never contradict. They are **not** wired to live
+aggregate data.
+
+No provider credentials are needed. To replace them with real aggregates later:
+
+1. The marketing page is public (no auth), so per-account data can't be read client-side. Add a
+   small **public, cached, non-sensitive** aggregate endpoint on the backend (e.g.
+   `GET /api/v1/public/outcome-stats` returning rounded totals only — never per-user data), surfaced
+   through `src/lib/api-client.ts`.
+2. Derive the totals heuristically from existing analytics (documents reviewed, vendor-rule
+   pre-fills, duplicate flags, an hours-saved heuristic) — no new model.
+3. Feed the fetched numbers into the `STATS` targets in `OutcomeStats.tsx`; the `useCountUp`
+   animation and reduced-motion handling stay as-is.
+
+Until then, keep the numbers honest and round, and keep them in sync with the hero proof strip.
+
 ## Rule For Later Prompts
 
 After each later prompt, append a new section here only if it adds a manual provider step, API credential, dashboard configuration, compliance action, or user authorization step. If a prompt needs no manual action, do not add a section.
