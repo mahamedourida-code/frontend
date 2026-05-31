@@ -217,6 +217,14 @@ There is no live PO sync yet, so open POs are loaded by CSV:
 - **Live QBO/Xero PO sync** is not yet implemented (the `source` column already supports `qbo`/`xero` for when it lands). Today POs come from CSV import.
 - Matching is at the **document/total level** (2-way: invoice ↔ PO total), not line-level 3-way (PO ↔ receipt ↔ invoice). The "Exceeds" flag fires when the invoice total is greater than the PO total, and publish asks for confirmation before proceeding.
 
+## Prompt C13 - Live Capture Guidance on the Mobile Upload Page
+
+No provider credentials or secrets. One environment note:
+
+1. The guided in-app camera on `/upload/[token]` uses `navigator.mediaDevices.getUserMedia`, which browsers only expose over **HTTPS** (or `localhost`). Production is already HTTPS (`https://www.axliner.com`), so no action is needed there.
+2. If a client opens the link over plain `http://` (e.g. a custom proxy or a LAN preview), the live camera silently falls back to the device's **native camera/file picker** — the page is never blocked, it just loses the live "move closer / too dark / hold steady / got it" cues. Keep client upload links on HTTPS to retain the guided experience.
+3. First open prompts the OS camera-permission dialog. If the client denies it, the page falls back to the native file picker automatically.
+
 ## Rule For Later Prompts
 
 After each later prompt, append a new section here only if it adds a manual provider step, API credential, dashboard configuration, compliance action, or user authorization step. If a prompt needs no manual action, do not add a section.

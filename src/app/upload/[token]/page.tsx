@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useParams } from "next/navigation"
+import { AnimatePresence } from "framer-motion"
 import {
   Camera,
   Check,
@@ -13,6 +14,7 @@ import {
 } from "lucide-react"
 
 import { AppLogo } from "@/components/AppIcon"
+import { CameraCapture } from "@/components/upload/CameraCapture"
 import { clientIntakeApi } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
 
@@ -50,6 +52,7 @@ export default function ClientUploadPage() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [cameraOpen, setCameraOpen] = useState(false)
 
   const libraryInputRef = useRef<HTMLInputElement | null>(null)
   const cameraInputRef = useRef<HTMLInputElement | null>(null)
@@ -94,6 +97,29 @@ export default function ClientUploadPage() {
       setStaged((current) => [...current, ...next])
       setError(null)
     }
+  }, [])
+
+  // Live, guided in-app camera with quality cues. Falls back to the native
+  // camera input when getUserMedia is unavailable (older browsers, no HTTPS,
+  // permission denied) so the client is never blocked.
+  const openCamera = useCallback(() => {
+    if (typeof navigator !== "undefined" && navigator.mediaDevices?.getUserMedia) {
+      setCameraOpen(true)
+    } else {
+      cameraInputRef.current?.click()
+    }
+  }, [])
+
+  const handleCapture = useCallback(
+    (file: File) => {
+      addFiles([file])
+    },
+    [addFiles],
+  )
+
+  const handleCameraUnavailable = useCallback(() => {
+    setCameraOpen(false)
+    cameraInputRef.current?.click()
   }, [])
 
   const removeFile = useCallback((id: string) => {
@@ -193,6 +219,18 @@ export default function ClientUploadPage() {
       className="flex min-h-[100dvh] flex-col bg-background"
       style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
     >
+      {/* Guided live camera — overlays everything while open. Stays open after
+          each shot so the client can capture page after page. */}
+      <AnimatePresence>
+        {cameraOpen ? (
+          <CameraCapture
+            onCapture={handleCapture}
+            onClose={() => setCameraOpen(false)}
+            onUnavailable={handleCameraUnavailable}
+          />
+        ) : null}
+      </AnimatePresence>
+
       {/* Hidden inputs — keyed off refs so the same staging code path
           handles both "library" and "camera" sources. */}
       <input
@@ -250,12 +288,12 @@ export default function ClientUploadPage() {
             {/* Primary mobile CTA — full-bleed tap target */}
             <button
               type="button"
-              onClick={() => cameraInputRef.current?.click()}
+              onClick={openCamera}
               className="ax-interactive flex min-h-[148px] w-full flex-col items-center justify-center gap-3 rounded-3xl bg-emerald-700 px-6 py-7 text-white shadow-lg shadow-emerald-700/25 active:scale-[0.98]"
             >
               <Camera className="size-9" strokeWidth={2} />
               <span className="text-lg font-bold tracking-tight">Take a photo</span>
-              <span className="text-[13px] font-semibold opacity-90">Opens your phone camera</span>
+              <span className="text-[13px] font-semibold opacity-90">Guided camera checks lighting &amp; focus</span>
             </button>
             {/* Secondary CTA — pick from library / browse files */}
             <button
@@ -327,7 +365,7 @@ export default function ClientUploadPage() {
             <div className="grid grid-cols-2 gap-2 pt-1">
               <button
                 type="button"
-                onClick={() => cameraInputRef.current?.click()}
+                onClick={openCamera}
                 className="ax-interactive flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-border bg-card text-sm font-bold text-foreground active:scale-[0.98]"
               >
                 <Camera className="size-4" />
