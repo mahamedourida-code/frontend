@@ -14,7 +14,9 @@ import {
   FileSpreadsheet,
   FileText,
   FolderUp,
+  Keyboard,
   Languages,
+  ListChecks,
   Loader2,
   RotateCcw,
   Save,
@@ -23,6 +25,13 @@ import {
   X,
 } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { MotionButton } from "@/components/ui/motion-button"
 import { BankReconciliationPanel } from "@/components/dashboard/BankReconciliationPanel"
 import { ConfidenceDot, ConfidenceLegend } from "@/components/dashboard/ConfidenceDot"
@@ -1462,6 +1471,10 @@ export function ResultActions({
   // C4 — clean/high-confidence cards collapse to a one-line summary; this set
   // holds the keys of clean cards the reviewer has chosen to expand in place.
   const [expandedClean, setExpandedClean] = useState<Record<string, true>>({})
+  // C5 — keyboard-first triage: the "?" shortcuts sheet + the "mark all ready"
+  // sweep over the collapsed clean pile.
+  const [shortcutsOpen, setShortcutsOpen] = useState(false)
+  const [bulkReadyBusy, setBulkReadyBusy] = useState(false)
   const [reviewedDownloadBusy, setReviewedDownloadBusy] = useState(false)
   const [vendorDrafts, setVendorDrafts] = useState<Record<string, VendorRuleFields>>({})
   const [vendorRuleSavingId, setVendorRuleSavingId] = useState<string | null>(null)
@@ -1803,6 +1816,105 @@ export function ResultActions({
     }
   }
 
+  // C5 — keyboard-first triage. Every shortcut drives an EXISTING handler; no
+  // new endpoints. The clean pile is the same set C4 collapses (review level is
+  // "clean"); "mark all ready" loops the per-document ready handler we already
+  // call from each card.
+  const cleanReadyEntries = resultEntries.filter((entry) => {
+    if (!deriveReviewLevel(entry.file, entry.badge).clean) return false
+    return Boolean(entry.file.document_id) &&
+      !["ready", "published", "failed", "deleted"].includes(entry.file.review_status || "")
+  })
+  const comparisonCanMarkReady = Boolean(
+    comparisonFile?.document_id &&
+    !["ready", "published", "failed", "deleted"].includes(comparisonFile?.review_status || ""),
+  )
+
+  const markAllCleanReady = async () => {
+    if (!onMarkDocumentReady || !cleanReadyEntries.length) return
+    setBulkReadyBusy(true)
+    try {
+      for (const entry of cleanReadyEntries) {
+        await onMarkDocumentReady(entry.file)
+      }
+    } finally {
+      setBulkReadyBusy(false)
+    }
+  }
+
+  // E — focus the first field that still "needs you" (C3 attention set), so the
+  // reviewer drops straight into the one thing to fix.
+  const focusFirstFlaggedField = () => {
+    const target = document.querySelector<HTMLInputElement>("[data-flagged-field]")
+    if (target) {
+      target.focus()
+      target.select?.()
+    }
+  }
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      // "?" opens the shortcuts sheet from anywhere in the review board.
+      if (event.key === "?" && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        const tag = (event.target as HTMLElement | null)?.tagName
+        if (tag === "INPUT" || tag === "TEXTAREA" || (event.target as HTMLElement | null)?.isContentEditable) return
+        event.preventDefault()
+        setShortcutsOpen((prev) => !prev)
+        return
+      }
+
+      // ⌘/Ctrl+Enter — confirm: mark the open document ready.
+      if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+        if (comparisonCanMarkReady) {
+          event.preventDefault()
+          void onMarkDocumentReady?.(comparisonFile!)
+        }
+        return
+      }
+
+      // Plain single-key shortcuts ignore typing contexts and modifier combos.
+      if (event.metaKey || event.ctrlKey || event.altKey) return
+      const target = event.target as HTMLElement | null
+      const tag = target?.tagName
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target?.isContentEditable) return
+
+      const key = event.key.toLowerCase()
+      if (key === "j") {
+        if (comparisonIndex === null) return
+        event.preventDefault()
+        goToAdjacentResult(1)
+      } else if (key === "k") {
+        if (comparisonIndex === null) return
+        event.preventDefault()
+        goToAdjacentResult(-1)
+      } else if (key === "a") {
+        if (!comparisonCanMarkReady) return
+        event.preventDefault()
+        void onMarkDocumentReady?.(comparisonFile!)
+      } else if (key === "e") {
+        if (comparisonIndex === null) return
+        event.preventDefault()
+        focusFirstFlaggedField()
+      } else if (key === "p") {
+        // P — publish. Only the receipt → QuickBooks flow can publish from this
+        // view; skip gracefully on anything else (no endpoint to call).
+        if (!isReceiptComparison || !receiptDestination || !receiptAccountRefId || receiptPublishing) return
+        event.preventDefault()
+        void publishReceipt()
+      }
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [
+    comparisonIndex,
+    comparisonCanMarkReady,
+    comparisonFile,
+    isReceiptComparison,
+    receiptDestination,
+    receiptAccountRefId,
+    receiptPublishing,
+  ])
+
   return (
     <>
     <div className="space-y-2.5">
@@ -1919,6 +2031,32 @@ export function ResultActions({
               </span>
             </button>
           ))}
+        </div>
+
+        {/* C5 — sweep the clean pile + a hint to the keyboard sheet. */}
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          {cleanReadyEntries.length ? (
+            <Button
+              type="button"
+              size="sm"
+              variant="reviewed"
+              onClick={() => void markAllCleanReady()}
+              disabled={bulkReadyBusy}
+              className="h-8 gap-2 rounded-full px-3.5 text-xs"
+            >
+              {bulkReadyBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ListChecks className="h-3.5 w-3.5" />}
+              Mark {cleanReadyEntries.length} clean ready
+            </Button>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => setShortcutsOpen(true)}
+            className="ax-interactive inline-flex h-8 items-center gap-2 rounded-full border border-border bg-card px-3 text-xs font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground"
+          >
+            <Keyboard className="h-3.5 w-3.5" />
+            Shortcuts
+            <kbd className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-md border border-border bg-muted px-1 font-sans text-[10px] font-semibold text-foreground">?</kbd>
+          </button>
         </div>
 
         <DocumentNavStrip
@@ -2683,6 +2821,7 @@ export function ResultActions({
                                 <div className="flex items-center gap-2">
                                   <input
                                     defaultValue={field.value}
+                                    data-flagged-field={needsYou && field.path === uncertainFieldPaths[0] ? "" : undefined}
                                     onBlur={(event) => {
                                       if (event.target.value !== field.value) {
                                         void updateStructuredValue(comparisonFile, [field.path], event.target.value)
@@ -2888,6 +3027,47 @@ export function ResultActions({
           </div>
         </div>
       ) : null}
+
+      {/* C5 — keyboard shortcuts sheet ("?"). Lists the review-board triage keys
+          wired above; reuses the shadcn Dialog + kbd pattern from HelpMenu. */}
+      <Dialog open={shortcutsOpen} onOpenChange={setShortcutsOpen}>
+        <DialogContent className="rounded-2xl sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Keyboard className="size-4 text-muted-foreground" />
+              Review shortcuts
+            </DialogTitle>
+            <DialogDescription>
+              Triage the review board without leaving the keyboard.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-1.5">
+            {([
+              [["J"], "Next document"],
+              [["K"], "Previous document"],
+              [["A"], "Approve / mark ready"],
+              [["E"], "Edit first flagged field"],
+              [["P"], "Publish to QuickBooks"],
+              [["⌘", "↵"], "Confirm — mark ready"],
+              [["?"], "Open this sheet"],
+            ] as Array<[string[], string]>).map(([keys, label]) => (
+              <div key={label} className="flex items-center justify-between gap-3">
+                <span className="text-[13px] text-foreground">{label}</span>
+                <span className="flex shrink-0 items-center gap-1">
+                  {keys.map((k, i) => (
+                    <kbd
+                      key={i}
+                      className="inline-flex h-6 min-w-[1.5rem] items-center justify-center rounded-md border border-border bg-muted px-1.5 font-sans text-[11px] font-semibold text-foreground"
+                    >
+                      {k}
+                    </kbd>
+                  ))}
+                </span>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
