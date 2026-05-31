@@ -2673,49 +2673,49 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
       value: "auto",
       label: "Auto detect",
       helper: "Classify each file",
-      icon: "bg-[#eefaf7] text-[#087a50]",
-      selected: "border-[#91dec0] bg-[#f2fff9]",
-      hover: "hover:border-[#91dec0] hover:bg-[#f2fff9]",
+      image: "/icons/doc-types-v2/auto-detect.png",
+      visual: "bg-[#eefaf7]",
+      icon: "text-[#087a50]",
     },
     {
       value: "table",
       label: "Table",
       helper: "Rows and columns",
-      icon: "bg-[#ebfbf3] text-[#098451]",
-      selected: "border-[#91dec0] bg-[#f2fff9]",
-      hover: "hover:border-[#91dec0] hover:bg-[#f2fff9]",
+      image: "/icons/doc-types-v2/table.png",
+      visual: "bg-[#ebfbf3]",
+      icon: "text-[#098451]",
     },
     {
       value: "invoice",
       label: "Invoice",
       helper: "Bills and line items",
-      icon: "bg-[#fff3ea] text-[#dd6d2f]",
-      selected: "border-[#f0c09f] bg-[#fff9f4]",
-      hover: "hover:border-[#f0c09f] hover:bg-[#fff9f4]",
+      image: "/icons/doc-types-v2/invoice.png",
+      visual: "bg-[#fff3ea]",
+      icon: "text-[#dd6d2f]",
     },
     {
       value: "receipt",
       label: "Receipt",
       helper: "Merchant and total",
-      icon: "bg-[#fff4eb] text-[#c95b1f]",
-      selected: "border-[#f0c09f] bg-[#fff9f4]",
-      hover: "hover:border-[#f0c09f] hover:bg-[#fff9f4]",
+      image: "/icons/doc-types-v2/receipt.png",
+      visual: "bg-[#fff4eb]",
+      icon: "text-[#c95b1f]",
     },
     {
       value: "bank_statement",
       label: "Bank statement",
       helper: "Text + transactions",
-      icon: "bg-[#eef5ff] text-[#3275d5]",
-      selected: "border-[#a9c9f5] bg-[#f5f9ff]",
-      hover: "hover:border-[#a9c9f5] hover:bg-[#f5f9ff]",
+      image: "/icons/doc-types-v2/bank-statement.png",
+      visual: "bg-[#eef5ff]",
+      icon: "text-[#3275d5]",
     },
     {
       value: "notes",
       label: "Notes",
       helper: "Handwritten pages",
-      icon: "bg-[#f4efff] text-[#7755d8]",
-      selected: "border-[#c6b5f4] bg-[#faf8ff]",
-      hover: "hover:border-[#c6b5f4] hover:bg-[#faf8ff]",
+      image: "/icons/doc-types-v2/notes.png",
+      visual: "bg-[#f4efff]",
+      icon: "text-[#7755d8]",
     },
   ] as const
 
@@ -2737,64 +2737,107 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
         <div className="grid gap-4">
           {!hasResults ? (
             <div className="space-y-5">
-              <section>
-                <h2 className="mb-3 text-xl font-bold tracking-tight text-foreground">Tools</h2>
-                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                  {modeOptions.map((mode) => (
-                    <button
-                      key={mode.value}
-                      type="button"
-                      onClick={() => handleModeChange(mode.value)}
-                      disabled={isProcessing}
-                      className={cn(
-                        "flex h-[84px] items-center gap-3 rounded-xl border border-border bg-card px-4 text-left shadow-xs transition-colors",
-                        mode.hover,
-                        selectedMode === mode.value
-                          ? mode.selected
-                          : "text-foreground",
-                        isProcessing && "cursor-not-allowed opacity-60"
-                      )}
-                    >
-                      <span className={cn("flex size-11 shrink-0 items-center justify-center rounded-xl", mode.icon)}>
-                        <ModeGlyph mode={mode.value} />
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block truncate text-[15px] font-semibold">{mode.label}</span>
-                        <span className="mt-0.5 block truncate text-[13px] font-medium text-muted-foreground">
-                          {mode.helper}
-                        </span>
-                      </span>
-                    </button>
-                  ))}
+              <section aria-labelledby="workspace-tools-title">
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#087a50]">Extraction tools</p>
+                    <h2 id="workspace-tools-title" className="mt-1 text-xl font-bold tracking-tight text-foreground">
+                      Choose the shape of your batch
+                    </h2>
+                    <p className="mt-1 max-w-xl text-sm font-medium text-muted-foreground">
+                      Use auto detect for mixed folders, or set one structure for every file.
+                    </p>
+                  </div>
+                  <span className="w-fit rounded-full border border-[var(--brand-green-ring)] bg-[var(--brand-green)] px-3 py-1 text-xs font-semibold text-[var(--brand-green-fg)]">
+                    6 document workflows
+                  </span>
                 </div>
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  {(documentMode === "notes"
-                    ? [
-                        { value: "text", label: "Readable text" },
-                        { value: "table", label: "Detected table XLSX" },
-                        { value: "csv", label: "Detected table CSV" },
-                      ]
-                    : [
-                        { value: "table", label: "Excel XLSX" },
-                        { value: "csv", label: "CSV" },
-                      ]
-                  ).map((format) => (
-                    <button
-                      key={format.value}
-                      type="button"
-                      onClick={() => onOutputModeChange(format.value as OutputMode)}
-                      disabled={isProcessing}
-                      className={cn(
-                        "h-9 rounded-md border px-3 text-sm font-medium transition-colors",
-                        outputMode === format.value
-                          ? "border-foreground bg-foreground text-background"
-                          : "border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground",
-                        isProcessing && "cursor-not-allowed opacity-60"
-                      )}
-                    >
-                      {format.label}
-                    </button>
-                  ))}
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {modeOptions.map((mode) => {
+                    const isSelected = selectedMode === mode.value
+
+                    return (
+                      <button
+                        key={mode.value}
+                        type="button"
+                        aria-pressed={isSelected}
+                        onClick={() => handleModeChange(mode.value)}
+                        disabled={isProcessing}
+                        className={cn(
+                          "group relative overflow-hidden rounded-[22px] border bg-card p-2.5 text-left shadow-[0_8px_24px_-18px_rgba(15,23,42,0.42)] transition-[transform,border-color,background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                          isSelected
+                            ? "border-[var(--brand-green-ring)] bg-[#f2fff9] shadow-[0_14px_30px_-20px_rgba(5,150,105,0.6)]"
+                            : !isProcessing && "hover:-translate-y-1 hover:border-[var(--brand-green-ring)] hover:shadow-[0_18px_30px_-22px_rgba(15,23,42,0.5)]",
+                          isProcessing && "cursor-not-allowed opacity-60"
+                        )}
+                      >
+                        <span className={cn("relative block h-28 overflow-hidden rounded-[16px] border border-black/[0.04]", mode.visual)}>
+                          <img
+                            src={mode.image}
+                            alt=""
+                            className={cn(
+                              "h-full w-full object-cover transition-transform duration-300",
+                              !isProcessing && "group-hover:scale-[1.04]"
+                            )}
+                          />
+                          <span className={cn("absolute left-2.5 top-2.5 flex size-9 items-center justify-center rounded-xl border border-white/90 bg-white/85 shadow-sm backdrop-blur", mode.icon)}>
+                            <ModeGlyph mode={mode.value} />
+                          </span>
+                          {isSelected ? (
+                            <span className="absolute right-2.5 top-2.5 rounded-full border border-[var(--brand-green-ring)] bg-[var(--brand-green)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--brand-green-fg)] shadow-sm">
+                              Selected
+                            </span>
+                          ) : null}
+                        </span>
+                        <span className="block px-1 pb-1 pt-3">
+                          <span className="block truncate text-[15px] font-bold text-foreground">{mode.label}</span>
+                          <span className="mt-0.5 block truncate text-[13px] font-medium text-muted-foreground">
+                            {mode.helper}
+                          </span>
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+                <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <span id="output-format-label" className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                    Output format
+                  </span>
+                  <div role="group" aria-labelledby="output-format-label" className="flex flex-wrap items-center gap-2">
+                    {(documentMode === "notes"
+                      ? [
+                          { value: "text", label: "Readable text" },
+                          { value: "table", label: "Detected table XLSX" },
+                          { value: "csv", label: "Detected table CSV" },
+                        ]
+                      : [
+                          { value: "table", label: "Excel XLSX" },
+                          { value: "csv", label: "CSV" },
+                        ]
+                    ).map((format) => {
+                      const isSelected = outputMode === format.value
+
+                      return (
+                        <button
+                          key={format.value}
+                          type="button"
+                          aria-pressed={isSelected}
+                          onClick={() => onOutputModeChange(format.value as OutputMode)}
+                          disabled={isProcessing}
+                          className={cn(
+                            "h-9 rounded-full border px-4 text-sm font-semibold transition-[transform,border-color,background-color,color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                            isSelected
+                              ? "border-[var(--brand-green-ring)] bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_1px_3px_0_rgba(0,0,0,0.12)]"
+                              : "border-border bg-card text-foreground shadow-xs",
+                            !isSelected && !isProcessing && "hover:-translate-y-0.5 hover:border-[var(--brand-green-ring)] hover:bg-[var(--brand-green)]",
+                            isProcessing && "cursor-not-allowed opacity-60"
+                          )}
+                        >
+                          {format.label}
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
               </section>
 
