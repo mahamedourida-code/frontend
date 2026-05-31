@@ -202,12 +202,12 @@ function WorkspaceErrorBanner({ banner, onDismiss }: { banner?: WorkspaceBanner 
       </div>
       <div className="flex items-center gap-2">
         {banner.actionLabel && banner.onAction ? (
-          <Button variant={isUpgradeAction ? "lime" : "outline"} onClick={banner.onAction} className="h-9 rounded-md px-4">
+          <Button variant={isUpgradeAction ? "lime" : "surface"} onClick={banner.onAction} className="h-9 px-4">
             {banner.actionLabel}
           </Button>
         ) : null}
         {onDismiss ? (
-          <Button variant="ghost" size="icon" onClick={onDismiss} className="h-10 w-10 rounded-md">
+          <Button variant="ghost" size="icon" onClick={onDismiss} className="h-10 w-10">
             <X className="h-4 w-4" />
           </Button>
         ) : null}
@@ -301,7 +301,7 @@ function AutoDetectionPanel({
                   variant={needsSelection ? "glossy" : "surface"}
                   disabled={busy || (!needsSelection && selectedMode === document.resolved_mode)}
                   onClick={() => onOverrideDocumentMode?.(document.id, selectedMode)}
-                  className="h-9 rounded-md px-3"
+                  className="h-9 px-3"
                 >
                   {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {needsSelection ? "Process" : "Apply"}
@@ -341,7 +341,7 @@ function ResumeBatchBanner({
         variant="surface"
         onClick={onContinueLatestJob}
         disabled={recoveryLoading}
-        className="h-9 rounded-md px-4"
+        className="h-9 px-4"
       >
         {recoveryLoading ? "Resuming..." : "Open batch"}
       </Button>
@@ -445,7 +445,7 @@ export function UploadDropzone({
           <label
             htmlFor="workspace-file-upload"
             className={cn(
-              buttonVariants({ variant: "surface", size: "default" }),
+              buttonVariants({ variant: "glossy", size: "default" }),
               "h-9 cursor-pointer px-4 font-medium",
               isProcessing && "pointer-events-none opacity-55"
             )}
@@ -460,7 +460,7 @@ export function UploadDropzone({
               variant="surface"
               onClick={onClearFiles}
               disabled={isProcessing}
-              className="h-9 rounded-md px-4"
+              className="h-9 px-4"
             >
               Clear
             </Button>
@@ -517,7 +517,7 @@ export function UploadDropzone({
                         setSelectedPreview(null)
                       }}
                       disabled={isProcessing}
-                      className="absolute right-1 top-1 h-7 w-7 rounded-md bg-card/88 text-foreground opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-accent group-hover:opacity-100"
+                      className="absolute right-1 top-1 h-7 w-7 bg-card/88 text-foreground opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-accent group-hover:opacity-100"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
@@ -548,9 +548,9 @@ export function UploadDropzone({
               <Button
                 type="button"
                 size="sm"
-                variant="outline"
+                variant="surface"
                 onClick={() => setSelectedPreview(null)}
-                className="h-9 rounded-md border-border bg-background px-3 text-foreground"
+                className="h-9 px-3"
                 aria-label="Close preview"
               >
                 <X className="h-4 w-4" />
@@ -588,10 +588,10 @@ export function SelectedFilesTray({
         <p className="text-sm font-semibold text-foreground">Selected files</p>
         <Button
           size="sm"
-          variant="ghost"
+          variant="surface"
           onClick={onClearFiles}
           disabled={isProcessing}
-          className="h-8 rounded-md px-3 text-foreground"
+          className="h-8 px-3"
         >
           Clear
         </Button>
@@ -635,7 +635,7 @@ export function SelectedFilesTray({
                     setSelectedPreview(null)
                   }}
                   disabled={isProcessing}
-                  className="absolute right-1 top-1 h-7 w-7 rounded-md bg-card/88 text-foreground opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-accent group-hover:opacity-100"
+                  className="absolute right-1 top-1 h-7 w-7 bg-card/88 text-foreground opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-accent group-hover:opacity-100"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
@@ -663,9 +663,9 @@ export function SelectedFilesTray({
               <p className="truncate text-sm font-semibold text-foreground">{selectedPreview.name}</p>
               <Button
                 size="sm"
-                variant="outline"
+                variant="surface"
                 onClick={() => setSelectedPreview(null)}
-                className="h-9 rounded-md border-border bg-background px-3 text-foreground"
+                className="h-9 px-3"
                 aria-label="Close preview"
               >
                 <X className="h-4 w-4" />
@@ -911,9 +911,9 @@ export function ResultPreviewPanel({
               <p className="truncate text-sm font-semibold text-foreground">{resultFiles[0]?.filename || "Input preview"}</p>
               <Button
                 size="sm"
-                variant="outline"
+                variant="surface"
                 onClick={() => setImagePreviewOpen(false)}
-                className="h-9 rounded-md border-border bg-background px-3 text-foreground"
+                className="h-9 px-3"
                 aria-label="Close preview"
               >
                 <X className="h-4 w-4" />
@@ -1784,7 +1784,7 @@ export function ResultActions({
               setEditingCell(null)
               onReset()
             }}
-            className="h-9 gap-2 rounded-md px-3 shadow-xs"
+            className="h-9 gap-2 px-3 shadow-xs"
           >
             <RotateCcw className="h-4 w-4" />
             New batch
@@ -1794,7 +1794,7 @@ export function ResultActions({
               onClick={onSaveToHistory}
               disabled={isSaving}
               variant="surface"
-              className="h-9 gap-2 rounded-md px-3 shadow-xs"
+              className="h-9 gap-2 px-3 shadow-xs"
             >
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               Save
@@ -1803,7 +1803,7 @@ export function ResultActions({
           <Button
             variant="ink"
             onClick={safeResultFiles.length > 1 ? onShareAll : () => firstResultFile && onShareFile(firstResultFile)}
-            className="h-9 gap-2 rounded-md px-3 shadow-xs"
+            className="h-9 gap-2 px-3 shadow-xs"
           >
             <Share2 className="h-4 w-4" />
             Share
@@ -1829,7 +1829,7 @@ export function ResultActions({
             variant="reviewed"
             onClick={handleReviewedBatchDownload}
             disabled={reviewedDownloadBusy || unresolvedDuplicateCount > 0}
-            className="h-9 gap-2 rounded-md px-3 shadow-xs"
+            className="h-9 gap-2 px-3 shadow-xs"
           >
             {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             {unresolvedDuplicateCount > 0 ? "Resolve duplicates to export" : "Download reviewed batch"}
@@ -1838,7 +1838,7 @@ export function ResultActions({
             <Button
               variant="destructive"
               onClick={() => void onDeleteBatch()}
-              className="h-9 gap-2 rounded-md px-3 shadow-xs"
+              className="h-9 gap-2 px-3 shadow-xs"
             >
               <Trash2 className="h-4 w-4" />
               Delete batch
@@ -1875,7 +1875,7 @@ export function ResultActions({
               type="button"
               onClick={() => setResultFilter(value)}
               className={cn(
-                "inline-flex h-8 items-center gap-2 rounded-md border px-3 text-xs font-semibold transition",
+                "inline-flex h-8 items-center gap-2 rounded-full border px-3 text-xs font-semibold transition",
                 resultFilter === value
                   ? "border-border bg-accent text-accent-foreground"
                   : "border-border bg-card text-foreground hover:bg-accent"
@@ -1996,12 +1996,12 @@ export function ResultActions({
                   <Button
                     type="button"
                     size="sm"
-                    variant="outline"
+                    variant="surface"
                     onClick={(event) => {
                       event.stopPropagation()
                       void onOverrideDuplicateWarning?.(file, duplicateWarning.id)
                     }}
-                    className="h-7 rounded-md border-amber-300 bg-white px-2.5 text-[11px] text-amber-950 hover:bg-amber-100"
+                    className="h-7 border-amber-300 bg-white px-2.5 text-[11px] text-amber-950 hover:bg-amber-100"
                   >
                     Keep separate
                   </Button>
@@ -2017,7 +2017,7 @@ export function ResultActions({
                       event.stopPropagation()
                       void onDeleteDocument(file)
                     }}
-                    className="h-8 rounded-md px-2.5 text-xs"
+                    className="h-8 px-2.5 text-xs"
                     aria-label="Delete stored document"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -2031,7 +2031,7 @@ export function ResultActions({
                       event.stopPropagation()
                       void onSendToAccountsPayable?.(file)
                     }}
-                    className="h-8 rounded-md px-3 text-xs"
+                    className="h-8 px-3 text-xs"
                   >
                     Add to AP
                   </Button>
@@ -2044,7 +2044,7 @@ export function ResultActions({
                       event.stopPropagation()
                       void onMarkDocumentReady?.(file)
                     }}
-                    className="h-8 rounded-md px-3 text-xs"
+                    className="h-8 px-3 text-xs"
                   >
                     Mark ready
                   </Button>
@@ -2058,7 +2058,7 @@ export function ResultActions({
                         event.stopPropagation()
                         onShareFile(file)
                       }}
-                      className="h-8 rounded-md px-3 text-xs"
+                      className="h-8 px-3 text-xs"
                     >
                       <Share2 className="h-3.5 w-3.5" />
                       Share
@@ -2073,7 +2073,7 @@ export function ResultActions({
                       event.stopPropagation()
                       onDownloadFile(file, index)
                     }}
-                    className="h-8 rounded-md px-3 text-xs"
+                    className="h-8 px-3 text-xs"
                   >
                     <Download className="h-3.5 w-3.5" />
                     Download
@@ -2089,9 +2089,9 @@ export function ResultActions({
             <Button
               type="button"
               size="sm"
-              variant="outline"
+              variant="surface"
               onClick={() => setResultFilter("all")}
-              className="mt-3 h-8 rounded-md border-border bg-background px-3 text-xs text-foreground hover:bg-accent"
+              className="mt-3 h-8 px-3 text-xs"
             >
               Show all files
             </Button>
@@ -2117,7 +2117,7 @@ export function ResultActions({
                   size="sm"
                   variant="destructive"
                   onClick={() => void onDeleteDocument(comparisonFile)}
-                  className="h-9 rounded-md px-3 text-xs"
+                  className="h-9 px-3 text-xs"
                 >
                   <Trash2 className="mr-1.5 h-3.5 w-3.5" />
                   Delete
@@ -2128,7 +2128,7 @@ export function ResultActions({
                   size="sm"
                   variant="surface"
                   onClick={() => void onSendToAccountsPayable?.(comparisonFile)}
-                  className="h-9 rounded-md px-3 text-xs"
+                  className="h-9 px-3 text-xs"
                 >
                   Add to Accounts Payable
                 </Button>
@@ -2138,19 +2138,19 @@ export function ResultActions({
                   size="sm"
                   variant="reviewed"
                   onClick={() => void onMarkDocumentReady?.(comparisonFile)}
-                  className="h-9 rounded-md px-3 text-xs"
+                  className="h-9 px-3 text-xs"
                 >
                   Mark ready
                 </Button>
               ) : null}
               <Button
                 size="sm"
-                variant="outline"
+                variant="surface"
                 onClick={() => {
                   setComparisonIndex(null)
                   setEditingCell(null)
                 }}
-                className="h-9 rounded-md border-border bg-background px-3 text-foreground"
+                className="h-9 px-3"
                 aria-label="Close comparison"
               >
                 <X className="h-4 w-4" />
@@ -2160,18 +2160,18 @@ export function ResultActions({
               <>
                 <Button
                   size="icon"
-                  variant="outline"
+                  variant="surface"
                   onClick={() => goToAdjacentResult(-1)}
-                  className="absolute left-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 rounded-md border-border bg-background text-foreground"
+                  className="absolute left-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2"
                   aria-label="Previous result"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </Button>
                 <Button
                   size="icon"
-                  variant="outline"
+                  variant="surface"
                   onClick={() => goToAdjacentResult(1)}
-                  className="absolute right-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 rounded-md border-border bg-background text-foreground"
+                  className="absolute right-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2"
                   aria-label="Next result"
                 >
                   <ChevronRight className="h-5 w-5" />
@@ -2216,9 +2216,9 @@ export function ResultActions({
                     <Button
                       type="button"
                       size="sm"
-                      variant="outline"
+                      variant="surface"
                       onClick={() => void onOverrideDuplicateWarning?.(comparisonFile, comparisonDuplicateWarning.id)}
-                      className="h-7 rounded-md border-amber-300 bg-white px-2.5 text-[11px] text-amber-950 hover:bg-amber-100"
+                      className="h-7 border-amber-300 bg-white px-2.5 text-[11px] text-amber-950 hover:bg-amber-100"
                     >
                       Keep separate
                     </Button>
@@ -2272,7 +2272,7 @@ export function ResultActions({
                           variant="surface"
                           onClick={() => void saveVendorRule()}
                           disabled={vendorRuleSavingId === comparisonFile.document_id}
-                          className="mt-3 h-8 rounded-md px-3 text-xs"
+                          className="mt-3 h-8 px-3 text-xs"
                         >
                           {vendorRuleSavingId === comparisonFile.document_id
                             ? "Saving..."
@@ -2313,7 +2313,7 @@ export function ResultActions({
                     ) : !quickBooksConnection?.connected ? (
                       <div className="mt-3 flex flex-wrap items-center gap-2">
                         <p className="text-xs text-muted-foreground">Connect QuickBooks before publishing receipts.</p>
-                        <a href="/dashboard/integrations" className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-8 rounded-md px-3 text-xs")}>
+                        <a href="/dashboard/integrations" className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-8 px-3 text-xs")}>
                           Open integrations
                         </a>
                       </div>
@@ -2425,7 +2425,7 @@ export function ResultActions({
                               (receiptDestination === "bill" && !receiptVendorRefId) ||
                               (receiptDestination === "expense" && !receiptPaymentAccountRefId)
                             }
-                            className="h-9 rounded-md px-4 text-xs"
+                            className="h-9 px-4 text-xs"
                           >
                             {receiptPublishing ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : null}
                             Publish {receiptDestination || "receipt"}
@@ -2435,7 +2435,7 @@ export function ResultActions({
                             size="sm"
                             variant="surface"
                             onClick={() => void onRefreshQuickBooksReferences?.()}
-                            className="h-9 rounded-md px-3 text-xs"
+                            className="h-9 px-3 text-xs"
                           >
                             Refresh QuickBooks lists
                           </Button>
@@ -2477,7 +2477,8 @@ export function ResultActions({
                           <Button
                             type="button"
                             size="sm"
-                            className="h-7 bg-emerald-700 px-2.5 text-[11px] font-bold text-white hover:bg-emerald-800"
+                            variant="glossy"
+                            className="h-7 px-2.5 text-[11px] font-bold"
                             onClick={() => {
                               writeInvoiceLanguage(suggestedLanguage)
                               setInvoiceLanguage(suggestedLanguage)
@@ -3067,7 +3068,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                       <Button
                         variant="surface"
                         onClick={onCancel}
-                        className="h-10 rounded-md px-4"
+                        className="h-10 px-4"
                       >
                         <X className="mr-2 h-4 w-4" />
                         Cancel
@@ -3078,7 +3079,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                       size="lg"
                       onClick={onConvert}
                       disabled={!uploadedFiles.length || isProcessing || noCredits}
-                      className="h-11 gap-2 rounded-xl px-6 font-semibold"
+                      className="h-11 gap-2 px-6 font-semibold"
                     >
                       {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
                       {isProcessing ? "Converting" : processLabel}
