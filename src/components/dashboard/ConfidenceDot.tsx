@@ -2,7 +2,8 @@
 
 import * as React from "react"
 
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { AnomalyDot } from "@/components/dashboard/AnomalyChip"
+import { confidenceCopy } from "@/lib/anomaly-reasons"
 import { CONFIDENCE_TIER_LABEL, type ConfidenceTier } from "@/lib/handwritten"
 import { cn } from "@/lib/utils"
 
@@ -31,8 +32,9 @@ const TIER_SHORT: Record<ConfidenceTier, string> = {
 /**
  * Per-cell / per-row confidence indicator. Shown only when a tier is
  * available; if `tier` is null the dot is omitted so we don't fabricate
- * confidence where none was computed. On hover it explains the tier — a bare
- * colored dot is ambiguous, so the tooltip carries the meaning.
+ * confidence where none was computed. On hover it explains the tier via the
+ * shared `AnomalyDot` "why" tooltip — a bare colored dot is ambiguous, so the
+ * tooltip carries a one-line plain-English reason.
  */
 export function ConfidenceDot({
   tier,
@@ -42,32 +44,32 @@ export function ConfidenceDot({
   withTooltip = true,
 }: ConfidenceDotProps) {
   if (!tier) return null
-  const dot = (
-    <span
-      aria-label={CONFIDENCE_TIER_LABEL[tier]}
-      title={withTooltip ? undefined : CONFIDENCE_TIER_LABEL[tier]}
-      style={{ width: size, height: size }}
-      className={cn(
-        "inline-block shrink-0 rounded-full",
-        TIER_COLOR[tier],
-        withRing && "shadow-[0_0_0_2px_hsl(var(--background))]",
-        className,
-      )}
-    />
-  )
-  if (!withTooltip) return dot
+  if (!withTooltip) {
+    return (
+      <span
+        aria-label={CONFIDENCE_TIER_LABEL[tier]}
+        title={CONFIDENCE_TIER_LABEL[tier]}
+        style={{ width: size, height: size }}
+        className={cn(
+          "inline-block shrink-0 rounded-full",
+          TIER_COLOR[tier],
+          withRing && "shadow-[0_0_0_2px_hsl(var(--background))]",
+          className,
+        )}
+      />
+    )
+  }
+  const copy = confidenceCopy(tier)
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button type="button" className="inline-flex cursor-help items-center" aria-label={CONFIDENCE_TIER_LABEL[tier]}>
-          {dot}
-        </button>
-      </TooltipTrigger>
-      <TooltipContent side="right" className="max-w-[200px]">
-        <span className="font-semibold">{TIER_SHORT[tier]}</span>
-        {tier !== "high" ? <span className="block text-background/80">{CONFIDENCE_TIER_LABEL[tier].split("—")[1]?.trim()}</span> : null}
-      </TooltipContent>
-    </Tooltip>
+    <AnomalyDot
+      tone={copy.tone}
+      title={copy.title}
+      reason={copy.reason}
+      ariaLabel={CONFIDENCE_TIER_LABEL[tier]}
+      size={size}
+      withRing={withRing}
+      className={className}
+    />
   )
 }
 

@@ -23,8 +23,10 @@ import { Button, buttonVariants } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
 import { BankReconciliationPanel } from "@/components/dashboard/BankReconciliationPanel"
 import { ConfidenceDot, ConfidenceLegend } from "@/components/dashboard/ConfidenceDot"
+import { AnomalyChip } from "@/components/dashboard/AnomalyChip"
 import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
 import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
+import { duplicateCopy } from "@/lib/anomaly-reasons"
 import { getRowConfidenceTier, isHandwrittenDocument } from "@/lib/handwritten"
 import {
   columnLabel,
@@ -1918,7 +1920,21 @@ export function ResultActions({
 
               {duplicateWarning ? (
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                  <span className="font-medium">{duplicateWarning.message}</span>
+                  <span className="flex min-w-0 items-center gap-2">
+                    <span className="truncate font-medium">{duplicateWarning.message}</span>
+                    {(() => {
+                      const copy = duplicateCopy(duplicateWarning)
+                      return (
+                        <AnomalyChip
+                          tone={copy.tone}
+                          title={copy.title}
+                          reason={copy.reason}
+                          label="Why"
+                          className="h-5 shrink-0 bg-white/70"
+                        />
+                      )
+                    })()}
+                  </span>
                   <Button
                     type="button"
                     size="sm"
@@ -2117,7 +2133,21 @@ export function ResultActions({
               <div key={comparisonKey} className="max-h-[74vh] min-h-[420px] overflow-auto rounded-md border border-border bg-white">
                 {comparisonFile && comparisonDuplicateWarning ? (
                   <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900">
-                    <span className="font-medium">{comparisonDuplicateWarning.message}</span>
+                    <span className="flex min-w-0 items-center gap-2">
+                      <span className="truncate font-medium">{comparisonDuplicateWarning.message}</span>
+                      {(() => {
+                        const copy = duplicateCopy(comparisonDuplicateWarning)
+                        return (
+                          <AnomalyChip
+                            tone={copy.tone}
+                            title={copy.title}
+                            reason={copy.reason}
+                            label="Why"
+                            className="h-5 shrink-0 bg-white/70"
+                          />
+                        )
+                      })()}
+                    </span>
                     <Button
                       type="button"
                       size="sm"

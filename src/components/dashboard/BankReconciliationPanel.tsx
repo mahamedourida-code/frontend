@@ -4,6 +4,8 @@ import * as React from "react"
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { AnomalyChip } from "@/components/dashboard/AnomalyChip"
+import { reconciliationCopy } from "@/lib/anomaly-reasons"
 import {
   formatAmount,
   reconcileBankStatement,
@@ -138,7 +140,27 @@ export function BankReconciliationPanel({ data, className }: BankReconciliationP
             <p className="text-[11px] font-bold uppercase tracking-[0.14em]">
               Balance check
             </p>
-            <p className="text-sm font-semibold">{headerCopy.label}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-semibold">{headerCopy.label}</p>
+              {(() => {
+                const copy = reconciliationCopy(headerCopy.tone, {
+                  difference:
+                    result.difference === null
+                      ? null
+                      : formatAmount(Math.abs(result.difference), result.currency),
+                  missingRows: result.estimatedMissingRows ?? null,
+                })
+                return (
+                  <AnomalyChip
+                    tone={copy.tone}
+                    title={copy.title}
+                    reason={copy.reason}
+                    label="Why"
+                    className="h-5 bg-white/70"
+                  />
+                )
+              })()}
+            </div>
           </div>
         </div>
         <p className="max-w-md text-xs font-medium leading-5">

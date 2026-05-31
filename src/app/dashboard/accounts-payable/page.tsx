@@ -11,6 +11,8 @@ import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoade
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
+import { AnomalyChip, AnomalyDot } from "@/components/dashboard/AnomalyChip"
+import { duplicateCopy, missingVatCopy, overPoCopy } from "@/lib/anomaly-reasons"
 import { Button } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -884,14 +886,20 @@ function AccountsPayableContent() {
                           )}
                         </span>
 
-                        {/* P4 — active duplicate flag on the row */}
-                        {hasActiveDuplicate(item) ? (
-                          <span
-                            aria-label="Possible duplicate"
-                            title="Possible duplicate"
-                            className="size-1.5 shrink-0 rounded-full bg-amber-500 shadow-[0_0_0_2px_hsl(var(--background))]"
-                          />
-                        ) : null}
+                        {/* P4 / C7 — active duplicate flag on the row, with its "why" */}
+                        {hasActiveDuplicate(item) ? (() => {
+                          const warning = (item.duplicate_warnings || []).find(w => !w.dismissed)!
+                          const copy = duplicateCopy(warning)
+                          return (
+                            <AnomalyDot
+                              tone={copy.tone}
+                              title={copy.title}
+                              reason={copy.reason}
+                              ariaLabel="Possible duplicate"
+                              size={6}
+                            />
+                          )
+                        })() : null}
 
                         {/* Vendor name */}
                         <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
@@ -1145,7 +1153,25 @@ function AccountsPayableContent() {
                             : "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200",
                         )}>
                           <div className="flex items-center justify-between gap-2">
-                            <span className="font-semibold">PO {activeItem.matched_po.po_number}</span>
+                            <span className="flex items-center gap-1.5">
+                              <span className="font-semibold">PO {activeItem.matched_po.po_number}</span>
+                              {activeItem.po_match_status === "exceeds" ? (() => {
+                                const copy = overPoCopy({
+                                  po_number: activeItem.matched_po!.po_number,
+                                  over_by: activeItem.matched_po!.over_by,
+                                  currency: activeItem.matched_po!.currency,
+                                })
+                                return (
+                                  <AnomalyChip
+                                    tone={copy.tone}
+                                    title={copy.title}
+                                    reason={copy.reason}
+                                    label="Over PO"
+                                    className="h-5"
+                                  />
+                                )
+                              })() : null}
+                            </span>
                             <button type="button" onClick={() => void matchPo(null)} className="font-semibold underline-offset-2 hover:underline">
                               Unlink
                             </button>
@@ -1182,12 +1208,26 @@ function AccountsPayableContent() {
                       </Select>
                     </div>
                     <div className="space-y-1.5">
-                      <FieldLabel
-                        htmlFor="ap-tax-ref"
-                        dirty={valuesDiffer(draft.tax_code_ref_id, activeItem.draft_data.tax_code_ref_id)}
-                      >
-                        {labels.taxCode}
-                      </FieldLabel>
+                      <div className="flex items-center justify-between gap-2">
+                        <FieldLabel
+                          htmlFor="ap-tax-ref"
+                          dirty={valuesDiffer(draft.tax_code_ref_id, activeItem.draft_data.tax_code_ref_id)}
+                        >
+                          {labels.taxCode}
+                        </FieldLabel>
+                        {!draft.tax_code_ref_id ? (() => {
+                          const copy = missingVatCopy()
+                          return (
+                            <AnomalyChip
+                              tone={copy.tone}
+                              title={copy.title}
+                              reason={copy.reason}
+                              label="No VAT"
+                              className="h-5"
+                            />
+                          )
+                        })() : null}
+                      </div>
                       <Select
                         value={String(draft.tax_code_ref_id || "none")}
                         onValueChange={value => selectQuickBooksReference("tax_code_ref_id", "tax_code", value, taxCodes)}
