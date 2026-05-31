@@ -7,6 +7,7 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   Download,
   Eye,
   FileImage,
@@ -25,7 +26,7 @@ import { Button, buttonVariants } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
 import { BankReconciliationPanel } from "@/components/dashboard/BankReconciliationPanel"
 import { ConfidenceDot, ConfidenceLegend } from "@/components/dashboard/ConfidenceDot"
-import { AnomalyChip } from "@/components/dashboard/AnomalyChip"
+import { AnomalyChip, type AnomalyTone } from "@/components/dashboard/AnomalyChip"
 import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
 import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
 import { SourceHighlightOverlay } from "@/components/dashboard/SourceHighlightOverlay"
@@ -1098,6 +1099,34 @@ function activeDuplicateWarnings(file: ResultFile) {
   return (file.duplicate_warnings || []).filter(warning => !warning.overridden)
 }
 
+/**
+ * C4 — collapse the review board by risk. Reuses the C1 review-score idea
+ * (High / Review / Flagged → emerald / amber / rose) but reads the signals we
+ * already derive for the conversion queue via `getOutputBadge`. A card is
+ * "clean" only when nothing asks for your attention: not needs-review, not
+ * failed, no live duplicate warning. Clean cards collapse to a quiet one-line
+ * summary; risky ones stay expanded with the full evidence. Aggregation only —
+ * no new model, no backend call.
+ */
+function deriveReviewLevel(file: ResultFile, badge: ReturnType<typeof getOutputBadge>): {
+  clean: boolean
+  tone: AnomalyTone
+  summaryLabel: string
+} {
+  if (badge.state === "failed") {
+    return { clean: false, tone: "risk", summaryLabel: "Needs your attention" }
+  }
+  if (badge.state === "needs_review" || activeDuplicateWarnings(file).length) {
+    return { clean: false, tone: "caution", summaryLabel: "Needs review" }
+  }
+  // Only the genuinely clean, confident pile collapses. Published / edited
+  // cards stay expanded — they carry their own state the reviewer just acted on.
+  if (badge.state === "ready") {
+    return { clean: true, tone: "good", summaryLabel: "Looks clean" }
+  }
+  return { clean: false, tone: "good", summaryLabel: badge.label }
+}
+
 const vendorRuleInputs: Array<{ key: keyof VendorRuleFields; label: string; placeholder: string }> = [
   { key: "category_account", label: "Category / account", placeholder: "Office supplies" },
   { key: "tax_code", label: "Tax code", placeholder: "VAT 20%" },
@@ -1430,6 +1459,9 @@ export function ResultActions({
   const prefersReducedMotion = useReducedMotion()
   const [editedTables, setEditedTables] = useState<Record<string, any[][]>>({})
   const [resultFilter, setResultFilter] = useState<ResultFilter>("all")
+  // C4 — clean/high-confidence cards collapse to a one-line summary; this set
+  // holds the keys of clean cards the reviewer has chosen to expand in place.
+  const [expandedClean, setExpandedClean] = useState<Record<string, true>>({})
   const [reviewedDownloadBusy, setReviewedDownloadBusy] = useState(false)
   const [vendorDrafts, setVendorDrafts] = useState<Record<string, VendorRuleFields>>({})
   const [vendorRuleSavingId, setVendorRuleSavingId] = useState<string | null>(null)
@@ -1904,10 +1936,58 @@ export function ResultActions({
           const visiblePreview = edited ? { table: editedTables[fileKey] || [], text: preview?.text || "", loading: false } : preview
           const compact = safeResultFiles.length > 1
           const summary = resultSummary(file)
+          // C4 — clean, high-confidence documents collapse to a quiet one-line
+          // summary so attention lands on the risky pile. Click (or keyboard)
+          // expands the card in place; risky cards never collapse.
+          const reviewLevel = deriveReviewLevel(file, badge)
+          const collapsed = reviewLevel.clean && !expandedClean[fileKey]
+
+          if (collapsed) {
+            return (
+              <motion.div
+                key={file.file_id || index}
+                layout={prefersReducedMotion ? false : "position"}
+                role="button"
+                tabIndex={0}
+                onClick={() => setExpandedClean(prev => ({ ...prev, [fileKey]: true }))}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault()
+                    setExpandedClean(prev => ({ ...prev, [fileKey]: true }))
+                  }
+                }}
+                className="group flex cursor-pointer items-center gap-3 rounded-full border border-border bg-card px-4 py-2.5 text-sm shadow-sm outline-none transition duration-200 hover:border-emerald-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary"
+                aria-label={`${summary.identity} — ${reviewLevel.summaryLabel}, expand to review`}
+              >
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-foreground text-[11px] font-bold text-background">
+                  {index + 1}
+                </span>
+                <span className="min-w-0 flex-1 truncate font-semibold text-foreground">
+                  {summary.identity}
+                </span>
+                <span className="shrink-0 font-semibold tabular-nums text-foreground">
+                  {summary.amount}
+                </span>
+                <AnomalyChip
+                  tone={reviewLevel.tone}
+                  title="Looks clean"
+                  reason="No flags, no duplicate, confident read — open it only if you want a closer look."
+                  label={
+                    <span className="inline-flex items-center gap-1">
+                      Looks clean <Check className="h-3 w-3" />
+                    </span>
+                  }
+                  className="shrink-0"
+                />
+                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition group-hover:translate-x-0.5" />
+              </motion.div>
+            )
+          }
 
           return (
-            <div
+            <motion.div
               key={file.file_id || index}
+              layout={prefersReducedMotion ? false : "position"}
               role="button"
               tabIndex={0}
               onClick={() => openComparison(index)}
@@ -1962,6 +2042,23 @@ export function ResultActions({
                     <span className="rounded-md border border-primary/20 bg-primary/10 px-2 py-1 text-[10px] font-semibold text-primary">
                       Edited
                     </span>
+                  ) : null}
+                  {reviewLevel.clean ? (
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        setExpandedClean(prev => {
+                          const next = { ...prev }
+                          delete next[fileKey]
+                          return next
+                        })
+                      }}
+                      className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition hover:bg-accent"
+                      aria-label="Collapse clean summary"
+                    >
+                      <ChevronUp className="h-3.5 w-3.5" />
+                    </button>
                   ) : null}
                 </div>
               </div>
@@ -2080,7 +2177,7 @@ export function ResultActions({
                   </Button>
                 ) : null}
               </div>
-            </div>
+            </motion.div>
           )
         }) : (
           <div className="rounded-md border border-dashed border-border bg-card p-5">
