@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { industrySolutions } from '@/lib/industry-solutions'
 import { blogPosts } from '@/lib/blogs'
+import { audienceSolutions } from '@/lib/audience-solutions'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.axliner.com'
@@ -12,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/solutions/data-entry',
   ]
   const industrySolutionRoutes = industrySolutions.map((solution) => `/solutions/${solution.slug}`)
+  const audienceSolutionRoutes = audienceSolutions.map((solution) => `/for-accountants-and-bookkeepers/${solution.slug}`)
   const blogRoutes = blogPosts.map((post) => `/blogs/${post.slug}`)
   
   return [
@@ -98,6 +100,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified,
       changeFrequency: 'weekly' as const,
       priority: 0.75,
+    })),
+    ...audienceSolutionRoutes.map((route) => ({
+      url: `${baseUrl}${route}`,
+      lastModified,
+      changeFrequency: 'weekly' as const,
+      priority: 0.82,
     })),
     {
       url: `${baseUrl}/privacy-policy`,
