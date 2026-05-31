@@ -1,40 +1,102 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import {
   Activity,
   Building2,
+  FileSpreadsheet,
+  FileText,
   History,
   Inbox,
   ReceiptText,
+  RefreshCw,
+  ScanSearch,
   Search,
   Settings,
   Upload,
 } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
 import { cn } from "@/lib/utils"
+import { useHistory, type HistoryJob } from "@/hooks/useHistory"
+
+type CommandGroup = "navigate" | "act" | "find"
 
 type CommandItem = {
   id: string
+  group: CommandGroup
   label: string
   hint: string
+  keywords?: string
   icon: React.ComponentType<{ className?: string }>
   href: string
 }
 
-const NAV_ITEMS: CommandItem[] = [
-  { id: "convert",      label: "Convert Files",      hint: "/dashboard/client",             icon: Upload,      href: "/dashboard/client" },
-  { id: "overview",     label: "Dashboard Overview",  hint: "/dashboard",                    icon: Activity,    href: "/dashboard" },
-  { id: "ap",           label: "Accounts Payable",    hint: "/dashboard/accounts-payable",   icon: ReceiptText, href: "/dashboard/accounts-payable" },
-  { id: "inbox",        label: "Inbox",               hint: "/dashboard/inbox",              icon: Inbox,       href: "/dashboard/inbox" },
-  { id: "history",      label: "History",             hint: "/history",                      icon: History,     href: "/history" },
-  { id: "integrations", label: "Integrations",        hint: "/dashboard/integrations",       icon: Building2,   href: "/dashboard/integrations" },
-  { id: "settings",     label: "Settings",            hint: "/dashboard/settings",           icon: Settings,    href: "/dashboard/settings" },
+const GROUP_LABELS: Record<CommandGroup, string> = {
+  navigate: "Navigate",
+  act: "Act",
+  find: "Find",
+}
+
+const GROUP_ORDER: CommandGroup[] = ["navigate", "act", "find"]
+
+// Navigate — every dashboard route (mirrors WorkspaceSidebar + workflow docs)
+const NAVIGATE_ITEMS: CommandItem[] = [
+  { id: "nav-overview",     group: "navigate", label: "Dashboard Overview", hint: "/dashboard",                    keywords: "home analytics",             icon: Activity,         href: "/dashboard" },
+  { id: "nav-client",       group: "navigate", label: "Convert Files",       hint: "/dashboard/client",             keywords: "upload batch workspace table", icon: Upload,          href: "/dashboard/client" },
+  { id: "nav-auto",         group: "navigate", label: "Auto detect",         hint: "/dashboard/auto-detect",        keywords: "classify",                   icon: ScanSearch,       href: "/dashboard/auto-detect" },
+  { id: "nav-invoices",     group: "navigate", label: "Invoices",            hint: "/dashboard/invoices",           keywords: "bills vendor",               icon: ReceiptText,      href: "/dashboard/invoices" },
+  { id: "nav-receipts",     group: "navigate", label: "Receipts",            hint: "/dashboard/receipts",           keywords: "expense purchase",           icon: ReceiptText,      href: "/dashboard/receipts" },
+  { id: "nav-bank",         group: "navigate", label: "Bank statements",     hint: "/dashboard/bank-statements",    keywords: "transactions",               icon: Building2,        href: "/dashboard/bank-statements" },
+  { id: "nav-notes",        group: "navigate", label: "Notes",               hint: "/dashboard/notes",              keywords: "handwriting",                icon: FileText,         href: "/dashboard/notes" },
+  { id: "nav-ap",           group: "navigate", label: "Accounts Payable",    hint: "/dashboard/accounts-payable",   keywords: "ap queue draft bills",       icon: ReceiptText,      href: "/dashboard/accounts-payable" },
+  { id: "nav-inbox",        group: "navigate", label: "Inbox",               hint: "/dashboard/inbox",              keywords: "intake",                     icon: Inbox,            href: "/dashboard/inbox" },
+  { id: "nav-integrations", group: "navigate", label: "Integrations",        hint: "/dashboard/integrations",       keywords: "quickbooks connect oauth",   icon: Building2,        href: "/dashboard/integrations" },
+  { id: "nav-history",      group: "navigate", label: "History",             hint: "/history",                      keywords: "saved jobs results",         icon: History,          href: "/history" },
+  { id: "nav-settings",     group: "navigate", label: "Settings",            hint: "/dashboard/settings",           keywords: "account billing plan",       icon: Settings,         href: "/dashboard/settings" },
 ]
 
-function fuzzyMatch(label: string, query: string) {
-  return label.toLowerCase().includes(query.toLowerCase())
+// Act — actions that already have a destination (no invented endpoints)
+const ACT_ITEMS: CommandItem[] = [
+  { id: "act-upload",      group: "act", label: "Upload a new batch",      hint: "Convert Files",     keywords: "new add files import scan",    icon: Upload,        href: "/dashboard/client#upload-files" },
+  { id: "act-refresh-qbo", group: "act", label: "Refresh QuickBooks lists", hint: "Integrations",     keywords: "sync vendors accounts tax qbo",icon: RefreshCw,     href: "/dashboard/integrations" },
+  { id: "act-import-pos",  group: "act", label: "Import purchase orders",  hint: "Accounts Payable",  keywords: "po pos bills coding",          icon: FileSpreadsheet, href: "/dashboard/accounts-payable" },
+]
+
+function fuzzyScore(haystack: string, query: string): number {
+  // Subsequence fuzzy match; returns -1 for no match, lower = better (tighter span).
+  const h = haystack.toLowerCase()
+  const q = query.toLowerCase().trim()
+  if (!q) return 0
+  if (h.includes(q)) return h.indexOf(q) // contiguous substrings rank best
+  let hi = 0
+  let qi = 0
+  let firstHit = -1
+  while (hi < h.length && qi < q.length) {
+    if (h[hi] === q[qi]) {
+      if (firstHit === -1) firstHit = hi
+      qi++
+    }
+    hi++
+  }
+  return qi === q.length ? 1000 + firstHit : -1
+}
+
+function searchText(item: CommandItem): string {
+  return `${item.label} ${item.hint} ${item.keywords ?? ""}`
+}
+
+function recentJobToItem(job: HistoryJob, index: number): CommandItem {
+  const name = job.filename || `Job ${job.original_job_id || job.id || index + 1}`
+  return {
+    id: `find-${job.original_job_id || job.id || index}`,
+    group: "find",
+    label: name,
+    hint: "Open in History",
+    keywords: job.status ?? "",
+    icon: FileText,
+    href: "/history",
+  }
 }
 
 interface CommandPaletteProps {
@@ -42,16 +104,52 @@ interface CommandPaletteProps {
   onOpenChange: (open: boolean) => void
 }
 
+// Outer gate: only mount the body (and the useHistory fetch) while the palette is open,
+// so the dashboard never pays for the "Find" source until ⌘K is pressed.
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
+  return (
+    <AnimatePresence>
+      {open && <CommandPaletteBody onOpenChange={onOpenChange} />}
+    </AnimatePresence>
+  )
+}
+
+function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) => void }) {
   const router = useRouter()
   const [query, setQuery] = useState("")
   const [activeIndex, setActiveIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
-  const listRef = useRef<HTMLUListElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
 
-  const filtered = query
-    ? NAV_ITEMS.filter(item => fuzzyMatch(item.label, query))
-    : NAV_ITEMS
+  // Lazily reads recent saved jobs as the "Find" source (client-side hook, no new backend).
+  const { jobs } = useHistory()
+
+  const findItems = useMemo<CommandItem[]>(
+    () => (jobs ?? []).slice(0, 20).map(recentJobToItem),
+    [jobs]
+  )
+
+  // Flat, ordered, fuzzy-filtered list (keeps a single moving selection across groups).
+  const results = useMemo(() => {
+    const base: CommandItem[] = [...NAVIGATE_ITEMS, ...ACT_ITEMS, ...findItems]
+    const q = query.trim()
+    const scored = base
+      .map(item => ({ item, score: fuzzyScore(searchText(item), q) }))
+      .filter(entry => entry.score >= 0)
+    if (q) scored.sort((a, b) => a.score - b.score)
+    return scored.map(entry => entry.item)
+  }, [query, findItems])
+
+  // Group the flat results while preserving the flat index for keyboard nav.
+  const grouped = useMemo(() => {
+    const map = new Map<CommandGroup, { item: CommandItem; flatIndex: number }[]>()
+    results.forEach((item, flatIndex) => {
+      const bucket = map.get(item.group) ?? []
+      bucket.push({ item, flatIndex })
+      map.set(item.group, bucket)
+    })
+    return GROUP_ORDER.filter(g => map.has(g)).map(g => ({ group: g, rows: map.get(g)! }))
+  }, [results])
 
   const execute = useCallback((item: CommandItem) => {
     router.push(item.href)
@@ -59,30 +157,25 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   }, [router, onOpenChange])
 
   useEffect(() => {
-    if (open) {
-      setQuery("")
-      setActiveIndex(0)
-      const t = setTimeout(() => inputRef.current?.focus(), 20)
-      return () => clearTimeout(t)
-    }
-  }, [open])
+    const t = setTimeout(() => inputRef.current?.focus(), 20)
+    return () => clearTimeout(t)
+  }, [])
 
   useEffect(() => {
     setActiveIndex(0)
   }, [query])
 
   useEffect(() => {
-    if (!open) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "ArrowDown") {
         e.preventDefault()
-        setActiveIndex(i => Math.min(i + 1, filtered.length - 1))
+        setActiveIndex(i => Math.min(i + 1, results.length - 1))
       } else if (e.key === "ArrowUp") {
         e.preventDefault()
         setActiveIndex(i => Math.max(i - 1, 0))
       } else if (e.key === "Enter") {
         e.preventDefault()
-        const item = filtered[activeIndex]
+        const item = results[activeIndex]
         if (item) execute(item)
       } else if (e.key === "Escape") {
         onOpenChange(false)
@@ -90,24 +183,25 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  }, [open, filtered, activeIndex, execute, onOpenChange])
+  }, [results, activeIndex, execute, onOpenChange])
 
   useEffect(() => {
-    const el = listRef.current?.children[activeIndex] as HTMLElement | undefined
+    const el = listRef.current?.querySelector<HTMLElement>(`[data-flat-index="${activeIndex}"]`)
     el?.scrollIntoView({ block: "nearest" })
   }, [activeIndex])
 
+  const showFindEmpty =
+    grouped.every(g => g.group !== "find") && findItems.length === 0 && !query
+
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          key="cp-root"
-          className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[18vh]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.14 }}
-        >
+    <motion.div
+      key="cp-root"
+      className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[18vh]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.14 }}
+    >
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
@@ -129,7 +223,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                 ref={inputRef}
                 value={query}
                 onChange={e => setQuery(e.target.value)}
-                placeholder="Search pages…"
+                placeholder="Navigate, act, or find a document…"
                 className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
               />
               <kbd className="hidden rounded-md border border-border bg-muted px-1.5 py-0.5 font-sans text-[10px] font-medium text-muted-foreground sm:block">
@@ -138,55 +232,75 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             </div>
 
             {/* Results */}
-            <div className="max-h-[320px] overflow-y-auto py-1.5">
-              {filtered.length === 0 ? (
+            <div ref={listRef} className="max-h-[340px] overflow-y-auto py-1.5">
+              {results.length === 0 ? (
                 <p className="px-4 py-8 text-center text-sm text-muted-foreground">
                   No results for &ldquo;{query}&rdquo;
                 </p>
               ) : (
-                <motion.ul
-                  ref={listRef}
-                  variants={{ show: { transition: { staggerChildren: 0.03 } } }}
+                <motion.div
+                  variants={{ show: { transition: { staggerChildren: 0.02 } } }}
                   initial="hidden"
                   animate="show"
                 >
-                  {filtered.map((item, index) => {
-                    const Icon = item.icon
-                    const isActive = index === activeIndex
-                    return (
-                      <motion.li
-                        key={item.id}
-                        variants={{
-                          hidden: { opacity: 0, y: 4 },
-                          show: { opacity: 1, y: 0, transition: { duration: 0.12, ease: [0.2, 0, 0, 1] } },
-                        }}
-                      >
-                        <button
-                          type="button"
-                          onMouseEnter={() => setActiveIndex(index)}
-                          onClick={() => execute(item)}
-                          className={cn(
-                            "flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors duration-100",
-                            isActive
-                              ? "bg-accent text-accent-foreground"
-                              : "text-foreground hover:bg-accent/60"
-                          )}
-                        >
-                          <span className={cn(
-                            "flex size-8 shrink-0 items-center justify-center rounded-lg border",
-                            isActive
-                              ? "border-primary/30 bg-primary/10 text-primary"
-                              : "border-border bg-muted/50 text-muted-foreground"
-                          )}>
-                            <Icon className="size-4" />
-                          </span>
-                          <span className="flex-1 truncate text-sm font-medium">{item.label}</span>
-                          <span className="shrink-0 text-xs text-muted-foreground">{item.hint}</span>
-                        </button>
-                      </motion.li>
-                    )
-                  })}
-                </motion.ul>
+                  {grouped.map(({ group, rows }) => (
+                    <div key={group} className="pb-1">
+                      <div className="px-4 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        {GROUP_LABELS[group]}
+                      </div>
+                      <ul>
+                        {rows.map(({ item, flatIndex }) => {
+                          const Icon = item.icon
+                          const isActive = flatIndex === activeIndex
+                          return (
+                            <motion.li
+                              key={item.id}
+                              data-flat-index={flatIndex}
+                              variants={{
+                                hidden: { opacity: 0, y: 4 },
+                                show: { opacity: 1, y: 0, transition: { duration: 0.12, ease: [0.2, 0, 0, 1] } },
+                              }}
+                            >
+                              <button
+                                type="button"
+                                onMouseEnter={() => setActiveIndex(flatIndex)}
+                                onClick={() => execute(item)}
+                                className={cn(
+                                  "flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors duration-100",
+                                  isActive
+                                    ? "bg-accent text-accent-foreground"
+                                    : "text-foreground hover:bg-accent/60"
+                                )}
+                              >
+                                <span className={cn(
+                                  "flex size-8 shrink-0 items-center justify-center rounded-lg border",
+                                  isActive
+                                    ? "border-primary/30 bg-primary/10 text-primary"
+                                    : "border-border bg-muted/50 text-muted-foreground"
+                                )}>
+                                  <Icon className="size-4" />
+                                </span>
+                                <span className="flex-1 truncate text-sm font-medium">{item.label}</span>
+                                <span className="shrink-0 text-xs text-muted-foreground">{item.hint}</span>
+                              </button>
+                            </motion.li>
+                          )
+                        })}
+                      </ul>
+                    </div>
+                  ))}
+
+                  {showFindEmpty && (
+                    <div className="pb-1">
+                      <div className="px-4 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        {GROUP_LABELS.find}
+                      </div>
+                      <p className="px-4 py-3 text-xs text-muted-foreground">
+                        Start typing to search your recent documents.
+                      </p>
+                    </div>
+                  )}
+                </motion.div>
               )}
             </div>
 
@@ -196,9 +310,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               <span className="flex items-center gap-1"><kbd className="font-sans">↵</kbd> open</span>
               <span className="flex items-center gap-1"><kbd className="font-sans">esc</kbd> close</span>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      </motion.div>
+    </motion.div>
   )
 }
