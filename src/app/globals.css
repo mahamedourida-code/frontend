@@ -217,10 +217,12 @@
     animation: fadeInUp 0.5s ease-out forwards;
   }
 
-  /* Content area offset — follows --sidebar-w set by WorkspaceSidebar */
+  /* Content area offset — follows --sidebar-w set by WorkspaceSidebar.
+     Default 56px = the icon rail width (the Tier-2 flyout overlays content,
+     so it never changes this offset). */
   @media (min-width: 768px) {
     .ax-dashboard-content {
-      margin-left: var(--sidebar-w, 252px);
+      margin-left: var(--sidebar-w, 56px);
       transition: margin-left 350ms cubic-bezier(0.2, 0, 0, 1);
     }
   }

@@ -3,19 +3,16 @@
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-import { ArrowRight, ChevronLeft, ChevronRight, Clock3, Loader2, Search } from "lucide-react"
+import { ChevronLeft, ChevronRight, Clock3, Loader2, Search } from "lucide-react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
-import { GlobalTopicMenus } from "@/components/GlobalTopicMenus"
 import { NotificationsBell } from "@/components/NotificationsBell"
 import { HelpMenu } from "@/components/HelpMenu"
 import { MobileNav } from "@/components/MobileNav"
 import { CommandPalette } from "@/components/CommandPalette"
-import { DashboardCreditsPill } from "@/components/DashboardCreditsPill"
-import { BillingSeal } from "@/components/BillingGlyphs"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { AccountMenu } from "@/components/AccountMenu"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { ocrApi, type RecoverableJobSummary } from "@/lib/api-client"
@@ -143,9 +140,6 @@ export function DashboardShell({
     return null
   }, [processingState, recoverableJob])
 
-  const nextActionHref = activeItem === "process" ? "/history" : "/dashboard/client"
-  const nextActionLabel = activeItem === "process" ? "History" : "Convert Files"
-
   const breadcrumb = useMemo(() => {
     const PAGE_LABELS: Record<string, string> = {
       "": "Overview",
@@ -217,32 +211,24 @@ export function DashboardShell({
                   </motion.span>
                 </AnimatePresence>
               </div>
-
-              {/* ── B2: global topic mega-menus ──────────────────────────────
-                  Automations · Insights · Connections — compact grouped panels
-                  of shortcuts into existing routes (not new features). Sits
-                  right after the breadcrumb so it reads as global shortcuts,
-                  not workspace nav. */}
-              <nav aria-label="Global topics" className="ms-3 hidden items-center lg:flex">
-                <GlobalTopicMenus />
-              </nav>
             </div>
 
-            {/* CENTER: global ⌘K search — "find anything, anywhere" */}
-            <div className="ms-auto me-auto hidden min-w-0 flex-1 justify-center px-2 md:flex lg:max-w-sm">
+            {/* CENTER (the bar's main element): global ⌘K search */}
+            <div className="me-auto hidden min-w-0 flex-1 justify-center px-2 md:flex">
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive group inline-flex h-9 w-full max-w-xs items-center gap-2 rounded-full border border-border bg-muted/40 px-3.5 text-sm text-muted-foreground transition-colors hover:border-border hover:bg-muted/70 hover:text-foreground"
+                className="ax-interactive group inline-flex h-10 w-full max-w-xl items-center gap-2.5 rounded-full border border-border bg-muted/40 px-4 text-sm text-muted-foreground transition-colors hover:border-border hover:bg-muted/70 hover:text-foreground"
               >
                 <Search className="size-4 shrink-0 opacity-70" />
-                <span className="truncate">Search…</span>
+                <span className="truncate">Search documents, vendors, batches…</span>
                 <kbd className="ms-auto hidden shrink-0 rounded-md border border-border bg-background px-1.5 py-0.5 font-sans text-[10px] font-medium text-muted-foreground sm:inline-flex">
                   ⌘K
                 </kbd>
               </button>
             </div>
 
+            {/* RIGHT: calm cluster — job pill, notifications, help, upgrade, account */}
             <div className="ms-auto flex min-w-0 items-center gap-2">
               {/* Mobile: compact ⌘K search trigger (full bar lives on md+) */}
               <button
@@ -252,16 +238,6 @@ export function DashboardShell({
               >
                 <Search className="size-4" />
               </button>
-
-              {/* ── B3 MOUNT POINT: notifications bell + panel ──────────────
-                  Drop the bell trigger (with unread badge) + dropdown here.
-                  Keep it a single rounded-full icon button to match the cluster. */}
-              <NotificationsBell />
-
-              {/* ── B4 MOUNT POINT: help & "what's new" menu ────────────────
-                  Drop the "?" menu trigger + dropdown here (shortcuts, docs,
-                  contact, changelog dot). Single rounded-full icon button. */}
-              <HelpMenu />
 
               {activeJob && (
                 <Link
@@ -283,30 +259,21 @@ export function DashboardShell({
                 </Link>
               )}
 
-              <div className="hidden h-9 items-center gap-2 rounded-full border border-border bg-card px-3.5 text-sm font-semibold text-foreground sm:inline-flex">
-                <BillingSeal className="size-4 text-foreground" />
-                <span>{billingLoading && !billingStatus ? "Plan" : formatPlan(plan)}</span>
-              </div>
+              <NotificationsBell />
+              <HelpMenu />
 
-              <DashboardCreditsPill credits={availableCredits} className="hidden sm:inline-flex" />
-              <ThemeToggle />
-
-              {isPaid ? (
-                <Button asChild size="sm" variant="outline">
-                  <Link href="/dashboard/settings?section=billing">Manage billing</Link>
-                </Button>
-              ) : (
-                <Button asChild variant="lime" className="h-9 px-5 text-[13px] font-bold">
+              {!isPaid && (
+                <Button asChild variant="lime" className="hidden h-9 px-5 text-[13px] font-bold sm:inline-flex">
                   <Link href="/pricing">Upgrade</Link>
                 </Button>
               )}
 
-              <Button asChild size="sm" variant="outline" className="hidden lg:inline-flex">
-                <Link href={nextActionHref}>
-                  {nextActionLabel}
-                  <ArrowRight className="ms-2 size-4" />
-                </Link>
-              </Button>
+              <AccountMenu
+                user={user}
+                planLabel={billingLoading && !billingStatus ? "Plan" : formatPlan(plan)}
+                credits={availableCredits}
+                billingLoading={billingLoading && !billingStatus}
+              />
 
               {actions}
             </div>
