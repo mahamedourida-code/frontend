@@ -10,6 +10,7 @@ import { AppLogo } from "@/components/AppIcon";
 import { BrandVisualFrame } from "@/components/BrandVisual";
 import { VideoPlaceholder } from "@/components/landing/VideoPlaceholder";
 import { FeatureHoverCards } from "@/components/landing/FeatureHoverCards";
+import { VerifiableShowcase } from "@/components/landing/VerifiableShowcase";
 
 import NextLink from "next/link";
 import { GoogleOneTap } from "@/components/GoogleOneTap";
@@ -554,6 +555,9 @@ export default function Home() {
           </div>
         </div>
         </div>
+
+        {/* ── Verifiable, not invisible — black-box AI vs AxLiner ── */}
+        <VerifiableShowcase />
 
         <div className="relative isolate overflow-hidden">
           <div
