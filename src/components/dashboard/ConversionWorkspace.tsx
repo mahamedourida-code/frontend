@@ -3355,7 +3355,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                 </div>
                 <details
                   className="group mt-3 rounded-[18px] bg-[var(--button-warm)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.82),0_0_0_1px_var(--button-warm-ring),0_1px_3px_0_rgba(84,59,32,0.12)]"
-                  defaultOpen={otherModeSelected}
+                  open={otherModeSelected || undefined}
                 >
                   <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3 text-left [&::-webkit-details-marker]:hidden">
                     <span>
