@@ -5,6 +5,7 @@ import {
   AlertCircle,
   ArrowRight,
   Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
@@ -81,8 +82,6 @@ export type WorkspaceBanner = {
 
 type OutputMode = "table" | "text" | "csv"
 type ResultFilter = "all" | "needs_review" | "ready" | "edited" | "failed" | "published"
-type WorkspaceMode = DocumentMode | "text"
-
 type ResultFile = {
   file_id?: string
   filename?: string
@@ -349,7 +348,7 @@ function ResumeBatchBanner({
         </div>
       </div>
       <Button
-        variant="surface"
+        variant="warm"
         onClick={onContinueLatestJob}
         disabled={recoveryLoading}
         className="h-9 px-4"
@@ -360,49 +359,64 @@ function ResumeBatchBanner({
   )
 }
 
-function ModeGlyph({ mode }: { mode: WorkspaceMode }) {
-  if (mode === "auto") {
-    return (
-      <svg viewBox="0 0 28 28" fill="none" className="size-6" aria-hidden="true">
-        <path d="M14 4.5v4M14 19.5v4M4.5 14h4M19.5 14h4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-        <path d="M9.25 9.25 7 7m11.75 2.25L21 7M9.25 18.75 7 21m11.75-2.25L21 21" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-        <circle cx="14" cy="14" r="3.5" stroke="currentColor" strokeWidth="1.7" />
-      </svg>
-    )
-  }
+type WorkspaceModeOption = {
+  value: Exclude<DocumentMode, "invoice_receipt">
+  label: string
+  helper: string
+  image: string
+  visual: string
+}
 
-  if (mode === "bank_statement") {
-    return (
-      <svg viewBox="0 0 28 28" fill="none" className="size-6" aria-hidden="true">
-        <path d="M4 10.5 14 5l10 5.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M6.5 12.5h15M8.5 12.5v8m5.5-8v8m5.5-8v8M5.5 22.5h17" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      </svg>
-    )
-  }
-
-  if (mode === "invoice" || mode === "receipt" || mode === "invoice_receipt") {
-    return (
-      <svg viewBox="0 0 28 28" fill="none" className="size-6" aria-hidden="true">
-        <path d="M8 4.5h12v19l-3-2-3 2-3-2-3 2v-19Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-        <path d="M11 10h6M11 14h6M11 18h4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      </svg>
-    )
-  }
-
-  if (mode === "notes" || mode === "text") {
-    return (
-      <svg viewBox="0 0 28 28" fill="none" className="size-6" aria-hidden="true">
-        <path d="M7 5.5h14v17H7z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-        <path d="M10 10h8M10 14h8M10 18h5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      </svg>
-    )
-  }
-
+function ModeOptionCard({
+  mode,
+  isSelected,
+  isProcessing,
+  compact = false,
+  onSelect,
+}: {
+  mode: WorkspaceModeOption
+  isSelected: boolean
+  isProcessing: boolean
+  compact?: boolean
+  onSelect: (mode: WorkspaceModeOption["value"]) => void
+}) {
   return (
-    <svg viewBox="0 0 28 28" fill="none" className="size-6" aria-hidden="true">
-      <rect x="5" y="6" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M5 11.5h18M11 6v16M17 6v16" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
+    <button
+      type="button"
+      aria-pressed={isSelected}
+      onClick={() => onSelect(mode.value)}
+      disabled={isProcessing}
+      className={cn(
+        "group relative overflow-hidden rounded-[20px] border bg-card p-2.5 text-left shadow-[0_8px_24px_-18px_rgba(15,23,42,0.42)] transition-[transform,border-color,background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        isSelected
+          ? "border-[var(--brand-green-ring)] bg-[#f2fff9] shadow-[0_14px_30px_-20px_rgba(5,150,105,0.6)]"
+          : !isProcessing && "hover:-translate-y-1 hover:border-[var(--button-surface-ring)] hover:shadow-[0_18px_30px_-22px_rgba(15,23,42,0.5)]",
+        isProcessing && "cursor-not-allowed opacity-60"
+      )}
+    >
+      <span className={cn("relative block overflow-hidden rounded-[15px] border border-black/[0.04]", compact ? "h-16" : "h-24", mode.visual)}>
+        <img
+          src={mode.image}
+          alt=""
+          className={cn(
+            "h-full w-full object-contain transition-transform duration-300",
+            compact ? "p-3" : "p-4",
+            !isProcessing && "group-hover:scale-[1.04]"
+          )}
+        />
+        {isSelected ? (
+          <span className="absolute right-2 top-2 rounded-full border border-[var(--brand-green-ring)] bg-[var(--brand-green)] px-2 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[var(--brand-green-fg)] shadow-sm">
+            Selected
+          </span>
+        ) : null}
+      </span>
+      <span className={cn("block px-1 pb-1", compact ? "pt-2.5" : "pt-3")}>
+        <span className="block truncate text-[15px] font-bold text-foreground">{mode.label}</span>
+        <span className="mt-0.5 block truncate text-[13px] font-medium text-muted-foreground">
+          {mode.helper}
+        </span>
+      </span>
+    </button>
   )
 }
 
@@ -1195,13 +1209,12 @@ function correctedFilename(filename?: string) {
 
 function formatDocumentType(type?: string) {
   const labels: Record<string, string> = {
-    auto: "Auto detect",
+    auto: "Auto-detect",
     table: "Table",
     invoice: "Invoice",
     receipt: "Receipt",
     bank_statement: "Bank statement",
     notes: "Notes",
-    invoice_receipt: "Invoice / receipt",
     needs_manual_selection: "Select type",
   }
   return labels[type || ""] || "Document"
@@ -1977,7 +1990,7 @@ export function ResultActions({
             <Button
               onClick={onSaveToHistory}
               disabled={isSaving}
-              variant="surface"
+              variant="warm"
               className="h-9 gap-2 px-3 shadow-xs"
             >
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
@@ -2366,7 +2379,7 @@ export function ResultActions({
                 {file.document_type === "invoice" && ["ready", "published"].includes(file.review_status || "") ? (
                   <Button
                     size="sm"
-                    variant="surface"
+                    variant="warm"
                     onClick={(event) => {
                       event.stopPropagation()
                       void onSendToAccountsPayable?.(file)
@@ -2466,7 +2479,7 @@ export function ResultActions({
               {comparisonFile.document_type === "invoice" && ["ready", "published"].includes(comparisonFile.review_status || "") ? (
                 <Button
                   size="sm"
-                  variant="surface"
+                  variant="warm"
                   onClick={() => void onSendToAccountsPayable?.(comparisonFile)}
                   className="h-9 px-3 text-xs"
                 >
@@ -3248,58 +3261,55 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
       ? "invoice"
       : documentMode
   const expectedOutputs = Math.max(creditEstimate || 0, uploadedFiles.length)
-  const modeOptions = [
+  const primaryModeOptions = [
     {
       value: "auto",
-      label: "Auto detect",
-      helper: "Classify each file",
-      image: "/icons/doc-types-v2/auto-detect.png",
+      label: "Auto-detect",
+      helper: "Best for mixed folders",
+      image: "/icons/doc-types-v3/auto-detect.png",
       visual: "bg-[#eefaf7]",
-      icon: "text-[#087a50]",
-    },
-    {
-      value: "table",
-      label: "Table",
-      helper: "Rows and columns",
-      image: "/icons/doc-types-v2/table.png",
-      visual: "bg-[#ebfbf3]",
-      icon: "text-[#098451]",
     },
     {
       value: "invoice",
-      label: "Invoice",
+      label: "Supplier invoices",
       helper: "Bills and line items",
-      image: "/icons/doc-types-v2/invoice.png",
+      image: "/icons/doc-types-v3/invoice.png",
       visual: "bg-[#fff3ea]",
-      icon: "text-[#dd6d2f]",
     },
     {
       value: "receipt",
-      label: "Receipt",
+      label: "Receipts",
       helper: "Merchant and total",
-      image: "/icons/doc-types-v2/receipt.png",
+      image: "/icons/doc-types-v3/receipt.png",
       visual: "bg-[#fff4eb]",
-      icon: "text-[#c95b1f]",
     },
     {
       value: "bank_statement",
-      label: "Bank statement",
+      label: "Bank statements",
       helper: "Text + transactions",
-      image: "/icons/doc-types-v2/bank-statement.png",
+      image: "/icons/doc-types-v3/bank-statement.png",
       visual: "bg-[#eef5ff]",
-      icon: "text-[#3275d5]",
+    },
+  ] as const satisfies readonly WorkspaceModeOption[]
+  const otherModeOptions = [
+    {
+      value: "table",
+      label: "Tables and spreadsheets",
+      helper: "Rows and columns",
+      image: "/icons/doc-types-v3/table.png",
+      visual: "bg-[#ebfbf3]",
     },
     {
       value: "notes",
-      label: "Notes",
-      helper: "Handwritten pages",
-      image: "/icons/doc-types-v2/notes.png",
+      label: "Notes and handwritten pages",
+      helper: "Readable text",
+      image: "/icons/doc-types-v3/notes.png",
       visual: "bg-[#f4efff]",
-      icon: "text-[#7755d8]",
     },
-  ] as const
+  ] as const satisfies readonly WorkspaceModeOption[]
+  const otherModeSelected = otherModeOptions.some(mode => mode.value === selectedMode)
 
-  const handleModeChange = (mode: typeof modeOptions[number]["value"]) => {
+  const handleModeChange = (mode: WorkspaceModeOption["value"]) => {
     onDocumentModeChange?.(mode)
     onOutputModeChange(mode === "notes" ? "text" : "table")
   }
@@ -3320,65 +3330,53 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
               <section aria-labelledby="workspace-tools-title">
                 <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#087a50]">Extraction tools</p>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#087a50]">Accounting workflows</p>
                     <h2 id="workspace-tools-title" className="mt-1 text-xl font-bold tracking-tight text-foreground">
-                      Choose the shape of your batch
+                      Choose the workflow for this batch
                     </h2>
                     <p className="mt-1 max-w-xl text-sm font-medium text-muted-foreground">
-                      Use auto detect for mixed folders, or set one structure for every file.
+                      Use auto-detect for mixed folders, or choose the document type you expect.
                     </p>
                   </div>
                   <span className="w-fit rounded-full border border-[var(--brand-green-ring)] bg-[var(--brand-green)] px-3 py-1 text-xs font-semibold text-[var(--brand-green-fg)]">
-                    6 document workflows
+                    4 primary presets
                   </span>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {modeOptions.map((mode) => {
-                    const isSelected = selectedMode === mode.value
-
-                    return (
-                      <button
-                        key={mode.value}
-                        type="button"
-                        aria-pressed={isSelected}
-                        onClick={() => handleModeChange(mode.value)}
-                        disabled={isProcessing}
-                        className={cn(
-                          "group relative overflow-hidden rounded-[22px] border bg-card p-2.5 text-left shadow-[0_8px_24px_-18px_rgba(15,23,42,0.42)] transition-[transform,border-color,background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                          isSelected
-                            ? "border-[var(--brand-green-ring)] bg-[#f2fff9] shadow-[0_14px_30px_-20px_rgba(5,150,105,0.6)]"
-                            : !isProcessing && "hover:-translate-y-1 hover:border-[var(--brand-green-ring)] hover:shadow-[0_18px_30px_-22px_rgba(15,23,42,0.5)]",
-                          isProcessing && "cursor-not-allowed opacity-60"
-                        )}
-                      >
-                        <span className={cn("relative block h-28 overflow-hidden rounded-[16px] border border-black/[0.04]", mode.visual)}>
-                          <img
-                            src={mode.image}
-                            alt=""
-                            className={cn(
-                              "h-full w-full object-cover transition-transform duration-300",
-                              !isProcessing && "group-hover:scale-[1.04]"
-                            )}
-                          />
-                          <span className={cn("absolute left-2.5 top-2.5 flex size-9 items-center justify-center rounded-xl border border-white/90 bg-white/85 shadow-sm backdrop-blur", mode.icon)}>
-                            <ModeGlyph mode={mode.value} />
-                          </span>
-                          {isSelected ? (
-                            <span className="absolute right-2.5 top-2.5 rounded-full border border-[var(--brand-green-ring)] bg-[var(--brand-green)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--brand-green-fg)] shadow-sm">
-                              Selected
-                            </span>
-                          ) : null}
-                        </span>
-                        <span className="block px-1 pb-1 pt-3">
-                          <span className="block truncate text-[15px] font-bold text-foreground">{mode.label}</span>
-                          <span className="mt-0.5 block truncate text-[13px] font-medium text-muted-foreground">
-                            {mode.helper}
-                          </span>
-                        </span>
-                      </button>
-                    )
-                  })}
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                  {primaryModeOptions.map(mode => (
+                    <ModeOptionCard
+                      key={mode.value}
+                      mode={mode}
+                      isSelected={selectedMode === mode.value}
+                      isProcessing={isProcessing}
+                      onSelect={handleModeChange}
+                    />
+                  ))}
                 </div>
+                <details
+                  className="group mt-3 rounded-[18px] bg-[var(--button-warm)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.82),0_0_0_1px_var(--button-warm-ring),0_1px_3px_0_rgba(84,59,32,0.12)]"
+                  defaultOpen={otherModeSelected}
+                >
+                  <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3 text-left [&::-webkit-details-marker]:hidden">
+                    <span>
+                      <span className="block text-sm font-bold text-[var(--button-ink)]">More document types</span>
+                      <span className="mt-0.5 block text-xs font-medium text-black/55">Tables and notes</span>
+                    </span>
+                    <ChevronDown className="ml-auto size-4 text-[var(--button-ink)] transition-transform duration-200 group-open:rotate-180" />
+                  </summary>
+                  <div className="grid gap-3 border-t border-[var(--button-warm-ring)]/45 p-3 sm:grid-cols-2">
+                    {otherModeOptions.map(mode => (
+                      <ModeOptionCard
+                        key={mode.value}
+                        mode={mode}
+                        isSelected={selectedMode === mode.value}
+                        isProcessing={isProcessing}
+                        compact
+                        onSelect={handleModeChange}
+                      />
+                    ))}
+                  </div>
+                </details>
                 <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
                   <span id="output-format-label" className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
                     Output format
