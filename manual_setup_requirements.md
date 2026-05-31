@@ -217,6 +217,27 @@ There is no live PO sync yet, so open POs are loaded by CSV:
 - **Live QBO/Xero PO sync** is not yet implemented (the `source` column already supports `qbo`/`xero` for when it lands). Today POs come from CSV import.
 - Matching is at the **document/total level** (2-way: invoice ↔ PO total), not line-level 3-way (PO ↔ receipt ↔ invoice). The "Exceeds" flag fires when the invoice total is greater than the PO total, and publish asks for confirmation before proceeding.
 
+## Prompt A5 - Marketing Outcome Stat Band (figures are placeholders)
+
+The animated count-up band in `src/components/landing/OutcomeStats.tsx` (rendered on the public
+landing page) shows four outcome figures — **1.2M+ invoices reviewed · 78% pre-coded by memory ·
+38k+ duplicates caught · 60k+ hours saved**. These are **tasteful static marketing targets**, kept
+consistent with the hero proof strip so they never contradict. They are **not** wired to live
+aggregate data.
+
+No provider credentials are needed. To replace them with real aggregates later:
+
+1. The marketing page is public (no auth), so per-account data can't be read client-side. Add a
+   small **public, cached, non-sensitive** aggregate endpoint on the backend (e.g.
+   `GET /api/v1/public/outcome-stats` returning rounded totals only — never per-user data), surfaced
+   through `src/lib/api-client.ts`.
+2. Derive the totals heuristically from existing analytics (documents reviewed, vendor-rule
+   pre-fills, duplicate flags, an hours-saved heuristic) — no new model.
+3. Feed the fetched numbers into the `STATS` targets in `OutcomeStats.tsx`; the `useCountUp`
+   animation and reduced-motion handling stay as-is.
+
+Until then, keep the numbers honest and round, and keep them in sync with the hero proof strip.
+
 ## Rule For Later Prompts
 
 After each later prompt, append a new section here only if it adds a manual provider step, API credential, dashboard configuration, compliance action, or user authorization step. If a prompt needs no manual action, do not add a section.
