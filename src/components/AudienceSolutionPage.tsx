@@ -1,12 +1,5 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  Check,
-  CircleCheck,
-  FileSpreadsheet,
-  FolderOpen,
-  ScanSearch,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { MarketingNavBar } from "@/components/MarketingNavBar";
 import { Button } from "@/components/ui/button";
@@ -16,237 +9,158 @@ import {
   getAudienceSolutionBySlug,
 } from "@/lib/audience-solutions";
 
-function ReviewBoardPreview({ solution }: { solution: AudienceSolution }) {
-  const Icon = solution.icon;
-
-  return (
-    <div className="mx-auto w-full max-w-[610px]">
-      <div className="overflow-hidden rounded-[30px] border border-black/10 bg-white shadow-[0_24px_70px_-34px_rgba(15,23,42,0.32)]">
-        <div className="flex items-center justify-between border-b border-black/8 bg-[#fffdf8] px-5 py-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <span className="flex size-10 items-center justify-center rounded-2xl border border-emerald-600/15 bg-[#d1fae5] text-[#064e3b]">
-              <Icon className="size-5" />
-            </span>
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-900/60">
-                Batch review
-              </p>
-              <p className="mt-1 text-sm font-bold text-[#171717]">May close / Client 04</p>
-            </div>
-          </div>
-          <span className="rounded-full border border-emerald-600/20 bg-[#d1fae5] px-3 py-1 text-[11px] font-bold text-[#064e3b]">
-            In review
-          </span>
-        </div>
-
-        <div className="grid gap-4 p-4 sm:grid-cols-[0.92fr_1.08fr] sm:p-5">
-          <div className="rounded-[22px] border border-black/8 bg-[#fbfaf6] p-3">
-            <div className="flex items-center gap-2 px-1 pb-3">
-              <FolderOpen className="size-4 text-emerald-800" />
-              <p className="text-xs font-bold text-[#171717]">Mixed client batch</p>
-            </div>
-
-            <div className="space-y-2">
-              {[
-                ["Vendor invoices", "18 documents", "Reviewed"],
-                ["Expense receipts", "12 documents", "Review"],
-                ["Bank statement", "3 pages", "Ready"],
-              ].map(([title, meta, status], index) => (
-                <div
-                  key={title}
-                  className="rounded-2xl border border-black/8 bg-white px-3 py-3 shadow-[0_3px_12px_-10px_rgba(15,23,42,0.5)]"
-                >
-                  <div className="flex items-start gap-2.5">
-                    <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-xl bg-[#f4f1e9] text-[#31312f]">
-                      {index === 1 ? <ScanSearch className="size-3.5" /> : <FileSpreadsheet className="size-3.5" />}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate text-[12px] font-bold text-[#171717]">{title}</p>
-                      <p className="mt-1 text-[11px] text-black/50">{meta}</p>
-                    </div>
-                  </div>
-                  <div className="mt-3 flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-black/35">
-                      {status}
-                    </span>
-                    <span
-                      className={`size-2 rounded-full ${
-                        index === 1 ? "bg-amber-400" : "bg-emerald-500"
-                      }`}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-[22px] border border-emerald-800/10 bg-[#effcf4] p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-900/55">
-                  Exception review
-                </p>
-                <p className="mt-1.5 text-sm font-bold text-[#173c31]">Receipt 08 / Total</p>
-              </div>
-              <span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-amber-700 shadow-sm">
-                Check field
-              </span>
-            </div>
-
-            <div className="mt-4 rounded-[18px] border border-emerald-900/10 bg-white p-3.5 shadow-sm">
-              <div className="h-2 w-2/3 rounded-full bg-black/10" />
-              <div className="mt-2 h-2 w-5/6 rounded-full bg-black/8" />
-              <div className="mt-5 rounded-xl border border-dashed border-emerald-700/25 bg-[#f8fff9] px-3 py-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-900/50">
-                  Extracted total
-                </p>
-                <p className="mt-1 text-lg font-bold tracking-[-0.03em] text-[#173c31]">$1,248.60</p>
-              </div>
-            </div>
-
-            <div className="mt-4 flex items-center gap-2 rounded-2xl bg-[#d1fae5] px-3 py-3 text-[#064e3b]">
-              <CircleCheck className="size-4 shrink-0" />
-              <p className="text-[11px] font-bold leading-4">Source and corrected row stay together.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function AudienceSolutionPage({ solution }: { solution: AudienceSolution }) {
+  const SolutionIcon = solution.icon;
+
   return (
-    <main className="min-h-screen overflow-hidden bg-[#fbfaf6] text-[#171717]">
+    <main className="ax-marketing-page min-h-screen overflow-hidden bg-white text-black">
       <MarketingNavBar />
 
-      <section className="mx-auto grid max-w-[1500px] gap-12 px-4 pb-16 pt-32 sm:px-5 lg:grid-cols-[0.94fr_1.06fr] lg:items-center lg:px-9 lg:pb-24 lg:pt-40">
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-600/20 bg-[#d1fae5] px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#064e3b]">
-            <solution.icon className="size-4" />
-            {solution.eyebrow}
-          </div>
+      <header className="border-b-2 border-black bg-white">
+        <div className="mx-auto max-w-[1500px] px-4 pb-14 pt-32 sm:px-5 sm:pb-16 lg:px-9 lg:pb-20 lg:pt-40">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-end">
+            <div>
+              <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.24em] text-black">
+                <SolutionIcon className="size-4 text-emerald-700" />
+                {solution.eyebrow}
+              </p>
+              <h1 className="ax-marketing-display mt-5 max-w-6xl text-4xl font-bold leading-[1.02] tracking-[-0.055em] text-black sm:text-6xl lg:text-[74px]">
+                {solution.headline}
+              </h1>
+              <p className="ax-marketing-lead mt-7 max-w-4xl text-justify text-xl font-semibold leading-8 text-black sm:text-[22px] sm:leading-9">
+                {solution.summary}
+              </p>
 
-          <h1 className="mt-7 max-w-3xl text-[2.75rem] font-bold leading-[0.98] tracking-[-0.065em] text-[#171717] sm:text-[4rem] lg:text-[5rem]">
-            {solution.headline}
-          </h1>
-          <p className="mt-7 max-w-2xl text-base font-medium leading-7 text-black/66 sm:text-lg sm:leading-8">
-            {solution.summary}
-          </p>
-          <p className="mt-4 max-w-2xl text-sm font-semibold leading-6 text-black/70 sm:text-base sm:leading-7">
-            {solution.proof}
-          </p>
+              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+                <Button variant="glossy" size="lg" asChild className="font-bold">
+                  <Link href="/sign-up?next=%2Fdashboard%2Fclient">
+                    Start free
+                    <ArrowRight className="size-4" />
+                  </Link>
+                </Button>
+                <Link
+                  href="/pricing"
+                  className="border-b border-black pb-0.5 text-sm font-bold uppercase tracking-[0.14em] text-black transition-colors hover:border-emerald-700 hover:text-emerald-800"
+                >
+                  See plans
+                </Link>
+              </div>
+            </div>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button variant="glossy" size="lg" asChild className="font-bold">
-              <Link href="/sign-up?next=%2Fdashboard%2Fclient">
-                Start free
-                <ArrowRight className="size-4" />
-              </Link>
-            </Button>
-            <Button variant="surface" size="lg" asChild className="font-bold">
-              <Link href="/pricing">See plans</Link>
-            </Button>
+            <aside className="border-t-2 border-black pt-5 lg:border-l lg:border-t-0 lg:pb-1 lg:pl-7 lg:pt-0">
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-black">Why it matters</p>
+              <p className="ax-marketing-prose mt-3 text-justify text-[17px] font-semibold leading-7 text-black">
+                {solution.proof}
+              </p>
+            </aside>
           </div>
         </div>
+      </header>
 
-        <ReviewBoardPreview solution={solution} />
-      </section>
-
-      <section className="border-y border-emerald-900/8 bg-[#d1fae5]">
-        <div className="mx-auto grid max-w-[1500px] gap-px px-4 sm:grid-cols-3 sm:px-5 lg:px-9">
+      <section className="ax-marketing-band-mint border-b border-black/20 bg-[#d1fae5]">
+        <div className="mx-auto grid max-w-[1500px] px-4 sm:grid-cols-3 sm:px-5 lg:px-9">
           {solution.signals.map((signal) => (
-            <div key={signal.value} className="border-emerald-900/10 py-6 sm:border-l sm:px-6 sm:last:border-r">
-              <p className="text-xl font-bold tracking-[-0.04em] text-[#064e3b]">{signal.value}</p>
-              <p className="mt-1 text-sm font-semibold text-[#064e3b]/70">{signal.label}</p>
+            <div
+              key={signal.value}
+              className="border-b border-black/20 py-6 last:border-b-0 sm:border-b-0 sm:border-l sm:px-6 sm:last:border-r"
+            >
+              <p className="text-xl font-bold tracking-[-0.035em] text-black">{signal.value}</p>
+              <p className="mt-1 text-base font-semibold leading-6 text-black">{signal.label}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1500px] px-4 py-20 sm:px-5 lg:px-9 lg:py-28">
-        <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
+      <section className="bg-white">
+        <div className="mx-auto grid max-w-[1500px] gap-10 px-4 py-16 sm:px-5 sm:py-20 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-20 lg:px-9 lg:py-28">
           <div className="max-w-xl">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-emerald-800">Built for review</p>
-            <h2 className="mt-4 text-3xl font-bold leading-[1.04] tracking-[-0.055em] text-[#171717] sm:text-5xl">
-              Batch work stays useful when the reviewer can still see the accounting story.
+            <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-800">Built for review</p>
+            <h2 className="ax-marketing-section-title mt-4 text-3xl font-bold leading-[1.08] tracking-[-0.045em] text-black sm:text-5xl">
+              Accounting work stays useful when the reviewer can still see the story.
             </h2>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-3">
-            {solution.benefits.map((benefit) => (
-              <div
+          <div>
+            {solution.benefits.map((benefit, index) => (
+              <article
                 key={benefit.title}
-                className="rounded-[24px] border border-black/8 bg-white p-5 shadow-[0_18px_45px_-36px_rgba(15,23,42,0.5)]"
+                className="grid gap-3 border-t border-black/25 py-6 sm:grid-cols-[56px_minmax(0,1fr)] sm:gap-5 sm:py-7 last:border-b"
               >
-                <span className="flex size-9 items-center justify-center rounded-full bg-[#d1fae5] text-[#064e3b]">
-                  <Check className="size-4" />
-                </span>
-                <h3 className="mt-7 text-lg font-bold tracking-[-0.03em] text-[#171717]">{benefit.title}</h3>
-                <p className="mt-3 text-sm font-medium leading-6 text-black/58">{benefit.description}</p>
-              </div>
+                <p className="text-[11px] font-bold tracking-[0.2em] text-emerald-800">
+                  {String(index + 1).padStart(2, "0")}
+                </p>
+                <div>
+                  <h3 className="text-2xl font-bold leading-tight tracking-[-0.035em] text-black">
+                    {benefit.title}
+                  </h3>
+                  <p className="ax-marketing-prose mt-3 text-justify text-[18px] font-semibold leading-8 text-black">
+                    {benefit.description}
+                  </p>
+                </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1500px] px-4 pb-20 sm:px-5 lg:px-9 lg:pb-28">
-        <div className="overflow-hidden rounded-[32px] border border-emerald-900/10 bg-[#d1fae5] px-5 py-7 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
-          <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#064e3b]/65">A controlled handoff</p>
-              <h2 className="mt-4 max-w-xl text-3xl font-bold leading-[1.03] tracking-[-0.055em] text-[#064e3b] sm:text-5xl">
-                Clear steps from folder intake to reviewed output.
-              </h2>
-            </div>
-
-            <div className="grid gap-3">
-              {solution.workflow.map((step, index) => (
-                <div
-                  key={step.title}
-                  className="grid gap-3 rounded-[22px] border border-emerald-900/10 bg-white/75 p-4 sm:grid-cols-[auto_1fr] sm:items-start sm:p-5"
-                >
-                  <span className="flex size-9 items-center justify-center rounded-full bg-[#064e3b] text-xs font-bold text-white">
-                    0{index + 1}
-                  </span>
-                  <div>
-                    <h3 className="text-base font-bold tracking-[-0.02em] text-[#173c31]">{step.title}</h3>
-                    <p className="mt-1 text-sm font-medium leading-6 text-[#064e3b]/65">{step.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+      <section className="ax-marketing-band-warm border-y border-black/20 bg-[#f7f3e9]">
+        <div className="mx-auto grid max-w-[1500px] gap-10 px-4 py-16 sm:px-5 sm:py-20 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-20 lg:px-9 lg:py-24">
+          <div className="max-w-xl">
+            <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-black">A controlled handoff</p>
+            <h2 className="ax-marketing-section-title mt-4 text-3xl font-bold leading-[1.08] tracking-[-0.045em] text-black sm:text-5xl">
+              Clear steps from intake to reviewed output.
+            </h2>
+            <p className="ax-marketing-prose mt-5 text-justify text-[18px] font-semibold leading-8 text-black">
+              Keep the batch visible from the moment the files arrive until corrected work is ready for export or
+              publish.
+            </p>
           </div>
+
+          <ol>
+            {solution.workflow.map((step, index) => (
+              <li
+                key={step.title}
+                className="grid gap-3 border-t border-black/25 py-6 sm:grid-cols-[56px_minmax(0,1fr)] sm:gap-5 sm:py-7 last:border-b"
+              >
+                <p className="text-[11px] font-bold tracking-[0.2em] text-black">
+                  {String(index + 1).padStart(2, "0")}
+                </p>
+                <div>
+                  <h3 className="text-2xl font-bold leading-tight tracking-[-0.035em] text-black">{step.title}</h3>
+                  <p className="ax-marketing-prose mt-3 text-justify text-[18px] font-semibold leading-8 text-black">
+                    {step.description}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1500px] px-4 pb-20 sm:px-5 lg:px-9 lg:pb-28">
-        <div className="grid gap-8 border-t border-black/10 pt-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-start">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-emerald-800">Keep exploring</p>
-            <h2 className="mt-4 text-2xl font-bold tracking-[-0.045em] text-[#171717] sm:text-3xl">
-              Related accounting workflows
-            </h2>
-          </div>
+      <section className="bg-white">
+        <div className="mx-auto max-w-[1500px] px-4 py-16 sm:px-5 sm:py-20 lg:px-9 lg:py-24">
+          <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-800">Keep exploring</p>
+          <h2 className="ax-marketing-section-title mt-4 text-3xl font-bold leading-tight tracking-[-0.04em] text-black sm:text-4xl">
+            Related accounting workflows
+          </h2>
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            {solution.related.map((slug) => {
+          <div className="mt-8">
+            {solution.related.map((slug, index) => {
               const relatedSolution = getAudienceSolutionBySlug(slug);
-              const Icon = relatedSolution.icon;
 
               return (
                 <Link
                   key={slug}
                   href={audienceSolutionHref(slug)}
-                  className="group rounded-[22px] border border-black/8 bg-white p-4 outline-none transition-[border-color,transform,box-shadow] hover:-translate-y-0.5 hover:border-emerald-600/30 hover:shadow-[0_18px_36px_-30px_rgba(6,78,59,0.5)] focus-visible:ring-2 focus-visible:ring-emerald-500"
+                  className="group grid gap-3 border-t border-black/25 py-5 text-black transition-colors hover:text-emerald-800 sm:grid-cols-[56px_minmax(0,1fr)_auto] sm:items-center sm:gap-5 last:border-b"
                 >
-                  <span className="flex size-9 items-center justify-center rounded-2xl bg-[#f4f1e9] text-[#31312f] transition-colors group-hover:bg-[#d1fae5] group-hover:text-[#064e3b]">
-                    <Icon className="size-4" />
+                  <span className="text-[11px] font-bold tracking-[0.2em]">
+                    {String(index + 1).padStart(2, "0")}
                   </span>
-                  <span className="mt-5 flex items-center justify-between gap-3 text-sm font-bold text-[#171717]">
+                  <span className="text-xl font-bold leading-tight tracking-[-0.025em]">
                     {relatedSolution.menuLabel}
-                    <ArrowRight className="size-4 shrink-0 transition-transform group-hover:translate-x-1" />
                   </span>
+                  <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               );
             })}
@@ -254,17 +168,17 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
         </div>
       </section>
 
-      <section className="border-t border-black/8 bg-white">
-        <div className="mx-auto flex max-w-[1500px] flex-col gap-7 px-4 py-16 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-9 lg:py-20">
+      <section className="ax-marketing-band-mint border-t-2 border-black bg-[#d1fae5]">
+        <div className="mx-auto flex max-w-[1500px] flex-col gap-7 px-4 py-14 sm:px-5 sm:py-16 lg:flex-row lg:items-center lg:justify-between lg:px-9 lg:py-20">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-emerald-800">Ready for the next batch</p>
-            <h2 className="mt-4 max-w-3xl text-3xl font-bold leading-[1.04] tracking-[-0.055em] text-[#171717] sm:text-5xl">
+            <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-black">Ready for the next batch</p>
+            <h2 className="ax-marketing-section-title mt-4 max-w-4xl text-3xl font-bold leading-[1.06] tracking-[-0.045em] text-black sm:text-5xl">
               Bring the folder. Keep the review step.
             </h2>
           </div>
-          <Button variant="ink" size="lg" asChild className="w-fit font-bold">
+          <Button variant="ink" size="lg" asChild className="w-fit shrink-0 font-bold">
             <Link href="/sign-up?next=%2Fdashboard%2Fclient">
-              Create an account
+              Start free
               <ArrowRight className="size-4" />
             </Link>
           </Button>
