@@ -8,6 +8,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
+import { GlobalTopicMenus } from "@/components/GlobalTopicMenus"
 import { MobileNav } from "@/components/MobileNav"
 import { CommandPalette } from "@/components/CommandPalette"
 import { DashboardCreditsPill } from "@/components/DashboardCreditsPill"
@@ -215,14 +216,14 @@ export function DashboardShell({
                 </AnimatePresence>
               </div>
 
-              {/* ── B2 MOUNT POINT: global topic mega-menus ──────────────────
-                  Place 2–3 click/hover dropdowns here (Automations · Insights ·
-                  Connections). Render them as a sibling group right after the
-                  breadcrumb so they read as global shortcuts, not workspace nav.
-                  Leave this slot empty until B2 fills it in. */}
-              {/* <nav aria-label="Global topics" className="ms-3 hidden items-center gap-1 lg:flex">
-                    …B2 topic menus go here…
-                  </nav> */}
+              {/* ── B2: global topic mega-menus ──────────────────────────────
+                  Automations · Insights · Connections — compact grouped panels
+                  of shortcuts into existing routes (not new features). Sits
+                  right after the breadcrumb so it reads as global shortcuts,
+                  not workspace nav. */}
+              <nav aria-label="Global topics" className="ms-3 hidden items-center lg:flex">
+                <GlobalTopicMenus />
+              </nav>
             </div>
 
             {/* CENTER: global ⌘K search — "find anything, anywhere" */}
