@@ -4,9 +4,11 @@ import { useCallback, useEffect, useRef, useState, type ChangeEvent, type DragEv
 import {
   AlertCircle,
   ArrowRight,
+  Check,
   ChevronLeft,
   ChevronRight,
   Download,
+  Eye,
   FileImage,
   FileSpreadsheet,
   FileText,
@@ -27,7 +29,9 @@ import { AnomalyChip } from "@/components/dashboard/AnomalyChip"
 import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
 import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
 import { SourceHighlightOverlay } from "@/components/dashboard/SourceHighlightOverlay"
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { duplicateCopy } from "@/lib/anomaly-reasons"
+import { fieldAttention } from "@/lib/field-attention"
 import { reconciliationTotalCopy } from "@/lib/source-highlight"
 import { getRowConfidenceTier, isHandwrittenDocument } from "@/lib/handwritten"
 import {
@@ -1415,6 +1419,15 @@ export function ResultActions({
   // C2 — source highlighting: the field value currently hovered/focused, so we
   // can text-match it against the document and float a source excerpt.
   const [activeSource, setActiveSource] = useState<{ value: string; label: string } | null>(null)
+  // C3 — "Review only the uncertain fields": when on, the field grid collapses
+  // the confident fields and shows only the few that need the user. null = use
+  // the per-document default (on when there ARE uncertain fields). false/true =
+  // the user's explicit choice for the currently open document.
+  const [onlyUncertain, setOnlyUncertain] = useState<boolean | null>(null)
+  // C3 — fields the user has confirmed in-place this session, so a confirmed
+  // field drops out of the "needs you" set without waiting on a round-trip.
+  const [confirmedFields, setConfirmedFields] = useState<Record<string, true>>({})
+  const prefersReducedMotion = useReducedMotion()
   const [editedTables, setEditedTables] = useState<Record<string, any[][]>>({})
   const [resultFilter, setResultFilter] = useState<ResultFilter>("all")
   const [reviewedDownloadBusy, setReviewedDownloadBusy] = useState(false)
@@ -1520,6 +1533,21 @@ export function ResultActions({
   // C2 — "why" for a flagged total (line items vs. stated total), reusing the
   // C7 anomaly-chip voice. Null when it reconciles or can't be checked.
   const comparisonTotalCopy = comparisonFile ? reconciliationTotalCopy(reviewData(comparisonFile)) : null
+  // C3 — per-field attention: empty / "not found" fields and the flagged total
+  // are the ones that "need you". `attention` is keyed by field path so the
+  // render can decide visibility, confirm state, and the "why" reason.
+  const fieldAttentionByPath: Record<string, ReturnType<typeof fieldAttention>> = {}
+  comparisonFields.forEach((field) => {
+    const flagged = field.path === "total" ? comparisonTotalCopy : null
+    fieldAttentionByPath[field.path] = fieldAttention(field, flagged)
+  })
+  const uncertainFieldPaths = comparisonFields
+    .filter((field) => fieldAttentionByPath[field.path]?.needsReview && !confirmedFields[field.path])
+    .map((field) => field.path)
+  const uncertainCount = uncertainFieldPaths.length
+  // Default the toggle on only when there is something to triage; honour the
+  // user's explicit choice once they've made one for this document.
+  const collapseConfident = onlyUncertain === null ? uncertainCount > 0 : onlyUncertain
   const comparisonColumnCount = Math.max(1, ...comparisonTable.map(row => row.length))
   const editedCount = Object.keys(editedTables).length
   const unresolvedDuplicateCount = safeResultFiles.reduce(
@@ -1614,8 +1642,12 @@ export function ResultActions({
   }, [comparisonIndex, safeResultFiles.length])
 
   // C2 — clear any source highlight when the comparison closes or switches docs.
+  // C3 — also reset the "only uncertain" choice and in-session confirmations so
+  // each document starts from its own default.
   useEffect(() => {
     setActiveSource(null)
+    setOnlyUncertain(null)
+    setConfirmedFields({})
   }, [comparisonIndex])
 
   if (!safeResultFiles.length) return null
@@ -2464,48 +2496,141 @@ export function ResultActions({
                       </div>
                     ) : null}
                     {comparisonFields.length ? (
-                      <div className="grid gap-px border-b border-border bg-border sm:grid-cols-2">
-                        {comparisonFields.map(field => {
-                          // C2 — flagged total carries a "why" chip (reconciliation gap).
-                          const totalCopy = field.path === "total" ? comparisonTotalCopy : null
-                          // C2 — hovering/focusing a field highlights its source on the document.
-                          const showSource = () => {
-                            if (field.value) setActiveSource({ value: field.value, label: field.label })
-                          }
-                          return (
-                          <label
-                            key={field.path}
-                            className="bg-white px-3 py-2.5"
-                            onMouseEnter={showSource}
-                            onMouseLeave={() => setActiveSource(null)}
-                            onFocus={showSource}
-                          >
-                            <span className="mb-1 flex items-center gap-1.5 text-[11px] font-medium text-gray-500">
-                              {field.label}
-                              {totalCopy ? (
-                                <AnomalyChip
-                                  tone={totalCopy.tone}
-                                  title={totalCopy.title}
-                                  reason={totalCopy.reason}
-                                  label="Why"
-                                  side="top"
-                                  className="h-5"
-                                />
-                              ) : null}
+                      <>
+                        {/* C3 — "Review only the uncertain fields": a calm summary + toggle.
+                            When there's nothing to triage we say so; otherwise we offer the
+                            focused view and a way back to the full document. */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-gray-50/70 px-4 py-2.5">
+                          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-700">
+                            {uncertainCount > 0 ? (
+                              <>
+                                <span className="inline-block size-1.5 shrink-0 rounded-full bg-amber-400" />
+                                {uncertainCount} of {comparisonFields.length} field{comparisonFields.length === 1 ? "" : "s"} need{uncertainCount === 1 ? "s" : ""} you
+                              </>
+                            ) : (
+                              <>
+                                <Check className="size-3.5 shrink-0 text-emerald-600" />
+                                Every field reads cleanly
+                              </>
+                            )}
+                          </span>
+                          {uncertainCount > 0 || collapseConfident ? (
+                            <button
+                              type="button"
+                              onClick={() => setOnlyUncertain(!collapseConfident)}
+                              className="ax-interactive inline-flex h-7 items-center gap-1.5 rounded-full border border-border bg-white px-3 text-[11px] font-semibold text-gray-700 hover:bg-gray-50"
+                            >
+                              {collapseConfident ? (
+                                <>
+                                  <Eye className="size-3.5" />
+                                  Review full document
+                                </>
+                              ) : (
+                                "Only fields that need you"
+                              )}
+                            </button>
+                          ) : null}
+                        </div>
+                        <div className="grid gap-px border-b border-border bg-border sm:grid-cols-2">
+                          <AnimatePresence initial={false}>
+                            {comparisonFields.map(field => {
+                              // C2 — flagged total carries a "why" chip (reconciliation gap).
+                              const totalCopy = field.path === "total" ? comparisonTotalCopy : null
+                              const attention = fieldAttentionByPath[field.path]
+                              const needsYou = Boolean(attention?.needsReview) && !confirmedFields[field.path]
+                              // When collapsed, only the fields that still need you are shown.
+                              if (collapseConfident && !needsYou) return null
+                              // C2 — hovering/focusing a field highlights its source on the document.
+                              const showSource = () => {
+                                if (field.value) setActiveSource({ value: field.value, label: field.label })
+                              }
+                              return (
+                              <motion.label
+                                key={field.path}
+                                layout={prefersReducedMotion ? false : "position"}
+                                initial={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
+                                animate={prefersReducedMotion ? {} : { opacity: 1, height: "auto" }}
+                                exit={prefersReducedMotion ? {} : { opacity: 0, height: 0 }}
+                                transition={{ duration: 0.18, ease: [0.04, 0.62, 0.23, 0.98] }}
+                                className={cn(
+                                  "block overflow-hidden bg-white px-3 py-2.5",
+                                  needsYou && "bg-amber-50/40",
+                                )}
+                                onMouseEnter={showSource}
+                                onMouseLeave={() => setActiveSource(null)}
+                                onFocus={showSource}
+                              >
+                                <span className="mb-1 flex items-center gap-1.5 text-[11px] font-medium text-gray-500">
+                                  {field.label}
+                                  {totalCopy ? (
+                                    <AnomalyChip
+                                      tone={totalCopy.tone}
+                                      title={totalCopy.title}
+                                      reason={totalCopy.reason}
+                                      label="Why"
+                                      side="top"
+                                      className="h-5"
+                                    />
+                                  ) : needsYou && attention?.reason ? (
+                                    <AnomalyChip
+                                      tone={attention.reason.tone}
+                                      title={attention.reason.title}
+                                      reason={attention.reason.reason}
+                                      label="Why"
+                                      side="top"
+                                      className="h-5"
+                                    />
+                                  ) : null}
+                                </span>
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    defaultValue={field.value}
+                                    onBlur={(event) => {
+                                      if (event.target.value !== field.value) {
+                                        void updateStructuredValue(comparisonFile, [field.path], event.target.value)
+                                      }
+                                    }}
+                                    className="ax-interactive h-8 w-full rounded-md border border-transparent bg-gray-50 px-2 text-sm font-medium text-gray-950 outline-none focus:border-primary/35 focus:bg-white focus:ring-2 focus:ring-primary/15"
+                                  />
+                                  {needsYou ? (
+                                    <button
+                                      type="button"
+                                      onClick={() => setConfirmedFields(prev => ({ ...prev, [field.path]: true }))}
+                                      className="ax-interactive inline-flex h-8 shrink-0 items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 text-[11px] font-semibold text-emerald-800 hover:bg-emerald-100"
+                                      aria-label={`Confirm ${field.label}`}
+                                    >
+                                      <Check className="size-3.5" />
+                                      Looks right
+                                    </button>
+                                  ) : null}
+                                </div>
+                              </motion.label>
+                              )
+                            })}
+                          </AnimatePresence>
+                        </div>
+                        {/* C3 — once nothing's left to triage in the collapsed view, offer the
+                            existing "mark reviewed" handler as the single next step. */}
+                        {collapseConfident && uncertainCount === 0 ? (
+                          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-emerald-50/50 px-4 py-2.5">
+                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800">
+                              <Check className="size-3.5 shrink-0" />
+                              Nothing left to check on this document.
                             </span>
-                            <input
-                              defaultValue={field.value}
-                              onBlur={(event) => {
-                                if (event.target.value !== field.value) {
-                                  void updateStructuredValue(comparisonFile, [field.path], event.target.value)
-                                }
-                              }}
-                              className="ax-interactive h-8 w-full rounded-md border border-transparent bg-gray-50 px-2 text-sm font-medium text-gray-950 outline-none focus:border-primary/35 focus:bg-white focus:ring-2 focus:ring-primary/15"
-                            />
-                          </label>
-                          )
-                        })}
-                      </div>
+                            {comparisonFile.document_id && !["ready", "published", "failed", "deleted"].includes(comparisonFile.review_status || "") ? (
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="reviewed"
+                                onClick={() => void onMarkDocumentReady?.(comparisonFile)}
+                                className="h-8 rounded-full px-3 text-xs"
+                              >
+                                Mark reviewed
+                              </Button>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </>
                     ) : null}
                     {comparisonRows?.rows.length ? (
                       <>
