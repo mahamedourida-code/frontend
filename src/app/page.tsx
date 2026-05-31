@@ -10,6 +10,7 @@ import { AppLogo } from "@/components/AppIcon";
 import { BrandVisualFrame } from "@/components/BrandVisual";
 import { VideoPlaceholder } from "@/components/landing/VideoPlaceholder";
 import { FeatureHoverCards } from "@/components/landing/FeatureHoverCards";
+import { MessyRealityShowcase } from "@/components/landing/MessyRealityShowcase";
 
 import NextLink from "next/link";
 import { GoogleOneTap } from "@/components/GoogleOneTap";
@@ -535,6 +536,9 @@ export default function Home() {
 
           </div>
         </div>
+
+        {/* ── Messy reality → clean reviewed entry (A2 proof section) ── */}
+        <MessyRealityShowcase />
 
         {/* Why Choose Us Section — black band, white text */}
         <ScrollAnimatedSection id="features" className="relative z-20 bg-emerald-100 pt-20 pb-24 lg:pt-24 lg:pb-28">
