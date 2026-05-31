@@ -1110,6 +1110,29 @@ function activeDuplicateWarnings(file: ResultFile) {
 }
 
 /**
+ * C14 — scale review depth by stakes. Invoices whose total lands at/above this
+ * amount auto-expand with full source evidence and a soft "high value" cue,
+ * even when they're otherwise clean; smaller clean ones still collapse to a
+ * one-line confirm (C4). Pure presentation over the already-extracted total —
+ * no new model, no backend call. Edit this single constant to retune the bar.
+ * (Radiology: more depth when the stakes are higher.)
+ */
+const HIGH_VALUE_THRESHOLD = 5000
+
+/** Parse a numeric magnitude out of a display amount like "USD 1,240.50". */
+function parseAmountValue(amount: unknown): number | null {
+  if (amount === undefined || amount === null) return null
+  const parsed = Number(String(amount).replace(/[^\d.-]/g, ""))
+  return Number.isNaN(parsed) ? null : Math.abs(parsed)
+}
+
+/** True when the document's total reads at/above the high-value threshold. */
+function isHighValue(file: ResultFile): boolean {
+  const value = parseAmountValue(resultSummary(file).amount)
+  return value !== null && value >= HIGH_VALUE_THRESHOLD
+}
+
+/**
  * C4 — collapse the review board by risk. Reuses the C1 review-score idea
  * (High / Review / Flagged → emerald / amber / rose) but reads the signals we
  * already derive for the conversion queue via `getOutputBadge`. A card is
@@ -1117,24 +1140,33 @@ function activeDuplicateWarnings(file: ResultFile) {
  * failed, no live duplicate warning. Clean cards collapse to a quiet one-line
  * summary; risky ones stay expanded with the full evidence. Aggregation only —
  * no new model, no backend call.
+ *
+ * C14 layers stakes on top: a clean card whose total is high-value (`highValue`)
+ * still auto-expands so the reviewer sees the full source evidence — it stays
+ * emerald/clean in tone (nothing is wrong) but carries a soft amber
+ * "high value — worth a double-check" cue rendered alongside.
  */
 function deriveReviewLevel(file: ResultFile, badge: ReturnType<typeof getOutputBadge>): {
   clean: boolean
   tone: AnomalyTone
   summaryLabel: string
+  highValue: boolean
 } {
   if (badge.state === "failed") {
-    return { clean: false, tone: "risk", summaryLabel: "Needs your attention" }
+    return { clean: false, tone: "risk", summaryLabel: "Needs your attention", highValue: false }
   }
   if (badge.state === "needs_review" || activeDuplicateWarnings(file).length) {
-    return { clean: false, tone: "caution", summaryLabel: "Needs review" }
+    return { clean: false, tone: "caution", summaryLabel: "Needs review", highValue: false }
   }
   // Only the genuinely clean, confident pile collapses. Published / edited
   // cards stay expanded — they carry their own state the reviewer just acted on.
   if (badge.state === "ready") {
-    return { clean: true, tone: "good", summaryLabel: "Looks clean" }
+    // C14 — a high-value clean invoice stays expanded for a closer look, but
+    // remains "clean" in tone; only `clean` (the collapse trigger) flips off.
+    const highValue = isHighValue(file)
+    return { clean: !highValue, tone: "good", summaryLabel: "Looks clean", highValue }
   }
-  return { clean: false, tone: "good", summaryLabel: badge.label }
+  return { clean: false, tone: "good", summaryLabel: badge.label, highValue: false }
 }
 
 const vendorRuleInputs: Array<{ key: keyof VendorRuleFields; label: string; placeholder: string }> = [
@@ -2197,6 +2229,18 @@ export function ResultActions({
                           {line.verdict.label}
                         </span>
                       </span>
+                    ) : null}
+                    {/* C14 — a soft "high value" cue on otherwise-clean invoices
+                        whose total clears the threshold. Caution (amber) tone,
+                        never rose: nothing is wrong, it just earns a second look. */}
+                    {reviewLevel.highValue ? (
+                      <AnomalyChip
+                        tone="caution"
+                        title="High value"
+                        reason="This total is high enough to be worth a second look — we've kept the full source evidence open."
+                        label="High value — worth a double-check"
+                        className="h-5 shrink-0"
+                      />
                     ) : null}
                   </p>
                 )

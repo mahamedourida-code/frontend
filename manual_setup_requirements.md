@@ -246,6 +246,14 @@ No provider credentials are needed. To replace them with real aggregates later:
 
 Until then, keep the numbers honest and round, and keep them in sync with the hero proof strip.
 
+## C14 - High-value review threshold (tuning knob)
+
+No provider step. The amount above which an otherwise-clean invoice auto-expands with full
+source evidence and a soft "high value — worth a double-check" cue (instead of collapsing to a
+one-line confirm) is a single editable constant: `HIGH_VALUE_THRESHOLD` in
+`src/components/dashboard/ConversionWorkspace.tsx` (default `5000`). Edit that one number to
+retune the bar; it is pure presentation over the extracted total — no migration, no backend change.
+
 ## Rule For Later Prompts
 
 After each later prompt, append a new section here only if it adds a manual provider step, API credential, dashboard configuration, compliance action, or user authorization step. If a prompt needs no manual action, do not add a section.
