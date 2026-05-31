@@ -2,25 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  BookOpen,
-  Download,
-  Eye,
-  FolderOpen,
-  Inbox,
-  Layers,
-  Link2,
-  ReceiptText,
-  ScanLine,
-  Users,
-  Workflow,
-} from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Sparkles } from "lucide-react";
 
 import { AppLogo } from "@/components/AppIcon";
 import { MobileNav } from "@/components/MobileNav";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -30,104 +16,125 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  AudienceSolution,
+  audienceSolutionGroups,
+  audienceSolutionHref,
+  getAudienceSolutionBySlug,
+  primaryAudienceSlugs,
+} from "@/lib/audience-solutions";
 import { cn } from "@/lib/utils";
 
-/* ── Data ────────────────────────────────────────────────────── */
+const primaryAudienceSolutions = primaryAudienceSlugs.map(getAudienceSolutionBySlug);
 
-type AudienceLink = {
-  label: string;
-  description: string;
-  href: string;
-  Icon: React.ComponentType<{ className?: string }>;
-};
+function PrimaryAudienceLink({ solution }: { solution: AudienceSolution }) {
+  const Icon = solution.icon;
 
-const bookkeeperLinks: AudienceLink[] = [
-  { label: "Document extraction",       description: "Invoices, receipts, bank statements, handwritten notes", href: "/dashboard/client",       Icon: ScanLine    },
-  { label: "Review board",              description: "Source image + editable cells, side by side",            href: "/dashboard/client",       Icon: Eye         },
-  { label: "Mixed batch auto-detect",   description: "Drop a whole folder — AxLiner classifies each file",    href: "/dashboard/auto-detect",  Icon: Layers      },
-  { label: "Export to Excel / CSV",     description: "One file or the full batch, clean and ready",           href: "/dashboard/client",       Icon: Download    },
-  { label: "QuickBooks publishing",     description: "Draft Bill posted with original document attached",     href: "/dashboard/integrations", Icon: ArrowUpRight },
-  { label: "Client upload links",       description: "Clients submit directly — no account needed",           href: "/dashboard/inbox",        Icon: Link2       },
-];
-
-const practiceLinks: AudienceLink[] = [
-  { label: "Batch processing",          description: "Up to 50 files, mixed types, one job",                 href: "/dashboard/client",           Icon: FolderOpen  },
-  { label: "Team reviewer access",      description: "Invite colleagues — they review, you publish",         href: "/dashboard/settings",         Icon: Users       },
-  { label: "AP queue + QuickBooks",     description: "Code, approve, and bulk-publish bills in one screen",  href: "/dashboard/accounts-payable", Icon: ReceiptText },
-  { label: "Vendor memory rules",       description: "Auto-fill coding for recurring suppliers",             href: "/dashboard/settings",         Icon: BookOpen    },
-  { label: "Inbox & client intake",     description: "Watch folder, email forwarding, intake links",         href: "/dashboard/inbox",            Icon: Inbox       },
-  { label: "Workflows",                 description: "Routing rules for multi-step document review",         href: "/dashboard/workflows",        Icon: Workflow    },
-];
-
-/* ── Mega-dropdown panel ─────────────────────────────────────── */
-
-/* ── Link row used inside both halves of the merged panel ── */
-function FeatureLinkRow({ link, index }: { link: AudienceLink; index: number }) {
   return (
-    <Link
-      href={link.href}
-      style={{ animationDelay: `${index * 28}ms` }}
-      className={cn(
-        "group flex items-start gap-3 rounded-lg px-3 py-2.5",
-        "ax-interactive ax-fade-in hover:bg-accent",
-      )}
-    >
-      <span className="mt-[1px] flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-background shadow-xs transition-[border-color,background] duration-[180ms] group-hover:border-primary/30 group-hover:bg-primary/5">
-        <link.Icon className="size-[15px] text-muted-foreground transition-[color,transform] duration-[180ms] group-hover:translate-x-px group-hover:text-primary" />
-      </span>
-      <div className="min-w-0">
-        <p className="text-[13.5px] font-semibold leading-none text-foreground">{link.label}</p>
-        <p className="mt-[5px] text-[12px] leading-snug text-muted-foreground">{link.description}</p>
-      </div>
-    </Link>
+    <NavigationMenuLink asChild>
+      <Link
+        href={audienceSolutionHref(solution.slug)}
+        className="group flex items-center gap-3 rounded-[18px] border border-black/8 bg-white px-4 py-4 text-[#171717] outline-none transition-[border-color,box-shadow,transform] hover:-translate-y-0.5 hover:border-emerald-600/30 hover:bg-white hover:shadow-[0_15px_28px_-24px_rgba(6,78,59,0.55)] focus-visible:ring-2 focus-visible:ring-emerald-500"
+      >
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-[#d1fae5] text-[#064e3b]">
+          <Icon className="size-5" />
+        </span>
+        <span className="text-sm font-bold tracking-[-0.02em]">{solution.menuLabel}</span>
+        <ArrowRight className="ml-auto size-4 shrink-0 text-emerald-800 transition-transform group-hover:translate-x-1" />
+      </Link>
+    </NavigationMenuLink>
   );
 }
 
-/* ── Merged audience mega-panel ── */
-function MergedAudiencePanel() {
+function SecondaryAudienceLink({ solution }: { solution: AudienceSolution }) {
   return (
-    <div className="w-[820px] overflow-hidden rounded-xl">
+    <NavigationMenuLink asChild>
+      <Link
+        href={audienceSolutionHref(solution.slug)}
+        className="group flex items-center gap-2 rounded-full border border-black/8 bg-white px-3.5 py-2 text-[12px] font-bold text-[#31312f] outline-none transition-[border-color,background-color,color] hover:border-emerald-600/30 hover:bg-[#d1fae5] hover:text-[#064e3b] focus-visible:ring-2 focus-visible:ring-emerald-500"
+      >
+        {solution.menuLabel}
+        <ArrowRight className="size-3 shrink-0 opacity-35 transition-[opacity,transform] group-hover:translate-x-0.5 group-hover:opacity-100" />
+      </Link>
+    </NavigationMenuLink>
+  );
+}
 
-      {/* Top: two columns of feature links */}
-      <div className="grid grid-cols-2 divide-x divide-border">
-        {/* Left column — solo bookkeepers */}
-        <div className="space-y-px p-4">
-          <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
-            Solo Bookkeepers
+function AudienceMegaMenu() {
+  return (
+    <div className="w-[960px] overflow-hidden rounded-[26px] border border-black/8 bg-[#fffdf8] text-[#171717] shadow-[0_26px_75px_-34px_rgba(15,23,42,0.38)]">
+      <div className="grid grid-cols-[0.92fr_1.08fr]">
+        <div className="border-r border-black/8 bg-[#f7f3e9] p-7">
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-800">
+            <BriefcaseBusiness className="size-3.5" />
+            Built for client work
+          </div>
+          <h2 className="mt-4 max-w-sm text-[27px] font-bold leading-[1.02] tracking-[-0.055em] text-[#171717]">
+            Move the whole accounting batch forward.
+          </h2>
+          <p className="mt-3 max-w-sm text-sm font-medium leading-6 text-black/58">
+            Choose the workspace that fits your practice, then explore the review flow around it.
           </p>
-          {bookkeeperLinks.map((link, i) => (
-            <FeatureLinkRow key={link.label} link={link} index={i} />
-          ))}
+
+          <div className="mt-6 space-y-2.5">
+            <p className="px-1 text-[10px] font-bold uppercase tracking-[0.19em] text-black/38">
+              Choose your fit
+            </p>
+            {primaryAudienceSolutions.map((solution) => (
+              <PrimaryAudienceLink key={solution.slug} solution={solution} />
+            ))}
+          </div>
         </div>
 
-        {/* Right column — accounting practices */}
-        <div className="space-y-px p-4">
-          <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
-            Accounting Practices
-          </p>
-          {practiceLinks.map((link, i) => (
-            <FeatureLinkRow key={link.label} link={link} index={i + 6} />
-          ))}
+        <div className="p-7">
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-800">
+            <Sparkles className="size-3.5" />
+            Explore the workflow
+          </div>
+
+          <div className="mt-5 space-y-5">
+            {audienceSolutionGroups.map((group) => {
+              const Icon = group.icon;
+
+              return (
+                <div
+                  key={group.label}
+                  className="grid grid-cols-[150px_1fr] gap-4 border-b border-black/8 pb-5 last:border-b-0 last:pb-0"
+                >
+                  <div>
+                    <span className="flex size-8 items-center justify-center rounded-xl bg-[#d1fae5] text-[#064e3b]">
+                      <Icon className="size-4" />
+                    </span>
+                    <p className="mt-3 text-sm font-bold tracking-[-0.02em] text-[#171717]">{group.label}</p>
+                    <p className="mt-1 text-[11px] font-medium leading-4 text-black/48">{group.description}</p>
+                  </div>
+                  <div className="flex content-start flex-wrap items-start gap-2 pt-0.5">
+                    {group.slugs.map((slug) => (
+                      <SecondaryAudienceLink key={slug} solution={getAudienceSolutionBySlug(slug)} />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      {/* Bottom: horizontal CTA strip */}
-      <div className="flex items-center justify-between gap-6 border-t border-border bg-muted/40 px-5 py-4">
-        <p
-          className="text-[13.5px] font-bold leading-snug tracking-[-0.005em] text-foreground"
-          style={{ fontVariantNumeric: "tabular-nums" }}
-        >
-          &ldquo;Built for solo bookkeepers and firms alike — without per-client minimums.&rdquo;
+      <div className="flex items-center justify-between gap-6 border-t border-emerald-900/10 bg-[#d1fae5] px-7 py-4">
+        <p className="max-w-xl text-[13px] font-bold leading-5 text-[#064e3b]">
+          Built around batch intake, exception review, and controlled accounting handoff.
         </p>
-        <Button variant="glossy" asChild className="h-9 shrink-0 px-5 text-[13px] font-bold">
-          <Link href="/sign-up?next=%2Fdashboard%2Fclient">Start free →</Link>
+        <Button variant="glossy" asChild className="h-9 shrink-0 px-4 text-[12px] font-bold">
+          <Link href={audienceSolutionHref("batch-review-board")}>
+            See the review board
+            <ArrowRight className="size-3.5" />
+          </Link>
         </Button>
       </div>
     </div>
   );
 }
-
-/* ── Nav bar ─────────────────────────────────────────────────── */
 
 type MarketingNavBarProps = {
   onSectionClick?: (sectionId: string) => void;
@@ -145,7 +152,6 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
     return () => window.removeEventListener("scroll", update);
   }, []);
 
-  /* shared flat-link style — bigger, bolder for visual consistency with body copy */
   const flatLink = cn(
     navigationMenuTriggerStyle(),
     "rounded-none bg-transparent px-3.5 text-[15.5px] font-bold text-foreground",
@@ -153,13 +159,11 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
     "focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent",
   );
 
-  /* audience trigger style — adds sliding underline on open */
   const audienceTrigger = cn(
     "relative h-9 rounded-none bg-transparent px-3.5 text-[15.5px] font-bold",
     "text-foreground transition-colors hover:bg-transparent hover:text-emerald-700",
-    "focus:bg-transparent focus:ring-0",
+    "focus:bg-transparent focus:ring-0 focus-visible:ring-2 focus-visible:ring-emerald-500",
     "data-[state=open]:bg-transparent data-[state=open]:text-emerald-700",
-    /* underline: a pseudo-element via after: Tailwind arbitrary */
     "after:absolute after:inset-x-3.5 after:bottom-0 after:h-[2px] after:origin-left",
     "after:scale-x-0 after:rounded-full after:bg-emerald-700 after:transition-transform after:duration-[140ms] after:ease-out",
     "data-[state=open]:after:scale-x-100",
@@ -176,45 +180,41 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
       )}
     >
       <div className="mx-auto flex h-full max-w-[1500px] items-center justify-between px-4 sm:px-5 lg:px-9">
-
-        {/* Logo */}
         <Link href="/" aria-label="AxLiner home" className="flex-shrink-0">
           <AppLogo className="h-7 w-auto" />
         </Link>
 
-        {/* Desktop nav ─────────────────── */}
         <div className="hidden flex-1 items-center justify-center lg:flex">
-          <NavigationMenu>
+          <NavigationMenu viewport={false}>
             <NavigationMenuList className="gap-0">
-
-              {/* Audience — merged into one consistent dropdown */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger className={audienceTrigger}>
                   For Accountants &amp; Bookkeepers
                 </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <MergedAudiencePanel />
+                <NavigationMenuContent className="-left-[240px] xl:-left-[180px] 2xl:-left-[120px]">
+                  <AudienceMegaMenu />
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
-              {/* Flat links */}
               <NavigationMenuItem>
-                <NavigationMenuLink href="/pricing" className={flatLink}>
-                  Pricing
+                <NavigationMenuLink asChild>
+                  <Link href="/pricing" className={flatLink}>
+                    Pricing
+                  </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuLink href="/blogs" className={flatLink}>
-                  Blog
+                <NavigationMenuLink asChild>
+                  <Link href="/blogs" className={flatLink}>
+                    Blog
+                  </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
-
             </NavigationMenuList>
           </NavigationMenu>
         </div>
 
-        {/* Right actions ───────────────── */}
         <div className="hidden items-center gap-2 lg:flex">
           {loading ? (
             <div className="h-9 w-[170px]" aria-hidden="true" />
@@ -231,18 +231,13 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
               >
                 <Link href="/sign-in?next=%2Fdashboard%2Fclient">Log in</Link>
               </Button>
-              <Button
-                variant="ink"
-                asChild
-                className="h-10 px-5 text-sm font-bold"
-              >
+              <Button variant="ink" asChild className="h-10 px-5 text-sm font-bold">
                 <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign up</Link>
               </Button>
             </>
           )}
         </div>
 
-        {/* Mobile ─────────────────────── */}
         {loading ? (
           <div className="h-10 w-10 lg:hidden" aria-hidden="true" />
         ) : (

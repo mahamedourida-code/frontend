@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,6 +23,12 @@ import { BillingSeal } from "@/components/BillingGlyphs"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { WorkspaceSwitcher } from "@/components/WorkspaceSwitcher"
 import {
+  audienceSolutionGroups,
+  audienceSolutionHref,
+  getAudienceSolutionBySlug,
+  primaryAudienceSlugs,
+} from "@/lib/audience-solutions"
+import {
   Menu,
   ChevronRight,
   Home,
@@ -36,16 +43,7 @@ import {
   ReceiptText,
   Building2,
   Inbox,
-  BookOpen,
-  Download,
-  Eye,
-  FolderOpen,
-  Layers,
-  Link2,
-  ArrowUpRight,
-  ScanLine,
   Users,
-  Workflow,
 } from "lucide-react"
 
 interface MobileNavProps {
@@ -69,13 +67,13 @@ type MobileNavItem = {
     icon?: NavIcon
     iconSrc?: string
     description?: string
+    group?: string
   }>
 }
 
 export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInClick, user }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [bookkeepersOpen, setBookkeepersOpen] = useState(false)
-  const [practicesOpen, setPracticesOpen] = useState(false)
+  const [audiencesOpen, setAudiencesOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
 
@@ -112,6 +110,29 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       window.location.replace("/")
     }
   }
+
+  const publicAudienceChildren = [
+    ...primaryAudienceSlugs.map((slug) => {
+      const solution = getAudienceSolutionBySlug(slug)
+      return {
+        label: solution.menuLabel,
+        href: audienceSolutionHref(slug),
+        icon: solution.icon,
+        group: "Choose your fit",
+      }
+    }),
+    ...audienceSolutionGroups.flatMap((group) =>
+      group.slugs.map((slug) => {
+        const solution = getAudienceSolutionBySlug(slug)
+        return {
+          label: solution.menuLabel,
+          href: audienceSolutionHref(slug),
+          icon: solution.icon,
+          group: group.label,
+        }
+      }),
+    ),
+  ]
 
   const mainNavItems: MobileNavItem[] = [
     {
@@ -176,30 +197,10 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       show: !isAuthenticated
     },
     {
-      label: "For Bookkeepers",
-      icon: Eye,
-      show: !isAuthenticated,
-      children: [
-        { label: "Document extraction", href: "/dashboard/client", icon: ScanLine, description: "Invoices, receipts, bank statements, handwritten" },
-        { label: "Review board", href: "/dashboard/client", icon: Eye, description: "Source image + editable cells side by side" },
-        { label: "Mixed batch auto-detect", href: "/dashboard/auto-detect", icon: Layers, description: "Drop a whole folder — each file classified" },
-        { label: "Export to Excel / CSV", href: "/dashboard/client", icon: Download, description: "One file or full batch, clean output" },
-        { label: "QuickBooks publishing", href: "/dashboard/integrations", icon: ArrowUpRight, description: "Draft Bill posted with original doc attached" },
-        { label: "Client upload links", href: "/dashboard/inbox", icon: Link2, description: "Clients submit without an account" },
-      ]
-    },
-    {
-      label: "For Accounting Practices",
+      label: "For Accountants & Bookkeepers",
       icon: Users,
       show: !isAuthenticated,
-      children: [
-        { label: "Batch processing", href: "/dashboard/client", icon: FolderOpen, description: "Up to 50 files, mixed types, one job" },
-        { label: "Team reviewer access", href: "/dashboard/settings", icon: Users, description: "Invite colleagues — they review, you publish" },
-        { label: "AP queue + QuickBooks", href: "/dashboard/accounts-payable", icon: ReceiptText, description: "Code, approve, and bulk-publish bills" },
-        { label: "Vendor memory rules", href: "/dashboard/settings", icon: BookOpen, description: "Auto-fill coding for recurring suppliers" },
-        { label: "Inbox & client intake", href: "/dashboard/inbox", icon: Inbox, description: "Watch folder, email forwarding, intake links" },
-        { label: "Workflows", href: "/dashboard/workflows", icon: Workflow, description: "Routing rules for multi-step review" },
-      ]
+      children: publicAudienceChildren,
     },
     {
       label: "Pricing",
@@ -338,15 +339,11 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                     .filter(item => item.show !== false)
                     .map((item, index) => {
                       if (item.children) {
-                        const isBookkeepers = item.label === "For Bookkeepers"
-                        const isPractices = item.label === "For Accounting Practices"
-                        const isOpen = isBookkeepers ? bookkeepersOpen : isPractices ? practicesOpen : false
-                        const setOpen = isBookkeepers ? setBookkeepersOpen : isPractices ? setPracticesOpen : () => {}
                         return (
                           <Collapsible
                             key={index}
-                            open={isOpen}
-                            onOpenChange={setOpen}
+                            open={audiencesOpen}
+                            onOpenChange={setAudiencesOpen}
                           >
                             <CollapsibleTrigger asChild>
                               <Button
@@ -363,46 +360,47 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                 <ChevronRight
                                   className={cn(
                                     "h-4 w-4 transition-transform",
-                                    isOpen && "rotate-90"
+                                    audiencesOpen && "rotate-90"
                                   )}
                                 />
                               </Button>
                             </CollapsibleTrigger>
                             <CollapsibleContent className="space-y-1 pl-4 pr-2">
-                              {item.children.map((child, childIndex) => (
-                                <Button
-                                  key={childIndex}
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleNavigation(child.href)}
-                                  className={cn(
-                                    "w-full justify-start h-auto py-2 px-3",
-                                    "ax-interactive rounded-2xl hover:bg-accent",
-                                    pathname === child.href && "bg-accent"
-                                  )}
-                                >
-                                  <div className="flex items-start gap-2 w-full">
-                                    {child.icon && (
-                                      <child.icon className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                                    )}
-                                    {child.iconSrc && (
-                                      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-border bg-background p-1">
-                                        <img src={child.iconSrc} alt="" className="h-full w-full object-contain" />
-                                      </span>
-                                    )}
-                                    <div className="flex-1 text-left">
-                                      <p className="text-sm font-medium leading-none">
-                                        {child.label}
+                              {item.children.map((child, childIndex) => {
+                                const previousGroup = item.children?.[childIndex - 1]?.group
+                                const showGroup = child.group && child.group !== previousGroup
+
+                                return (
+                                  <React.Fragment key={child.href}>
+                                    {showGroup && (
+                                      <p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-800">
+                                        {child.group}
                                       </p>
-                                      {child.description && (
-                                        <p className="text-xs text-muted-foreground mt-0.5">
-                                          {child.description}
-                                        </p>
+                                    )}
+                                    <Button
+                                      asChild
+                                      variant="ghost"
+                                      size="sm"
+                                      className={cn(
+                                        "h-auto w-full justify-start rounded-full px-3 py-2",
+                                        "ax-interactive hover:bg-accent",
+                                        pathname === child.href && "bg-accent"
                                       )}
-                                    </div>
-                                  </div>
-                                </Button>
-                              ))}
+                                    >
+                                      <Link href={child.href} onClick={() => setIsOpen(false)}>
+                                        <div className="flex w-full items-center gap-2">
+                                          {child.icon && (
+                                            <child.icon className="h-4 w-4 text-muted-foreground" />
+                                          )}
+                                          <p className="flex-1 text-left text-sm font-medium leading-none">
+                                            {child.label}
+                                          </p>
+                                        </div>
+                                      </Link>
+                                    </Button>
+                                  </React.Fragment>
+                                )
+                              })}
                             </CollapsibleContent>
                           </Collapsible>
                         )
