@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
 import { GlobalTopicMenus } from "@/components/GlobalTopicMenus"
 import { NotificationsBell } from "@/components/NotificationsBell"
+import { HelpMenu } from "@/components/HelpMenu"
 import { MobileNav } from "@/components/MobileNav"
 import { CommandPalette } from "@/components/CommandPalette"
 import { DashboardCreditsPill } from "@/components/DashboardCreditsPill"
@@ -260,7 +261,7 @@ export function DashboardShell({
               {/* ── B4 MOUNT POINT: help & "what's new" menu ────────────────
                   Drop the "?" menu trigger + dropdown here (shortcuts, docs,
                   contact, changelog dot). Single rounded-full icon button. */}
-              {/* <HelpMenu /> */}
+              <HelpMenu />
 
               {activeJob && (
                 <Link
