@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardMiniCharts } from "@/components/dashboard/DashboardMiniCharts"
+import { MonthlyRecapCard } from "@/components/dashboard/MonthlyRecap"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { ClientsTab } from "@/components/dashboard/ClientsTab"
@@ -673,6 +674,18 @@ export default function DashboardPage() {
         </section>
 
         <DashboardMiniCharts chartData={chartData} stats={stats} />
+
+        {/* C12 — "This month with AxLiner" value recap (heuristic over existing analytics) */}
+        {!loading ? (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            viewport={{ once: true }}
+          >
+            <MonthlyRecapCard />
+          </motion.div>
+        ) : null}
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
             <motion.div
