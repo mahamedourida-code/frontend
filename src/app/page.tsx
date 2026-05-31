@@ -524,6 +524,9 @@ export default function Home() {
                 <p className="ax-body mt-5 font-semibold text-neutral-900">
                   Every extracted document lands in your review board before export. Original image on the left, editable cells on the right. Click to correct, tab to move on.
                 </p>
+                <p className="ax-body mt-5 font-bold text-emerald-800">
+                  AxLiner prepares it. You approve it.
+                </p>
                 <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border-2 border-emerald-700 bg-transparent px-8 text-sm font-bold text-emerald-700 transition-colors hover:bg-emerald-700 hover:text-white">
                   Explore the review board →
                 </NextLink>

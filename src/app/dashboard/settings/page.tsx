@@ -350,7 +350,7 @@ function SettingsContent() {
       const successCopy: Record<VendorRuleAutoMode, string> = {
         suggest: "Switched to suggestion only.",
         auto_fill: "Auto-fill on — confirm still required.",
-        auto_ready: "Auto-fill + mark Ready enabled.",
+        auto_ready: "Auto-fill on — moved to Ready for your approval.",
       }
       toast.success(successCopy[autoMode])
     } catch {
@@ -741,7 +741,7 @@ function SettingsContent() {
                               </p>
                               <p className="mt-1 text-xs text-foreground">
                                 {(rule.auto_mode || 'suggest') === 'auto_ready'
-                                  ? 'Next invoice from this vendor is pre-filled and marked Ready automatically.'
+                                  ? 'Next invoice from this vendor is pre-filled and moved to Ready for your approval. You still publish it.'
                                   : (rule.auto_mode || 'suggest') === 'auto_fill'
                                     ? 'Next invoice from this vendor is pre-filled. You still confirm before publishing.'
                                     : 'Next invoice from this vendor surfaces this rule as a suggestion only.'}
@@ -758,7 +758,7 @@ function SettingsContent() {
                               <SelectContent>
                                 <SelectItem value="suggest">Suggest only</SelectItem>
                                 <SelectItem value="auto_fill">Auto-fill + confirm required</SelectItem>
-                                <SelectItem value="auto_ready">Auto-fill + mark Ready automatically</SelectItem>
+                                <SelectItem value="auto_ready">Auto-fill + move to Ready for your approval</SelectItem>
                               </SelectContent>
                             </Select>
                           </div>

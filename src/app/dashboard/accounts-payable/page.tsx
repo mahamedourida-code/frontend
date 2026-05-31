@@ -682,7 +682,7 @@ function AccountsPayableContent() {
       <div className="space-y-4">
         <PageHeader
           title="Accounts Payable"
-          description="Reviewed invoices ready to publish as QuickBooks Bills"
+          description="Reviewed invoices, drafted as QuickBooks Bills. AxLiner prepares it. You approve it."
           actions={selectedReadyIds.length ? (
             <MotionButton ref={publishTriggerRef} variant="glossy" onClick={openPublishDialog} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md px-4">
               <Image src="/icons/qb-badge.png" alt="" width={16} height={16} className="mr-1 object-contain" />
@@ -1069,7 +1069,7 @@ function AccountsPayableContent() {
                     <div className="flex flex-wrap items-start justify-between gap-3 rounded-md border-2 border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900/60 dark:bg-emerald-950/40">
                       <div className="min-w-0 flex-1">
                         <p className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
-                          {autoAppliedRule.mode === "auto_ready" ? "Pre-filled & marked ready" : "Pre-filled by vendor rule"}
+                          {autoAppliedRule.mode === "auto_ready" ? "Pre-filled & moved to Ready for your approval" : "Pre-filled by vendor rule"}
                         </p>
                         <p className="mt-1 text-sm font-semibold text-emerald-900 dark:text-emerald-100">
                           {autoAppliedRule.ruleName}
