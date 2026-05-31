@@ -4,7 +4,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { AnimatePresence, motion } from "framer-motion"
-import { ChevronLeft, FileText, Loader2 } from "lucide-react"
+import { ChevronLeft, FileText, Loader2, Sparkles } from "lucide-react"
 import Image from "next/image"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
@@ -91,6 +91,21 @@ const editableFields: Array<[keyof AccountsPayableDraftData, string, string]> = 
   ["reference", "Reference", "PO or bill reference"],
   ["currency", "Currency", "USD"],
 ]
+
+// C9 — bookkeeper-friendly words for the fields vendor memory remembers, so the
+// pre-fill notice reads as a memory ("category, terms, tax") not raw draft keys.
+const MEMORY_FIELD_LABELS: Record<string, string> = {
+  account_category: "category",
+  account_ref_id: "category",
+  tax_code: "tax",
+  tax_code_ref_id: "tax",
+  payment_terms: "terms",
+  due_date: "terms",
+  currency: "currency",
+  vendor_ref_id: "vendor",
+}
+
+const LEARNED_HINT_STORAGE_KEY = "axliner.ap.vendor-memory-learned-seen"
 
 const inlineFieldClass =
   "h-9 rounded-lg transition-[border-color,box-shadow] duration-150 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-0"
@@ -198,6 +213,9 @@ function AccountsPayableContent() {
   // C8 — calm publish moment for the single-Bill flow (the bulk flow already
   // confirms in its own dialog). Holds the entry kind + attachment + burst origin.
   const [publishConfirmation, setPublishConfirmation] = useState<PublishConfirmationState | null>(null)
+  // C9 — show the gentle "AxLiner learned this" affordance only the first time a
+  // reviewer ever sees a rule auto-apply. Persisted in localStorage so it never nags.
+  const [showLearnedHint, setShowLearnedHint] = useState(false)
   const publishTriggerRef = useRef<HTMLButtonElement | null>(null)
   const confirmPublishRef = useRef<HTMLButtonElement | null>(null)
   const activePublishRef = useRef<HTMLButtonElement | null>(null)
@@ -415,13 +433,32 @@ function AccountsPayableContent() {
     const fields = Array.isArray(block.applied_fields)
       ? (block.applied_fields as unknown[]).filter((entry): entry is string => typeof entry === "string")
       : []
+    // C9 — translate the raw draft keys into the plain words a bookkeeper would
+    // use, so the notice reads as memory ("category, terms, tax") not schema.
+    const learnedLabels = Array.from(new Set(fields.map((field) => MEMORY_FIELD_LABELS[field] ?? field.replaceAll("_", " "))))
     return {
       ruleId: typeof block.rule_id === "string" ? block.rule_id : null,
       ruleName: typeof block.rule_name === "string" ? block.rule_name : "Saved vendor",
       mode: (block.mode === "auto_ready" ? "auto_ready" : "auto_fill") as "auto_fill" | "auto_ready",
       appliedFields: fields,
+      learnedLabels,
     }
   })()
+
+  // C9 — the very first time a reviewer opens an item where memory auto-applied a
+  // rule, reveal the gentle "AxLiner learned this" hint once, then remember we've
+  // shown it (localStorage) so it never reappears.
+  const hasAutoApplied = Boolean(autoAppliedRule)
+  useEffect(() => {
+    if (!hasAutoApplied) {
+      setShowLearnedHint(false)
+      return
+    }
+    if (typeof window === "undefined") return
+    if (window.localStorage.getItem(LEARNED_HINT_STORAGE_KEY)) return
+    window.localStorage.setItem(LEARNED_HINT_STORAGE_KEY, "1")
+    setShowLearnedHint(true)
+  }, [hasAutoApplied, activeId])
 
   const mergeItem = (item: AccountsPayableItem) => {
     setItems(current => current.map(existing => existing.id === item.id ? item : existing))
@@ -1133,16 +1170,42 @@ function AccountsPayableContent() {
                     <div className="flex flex-wrap items-start justify-between gap-3 rounded-md border-2 border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900/60 dark:bg-emerald-950/40">
                       <div className="min-w-0 flex-1">
                         <p className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
-                          {autoAppliedRule.mode === "auto_ready" ? "Pre-filled & moved to Ready for your approval" : "Pre-filled by vendor rule"}
+                          {autoAppliedRule.mode === "auto_ready" ? "Pre-filled & moved to Ready for your approval" : "Pre-filled from memory"}
                         </p>
                         <p className="mt-1 text-sm font-semibold text-emerald-900 dark:text-emerald-100">
                           {autoAppliedRule.ruleName}
                         </p>
-                        {autoAppliedRule.appliedFields.length ? (
-                          <p className="mt-1 text-xs text-emerald-900/80 dark:text-emerald-100/80">
-                            Applied {autoAppliedRule.appliedFields.length} field{autoAppliedRule.appliedFields.length === 1 ? "" : "s"}: {autoAppliedRule.appliedFields.map((field) => field.replaceAll("_", " ")).join(", ")}
-                          </p>
+                        {autoAppliedRule.learnedLabels.length ? (
+                          <>
+                            <p className="mt-1 text-xs text-emerald-900/80 dark:text-emerald-100/80">
+                              Remembered from your past invoices — {autoAppliedRule.learnedLabels.join(", ")}.
+                            </p>
+                            <div className="mt-2 flex flex-wrap gap-1.5">
+                              {autoAppliedRule.learnedLabels.map((label) => (
+                                <span
+                                  key={label}
+                                  className="rounded-full border border-emerald-300/70 bg-white/70 px-2 py-0.5 text-[11px] font-semibold capitalize text-emerald-800 dark:border-emerald-800/60 dark:bg-emerald-900/40 dark:text-emerald-200"
+                                >
+                                  {label}
+                                </span>
+                              ))}
+                            </div>
+                          </>
                         ) : null}
+                        <AnimatePresence>
+                          {showLearnedHint ? (
+                            <motion.div
+                              initial={{ opacity: 0, y: 4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -4 }}
+                              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                              className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-emerald-300/70 bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-emerald-800 dark:border-emerald-800/60 dark:bg-emerald-900/50 dark:text-emerald-200"
+                            >
+                              <Sparkles className="size-3" />
+                              AxLiner learned this from you — it&apos;ll code this vendor for you next time.
+                            </motion.div>
+                          ) : null}
+                        </AnimatePresence>
                       </div>
                       <Button
                         variant="surface"
