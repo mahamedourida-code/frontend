@@ -12,7 +12,9 @@ import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { AnomalyChip, AnomalyDot } from "@/components/dashboard/AnomalyChip"
+import { ReviewScoreBadge } from "@/components/dashboard/ReviewScoreBadge"
 import { duplicateCopy, missingVatCopy, overPoCopy } from "@/lib/anomaly-reasons"
+import { computeReviewScore, REVIEW_LEVEL_WEIGHT } from "@/lib/review-score"
 import { Button } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -330,6 +332,14 @@ function AccountsPayableContent() {
     [items],
   )
 
+  // C1 — composite Review Score per item, computed once over the queue.
+  // Drives the row badge, the detail badge, and the "needs you first" sort.
+  const reviewScores = useMemo(() => {
+    const map = new Map<string, ReturnType<typeof computeReviewScore>>()
+    for (const item of items) map.set(item.id, computeReviewScore(item))
+    return map
+  }, [items])
+
   // P11 — resolve a client filter (?client=<linkId>) to its job_ids
   useEffect(() => {
     if (!clientId || !activeWorkspace?.id) {
@@ -356,8 +366,18 @@ function AccountsPayableContent() {
     if (clientJobIds) {
       base = base.filter(item => clientJobIds.has(String(item.job_id || "")))
     }
+    // C1 — "needs you first": stable sort by Review Score (Flagged → Review →
+    // High). `.map`+index keeps ties in their original API order.
     return base
-  }, [items, filter, clientJobIds])
+      .map((item, index) => ({ item, index }))
+      .sort((a, b) => {
+        const weight =
+          REVIEW_LEVEL_WEIGHT[reviewScores.get(a.item.id)?.level ?? "high"] -
+          REVIEW_LEVEL_WEIGHT[reviewScores.get(b.item.id)?.level ?? "high"]
+        return weight !== 0 ? weight : a.index - b.index
+      })
+      .map(({ item }) => item)
+  }, [items, filter, clientJobIds, reviewScores])
   const lineItems = Array.isArray(draft.line_items) ? draft.line_items : []
   const lineColumns = (
     Array.from(new Set(lineItems.flatMap(line => Object.keys(line)))).slice(0, 6).length
@@ -798,6 +818,7 @@ function AccountsPayableContent() {
                 <span className="w-[72px] shrink-0 text-xs font-medium uppercase tracking-wider text-muted-foreground">Date</span>
                 <span className="w-[68px] shrink-0 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">Amount</span>
                 <span className="hidden w-[78px] shrink-0 text-xs font-medium uppercase tracking-wider text-muted-foreground sm:block">PO</span>
+                <span className="w-[84px] shrink-0 text-xs font-medium uppercase tracking-wider text-muted-foreground">Review</span>
                 <span className="w-[72px] shrink-0 text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</span>
               </div>
             </div>
@@ -935,6 +956,14 @@ function AccountsPayableContent() {
                           </span>
                         </span>
 
+                        {/* C1 — composite Review Score + "why this needs review" */}
+                        <span
+                          className="w-[84px] shrink-0"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <ReviewScoreBadge score={reviewScores.get(item.id) ?? computeReviewScore(item)} />
+                        </span>
+
                         {/* Status badge */}
                         <span className="w-[72px] shrink-0">
                           <StatusBadge tone={tone}>{statusLabel(item.status)}</StatusBadge>
@@ -969,6 +998,10 @@ function AccountsPayableContent() {
                           <a href={activeItem.source_access_url} target="_blank" rel="noreferrer">View attachment</a>
                         </Button>
                       ) : null}
+                      <ReviewScoreBadge
+                        score={reviewScores.get(activeItem.id) ?? computeReviewScore(activeItem)}
+                        side="bottom"
+                      />
                       <StatusBadge tone={statusTone[activeItem.status]}>
                         {statusLabel(activeItem.status)}
                       </StatusBadge>
