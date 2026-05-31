@@ -41,6 +41,7 @@ import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOver
 import { SourceHighlightOverlay } from "@/components/dashboard/SourceHighlightOverlay"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { duplicateCopy } from "@/lib/anomaly-reasons"
+import { buildCardSummary } from "@/lib/card-summary"
 import { fieldAttention } from "@/lib/field-attention"
 import { reconciliationTotalCopy } from "@/lib/source-highlight"
 import { getRowConfidenceTier, isHandwrittenDocument } from "@/lib/handwritten"
@@ -1181,12 +1182,15 @@ function reviewData(file: ResultFile) {
 function resultSummary(file: ResultFile) {
   const data = reviewData(file)
   const type = file.document_type
+  // C11 — a date the at-a-glance summary line can show. Undefined when the
+  // document type carries no due/payment date, so the line omits it cleanly.
   if (type === "invoice") {
     return {
       identityLabel: "Vendor",
       identity: String(data.vendor_name || "Vendor not found"),
       amountLabel: "Total",
       amount: [data.currency, data.total].filter(Boolean).join(" ") || "-",
+      due: data.due_date,
     }
   }
   if (type === "receipt") {
@@ -1195,6 +1199,7 @@ function resultSummary(file: ResultFile) {
       identity: String(data.merchant || "Merchant not found"),
       amountLabel: "Total",
       amount: [data.currency, data.total].filter(Boolean).join(" ") || "-",
+      due: data.date,
     }
   }
   if (type === "bank_statement") {
@@ -1203,6 +1208,7 @@ function resultSummary(file: ResultFile) {
       identity: String(data.account_holder || data.bank_name || "Account not found"),
       amountLabel: "Closing balance",
       amount: [data.currency, data.closing_balance].filter(Boolean).join(" ") || "-",
+      due: undefined,
     }
   }
   if (type === "notes") {
@@ -1212,6 +1218,7 @@ function resultSummary(file: ResultFile) {
       identity: text ? `${text.slice(0, 48)}${text.length > 48 ? "..." : ""}` : "Handwritten notes",
       amountLabel: "Tables",
       amount: String(Array.isArray(data.tables) ? data.tables.length : 0),
+      due: undefined,
     }
   }
   return {
@@ -1219,6 +1226,7 @@ function resultSummary(file: ResultFile) {
     identity: file.filename || "Extracted table",
     amountLabel: "Rows",
     amount: String(Array.isArray(file.review_grid) ? Math.max(file.review_grid.length - 1, 0) : "-"),
+    due: undefined,
   }
 }
 
@@ -2079,6 +2087,15 @@ export function ResultActions({
           // expands the card in place; risky cards never collapse.
           const reviewLevel = deriveReviewLevel(file, badge)
           const collapsed = reviewLevel.clean && !expandedClean[fileKey]
+          // C11 — shared at-a-glance line (identity · amount · due), used by both
+          // the collapsed clean summary below and the expanded card above so the
+          // two never drift. Verdict stays on the chip here for its "why" tooltip.
+          const cardLine = buildCardSummary({
+            identity: summary.identity,
+            amount: summary.amount,
+            dueDate: summary.due,
+          })
+          const cardDue = cardLine.parts.find((part) => part.key === "due")
 
           if (collapsed) {
             return (
@@ -2106,6 +2123,11 @@ export function ResultActions({
                 <span className="shrink-0 font-semibold tabular-nums text-foreground">
                   {summary.amount}
                 </span>
+                {cardDue ? (
+                  <span className="hidden shrink-0 text-xs text-muted-foreground sm:inline">
+                    {cardDue.text}
+                  </span>
+                ) : null}
                 <AnomalyChip
                   tone={reviewLevel.tone}
                   title="Looks clean"
@@ -2140,6 +2162,45 @@ export function ResultActions({
                 compact ? "min-h-[300px]" : "min-h-[375px]"
               )}
             >
+              {/* C11 — at-a-glance summary line: vendor · total · due · verdict,
+                  derived from already-extracted fields. The verdict reuses C4's
+                  review level (tone + label) so the line and badges agree; any
+                  missing piece is omitted by buildCardSummary, never blank. */}
+              {(() => {
+                const line = buildCardSummary({
+                  identity: summary.identity,
+                  amount: summary.amount,
+                  dueDate: summary.due,
+                  verdict: { tone: reviewLevel.tone, label: reviewLevel.summaryLabel },
+                })
+                return (
+                  <p className="mb-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground">
+                    {line.parts.map((part, partIndex) => (
+                      <span key={part.key} className="inline-flex items-center gap-1.5">
+                        {partIndex > 0 ? <span aria-hidden className="text-muted-foreground/40">·</span> : null}
+                        <span className={cn(part.key === "identity" && "font-semibold text-foreground")}>
+                          {part.text}
+                        </span>
+                      </span>
+                    ))}
+                    {line.verdict ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <span aria-hidden className="text-muted-foreground/40">·</span>
+                        <span
+                          className={cn(
+                            "font-semibold",
+                            line.verdict.tone === "good" && "text-emerald-700",
+                            line.verdict.tone === "caution" && "text-amber-700",
+                            line.verdict.tone === "risk" && "text-rose-700",
+                          )}
+                        >
+                          {line.verdict.label}
+                        </span>
+                      </span>
+                    ) : null}
+                  </p>
+                )
+              })()}
               <div className="grid gap-3 lg:grid-cols-[minmax(180px,0.95fr)_minmax(0,1.05fr)]">
                 <div className="overflow-hidden rounded-md border border-border bg-white">
                   {file.input_preview_url ? (
