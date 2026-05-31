@@ -32,6 +32,7 @@ import {
   ConversionWorkspace,
   type WorkspaceBanner,
 } from "@/components/dashboard/ConversionWorkspace"
+import { PublishConfirmation, type PublishConfirmationState } from "@/components/dashboard/PublishConfirmation"
 import {
   CheckCircle,
   Link,
@@ -162,6 +163,8 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
   const [filePreviewUrls, setFilePreviewUrls] = useState<{[key: number]: string}>({})
   const [pdfPageCounts, setPdfPageCounts] = useState<{[key: number]: number}>({})
   const [workspaceBanner, setWorkspaceBanner] = useState<WorkspaceBanner | null>(null)
+  // C8 — calm publish moment after a receipt is posted to QuickBooks.
+  const [publishConfirmation, setPublishConfirmation] = useState<PublishConfirmationState | null>(null)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null)
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([])
@@ -1719,12 +1722,23 @@ Best regards`
         : "Publish this reviewed receipt as an unpaid QuickBooks bill? This creates a Bill transaction.",
     )
     if (!confirmation) return false
+    // Anchor the paired success burst on the Publish button the reviewer just clicked.
+    const trigger = document.activeElement as HTMLElement | null
+    const origin = trigger && typeof trigger.getBoundingClientRect === "function"
+      ? (() => { const r = trigger.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 } })()
+      : null
     try {
       const response = await ocrApi.publishReceiptToQuickBooks(jobId, file.document_id, request)
       mergeReviewedDocument(response.document)
       await reloadDurableDocuments()
-      toast.success(isExpense ? "Receipt published as a QuickBooks expense." : "Receipt published as a QuickBooks bill.")
       setWorkspaceBanner(null)
+      // C8 — hold a brief deliberate confirmation paired with the success burst,
+      // instead of only a vanishing toast. Wording follows what was posted.
+      setPublishConfirmation({
+        kind: isExpense ? "expense" : "bill",
+        attached: response.document.quickbooks_receipt_publication?.attachment_status === "attached",
+        origin,
+      })
       return true
     } catch (error: any) {
       setWorkspaceBanner({
@@ -2015,6 +2029,10 @@ Best regards`
         classifiedDocuments={activeDocumentMode === "auto" ? jobDocuments : []}
         overridingDocumentId={overridingDocumentId}
         onOverrideDocumentMode={handleDocumentModeOverride}
+      />
+      <PublishConfirmation
+        state={publishConfirmation}
+        onClose={() => setPublishConfirmation(null)}
       />
       {!isComplete ? <WorkspaceFilesPanel refreshKey={jobId && status === "completed" ? `${jobId}:${isSaved}` : undefined} /> : null}
 

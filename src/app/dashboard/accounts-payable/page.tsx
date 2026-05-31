@@ -21,6 +21,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PublishSuccessBurst } from "@/components/dashboard/PublishSuccessBurst"
+import { PublishConfirmation, type PublishConfirmationState } from "@/components/dashboard/PublishConfirmation"
 import { SpotlightCard } from "@/components/dashboard/SpotlightCard"
 import {
   Dialog,
@@ -194,8 +195,12 @@ function AccountsPayableContent() {
   const [dismissDraft, setDismissDraft] = useState<{ warningId: string; reason: string } | null>(null)
   const [dismissing, setDismissing] = useState(false)
   const [discarding, setDiscarding] = useState(false)
+  // C8 — calm publish moment for the single-Bill flow (the bulk flow already
+  // confirms in its own dialog). Holds the entry kind + attachment + burst origin.
+  const [publishConfirmation, setPublishConfirmation] = useState<PublishConfirmationState | null>(null)
   const publishTriggerRef = useRef<HTMLButtonElement | null>(null)
   const confirmPublishRef = useRef<HTMLButtonElement | null>(null)
+  const activePublishRef = useRef<HTMLButtonElement | null>(null)
   const burstTimeoutRef = useRef<number | null>(null)
 
   useEffect(() => {
@@ -688,7 +693,22 @@ function AccountsPayableContent() {
       }
       const response = await accountsPayableApi.publish(activeItem.id)
       mergeItem(response.item)
-      toast.success(retryAttachment ? "Source document attached in QuickBooks." : "Unpaid Bill created in QuickBooks.")
+      // C8 — calm publish moment. For a QuickBooks Bill, hold a brief deliberate
+      // confirmation paired with the success burst instead of only a toast. Xero
+      // (roadmap UI) keeps the lightweight toast.
+      if (!isXero && !retryAttachment) {
+        const anchor = activePublishRef.current
+        const origin = anchor
+          ? (() => { const r = anchor.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 } })()
+          : null
+        setPublishConfirmation({
+          kind: "bill",
+          attached: response.item.quickbooks_publication?.attachment_status === "attached",
+          origin,
+        })
+      } else {
+        toast.success(retryAttachment ? "Source document attached in QuickBooks." : `Unpaid Bill created in ${destName}.`)
+      }
     } catch (error: any) {
       toast.error(error?.detail || error?.message || "Could not publish this Bill.")
       await loadQueue()
@@ -1416,7 +1436,7 @@ function AccountsPayableContent() {
                             Apply status
                           </Button>
                           {activeItem.status === "ready_to_publish" ? (
-                            <MotionButton variant="glossy" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9">
+                            <MotionButton ref={activePublishRef} variant="glossy" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9">
                               {labels.publish}
                             </MotionButton>
                           ) : null}
@@ -1648,6 +1668,11 @@ function AccountsPayableContent() {
       </Dialog>
 
       <PublishSuccessBurst show={showSuccessBurst} origin={burstOrigin} />
+
+      <PublishConfirmation
+        state={publishConfirmation}
+        onClose={() => setPublishConfirmation(null)}
+      />
     </DashboardShell>
   )
 }
