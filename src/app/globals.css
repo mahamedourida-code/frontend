@@ -143,44 +143,40 @@
      consistency. Never use sm:/lg: overrides on top of these —
      clamp() handles the full range. */
   .ax-h1 {
-    font-size: clamp(2.75rem, 5.5vw, 4.5rem);
-    line-height: 1.04;
-    letter-spacing: -0.025em;
+    font-size: clamp(3.25rem, 8vw, 7.5rem);
+    line-height: 0.94;
+    letter-spacing: -0.065em;
   }
   .ax-h2 {
-    font-size: clamp(1.875rem, 3.5vw, 3rem);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    font-size: clamp(2.25rem, 4.8vw, 4.75rem);
+    line-height: 1;
+    letter-spacing: -0.055em;
   }
   .ax-h3 {
-    font-size: clamp(1.25rem, 2vw, 1.75rem);
-    line-height: 1.2;
-    letter-spacing: -0.01em;
+    font-size: clamp(1.5rem, 2.4vw, 2.125rem);
+    line-height: 1.12;
+    letter-spacing: -0.035em;
   }
-  /* Body copy — 17px base, 1.72 leading, medium-bold (gras feel) */
+  /* Body copy — readable 17px base with relaxed leading */
   .ax-body {
-    font-size: clamp(1.0625rem, 1.15vw, 1.125rem);
-    line-height: 1.65;
+    font-size: clamp(1.0625rem, 1.15vw, 1.1875rem);
+    line-height: 1.68;
     font-weight: 500;
   }
 
-  /* ── Marketing prose rule ───────────────────────────────────
-     Bumps muted body copy to semibold weight site-wide on marketing
-     pages by scoping to <main> descendants that don't live inside
-     a dashboard shell. Dashboard pages use the .ax-dashboard-content
-     wrapper which neutralizes this. */
-  main p.text-muted-foreground,
-  main li.text-muted-foreground,
-  main span.text-muted-foreground,
-  main div.text-muted-foreground,
-  main p.text-foreground\/70,
-  main p.text-foreground\/76,
-  main p.text-foreground\/78,
-  main p.text-foreground\/80,
-  main p.text-foreground\/82,
-  main p.text-black\/70,
-  main p.text-black\/80,
-  main ul.text-muted-foreground li {
+  /* Marketing copy opt-in. Dashboard pages keep their own type rules below. */
+  .ax-marketing-page p.text-muted-foreground,
+  .ax-marketing-page li.text-muted-foreground,
+  .ax-marketing-page span.text-muted-foreground,
+  .ax-marketing-page div.text-muted-foreground,
+  .ax-marketing-page p.text-foreground\/70,
+  .ax-marketing-page p.text-foreground\/76,
+  .ax-marketing-page p.text-foreground\/78,
+  .ax-marketing-page p.text-foreground\/80,
+  .ax-marketing-page p.text-foreground\/82,
+  .ax-marketing-page p.text-black\/70,
+  .ax-marketing-page p.text-black\/80,
+  .ax-marketing-page ul.text-muted-foreground li {
     font-weight: 600;
   }
   .ax-dashboard-content p.text-muted-foreground,
@@ -218,9 +214,9 @@
   }
   /* Uppercase eyebrow label above a heading */
   .ax-eyebrow {
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
+    font-size: clamp(0.75rem, 0.7vw, 0.875rem);
+    font-weight: 700;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
   }
   
@@ -393,6 +389,11 @@
   --button-surface: #f3f4f4;
   --button-surface-hover: #e7e9e8;
   --button-surface-ring: #c5cac8;
+  --ax-marketing-page: #ffffff;
+  --ax-marketing-ink: #171717;
+  --ax-marketing-muted: #404040;
+  --ax-marketing-mint: var(--brand-green);
+  --ax-marketing-cream: var(--button-warm);
   --secondary: hsl(220 14% 96%);
   --secondary-foreground: hsl(222 47% 11%);
   --muted: hsl(220 14% 96%);
@@ -714,6 +715,124 @@ body {
 }
 
 @layer components {
+  /* Public pages opt into one calm palette and a shared Big SaaS type scale. */
+  .ax-marketing-page {
+    background: var(--ax-marketing-page);
+    color: var(--ax-marketing-ink);
+  }
+
+  .ax-marketing-display {
+    font-size: clamp(3.25rem, 8vw, 7.5rem);
+    font-weight: 700;
+    line-height: 0.94;
+    letter-spacing: -0.065em;
+  }
+
+  .ax-marketing-section-title {
+    font-size: clamp(2.25rem, 4.8vw, 4.75rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.055em;
+  }
+
+  .ax-marketing-subtitle {
+    font-size: clamp(1.5rem, 2.4vw, 2.125rem);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.035em;
+  }
+
+  .ax-marketing-lead {
+    max-width: 46rem;
+    color: var(--ax-marketing-muted);
+    font-size: clamp(1.1875rem, 1.7vw, 1.5rem);
+    font-weight: 500;
+    line-height: 1.55;
+    letter-spacing: -0.012em;
+  }
+
+  .ax-marketing-body {
+    color: var(--ax-marketing-muted);
+    font-size: clamp(1.0625rem, 1.15vw, 1.1875rem);
+    font-weight: 500;
+    line-height: 1.68;
+  }
+
+  .ax-marketing-muted,
+  .ax-marketing-page p.text-muted-foreground,
+  .ax-marketing-page li.text-muted-foreground {
+    color: var(--ax-marketing-muted);
+    font-size: clamp(1rem, 1vw, 1.125rem);
+    font-weight: 500;
+    line-height: 1.65;
+  }
+
+  .ax-marketing-eyebrow {
+    color: var(--ax-marketing-ink);
+    font-size: clamp(0.75rem, 0.7vw, 0.875rem);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    line-height: 1.25;
+    text-transform: uppercase;
+  }
+
+  .ax-marketing-prose {
+    color: var(--ax-marketing-ink);
+    font-size: clamp(1.0625rem, 1.25vw, 1.25rem);
+    font-weight: 500;
+    line-height: 1.78;
+  }
+
+  .ax-marketing-prose :where(p, li) {
+    color: var(--ax-marketing-muted);
+  }
+
+  .ax-marketing-section {
+    padding-block: clamp(5rem, 8vw, 8rem);
+  }
+
+  .ax-marketing-band,
+  .ax-marketing-band-mint,
+  .ax-marketing-band-cream {
+    color: var(--ax-marketing-ink);
+  }
+
+  .ax-marketing-band-mint,
+  .section-features,
+  .section-differentiators {
+    background: var(--ax-marketing-mint);
+  }
+
+  .ax-marketing-band-cream,
+  .section-how-it-works {
+    background: var(--ax-marketing-cream);
+  }
+
+  .section-hero,
+  .section-trusted {
+    background: var(--ax-marketing-page);
+  }
+
+  :is(.ax-marketing-band, .ax-marketing-band-mint, .ax-marketing-band-cream)
+    :is(
+      .ax-marketing-display,
+      .ax-marketing-section-title,
+      .ax-marketing-subtitle,
+      .ax-marketing-lead,
+      .ax-marketing-body,
+      .ax-marketing-muted,
+      .ax-marketing-eyebrow,
+      .ax-marketing-prose,
+      .ax-h1,
+      .ax-h2,
+      .ax-h3,
+      .ax-body,
+      .ax-eyebrow,
+      .text-muted-foreground
+    ) {
+    color: var(--ax-marketing-ink) !important;
+  }
+
   .ax-surface {
     border: 1px solid var(--ax-visual-line);
     background: var(--ax-visual-surface);
@@ -827,27 +946,6 @@ body {
   .ax-section-label {
     transition: none;
   }
-}
-
-/* Custom section background styles for better differentiation */
-.section-hero {
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.84) 0%, rgb(255 255 255 / 0.92) 100%);
-}
-
-.section-features {
-  background: linear-gradient(135deg, hsl(220 14% 96% / 0.64) 0%, hsl(220 14% 96% / 0.42) 100%);
-}
-
-.section-trusted {
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.56) 0%, rgb(255 255 255 / 0.82) 100%);
-}
-
-.section-differentiators {
-  background: linear-gradient(135deg, hsl(143 58% 34% / 0.08) 0%, hsl(220 14% 96% / 0.58) 50%, rgb(255 255 255 / 0.6) 100%);
-}
-
-.section-how-it-works {
-  background: linear-gradient(135deg, hsl(220 14% 96% / 0.55) 0%, hsl(220 14% 96% / 0.28) 100%);
 }
 
 /* Handwriting font utility */
