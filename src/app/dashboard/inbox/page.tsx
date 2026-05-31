@@ -637,7 +637,7 @@ export default function EmailInboxPage() {
             {loading ? (
               <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading submissions" description="Fetching client uploads" /></div>
             ) : submissions.length === 0 ? (
-              <div className="py-4"><EmptyState compact icon={<Inbox />} illustration="/illustrations/empty-inbox.png" title="No submissions yet" description="Clients can upload via a shared link you create above." /></div>
+              <div className="py-4"><EmptyState compact icon={<Inbox />} illustration="/illustrations/workspace-v2/empty-inbox.png" illustrationSize={112} title="No submissions yet" description="Clients can upload via a shared link you create above." /></div>
             ) : (
               <>
                 {/* Desktop table */}
@@ -724,7 +724,7 @@ export default function EmailInboxPage() {
             {loading ? (
               <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading imports" description="Fetching forwarded documents" /></div>
             ) : messages.length === 0 ? (
-              <div className="py-4"><EmptyState compact icon={<Inbox />} illustration="/illustrations/client-upload.png" title="No emailed documents yet" description="New attachments will appear here for review." /></div>
+              <div className="py-4"><EmptyState compact icon={<Inbox />} illustration="/illustrations/workspace-v2/empty-inbox.png" illustrationSize={112} title="No emailed documents yet" description="New attachments will appear here for review." /></div>
             ) : (
               <div className="divide-y divide-border">
                 {messages.map((message) => {

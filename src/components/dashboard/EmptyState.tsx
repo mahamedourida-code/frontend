@@ -11,6 +11,7 @@ interface EmptyStateProps {
   compact?: boolean
   className?: string
   illustration?: string
+  illustrationSize?: number
 }
 
 function EmptyState({
@@ -21,7 +22,10 @@ function EmptyState({
   compact = false,
   className,
   illustration,
+  illustrationSize,
 }: EmptyStateProps) {
+  const resolvedIllustrationSize = illustrationSize ?? (compact ? 72 : 96)
+
   return (
     <div
       className={cn(
@@ -35,8 +39,8 @@ function EmptyState({
           src={illustration}
           alt=""
           role="presentation"
-          width={compact ? 72 : 96}
-          height={compact ? 72 : 96}
+          width={resolvedIllustrationSize}
+          height={resolvedIllustrationSize}
           className="object-contain opacity-90"
           loading="lazy"
         />

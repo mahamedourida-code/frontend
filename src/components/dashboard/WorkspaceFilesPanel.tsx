@@ -4,7 +4,7 @@ import { type ComponentType, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { format } from "date-fns"
-import { ChevronDown, FileImage, FileSpreadsheet, FileText, Grid2X2, List, MoreHorizontal, Upload } from "lucide-react"
+import { ChevronDown, FileImage, FileSpreadsheet, FileText, Grid2X2, List, MoreHorizontal } from "lucide-react"
 import { motion } from "framer-motion"
 import { ocrApi } from "@/lib/api-client"
 import { Button } from "@/components/ui/button"
@@ -153,15 +153,20 @@ function DropZone() {
       />
 
       <div className="relative flex flex-col items-center justify-center gap-4 px-6 py-14 text-center">
-        <div className="relative flex items-center justify-center">
-          <motion.div
-            className="absolute rounded-full bg-primary/10"
-            style={{ width: 60, height: 60 }}
-            animate={{ scale: [1, 1.4, 1], opacity: [0.4, 0, 0.4] }}
-            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+        <motion.div
+          animate={isDragging ? { y: -4, scale: 1.06 } : { y: 0, scale: 1 }}
+          transition={{ type: "spring", stiffness: 360, damping: 24 }}
+        >
+          <Image
+            src="/illustrations/workspace-v2/upload-tray.png"
+            alt=""
+            role="presentation"
+            width={160}
+            height={160}
+            className="h-28 w-auto object-contain sm:h-32"
+            loading="lazy"
           />
-          <Upload className={cn("relative size-10 transition-colors duration-200", isDragging ? "text-primary" : "text-primary/60")} />
-        </div>
+        </motion.div>
 
         <div className="space-y-1">
           <p className="text-base font-semibold text-foreground">
@@ -170,7 +175,7 @@ function DropZone() {
           <p className="text-sm text-muted-foreground">PDF, PNG, JPEG, WebP — up to 50 files</p>
         </div>
 
-        <Button asChild variant="surface" className="mt-1 h-9 rounded-lg px-4 text-sm font-medium">
+        <Button asChild variant="surface" className="mt-1 h-9 px-4 text-sm font-medium">
           <Link href="/dashboard/client#upload-files">Browse files</Link>
         </Button>
       </div>
@@ -223,13 +228,13 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
           <Button
             type="button"
             variant="surface"
-            className="h-10 rounded-lg px-3 text-sm font-medium"
+            className="h-10 px-3 text-sm font-medium"
             onClick={() => setSort((current) => current === "modified-desc" ? "modified-asc" : "modified-desc")}
           >
             Last modified
             <ChevronDown className={cn("size-4 transition-transform", sort === "modified-asc" && "rotate-180")} />
           </Button>
-          <Button asChild variant="surface" className="h-10 rounded-lg px-3 text-sm font-medium">
+          <Button asChild variant="surface" className="h-10 px-3 text-sm font-medium">
             <Link href="/history">All files</Link>
           </Button>
           <div className="flex overflow-hidden rounded-lg border border-border bg-card p-0.5 shadow-xs">
@@ -250,7 +255,7 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
               <List className="size-4" />
             </button>
           </div>
-          <Button variant="ghost" size="icon" asChild className="size-10 rounded-lg">
+          <Button variant="ghost" size="icon" asChild className="size-10">
             <Link href="/history" aria-label="Open history">
               <MoreHorizontal className="size-5 text-muted-foreground" />
             </Link>

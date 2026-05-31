@@ -483,6 +483,8 @@ function IntegrationsContent() {
                   ) : (
                     <EmptyState
                       icon={<Database />}
+                      illustration="/illustrations/workspace-v2/empty-reference-data.png"
+                      illustrationSize={112}
                       title="No reference data cached"
                       description={isOwner ? "Click Refresh QuickBooks lists to load vendors, accounts, and tax codes" : "Reference data will appear here once the workspace owner syncs QuickBooks"}
                       action={isOwner ? (

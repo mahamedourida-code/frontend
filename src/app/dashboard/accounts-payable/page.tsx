@@ -706,7 +706,7 @@ function AccountsPayableContent() {
           title="Accounts Payable"
           description="Reviewed invoices, drafted as QuickBooks Bills. AxLiner prepares it. You approve it."
           actions={selectedReadyIds.length ? (
-            <MotionButton ref={publishTriggerRef} variant="glossy" onClick={openPublishDialog} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-md px-4">
+            <MotionButton ref={publishTriggerRef} variant="glossy" onClick={openPublishDialog} disabled={saving || !quickBooksConnection?.connected} className="h-9 px-4">
               <Image src="/icons/qb-badge.png" alt="" width={16} height={16} className="mr-1 object-contain" />
               Publish {selectedReadyIds.length} {selectedReadyIds.length === 1 ? "bill" : "bills"}
             </MotionButton>
@@ -842,8 +842,9 @@ function AccountsPayableContent() {
                 </div>
               ) : visibleItems.length === 0 ? (
                 <EmptyState
+                  illustration="/illustrations/workspace-v2/empty-history.png"
+                  illustrationSize={120}
                   icon={<ChevronLeft />}
-                  illustration="/illustrations/empty-ap.png"
                   title="No invoices in this queue"
                   description="Mark a reviewed invoice Ready, then add it from Convert Files."
                   compact
@@ -982,6 +983,8 @@ function AccountsPayableContent() {
               {!activeItem ? (
                 <EmptyState
                   icon={<ChevronLeft />}
+                  illustration="/illustrations/workspace-v2/select-invoice.png"
+                  illustrationSize={160}
                   title="Select an invoice"
                   description="Pick an item from the queue to start coding"
                 />
@@ -994,7 +997,7 @@ function AccountsPayableContent() {
                     </div>
                     <div className="flex items-center gap-2">
                       {activeItem.source_access_url ? (
-                        <Button asChild variant="surface" size="sm" className="h-8 rounded-md">
+                        <Button asChild variant="surface" size="sm" className="h-8">
                           <a href={activeItem.source_access_url} target="_blank" rel="noreferrer">View attachment</a>
                         </Button>
                       ) : null}
@@ -1054,7 +1057,7 @@ function AccountsPayableContent() {
                             size="sm"
                             onClick={() => setDismissDraft({ warningId: warning.id, reason: "" })}
                             disabled={dismissing || discarding || activeLocked}
-                            className="h-8 rounded-md px-3 text-xs"
+                            className="h-8 px-3 text-xs"
                           >
                             Dismiss…
                           </Button>
@@ -1063,7 +1066,7 @@ function AccountsPayableContent() {
                             size="sm"
                             onClick={() => void discardActive()}
                             disabled={dismissing || discarding || activeLocked}
-                            className="h-8 rounded-md px-3 text-xs"
+                            className="h-8 px-3 text-xs"
                           >
                             Discard this one
                           </Button>
@@ -1087,7 +1090,7 @@ function AccountsPayableContent() {
                               size="sm"
                               onClick={() => setDismissDraft(null)}
                               disabled={dismissing}
-                              className="h-8 rounded-md px-3 text-xs"
+                              className="h-8 px-3 text-xs"
                             >
                               Cancel
                             </Button>
@@ -1096,7 +1099,7 @@ function AccountsPayableContent() {
                               size="sm"
                               onClick={() => void dismissDuplicateWarning()}
                               disabled={dismissing}
-                              className="h-8 rounded-md px-3 text-xs"
+                              className="h-8 px-3 text-xs"
                             >
                               {dismissing ? "Dismissing…" : "Dismiss warning"}
                             </Button>
@@ -1126,7 +1129,7 @@ function AccountsPayableContent() {
                         size="sm"
                         disabled={saving || activeLocked}
                         onClick={() => void overrideAutoFill()}
-                        className="h-8 shrink-0 rounded-md px-3 text-xs"
+                        className="h-8 shrink-0 px-3 text-xs"
                       >
                         Override
                       </Button>
@@ -1333,7 +1336,7 @@ function AccountsPayableContent() {
                     <div className="mb-2 flex items-center justify-between gap-3">
                       <p className="text-sm font-semibold text-foreground">Line items</p>
                       {!activeLocked ? (
-                        <Button type="button" variant="surface" size="sm" onClick={addLineItem} className="h-8 rounded-md text-xs">
+                        <Button type="button" variant="surface" size="sm" onClick={addLineItem} className="h-8 text-xs">
                           Add line
                         </Button>
                       ) : null}
@@ -1406,21 +1409,21 @@ function AccountsPayableContent() {
                     <div className="flex flex-wrap gap-2">
                       {!activeLocked ? (
                         <>
-                          <MotionButton variant="glossy" onClick={() => void persistDraft()} disabled={saving} className="h-9 rounded-lg">
+                          <MotionButton variant="glossy" onClick={() => void persistDraft()} disabled={saving} className="h-9">
                             Save draft
                           </MotionButton>
-                          <Button variant="reviewed" onClick={() => void applySelectedStatus()} disabled={saving || nextStatus === activeItem.status} className="h-9 rounded-lg">
+                          <Button variant="reviewed" onClick={() => void applySelectedStatus()} disabled={saving || nextStatus === activeItem.status} className="h-9">
                             Apply status
                           </Button>
                           {activeItem.status === "ready_to_publish" ? (
-                            <MotionButton variant="glossy" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-lg">
+                            <MotionButton variant="glossy" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9">
                               {labels.publish}
                             </MotionButton>
                           ) : null}
                         </>
                       ) : null}
                       {activeItem.status === "published" && activeItem.quickbooks_publication?.attachment_status === "failed" ? (
-                        <Button variant="surface" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9 rounded-lg">
+                        <Button variant="surface" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9">
                           Retry attachment
                         </Button>
                       ) : null}
@@ -1507,12 +1510,12 @@ function AccountsPayableContent() {
 
           <DialogFooter>
             {publishResult ? (
-              <MotionButton variant="glossy" onClick={closePublishDialog} className="h-9 rounded-md px-4">
+              <MotionButton variant="glossy" onClick={closePublishDialog} className="h-9 px-4">
                 Close
               </MotionButton>
             ) : (
               <>
-                <Button variant="surface" onClick={closePublishDialog} disabled={publishing} className="h-9 rounded-md px-4">
+                <Button variant="surface" onClick={closePublishDialog} disabled={publishing} className="h-9 px-4">
                   Cancel
                 </Button>
                 <MotionButton
@@ -1520,7 +1523,7 @@ function AccountsPayableContent() {
                   variant="glossy"
                   onClick={() => void confirmPublishSelected()}
                   disabled={publishing || !quickBooksConnection?.connected || !selectedReadyIds.length}
-                  className="h-9 rounded-md px-4"
+                  className="h-9 px-4"
                 >
                   {publishing ? (
                     <>
@@ -1635,8 +1638,8 @@ function AccountsPayableContent() {
             className="w-full rounded-md border border-border bg-background p-3 font-mono text-xs outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
           />
           <DialogFooter>
-            <Button variant="surface" onClick={() => setPoImportOpen(false)} disabled={poBusy} className="h-9 rounded-md px-4">Cancel</Button>
-            <MotionButton variant="glossy" onClick={() => void importPos()} disabled={poBusy || !poCsv.trim()} className="h-9 rounded-md px-4">
+            <Button variant="surface" onClick={() => setPoImportOpen(false)} disabled={poBusy} className="h-9 px-4">Cancel</Button>
+            <MotionButton variant="glossy" onClick={() => void importPos()} disabled={poBusy || !poCsv.trim()} className="h-9 px-4">
               {poBusy ? <Loader2 className="size-4 animate-spin" /> : null}
               Import
             </MotionButton>

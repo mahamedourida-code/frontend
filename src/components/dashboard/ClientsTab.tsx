@@ -127,6 +127,8 @@ export function ClientsTab({ workspaceId }: { workspaceId?: string }) {
                 <TableCell colSpan={6} className="h-32">
                   <EmptyState
                     icon={<Users />}
+                    illustration="/illustrations/workspace-v2/empty-clients.png"
+                    illustrationSize={104}
                     title="No clients yet"
                     description="Create a client upload link in the Inbox. Each link becomes a tracked client here."
                     compact
