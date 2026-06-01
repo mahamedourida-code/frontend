@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { MarketingNavBar } from '@/components/MarketingNavBar';
 import { Camera, FileSpreadsheet, Zap, CheckCircle, ArrowRight } from 'lucide-react';
 import NextLink from 'next/link';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 export default function ScreenshotToExcel() {
 
@@ -22,6 +24,24 @@ export default function ScreenshotToExcel() {
               Transform screenshots to Excel spreadsheets instantly with AI-powered OCR. Free, accurate, and no signup required.
             </p>
           </div>
+
+          {/* Hero image — glowing invoice on screen with extraction icons */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, ease: 'easeOut' }}
+            className="mx-auto max-w-2xl overflow-hidden rounded-2xl shadow-md ring-1 ring-emerald-300/40"
+          >
+            <Image
+              src="/photos/istockphoto-2254128413-612x612.jpg"
+              alt="Glowing digital invoice on a laptop screen with AI extraction icons"
+              width={612}
+              height={408}
+              className="w-full object-cover"
+              priority
+            />
+          </motion.div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" asChild className="text-lg px-8">
@@ -107,6 +127,23 @@ export default function ScreenshotToExcel() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Section accent — documents with checkmarks */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, ease: 'easeOut' }}
+            className="mx-auto max-w-xl overflow-hidden rounded-2xl shadow-sm ring-1 ring-emerald-300/40"
+          >
+            <Image
+              src="/photos/istockphoto-2227797727-612x612.jpg"
+              alt="Digital documents with checkmarks indicating successful extraction"
+              width={612}
+              height={408}
+              className="w-full object-cover"
+            />
+          </motion.div>
 
           <div className="mt-16">
             <Button size="lg" asChild className="text-lg px-12">

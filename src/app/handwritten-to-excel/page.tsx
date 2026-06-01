@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { MarketingNavBar } from '@/components/MarketingNavBar';
 import { PenTool, FileSpreadsheet, Zap, CheckCircle, ArrowRight, Sparkles } from 'lucide-react';
 import NextLink from 'next/link';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 export default function HandwrittenToExcel() {
   return (
@@ -25,6 +27,24 @@ export default function HandwrittenToExcel() {
               Convert handwritten tables to Excel with our specialized 7B parameter AI model. Advanced OCR technology for accurate handwriting recognition.
             </p>
           </div>
+
+          {/* Hero image */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, ease: 'easeOut' }}
+            className="mx-auto max-w-2xl overflow-hidden rounded-2xl shadow-md ring-1 ring-emerald-300/40"
+          >
+            <Image
+              src="/photos/kelly-sikkema-M98NRBuzbpc-unsplash.jpg"
+              alt="Handwritten receipts and paperwork ready to be digitised"
+              width={800}
+              height={533}
+              className="w-full object-cover"
+              priority
+            />
+          </motion.div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" asChild className="text-lg px-8">
@@ -111,6 +131,23 @@ export default function HandwrittenToExcel() {
             </CardContent>
           </Card>
 
+          {/* Section accent — handwritten notes close-up */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, ease: 'easeOut' }}
+            className="mx-auto max-w-xl overflow-hidden rounded-2xl shadow-sm ring-1 ring-emerald-300/40"
+          >
+            <Image
+              src="/photos/kelly-sikkema-SiOW0btU0zk-unsplash.jpg"
+              alt="Close-up of handwritten notes being processed"
+              width={800}
+              height={533}
+              className="w-full object-cover"
+            />
+          </motion.div>
+
           <Card className="ax-glass-card mt-8 text-left">
             <CardHeader>
               <CardTitle className="ax-marketing-subtitle flex items-center gap-2">
@@ -162,6 +199,23 @@ export default function HandwrittenToExcel() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Section accent — manual bookkeeping cost visual */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, ease: 'easeOut' }}
+            className="mx-auto max-w-xl overflow-hidden rounded-2xl shadow-sm ring-1 ring-emerald-300/40"
+          >
+            <Image
+              src="/photos/The-Real-Cost-of-DIY-Bookkeeping-scaled.jpg"
+              alt="The real cost of manual bookkeeping"
+              width={800}
+              height={533}
+              className="w-full object-cover"
+            />
+          </motion.div>
 
           <div className="mt-16">
             <Button size="lg" asChild className="text-lg px-12">

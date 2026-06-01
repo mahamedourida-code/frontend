@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { MarketingNavBar } from '@/components/MarketingNavBar';
 import { FileImage, FileSpreadsheet, Zap, CheckCircle, ArrowRight, Upload } from 'lucide-react';
 import NextLink from 'next/link';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 export default function ImageToExcel() {
   return (
@@ -21,6 +23,24 @@ export default function ImageToExcel() {
               Convert any image containing tables to Excel instantly with AI-powered OCR. Free, fast, and accurate - no signup required.
             </p>
           </div>
+
+          {/* Hero image — man photographing an invoice */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, ease: 'easeOut' }}
+            className="mx-auto max-w-2xl overflow-hidden rounded-2xl shadow-md ring-1 ring-emerald-300/40"
+          >
+            <Image
+              src="/photos/istockphoto-2273856415-612x612.jpg"
+              alt="Man photographing an invoice with a smartphone"
+              width={612}
+              height={408}
+              className="w-full object-cover"
+              priority
+            />
+          </motion.div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" asChild className="text-lg px-8">
@@ -107,6 +127,23 @@ export default function ImageToExcel() {
             </CardContent>
           </Card>
 
+          {/* Section accent — smiling woman using phone to capture invoice */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, ease: 'easeOut' }}
+            className="mx-auto max-w-xl overflow-hidden rounded-2xl shadow-sm ring-1 ring-emerald-300/40"
+          >
+            <Image
+              src="/photos/smiling-young-woman-sitting-on-chair-holding-mobil-2023-11-27-04-52-35-utc.webp"
+              alt="Smiling woman using her phone to capture a document"
+              width={612}
+              height={408}
+              className="w-full object-cover"
+            />
+          </motion.div>
+
           <Card className="ax-glass-card mt-8 text-left">
             <CardHeader>
               <CardTitle className="ax-marketing-subtitle">How It Works</CardTitle>
@@ -126,6 +163,23 @@ export default function ImageToExcel() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Section accent — invoice scanning close-up */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, ease: 'easeOut' }}
+            className="mx-auto max-w-xl overflow-hidden rounded-2xl shadow-sm ring-1 ring-emerald-300/40"
+          >
+            <Image
+              src="/photos/istockphoto-2185212349-612x612.jpg"
+              alt="Invoice being scanned and extracted by AI"
+              width={612}
+              height={408}
+              className="w-full object-cover"
+            />
+          </motion.div>
 
           <div className="mt-16">
             <Button size="lg" asChild className="text-lg px-12">
