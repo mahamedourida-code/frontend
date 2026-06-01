@@ -152,7 +152,7 @@ function CompareCellValue({ value }: { value: ComparisonCell }) {
 
 function PricingFallback() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="ax-marketing-page min-h-screen bg-white text-black">
       <div className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-4">
         <div className="h-12 w-12 animate-spin rounded-full border-4 border-border border-t-primary" />
       </div>
@@ -404,12 +404,12 @@ function PricingContent() {
     <main className="ax-marketing-page min-h-screen overflow-hidden bg-white text-black">
       <MarketingNavBar />
 
-      <section className="mx-auto max-w-[1480px] px-4 pb-16 pt-28 sm:px-6 lg:px-8 lg:pt-32">
+      <section className="ax-marketing-container max-w-[1480px] pb-16 pt-32 lg:pt-36">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-700">Plans &amp; pricing</p>
           <h1 className="ax-marketing-section-title mt-4 text-black">Pricing</h1>
           <p className="ax-marketing-lead mx-auto mt-5 max-w-xl text-black">
-            Simple plans for solo bookkeepers and accounting practices. Pick monthly or annual — change anytime.
+            Simple plans for solo bookkeepers and accounting practices. Pick monthly or annual. Change anytime.
           </p>
 
           <div className="mt-8 inline-flex rounded-full border-2 border-neutral-900 bg-white p-1 shadow-sm">
@@ -520,7 +520,7 @@ function PricingContent() {
                     <div className="flex min-h-[96px] items-start justify-between gap-4">
                       <div>
                         <p className="text-xl font-bold text-neutral-900">{presentation.name}</p>
-                        <p className="mt-2 max-w-[220px] text-sm font-semibold leading-6 text-neutral-900">{presentation.description}</p>
+                        <p className="mt-2 max-w-[220px] text-[16px] font-semibold leading-6 text-neutral-900">{presentation.description}</p>
                       </div>
                       {isPopular && (
                         <span className="rounded-full bg-emerald-700 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-white">
@@ -561,7 +561,7 @@ function PricingContent() {
 
                     <ul className="mt-7 flex-1 space-y-3 border-t border-neutral-900/10 pt-6">
                       {featureRows.map((feature) => (
-                        <li key={feature} className="flex items-start gap-3 text-sm font-semibold leading-6 text-neutral-900">
+                        <li key={feature} className="flex items-start gap-3 text-[15px] font-semibold leading-6 text-neutral-900">
                           <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-700" />
                           <span>{feature}</span>
                         </li>

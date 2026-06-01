@@ -92,7 +92,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
       />
       <MarketingNavBar />
 
-      <article className="mx-auto max-w-[760px] px-4 pb-20 pt-28 sm:px-6 lg:px-8 lg:pt-32">
+      <article className="ax-marketing-container-reading max-w-[760px] pb-20 pt-32 lg:pt-36">
         <header>
           <Link
             href="/blogs"
@@ -200,7 +200,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
 
       {/* Related issues */}
       {otherPosts.length > 0 ? (
-        <section className="mx-auto max-w-6xl px-4 pb-24 sm:px-6 lg:px-8">
+        <section className="ax-marketing-container-editorial pb-24">
           <div className="border-t-2 border-neutral-900 pt-10">
             <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-emerald-700">
               Keep reading
@@ -223,7 +223,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
                 <h4 className="mt-3 text-xl font-bold leading-snug tracking-tight text-neutral-900 transition-colors group-hover:text-emerald-700 sm:text-[22px]">
                   {other.title}
                 </h4>
-                <p className="mt-3 line-clamp-3 text-sm font-semibold leading-6 text-neutral-900">
+                <p className="ax-marketing-card-copy mt-3 line-clamp-3">
                   {other.description}
                 </p>
                 <p className="mt-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">

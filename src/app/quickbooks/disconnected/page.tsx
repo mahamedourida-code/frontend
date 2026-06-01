@@ -15,22 +15,22 @@ export const metadata: Metadata = {
 
 export default function QuickBooksDisconnectedPage() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="ax-marketing-page min-h-screen bg-white text-black">
       <MarketingNavBar />
 
-      <section className="mx-auto flex min-h-screen max-w-[720px] items-center px-4 py-28 sm:px-6">
+      <section className="ax-marketing-container-reading flex min-h-screen max-w-[720px] items-center py-28">
         <div className="w-full border-t border-border pt-10">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">QuickBooks Online</p>
-          <h1 className="mt-5 text-4xl font-semibold tracking-normal sm:text-5xl">Your company is disconnected.</h1>
-          <p className="mt-5 max-w-[620px] text-lg leading-8 text-foreground/76">
+          <p className="ax-marketing-eyebrow text-emerald-700">QuickBooks Online</p>
+          <h1 className="ax-marketing-section-title mt-5 text-black">Your company is disconnected.</h1>
+          <p className="ax-marketing-body mt-5 max-w-[620px] text-black">
             AxLiner can no longer read QuickBooks vendor, account, or tax reference lists for this workspace. You can
             reconnect from Integrations whenever you need that workflow again.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild className="rounded-md px-6">
+            <Button asChild variant="glossy" className="px-6">
               <Link href="/dashboard/integrations">Open integrations</Link>
             </Button>
-            <Button asChild variant="outline" className="rounded-md px-6">
+            <Button asChild variant="outline" className="px-6">
               <Link href="/">Return home</Link>
             </Button>
           </div>

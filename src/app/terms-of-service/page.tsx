@@ -5,15 +5,15 @@ import { MarketingNavBar } from "@/components/MarketingNavBar"
 
 export default function TermsOfServicePage() {
   return (
-    <div className="ax-page-bg min-h-screen">
+    <div className="ax-marketing-page min-h-screen bg-white text-black">
       <MarketingNavBar />
 
       {/* Content */}
-      <main className="ax-glass-card relative z-10 container mx-auto max-w-4xl rounded-3xl px-4 pb-12 pt-32">
-        <h1 className="text-4xl font-bold mb-4">Terms of Service</h1>
-        <p className="text-muted-foreground mb-8">Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+      <main className="ax-marketing-container-reading relative z-10 max-w-4xl pb-12 pt-32 lg:pt-36">
+        <h1 className="ax-marketing-section-title mb-4 text-black">Terms of Service</h1>
+        <p className="mb-8 font-semibold text-neutral-900">Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
 
-        <div className="prose prose-slate dark:prose-invert max-w-none space-y-8">
+        <div className="ax-marketing-legal max-w-none space-y-10">
           <section>
             <h2 className="text-2xl font-semibold mb-4">1. Agreement to Terms</h2>
             <p className="text-muted-foreground leading-relaxed">
@@ -255,7 +255,7 @@ export default function TermsOfServicePage() {
 
       {/* Footer */}
       <footer className="border-t mt-20">
-        <div className="container max-w-4xl mx-auto px-4 py-8">
+        <div className="ax-marketing-container-reading max-w-4xl py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
             <p>© {new Date().getFullYear()} AxLiner. All rights reserved.</p>
             <div className="flex gap-6">

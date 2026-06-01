@@ -20,14 +20,14 @@ function dateParts(date: string) {
 export const metadata: Metadata = {
   title: "AxLiner Journal | The bookkeeping profession in 2026",
   description:
-    "Honest writing about running a bookkeeping or accounting practice in 2026 — pricing, retention, daily life, and how AI is reshaping the work.",
+    "Honest writing about running a bookkeeping or accounting practice in 2026: pricing, retention, daily life, and how AI is reshaping the work.",
   alternates: {
     canonical: "https://www.axliner.com/blogs",
   },
   openGraph: {
     title: "AxLiner Journal",
     description:
-      "Field notes for bookkeepers and accountants — pricing, client retention, daily life, profession trends.",
+      "Field notes for bookkeepers and accountants: pricing, client retention, daily life, profession trends.",
     url: "https://www.axliner.com/blogs",
     siteName: "AxLiner",
     type: "website",
@@ -42,7 +42,7 @@ export default function BlogsPage() {
       <MarketingNavBar />
 
       {/* Masthead */}
-      <section className="mx-auto max-w-6xl px-4 pb-10 pt-28 sm:px-6 lg:px-8 lg:pt-32">
+      <section className="ax-marketing-container-editorial pb-10 pt-32 lg:pt-36">
         <div className="border-b-2 border-neutral-900 pb-10">
           <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-emerald-700">
             The AxLiner Journal
@@ -51,7 +51,7 @@ export default function BlogsPage() {
             Field notes for the people who keep the books.
           </h1>
           <p className="ax-marketing-lead mt-6 max-w-3xl text-black">
-            Honest writing about running a bookkeeping or accounting practice in 2026 — pricing models, client
+            Honest writing about running a bookkeeping or accounting practice in 2026: pricing models, client
             retention, the Sunday-evening reality, and what AI is actually doing to the profession.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-neutral-900/10 pt-5 text-sm font-bold uppercase tracking-[0.12em] text-neutral-900">
@@ -66,7 +66,7 @@ export default function BlogsPage() {
 
       {/* Featured */}
       {featured ? (
-        <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 lg:px-8">
+        <section className="ax-marketing-container-editorial pb-16">
           <Link href={`/blogs/${featured.slug}`} className="group block">
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:items-center">
               <BrandVisualFrame treatment="photo" className="relative aspect-[5/4] w-full overflow-hidden lg:aspect-[6/5]">
@@ -88,7 +88,7 @@ export default function BlogsPage() {
                     {featured.title}
                   </span>
                 </h2>
-                <p className="mt-5 max-w-xl text-base font-semibold leading-7 text-neutral-900 sm:text-lg">
+                <p className="ax-marketing-body mt-5 max-w-xl text-black">
                   {featured.description}
                 </p>
                 <div className="mt-7 flex items-center gap-3 text-sm font-bold text-neutral-900">
@@ -118,7 +118,7 @@ export default function BlogsPage() {
       ) : null}
 
       {/* Issue list */}
-      <section className="mx-auto max-w-6xl px-4 pb-24 sm:px-6 lg:px-8">
+      <section className="ax-marketing-container-editorial pb-24">
         <div className="border-t-2 border-neutral-900 pt-10">
           <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-neutral-900">
             More from the journal
@@ -167,7 +167,7 @@ export default function BlogsPage() {
 
                     <div className="flex min-h-[200px] flex-col justify-between">
                       <div>
-                        <p className="text-base font-semibold leading-7 text-neutral-900 sm:text-[17px]">
+                        <p className="ax-marketing-body text-black">
                           {post.description}
                         </p>
                         <div className="mt-5 flex items-center gap-3 text-sm font-bold text-neutral-900">

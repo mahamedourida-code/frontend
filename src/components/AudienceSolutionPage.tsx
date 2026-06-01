@@ -17,7 +17,7 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
       <MarketingNavBar />
 
       <header className="border-b-2 border-black bg-white">
-        <div className="mx-auto max-w-[1500px] px-4 pb-14 pt-32 sm:px-5 sm:pb-16 lg:px-9 lg:pb-20 lg:pt-40">
+        <div className="ax-marketing-container pb-14 pt-32 sm:pb-16 lg:pb-20 lg:pt-40">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-end">
             <div>
               <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.24em] text-black">
@@ -49,7 +49,7 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
 
             <aside className="border-t-2 border-black pt-5 lg:border-l lg:border-t-0 lg:pb-1 lg:pl-7 lg:pt-0">
               <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-black">Why it matters</p>
-              <p className="ax-marketing-prose mt-3 text-justify text-[17px] font-semibold leading-7 text-black">
+              <p className="ax-marketing-prose mt-3 text-justify text-black">
                 {solution.proof}
               </p>
             </aside>
@@ -58,21 +58,21 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
       </header>
 
       <section className="ax-marketing-band-mint border-b border-black/20 bg-[#d1fae5]">
-        <div className="mx-auto grid max-w-[1500px] px-4 sm:grid-cols-3 sm:px-5 lg:px-9">
+        <div className="ax-marketing-container grid sm:grid-cols-3">
           {solution.signals.map((signal) => (
             <div
               key={signal.value}
               className="border-b border-black/20 py-6 last:border-b-0 sm:border-b-0 sm:border-l sm:px-6 sm:last:border-r"
             >
               <p className="text-xl font-bold tracking-[-0.035em] text-black">{signal.value}</p>
-              <p className="mt-1 text-base font-semibold leading-6 text-black">{signal.label}</p>
+              <p className="ax-marketing-body mt-1 text-black">{signal.label}</p>
             </div>
           ))}
         </div>
       </section>
 
       <section className="bg-white">
-        <div className="mx-auto grid max-w-[1500px] gap-10 px-4 py-16 sm:px-5 sm:py-20 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-20 lg:px-9 lg:py-28">
+        <div className="ax-marketing-container grid gap-10 py-16 sm:py-20 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-20 lg:py-28">
           <div className="max-w-xl">
             <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-800">Built for review</p>
             <h2 className="ax-marketing-section-title mt-4 text-black">
@@ -104,7 +104,7 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
       </section>
 
       <section className="ax-marketing-band-warm border-y border-black/20 bg-[#f7f3e9]">
-        <div className="mx-auto grid max-w-[1500px] gap-10 px-4 py-16 sm:px-5 sm:py-20 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-20 lg:px-9 lg:py-24">
+        <div className="ax-marketing-container grid gap-10 py-16 sm:py-20 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-20 lg:py-24">
           <div className="max-w-xl">
             <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-black">A controlled handoff</p>
             <h2 className="ax-marketing-section-title mt-4 text-black">
@@ -138,7 +138,7 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
       </section>
 
       <section className="bg-white">
-        <div className="mx-auto max-w-[1500px] px-4 py-16 sm:px-5 sm:py-20 lg:px-9 lg:py-24">
+        <div className="ax-marketing-container py-16 sm:py-20 lg:py-24">
           <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-800">Keep exploring</p>
           <h2 className="ax-marketing-section-title mt-4 text-black">
             Related accounting workflows
@@ -169,7 +169,7 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
       </section>
 
       <section className="ax-marketing-band-mint border-t-2 border-black bg-[#d1fae5]">
-        <div className="mx-auto flex max-w-[1500px] flex-col gap-7 px-4 py-14 sm:px-5 sm:py-16 lg:flex-row lg:items-center lg:justify-between lg:px-9 lg:py-20">
+        <div className="ax-marketing-container flex flex-col gap-7 py-14 sm:py-16 lg:flex-row lg:items-center lg:justify-between lg:py-20">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-black">Ready for the next batch</p>
             <h2 className="ax-marketing-section-title mt-4 max-w-4xl text-black">

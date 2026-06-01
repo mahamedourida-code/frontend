@@ -16,16 +16,16 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="ax-marketing-page min-h-screen bg-white text-black">
       <MarketingNavBar />
 
-      <article className="mx-auto max-w-[860px] px-4 pb-24 pt-32 sm:px-6 lg:px-8 lg:pt-36">
+      <article className="ax-marketing-container-reading pb-24 pt-32 lg:pt-36">
         <header>
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Contact</p>
-          <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-normal text-foreground sm:text-5xl">
+          <p className="ax-marketing-eyebrow text-emerald-700">Contact</p>
+          <h1 className="ax-marketing-section-title mt-5 text-black">
             Reach the AxLiner team with the document problem in front of you.
           </h1>
-          <p className="mt-5 text-xl font-semibold leading-7 text-foreground">
+          <p className="ax-marketing-lead mt-5 text-black">
             Write to us for product questions, billing questions, privacy requests, or help with a conversion batch.
             A useful message explains what you uploaded, what output you expected, and whether the issue happened in
             Table mode or Bank statement mode.
@@ -51,8 +51,8 @@ export default function ContactPage() {
         </header>
 
         <section className="mt-10 border-t border-border pt-9">
-          <h2 className="text-2xl font-semibold tracking-normal">The fastest contact path</h2>
-          <div className="mt-5 space-y-5 text-[19px] leading-8 text-foreground">
+          <h2 className="ax-marketing-subtitle">The fastest contact path</h2>
+          <div className="ax-marketing-prose mt-5 space-y-5">
             <p>
               For normal support, email{" "}
               <a className="font-semibold text-primary underline underline-offset-4" href="mailto:contact@axliner.com">
@@ -68,18 +68,18 @@ export default function ContactPage() {
             </p>
           </div>
           <div className="mt-7 flex flex-wrap gap-3">
-            <Button asChild className="rounded-md px-6">
+            <Button asChild variant="glossy" className="px-6">
               <a href="mailto:contact@axliner.com?subject=AxLiner%20support%20request">Send email</a>
             </Button>
-            <Button asChild variant="outline" className="rounded-md px-6">
+            <Button asChild variant="outline" className="px-6">
               <Link href="/data-deletion">Data deletion</Link>
             </Button>
           </div>
         </section>
 
         <section className="mt-10 border-t border-border pt-9">
-          <h2 className="text-2xl font-semibold tracking-normal">Privacy and account requests</h2>
-          <div className="mt-5 space-y-5 text-[19px] leading-8 text-foreground">
+          <h2 className="ax-marketing-subtitle">Privacy and account requests</h2>
+          <div className="ax-marketing-prose mt-5 space-y-5">
             <p>
               Privacy questions and deletion requests should be clear enough to verify the account and the action being
               requested. Use the account email, say whether you want generated files deleted or the account removed,

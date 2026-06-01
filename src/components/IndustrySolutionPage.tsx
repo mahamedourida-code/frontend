@@ -20,8 +20,8 @@ function NumberedBlock({ number, title, text }: { number: string; title: string;
       <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
         {number}
       </div>
-      <h3 className="text-base font-semibold text-foreground">{title}</h3>
-      <p className="mt-3 text-sm leading-6 text-foreground">{text}</p>
+      <h3 className="text-xl font-bold leading-tight tracking-[-0.025em] text-black">{title}</h3>
+      <p className="ax-marketing-card-copy mt-3">{text}</p>
     </div>
   );
 }
@@ -31,7 +31,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
     <main className="ax-marketing-page min-h-screen overflow-hidden bg-white text-black">
       <MarketingNavBar />
 
-      <section className="relative mx-auto grid max-w-6xl gap-8 px-4 pb-12 pt-28 sm:px-6 lg:grid-cols-[0.96fr_1.04fr] lg:px-8 lg:pb-16 lg:pt-32">
+      <section className="ax-marketing-container-editorial relative grid gap-8 pb-12 pt-32 lg:grid-cols-[0.96fr_1.04fr] lg:pb-16 lg:pt-36">
         <div className="flex flex-col justify-center">
           <div className="w-fit rounded-md border border-border bg-card px-4 py-2 text-sm font-semibold text-primary shadow-sm">
             {solution.eyebrow}
@@ -47,7 +47,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
           </p>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <Button asChild className="h-12 rounded-md px-6">
+            <Button asChild variant="glossy" className="h-12 px-6">
               <Link href="/dashboard/client">
                 Try it with your files
                 <ArrowMark className="ml-2" />
@@ -56,7 +56,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
             <Button
               variant="outline"
               asChild
-              className="h-12 rounded-md px-6"
+              className="h-12 px-6"
             >
               <Link href="/pricing">See plans</Link>
             </Button>
@@ -75,7 +75,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
         </BrandVisualFrame>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <section className="ax-marketing-container-editorial py-10">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {solution.useCases.map((item) => (
             <div
@@ -83,31 +83,31 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
               className="ax-surface rounded-md px-4 py-5"
             >
               <div className="mb-4 h-[3px] w-10 rounded-full bg-primary" />
-              <p className="text-sm font-semibold leading-6 text-foreground">{item}</p>
+              <p className="ax-marketing-card-copy">{item}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <section className="ax-marketing-container-editorial py-10">
         <div className="grid gap-6 lg:grid-cols-[0.86fr_1.14fr] lg:items-start">
           <div className="ax-surface rounded-md p-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
+            <p className="ax-marketing-eyebrow text-emerald-700">
               Where it fits
             </p>
-            <h2 className="ax-marketing-subtitle mt-4 text-black">
+            <h2 className="ax-marketing-section-title mt-4 text-black">
               Built for the gap between handwritten files and corrected spreadsheet output.
             </h2>
           </div>
 
           <div className="grid gap-4">
             <div className="ax-surface rounded-md p-6">
-              <p className="text-base leading-7 text-foreground">
+              <p className="ax-marketing-body text-black">
                 Most {solution.title.toLowerCase()} teams already know what has to happen after conversion: review the rows, correct edge cases, and send the spreadsheet into reporting or operations. AxLiner is shaped around that step instead of leaving a pile of handwritten paperwork to rebuild by hand.
               </p>
             </div>
             <div className="ax-surface rounded-md p-6">
-              <p className="text-base leading-7 text-foreground">
+              <p className="ax-marketing-body text-black">
                 The product keeps batches simple: upload the invoices, bank statements, forms, or table files, inspect the result set, fix the exceptions, then download corrected outputs your team can open immediately. That fits daily intake and backlog cleanup without forcing a custom project for every format.
               </p>
             </div>
@@ -115,7 +115,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1.04fr_0.96fr] lg:px-8 lg:py-16">
+      <section className="ax-marketing-container-editorial grid gap-8 py-12 lg:grid-cols-[1.04fr_0.96fr] lg:py-16">
         <BrandVisualFrame treatment="photo" className="min-h-[300px] sm:min-h-[360px] lg:min-h-[420px]">
           <Image
             src={POLIVALENT_SOLUTION_IMAGE}
@@ -128,10 +128,10 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
 
         <div className="flex flex-col justify-center">
           <div className="ax-surface rounded-md p-6 sm:p-7">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
+            <p className="ax-marketing-eyebrow text-emerald-700">
               How it works
             </p>
-            <h2 className="ax-marketing-subtitle mt-4 text-black">
+            <h2 className="ax-marketing-section-title mt-4 text-black">
               A short path from a file batch to reviewable Excel output.
             </h2>
             <div className="mt-7 grid gap-4">
@@ -148,18 +148,18 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 lg:px-8">
-        <div className="overflow-hidden rounded-md border border-primary/20 bg-primary p-6 text-primary-foreground shadow-sm sm:p-8 lg:p-10">
+      <section className="ax-marketing-container-editorial pb-20">
+        <div className="ax-marketing-band-mint overflow-hidden rounded-md border-2 border-neutral-900 bg-[#d1fae5] p-6 text-black shadow-sm sm:p-8 lg:p-10">
           <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary-foreground/70">
+              <p className="ax-marketing-eyebrow text-black">
                 Ready for batch work
               </p>
-              <h2 className="ax-marketing-subtitle mt-4 max-w-3xl text-black">
+              <h2 className="ax-marketing-section-title mt-4 max-w-3xl text-black">
                 Convert {solution.title.toLowerCase()} documents without building a custom data-entry team.
               </h2>
             </div>
-            <Button asChild className="h-12 rounded-md bg-background px-6 text-primary hover:bg-card/90">
+            <Button asChild variant="ink" className="h-12 px-6">
               <Link href="/dashboard/client">
                 Start converting
                 <ArrowMark className="ml-2" />

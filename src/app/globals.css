@@ -719,6 +719,60 @@ body {
   .ax-marketing-page {
     background: var(--ax-marketing-page);
     color: var(--ax-marketing-ink);
+    color-scheme: light;
+    --background: #ffffff;
+    --foreground: #171717;
+    --card: #ffffff;
+    --card-foreground: #171717;
+    --popover: #ffffff;
+    --popover-foreground: #171717;
+    --primary: hsl(160 84% 39%);
+    --primary-foreground: #171717;
+    --secondary: #f3f4f4;
+    --secondary-foreground: #171717;
+    --muted: #f3f4f4;
+    --muted-foreground: #404040;
+    --accent: #e7e9e8;
+    --accent-foreground: #171717;
+    --border: #e5e7eb;
+    --input: #e5e7eb;
+    --ring: hsl(160 84% 38%);
+  }
+
+  .ax-marketing-container,
+  .ax-marketing-container-editorial,
+  .ax-marketing-container-reading {
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+
+  .ax-marketing-container {
+    max-width: 93.75rem;
+  }
+
+  .ax-marketing-container-editorial {
+    max-width: 72rem;
+  }
+
+  .ax-marketing-container-reading {
+    max-width: 53.75rem;
+  }
+
+  @media (min-width: 640px) {
+    .ax-marketing-container,
+    .ax-marketing-container-editorial,
+    .ax-marketing-container-reading {
+      padding-inline: 1.25rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .ax-marketing-container,
+    .ax-marketing-container-editorial,
+    .ax-marketing-container-reading {
+      padding-inline: 2.25rem;
+    }
   }
 
   .ax-marketing-display {
@@ -729,7 +783,7 @@ body {
   }
 
   .ax-marketing-section-title {
-    font-size: clamp(2.25rem, 4.8vw, 4.75rem);
+    font-size: clamp(2.5rem, 4.8vw, 4.75rem);
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.055em;
@@ -745,7 +799,7 @@ body {
   .ax-marketing-lead {
     max-width: 46rem;
     color: var(--ax-marketing-muted);
-    font-size: clamp(1.1875rem, 1.7vw, 1.5rem);
+    font-size: clamp(1.25rem, 1.7vw, 1.5rem);
     font-weight: 500;
     line-height: 1.55;
     letter-spacing: -0.012em;
@@ -753,7 +807,7 @@ body {
 
   .ax-marketing-body {
     color: var(--ax-marketing-muted);
-    font-size: clamp(1.0625rem, 1.15vw, 1.1875rem);
+    font-size: clamp(1.125rem, 1.15vw, 1.25rem);
     font-weight: 500;
     line-height: 1.68;
   }
@@ -762,7 +816,7 @@ body {
   .ax-marketing-page p.text-muted-foreground,
   .ax-marketing-page li.text-muted-foreground {
     color: var(--ax-marketing-muted);
-    font-size: clamp(1rem, 1vw, 1.125rem);
+    font-size: clamp(1.125rem, 1vw, 1.25rem);
     font-weight: 500;
     line-height: 1.65;
   }
@@ -778,7 +832,7 @@ body {
 
   .ax-marketing-prose {
     color: var(--ax-marketing-ink);
-    font-size: clamp(1.0625rem, 1.25vw, 1.25rem);
+    font-size: clamp(1.125rem, 1.25vw, 1.25rem);
     font-weight: 500;
     line-height: 1.78;
   }
@@ -789,6 +843,40 @@ body {
 
   .ax-marketing-section {
     padding-block: clamp(5rem, 8vw, 8rem);
+  }
+
+  .ax-marketing-card-copy,
+  .ax-marketing-page [data-slot="card-description"] {
+    color: var(--ax-marketing-muted);
+    font-size: clamp(1.125rem, 1vw, 1.25rem);
+    font-weight: 500;
+    line-height: 1.65;
+  }
+
+  .ax-marketing-legal {
+    color: var(--ax-marketing-ink);
+    font-size: clamp(1.125rem, 1.25vw, 1.25rem);
+    line-height: 1.75;
+  }
+
+  .ax-marketing-legal h2 {
+    color: var(--ax-marketing-ink);
+    font-size: clamp(2rem, 3vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+  }
+
+  .ax-marketing-legal h3 {
+    color: var(--ax-marketing-ink);
+    font-size: clamp(1.375rem, 2vw, 1.75rem);
+    font-weight: 700;
+    line-height: 1.16;
+    letter-spacing: -0.025em;
+  }
+
+  .ax-marketing-legal :where(p, li) {
+    color: var(--ax-marketing-muted);
   }
 
   .ax-marketing-band,

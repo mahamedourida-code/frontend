@@ -71,7 +71,7 @@
   }
   
   /* Make all cards full width on mobile */
-  [class*="grid"] > div {
+  [class*="grid"] > div:not(.ax-marketing-page *) {
     width: 100%;
   }
   
@@ -88,37 +88,37 @@
   }
   
   /* Responsive font scaling with clamp */
-  h1:not(.ax-h1):not(.ax-marketing-display):not(.ax-marketing-section-title) {
+  h1:not(.ax-h1):not(.ax-marketing-display):not(.ax-marketing-section-title):not(.ax-marketing-page *) {
     font-size: clamp(1.5rem, 5vw, 2rem) !important;
   }
   
-  h2:not(.ax-h2):not(.ax-marketing-section-title) {
+  h2:not(.ax-h2):not(.ax-marketing-section-title):not(.ax-marketing-page *) {
     font-size: clamp(1.25rem, 4vw, 1.75rem) !important;
   }
   
-  h3:not(.ax-h3):not(.ax-marketing-subtitle) {
+  h3:not(.ax-h3):not(.ax-marketing-subtitle):not(.ax-marketing-page *) {
     font-size: clamp(1.125rem, 3.5vw, 1.5rem) !important;
   }
   
   /* Compact buttons on mobile */
-  button:not([class*="h-"]) {
+  button:not([class*="h-"]):not(.ax-marketing-page *) {
     padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
     font-size: 0.875rem !important;
   }
   
   /* Consistent icon sizes - 20-24px range */
-  svg:not([class*="h-"]) {
+  svg:not([class*="h-"]):not(.ax-marketing-page *) {
     height: 1.25rem;
     width: 1.25rem;
   }
   
   /* Compact spacing - space-y-1 and gap-2 */
-  [class*="space-y-"]:not([class*="space-y-0"]) {
+  [class*="space-y-"]:not([class*="space-y-0"]):not(.ax-marketing-page *) {
     row-gap: 0.25rem !important;
   }
   
-  [class*="gap-"]:not([class*="gap-0"]):not([class*="gap-px"]) {
+  [class*="gap-"]:not([class*="gap-0"]):not([class*="gap-px"]):not(.ax-marketing-page *) {
     gap: 0.5rem !important;
   }
   

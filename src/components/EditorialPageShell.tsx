@@ -35,7 +35,7 @@ export function EditorialPageShell({
     <main className={cn("ax-marketing-page min-h-screen bg-white text-black", className)}>
       <MarketingNavBar />
 
-      <div className="mx-auto max-w-[1560px] px-4 pb-24 pt-32 sm:px-6 lg:px-8 lg:pt-36">
+      <div className="ax-marketing-container max-w-[1560px] pb-24 pt-32 lg:pt-36">
         <div className="grid gap-10 lg:grid-cols-[minmax(224px,280px)_minmax(0,820px)] lg:items-start lg:gap-16 xl:grid-cols-[300px_minmax(0,820px)] xl:gap-20">
           <aside className="hidden self-stretch border-r border-neutral-900/15 pr-8 lg:block xl:pr-10">
             <nav
@@ -73,7 +73,7 @@ export function EditorialPageShell({
               <h1 className="ax-marketing-section-title mt-5 text-black">
                 {title}
               </h1>
-              <div className="mt-6 max-w-[760px] space-y-4 text-[18px] font-semibold leading-8 text-neutral-900">{intro}</div>
+              <div className="ax-marketing-body mt-6 max-w-[760px] space-y-4 text-black">{intro}</div>
               {meta ? <p className="mt-5 text-sm font-bold text-neutral-700">{meta}</p> : null}
               {hero}
             </header>
@@ -93,7 +93,7 @@ export function EditorialPageShell({
               </ol>
             </nav>
 
-            <div className="mt-10 space-y-12 text-[17px] font-semibold leading-8 text-neutral-900">{children}</div>
+            <div className="ax-marketing-prose mt-10 space-y-12">{children}</div>
           </article>
         </div>
       </div>

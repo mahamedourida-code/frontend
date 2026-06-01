@@ -9,16 +9,16 @@ import NextLink from 'next/link';
 export default function ScreenshotToExcel() {
 
   return (
-    <div className="ax-page-bg min-h-screen">
+    <div className="ax-marketing-page min-h-screen bg-white text-black">
       <MarketingNavBar />
 
-      <main className="container relative z-10 mx-auto px-4 pb-16 pt-28">
+      <main className="ax-marketing-container relative z-10 pb-20 pt-32 lg:pt-36">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-4">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              Screenshot to Excel  Converter
+            <h1 className="ax-marketing-section-title text-black">
+              Screenshot to Excel Converter
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="ax-marketing-lead text-black max-w-2xl mx-auto">
               Transform screenshots to Excel spreadsheets instantly with AI-powered OCR. Free, accurate, and no signup required.
             </p>
           </div>
@@ -74,35 +74,35 @@ export default function ScreenshotToExcel() {
 
           <Card className="ax-glass-card mt-16 text-left">
             <CardHeader>
-              <CardTitle className="text-2xl">Why Convert Screenshots to Excel?</CardTitle>
+              <CardTitle className="ax-marketing-subtitle">Why Convert Screenshots to Excel?</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
                 <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Save Time</h3>
-                  <p className="text-muted-foreground">No need to manually type data from screenshots. Convert in seconds instead of hours.</p>
+                  <p className="ax-marketing-card-copy">No need to manually type data from screenshots. Convert in seconds instead of hours.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">High Accuracy</h3>
-                  <p className="text-muted-foreground">AI-powered OCR ensures accurate data extraction from your screenshots.</p>
+                  <p className="ax-marketing-card-copy">AI-powered OCR ensures accurate data extraction from your screenshots.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Free to Use</h3>
-                  <p className="text-muted-foreground">No signup, no credit card, no hidden fees. Just upload and convert.</p>
+                  <p className="ax-marketing-card-copy">No signup, no credit card, no hidden fees. Just upload and convert.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Secure & Private</h3>
-                  <p className="text-muted-foreground">Your files are processed securely and deleted after conversion.</p>
+                  <p className="ax-marketing-card-copy">Your files are processed securely and deleted after conversion.</p>
                 </div>
               </div>
             </CardContent>
@@ -119,8 +119,8 @@ export default function ScreenshotToExcel() {
       </main>
 
       <footer className="relative z-10 border-t mt-24 py-8">
-        <div className="container text-center text-muted-foreground">
-          <p>&copy; 2025 AxLiner. All rights reserved.</p>
+        <div className="ax-marketing-container text-center text-neutral-900">
+          <p>&copy; 2026 AxLiner. All rights reserved.</p>
         </div>
       </footer>
     </div>

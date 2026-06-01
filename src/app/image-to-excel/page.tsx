@@ -8,17 +8,17 @@ import NextLink from 'next/link';
 
 export default function ImageToExcel() {
   return (
-    <div className="ax-page-bg min-h-screen">
+    <div className="ax-marketing-page min-h-screen bg-white text-black">
       <MarketingNavBar />
 
-      <main className="container relative z-10 mx-auto px-4 pb-16 pt-28">
+      <main className="ax-marketing-container relative z-10 pb-20 pt-32 lg:pt-36">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-4">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              Image to Excel Converter  
+            <h1 className="ax-marketing-section-title text-black">
+              Image to Excel Converter
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Convert any image containing  tables to Excel instantly with AI-powered OCR. Free, fast, and accurate - no signup required.
+            <p className="ax-marketing-lead text-black max-w-2xl mx-auto">
+              Convert any image containing tables to Excel instantly with AI-powered OCR. Free, fast, and accurate - no signup required.
             </p>
           </div>
 
@@ -73,35 +73,35 @@ export default function ImageToExcel() {
 
           <Card className="ax-glass-card mt-16 text-left">
             <CardHeader>
-              <CardTitle className="text-2xl">Perfect For</CardTitle>
+              <CardTitle className="ax-marketing-subtitle">Perfect For</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
                 <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Scanned Documents</h3>
-                  <p className="text-muted-foreground">Convert scanned paper documents with tables into editable Excel spreadsheets.</p>
+                  <p className="ax-marketing-card-copy">Convert scanned paper documents with tables into editable Excel spreadsheets.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Photos from Phone</h3>
-                  <p className="text-muted-foreground">Take a photo of any table with your smartphone and convert it to Excel instantly.</p>
+                  <p className="ax-marketing-card-copy">Take a photo of any table with your smartphone and convert it to Excel instantly.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">PDF Tables</h3>
-                  <p className="text-muted-foreground">Extract tables from PDF images or convert PDF screenshots to Excel format.</p>
+                  <p className="ax-marketing-card-copy">Extract tables from PDF images or convert PDF screenshots to Excel format.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Financial Reports</h3>
-                  <p className="text-muted-foreground">Digitize financial statements, invoices, and reports from image format.</p>
+                  <p className="ax-marketing-card-copy">Digitize financial statements, invoices, and reports from image format.</p>
                 </div>
               </div>
             </CardContent>
@@ -109,20 +109,20 @@ export default function ImageToExcel() {
 
           <Card className="ax-glass-card mt-8 text-left">
             <CardHeader>
-              <CardTitle className="text-2xl">How It Works</CardTitle>
+              <CardTitle className="ax-marketing-subtitle">How It Works</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">1</div>
-                <p>Upload your image containing a table (JPG, PNG, etc.)</p>
+                <p className="ax-marketing-card-copy">Upload your image containing a table (JPG, PNG, etc.)</p>
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">2</div>
-                <p>Our AI analyzes and extracts the table structure and data</p>
+                <p className="ax-marketing-card-copy">Our AI analyzes and extracts the table structure and data</p>
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">3</div>
-                <p>Download your formatted Excel file ready for editing</p>
+                <p className="ax-marketing-card-copy">Download your formatted Excel file ready for editing</p>
               </div>
             </CardContent>
           </Card>
@@ -138,8 +138,8 @@ export default function ImageToExcel() {
       </main>
 
       <footer className="relative z-10 border-t mt-24 py-8">
-        <div className="container text-center text-muted-foreground">
-          <p>&copy; 2025 AxLiner. All rights reserved.</p>
+        <div className="ax-marketing-container text-center text-neutral-900">
+          <p>&copy; 2026 AxLiner. All rights reserved.</p>
         </div>
       </footer>
     </div>

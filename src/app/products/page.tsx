@@ -9,17 +9,17 @@ import Link from "next/link";
 
 export default function ProductsPage() {
   return (
-    <div className="ax-page-bg min-h-screen">
+    <div className="ax-marketing-page min-h-screen bg-white text-black">
       <MarketingNavBar />
 
-      <main className="container relative z-10 mx-auto px-4 pb-16 pt-28 sm:px-6 lg:px-8">
+      <main className="ax-marketing-container relative z-10 pb-20 pt-32 lg:pt-36">
         {/* Hero Section */}
         <div className="text-center mb-16">
           <Badge variant="outline" className="mb-4 border-primary/50 text-primary">Products</Badge>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-6">
+          <h1 className="ax-marketing-display font-bold text-black mb-6">
             Transform Images to <span className="bg-gradient-to-r from-primary via-chart-2 to-primary bg-clip-text text-transparent">Excel & CSV Files</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="ax-marketing-lead text-black max-w-3xl mx-auto">
             Professional OCR solutions that convert any document, screenshot, or handwritten table into structured XLSX and CSV spreadsheets.
           </p>
         </div>
@@ -27,8 +27,8 @@ export default function ProductsPage() {
         {/* Key Features Section */}
         <section id="batch-processing" className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Key Features</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <h2 className="ax-marketing-section-title text-black mb-4">Key Features</h2>
+            <p className="ax-marketing-body text-black max-w-2xl mx-auto">
               Powerful features designed to save you hours of manual data entry
             </p>
           </div>
@@ -109,15 +109,15 @@ export default function ProductsPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="ax-glass-card rounded-2xl p-12 text-center">
-          <h2 className="text-3xl font-bold text-foreground mb-4">
+        <section className="ax-marketing-band-mint rounded-2xl bg-[#d1fae5] p-12 text-center">
+          <h2 className="ax-marketing-section-title text-black mb-4">
             Ready to Automate Your Data Entry?
           </h2>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="ax-marketing-lead text-black mb-8 max-w-2xl mx-auto">
             Start converting images to Excel and CSV files in seconds. No credit card required.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" asChild className="text-lg px-8 py-6 h-auto">
+            <Button size="lg" variant="glossy" asChild className="text-lg px-8 py-6 h-auto">
               <Link href="/sign-up">Start Free Trial</Link>
             </Button>
             <Button size="lg" variant="outline" asChild className="text-lg px-8 py-6 h-auto">

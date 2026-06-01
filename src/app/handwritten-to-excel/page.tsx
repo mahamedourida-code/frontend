@@ -8,20 +8,20 @@ import NextLink from 'next/link';
 
 export default function HandwrittenToExcel() {
   return (
-    <div className="ax-page-bg min-h-screen">
+    <div className="ax-marketing-page min-h-screen bg-white text-black">
       <MarketingNavBar />
 
-      <main className="container relative z-10 mx-auto px-4 pb-16 pt-28">
+      <main className="ax-marketing-container relative z-10 pb-20 pt-32 lg:pt-36">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-4">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <Sparkles className="h-8 w-8 text-yellow-500" />
-              <span className="text-sm font-semibold text-yellow-600 dark:text-yellow-500 uppercase tracking-wide">7B AI Model</span>
+              <Sparkles className="h-8 w-8 text-emerald-700" />
+              <span className="text-sm font-semibold text-emerald-700 uppercase tracking-wide">7B AI Model</span>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              Handwritten Table  to Excel
+            <h1 className="ax-marketing-section-title text-black">
+              Handwritten Table to Excel
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="ax-marketing-lead text-black max-w-2xl mx-auto">
               Convert handwritten tables to Excel with our specialized 7B parameter AI model. Advanced OCR technology for accurate handwriting recognition.
             </p>
           </div>
@@ -77,35 +77,35 @@ export default function HandwrittenToExcel() {
 
           <Card className="ax-glass-card mt-16 text-left">
             <CardHeader>
-              <CardTitle className="text-2xl">Perfect For Handwritten</CardTitle>
+              <CardTitle className="ax-marketing-subtitle">Perfect For Handwritten</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
                 <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Paper Forms & Surveys</h3>
-                  <p className="text-muted-foreground">Digitize handwritten forms, surveys, and questionnaires filled out on paper.</p>
+                  <p className="ax-marketing-card-copy">Digitize handwritten forms, surveys, and questionnaires filled out on paper.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Research Notes & Data</h3>
-                  <p className="text-muted-foreground">Convert handwritten research notes, lab data, and field observations into Excel.</p>
+                  <p className="ax-marketing-card-copy">Convert handwritten research notes, lab data, and field observations into Excel.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Meeting Notes & Lists</h3>
-                  <p className="text-muted-foreground">Transform handwritten meeting notes, action items, and lists into organized spreadsheets.</p>
+                  <p className="ax-marketing-card-copy">Transform handwritten meeting notes, action items, and lists into organized spreadsheets.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold mb-1">Financial Records</h3>
-                  <p className="text-muted-foreground">Digitize handwritten expense logs, receipts, and financial tracking sheets.</p>
+                  <p className="ax-marketing-card-copy">Digitize handwritten expense logs, receipts, and financial tracking sheets.</p>
                 </div>
               </div>
             </CardContent>
@@ -113,16 +113,16 @@ export default function HandwrittenToExcel() {
 
           <Card className="ax-glass-card mt-8 text-left">
             <CardHeader>
-              <CardTitle className="text-2xl flex items-center gap-2">
-                <Sparkles className="h-6 w-6 text-yellow-500" />
+              <CardTitle className="ax-marketing-subtitle flex items-center gap-2">
+                <Sparkles className="h-6 w-6 text-emerald-700" />
                 Why 7B AI Model?
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-muted-foreground">
+              <p className="ax-marketing-card-copy">
                 Handwriting recognition is significantly more complex than printed text. Our 7 billion parameter AI model has been trained on millions of handwriting samples, enabling it to:
               </p>
-              <ul className="space-y-2 text-muted-foreground ml-4">
+              <ul className="ax-marketing-card-copy space-y-2 ml-4">
                 <li className="flex items-start gap-2">
                   <span className="text-primary font-bold">•</span>
                   <span>Recognize diverse handwriting styles and variations</span>
@@ -145,20 +145,20 @@ export default function HandwrittenToExcel() {
 
           <Card className="ax-glass-card mt-8 text-left">
             <CardHeader>
-              <CardTitle className="text-2xl">How It Works</CardTitle>
+              <CardTitle className="ax-marketing-subtitle">How It Works</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">1</div>
-                <p>Upload or photograph your handwritten table</p>
+                <p className="ax-marketing-card-copy">Upload or photograph your handwritten table</p>
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">2</div>
-                <p>Our 7B AI model analyzes and recognizes the handwriting</p>
+                <p className="ax-marketing-card-copy">Our 7B AI model analyzes and recognizes the handwriting</p>
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">3</div>
-                <p>Download your digitized Excel file with extracted data</p>
+                <p className="ax-marketing-card-copy">Download your digitized Excel file with extracted data</p>
               </div>
             </CardContent>
           </Card>
@@ -174,8 +174,8 @@ export default function HandwrittenToExcel() {
       </main>
 
       <footer className="relative z-10 border-t mt-24 py-8">
-        <div className="container text-center text-muted-foreground">
-          <p>&copy; 2025 AxLiner. All rights reserved.</p>
+        <div className="ax-marketing-container text-center text-neutral-900">
+          <p>&copy; 2026 AxLiner. All rights reserved.</p>
         </div>
       </footer>
     </div>

@@ -13,16 +13,16 @@ const deletedData = [
 
 export default function DataDeletionPage() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="ax-marketing-page min-h-screen bg-white text-black">
       <MarketingNavBar />
 
-      <article className="mx-auto max-w-[760px] px-4 pb-24 pt-32 sm:px-6 lg:px-8 lg:pt-36">
+      <article className="ax-marketing-container-reading max-w-[760px] pb-24 pt-32 lg:pt-36">
         <header>
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Data deletion</p>
-          <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-normal sm:text-5xl">
+          <p className="ax-marketing-eyebrow text-emerald-700">Data deletion</p>
+          <h1 className="ax-marketing-section-title mt-5 text-black">
             Delete AxLiner account data with a clear request.
           </h1>
-          <p className="mt-5 text-xl font-semibold leading-7 text-foreground">
+          <p className="ax-marketing-lead mt-5 text-black">
             AxLiner processes documents for conversion and keeps the account, job, file, and billing metadata needed
             to deliver the service. This page explains how to request deletion and what happens after the request is
             confirmed.
@@ -31,14 +31,14 @@ export default function DataDeletionPage() {
         </header>
 
         <section className="mt-10 border-t border-border pt-9">
-          <h2 className="text-2xl font-semibold tracking-normal">What can be deleted</h2>
-          <p className="mt-5 text-[19px] leading-8">
+          <h2 className="ax-marketing-subtitle">What can be deleted</h2>
+          <p className="ax-marketing-prose mt-5">
             A deletion request is meant to remove the account data AxLiner no longer needs to operate for you. That
             normally includes the following information.
           </p>
           <ul className="mt-5 space-y-3">
             {deletedData.map((item) => (
-              <li key={item} className="flex gap-3 text-[19px] leading-8 text-foreground">
+              <li key={item} className="ax-marketing-prose flex gap-3">
                 <span className="mt-[14px] h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                 <span>{item}</span>
               </li>
@@ -47,8 +47,8 @@ export default function DataDeletionPage() {
         </section>
 
         <section className="mt-10 border-t border-border pt-9">
-          <h2 className="text-2xl font-semibold tracking-normal">Delete from account settings</h2>
-          <div className="mt-5 space-y-5 text-[19px] leading-8">
+          <h2 className="ax-marketing-subtitle">Delete from account settings</h2>
+          <div className="ax-marketing-prose mt-5 space-y-5">
             <p>
               If you can access the account, start from{" "}
               <Link href="/dashboard/settings" className="font-semibold text-primary underline underline-offset-4">
@@ -65,8 +65,8 @@ export default function DataDeletionPage() {
         </section>
 
         <section className="mt-10 border-t border-border pt-9">
-          <h2 className="text-2xl font-semibold tracking-normal">Request deletion by email</h2>
-          <div className="mt-5 space-y-5 text-[19px] leading-8">
+          <h2 className="ax-marketing-subtitle">Request deletion by email</h2>
+          <div className="ax-marketing-prose mt-5 space-y-5">
             <p>
               If you cannot reach settings, email{" "}
               <a className="font-semibold text-primary underline underline-offset-4" href="mailto:contact@axliner.com">
@@ -82,18 +82,18 @@ export default function DataDeletionPage() {
             </p>
           </div>
           <div className="mt-7 flex flex-wrap gap-3">
-            <Button asChild className="rounded-md px-6">
+            <Button asChild variant="glossy" className="px-6">
               <a href="mailto:contact@axliner.com?subject=Data%20Deletion%20Request">Email deletion request</a>
             </Button>
-            <Button asChild variant="outline" className="rounded-md px-6">
+            <Button asChild variant="outline" className="px-6">
               <Link href="/contact">Contact page</Link>
             </Button>
           </div>
         </section>
 
         <section className="mt-10 border-t border-border pt-9">
-          <h2 className="text-2xl font-semibold tracking-normal">After deletion</h2>
-          <div className="mt-5 space-y-5 text-[19px] leading-8">
+          <h2 className="ax-marketing-subtitle">After deletion</h2>
+          <div className="ax-marketing-prose mt-5 space-y-5">
             <p>
               Generated files, file metadata, job history, profile information, and active access paths are removed
               according to the confirmed deletion action and the service retention process. Shared download access
@@ -108,8 +108,8 @@ export default function DataDeletionPage() {
         </section>
 
         <section className="mt-10 border-t border-border pt-9">
-          <h2 className="text-2xl font-semibold tracking-normal">Related pages</h2>
-          <p className="mt-5 text-[19px] leading-8">
+          <h2 className="ax-marketing-subtitle">Related pages</h2>
+          <p className="ax-marketing-prose mt-5">
             Read the <Link href="/privacy-policy" className="font-semibold text-primary underline underline-offset-4">privacy policy</Link>{" "}
             for the wider data handling explanation or use the{" "}
             <Link href="/contact" className="font-semibold text-primary underline underline-offset-4">contact page</Link>{" "}
