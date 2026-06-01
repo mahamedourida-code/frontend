@@ -3,11 +3,11 @@
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-import { BookCheck, ChevronLeft, Clock3, Loader2, Search } from "lucide-react"
+import { ChevronLeft, Clock3, Loader2, Search, Upload } from "lucide-react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { WorkspaceSidebar } from "@/components/WorkspaceSidebar"
+import { WorkspaceSidebar, type WorkspaceSidebarItemKey } from "@/components/WorkspaceSidebar"
 import { NotificationsBell } from "@/components/NotificationsBell"
 import { HelpMenu } from "@/components/HelpMenu"
 import { MobileNav } from "@/components/MobileNav"
@@ -18,7 +18,7 @@ import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { ocrApi, type RecoverableJobSummary } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
 
-type DashboardItemKey = "overview" | "process" | "inbox" | "accounts_payable" | "integrations" | "history" | "pricing" | "settings"
+type DashboardItemKey = WorkspaceSidebarItemKey
 
 type DashboardShellProps = {
   activeItem: DashboardItemKey
@@ -140,15 +140,6 @@ export function DashboardShell({
     return null
   }, [processingState, recoverableJob])
 
-  // "N to review" — derived from available client state (no blocking fetch).
-  // Files that finished processing but aren't yet exported are the review queue.
-  const reviewCount = useMemo(() => {
-    if (processingState.processingComplete && Array.isArray(processingState.processedFiles)) {
-      return processingState.processedFiles.length
-    }
-    return 0
-  }, [processingState])
-
   return (
     <div className="ax-page-bg min-h-svh text-foreground">
       <WorkspaceSidebar activeItem={activeItem} user={user} />
@@ -222,17 +213,12 @@ export function DashboardShell({
               )}
 
               {/* The ONE mint element above the fold — straight to the review board. */}
-              {reviewCount > 0 && (
-                <Link
-                  href="/dashboard/client"
-                  aria-label={`${reviewCount} to review`}
-                  className="ax-interactive hidden h-9 items-center gap-2 rounded-full bg-[var(--brand-green)] px-3.5 text-[13px] font-bold text-[var(--brand-green-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_1px_3px_0_rgba(0,0,0,0.12)] hover:bg-[var(--brand-green-hover)] sm:inline-flex"
-                >
-                  <BookCheck className="size-4" />
-                  <span>{reviewCount} to review</span>
-                  <span aria-hidden="true">&rarr;</span>
+              <Button asChild variant="glossy" className="hidden h-9 px-4 text-[13px] font-bold sm:inline-flex">
+                <Link href="/dashboard/client#upload-files">
+                  <Upload className="size-4" />
+                  Upload documents
                 </Link>
-              )}
+              </Button>
 
               <NotificationsBell />
               <HelpMenu />

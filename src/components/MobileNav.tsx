@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { motion } from "framer-motion"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -30,16 +29,15 @@ import {
 } from "@/lib/audience-solutions"
 import {
   Menu,
+  BookCheck,
   ChevronRight,
   Home,
   LogIn,
   Activity,
   Upload,
-  History,
   Settings,
   LogOut,
   FileText,
-  LayoutDashboard,
   ReceiptText,
   Building2,
   Inbox,
@@ -137,27 +135,21 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
 
   const mainNavItems: MobileNavItem[] = [
     {
-      label: "Convert Files",
-      href: "/dashboard/client",
-      icon: Upload,
-      show: isAuthenticated
-    },
-    {
-      label: "Overview",
+      label: "Home",
       href: "/dashboard",
-      icon: Activity,
+      icon: Home,
       show: isAuthenticated
     },
     {
-      label: "History",
+      label: "Clients",
+      href: "/dashboard?view=clients",
+      icon: Users,
+      show: isAuthenticated
+    },
+    {
+      label: "Activity",
       href: "/history",
-      icon: History,
-      show: isAuthenticated
-    },
-    {
-      label: "Accounts Payable",
-      href: "/dashboard/accounts-payable",
-      icon: ReceiptText,
+      icon: Activity,
       show: isAuthenticated
     },
     {
@@ -167,21 +159,21 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       show: isAuthenticated
     },
     {
-      label: "Integrations",
-      href: "/dashboard/integrations",
-      icon: Building2,
+      label: "Review",
+      href: "/dashboard/client",
+      icon: BookCheck,
+      show: isAuthenticated
+    },
+    {
+      label: "Accounts payable",
+      href: "/dashboard/accounts-payable",
+      icon: ReceiptText,
       show: isAuthenticated
     },
     {
       label: "Settings",
       href: "/dashboard/settings",
       icon: Settings,
-      show: isAuthenticated
-    },
-    {
-      label: "Pricing",
-      href: "/pricing",
-      icon: BillingSeal,
       show: isAuthenticated
     },
     // Non-Authenticated User Menu
@@ -236,9 +228,9 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
     onClick: () => void
   }> = isAuthenticated
     ? [
-        { label: "Convert", icon: Upload, active: pathname === "/dashboard/client", onClick: () => handleNavigation("/dashboard/client") },
-        { label: "Overview", icon: LayoutDashboard, active: pathname === "/dashboard", onClick: () => handleNavigation("/dashboard") },
-        { label: "History", icon: History, active: pathname === "/history", onClick: () => handleNavigation("/history") },
+        { label: "Home", icon: Home, active: pathname === "/dashboard", onClick: () => handleNavigation("/dashboard") },
+        { label: "Review", icon: BookCheck, active: pathname === "/dashboard/client", onClick: () => handleNavigation("/dashboard/client") },
+        { label: "Inbox", icon: Inbox, active: pathname === "/dashboard/inbox", onClick: () => handleNavigation("/dashboard/inbox") },
       ]
     : [
         { label: "Home", icon: Home, active: pathname === "/", onClick: () => handleNavigation("/") },
@@ -250,7 +242,8 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
     <>
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur-xl lg:hidden",
+          "fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur-xl",
+          isAuthenticated ? "md:hidden" : "lg:hidden",
           isAuthenticated
             ? "border-border bg-background/95 shadow-sm"
             : "border-border bg-background/95 shadow-sm"
@@ -340,7 +333,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                     onClick={() => handleNavigation("/dashboard/client#upload-files")}
                   >
                     <Upload className="h-4 w-4" />
-                    Upload
+                    Upload documents
                   </Button>
                 </div>
               )}
@@ -493,48 +486,9 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
         </div>
       </div>
 
-      {/* FAB — upload shortcut, authenticated only */}
-      {isAuthenticated && (
-        <motion.div
-          className="lg:hidden"
-          style={{
-            position: "fixed",
-            bottom: "calc(4.75rem + env(safe-area-inset-bottom) + 16px)",
-            right: 16,
-            zIndex: 50,
-          }}
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 400, damping: 20, delay: 0.15 }}
-        >
-          <motion.button
-            aria-label="Upload files"
-            whileTap={{ scale: 0.9 }}
-            onClick={() => {
-              setIsOpen(false)
-              router.push("/dashboard/client#upload-files")
-            }}
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.8))",
-              boxShadow: "0 4px 20px hsl(var(--primary) / 0.4)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            <Upload className="h-6 w-6 text-white" />
-          </motion.button>
-        </motion.div>
-      )}
-
       {/* Add padding to body content to account for fixed bottom nav */}
       <style jsx global>{`
-        @media (max-width: 1023px) {
+        @media (max-width: ${isAuthenticated ? "767px" : "1023px"}) {
           body {
             padding-bottom: calc(4.75rem + env(safe-area-inset-bottom));
           }

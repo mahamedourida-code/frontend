@@ -4,17 +4,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import {
   Activity,
-  Building2,
+  BookCheck,
   FileSpreadsheet,
   FileText,
-  History,
   Inbox,
   ReceiptText,
   RefreshCw,
-  ScanSearch,
   Search,
   Settings,
   Upload,
+  Users,
 } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
 import { cn } from "@/lib/utils"
@@ -42,25 +41,20 @@ const GROUP_ORDER: CommandGroup[] = ["navigate", "act", "find"]
 
 // Navigate — every dashboard route (mirrors WorkspaceSidebar + workflow docs)
 const NAVIGATE_ITEMS: CommandItem[] = [
-  { id: "nav-overview",     group: "navigate", label: "Dashboard Overview", hint: "/dashboard",                    keywords: "home analytics",             icon: Activity,         href: "/dashboard" },
-  { id: "nav-client",       group: "navigate", label: "Convert Files",       hint: "/dashboard/client",             keywords: "upload batch workspace table", icon: Upload,          href: "/dashboard/client" },
-  { id: "nav-auto",         group: "navigate", label: "Auto detect",         hint: "/dashboard/auto-detect",        keywords: "classify",                   icon: ScanSearch,       href: "/dashboard/auto-detect" },
-  { id: "nav-invoices",     group: "navigate", label: "Invoices",            hint: "/dashboard/invoices",           keywords: "bills vendor",               icon: ReceiptText,      href: "/dashboard/invoices" },
-  { id: "nav-receipts",     group: "navigate", label: "Receipts",            hint: "/dashboard/receipts",           keywords: "expense purchase",           icon: ReceiptText,      href: "/dashboard/receipts" },
-  { id: "nav-bank",         group: "navigate", label: "Bank statements",     hint: "/dashboard/bank-statements",    keywords: "transactions",               icon: Building2,        href: "/dashboard/bank-statements" },
-  { id: "nav-notes",        group: "navigate", label: "Notes",               hint: "/dashboard/notes",              keywords: "handwriting",                icon: FileText,         href: "/dashboard/notes" },
-  { id: "nav-ap",           group: "navigate", label: "Accounts Payable",    hint: "/dashboard/accounts-payable",   keywords: "ap queue draft bills",       icon: ReceiptText,      href: "/dashboard/accounts-payable" },
-  { id: "nav-inbox",        group: "navigate", label: "Inbox",               hint: "/dashboard/inbox",              keywords: "intake",                     icon: Inbox,            href: "/dashboard/inbox" },
-  { id: "nav-integrations", group: "navigate", label: "Integrations",        hint: "/dashboard/integrations",       keywords: "quickbooks connect oauth",   icon: Building2,        href: "/dashboard/integrations" },
-  { id: "nav-history",      group: "navigate", label: "History",             hint: "/history",                      keywords: "saved jobs results",         icon: History,          href: "/history" },
-  { id: "nav-settings",     group: "navigate", label: "Settings",            hint: "/dashboard/settings",           keywords: "account billing plan",       icon: Settings,         href: "/dashboard/settings" },
+  { id: "nav-home",     group: "navigate", label: "Home",             hint: "Workspace", keywords: "dashboard overview",           icon: Activity,    href: "/dashboard" },
+  { id: "nav-clients",  group: "navigate", label: "Clients",          hint: "Workspace", keywords: "companies customers",          icon: Users,       href: "/dashboard?view=clients" },
+  { id: "nav-activity", group: "navigate", label: "Activity",         hint: "Workspace", keywords: "history saved jobs results",   icon: Activity,    href: "/history" },
+  { id: "nav-inbox",    group: "navigate", label: "Inbox",            hint: "Workspace", keywords: "intake client submissions",    icon: Inbox,       href: "/dashboard/inbox" },
+  { id: "nav-review",   group: "navigate", label: "Review batches",   hint: "Workspace", keywords: "documents exceptions results", icon: BookCheck,   href: "/dashboard/client" },
+  { id: "nav-ap",       group: "navigate", label: "Accounts payable", hint: "Workspace", keywords: "ap queue draft bills",         icon: ReceiptText, href: "/dashboard/accounts-payable" },
+  { id: "nav-settings", group: "navigate", label: "Settings",         hint: "Workspace", keywords: "account billing plan",         icon: Settings,    href: "/dashboard/settings" },
 ]
 
 // Act — actions that already have a destination (no invented endpoints)
 const ACT_ITEMS: CommandItem[] = [
-  { id: "act-upload",      group: "act", label: "Upload a new batch",      hint: "Convert Files",     keywords: "new add files import scan",    icon: Upload,        href: "/dashboard/client#upload-files" },
-  { id: "act-refresh-qbo", group: "act", label: "Refresh QuickBooks lists", hint: "Integrations",     keywords: "sync vendors accounts tax qbo",icon: RefreshCw,     href: "/dashboard/integrations" },
-  { id: "act-import-pos",  group: "act", label: "Import purchase orders",  hint: "Accounts Payable",  keywords: "po pos bills coding",          icon: FileSpreadsheet, href: "/dashboard/accounts-payable" },
+  { id: "act-upload",      group: "act", label: "Upload documents",         hint: "New batch",              keywords: "new add files import scan",     icon: Upload,          href: "/dashboard/client#upload-files" },
+  { id: "act-refresh-qbo", group: "act", label: "Refresh QuickBooks lists", hint: "Accounting connection", keywords: "sync vendors accounts tax qbo", icon: RefreshCw,       href: "/dashboard/integrations" },
+  { id: "act-import-pos",  group: "act", label: "Import purchase orders",   hint: "Accounts payable",       keywords: "po pos bills coding",           icon: FileSpreadsheet, href: "/dashboard/accounts-payable" },
 ]
 
 function fuzzyScore(haystack: string, query: string): number {

@@ -1,17 +1,5 @@
-"use client"
-
-import { Suspense } from "react"
-import { ProcessImagesContent } from "@/app/dashboard/client/page"
-import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
-
-function BankStatementFallback() {
-  return <DashboardRouteLoader label="Loading bank statement workspace" />
-}
+import { redirect } from "next/navigation"
 
 export default function BankStatementModePage() {
-  return (
-    <Suspense fallback={<BankStatementFallback />}>
-      <ProcessImagesContent documentMode="bank_statement" />
-    </Suspense>
-  )
+  redirect("/dashboard/client?mode=bank_statement")
 }
