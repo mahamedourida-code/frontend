@@ -224,7 +224,7 @@ const ARCHETYPES: Archetype[] = [
       { label: "Vendor", value: "Marlowe & Sons" },
       { label: "Date", value: "14 May 2026" },
       { label: "Total", value: "$248.00" },
-      { label: "Tax", value: "—", state: "check" },
+      { label: "Tax", value: "-", state: "check" },
     ],
   },
   {
@@ -263,7 +263,7 @@ const ARCHETYPES: Archetype[] = [
       { label: "Vendor", value: "Bright Supplies" },
       { label: "Invoice #", value: "BS-7781" },
       { label: "Total", value: "$612.40" },
-      { label: "Due date", value: "—", state: "check" },
+      { label: "Due date", value: "-", state: "check" },
     ],
   },
   {
@@ -290,7 +290,7 @@ function CleanEntry({ archetype }: { archetype: Archetype }) {
         <span className="text-[12px] font-bold tracking-tight text-neutral-900">
           {archetype.entryTitle}
         </span>
-        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-[3px] text-[10px] font-bold uppercase tracking-[0.1em] text-emerald-800">
+        <span className="inline-flex items-center gap-1 rounded-full bg-[#d1fae5] px-2 py-[3px] text-[10px] font-bold uppercase tracking-[0.1em] text-emerald-800">
           <span className="size-1.5 rounded-full bg-emerald-500" />
           Reviewed
         </span>
@@ -365,7 +365,7 @@ function ArchetypeRow({ archetype, index }: { archetype: Archetype; index: numbe
         <div className="h-[148px] w-full">
           <Doc />
         </div>
-        <span className="text-[11px] font-medium text-neutral-500">{archetype.caption}</span>
+        <span className="text-[12px] font-semibold text-neutral-700">{archetype.caption}</span>
       </div>
 
       <FlowArrow />
@@ -385,7 +385,7 @@ function ArchetypeRow({ archetype, index }: { archetype: Archetype; index: numbe
 
 export function MessyRealityShowcase() {
   return (
-    <section id="messy-reality" className="bg-emerald-100">
+    <section id="messy-reality" className="bg-[#d1fae5]">
       <div className="mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -401,7 +401,7 @@ export function MessyRealityShowcase() {
           <p className="ax-body mt-4 font-semibold text-neutral-900">
             Not clean PDFs. The handwritten note, the blurry photo, the crumpled receipt, the
             WhatsApp forward, the invoice in three languages. AxLiner reads them, then hands you a
-            reviewed entry with the uncertain fields flagged — never a black box.
+            reviewed entry with the uncertain fields flagged. You stay in control.
           </p>
         </motion.div>
 

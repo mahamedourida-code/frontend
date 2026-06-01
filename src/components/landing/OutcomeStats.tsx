@@ -44,13 +44,13 @@ const STATS: Stat[] = [
     target: 1_200_000,
     format: (v) => compact(v),
     label: "Invoices reviewed",
-    caption: "checked by a human before posting",
+    caption: "checked before posting",
   },
   {
     target: 78,
     format: (v) => `${Math.round(v)}%`,
     label: "Pre-coded by memory",
-    caption: "vendor, account & tax filled in for you",
+    caption: "vendor, account, and tax filled in",
   },
   {
     target: 38_000,
@@ -62,7 +62,7 @@ const STATS: Stat[] = [
     target: 60_000,
     format: (v) => compact(v),
     label: "Hours saved",
-    caption: "data entry AxLiner did instead of you",
+    caption: "less manual data entry for your team",
   },
 ]
 
@@ -92,12 +92,12 @@ function OutcomeStat({
     >
       <dd
         ref={ref as Ref<HTMLDivElement>}
-        className="text-4xl font-bold leading-none tracking-tight tabular-nums text-emerald-900 sm:text-5xl"
+        className="text-4xl font-bold leading-none tracking-tight tabular-nums text-neutral-950 sm:text-5xl"
       >
         {stat.format(value)}
       </dd>
-      <dt className="mt-3 text-[15px] font-bold text-emerald-900">{stat.label}</dt>
-      <p className="mt-1 text-[13px] font-semibold leading-snug text-emerald-800/70">
+      <dt className="mt-3 text-[15px] font-bold text-neutral-950">{stat.label}</dt>
+      <p className="mt-1 text-[14px] font-semibold leading-snug text-neutral-700">
         {stat.caption}
       </p>
     </motion.div>
@@ -114,7 +114,7 @@ export function OutcomeStats() {
   return (
     <section
       aria-labelledby="outcome-stats-heading"
-      className="relative overflow-hidden bg-background py-20 lg:py-28"
+      className="relative overflow-hidden bg-white py-20 lg:py-28"
     >
       <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
         {/* ── Header ── */}
@@ -125,18 +125,18 @@ export function OutcomeStats() {
           transition={{ duration: 0.6, ease: easeOut }}
           className="mx-auto max-w-2xl text-center"
         >
-          <p className="ax-eyebrow text-primary">The outcome</p>
-          <h2 id="outcome-stats-heading" className="ax-h2 mt-3 font-bold text-foreground">
+          <p className="ax-eyebrow text-neutral-700">The outcome</p>
+          <h2 id="outcome-stats-heading" className="ax-h2 mt-3 font-bold text-neutral-950">
             Less typing. Fewer mistakes. More reviewed, faster.
           </h2>
-          <p className="ax-body mt-4 font-semibold text-muted-foreground">
-            The work AxLiner takes off bookkeepers and accounting teams — across every batch,
-            every client, every messy document.
+          <p className="ax-body mt-4 font-semibold text-neutral-700">
+            The work AxLiner takes off bookkeepers and accounting teams across every batch, every
+            client, and every messy document.
           </p>
         </motion.div>
 
         {/* ── The four outcome counters ── */}
-        <dl className="mt-14 grid grid-cols-1 gap-y-12 rounded-3xl bg-emerald-100 px-8 py-12 ring-1 ring-emerald-300/50 sm:grid-cols-2 sm:gap-x-8 lg:mt-16 lg:grid-cols-4 lg:gap-x-6 lg:px-12 lg:py-14">
+        <dl className="mt-14 grid grid-cols-1 gap-y-12 rounded-3xl bg-[#d1fae5] px-8 py-12 ring-1 ring-black/10 sm:grid-cols-2 sm:gap-x-8 lg:mt-16 lg:grid-cols-4 lg:gap-x-6 lg:px-12 lg:py-14">
           {STATS.map((stat, index) => (
             <OutcomeStat key={stat.label} stat={stat} index={index} animate={animate} />
           ))}
@@ -148,7 +148,7 @@ export function OutcomeStats() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.5, ease: easeOut, delay: 0.2 }}
-          className="mt-14 text-center text-[12px] font-semibold uppercase tracking-[0.16em] text-emerald-800/60"
+          className="mt-14 text-center text-[12px] font-semibold uppercase tracking-[0.16em] text-neutral-600"
         >
           Aggregate outcomes across AxLiner accounts
         </motion.p>

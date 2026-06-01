@@ -12,21 +12,12 @@ type SolutionCard = {
   description: string
 }
 
-/* Saturated card backgrounds — pop against the light green section bg */
-const CARD_TINTS = [
-  "bg-emerald-300",
-  "bg-sky-300",
-  "bg-stone-300",
-  "bg-amber-300",
-  "bg-rose-300",
-  "bg-violet-300",
-  "bg-teal-300",
-  "bg-orange-300",
-]
+/* Calm brand surfaces alternate so the grid stays easy to scan. */
+const CARD_SURFACES = ["bg-[#d1fae5]", "bg-[#f7f3e9]"]
 
 /* ── Single card ──────────────────────────────────────────────── */
 
-function HoverCard({ card, index, tint }: { card: SolutionCard; index: number; tint: string }) {
+function HoverCard({ card, index, surface }: { card: SolutionCard; index: number; surface: string }) {
   const ref = useRef<HTMLDivElement>(null)
 
   /* 3D tilt */
@@ -59,8 +50,8 @@ function HoverCard({ card, index, tint }: { card: SolutionCard; index: number; t
       >
         {/* ── Image card — fills cell, slides DOWN + shrinks on hover ── */}
         <div className={cn(
-          "absolute inset-0 rounded-2xl overflow-hidden",
-          tint,
+          "absolute inset-0 overflow-hidden rounded-2xl ring-1 ring-black/10",
+          surface,
           "transition-transform duration-[460ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]",
           "origin-top group-hover:translate-y-[150px] group-hover:scale-[0.92]",
         )}>
@@ -75,7 +66,7 @@ function HoverCard({ card, index, tint }: { card: SolutionCard; index: number; t
 
         {/* ── Title + description overlay — dark text, no gradient ── */}
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 px-6 pt-7">
-          <h3 className="text-[26px] font-bold leading-tight tracking-tight text-neutral-900">
+          <h3 className="text-[26px] font-bold leading-tight tracking-tight text-neutral-950">
             {card.title}
           </h3>
 
@@ -84,10 +75,10 @@ function HoverCard({ card, index, tint }: { card: SolutionCard; index: number; t
             "transition-[grid-template-rows] duration-[360ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
           )}>
             <div className="min-h-0 overflow-hidden">
-              <p className="pt-3 text-[16px] font-semibold leading-snug text-neutral-900 line-clamp-2">
+              <p className="line-clamp-2 pt-3 text-[16px] font-semibold leading-snug text-neutral-800">
                 {card.description}
               </p>
-              <p className="mt-4 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-800">
+              <p className="mt-4 flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-[0.16em] text-neutral-700">
                 Discover
                 <svg viewBox="0 0 10 10" fill="none" className="size-2.5" aria-hidden>
                   <path d="M1 5h8M6 2l3 3-3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -114,7 +105,12 @@ export function FeatureHoverCards({ cards, className }: FeatureHoverCardsProps) 
   return (
     <div className={cn("grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4", className)}>
       {cards.map((card, i) => (
-        <HoverCard key={card.title} card={card} index={i} tint={CARD_TINTS[i % CARD_TINTS.length]} />
+        <HoverCard
+          key={card.title}
+          card={card}
+          index={i}
+          surface={CARD_SURFACES[i % CARD_SURFACES.length]}
+        />
       ))}
     </div>
   )

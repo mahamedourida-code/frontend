@@ -43,7 +43,7 @@ export function VerifiableShowcase() {
   return (
     <section
       aria-labelledby="verifiable-heading"
-      className="relative overflow-hidden bg-background py-20 lg:py-28"
+      className="relative overflow-hidden bg-white py-20 lg:py-28"
     >
       <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
         {/* ── Header ── */}
@@ -54,34 +54,34 @@ export function VerifiableShowcase() {
           transition={{ duration: 0.6, ease: easeOut }}
           className="mx-auto max-w-2xl text-center"
         >
-          <p className="ax-eyebrow text-primary">Verifiable, not invisible</p>
-          <h2 id="verifiable-heading" className="ax-h2 mt-3 font-bold text-foreground">
+          <p className="ax-eyebrow text-neutral-700">Verifiable, not invisible</p>
+          <h2 id="verifiable-heading" className="ax-h2 mt-3 font-bold text-neutral-950">
             See where every number came from.
           </h2>
-          <p className="ax-body mt-4 font-medium text-muted-foreground">
-            Other tools hand you an answer and ask you to trust it. AxLiner shows its work — every field
-            carries a confidence dot, every value points to its spot on the document, every flag explains
-            itself.
+          <p className="ax-body mt-4 font-semibold text-neutral-700">
+            Other tools hand you an answer and ask you to trust it. AxLiner shows its work. Every
+            field carries a confidence dot, every value points to its spot on the document, and every
+            flag explains itself.
           </p>
         </motion.div>
 
         {/* ── Side-by-side contrast ── */}
-        <div className="mt-14 grid items-stretch gap-5 lg:mt-16 lg:grid-cols-[1fr_auto_1fr] lg:gap-6">
+        <div className="mt-14 grid items-stretch gap-5 lg:mt-16 lg:grid-cols-2 lg:gap-6">
           {/* LEFT — Black-box AI (opaque, no provenance) */}
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6, ease: easeOut }}
-            className="relative flex flex-col overflow-hidden rounded-3xl bg-neutral-900 p-8 ring-1 ring-white/5"
+            className="relative flex flex-col overflow-hidden rounded-3xl bg-[#f7f3e9] p-8 ring-1 ring-black/10"
           >
             <div className="flex items-center gap-2.5">
-              <span className="size-2.5 rounded-full bg-white/25" aria-hidden />
-              <p className="text-[13px] font-bold uppercase tracking-[0.18em] text-white/45">
+              <span className="size-2.5 rounded-full bg-neutral-500" aria-hidden />
+              <p className="text-[13px] font-bold uppercase tracking-[0.18em] text-neutral-700">
                 Black-box AI
               </p>
             </div>
-            <p className="mt-3 text-[15px] font-semibold text-white/60">
+            <p className="mt-3 text-[16px] font-semibold leading-relaxed text-neutral-800">
               An answer with no provenance. You re-check everything by hand.
             </p>
 
@@ -90,13 +90,13 @@ export function VerifiableShowcase() {
               {FIELDS.map((f) => (
                 <div
                   key={f.label}
-                  className="flex items-center justify-between rounded-xl bg-white/[0.04] px-4 py-3 ring-1 ring-white/5"
+                  className="flex items-center justify-between rounded-xl bg-white px-4 py-3 ring-1 ring-black/10"
                 >
-                  <span className="text-[13px] font-medium text-white/35">{f.label}</span>
-                  <span className="font-mono text-[13px] font-semibold text-white/70">{f.value}</span>
+                  <span className="text-[13px] font-medium text-neutral-600">{f.label}</span>
+                  <span className="font-mono text-[13px] font-semibold text-neutral-950">{f.value}</span>
                   {/* No provenance — a blank where the proof should be */}
                   <span
-                    className="flex size-5 items-center justify-center rounded-full bg-white/5 text-[11px] font-bold text-white/30"
+                    className="flex size-5 items-center justify-center rounded-full bg-white text-[11px] font-bold text-neutral-500 ring-1 ring-black/10"
                     aria-hidden
                   >
                     ?
@@ -105,17 +105,10 @@ export function VerifiableShowcase() {
               ))}
             </div>
 
-            <p className="mt-auto pt-7 text-[13px] font-medium text-white/35">
+            <p className="mt-auto pt-7 text-[14px] font-semibold text-neutral-700">
               Was the VAT right? You can&apos;t tell without opening the file.
             </p>
           </motion.div>
-
-          {/* CENTER — "vs" divider */}
-          <div className="hidden items-center justify-center lg:flex">
-            <span className="flex size-11 items-center justify-center rounded-full bg-white text-[13px] font-bold uppercase tracking-wide text-neutral-400 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.12)] ring-1 ring-neutral-200">
-              vs
-            </span>
-          </div>
 
           {/* RIGHT — AxLiner (every value points to its spot on the source) */}
           <motion.div
@@ -123,22 +116,22 @@ export function VerifiableShowcase() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6, ease: easeOut, delay: 0.08 }}
-            className="relative flex flex-col overflow-hidden rounded-3xl bg-emerald-100 p-8 ring-1 ring-emerald-300/50"
+            className="relative flex flex-col overflow-hidden rounded-3xl bg-[#d1fae5] p-8 ring-1 ring-black/10"
           >
             <div className="flex items-center gap-2.5">
               <span className="size-2.5 rounded-full bg-emerald-600" aria-hidden />
-              <p className="text-[13px] font-bold uppercase tracking-[0.18em] text-emerald-800">
+              <p className="text-[13px] font-bold uppercase tracking-[0.18em] text-neutral-950">
                 AxLiner
               </p>
             </div>
-            <p className="mt-3 text-[15px] font-semibold text-emerald-900/80">
-              Every field sourced, scored, and explained — before it touches your books.
+            <p className="mt-3 text-[16px] font-semibold leading-relaxed text-neutral-800">
+              Every field sourced, scored, and explained before it touches your books.
             </p>
 
             {/* Source + fields, visually linked */}
             <div className="mt-7 grid grid-cols-[auto_1fr] gap-4">
               {/* The source document — with a highlighted "spot" */}
-              <div className="relative w-[88px] shrink-0 rounded-xl bg-white p-2.5 shadow-sm ring-1 ring-emerald-300/50">
+              <div className="relative w-[88px] shrink-0 rounded-xl bg-white p-2.5 shadow-sm ring-1 ring-black/10">
                 <div className="space-y-1.5" aria-hidden>
                   <div className="h-1.5 w-3/4 rounded-full bg-neutral-200" />
                   <div className="h-1.5 w-1/2 rounded-full bg-neutral-200" />
@@ -150,7 +143,7 @@ export function VerifiableShowcase() {
                   <div className="mt-2 h-3 w-4/5 rounded bg-rose-100 ring-1 ring-rose-400/60" />
                   <div className="h-1.5 w-1/2 rounded-full bg-neutral-200" />
                 </div>
-                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-emerald-700 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
+                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-white px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-neutral-950 ring-1 ring-black/10">
                   Source
                 </span>
               </div>
@@ -172,7 +165,7 @@ export function VerifiableShowcase() {
                         {f.value}
                       </div>
                       {/* the flag explains itself */}
-                      <div className={`mt-1 text-[11px] font-semibold ${c.text}`}>↳ {f.why}</div>
+                      <div className={`mt-1 text-[11px] font-semibold ${c.text}`}>Reason: {f.why}</div>
                     </div>
                   )
                 })}
@@ -189,7 +182,7 @@ export function VerifiableShowcase() {
           transition={{ duration: 0.5, ease: easeOut, delay: 0.1 }}
           className="mt-10 flex flex-wrap items-center justify-center gap-3"
         >
-          <span className="text-[13px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <span className="text-[13px] font-semibold uppercase tracking-[0.16em] text-neutral-600">
             Confidence
           </span>
           <LegendChip confidence="high" label="High" />
