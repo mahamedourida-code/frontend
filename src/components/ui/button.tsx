@@ -20,6 +20,11 @@ const buttonVariants = cva(
         // with a brown definition ring and dark ink label.
         warm:
           "bg-[var(--button-warm)] text-[var(--button-ink)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.82),0_0_0_1px_var(--button-warm-ring),0_1px_3px_0_rgba(84,59,32,0.14)] hover:bg-[var(--button-warm-hover)] active:translate-y-px",
+        // Warm clay CTA — a real mid-brown fill from the landing warm family,
+        // paired with strong near-black ink text and the Tella-style definition
+        // (inset top highlight + brown ring + soft drop shadow). Pairs with green.
+        clay:
+          "bg-[var(--brand-clay)] text-[var(--brand-clay-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.45),0_0_0_1px_var(--brand-clay-ring),0_1px_3px_0_rgba(58,42,24,0.28)] hover:bg-[var(--brand-clay-hover)] active:translate-y-px",
         // Black/ink CTA — high-contrast solid with Tella-style definition
         // (inset top highlight + layered drop shadow).
         ink:
