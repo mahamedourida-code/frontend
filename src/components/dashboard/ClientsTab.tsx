@@ -8,7 +8,6 @@ import { EmptyState } from "@/components/dashboard/EmptyState"
 import { SkeletonTableRow } from "@/components/dashboard/SkeletonCard"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import {
   Table,
   TableBody,
@@ -38,7 +37,7 @@ function turnaroundLabel(hours: number | null) {
   return `${(hours / 24).toFixed(1)}d`
 }
 
-export function ClientsTab({ workspaceId }: { workspaceId?: string }) {
+export function ClientsTab({ workspaceId, compact = false }: { workspaceId?: string; compact?: boolean }) {
   const router = useRouter()
   const [clients, setClients] = useState<ClientAnalyticsRow[]>([])
   const [loading, setLoading] = useState(true)
@@ -65,36 +64,34 @@ export function ClientsTab({ workspaceId }: { workspaceId?: string }) {
   }, [load])
 
   const lateCount = clients.filter((c) => c.is_late).length
+  const visibleClients = compact ? clients.slice(0, 5) : clients
 
   return (
-    <Card>
+    <Card className="overflow-hidden rounded-lg">
       <CardContent className="p-0">
-        {/* Controls */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-border px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-3.5">
           <div className="flex items-center gap-2">
-            <span className="inline-flex size-7 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
-              <Users className="size-4" />
-            </span>
-            <span className="text-sm font-bold text-foreground">Clients</span>
+            <Users className="size-4 text-muted-foreground" />
+            <span className="text-sm font-semibold text-foreground">Clients</span>
             {lateCount > 0 ? (
-              <span className="inline-flex items-center gap-1 rounded-md border border-amber-300 bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
+              <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
                 <AlertTriangle className="size-3" />
-                {lateCount} late
+                {lateCount} need follow-up
               </span>
             ) : null}
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-muted-foreground">Late after</span>
-            <div className="inline-flex rounded-lg border border-border bg-muted/40 p-0.5">
+            <div className="inline-flex rounded-full border border-border bg-muted/40 p-0.5">
               {LATE_THRESHOLDS.map((days) => (
                 <button
                   key={days}
                   type="button"
                   onClick={() => setLateDays(days)}
                   className={cn(
-                    "ax-interactive rounded-md px-2.5 py-1 text-xs font-bold transition-colors",
+                    "ax-interactive rounded-full px-2.5 py-1 text-xs font-semibold transition-colors",
                     lateDays === days
-                      ? "bg-emerald-700 text-white shadow-sm"
+                      ? "bg-background text-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground",
                   )}
                 >
@@ -108,12 +105,13 @@ export function ClientsTab({ workspaceId }: { workspaceId?: string }) {
           </div>
         </div>
 
+        <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Client</TableHead>
               <TableHead className="text-right">Docs this month</TableHead>
-              <TableHead className="text-right">Success rate</TableHead>
+              <TableHead className="text-right">Total docs</TableHead>
               <TableHead className="text-right">Avg turnaround</TableHead>
               <TableHead>Last submission</TableHead>
               <TableHead className="w-10" />
@@ -127,8 +125,6 @@ export function ClientsTab({ workspaceId }: { workspaceId?: string }) {
                 <TableCell colSpan={6} className="h-32">
                   <EmptyState
                     icon={<Users />}
-                    illustration="/illustrations/workspace-v2/empty-clients.png"
-                    illustrationSize={104}
                     title="No clients yet"
                     description="Create a client upload link in the Inbox. Each link becomes a tracked client here."
                     compact
@@ -136,7 +132,7 @@ export function ClientsTab({ workspaceId }: { workspaceId?: string }) {
                 </TableCell>
               </TableRow>
             ) : (
-              clients.map((client) => (
+              visibleClients.map((client) => (
                 <TableRow
                   key={client.link_id}
                   className="ax-interactive cursor-pointer hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20"
@@ -144,29 +140,21 @@ export function ClientsTab({ workspaceId }: { workspaceId?: string }) {
                 >
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-foreground">{client.name}</span>
+                      <span className="font-semibold text-foreground">{client.name}</span>
                       {client.is_late ? (
-                        <span className="inline-flex items-center gap-1 rounded-md border border-amber-300 bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
+                        <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
                           <Clock className="size-2.5" />
                           Late
                         </span>
                       ) : client.never_submitted ? (
-                        <span className="rounded-md border border-border bg-muted/50 px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                        <span className="rounded-full border border-border bg-muted/50 px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground">
                           Awaiting first upload
                         </span>
                       ) : null}
                     </div>
                   </TableCell>
                   <TableCell className="text-right tabular-nums">{client.documents_this_month}</TableCell>
-                  <TableCell className="text-right">
-                    {client.success_rate === null ? (
-                      <span className="text-muted-foreground">—</span>
-                    ) : (
-                      <StatusBadge tone={client.success_rate >= 90 ? "success" : client.success_rate >= 70 ? "warning" : "error"}>
-                        {client.success_rate}%
-                      </StatusBadge>
-                    )}
-                  </TableCell>
+                  <TableCell className="text-right tabular-nums text-muted-foreground">{client.total_documents}</TableCell>
                   <TableCell className="text-right tabular-nums text-muted-foreground">{turnaroundLabel(client.avg_turnaround_hours)}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {relativeDate(client.last_submission_at)}
@@ -182,6 +170,7 @@ export function ClientsTab({ workspaceId }: { workspaceId?: string }) {
             )}
           </TableBody>
         </Table>
+        </div>
       </CardContent>
     </Card>
   )

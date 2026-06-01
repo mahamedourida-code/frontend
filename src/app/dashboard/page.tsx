@@ -1,744 +1,200 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { LayoutGroup, motion, type Variants } from "framer-motion"
-import { useAuth } from "@/hooks/useAuth"
-import { useCountUp } from "@/hooks/useCountUp"
-import { useWorkspaces } from "@/hooks/useWorkspaces"
-import { ocrApi } from "@/lib/api-client"
-import dynamic from "next/dynamic"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ArrowRight, Clock3, FileSpreadsheet, RefreshCw, Upload, Users } from "lucide-react"
+
 import { DashboardShell } from "@/components/DashboardShell"
-import { DashboardMiniCharts } from "@/components/dashboard/DashboardMiniCharts"
-import { MonthlyRecapCard } from "@/components/dashboard/MonthlyRecap"
+import { ClientsTab } from "@/components/dashboard/ClientsTab"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { PageHeader } from "@/components/dashboard/PageHeader"
-import { ClientsTab } from "@/components/dashboard/ClientsTab"
-import { SkeletonStatCard } from "@/components/dashboard/SkeletonCard"
-import { SpotlightCard } from "@/components/dashboard/SpotlightCard"
+import { StatusBadge } from "@/components/dashboard/StatusBadge"
+import { Button } from "@/components/ui/button"
+import { useAuth } from "@/hooks/useAuth"
+import { useWorkspaces } from "@/hooks/useWorkspaces"
+import { clientIntakeApi, ocrApi, type ClientAnalyticsRow } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
-import {
-  BarChart3,
-  CalendarDays,
-  FileSpreadsheet,
-  RefreshCw,
-  Timer,
-  TrendingUp
-} from "lucide-react"
 
-// Dynamic import for the Chart component to avoid SSR issues
-const DashboardChart = dynamic(() => import("@/components/DashboardChart"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center h-[280px]">
-      <div className="text-muted-foreground">Loading chart...</div>
-    </div>
-  )
-})
-import { format, subDays, subHours, startOfDay, endOfDay, eachDayOfInterval, eachHourOfInterval } from "date-fns"
+type RecentJob = {
+  id: string
+  filename: string
+  status: string
+  createdAt: string
+}
 
-type TimeRange = "1d" | "7d" | "30d" | "3m"
+function statusTone(status: string): "success" | "error" | "processing" | "info" | "neutral" {
+  if (status === "completed" || status === "partially_completed") return "success"
+  if (status === "failed") return "error"
+  if (status === "processing") return "processing"
+  if (status === "queued") return "info"
+  return "neutral"
+}
 
-const TIME_RANGE_OPTIONS: Array<{ value: TimeRange; label: string }> = [
-  { value: "1d", label: "24h" },
-  { value: "7d", label: "7D" },
-  { value: "30d", label: "30D" },
-  { value: "3m", label: "3M" },
-]
+function formatStatus(status: string) {
+  if (status === "completed") return "Ready"
+  return status.replace(/_/g, " ")
+}
 
-function rangeStartDate(value: TimeRange, now: Date): Date {
-  switch (value) {
-    case "1d":
-      return subHours(now, 24)
-    case "7d":
-      return subDays(now, 7)
-    case "30d":
-      return subDays(now, 30)
-    case "3m":
-      return subDays(now, 90)
+function formatDate(value: string) {
+  try {
+    return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(new Date(value))
+  } catch {
+    return "-"
   }
 }
 
-const STAT_GRID_VARIANTS: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.09 } },
-}
+function normalizeJobs(response: any): RecentJob[] {
+  const jobs = Array.isArray(response)
+    ? response
+    : response?.jobs || response?.history || response?.items || response?.data || []
 
-const STAT_CARD_VARIANTS: Variants = {
-  hidden: { opacity: 0, y: 18 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.38, ease: [0.16, 1, 0.3, 1] },
-  },
-}
-
-type AnimatedStatCardProps = {
-  title: string
-  helper: string
-  Icon: React.ComponentType<{ className?: string }>
-  value: string | number
-}
-
-function AnimatedStatCard({ title, helper, Icon, value }: AnimatedStatCardProps) {
-  const numericTarget = typeof value === "number" ? value : 0
-  const { value: countValue, ref } = useCountUp(numericTarget, {
-    duration: 1.2,
-    ease: "easeOut",
-    startOnView: true,
-    enabled: typeof value === "number",
-  })
-
-  const display =
-    typeof value === "number"
-      ? Math.round(countValue).toLocaleString()
-      : value
-
-  return (
-    <motion.div variants={STAT_CARD_VARIANTS}>
-      <SpotlightCard className="rounded-md">
-        <Card ref={ref as React.Ref<HTMLDivElement>}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{title}</CardTitle>
-            <Icon className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-[26px] font-bold tabular-nums tracking-tight">{display}</div>
-            <p className="text-[13px] font-medium text-muted-foreground">{helper}</p>
-          </CardContent>
-        </Card>
-      </SpotlightCard>
-    </motion.div>
-  )
-}
-
-function TimeRangePill({
-  value,
-  onChange,
-  disabled,
-}: {
-  value: TimeRange
-  onChange: (next: TimeRange) => void
-  disabled?: boolean
-}) {
-  return (
-    <LayoutGroup id="dashboard-time-range">
-      <div
-        role="tablist"
-        aria-label="Time range"
-        className={cn(
-          "relative inline-flex items-center rounded-full border border-border bg-muted/50 p-[1px]",
-          disabled && "pointer-events-none opacity-60",
-        )}
-      >
-        {TIME_RANGE_OPTIONS.map((option) => {
-          const active = option.value === value
-          return (
-            <button
-              key={option.value}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => onChange(option.value)}
-              className={cn(
-                "relative z-10 inline-flex h-8 items-center justify-center rounded-full px-4 text-sm font-medium transition-colors",
-                active
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {active && (
-                <motion.span
-                  layoutId="time-range-pill"
-                  className="absolute inset-[1px] -z-10 rounded-full bg-background shadow-sm"
-                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                />
-              )}
-              {option.label}
-            </button>
-          )
-        })}
-      </div>
-    </LayoutGroup>
-  )
-}
-
-interface ProcessingMetadata {
-  total_images?: number
-  processing_time?: number
-  [key: string]: any
-}
-
-interface Job {
-  id: string
-  user_id: string
-  status: string
-  created_at: string
-  saved_at?: string
-  updated_at?: string
-  filename?: string
-  original_job_id?: string
-  result_url?: string
-  requires_review?: boolean
-  processing_metadata?: ProcessingMetadata
-  [key: string]: any
-}
-
-interface ProcessingData {
-  timestamp: Date
-  count: number
-  formattedDate?: string
-  formattedTime?: string
-}
-
-interface DashboardStats {
-  totalProcessed: number
-  todayProcessed: number
-  thisMonthProcessed: number
-  monthProcessed: number
-  lastWeekProcessed: number
-  averageTime: number
-  successRate: number
-  selectedPeriodProcessed: number
-  totalJobs: number
-  activeJobs: number
-  failedJobs: number
-  successfulJobs: number
+  return jobs.slice(0, 6).map((job: any) => ({
+    id: String(job.id || job.job_id || job.original_job_id),
+    filename: job.filename || "Untitled document",
+    status: job.status || "completed",
+    createdAt: job.saved_at || job.created_at || job.completed_at || new Date().toISOString(),
+  }))
 }
 
 export default function DashboardPage() {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
   const { activeWorkspace } = useWorkspaces(user)
-  const [view, setView] = useState<"overview" | "clients">("overview")
-  const [timeRange, setTimeRange] = useState<TimeRange>("7d")
-  const [chartData, setChartData] = useState<ProcessingData[]>([])
-  const [stats, setStats] = useState<DashboardStats>({
-    totalProcessed: 0,
-    todayProcessed: 0,
-    thisMonthProcessed: 0,
-    monthProcessed: 0,
-    lastWeekProcessed: 0,
-    averageTime: 0,
-    successRate: 0,
-    selectedPeriodProcessed: 0,
-    totalJobs: 0,
-    activeJobs: 0,
-    failedJobs: 0,
-    successfulJobs: 0,
-  })
+  const [clients, setClients] = useState<ClientAnalyticsRow[]>([])
+  const [recentJobs, setRecentJobs] = useState<RecentJob[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.replace('/sign-in?next=%2Fdashboard')
-    } else if (!authLoading && user) {
-      fetchDashboardData()
-    }
-  }, [user?.id, authLoading, router])
+    if (!authLoading && !user) router.replace("/sign-in?next=%2Fdashboard")
+  }, [authLoading, router, user])
 
-  useEffect(() => {
-    if (user?.id && !authLoading) {
-      fetchDashboardData()
-    }
-  }, [timeRange])
-
-  const fetchDashboardData = async () => {
+  const load = useCallback(async () => {
     if (!user) return
-
     setLoading(true)
-
     try {
-      const dashboard = await ocrApi.getDashboard(timeRange)
-      setChartData(
-        (dashboard.chart || []).map((point: any) => ({
-          ...point,
-          timestamp: new Date(point.timestamp),
-        }))
-      )
-      setStats({
-        totalProcessed: dashboard.stats?.totalProcessed || 0,
-        todayProcessed: dashboard.stats?.todayProcessed || 0,
-        thisMonthProcessed: dashboard.stats?.thisMonthProcessed || 0,
-        monthProcessed: dashboard.stats?.monthProcessed || 0,
-        lastWeekProcessed: dashboard.stats?.lastWeekProcessed || 0,
-        averageTime: dashboard.stats?.averageTime || 0,
-        successRate: dashboard.stats?.successRate || 0,
-        selectedPeriodProcessed: dashboard.stats?.selectedPeriodProcessed || 0,
-        totalJobs: dashboard.stats?.totalJobs || 0,
-        activeJobs: dashboard.stats?.activeJobs || 0,
-        failedJobs: dashboard.stats?.failedJobs || 0,
-        successfulJobs: dashboard.stats?.successfulJobs || 0,
-      })
-    } catch (error) {
-      try {
-        await fetchDashboardDataFromHistory()
-      } catch {
-        resetDashboardData()
-      }
+      const [history, analytics] = await Promise.all([
+        ocrApi.getHistory(6, 0).catch(() => []),
+        activeWorkspace?.id
+          ? clientIntakeApi.analytics(activeWorkspace.id, 14).catch(() => ({ clients: [], total: 0 }))
+          : Promise.resolve({ clients: [], total: 0 }),
+      ])
+      setRecentJobs(normalizeJobs(history))
+      setClients(analytics.clients)
     } finally {
       setLoading(false)
     }
+  }, [activeWorkspace?.id, user])
+
+  useEffect(() => {
+    void load()
+  }, [load])
+
+  const summary = useMemo(() => ({
+    clients: clients.length,
+    waiting: clients.filter(client => client.is_late || client.never_submitted).length,
+    documents: clients.reduce((total, client) => total + client.documents_this_month, 0),
+  }), [clients])
+
+  if (authLoading || !user) {
+    return <DashboardRouteLoader label="Loading workspace" />
   }
-
-  const fetchDashboardDataFromHistory = async () => {
-      // Calculate date range based on selected time
-      const now = new Date()
-      let fromDate: Date
-      
-      switch (timeRange) {
-        case "1d":
-          fromDate = subHours(now, 24)
-          break
-        case "7d":
-          fromDate = subDays(now, 7)
-          break
-        case "30d":
-          fromDate = subDays(now, 30)
-          break
-        case "3m":
-          fromDate = subDays(now, 90)
-          break
-        default:
-          fromDate = subDays(now, 7)
-      }
-
-      const historyResponse = await ocrApi.getHistory(500, 0)
-      const allJobs = normalizeHistoryJobs(historyResponse)
-      const typedJobs = allJobs
-        .filter(job => new Date(job.created_at) >= fromDate)
-        .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-
-      // Process data for chart
-      const processedData = generateChartData(typedJobs, timeRange)
-      setChartData(processedData)
-
-      // Calculate stats
-      const totalJobs = typedJobs.length
-      const totalImages = typedJobs.reduce((sum, job) => {
-        let metadata = job.processing_metadata
-        if (typeof metadata === 'string') {
-          try {
-            metadata = JSON.parse(metadata)
-          } catch (e) {
-            metadata = undefined
-          }
-        }
-        return sum + (metadata?.total_images || 1)
-      }, 0)
-      
-      // Get today's jobs
-      const todayStart = startOfDay(now)
-      const todayJobs = typedJobs.filter(job => 
-        new Date(job.created_at) >= todayStart
-      )
-      const todayImages = todayJobs.reduce((sum, job) => {
-        let metadata = job.processing_metadata
-        if (typeof metadata === 'string') {
-          try {
-            metadata = JSON.parse(metadata)
-          } catch (e) {
-            metadata = undefined
-          }
-        }
-        return sum + (metadata?.total_images || 1)
-      }, 0)
-      
-      // Calculate average processing time
-      const processingTimes = typedJobs.map(job => {
-        let metadata = job.processing_metadata
-        if (typeof metadata === 'string') {
-          try {
-            metadata = JSON.parse(metadata)
-          } catch (e) {
-            metadata = undefined
-          }
-        }
-        if (metadata?.processing_time) {
-          return metadata.processing_time
-        }
-        return 0
-      }).filter(time => time > 0)
-      
-      const avgTime = processingTimes.length > 0
-        ? processingTimes.reduce((a, b) => a + b, 0) / processingTimes.length
-        : 0
-
-      // Calculate success rate
-      const successfulJobs = typedJobs.filter(job => job.status === 'completed').length
-      const successRate = totalJobs > 0 ? (successfulJobs / totalJobs) * 100 : 0
-
-      const monthStart = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1))
-      const monthJobs = allJobs.filter(job => new Date(job.created_at) >= monthStart)
-      const thisMonthProcessed = monthJobs.reduce((sum, job) => {
-        let metadata = job.processing_metadata
-        if (typeof metadata === 'string') {
-          try {
-            metadata = JSON.parse(metadata)
-          } catch (e) {
-            metadata = undefined
-          }
-        }
-        return sum + (metadata?.total_images || 1)
-      }, 0)
-      
-      // Calculate last week's processed
-      const weekAgo = new Date()
-      weekAgo.setDate(weekAgo.getDate() - 7)
-      
-      const weekJobs = typedJobs.filter(job => 
-        new Date(job.created_at) >= weekAgo
-      )
-      const lastWeekProcessed = weekJobs.reduce((sum, job) => {
-        let metadata = job.processing_metadata
-        if (typeof metadata === 'string') {
-          try {
-            metadata = JSON.parse(metadata)
-          } catch (e) {
-            metadata = undefined
-          }
-        }
-        return sum + (metadata?.total_images || 1)
-      }, 0)
-
-      const newStats = {
-        totalProcessed: allJobs.reduce((sum, job) => sum + getJobImageCount(job), 0) || totalImages,
-        todayProcessed: todayImages,
-        thisMonthProcessed: thisMonthProcessed,
-        monthProcessed: thisMonthProcessed,
-        lastWeekProcessed: lastWeekProcessed,
-        averageTime: avgTime,
-        successRate,
-        selectedPeriodProcessed: totalImages,
-        totalJobs: allJobs.length,
-        activeJobs: allJobs.filter(job => ["queued", "processing"].includes(job.status)).length,
-        failedJobs: typedJobs.filter(job => job.status === "failed").length,
-        successfulJobs: successfulJobs,
-      }
-      setStats(newStats)
-  }
-
-  const getJobImageCount = (job: Job): number => {
-    let metadata = job.processing_metadata
-    if (typeof metadata === 'string') {
-      try {
-        metadata = JSON.parse(metadata)
-      } catch (e) {
-        metadata = undefined
-      }
-    }
-    return Number(metadata?.successful_images || metadata?.processed_images || metadata?.total_images || 1)
-  }
-
-  const resetDashboardData = () => {
-      // Set default values on error
-      setChartData([])
-      setStats({
-        totalProcessed: 0,
-        todayProcessed: 0,
-        thisMonthProcessed: 0,
-        monthProcessed: 0,
-        lastWeekProcessed: 0,
-        averageTime: 0,
-        successRate: 0,
-        selectedPeriodProcessed: 0,
-        totalJobs: 0,
-        activeJobs: 0,
-        failedJobs: 0,
-        successfulJobs: 0,
-      })
-  }
-
-  const normalizeHistoryJobs = (response: any): Job[] => {
-    const rawJobs = Array.isArray(response)
-      ? response
-      : response?.jobs || response?.history || response?.items || response?.data || []
-
-    return rawJobs.map((job: any) => ({
-      ...job,
-      id: job.id || job.job_id || job.original_job_id,
-      created_at: job.created_at || job.saved_at || job.completed_at || new Date().toISOString(),
-      status: job.status || 'completed',
-      processing_metadata: job.processing_metadata || job.metadata || {
-        total_images: job.total_images || job.successful_images || 1,
-        processing_time: job.processing_time || job.processing_time_seconds,
-      },
-    }))
-  }
-
-  const generateChartData = (jobs: Job[], range: TimeRange): ProcessingData[] => {
-    const now = new Date()
-    let data: ProcessingData[] = []
-    
-    if (range === "1d") {
-      // Last 24 hours - hourly data
-      const hours = eachHourOfInterval({
-        start: subHours(now, 24),
-        end: now
-      })
-      
-      data = hours.map(hour => {
-        const hourJobs = jobs.filter(job => {
-          const jobDate = new Date(job.created_at)
-          return jobDate >= hour && jobDate < new Date(hour.getTime() + 60 * 60 * 1000)
-        })
-        
-        const count = hourJobs.reduce((sum, job) => {
-          // Handle case where metadata might be a string
-          let metadata = job.processing_metadata
-          if (typeof metadata === 'string') {
-            try {
-              metadata = JSON.parse(metadata)
-            } catch (e) {
-              metadata = undefined
-            }
-          }
-          return sum + (metadata?.total_images || 1)
-        }, 0)
-        
-        return {
-          timestamp: hour,
-          count,
-          formattedTime: format(hour, 'ha')
-        }
-      })
-    } else {
-      // Daily data for 7d, 30d, 3m
-      const days = eachDayOfInterval({
-        start: range === "7d" ? subDays(now, 7) : 
-               range === "30d" ? subDays(now, 30) : 
-               subDays(now, 90),
-        end: now
-      })
-      
-      data = days.map(day => {
-        const dayJobs = jobs.filter(job => {
-          const jobDate = new Date(job.created_at)
-          return jobDate >= startOfDay(day) && jobDate <= endOfDay(day)
-        })
-        
-        const count = dayJobs.reduce((sum, job) => {
-          // Handle case where metadata might be a string
-          let metadata = job.processing_metadata
-          if (typeof metadata === 'string') {
-            try {
-              metadata = JSON.parse(metadata)
-            } catch (e) {
-              metadata = undefined
-            }
-          }
-          return sum + (metadata?.total_images || 1)
-        }, 0)
-        
-        return {
-          timestamp: day,
-          count,
-          formattedDate: format(day, 'MMM d')
-        }
-      })
-    }
-    
-    return data
-  }
-
-  if (authLoading) {
-    return <DashboardRouteLoader label="Loading dashboard" />
-  }
-
-  const averageTimeLabel = stats.averageTime > 0
-    ? `${stats.averageTime.toFixed(1)}s`
-    : stats.monthProcessed > 0
-      ? "~5s"
-      : "-"
-
-  const metricCards = [
-    {
-      title: "Today",
-      value: stats.todayProcessed,
-      helper: "Files processed",
-      icon: CalendarDays,
-    },
-    {
-      title: "This month",
-      value: stats.thisMonthProcessed,
-      helper: "Monthly volume",
-      icon: FileSpreadsheet,
-    },
-    {
-      title: "Average time",
-      value: averageTimeLabel,
-      helper: "Per image",
-      icon: Timer,
-    },
-    {
-      title: "Total",
-      value: stats.totalProcessed,
-      helper: "All time files",
-      icon: BarChart3,
-    },
-  ]
-
-  const summaryRows = [
-    { label: "Success rate", value: stats.successRate ? `${Math.round(stats.successRate)}%` : "-" },
-    { label: "Selected period", value: stats.selectedPeriodProcessed.toLocaleString() },
-    { label: "Active jobs", value: stats.activeJobs.toLocaleString() },
-  ]
-
-  const dateRangeLabel = (() => {
-    const now = new Date()
-    const start = rangeStartDate(timeRange, now)
-    if (timeRange === "1d") {
-      return `${format(start, "MMM d, h:mm a")} – ${format(now, "h:mm a")}`
-    }
-    return `${format(start, "MMM d, yyyy")} – ${format(now, "MMM d, yyyy")}`
-  })()
 
   return (
-    <DashboardShell activeItem="overview" title="Dashboard" user={user} showBack={false}>
-      <div className="space-y-4">
+    <DashboardShell activeItem="overview" title="Home" user={user} showBack={false}>
+      <div className="max-w-6xl space-y-6">
         <PageHeader
-          title="Dashboard"
-          description="Volume and processing activity"
+          title="Home"
+          description="Keep client submissions moving from intake to review."
           actions={
-            view === "overview" ? (
-              <div className="flex items-center gap-2">
-                <TimeRangePill value={timeRange} onChange={setTimeRange} disabled={loading} />
-                <Button
-                  variant="glossy"
-                  size="sm"
-                  onClick={fetchDashboardData}
-                  disabled={loading}
-                  className="h-9"
-                  aria-label="Refresh dashboard"
-                >
-                  <RefreshCw className={cn("size-4", loading && "animate-spin")} />
-                </Button>
-              </div>
-            ) : undefined
+            <div className="flex items-center gap-2">
+              <Button variant="surface" size="sm" onClick={() => void load()} disabled={loading}>
+                <RefreshCw className={cn("size-4", loading && "animate-spin")} />
+                Refresh
+              </Button>
+              <Button asChild variant="glossy" size="sm">
+                <Link href="/dashboard/client">
+                  <Upload className="size-4" />
+                  Upload documents
+                </Link>
+              </Button>
+            </div>
           }
         />
 
-        {/* P11 — Overview / Clients tab switch */}
-        <div className="inline-flex rounded-lg border border-border bg-muted/40 p-0.5">
-          {(["overview", "clients"] as const).map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setView(tab)}
-              className={cn(
-                "ax-interactive rounded-md px-4 py-1.5 text-sm font-semibold capitalize transition-colors",
-                view === tab ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {view === "clients" ? (
-          <ClientsTab workspaceId={activeWorkspace?.id} />
-        ) : (
-        <>
-        <p className="text-[13px] font-medium text-muted-foreground" aria-live="polite">
-          Showing {dateRangeLabel}
-        </p>
-        <section className="space-y-4">
-          {loading ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {Array.from({ length: 4 }).map((_, index) => (
-                <SkeletonStatCard key={`stat-skeleton-${index}`} />
-              ))}
+        <section className="overflow-hidden rounded-lg border border-border bg-card">
+          <div className="grid divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+            <div className="px-5 py-4">
+              <p className="text-sm text-muted-foreground">Active clients</p>
+              <p className="mt-1 text-2xl font-semibold tabular-nums text-foreground">{summary.clients}</p>
             </div>
-          ) : (
-            <motion.div
-              key={`stat-grid-${timeRange}`}
-              className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
-              variants={STAT_GRID_VARIANTS}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: "-30px" }}
-            >
-              {metricCards.map((item) => (
-                <AnimatedStatCard
-                  key={item.title}
-                  title={item.title}
-                  helper={item.helper}
-                  Icon={item.icon}
-                  value={item.value}
-                />
-              ))}
-            </motion.div>
-          )}
+            <div className="px-5 py-4">
+              <p className="text-sm text-muted-foreground">Need attention</p>
+              <p className="mt-1 text-2xl font-semibold tabular-nums text-foreground">{summary.waiting}</p>
+            </div>
+            <div className="px-5 py-4">
+              <p className="text-sm text-muted-foreground">Documents this month</p>
+              <p className="mt-1 text-2xl font-semibold tabular-nums text-foreground">{summary.documents}</p>
+            </div>
+          </div>
         </section>
 
-        <DashboardMiniCharts chartData={chartData} stats={stats} />
+        <section className="space-y-3">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">Client work queue</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Follow up on late submissions and open recent client work.</p>
+            </div>
+            <Button asChild variant="surface" size="sm">
+              <Link href="/dashboard/clients">
+                View clients
+                <ArrowRight className="size-4" />
+              </Link>
+            </Button>
+          </div>
+          <ClientsTab workspaceId={activeWorkspace?.id} compact />
+        </section>
 
-        {/* C12 — "This month with AxLiner" value recap (heuristic over existing analytics) */}
-        {!loading ? (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <MonthlyRecapCard />
-          </motion.div>
-        ) : null}
-
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
-            <motion.div
-              className="col-span-1 lg:col-span-4"
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.4 }}
-              viewport={{ once: true }}
-            >
-              <Card className="relative overflow-hidden">
-                <CardHeader className="relative">
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="size-4 text-primary" />
-                    Processing Activity
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="relative ps-2">
-                  {loading ? (
-                    <div className="flex h-[280px] items-end gap-1.5 px-3">
-                      {Array.from({ length: 16 }).map((_, index) => (
-                        <div
-                          key={`chart-skeleton-${index}`}
-                          className="flex-1 animate-pulse rounded-sm bg-accent"
-                          style={{ height: `${30 + ((index * 19) % 60)}%` }}
-                        />
-                      ))}
+        <section className="space-y-3">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">Recent documents</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Latest batches saved in this workspace.</p>
+            </div>
+            <Button asChild variant="surface" size="sm">
+              <Link href="/history">
+                View activity
+                <ArrowRight className="size-4" />
+              </Link>
+            </Button>
+          </div>
+          <div className="overflow-hidden rounded-lg border border-border bg-card">
+            {loading ? (
+              <div className="px-5 py-8 text-sm text-muted-foreground">Loading recent work...</div>
+            ) : recentJobs.length ? (
+              <div className="divide-y divide-border">
+                {recentJobs.map(job => (
+                  <div key={job.id} className="grid gap-2 px-5 py-3.5 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center sm:gap-5">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <FileSpreadsheet className="size-4 shrink-0 text-muted-foreground" />
+                      <span className="truncate text-sm font-medium text-foreground">{job.filename}</span>
                     </div>
-                  ) : (
-                    <DashboardChart chartData={chartData} timeRange={timeRange} />
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <Card className="col-span-1 lg:col-span-3">
-              <CardHeader>
-                <CardTitle>Period summary</CardTitle>
-                <CardDescription>Activity for the selected reporting window.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {summaryRows.map((row) => (
-                    <div key={row.label} className="flex items-center justify-between gap-4">
-                      <p className="truncate text-sm font-medium">{row.label}</p>
-                      <p className="text-sm font-semibold tabular-nums text-primary">{row.value}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-        </div>
-        </>
-        )}
+                    <StatusBadge tone={statusTone(job.status)}>{formatStatus(job.status)}</StatusBadge>
+                    <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <Clock3 className="size-3.5" />
+                      {formatDate(job.createdAt)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 px-5 py-8 text-sm text-muted-foreground">
+                <Users className="size-4" />
+                Upload a batch to start the review queue.
+              </div>
+            )}
+          </div>
+        </section>
       </div>
     </DashboardShell>
   )

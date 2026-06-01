@@ -45,9 +45,10 @@ import {
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
+import { AccountingConnectionsSection } from "@/components/dashboard/accounting-connections/AccountingConnectionsSection"
 import { clayButton } from "@/lib/clay-button"
 
-type SettingsSection = 'account' | 'billing' | 'vendors' | 'preferences'
+type SettingsSection = 'account' | 'billing' | 'accounting' | 'vendors' | 'preferences'
 type Theme = 'dark' | 'light' | 'system'
 
 function SettingsFallback() {
@@ -139,7 +140,7 @@ function SettingsContent() {
 
   useEffect(() => {
     const section = searchParams.get('section')
-    if (section === 'account' || section === 'billing' || section === 'vendors' || section === 'preferences') {
+    if (section === 'account' || section === 'billing' || section === 'accounting' || section === 'vendors' || section === 'preferences') {
       if (section === 'vendors' && !isOwner) return
       setActiveSection(section)
     }
@@ -393,6 +394,7 @@ function SettingsContent() {
       items: [
         { id: 'account', label: 'Account', icon: User },
         { id: 'billing', label: 'Billing', icon: BillingSeal },
+        { id: 'accounting', label: 'Accounting connections', icon: DownloadCloud },
         ...(isOwner ? [{ id: 'vendors', label: 'Vendor memory', icon: FileSpreadsheet }] : []),
         { id: 'preferences', label: 'Preferences', icon: Settings2 },
       ] as Array<{ id: SettingsSection; label: string; icon: React.ComponentType<{ className?: string }> }>
@@ -802,6 +804,10 @@ function SettingsContent() {
                   </CardContent>
                 </Card>
               </div>
+            )}
+
+            {activeSection === 'accounting' && (
+              <AccountingConnectionsSection workspaceId={activeWorkspace?.id} isOwner={isOwner} />
             )}
 
             {/* Preferences */}
