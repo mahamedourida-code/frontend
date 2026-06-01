@@ -172,15 +172,15 @@ function FeaturesMegaMenu() {
               </span>
             </Link>
             <Link
-              href="/handwritten-to-excel"
+              href="/ocr"
               className="group block rounded-[16px] border border-black/10 bg-white p-4 text-black transition-colors hover:border-black/25"
             >
               <span className="flex size-11 items-center justify-center rounded-[13px] bg-[#d1fae5] text-black">
                 <ScanLine className="size-[22px]" strokeWidth={2} />
               </span>
-              <span className="mt-3.5 block text-[17px] font-bold leading-5">Reads the messy stuff</span>
+              <span className="mt-3.5 block text-[17px] font-bold leading-5">OCR engine</span>
               <span className="mt-1 block text-[13px] font-medium leading-tight text-black/55">
-                Handwriting, photos, receipts
+                Reads handwriting, photos, receipts
               </span>
             </Link>
           </div>
@@ -466,14 +466,6 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
                 <NavigationMenuLink asChild>
                   <Link href="/integrations" className={flatLink}>
                     Integrations
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/ocr" className={flatLink}>
-                    OCR
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>

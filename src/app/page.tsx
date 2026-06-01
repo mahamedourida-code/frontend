@@ -345,87 +345,116 @@ export default function Home() {
           <div className="relative z-10">
         <section ref={heroRef} className="relative overflow-hidden pt-16 pb-10 sm:pt-20 sm:pb-12 lg:pt-20 lg:pb-14">
           <div className="ax-marketing-container relative z-10">
-            <div className="grid min-h-[400px] items-center gap-14 lg:min-h-[420px] lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)] lg:gap-16">
-              <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:translate-x-8 lg:text-left xl:translate-x-10">
-                <h1 className="ax-h1 ax-marketing-display font-bold text-black">
-                  The review layer between{" "}
-                  <br className="hidden sm:block" />
-                  messy invoices and your books.
-                </h1>
-                <p className="ax-body ax-marketing-lead mt-6 font-semibold text-neutral-950">
-                  AxLiner reads the documents other tools refuse: handwriting, phone photos, and wrinkled receipts. It checks them and gets every entry one keystroke from QuickBooks Online. You stay in control.
-                </p>
+            {/* Centered hero copy */}
+            <div className="mx-auto max-w-3xl text-center">
+              <h1 className="ax-h1 ax-marketing-display font-bold text-black">
+                The review layer between{" "}
+                <br className="hidden sm:block" />
+                messy invoices and your books.
+              </h1>
+              <p className="ax-body ax-marketing-lead mx-auto mt-6 font-semibold text-neutral-950">
+                AxLiner reads the documents other tools refuse: handwriting, phone photos, and wrinkled receipts. It checks them and gets every entry one keystroke from QuickBooks Online. You stay in control.
+              </p>
 
-                <div className="mt-9 flex flex-col items-center gap-5 sm:flex-row lg:items-center">
-                  <div className="flex flex-col items-center gap-3 lg:items-start">
-                    <Button variant="glossy" asChild className="h-[52px] rounded-full px-10 text-base font-bold">
-                      <NextLink href="/dashboard/client">Start free</NextLink>
-                    </Button>
-                    <button
-                      type="button"
-                      onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
-                      className="ax-interactive text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-                    >
-                      See how it works ↓
-                    </button>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className="flex -space-x-2">
-                      {[0, 1, 2, 3, 4].map((i) => (
-                        <Image
-                          key={i}
-                          src={`/avatars/${i}.webp`}
-                          alt={`User ${i + 1}`}
-                          width={40}
-                          height={40}
-                          className="h-10 w-10 rounded-full border-2 border-white object-cover shadow-sm"
-                        />
-                      ))}
-                    </div>
-                    <div className="h-9 w-px bg-border" />
-                    <div className="text-left">
-                      <p className="text-sm font-bold leading-none text-neutral-950">5,000+</p>
-                      <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600">bookkeepers & accountants</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Proof stat strip — Nanonets-style outcome numbers, not feature claims */}
-                <motion.dl
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.6 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="mt-10 grid max-w-md grid-cols-3 gap-px overflow-hidden rounded-2xl border border-border bg-border lg:max-w-lg"
+              <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                <Button variant="glossy" asChild className="h-[52px] rounded-full px-10 text-base font-bold">
+                  <NextLink href="/dashboard/client">Start free</NextLink>
+                </Button>
+                <button
+                  type="button"
+                  onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
+                  className="ax-interactive text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
                 >
-                  {proofStats.map((stat) => (
-                    <div key={stat.label} className="bg-white px-4 py-5 text-center lg:text-left">
-                      <dt className="sr-only">{stat.label}</dt>
-                      <dd>
-                        <span className="block text-2xl font-bold leading-none tracking-tight text-neutral-950 sm:text-3xl">
-                          {stat.value}
-                        </span>
-                        <span className="mt-2 block text-[11px] font-semibold uppercase leading-snug tracking-[0.12em] text-neutral-600">
-                          {stat.label}
-                        </span>
-                      </dd>
-                    </div>
-                  ))}
-                </motion.dl>
+                  See how it works ↓
+                </button>
               </div>
 
-              <div className="flex flex-col items-center lg:translate-x-14 lg:items-end xl:translate-x-20">
-                <BrandVisualFrame treatment="cutout" className="relative w-full max-w-[800px]">
-                  <div className="absolute inset-x-8 bottom-5 h-20 rounded-full bg-primary/15 blur-3xl" aria-hidden="true" />
-                  <img
-                    src="/header.svg"
-                    alt="AxLiner document conversion illustration"
-                    className="relative z-10 mx-auto h-auto w-full max-w-[760px] object-contain"
-                  />
-                </BrandVisualFrame>
+              <div className="mt-7 flex items-center justify-center gap-3">
+                <div className="flex -space-x-2">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <Image
+                      key={i}
+                      src={`/avatars/${i}.webp`}
+                      alt={`User ${i + 1}`}
+                      width={40}
+                      height={40}
+                      className="h-10 w-10 rounded-full border-2 border-white object-cover shadow-sm"
+                    />
+                  ))}
+                </div>
+                <div className="h-9 w-px bg-border" />
+                <div className="text-left">
+                  <p className="text-sm font-bold leading-none text-neutral-950">5,000+</p>
+                  <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600">bookkeepers &amp; accountants</p>
+                </div>
               </div>
             </div>
+
+            {/* Tella / Screen-Studio-style video placeholder — drop the recording in here */}
+            <motion.div
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
+              className="relative mx-auto mt-14 max-w-[1040px] lg:mt-16"
+            >
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -inset-x-10 -top-8 bottom-0 -z-10 rounded-[3rem] bg-gradient-to-b from-[#d1fae5]/70 via-[#d1fae5]/25 to-transparent blur-2xl"
+              />
+              <div className="rounded-[1.5rem] border border-emerald-200/70 bg-white/70 p-2 shadow-[0_28px_80px_-28px_rgba(16,185,129,0.4)] backdrop-blur-sm sm:rounded-[2.25rem] sm:p-3">
+                <div className="relative aspect-video w-full overflow-hidden rounded-[1.1rem] bg-neutral-950 ring-1 ring-black/5 sm:rounded-[1.6rem]">
+                  {/* window chrome */}
+                  <div className="absolute inset-x-0 top-0 z-10 flex h-9 items-center gap-1.5 bg-neutral-900/90 px-4">
+                    <span className="size-2.5 rounded-full bg-[#ff5f57]" />
+                    <span className="size-2.5 rounded-full bg-[#febc2e]" />
+                    <span className="size-2.5 rounded-full bg-[#28c840]" />
+                  </div>
+                  {/* subtle dot grid */}
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 opacity-[0.06]"
+                    style={{
+                      backgroundImage: "radial-gradient(circle, #ffffff 1.4px, transparent 1.4px)",
+                      backgroundSize: "26px 26px",
+                    }}
+                  />
+                  {/* play button */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="flex size-20 items-center justify-center rounded-full bg-[#d1fae5] text-[#064e3b] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.7),0_10px_34px_-8px_rgba(16,185,129,0.7)] transition-transform duration-200 hover:scale-105">
+                      <svg viewBox="0 0 16 16" fill="currentColor" className="ml-1 size-7" aria-hidden="true">
+                        <path d="M3 2.25 14.5 8 3 13.75V2.25Z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p className="absolute inset-x-0 bottom-4 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white/45">
+                    Product walkthrough — coming soon
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Proof stat strip — Nanonets-style outcome numbers, not feature claims */}
+            <motion.dl
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.6 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="mx-auto mt-12 grid max-w-2xl grid-cols-3 gap-px overflow-hidden rounded-2xl border border-border bg-border"
+            >
+              {proofStats.map((stat) => (
+                <div key={stat.label} className="bg-white px-4 py-5 text-center">
+                  <dt className="sr-only">{stat.label}</dt>
+                  <dd>
+                    <span className="block text-2xl font-bold leading-none tracking-tight text-neutral-950 sm:text-3xl">
+                      {stat.value}
+                    </span>
+                    <span className="mt-2 block text-[11px] font-semibold uppercase leading-snug tracking-[0.12em] text-neutral-600">
+                      {stat.label}
+                    </span>
+                  </dd>
+                </div>
+              ))}
+            </motion.dl>
           </div>
         </section>
 

@@ -121,7 +121,7 @@ export default function IntegrationsClient() {
 
             <motion.h1
               variants={fadeUp}
-              className="ax-marketing-display mx-auto max-w-[860px] text-[42px] font-bold leading-[1.06] tracking-tight text-neutral-950 md:text-[56px] lg:text-[68px]"
+              className="ax-marketing-display mx-auto max-w-[820px] text-[34px] font-bold leading-[1.08] tracking-tight text-neutral-950 md:text-[44px] lg:text-[54px]"
             >
               Seamless integrations with the{" "}
               <span className="text-[#059669]">accounting tools</span> you already use
