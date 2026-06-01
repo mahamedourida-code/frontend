@@ -92,6 +92,28 @@ export default function ContactPage() {
               explains the deletion path and retention exceptions.
             </p>
           </div>
+
+          {/* Friendly office accent — small business owners */}
+          <div className="mt-10 grid gap-4 sm:grid-cols-2">
+            <div className="relative overflow-hidden rounded-2xl ring-1 ring-emerald-200 shadow-sm" style={{ aspectRatio: "4/3" }}>
+              <Image
+                src="/photos/istockphoto-1339827194-612x612.jpg"
+                alt="Small business owners discussing a question with their accountant"
+                fill
+                sizes="(min-width: 640px) 50vw, 100vw"
+                className="object-cover object-center"
+              />
+            </div>
+            <div className="relative overflow-hidden rounded-2xl ring-1 ring-emerald-200 shadow-sm" style={{ aspectRatio: "4/3" }}>
+              <Image
+                src="/photos/smiling-young-woman-sitting-on-chair-holding-mobil-2023-11-27-04-52-35-utc.webp"
+                alt="Team member ready to help with your AxLiner question"
+                fill
+                sizes="(min-width: 640px) 50vw, 100vw"
+                className="object-cover object-center"
+              />
+            </div>
+          </div>
         </section>
       </article>
     </main>

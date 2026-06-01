@@ -136,6 +136,17 @@ export default function SecurityPage() {
             and available to customers.
           </p>
         </div>
+
+        {/* Secure bookkeeping accent photo */}
+        <BrandVisualFrame treatment="photo" className="mt-8 aspect-[16/7]">
+          <Image
+            src="/photos/The-Real-Cost-of-DIY-Bookkeeping-scaled.jpg"
+            alt="Organized bookkeeping records representing secure document handling"
+            fill
+            sizes="(min-width: 1024px) 820px, 100vw"
+            className="rounded-md object-cover object-center"
+          />
+        </BrandVisualFrame>
       </section>
 
       <section id="questions" className="scroll-mt-32 border-t border-border pt-9">

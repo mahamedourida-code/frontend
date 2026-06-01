@@ -142,6 +142,17 @@ export default function HowAxlinerIsBuiltPage() {
             time saved comes from handling the group, not only the first image.
           </p>
         </div>
+
+        {/* Team / engineering accent photo */}
+        <BrandVisualFrame treatment="photo" className="mt-8 aspect-[16/7]">
+          <Image
+            src="/photos/austin-distel-mpN7xjKQ_Ns-unsplash.jpg"
+            alt="Engineering team designing the AxLiner batch processing layer"
+            fill
+            sizes="(min-width: 1024px) 820px, 100vw"
+            className="rounded-md object-cover object-center"
+          />
+        </BrandVisualFrame>
       </section>
 
       <section id="export" className="scroll-mt-32 border-t border-border pt-9">
@@ -157,6 +168,18 @@ export default function HowAxlinerIsBuiltPage() {
             faster batch review, and spreadsheets that remain editable once they leave AxLiner.
           </p>
         </div>
+
+        {/* Product / developer build photo */}
+        <BrandVisualFrame treatment="photo" className="mt-8 aspect-[16/7]">
+          <Image
+            src="/photos/pexels-mikhail-nilov-8297034.jpg"
+            alt="Developer building the AxLiner review board interface"
+            fill
+            sizes="(min-width: 1024px) 820px, 100vw"
+            className="rounded-md object-cover object-center"
+          />
+        </BrandVisualFrame>
+
         <div className="mt-9 flex flex-wrap gap-3">
           <Button asChild className="rounded-md px-6">
             <Link href="/dashboard/client">Convert files</Link>
