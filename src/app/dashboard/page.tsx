@@ -105,8 +105,8 @@ function AnimatedStatCard({ title, helper, Icon, value }: AnimatedStatCardProps)
             <Icon className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold tabular-nums">{display}</div>
-            <p className="text-xs text-muted-foreground">{helper}</p>
+            <div className="text-[26px] font-bold tabular-nums tracking-tight">{display}</div>
+            <p className="text-[13px] font-medium text-muted-foreground">{helper}</p>
           </CardContent>
         </Card>
       </SpotlightCard>
@@ -606,7 +606,7 @@ export default function DashboardPage() {
               <div className="flex items-center gap-2">
                 <TimeRangePill value={timeRange} onChange={setTimeRange} disabled={loading} />
                 <Button
-                  variant="surface"
+                  variant="glossy"
                   size="sm"
                   onClick={fetchDashboardData}
                   disabled={loading}
@@ -641,7 +641,7 @@ export default function DashboardPage() {
           <ClientsTab workspaceId={activeWorkspace?.id} />
         ) : (
         <>
-        <p className="text-xs text-muted-foreground" aria-live="polite">
+        <p className="text-[13px] font-medium text-muted-foreground" aria-live="polite">
           Showing {dateRangeLabel}
         </p>
         <section className="space-y-4">

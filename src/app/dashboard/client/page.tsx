@@ -2076,7 +2076,7 @@ Best regards`
                   <svg className="h-10 w-10 text-[#EA4335] group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
                   </svg>
-                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Gmail</span>
+                  <span className="text-[13px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Gmail</span>
                 </button>
 
                 <button
@@ -2087,7 +2087,7 @@ Best regards`
                   <svg className="h-10 w-10 text-[#0077B5] group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
                   </svg>
-                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">LinkedIn</span>
+                  <span className="text-[13px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">LinkedIn</span>
                 </button>
 
                 <button
@@ -2098,7 +2098,7 @@ Best regards`
                   <svg className="h-10 w-10 text-foreground group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                   </svg>
-                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">X</span>
+                  <span className="text-[13px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">X</span>
                 </button>
 
                 <button
@@ -2107,7 +2107,7 @@ Best regards`
                   title="Send via Facebook Messenger"
                 >
                   <MessageCircle className="h-10 w-10 text-[#0084FF] group-hover:scale-110 transition-transform" />
-                  <span className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors">Messenger</span>
+                  <span className="text-[13px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Messenger</span>
                 </button>
               </div>
             </div>

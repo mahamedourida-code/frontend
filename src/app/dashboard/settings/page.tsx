@@ -45,6 +45,7 @@ import {
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
+import { clayButton } from "@/lib/clay-button"
 
 type SettingsSection = 'account' | 'billing' | 'vendors' | 'preferences'
 type Theme = 'dark' | 'light' | 'system'
@@ -506,7 +507,7 @@ function SettingsContent() {
                         disabled
                         className="bg-muted h-9 lg:h-10"
                       />
-                      <p className="text-[10px] lg:text-xs text-muted-foreground">Email cannot be changed</p>
+                      <p className="text-[13px] font-medium text-muted-foreground">Email cannot be changed</p>
                     </div>
 
                     <div className="flex justify-end gap-2 lg:gap-3 pt-3 lg:pt-4 border-t">
@@ -541,7 +542,7 @@ function SettingsContent() {
                       <div className="p-5 sm:p-6">
                         <div className="flex items-start justify-between gap-4">
                           <div>
-                            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Billing</p>
+                            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-emerald-700">Billing</p>
                             <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
                               {billingLoading ? "Loading plan" : `${formatPlan(billingStatus?.plan)} workspace`}
                             </h2>
@@ -596,8 +597,8 @@ function SettingsContent() {
 
                         <div className="mt-5 flex flex-col gap-2 sm:flex-row">
                           <Button
-                            variant="glossy"
-                            className="h-11 rounded-lg"
+                            variant="surface"
+                            className={cn("h-11 rounded-lg", clayButton)}
                             onClick={openBillingPortal}
                             disabled={!hasBillingPortal || billingAction === "portal"}
                           >
@@ -788,10 +789,10 @@ function SettingsContent() {
                         <div className="mt-4 flex justify-end">
                           <Button
                             size="sm"
-                            variant="glossy"
+                            variant="surface"
                             disabled={vendorRuleAction === rule.id}
                             onClick={() => void saveVendorRule(rule)}
-                            className="h-9 rounded-md px-4"
+                            className={cn("h-9 rounded-md px-4", clayButton)}
                           >
                             {vendorRuleAction === rule.id ? 'Saving...' : 'Save changes'}
                           </Button>

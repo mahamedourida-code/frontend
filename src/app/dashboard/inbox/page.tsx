@@ -18,6 +18,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
+import { clayButton } from "@/lib/clay-button"
 import {
   clientIntakeApi,
   connectedSourcesApi,
@@ -375,7 +376,7 @@ export default function EmailInboxPage() {
                       <p className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">{newUploadUrl.replace("/upload/", "/status/")}</p>
                       <Button variant="surface" size="sm" onClick={() => void navigator.clipboard.writeText(newUploadUrl.replace("/upload/", "/status/"))}>Copy</Button>
                     </div>
-                    <p className="text-[11px] leading-4 text-muted-foreground">
+                    <p className="text-[13px] font-medium leading-5 text-muted-foreground">
                       Share the upload link to collect documents; share the status link so the client can track progress without emailing you.
                     </p>
                   </div>
@@ -560,7 +561,7 @@ export default function EmailInboxPage() {
                                   placeholder={provider === "google_drive" ? "AxLiner intake" : "/AxLiner intake"}
                                   className="h-9"
                                 />
-                                <Button size="sm" variant="glossy" onClick={() => void saveWatchedFolder(source.id)} disabled={actionBusy === source.id} className="shrink-0">
+                                <Button size="sm" variant="surface" onClick={() => void saveWatchedFolder(source.id)} disabled={actionBusy === source.id} className={cn("shrink-0", clayButton)}>
                                   Save
                                 </Button>
                                 <Button size="sm" variant="ghost" onClick={() => setFolderDraft(null)} className="shrink-0">
@@ -602,9 +603,9 @@ export default function EmailInboxPage() {
                       ) : (
                         <div className="mt-3">
                           <Button
-                            variant="glossy"
+                            variant="surface"
                             size="sm"
-                            className="w-full"
+                            className={cn("w-full", clayButton)}
                             onClick={() => void startConnectProvider(provider)}
                             disabled={!configured || connectingProvider === provider}
                           >
@@ -627,8 +628,11 @@ export default function EmailInboxPage() {
         ) : null}
 
         {/* Client submissions */}
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-foreground">Client submissions</h2>
+        <div className="flex items-end justify-between gap-3 border-b border-border/60 pb-2">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-emerald-700">Intake</p>
+            <h2 className="mt-1 text-[19px] font-bold tracking-tight text-foreground">Client submissions</h2>
+          </div>
           <Badge variant="outline">{submissions.reduce((count, submission) => count + submission.file_count, 0)} files</Badge>
         </div>
 
@@ -714,8 +718,11 @@ export default function EmailInboxPage() {
         </Card>
 
         {/* Imported documents (email messages) */}
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-foreground">Imported documents</h2>
+        <div className="flex items-end justify-between gap-3 border-b border-border/60 pb-2">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-emerald-700">Email</p>
+            <h2 className="mt-1 text-[19px] font-bold tracking-tight text-foreground">Imported documents</h2>
+          </div>
           <Badge variant="outline">{importCount} files</Badge>
         </div>
 
