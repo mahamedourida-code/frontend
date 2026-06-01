@@ -348,7 +348,7 @@ function ResumeBatchBanner({
         </div>
       </div>
       <Button
-        variant="warm"
+        variant="clay"
         onClick={onContinueLatestJob}
         disabled={recoveryLoading}
         className="h-9 px-4"
@@ -1993,7 +1993,7 @@ export function ResultActions({
             <Button
               onClick={onSaveToHistory}
               disabled={isSaving}
-              variant="warm"
+              variant="clay"
               className="h-9 gap-2 px-3 shadow-xs"
             >
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
@@ -2102,7 +2102,7 @@ export function ResultActions({
             <Button
               type="button"
               size="sm"
-              variant="warm"
+              variant="clay"
               onClick={() => void markAllCleanReady()}
               disabled={bulkReadyBusy}
               className="h-8 gap-2 rounded-full px-3.5 text-xs"
@@ -2435,7 +2435,7 @@ export function ResultActions({
                 {file.file_id || file.document_id ? (
                   <Button
                     size="sm"
-                    variant="warm"
+                    variant="clay"
                     onClick={(event) => {
                       event.stopPropagation()
                       onDownloadFile(file, index)
