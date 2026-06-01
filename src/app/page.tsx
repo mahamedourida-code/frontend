@@ -343,9 +343,9 @@ export default function Home() {
             }}
           />
           <div className="relative z-10">
-        <section ref={heroRef} className="relative overflow-hidden pt-24 pb-16 sm:pt-28 sm:pb-[4.5rem] lg:pt-28 lg:pb-24">
+        <section ref={heroRef} className="relative overflow-hidden pt-16 pb-10 sm:pt-20 sm:pb-12 lg:pt-20 lg:pb-14">
           <div className="ax-marketing-container relative z-10">
-            <div className="grid min-h-[500px] items-center gap-14 lg:min-h-[535px] lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)] lg:gap-16">
+            <div className="grid min-h-[400px] items-center gap-14 lg:min-h-[420px] lg:grid-cols-[minmax(0,1.08fr)_minmax(460px,0.92fr)] lg:gap-16">
               <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:translate-x-8 lg:text-left xl:translate-x-10">
                 <h1 className="ax-h1 ax-marketing-display font-bold text-black">
                   The review layer between{" "}
@@ -603,6 +603,64 @@ export default function Home() {
         {/* ── Outcome stat band (A5) — animated count-up social proof ── */}
         <OutcomeStats />
 
+        {/* ── Integrations band — large raw logos of the tools we plug into ── */}
+        <section className="relative z-10 overflow-hidden bg-[#f7f3e9] py-20 lg:py-28">
+          <div className="mx-auto max-w-[1280px] px-4 text-center sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.55, ease: "easeOut" }}
+            >
+              <h2 className="ax-h2 ax-marketing-section-title mx-auto max-w-3xl font-bold text-neutral-950">
+                Works with the tools you already use.
+              </h2>
+              <p className="ax-body ax-marketing-body mx-auto mt-5 max-w-2xl font-semibold text-neutral-950">
+                Pull documents in from email and Drive, publish reviewed entries straight to your accounting system. No new place to learn.
+              </p>
+            </motion.div>
+
+            <motion.ul
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={{
+                hidden: {},
+                show: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
+              }}
+              className="mt-16 flex flex-wrap items-center justify-center gap-x-16 gap-y-12 sm:gap-x-24 lg:gap-x-28"
+            >
+              {[
+                { src: "/integrations/quickbooks.png", alt: "QuickBooks", label: "QuickBooks", h: 64 },
+                { src: "/integrations/xero.png", alt: "Xero", label: "Xero", h: 88 },
+                { src: "/integrations/gmail.webp", alt: "Gmail", label: "Gmail", h: 72 },
+                { src: "/drive.png", alt: "Google Drive", label: "Google Drive", h: 92 },
+              ].map((logo) => (
+                <motion.li
+                  key={logo.label}
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+                  }}
+                  className="flex flex-col items-center gap-4"
+                >
+                  <Image
+                    src={logo.src}
+                    alt={logo.alt}
+                    width={200}
+                    height={logo.h}
+                    style={{ height: logo.h, width: "auto" }}
+                    className="object-contain"
+                  />
+                  <span className="text-sm font-bold uppercase tracking-[0.16em] text-neutral-700">
+                    {logo.label}
+                  </span>
+                </motion.li>
+              ))}
+            </motion.ul>
+          </div>
+        </section>
+
         <div className="relative isolate overflow-hidden">
           <div
             aria-hidden="true"
@@ -704,37 +762,6 @@ export default function Home() {
           </div>
         </div>
       </main>
-
-      {/* ── Final CTA band — Descript bottom recipe, recolored to black ── */}
-      <section className="relative z-10 w-full overflow-hidden bg-black px-5 py-16 text-white sm:px-10 sm:py-20 lg:px-16 lg:py-[104px]">
-        <div className="mx-auto flex max-w-[1200px] flex-col items-center gap-6 text-center">
-          <h2 className="ax-marketing-display text-[40px] font-bold leading-[1.08] tracking-tight text-white md:text-[48px] lg:text-[56px]">
-            Take back control of your document workflow.
-          </h2>
-          <p className="max-w-[928px] text-[18px] font-medium leading-[1.45] text-white/85">
-            Invoices, receipts, bank statements, handwritten notes: reviewed by you, posted correctly. No per-client minimums, no surprise pricing.
-          </p>
-
-          <div className="mt-4 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <NextLink
-              href="/dashboard/client"
-              className="inline-flex h-14 items-center rounded-full bg-[#d1fae5] px-10 text-base font-bold text-black shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_6px_22px_-8px_rgba(16,185,129,0.55)] transition-all hover:bg-[#a7f3d0]"
-            >
-              Start free →
-            </NextLink>
-            <NextLink
-              href="/pricing"
-              className="inline-flex h-14 items-center rounded-full border-2 border-white px-10 text-base font-bold text-white transition-colors hover:bg-white hover:text-black"
-            >
-              See pricing
-            </NextLink>
-          </div>
-
-          <p className="mt-4 text-sm font-semibold text-white/65">
-            No credit card · 50 free conversions · Cancel anytime
-          </p>
-        </div>
-      </section>
 
       {/* ── Footer — Descript dark-footer recipe, recolored to black ── */}
       <footer className="relative z-10 bg-black text-white">

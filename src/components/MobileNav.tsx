@@ -44,6 +44,7 @@ import {
   Building2,
   Inbox,
   Users,
+  ScanLine,
 } from "lucide-react"
 
 interface MobileNavProps {
@@ -201,6 +202,18 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       icon: Users,
       show: !isAuthenticated,
       children: publicAudienceChildren,
+    },
+    {
+      label: "Integrations",
+      href: "/integrations",
+      icon: Building2,
+      show: !isAuthenticated
+    },
+    {
+      label: "OCR",
+      href: "/ocr",
+      icon: ScanLine,
+      show: !isAuthenticated
     },
     {
       label: "Pricing",
