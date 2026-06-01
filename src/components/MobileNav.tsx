@@ -142,7 +142,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
     },
     {
       label: "Clients",
-      href: "/dashboard?view=clients",
+      href: "/dashboard/clients",
       icon: Users,
       show: isAuthenticated
     },

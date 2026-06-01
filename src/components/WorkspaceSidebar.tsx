@@ -41,7 +41,7 @@ const SIDEBAR_W = 232
 
 const NAV_ITEMS: SidebarItem[] = [
   { key: "overview", label: "Home", href: "/dashboard", icon: Home },
-  { key: "clients", label: "Clients", href: "/dashboard?view=clients", icon: Users },
+  { key: "clients", label: "Clients", href: "/dashboard/clients", icon: Users },
   { key: "activity", label: "Activity", href: "/history", icon: Activity },
   { key: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
   { key: "review", label: "Review", href: "/dashboard/client", icon: BookCheck },

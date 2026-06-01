@@ -20,7 +20,7 @@ export default function ClientsPage() {
   }
 
   return (
-    <DashboardShell activeItem="overview" title="Clients" user={user} showBack={false}>
+    <DashboardShell activeItem="clients" title="Clients" user={user} showBack={false}>
       <div className="max-w-6xl space-y-5">
         <PageHeader
           title="Clients"

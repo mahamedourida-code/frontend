@@ -807,7 +807,7 @@ function SettingsContent() {
             )}
 
             {activeSection === 'accounting' && (
-              <AccountingConnectionsSection workspaceId={activeWorkspace?.id} isOwner={isOwner} />
+              <AccountingConnectionsSection isOwner={isOwner} />
             )}
 
             {/* Preferences */}

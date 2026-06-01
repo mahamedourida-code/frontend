@@ -39,10 +39,10 @@ const GROUP_LABELS: Record<CommandGroup, string> = {
 
 const GROUP_ORDER: CommandGroup[] = ["navigate", "act", "find"]
 
-// Navigate — every dashboard route (mirrors WorkspaceSidebar + workflow docs)
+// Navigate: every dashboard route (mirrors WorkspaceSidebar + workflow docs)
 const NAVIGATE_ITEMS: CommandItem[] = [
   { id: "nav-home",     group: "navigate", label: "Home",             hint: "Workspace", keywords: "dashboard overview",           icon: Activity,    href: "/dashboard" },
-  { id: "nav-clients",  group: "navigate", label: "Clients",          hint: "Workspace", keywords: "companies customers",          icon: Users,       href: "/dashboard?view=clients" },
+  { id: "nav-clients",  group: "navigate", label: "Clients",          hint: "Workspace", keywords: "companies customers",          icon: Users,       href: "/dashboard/clients" },
   { id: "nav-activity", group: "navigate", label: "Activity",         hint: "Workspace", keywords: "history saved jobs results",   icon: Activity,    href: "/history" },
   { id: "nav-inbox",    group: "navigate", label: "Inbox",            hint: "Workspace", keywords: "intake client submissions",    icon: Inbox,       href: "/dashboard/inbox" },
   { id: "nav-review",   group: "navigate", label: "Review batches",   hint: "Workspace", keywords: "documents exceptions results", icon: BookCheck,   href: "/dashboard/client" },
@@ -50,7 +50,7 @@ const NAVIGATE_ITEMS: CommandItem[] = [
   { id: "nav-settings", group: "navigate", label: "Settings",         hint: "Workspace", keywords: "account billing plan",         icon: Settings,    href: "/dashboard/settings" },
 ]
 
-// Act — actions that already have a destination (no invented endpoints)
+// Act: actions that already have a destination (no invented endpoints)
 const ACT_ITEMS: CommandItem[] = [
   { id: "act-upload",      group: "act", label: "Upload documents",         hint: "New batch",              keywords: "new add files import scan",     icon: Upload,          href: "/dashboard/client#upload-files" },
   { id: "act-refresh-qbo", group: "act", label: "Refresh QuickBooks lists", hint: "Accounting connection", keywords: "sync vendors accounts tax qbo", icon: RefreshCw,       href: "/dashboard/integrations" },
@@ -99,7 +99,7 @@ interface CommandPaletteProps {
 }
 
 // Outer gate: only mount the body (and the useHistory fetch) while the palette is open,
-// so the dashboard never pays for the "Find" source until ⌘K is pressed.
+// so the dashboard never pays for the "Find" source until the shortcut is pressed.
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   return (
     <AnimatePresence>
@@ -217,7 +217,7 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
                 ref={inputRef}
                 value={query}
                 onChange={e => setQuery(e.target.value)}
-                placeholder="Navigate, act, or find a document…"
+                placeholder="Navigate, act, or find a document..."
                 className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
               />
               <kbd className="hidden rounded-md border border-border bg-muted px-1.5 py-0.5 font-sans text-[10px] font-medium text-muted-foreground sm:block">
