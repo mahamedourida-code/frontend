@@ -18,6 +18,7 @@ import { computeReviewScore, REVIEW_LEVEL_WEIGHT } from "@/lib/review-score"
 import { deriveMissingInfo } from "@/lib/missing-info"
 import { Button } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
+import { clayButton } from "@/lib/clay-button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -818,7 +819,7 @@ function AccountsPayableContent() {
                 {syncingReferences ? "Refreshing..." : "Refresh lists"}
               </Button>
             ) : (
-              <Button variant="glossy" size="sm" onClick={() => router.push("/dashboard/integrations")}>
+              <Button variant="surface" size="sm" className={cn(clayButton)} onClick={() => router.push("/dashboard/integrations")}>
                 Connect QuickBooks
               </Button>
             )}
@@ -1098,8 +1099,8 @@ function AccountsPayableContent() {
                 <div className="space-y-5">
                   <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
                     <div>
-                      <h2 className="text-base font-semibold text-foreground">{draft.vendor || "Vendor missing"}</h2>
-                      <p className="mt-1 text-xs text-muted-foreground">{activeItem.source_filename}</p>
+                      <h2 className="text-[19px] font-bold tracking-tight text-foreground">{draft.vendor || "Vendor missing"}</h2>
+                      <p className="mt-1 text-[13px] text-muted-foreground">{activeItem.source_filename}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {activeItem.source_access_url ? (
@@ -1214,11 +1215,11 @@ function AccountsPayableContent() {
                               Cancel
                             </Button>
                             <Button
-                              variant="glossy"
+                              variant="surface"
                               size="sm"
                               onClick={() => void dismissDuplicateWarning()}
                               disabled={dismissing}
-                              className="h-8 px-3 text-xs"
+                              className={cn("h-8 px-3 text-xs", clayButton)}
                             >
                               {dismissing ? "Dismissing…" : "Dismiss warning"}
                             </Button>
@@ -1554,7 +1555,7 @@ function AccountsPayableContent() {
                     <div className="flex flex-wrap gap-2">
                       {!activeLocked ? (
                         <>
-                          <MotionButton variant="glossy" onClick={() => void persistDraft()} disabled={saving} className="h-9">
+                          <MotionButton variant="surface" onClick={() => void persistDraft()} disabled={saving} className={cn("h-9", clayButton)}>
                             Save draft
                           </MotionButton>
                           <Button variant="reviewed" onClick={() => void applySelectedStatus()} disabled={saving || nextStatus === activeItem.status} className="h-9">

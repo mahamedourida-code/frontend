@@ -12,6 +12,7 @@ import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
+import { clayButton } from "@/lib/clay-button"
 import { Card, CardContent } from "@/components/ui/card"
 import { SpotlightCard } from "@/components/dashboard/SpotlightCard"
 import { useAuth } from "@/hooks/useAuth"
@@ -452,7 +453,7 @@ function IntegrationsContent() {
                   </p>
                 </div>
                 {isOwner && (
-                  <MotionButton variant="glossy" className="mx-auto w-full max-w-xs" onClick={() => void connectXero()} disabled={Boolean(xeroBusy) || loading}>
+                  <MotionButton variant="surface" className={cn("mx-auto w-full max-w-xs", clayButton)} onClick={() => void connectXero()} disabled={Boolean(xeroBusy) || loading}>
                     {xeroBusy === "connect" ? "Connecting..." : "Connect Xero"}
                   </MotionButton>
                 )}
