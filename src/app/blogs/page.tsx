@@ -44,22 +44,39 @@ export default function BlogsPage() {
       {/* Masthead */}
       <section className="ax-marketing-container-editorial pb-10 pt-32 lg:pt-36">
         <div className="border-b-2 border-neutral-900 pb-10">
-          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-emerald-700">
-            The AxLiner Journal
-          </p>
-          <h1 className="ax-marketing-section-title mt-5 max-w-4xl text-black">
-            Field notes for the people who keep the books.
-          </h1>
-          <p className="ax-marketing-lead mt-6 max-w-3xl text-black">
-            Honest writing about running a bookkeeping or accounting practice in 2026: pricing models, client
-            retention, the Sunday-evening reality, and what AI is actually doing to the profession.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-neutral-900/10 pt-5 text-sm font-bold uppercase tracking-[0.12em] text-neutral-900">
-            <span className="text-emerald-700">All issues</span>
-            <span>Client retention</span>
-            <span>Pricing trends</span>
-            <span>Daily life</span>
-            <span>Profession in 2026</span>
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-emerald-700">
+                The AxLiner Journal
+              </p>
+              <h1 className="ax-marketing-section-title mt-5 max-w-4xl text-black">
+                Field notes for the people who keep the books.
+              </h1>
+              <p className="ax-marketing-lead mt-6 max-w-3xl text-black">
+                Honest writing about running a bookkeeping or accounting practice in 2026: pricing models, client
+                retention, the Sunday-evening reality, and what AI is actually doing to the profession.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-neutral-900/10 pt-5 text-sm font-bold uppercase tracking-[0.12em] text-neutral-900">
+                <span className="text-emerald-700">All issues</span>
+                <span>Client retention</span>
+                <span>Pricing trends</span>
+                <span>Daily life</span>
+                <span>Profession in 2026</span>
+              </div>
+            </div>
+            {/* Editorial accent photo */}
+            <div className="hidden lg:block">
+              <div className="relative overflow-hidden rounded-2xl ring-1 ring-emerald-200 shadow-sm" style={{ aspectRatio: "4/5" }}>
+                <Image
+                  src="/photos/austin-distel-mpN7xjKQ_Ns-unsplash.jpg"
+                  alt="Bookkeeper working in a modern office"
+                  fill
+                  priority
+                  sizes="320px"
+                  className="object-cover object-center"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>

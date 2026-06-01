@@ -1,7 +1,9 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 import Link from "next/link"
 
 import { EditorialPageShell } from "@/components/EditorialPageShell"
+import { BrandVisualFrame } from "@/components/BrandVisual"
 import BenchmarkAccuracyChart from "@/components/landing/BenchmarkAccuracyChart"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -101,6 +103,17 @@ export default function BenchmarksPage() {
         <div className="mt-7">
           <BenchmarkAccuracyChart />
         </div>
+
+        {/* Supporting photo — person reviewing documents at laptop */}
+        <BrandVisualFrame treatment="photo" className="mt-8 aspect-[16/7]">
+          <Image
+            src="/photos/istockphoto-2185212349-612x612.jpg"
+            alt="Professional reviewing extracted document data at a laptop"
+            fill
+            sizes="(min-width: 1024px) 820px, 100vw"
+            className="rounded-md object-cover object-center"
+          />
+        </BrandVisualFrame>
       </section>
 
       <section id="workbook" className="scroll-mt-32 border-t border-border pt-9">
