@@ -117,7 +117,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       return {
         label: solution.menuLabel,
         href: audienceSolutionHref(slug),
-        icon: solution.icon,
+        icon: Users,
         group: "Choose your fit",
       }
     }),
@@ -127,7 +127,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
         return {
           label: solution.menuLabel,
           href: audienceSolutionHref(slug),
-          icon: solution.icon,
+          icon: group.icon,
           group: group.label,
         }
       }),

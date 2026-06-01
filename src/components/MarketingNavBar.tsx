@@ -19,6 +19,8 @@ import {
   Wrench,
   Gift,
   LifeBuoy,
+  UserRound,
+  Building2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -206,8 +208,13 @@ function FeaturesMegaMenu() {
 
 /* ── For Accountants & Bookkeepers mega-menu ────────────────────────────── */
 
+const primaryAudienceIcons: Record<string, LucideIcon> = {
+  "solo-bookkeepers": UserRound,
+  "accounting-practices": Building2,
+};
+
 function PrimaryAudienceLink({ solution }: { solution: AudienceSolution }) {
-  const Icon = solution.icon;
+  const Icon = primaryAudienceIcons[solution.slug] ?? UserRound;
 
   return (
     <NavigationMenuLink asChild>
