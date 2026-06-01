@@ -583,10 +583,10 @@ export default function Home() {
           <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
             <div className="mb-14" data-animate="headline">
               <h2 className="ax-h2 ax-marketing-section-title font-bold text-neutral-950">
-                Works for anyone who touches documents.
+                Turn every document batch into reviewed accounting work.
               </h2>
               <p className="ax-body ax-marketing-lead mt-4 max-w-2xl font-semibold text-neutral-950">
-                From solo bookkeepers to construction managers: one workflow, every document type.
+                From invoices and receipts to statements and handwritten tables: one controlled path to review, export, and publish.
               </p>
             </div>
 
@@ -625,7 +625,7 @@ export default function Home() {
           <div className="container relative z-10 mx-auto max-w-[1540px] px-4 sm:px-6 lg:px-8">
             <div className="grid gap-10 lg:grid-cols-[minmax(360px,0.82fr)_minmax(520px,1.18fr)] lg:items-center">
               <div data-animate="headline">
-                <p className="ax-eyebrow text-primary">Security</p>
+                <p className="ax-eyebrow text-black">Security</p>
                 <h2 className="ax-h2 ax-marketing-section-title mt-3 max-w-2xl font-bold text-neutral-950">
                   Your data never leaves the review board uninvited.
                 </h2>
@@ -673,7 +673,7 @@ export default function Home() {
             </div>
 
             <div className="mx-auto mt-16 max-w-[928px] lg:mt-20" data-animate="headline">
-              <p className="ax-eyebrow text-primary">FAQ</p>
+              <p className="ax-eyebrow text-black">FAQ</p>
               <h3 className="ax-h2 ax-marketing-section-title mt-3 font-bold text-neutral-950">
                 Questions we hear from bookkeepers.
               </h3>
@@ -694,7 +694,7 @@ export default function Home() {
                     </span>
                   </summary>
                   <div className="pb-7 pr-10">
-                    <p className="ax-body ax-marketing-body text-neutral-700">{item.answer}</p>
+                    <p className="ax-body ax-marketing-body text-neutral-900">{item.answer}</p>
                   </div>
                 </details>
               ))}
@@ -705,95 +705,45 @@ export default function Home() {
         </div>
       </main>
 
-      {/* ── Warm CTA band — last pitch before footer ── */}
-      <section className="ax-marketing-band-warm relative z-10 overflow-hidden border-y border-neutral-950/10 bg-[#f7f3e9] text-neutral-950">
-        <div className="relative z-10 mx-auto max-w-[1280px] px-4 py-24 sm:px-6 lg:px-8 lg:py-32">
-          <div className="mx-auto max-w-3xl text-center">
-            <h2 className="ax-h2 ax-marketing-section-title font-bold tracking-tight text-neutral-950">
-              Take back control of your document workflow.
-            </h2>
-            <p className="ax-body ax-marketing-lead mt-6 font-semibold text-neutral-950">
-              Invoices, receipts, bank statements, handwritten notes: reviewed by you, posted correctly. No per-client minimums, no surprise pricing.
-            </p>
+      {/* ── Final CTA band — Descript bottom recipe, recolored to black ── */}
+      <section className="relative z-10 w-full overflow-hidden bg-black px-5 py-16 text-white sm:px-10 sm:py-20 lg:px-16 lg:py-[104px]">
+        <div className="mx-auto flex max-w-[1200px] flex-col items-center gap-6 text-center">
+          <h2 className="ax-marketing-display text-[40px] font-bold leading-[1.08] tracking-tight text-white md:text-[48px] lg:text-[56px]">
+            Take back control of your document workflow.
+          </h2>
+          <p className="max-w-[928px] text-[18px] font-medium leading-[1.45] text-white/85">
+            Invoices, receipts, bank statements, handwritten notes: reviewed by you, posted correctly. No per-client minimums, no surprise pricing.
+          </p>
 
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <NextLink
-                href="/dashboard/client"
-                className="inline-flex h-14 items-center rounded-full bg-[var(--brand-green)] px-10 text-base font-bold text-neutral-950 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_6px_22px_-8px_rgba(16,185,129,0.55)] transition-all hover:bg-[var(--brand-green-hover)]"
-              >
-                Start free →
-              </NextLink>
-              <NextLink
-                href="/pricing"
-                className="inline-flex h-14 items-center rounded-full border-2 border-neutral-950 px-10 text-base font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white"
-              >
-                See pricing
-              </NextLink>
-            </div>
-
-            <p className="mt-8 text-sm font-semibold text-neutral-950/70">
-              No credit card · 50 free conversions · Cancel anytime
-            </p>
+          <div className="mt-4 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <NextLink
+              href="/dashboard/client"
+              className="inline-flex h-14 items-center rounded-full bg-[#d1fae5] px-10 text-base font-bold text-black shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_6px_22px_-8px_rgba(16,185,129,0.55)] transition-all hover:bg-[#a7f3d0]"
+            >
+              Start free →
+            </NextLink>
+            <NextLink
+              href="/pricing"
+              className="inline-flex h-14 items-center rounded-full border-2 border-white px-10 text-base font-bold text-white transition-colors hover:bg-white hover:text-black"
+            >
+              See pricing
+            </NextLink>
           </div>
+
+          <p className="mt-4 text-sm font-semibold text-white/65">
+            No credit card · 50 free conversions · Cancel anytime
+          </p>
         </div>
       </section>
 
-      {/* ── Clean Proposify-style footer ── */}
-      <footer className="relative z-10 border-t border-neutral-200 bg-white">
-        <div className="mx-auto max-w-[1480px] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,2.4fr)] lg:gap-16">
-            {/* Logo column */}
-            <div>
-              <NextLink href="/" aria-label="AxLiner home" className="inline-flex items-center">
-                <AppLogo className="h-8 w-auto" />
-              </NextLink>
-              <p className="mt-6 max-w-xs text-[15px] font-semibold leading-relaxed text-neutral-900">
-                Invoice & document review for bookkeepers and accounting practices.
-              </p>
-            </div>
-
-            {/* Link columns */}
-            <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:grid-cols-5 lg:gap-8">
-              {footerColumns.map((column) => (
-                <div key={column.title}>
-                  <h4 className="text-[15px] font-bold text-emerald-700">
-                    {column.title}
-                  </h4>
-                  <ul className="mt-5 space-y-3.5">
-                    {column.links.map((link) => (
-                      <li key={`${column.title}-${link.label}`}>
-                        <NextLink
-                          href={link.href}
-                          className="text-[14px] font-semibold text-neutral-900 transition-colors hover:text-emerald-700"
-                        >
-                          {link.label}
-                        </NextLink>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Bottom row */}
-          <div className="mt-16 flex flex-col gap-6 border-t border-neutral-200 pt-8 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-[13px] font-semibold text-neutral-900">
-              © 2026 AxLiner Inc. All rights reserved.
-            </p>
-
-            <div className="flex flex-wrap items-center gap-6">
-              <NextLink href="/contact" className="text-[13px] font-semibold text-neutral-900 transition-colors hover:text-emerald-700">
-                Contact Us
-              </NextLink>
-              <NextLink href="/privacy-policy" className="text-[13px] font-semibold text-neutral-900 transition-colors hover:text-emerald-700">
-                Privacy Policy
-              </NextLink>
-              <NextLink href="/end-user-license-agreement" className="text-[13px] font-semibold text-neutral-900 transition-colors hover:text-emerald-700">
-                Terms & Conditions
-              </NextLink>
-            </div>
-
+      {/* ── Footer — Descript dark-footer recipe, recolored to black ── */}
+      <footer className="relative z-10 bg-black text-white">
+        <div className="mx-auto max-w-[1200px] px-4 pt-16 pb-10 sm:px-6 lg:px-8 lg:pt-20">
+          {/* Logo + social row */}
+          <div className="flex flex-col gap-6 border-b border-white/12 pb-10 sm:flex-row sm:items-center sm:justify-between">
+            <NextLink href="/" aria-label="AxLiner home" className="inline-flex items-center">
+              <AppLogo className="h-8 w-auto invert" />
+            </NextLink>
             <div className="flex items-center gap-3">
               {footerSocialLinks.map(({ label, href, Icon }) => (
                 <a
@@ -802,11 +752,53 @@ export default function Home() {
                   aria-label={label}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-700 text-white transition-all hover:-translate-y-0.5 hover:bg-emerald-800"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:-translate-y-0.5 hover:bg-[#d1fae5] hover:text-black"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
               ))}
+            </div>
+          </div>
+
+          {/* Link columns */}
+          <div className="grid grid-cols-2 gap-10 py-12 sm:grid-cols-3 lg:grid-cols-5 lg:gap-8">
+            {footerColumns.map((column) => (
+              <div key={column.title}>
+                <p className="text-[15px] font-bold text-white">
+                  {column.title}
+                </p>
+                <ul className="mt-5 space-y-3.5">
+                  {column.links.map((link) => (
+                    <li key={`${column.title}-${link.label}`}>
+                      <NextLink
+                        href={link.href}
+                        className="text-[14px] font-medium text-white/70 transition-opacity hover:text-white hover:opacity-100"
+                      >
+                        {link.label}
+                      </NextLink>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom legal row */}
+          <div className="flex flex-col gap-6 border-t border-white/12 pt-8 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-[13px] font-medium text-white/70">
+              © 2026 AxLiner Inc. All rights reserved.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-6">
+              <NextLink href="/contact" className="text-[13px] font-medium text-white/70 transition-colors hover:text-white">
+                Contact Us
+              </NextLink>
+              <NextLink href="/privacy-policy" className="text-[13px] font-medium text-white/70 transition-colors hover:text-white">
+                Privacy Policy
+              </NextLink>
+              <NextLink href="/end-user-license-agreement" className="text-[13px] font-medium text-white/70 transition-colors hover:text-white">
+                Terms &amp; Conditions
+              </NextLink>
             </div>
           </div>
         </div>

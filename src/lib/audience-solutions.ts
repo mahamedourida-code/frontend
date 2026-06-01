@@ -1,12 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
-  BookOpenCheck,
-  ClipboardCheck,
   FolderOpen,
-  Inbox,
-  ReceiptText,
   ScanSearch,
-  UsersRound,
   Workflow,
 } from "lucide-react";
 
@@ -24,15 +19,10 @@ export type AudienceSolution = {
   slug: AudienceSolutionSlug;
   title: string;
   menuLabel: string;
-  icon: LucideIcon;
   eyebrow: string;
   headline: string;
   summary: string;
   proof: string;
-  signals: Array<{
-    value: string;
-    label: string;
-  }>;
   benefits: Array<{
     title: string;
     description: string;
@@ -49,18 +39,12 @@ export const audienceSolutions: AudienceSolution[] = [
     slug: "solo-bookkeepers",
     title: "AxLiner for solo bookkeepers",
     menuLabel: "Solo bookkeepers",
-    icon: BookOpenCheck,
     eyebrow: "For solo bookkeepers",
     headline: "Move a client folder from paperwork to reviewed books without rebuilding every row.",
     summary:
       "Upload mixed invoices, receipts, statements, and notes as one batch. AxLiner classifies the files, extracts the accounting details, and gives you one calm review board for the exceptions.",
     proof:
       "Keep the review step in your hands, then export clean files or publish reviewed draft bills to QuickBooks Online.",
-    signals: [
-      { value: "One batch", label: "for mixed client paperwork" },
-      { value: "One board", label: "for flagged fields and rows" },
-      { value: "One handoff", label: "to Excel, CSV, or QuickBooks" },
-    ],
     benefits: [
       {
         title: "Protect your close-day focus",
@@ -98,18 +82,12 @@ export const audienceSolutions: AudienceSolution[] = [
     slug: "accounting-practices",
     title: "AxLiner for accounting practices",
     menuLabel: "Accounting practices",
-    icon: UsersRound,
     eyebrow: "For accounting practices",
     headline: "Give every client batch a visible path from intake to reviewer sign-off.",
     summary:
       "AxLiner helps practices process document-heavy client work without turning the close into a chain of private spreadsheets and status messages.",
     proof:
       "Collect files, review exceptions, coordinate reviewers, and prepare draft bills for QuickBooks Online from a workflow shaped around accounting operations.",
-    signals: [
-      { value: "Shared intake", label: "for recurring client files" },
-      { value: "Clear queues", label: "for reviewers and exceptions" },
-      { value: "Draft bills", label: "for controlled QuickBooks handoff" },
-    ],
     benefits: [
       {
         title: "Standardize client intake",
@@ -147,18 +125,12 @@ export const audienceSolutions: AudienceSolution[] = [
     slug: "mixed-batch-processing",
     title: "Mixed batch processing",
     menuLabel: "Mixed batch processing",
-    icon: FolderOpen,
     eyebrow: "Prepare the batch",
     headline: "Drop the whole folder. Let each accounting document find the right lane.",
     summary:
       "AxLiner accepts mixed client paperwork in one batch, then separates the work so invoices, receipts, statements, tables, and notes can move through the right extraction flow.",
     proof:
       "The value is not one-file conversion. It is clearing the folder while preserving a review step for the documents that need attention.",
-    signals: [
-      { value: "Mixed files", label: "in a single upload" },
-      { value: "Auto-detect", label: "for document routing" },
-      { value: "Batch status", label: "for visible progress" },
-    ],
     benefits: [
       {
         title: "Start with the real folder",
@@ -193,18 +165,12 @@ export const audienceSolutions: AudienceSolution[] = [
     slug: "client-intake",
     title: "Client intake",
     menuLabel: "Client intake",
-    icon: Inbox,
     eyebrow: "Prepare the batch",
     headline: "Give client paperwork a front door before the review queue fills up.",
     summary:
       "Use a repeatable intake path for the documents clients send throughout the month, then move those files into a batch that is ready for extraction and review.",
     proof:
       "A cleaner intake step means less time assembling the real workload after it has already arrived in several places.",
-    signals: [
-      { value: "Client links", label: "for simpler uploads" },
-      { value: "Inbox flow", label: "for collected paperwork" },
-      { value: "Ready batches", label: "for the review queue" },
-    ],
     benefits: [
       {
         title: "Reduce chasing",
@@ -239,18 +205,12 @@ export const audienceSolutions: AudienceSolution[] = [
     slug: "batch-review-board",
     title: "Batch Review Board",
     menuLabel: "Batch Review Board",
-    icon: ScanSearch,
     eyebrow: "Review the exceptions",
     headline: "Review the batch where the source document and the corrected row stay together.",
     summary:
       "AxLiner gives bookkeepers a focused review board for the fields and rows that need judgment before a spreadsheet export or QuickBooks handoff.",
     proof:
       "Confidence flags direct attention without pretending that accounting review can be replaced by a blanket accuracy percentage.",
-    signals: [
-      { value: "Side by side", label: "source and editable output" },
-      { value: "Field flags", label: "for targeted review" },
-      { value: "Batch view", label: "for exception progress" },
-    ],
     benefits: [
       {
         title: "See the evidence",
@@ -285,18 +245,12 @@ export const audienceSolutions: AudienceSolution[] = [
     slug: "team-review",
     title: "Team review",
     menuLabel: "Team reviewer access",
-    icon: UsersRound,
     eyebrow: "Review the exceptions",
     headline: "Keep review work visible when more than one person touches the client batch.",
     summary:
       "AxLiner gives accounting practices a shared place to work through exceptions so reviewers can correct the batch and the final publisher can see what is ready.",
     proof:
       "The workflow keeps responsibilities clear without removing the final accounting judgment from the team.",
-    signals: [
-      { value: "Shared queue", label: "for reviewer work" },
-      { value: "Visible status", label: "for each batch" },
-      { value: "Controlled step", label: "before publish" },
-    ],
     benefits: [
       {
         title: "Make the queue understandable",
@@ -331,18 +285,12 @@ export const audienceSolutions: AudienceSolution[] = [
     slug: "quickbooks-draft-bills",
     title: "QuickBooks draft bills",
     menuLabel: "QuickBooks draft bills",
-    icon: ReceiptText,
     eyebrow: "Finish the books",
     headline: "Publish reviewed invoice drafts to QuickBooks Online with the source still attached.",
     summary:
       "AxLiner helps bookkeepers move corrected invoice data into QuickBooks Online as draft bills after review, with the original document available for the accounting record.",
     proof:
       "The workflow prepares drafts. It does not auto-approve, reconcile, pay, or delete transactions.",
-    signals: [
-      { value: "Reviewed first", label: "before publish" },
-      { value: "Draft bills", label: "for controlled handoff" },
-      { value: "Source attached", label: "for a clearer record" },
-    ],
     benefits: [
       {
         title: "Publish after correction",
@@ -377,18 +325,12 @@ export const audienceSolutions: AudienceSolution[] = [
     slug: "accounts-payable-queue",
     title: "Accounts payable queue",
     menuLabel: "Accounts payable queue",
-    icon: ClipboardCheck,
     eyebrow: "Finish the books",
     headline: "Turn reviewed invoice batches into an AP queue your practice can actually follow.",
     summary:
       "AxLiner keeps reviewed invoice drafts together for coding and controlled QuickBooks Online publishing, so the AP handoff stays visible after extraction.",
     proof:
       "The queue is for reviewed draft bills only. AxLiner never pays vendors, reconciles accounts, or auto-approves bills.",
-    signals: [
-      { value: "Review status", label: "before the AP handoff" },
-      { value: "Draft queue", label: "for coding and publish" },
-      { value: "QuickBooks", label: "for the downstream record" },
-    ],
     benefits: [
       {
         title: "Keep invoice work together",
