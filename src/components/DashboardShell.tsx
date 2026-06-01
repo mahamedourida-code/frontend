@@ -3,7 +3,7 @@
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-import { ChevronLeft, ChevronRight, Clock3, Loader2, Search } from "lucide-react"
+import { BookCheck, ChevronLeft, Clock3, Loader2, Search } from "lucide-react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -140,28 +140,14 @@ export function DashboardShell({
     return null
   }, [processingState, recoverableJob])
 
-  const breadcrumb = useMemo(() => {
-    const PAGE_LABELS: Record<string, string> = {
-      "": "Overview",
-      client: "Convert Files",
-      inbox: "Inbox",
-      "accounts-payable": "Accounts Payable",
-      integrations: "Integrations",
-      settings: "Settings",
-      "auto-detect": "Auto Detect",
-      "bank-statements": "Bank Statements",
-      invoices: "Invoices",
-      receipts: "Receipts",
-      notes: "Notes",
-      workflows: "Workflows",
-      "upload-type": "Upload",
+  // "N to review" — derived from available client state (no blocking fetch).
+  // Files that finished processing but aren't yet exported are the review queue.
+  const reviewCount = useMemo(() => {
+    if (processingState.processingComplete && Array.isArray(processingState.processedFiles)) {
+      return processingState.processedFiles.length
     }
-    if (pathname.startsWith("/dashboard")) {
-      const slug = pathname.split("/")[2] || ""
-      return { parent: "Dashboard", current: PAGE_LABELS[slug] || title }
-    }
-    return { parent: null, current: title }
-  }, [pathname, title])
+    return 0
+  }, [processingState])
 
   return (
     <div className="ax-page-bg min-h-svh text-foreground">
@@ -187,30 +173,6 @@ export function DashboardShell({
             {/* Mobile: page title only */}
             <div className="me-auto min-w-0 md:hidden">
               <div className="truncate text-[15px] font-semibold">{title}</div>
-            </div>
-
-            {/* Desktop LEFT: breadcrumb — "where in my workspace" */}
-            <div className="hidden min-w-0 items-center md:flex">
-              <div className="flex items-center gap-1.5 text-[15px]">
-                {breadcrumb.parent && (
-                  <>
-                    <span className="text-muted-foreground">{breadcrumb.parent}</span>
-                    <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/60" />
-                  </>
-                )}
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={pathname}
-                    initial={{ opacity: 0, x: -6 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.15, ease: "easeOut" }}
-                    className="font-semibold text-foreground"
-                  >
-                    {breadcrumb.current}
-                  </motion.span>
-                </AnimatePresence>
-              </div>
             </div>
 
             {/* CENTER (the bar's main element): global ⌘K search */}
@@ -256,6 +218,19 @@ export function DashboardShell({
                   )}
                   <span>{activeJob.label}</span>
                   <span className="text-xs opacity-75">{activeJob.progress}</span>
+                </Link>
+              )}
+
+              {/* The ONE mint element above the fold — straight to the review board. */}
+              {reviewCount > 0 && (
+                <Link
+                  href="/dashboard/client"
+                  aria-label={`${reviewCount} to review`}
+                  className="ax-interactive hidden h-9 items-center gap-2 rounded-full bg-[var(--brand-green)] px-3.5 text-[13px] font-bold text-[var(--brand-green-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_1px_3px_0_rgba(0,0,0,0.12)] hover:bg-[var(--brand-green-hover)] sm:inline-flex"
+                >
+                  <BookCheck className="size-4" />
+                  <span>{reviewCount} to review</span>
+                  <span aria-hidden="true">&rarr;</span>
                 </Link>
               )}
 
