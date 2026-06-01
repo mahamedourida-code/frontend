@@ -359,67 +359,6 @@ function ResumeBatchBanner({
   )
 }
 
-type WorkspaceModeOption = {
-  value: Exclude<DocumentMode, "invoice_receipt">
-  label: string
-  helper: string
-  image: string
-  visual: string
-}
-
-function ModeOptionCard({
-  mode,
-  isSelected,
-  isProcessing,
-  compact = false,
-  onSelect,
-}: {
-  mode: WorkspaceModeOption
-  isSelected: boolean
-  isProcessing: boolean
-  compact?: boolean
-  onSelect: (mode: WorkspaceModeOption["value"]) => void
-}) {
-  return (
-    <button
-      type="button"
-      aria-pressed={isSelected}
-      onClick={() => onSelect(mode.value)}
-      disabled={isProcessing}
-      className={cn(
-        "group relative overflow-hidden rounded-[20px] border bg-card p-2.5 text-left shadow-[0_8px_24px_-18px_rgba(15,23,42,0.42)] transition-[transform,border-color,background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        isSelected
-          ? "border-[var(--brand-green-ring)] bg-[#f2fff9] shadow-[0_14px_30px_-20px_rgba(5,150,105,0.6)]"
-          : !isProcessing && "hover:-translate-y-1 hover:border-[var(--button-surface-ring)] hover:shadow-[0_18px_30px_-22px_rgba(15,23,42,0.5)]",
-        isProcessing && "cursor-not-allowed opacity-60"
-      )}
-    >
-      <span className={cn("relative block overflow-hidden rounded-[15px] border border-black/[0.04]", compact ? "h-16" : "h-24", mode.visual)}>
-        <img
-          src={mode.image}
-          alt=""
-          className={cn(
-            "h-full w-full object-contain transition-transform duration-300",
-            compact ? "p-3" : "p-4",
-            !isProcessing && "group-hover:scale-[1.04]"
-          )}
-        />
-        {isSelected ? (
-          <span className="absolute right-2 top-2 rounded-full border border-[var(--brand-green-ring)] bg-[var(--brand-green)] px-2 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[var(--brand-green-fg)] shadow-sm">
-            Selected
-          </span>
-        ) : null}
-      </span>
-      <span className={cn("block px-1 pb-1", compact ? "pt-2.5" : "pt-3")}>
-        <span className="block truncate text-[15px] font-bold text-foreground">{mode.label}</span>
-        <span className="mt-0.5 block truncate text-[13px] font-medium text-muted-foreground">
-          {mode.helper}
-        </span>
-      </span>
-    </button>
-  )
-}
-
 export function UploadDropzone({
   uploadedFiles,
   filePreviewUrls,
@@ -460,12 +399,25 @@ export function UploadDropzone({
         isDragging ? "border-primary bg-card/85 scale-[0.997]" : "border-border bg-card/50 hover:border-primary/50"
       )}
     >
-      <div className={cn("px-4 py-4 text-center sm:px-5", uploadedFiles.length ? "min-h-[248px]" : "flex min-h-[208px] flex-col items-center justify-center")}>
-        <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-md border border-border bg-card shadow-xs">
-          <FolderUp className="h-5 w-5 text-foreground" />
-        </div>
-        <h3 className="text-lg font-semibold text-foreground">{isDragging ? "Drop files" : uploadedFiles.length ? "Drop more files" : "Upload files"}</h3>
-        <p className="mt-1 text-xs font-medium text-muted-foreground">Handwritten invoices, statements, tables, images, and PDFs</p>
+      <div className={cn("px-4 py-5 text-center sm:px-6", uploadedFiles.length ? "min-h-[240px]" : "flex min-h-[300px] flex-col items-center justify-center")}>
+        {!uploadedFiles.length ? (
+          <img
+            src="/illustrations/workspace-minimal/upload-documents.png"
+            alt=""
+            role="presentation"
+            className="mb-2 h-24 w-auto object-contain sm:h-28"
+          />
+        ) : (
+          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-md border border-border bg-card shadow-xs">
+            <FolderUp className="h-5 w-5 text-foreground" />
+          </div>
+        )}
+        <h3 className="text-xl font-semibold tracking-tight text-foreground">
+          {isDragging ? "Drop documents to upload" : uploadedFiles.length ? "Add more documents" : "Upload documents"}
+        </h3>
+        <p className="mt-1.5 text-sm font-medium text-muted-foreground">
+          Drag in a folder or select scans, photos, and PDFs. Handwritten documents are welcome.
+        </p>
         <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
           <label
             htmlFor="workspace-file-upload"
@@ -502,7 +454,7 @@ export function UploadDropzone({
         />
 
         {uploadedFiles.length ? (
-          <div className="mt-3 grid grid-cols-3 gap-2 text-left sm:grid-cols-4 xl:grid-cols-6">
+          <div className="mx-auto mt-5 max-w-3xl divide-y divide-border overflow-hidden rounded-md border border-border bg-card text-left">
             {uploadedFiles.map((file, index) => {
               const pdf = isPdfFile(file)
               const pageCount = pdfPageCounts[index]
@@ -510,49 +462,40 @@ export function UploadDropzone({
               return (
                 <div
                   key={`${file.name}-${file.size}-${index}`}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => {
-                    if (previewUrl) setSelectedPreview({ url: previewUrl, name: file.name })
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault()
-                      if (previewUrl) setSelectedPreview({ url: previewUrl, name: file.name })
-                    }
-                  }}
-                  className="ax-interactive ax-row-enter group cursor-pointer rounded-md border border-border bg-card/70 p-2 outline-none hover:-translate-y-0.5 hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary"
+                  className="ax-row-enter flex items-center gap-3 px-3 py-2.5"
                 >
-                  <div className="relative mb-2 aspect-[4/3] overflow-hidden rounded-md border border-border bg-white">
-                    {previewUrl ? (
-                      <img src={previewUrl} alt="" className="h-full w-full object-cover" />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center">
-                        {pdf ? <FileText className="h-5 w-5 text-primary" /> : <FileImage className="h-5 w-5 text-primary" />}
-                      </div>
-                    )}
-                    {isProcessing ? <ProcessingScanOverlay /> : null}
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        onRemoveFile(index)
-                        setSelectedPreview(null)
-                      }}
-                      disabled={isProcessing}
-                      className="absolute right-1 top-1 h-7 w-7 bg-card/88 text-foreground opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-accent group-hover:opacity-100"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-xs font-bold text-foreground">{file.name}</p>
-                    <p className="mt-0.5 truncate text-[11px] font-semibold text-muted-foreground">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (previewUrl) setSelectedPreview({ url: previewUrl, name: file.name })
+                    }}
+                    disabled={!previewUrl}
+                    className="ax-interactive flex min-w-0 flex-1 items-center gap-3 text-left disabled:cursor-default"
+                  >
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-primary">
+                      {pdf ? <FileText className="h-4 w-4" /> : <FileImage className="h-4 w-4" />}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-semibold text-foreground">{file.name}</span>
+                      <span className="mt-0.5 block truncate text-xs font-medium text-muted-foreground">
                       {pdf ? `${pageCount ? `${pageCount} page${pageCount === 1 ? "" : "s"}` : "PDF"}` : "Image"} - {formatBytes(file.size)}
-                    </p>
-                  </div>
+                      </span>
+                    </span>
+                  </button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      onRemoveFile(index)
+                      setSelectedPreview(null)
+                    }}
+                    disabled={isProcessing}
+                    className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
+                    aria-label={`Remove ${file.name}`}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
                 </div>
               )
             })}
@@ -956,124 +899,6 @@ export function ResultPreviewPanel({
 
 function getResultKey(file: ResultFile, index: number) {
   return file.file_id || `result-${index}`
-}
-
-const DOT_COLOR: Record<string, string> = {
-  needs_review: "bg-amber-400",
-  ready: "bg-emerald-500",
-  failed: "bg-rose-500",
-  edited: "bg-primary",
-  published: "bg-sky-400",
-}
-
-function DocumentNavStrip({
-  entries,
-  activeIndex,
-  onSelect,
-}: {
-  entries: Array<{ file: ResultFile; index: number; badge: { state: string } }>
-  activeIndex: number | null
-  onSelect: (index: number) => void
-}) {
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const [canScrollLeft, setCanScrollLeft] = useState(false)
-  const [canScrollRight, setCanScrollRight] = useState(false)
-
-  const checkScroll = () => {
-    const el = scrollRef.current
-    if (!el) return
-    setCanScrollLeft(el.scrollLeft > 4)
-    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4)
-  }
-
-  useEffect(() => {
-    checkScroll()
-    const el = scrollRef.current
-    if (!el) return
-    el.addEventListener("scroll", checkScroll, { passive: true })
-    const ro = new ResizeObserver(checkScroll)
-    ro.observe(el)
-    return () => {
-      el.removeEventListener("scroll", checkScroll)
-      ro.disconnect()
-    }
-  }, [entries.length])
-
-  useEffect(() => {
-    if (activeIndex === null) return
-    const el = scrollRef.current
-    const card = el?.children[activeIndex] as HTMLElement | undefined
-    card?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" })
-  }, [activeIndex])
-
-  if (entries.length <= 1) return null
-
-  return (
-    <div className="relative mb-4">
-      {canScrollLeft && (
-        <button
-          type="button"
-          onClick={() => scrollRef.current?.scrollBy({ left: -200, behavior: "smooth" })}
-          aria-label="Scroll left"
-          className="absolute left-0 top-1/2 z-10 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card/90 shadow-sm backdrop-blur hover:bg-accent"
-        >
-          <ChevronLeft className="h-3.5 w-3.5" />
-        </button>
-      )}
-      {canScrollRight && (
-        <button
-          type="button"
-          onClick={() => scrollRef.current?.scrollBy({ left: 200, behavior: "smooth" })}
-          aria-label="Scroll right"
-          className="absolute right-0 top-1/2 z-10 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-card/90 shadow-sm backdrop-blur hover:bg-accent"
-        >
-          <ChevronRight className="h-3.5 w-3.5" />
-        </button>
-      )}
-
-      <div
-        ref={scrollRef}
-        className="flex gap-2 overflow-x-auto snap-x snap-mandatory px-1 py-1"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-      >
-        {entries.map(({ file, index, badge }) => {
-          const isActive = activeIndex === index
-          const handwritten = isHandwrittenDocument(file)
-          return (
-            <button
-              key={file.file_id || index}
-              type="button"
-              onClick={() => onSelect(index)}
-              aria-label={`Document ${index + 1}${handwritten ? ", handwritten" : ""}`}
-              className={cn(
-                "relative flex-none snap-start overflow-hidden rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                isActive ? "border-primary" : "border-border hover:border-primary/50"
-              )}
-              style={{ width: 56, height: 72 }}
-            >
-              {file.input_preview_url ? (
-                <img src={file.input_preview_url} alt="" className="h-full w-full object-cover" />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-muted">
-                  <FileImage className="h-4 w-4 text-muted-foreground" />
-                </div>
-              )}
-              <span className="absolute left-0.5 top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-sm bg-card/80 px-0.5 text-[9px] font-bold text-foreground backdrop-blur">
-                {index + 1}
-              </span>
-              {handwritten ? (
-                <HandwrittenBadge variant="corner" className="absolute right-0.5 top-0.5" />
-              ) : null}
-              <span className={cn(
-                "absolute bottom-0.5 right-0.5 size-2.5 rounded-full border border-white/60 shadow-sm",
-                DOT_COLOR[badge.state] || "bg-muted-foreground"
-              )} />
-            </button>
-          )
-        })}
-      </div>
-    </div>
-  )
 }
 
 function getOutputBadge(file: ResultFile) {
@@ -1989,42 +1814,6 @@ export function ResultActions({
             <RotateCcw className="h-4 w-4" />
             New batch
           </Button>
-          {!isSaved ? (
-            <Button
-              onClick={onSaveToHistory}
-              disabled={isSaving}
-              variant="clay"
-              className="h-9 gap-2 px-3 shadow-xs"
-            >
-              {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              Save
-            </Button>
-          ) : null}
-          <Button
-            variant="ghost"
-            onClick={safeResultFiles.length > 1 ? onShareAll : () => firstResultFile && onShareFile(firstResultFile)}
-            className="h-9 gap-2 px-3 text-foreground"
-          >
-            <Share2 className="h-4 w-4" />
-            Share
-          </Button>
-          <div className="flex h-9 items-center overflow-hidden rounded-md border border-border bg-card shadow-xs">
-            {reviewedExportOptions.map(format => (
-              <button
-                key={format.value}
-                type="button"
-                onClick={() => onOutputModeChange(format.value)}
-                className={cn(
-                  "h-full border-r border-border px-3 text-xs font-semibold transition last:border-r-0",
-                  outputMode === format.value
-                    ? "bg-foreground text-background"
-                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                )}
-              >
-                {format.label}
-              </button>
-            ))}
-          </div>
           <Button
             variant="glossy"
             onClick={handleReviewedBatchDownload}
@@ -2034,21 +1823,60 @@ export function ResultActions({
             {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             {unresolvedDuplicateCount > 0 ? "Resolve duplicates to export" : "Download reviewed batch"}
           </Button>
-          {onDeleteBatch ? (
-            <Button
-              variant="destructive"
-              onClick={() => void onDeleteBatch()}
-              className="h-9 gap-2 px-3 shadow-xs"
-            >
-              <Trash2 className="h-4 w-4" />
-              Delete batch
-            </Button>
-          ) : null}
           {editedCount > 0 && !isTextOutput ? (
             <span className="inline-flex h-9 items-center rounded-md border border-border bg-muted px-3 text-xs font-semibold text-foreground">
               {editedCount} edited
             </span>
           ) : null}
+          <details className="group relative ml-auto">
+            <summary className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-9 cursor-pointer list-none gap-2 px-3 [&::-webkit-details-marker]:hidden")}>
+              More actions
+              <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="absolute right-0 top-11 z-30 w-56 space-y-2 rounded-md border border-border bg-card p-2 shadow-lg">
+              {!isSaved ? (
+                <Button
+                  onClick={onSaveToHistory}
+                  disabled={isSaving}
+                  variant="clay"
+                  className="h-9 w-full justify-start gap-2 px-3 shadow-xs"
+                >
+                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                  Save to history
+                </Button>
+              ) : null}
+              <Button
+                variant="surface"
+                onClick={safeResultFiles.length > 1 ? onShareAll : () => firstResultFile && onShareFile(firstResultFile)}
+                className="h-9 w-full justify-start gap-2 px-3"
+              >
+                <Share2 className="h-4 w-4" />
+                Share
+              </Button>
+              <label className="block text-xs font-semibold text-muted-foreground">
+                Download format
+                <select
+                  value={outputMode}
+                  onChange={(event) => onOutputModeChange(event.target.value as OutputMode)}
+                  className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2 text-xs font-semibold text-foreground"
+                >
+                  {reviewedExportOptions.map(format => (
+                    <option key={format.value} value={format.value}>{format.label}</option>
+                  ))}
+                </select>
+              </label>
+              {onDeleteBatch ? (
+                <Button
+                  variant="destructive"
+                  onClick={() => void onDeleteBatch()}
+                  className="h-9 w-full justify-start gap-2 px-3 shadow-xs"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete batch
+                </Button>
+              ) : null}
+            </div>
+          </details>
         </div>
       ) : null}
 
@@ -2122,16 +1950,7 @@ export function ResultActions({
           </button>
         </div>
 
-        <DocumentNavStrip
-          entries={resultEntries}
-          activeIndex={comparisonIndex}
-          onSelect={openComparison}
-        />
-
-        <div className={cn(
-          "grid gap-4",
-          safeResultFiles.length > 1 ? "grid-cols-1 2xl:grid-cols-2" : "grid-cols-1"
-        )}>
+        <div className="grid gap-2">
         {filteredResultEntries.length ? filteredResultEntries.map(({ file, index, fileKey, badge, edited, duplicateWarning }) => {
           const preview = file.file_id ? resultPreviews?.[file.file_id] : undefined
           const visiblePreview = edited ? { table: editedTables[fileKey] || [], text: preview?.text || "", loading: false } : preview
@@ -2141,7 +1960,7 @@ export function ResultActions({
           // summary so attention lands on the risky pile. Click (or keyboard)
           // expands the card in place; risky cards never collapse.
           const reviewLevel = deriveReviewLevel(file, badge)
-          const collapsed = reviewLevel.clean && !expandedClean[fileKey]
+          const collapsed = true
           // C11 — shared at-a-glance line (identity · amount · due), used by both
           // the collapsed clean summary below and the expanded card above so the
           // two never drift. Verdict stays on the chip here for its "why" tooltip.
@@ -2159,42 +1978,52 @@ export function ResultActions({
                 layout={prefersReducedMotion ? false : "position"}
                 role="button"
                 tabIndex={0}
-                onClick={() => setExpandedClean(prev => ({ ...prev, [fileKey]: true }))}
+                onClick={() => openComparison(index)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" || event.key === " ") {
                     event.preventDefault()
-                    setExpandedClean(prev => ({ ...prev, [fileKey]: true }))
+                    openComparison(index)
                   }
                 }}
-                className="group flex cursor-pointer items-center gap-3 rounded-full border border-border bg-card px-4 py-2.5 text-sm shadow-sm outline-none transition duration-200 hover:border-emerald-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary"
-                aria-label={`${summary.identity} — ${reviewLevel.summaryLabel}, expand to review`}
+                className={cn(
+                  "group flex cursor-pointer flex-wrap items-center gap-x-3 gap-y-2 rounded-md border border-border bg-card px-3 py-3 text-sm shadow-xs outline-none transition duration-200 hover:border-primary/30 hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-primary sm:flex-nowrap",
+                  (badge.state === "needs_review" || badge.state === "failed") && "border-l-2 border-l-[var(--brand-green-ring)]"
+                )}
+                aria-label={`${summary.identity} — ${reviewLevel.summaryLabel}, open review`}
               >
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-foreground text-[11px] font-bold text-background">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-foreground text-[11px] font-bold text-background">
                   {index + 1}
                 </span>
-                <span className="min-w-0 flex-1 truncate font-semibold text-foreground">
+                <span className="min-w-[180px] flex-1">
+                  <span className="block truncate font-semibold text-foreground">{file.filename || summary.identity}</span>
+                  <span className="mt-0.5 block truncate text-xs font-medium text-muted-foreground">
+                    {formatDocumentType(file.document_type)}
+                    {file.source_page ? ` - page ${file.source_page}${file.source_page_count ? ` of ${file.source_page_count}` : ""}` : ""}
+                  </span>
+                </span>
+                {isHandwrittenDocument(file) ? <HandwrittenBadge /> : null}
+                <span className="hidden min-w-[120px] shrink-0 truncate text-xs font-medium text-muted-foreground lg:inline">
                   {summary.identity}
                 </span>
-                <span className="shrink-0 font-semibold tabular-nums text-foreground">
+                <span className="min-w-[84px] shrink-0 text-right font-semibold tabular-nums text-foreground">
                   {summary.amount}
                 </span>
                 {cardDue ? (
-                  <span className="hidden shrink-0 text-xs text-muted-foreground sm:inline">
+                  <span className="hidden min-w-[92px] shrink-0 text-xs text-muted-foreground xl:inline">
                     {cardDue.text}
                   </span>
                 ) : null}
                 <AnomalyChip
                   tone={reviewLevel.tone}
-                  title="Looks clean"
-                  reason="No flags, no duplicate, confident read — open it only if you want a closer look."
-                  label={
-                    <span className="inline-flex items-center gap-1">
-                      Looks clean <Check className="h-3 w-3" />
-                    </span>
-                  }
+                  title={reviewLevel.summaryLabel}
+                  reason={duplicateWarning?.message || "Open the document to review the extracted fields beside the source."}
+                  label={reviewLevel.summaryLabel}
                   className="shrink-0"
                 />
-                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition group-hover:translate-x-0.5" />
+                <span className="ml-auto inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-foreground">
+                  Review
+                  <ChevronRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5" />
+                </span>
               </motion.div>
             )
           }
@@ -2450,7 +2279,13 @@ export function ResultActions({
             </motion.div>
           )
         }) : (
-          <div className="rounded-md border border-dashed border-border bg-card p-5">
+          <div className="rounded-md border border-dashed border-border bg-card p-5 text-center">
+            <img
+              src="/illustrations/workspace-minimal/review-empty.png"
+              alt=""
+              role="presentation"
+              className="mx-auto mb-2 h-16 w-auto object-contain"
+            />
             <p className="text-sm font-semibold text-foreground">No files in this view</p>
             <p className="mt-1 text-xs font-semibold text-muted-foreground">The full batch is still available.</p>
             <Button
@@ -2479,16 +2314,46 @@ export function ResultActions({
         >
           <div className="relative w-full max-w-[1240px] rounded-md border border-border bg-card p-3 shadow-xl sm:p-4">
             <div className="absolute right-4 top-4 z-10 flex items-center gap-2">
-              {comparisonFile.document_id && onDeleteDocument ? (
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => void onDeleteDocument(comparisonFile)}
-                  className="h-9 px-3 text-xs"
-                >
-                  <Trash2 className="mr-1.5 h-3.5 w-3.5" />
-                  Delete
-                </Button>
+              {comparisonFile.file_id || comparisonFile.document_id ? (
+                <details className="group relative">
+                  <summary className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-9 cursor-pointer list-none gap-1.5 px-3 text-xs [&::-webkit-details-marker]:hidden")}>
+                    Actions
+                    <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
+                  </summary>
+                  <div className="absolute right-0 top-11 z-20 w-44 space-y-2 rounded-md border border-border bg-card p-2 shadow-lg">
+                    {comparisonFile.file_id ? (
+                      <Button
+                        size="sm"
+                        variant="surface"
+                        onClick={() => onShareFile(comparisonFile)}
+                        className="h-9 w-full justify-start gap-1.5 px-3 text-xs"
+                      >
+                        <Share2 className="h-3.5 w-3.5" />
+                        Share
+                      </Button>
+                    ) : null}
+                    <Button
+                      size="sm"
+                      variant="clay"
+                      onClick={() => onDownloadFile(comparisonFile, comparisonIndex ?? undefined)}
+                      className="h-9 w-full justify-start gap-1.5 px-3 text-xs"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      Download
+                    </Button>
+                    {comparisonFile.document_id && onDeleteDocument ? (
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => void onDeleteDocument(comparisonFile)}
+                        className="h-9 w-full justify-start gap-1.5 px-3 text-xs"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Delete
+                      </Button>
+                    ) : null}
+                  </div>
+                </details>
               ) : null}
               {comparisonFile.document_type === "invoice" && ["ready", "published"].includes(comparisonFile.review_status || "") ? (
                 <Button
@@ -3219,7 +3084,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     isDragging,
     outputMode,
     onOutputModeChange,
-    documentMode = "table",
+    documentMode = "auto",
     onDocumentModeChange,
     isUploading,
     isProcessing,
@@ -3277,55 +3142,26 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
       ? "invoice"
       : documentMode
   const expectedOutputs = Math.max(creditEstimate || 0, uploadedFiles.length)
-  const primaryModeOptions = [
-    {
-      value: "auto",
-      label: "Auto-detect",
-      helper: "Best for mixed folders",
-      image: "/icons/doc-types-v3/auto-detect.png",
-      visual: "bg-[#eefaf7]",
-    },
-    {
-      value: "invoice",
-      label: "Supplier invoices",
-      helper: "Bills and line items",
-      image: "/icons/doc-types-v3/invoice.png",
-      visual: "bg-[#fff3ea]",
-    },
-    {
-      value: "receipt",
-      label: "Receipts",
-      helper: "Merchant and total",
-      image: "/icons/doc-types-v3/receipt.png",
-      visual: "bg-[#fff4eb]",
-    },
-    {
-      value: "bank_statement",
-      label: "Bank statements",
-      helper: "Text + transactions",
-      image: "/icons/doc-types-v3/bank-statement.png",
-      visual: "bg-[#eef5ff]",
-    },
-  ] as const satisfies readonly WorkspaceModeOption[]
-  const otherModeOptions = [
-    {
-      value: "table",
-      label: "Tables and spreadsheets",
-      helper: "Rows and columns",
-      image: "/icons/doc-types-v3/table.png",
-      visual: "bg-[#ebfbf3]",
-    },
-    {
-      value: "notes",
-      label: "Notes and handwritten pages",
-      helper: "Readable text",
-      image: "/icons/doc-types-v3/notes.png",
-      visual: "bg-[#f4efff]",
-    },
-  ] as const satisfies readonly WorkspaceModeOption[]
-  const otherModeSelected = otherModeOptions.some(mode => mode.value === selectedMode)
+  const modeOptions = [
+    { value: "auto", label: "Auto detect" },
+    { value: "invoice", label: "Invoice" },
+    { value: "receipt", label: "Receipt" },
+    { value: "bank_statement", label: "Bank statement" },
+    { value: "table", label: "Table" },
+    { value: "notes", label: "Notes" },
+  ] as const satisfies ReadonlyArray<{ value: Exclude<DocumentMode, "invoice_receipt">; label: string }>
+  const outputOptions = documentMode === "notes"
+    ? [
+        { value: "text", label: "Readable text" },
+        { value: "table", label: "Excel XLSX" },
+        { value: "csv", label: "CSV" },
+      ]
+    : [
+        { value: "table", label: "Excel XLSX" },
+        { value: "csv", label: "CSV" },
+      ]
 
-  const handleModeChange = (mode: WorkspaceModeOption["value"]) => {
+  const handleModeChange = (mode: Exclude<DocumentMode, "invoice_receipt">) => {
     onDocumentModeChange?.(mode)
     onOutputModeChange(mode === "notes" ? "text" : "table")
   }
@@ -3343,94 +3179,44 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
         <div className="grid gap-4">
           {!hasResults ? (
             <div className="space-y-5">
-              <section aria-labelledby="workspace-tools-title">
-                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <section aria-labelledby="workspace-tools-title" className="border-b border-border pb-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#087a50]">Accounting workflows</p>
-                    <h2 id="workspace-tools-title" className="mt-1 text-xl font-bold tracking-tight text-foreground">
-                      Choose the workflow for this batch
+                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#087a50]">New batch</p>
+                    <h2 id="workspace-tools-title" className="mt-1 text-2xl font-bold tracking-tight text-foreground">
+                      Upload documents
                     </h2>
-                    <p className="mt-1 max-w-xl text-sm font-medium text-muted-foreground">
-                      Use auto-detect for mixed folders, or choose the document type you expect.
+                    <p className="mt-1 max-w-2xl text-sm font-medium leading-6 text-muted-foreground">
+                      Send the whole folder. AxLiner separates mixed scans, handwritten pages, and photographed documents before review.
                     </p>
                   </div>
-                  <span className="w-fit rounded-full border border-[var(--brand-green-ring)] bg-[var(--brand-green)] px-3 py-1 text-xs font-semibold text-[var(--brand-green-fg)]">
-                    4 primary presets
-                  </span>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                  {primaryModeOptions.map(mode => (
-                    <ModeOptionCard
-                      key={mode.value}
-                      mode={mode}
-                      isSelected={selectedMode === mode.value}
-                      isProcessing={isProcessing}
-                      onSelect={handleModeChange}
-                    />
-                  ))}
-                </div>
-                <details
-                  className="group mt-3 rounded-[18px] bg-[var(--button-warm)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.82),0_0_0_1px_var(--button-warm-ring),0_1px_3px_0_rgba(84,59,32,0.12)]"
-                  open={otherModeSelected || undefined}
-                >
-                  <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3 text-left [&::-webkit-details-marker]:hidden">
-                    <span>
-                      <span className="block text-sm font-bold text-[var(--button-ink)]">More document types</span>
-                      <span className="mt-0.5 block text-xs font-medium text-black/55">Tables and notes</span>
-                    </span>
-                    <ChevronDown className="ml-auto size-4 text-[var(--button-ink)] transition-transform duration-200 group-open:rotate-180" />
-                  </summary>
-                  <div className="grid gap-3 border-t border-[var(--button-warm-ring)]/45 p-3 sm:grid-cols-2">
-                    {otherModeOptions.map(mode => (
-                      <ModeOptionCard
-                        key={mode.value}
-                        mode={mode}
-                        isSelected={selectedMode === mode.value}
-                        isProcessing={isProcessing}
-                        compact
-                        onSelect={handleModeChange}
-                      />
-                    ))}
-                  </div>
-                </details>
-                <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <span id="output-format-label" className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                    Output format
-                  </span>
-                  <div role="group" aria-labelledby="output-format-label" className="flex flex-wrap items-center gap-2">
-                    {(documentMode === "notes"
-                      ? [
-                          { value: "text", label: "Readable text" },
-                          { value: "table", label: "Detected table XLSX" },
-                          { value: "csv", label: "Detected table CSV" },
-                        ]
-                      : [
-                          { value: "table", label: "Excel XLSX" },
-                          { value: "csv", label: "CSV" },
-                        ]
-                    ).map((format) => {
-                      const isSelected = outputMode === format.value
-
-                      return (
-                        <button
-                          key={format.value}
-                          type="button"
-                          aria-pressed={isSelected}
-                          onClick={() => onOutputModeChange(format.value as OutputMode)}
-                          disabled={isProcessing}
-                          className={cn(
-                            "h-9 rounded-full border px-4 text-sm font-semibold transition-[transform,border-color,background-color,color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                            isSelected
-                              ? "border-[var(--brand-green-ring)] bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_1px_3px_0_rgba(0,0,0,0.12)]"
-                              : "border-border bg-card text-foreground shadow-xs",
-                            !isSelected && !isProcessing && "hover:-translate-y-0.5 hover:border-[var(--brand-green-ring)] hover:bg-[var(--brand-green)]",
-                            isProcessing && "cursor-not-allowed opacity-60"
-                          )}
-                        >
-                          {format.label}
-                        </button>
-                      )
-                    })}
+                  <div className="flex flex-wrap gap-3">
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Document type
+                      <select
+                        value={selectedMode}
+                        onChange={(event) => handleModeChange(event.target.value as Exclude<DocumentMode, "invoice_receipt">)}
+                        disabled={isProcessing}
+                        className="mt-1 block h-10 min-w-[180px] rounded-md border border-border bg-card px-3 text-sm font-semibold text-foreground outline-none focus:ring-2 focus:ring-ring/40"
+                      >
+                        {modeOptions.map(mode => (
+                          <option key={mode.value} value={mode.value}>{mode.label}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Output
+                      <select
+                        value={outputMode}
+                        onChange={(event) => onOutputModeChange(event.target.value as OutputMode)}
+                        disabled={isProcessing}
+                        className="mt-1 block h-10 min-w-[140px] rounded-md border border-border bg-card px-3 text-sm font-semibold text-foreground outline-none focus:ring-2 focus:ring-ring/40"
+                      >
+                        {outputOptions.map(format => (
+                          <option key={format.value} value={format.value}>{format.label}</option>
+                        ))}
+                      </select>
+                    </label>
                   </div>
                 </div>
               </section>

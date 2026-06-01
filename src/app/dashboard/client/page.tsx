@@ -141,15 +141,38 @@ type DurableWorkspaceResultFile = Partial<ProcessedFile> & {
 
 type ConversionDocumentMode = DocumentMode
 
+function requestedDocumentMode(value: string | null): ConversionDocumentMode | null {
+  if (!value) return null
+
+  const normalized = value.trim().toLowerCase().replace(/-/g, "_")
+  const aliases: Record<string, ConversionDocumentMode> = {
+    auto: "auto",
+    auto_detect: "auto",
+    invoice: "invoice",
+    invoices: "invoice",
+    receipt: "receipt",
+    receipts: "receipt",
+    bank_statement: "bank_statement",
+    bank_statements: "bank_statement",
+    table: "table",
+    tables: "table",
+    notes: "notes",
+    invoice_receipt: "invoice_receipt",
+    invoice_receipts: "invoice_receipt",
+  }
+
+  return aliases[normalized] || null
+}
+
 export default function ProcessImagesPage() {
   return (
     <Suspense fallback={<ProcessImagesFallback />}>
-      <ProcessImagesContent documentMode="table" />
+      <ProcessImagesContent documentMode="auto" />
     </Suspense>
   )
 }
 
-export function ProcessImagesContent({ documentMode = "table" }: { documentMode?: ConversionDocumentMode }) {
+export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?: ConversionDocumentMode }) {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -263,11 +286,24 @@ export function ProcessImagesContent({ documentMode = "table" }: { documentMode?
   const [latestRecoverableJob, setLatestRecoverableJob] = useState<RecoverableJobSummary | null>(null)
   const [recoveryLoading, setRecoveryLoading] = useState(false)
   const openedJobIdRef = useRef<string | null>(null)
+  const appliedModeParamRef = useRef<string | null>(null)
 
   useEffect(() => {
     setActiveDocumentMode(documentMode)
     setOutputMode(documentMode === 'notes' ? 'text' : 'table')
   }, [documentMode])
+
+  useEffect(() => {
+    const requestedMode = searchParams.get("mode")
+    if (!requestedMode || appliedModeParamRef.current === requestedMode) return
+
+    const nextMode = requestedDocumentMode(requestedMode)
+    if (!nextMode) return
+
+    appliedModeParamRef.current = requestedMode
+    setActiveDocumentMode(nextMode)
+    setOutputMode(nextMode === "notes" ? "text" : "table")
+  }, [searchParams])
 
   useEffect(() => {
     if (!ocrError) return
