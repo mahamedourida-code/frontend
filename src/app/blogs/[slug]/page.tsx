@@ -85,7 +85,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
   const otherPosts = blogPosts.filter((p) => p.slug !== post.slug).slice(0, 3);
 
   return (
-    <main className="min-h-screen bg-background text-neutral-900">
+    <main className="ax-marketing-page min-h-screen bg-white text-black">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
@@ -104,10 +104,10 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
           <p className="mt-6 text-[11px] font-bold uppercase tracking-[0.24em] text-neutral-900">
             {post.eyebrow}
           </p>
-          <h1 className="mt-4 text-4xl font-bold leading-[1.08] tracking-tight text-neutral-900 sm:text-5xl">
+          <h1 className="ax-marketing-section-title mt-4 text-black">
             {post.title}
           </h1>
-          <p className="mt-6 text-xl font-semibold leading-8 text-neutral-900">
+          <p className="ax-marketing-lead mt-6 text-black">
             {post.description}
           </p>
 

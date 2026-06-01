@@ -88,15 +88,15 @@
   }
   
   /* Responsive font scaling with clamp */
-  h1 {
+  h1:not(.ax-h1):not(.ax-marketing-display):not(.ax-marketing-section-title) {
     font-size: clamp(1.5rem, 5vw, 2rem) !important;
   }
   
-  h2 {
+  h2:not(.ax-h2):not(.ax-marketing-section-title) {
     font-size: clamp(1.25rem, 4vw, 1.75rem) !important;
   }
   
-  h3 {
+  h3:not(.ax-h3):not(.ax-marketing-subtitle) {
     font-size: clamp(1.125rem, 3.5vw, 1.5rem) !important;
   }
   

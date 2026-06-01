@@ -793,7 +793,8 @@ body {
 
   .ax-marketing-band,
   .ax-marketing-band-mint,
-  .ax-marketing-band-cream {
+  .ax-marketing-band-cream,
+  .ax-marketing-band-warm {
     color: var(--ax-marketing-ink);
   }
 
@@ -804,6 +805,7 @@ body {
   }
 
   .ax-marketing-band-cream,
+  .ax-marketing-band-warm,
   .section-how-it-works {
     background: var(--ax-marketing-cream);
   }
@@ -813,7 +815,7 @@ body {
     background: var(--ax-marketing-page);
   }
 
-  :is(.ax-marketing-band, .ax-marketing-band-mint, .ax-marketing-band-cream)
+  :is(.ax-marketing-band, .ax-marketing-band-mint, .ax-marketing-band-cream, .ax-marketing-band-warm)
     :is(
       .ax-marketing-display,
       .ax-marketing-section-title,

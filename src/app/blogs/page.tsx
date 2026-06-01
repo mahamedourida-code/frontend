@@ -38,7 +38,7 @@ export default function BlogsPage() {
   const [featured, ...rest] = blogPosts;
 
   return (
-    <main className="min-h-screen bg-background text-neutral-900">
+    <main className="ax-marketing-page min-h-screen bg-white text-black">
       <MarketingNavBar />
 
       {/* Masthead */}
@@ -47,10 +47,10 @@ export default function BlogsPage() {
           <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-emerald-700">
             The AxLiner Journal
           </p>
-          <h1 className="mt-5 text-4xl font-bold leading-[1.05] tracking-tight text-neutral-900 sm:text-5xl lg:text-[58px]">
+          <h1 className="ax-marketing-section-title mt-5 max-w-4xl text-black">
             Field notes for the people who keep the books.
           </h1>
-          <p className="mt-6 max-w-3xl text-lg font-semibold leading-7 text-neutral-900 sm:text-xl">
+          <p className="ax-marketing-lead mt-6 max-w-3xl text-black">
             Honest writing about running a bookkeeping or accounting practice in 2026 — pricing models, client
             retention, the Sunday-evening reality, and what AI is actually doing to the profession.
           </p>

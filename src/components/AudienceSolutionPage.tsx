@@ -24,10 +24,10 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
                 <SolutionIcon className="size-4 text-emerald-700" />
                 {solution.eyebrow}
               </p>
-              <h1 className="ax-marketing-display mt-5 max-w-6xl text-4xl font-bold leading-[1.02] tracking-[-0.055em] text-black sm:text-6xl lg:text-[74px]">
+              <h1 className="ax-marketing-display mt-5 max-w-6xl text-black">
                 {solution.headline}
               </h1>
-              <p className="ax-marketing-lead mt-7 max-w-4xl text-justify text-xl font-semibold leading-8 text-black sm:text-[22px] sm:leading-9">
+              <p className="ax-marketing-lead mt-7 max-w-4xl text-justify text-black">
                 {solution.summary}
               </p>
 
@@ -75,7 +75,7 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
         <div className="mx-auto grid max-w-[1500px] gap-10 px-4 py-16 sm:px-5 sm:py-20 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-20 lg:px-9 lg:py-28">
           <div className="max-w-xl">
             <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-800">Built for review</p>
-            <h2 className="ax-marketing-section-title mt-4 text-3xl font-bold leading-[1.08] tracking-[-0.045em] text-black sm:text-5xl">
+            <h2 className="ax-marketing-section-title mt-4 text-black">
               Accounting work stays useful when the reviewer can still see the story.
             </h2>
           </div>
@@ -107,7 +107,7 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
         <div className="mx-auto grid max-w-[1500px] gap-10 px-4 py-16 sm:px-5 sm:py-20 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-20 lg:px-9 lg:py-24">
           <div className="max-w-xl">
             <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-black">A controlled handoff</p>
-            <h2 className="ax-marketing-section-title mt-4 text-3xl font-bold leading-[1.08] tracking-[-0.045em] text-black sm:text-5xl">
+            <h2 className="ax-marketing-section-title mt-4 text-black">
               Clear steps from intake to reviewed output.
             </h2>
             <p className="ax-marketing-prose mt-5 text-justify text-[18px] font-semibold leading-8 text-black">
@@ -140,7 +140,7 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
       <section className="bg-white">
         <div className="mx-auto max-w-[1500px] px-4 py-16 sm:px-5 sm:py-20 lg:px-9 lg:py-24">
           <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-800">Keep exploring</p>
-          <h2 className="ax-marketing-section-title mt-4 text-3xl font-bold leading-tight tracking-[-0.04em] text-black sm:text-4xl">
+          <h2 className="ax-marketing-section-title mt-4 text-black">
             Related accounting workflows
           </h2>
 
@@ -172,7 +172,7 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
         <div className="mx-auto flex max-w-[1500px] flex-col gap-7 px-4 py-14 sm:px-5 sm:py-16 lg:flex-row lg:items-center lg:justify-between lg:px-9 lg:py-20">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-black">Ready for the next batch</p>
-            <h2 className="ax-marketing-section-title mt-4 max-w-4xl text-3xl font-bold leading-[1.06] tracking-[-0.045em] text-black sm:text-5xl">
+            <h2 className="ax-marketing-section-title mt-4 max-w-4xl text-black">
               Bring the folder. Keep the review step.
             </h2>
           </div>

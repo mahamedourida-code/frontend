@@ -32,7 +32,7 @@ export function EditorialPageShell({
   articleClassName,
 }: EditorialPageShellProps) {
   return (
-    <main className={cn("min-h-screen bg-background text-neutral-900", className)}>
+    <main className={cn("ax-marketing-page min-h-screen bg-white text-black", className)}>
       <MarketingNavBar />
 
       <div className="mx-auto max-w-[1560px] px-4 pb-24 pt-32 sm:px-6 lg:px-8 lg:pt-36">
@@ -43,7 +43,7 @@ export function EditorialPageShell({
               aria-label={`${eyebrow} sections`}
             >
               <div className="border-b-2 border-neutral-900 bg-white px-5 py-4">
-                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-700">
+                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-black">
                   In this page
                 </p>
               </div>
@@ -54,7 +54,7 @@ export function EditorialPageShell({
                       href={`#${link.id}`}
                       className="group grid grid-cols-[22px_1fr] gap-2 rounded-md px-2 py-2 text-left transition-colors hover:bg-white"
                     >
-                      <span className="pt-0.5 text-[11px] font-bold text-emerald-700">
+                      <span className="pt-0.5 text-[11px] font-bold text-black">
                         {String(index + 1).padStart(2, "0")}
                       </span>
                       <span className="text-sm font-semibold leading-5 tracking-normal text-neutral-900 group-hover:text-emerald-700">
@@ -70,7 +70,7 @@ export function EditorialPageShell({
           <article className={cn("min-w-0", articleClassName)}>
             <header>
               <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-700">{eyebrow}</p>
-              <h1 className="mt-5 text-4xl font-bold leading-[1.08] tracking-tight text-neutral-900 sm:text-5xl">
+              <h1 className="ax-marketing-section-title mt-5 text-black">
                 {title}
               </h1>
               <div className="mt-6 max-w-[760px] space-y-4 text-[18px] font-semibold leading-8 text-neutral-900">{intro}</div>

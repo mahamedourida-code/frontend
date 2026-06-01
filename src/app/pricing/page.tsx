@@ -401,14 +401,14 @@ function PricingContent() {
   ]
 
   return (
-    <main className="min-h-screen overflow-hidden bg-background">
+    <main className="ax-marketing-page min-h-screen overflow-hidden bg-white text-black">
       <MarketingNavBar />
 
       <section className="mx-auto max-w-[1480px] px-4 pb-16 pt-28 sm:px-6 lg:px-8 lg:pt-32">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-700">Plans &amp; pricing</p>
-          <h1 className="mt-4 text-5xl font-bold leading-[1.05] tracking-tight text-neutral-900 sm:text-6xl">Pricing</h1>
-          <p className="mx-auto mt-5 max-w-xl text-lg font-semibold leading-7 text-neutral-900">
+          <h1 className="ax-marketing-section-title mt-4 text-black">Pricing</h1>
+          <p className="ax-marketing-lead mx-auto mt-5 max-w-xl text-black">
             Simple plans for solo bookkeepers and accounting practices. Pick monthly or annual — change anytime.
           </p>
 
@@ -606,7 +606,7 @@ function PricingContent() {
           <section className="mx-auto mt-20 max-w-[1260px]">
             <div className="mb-10 text-center">
               <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-700">Side by side</p>
-              <h2 className="mt-3 text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl">Compare plans</h2>
+              <h2 className="ax-marketing-section-title mt-3 text-black">Compare plans</h2>
             </div>
 
             <Table className="min-w-[940px] border-separate border-spacing-0" containerClassName="lg:overflow-visible">

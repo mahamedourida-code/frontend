@@ -28,7 +28,7 @@ function NumberedBlock({ number, title, text }: { number: string; title: string;
 
 export function IndustrySolutionPage({ solution }: { solution: IndustrySolution }) {
   return (
-    <main className="ax-page-bg min-h-screen overflow-hidden text-foreground">
+    <main className="ax-marketing-page min-h-screen overflow-hidden bg-white text-black">
       <MarketingNavBar />
 
       <section className="relative mx-auto grid max-w-6xl gap-8 px-4 pb-12 pt-28 sm:px-6 lg:grid-cols-[0.96fr_1.04fr] lg:px-8 lg:pb-16 lg:pt-32">
@@ -36,13 +36,13 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
           <div className="w-fit rounded-md border border-border bg-card px-4 py-2 text-sm font-semibold text-primary shadow-sm">
             {solution.eyebrow}
           </div>
-          <h1 className="mt-5 max-w-2xl text-3xl font-semibold leading-tight tracking-normal text-foreground sm:text-4xl lg:text-5xl">
+          <h1 className="ax-marketing-section-title mt-5 max-w-2xl text-black">
             {solution.headline}
           </h1>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-foreground">
+          <p className="ax-marketing-body mt-5 max-w-2xl text-black">
             {solution.summary}
           </p>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-foreground">
+          <p className="ax-marketing-body mt-4 max-w-2xl text-black">
             {solution.proof}
           </p>
 
@@ -95,7 +95,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
               Where it fits
             </p>
-            <h2 className="mt-4 text-2xl font-semibold leading-tight text-foreground sm:text-3xl">
+            <h2 className="ax-marketing-subtitle mt-4 text-black">
               Built for the gap between handwritten files and corrected spreadsheet output.
             </h2>
           </div>
@@ -131,7 +131,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
               How it works
             </p>
-            <h2 className="mt-4 text-2xl font-semibold leading-tight text-foreground sm:text-3xl">
+            <h2 className="ax-marketing-subtitle mt-4 text-black">
               A short path from a file batch to reviewable Excel output.
             </h2>
             <div className="mt-7 grid gap-4">
@@ -155,7 +155,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
               <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary-foreground/70">
                 Ready for batch work
               </p>
-              <h2 className="mt-4 max-w-3xl text-2xl font-semibold leading-tight sm:text-3xl">
+              <h2 className="ax-marketing-subtitle mt-4 max-w-3xl text-black">
                 Convert {solution.title.toLowerCase()} documents without building a custom data-entry team.
               </h2>
             </div>

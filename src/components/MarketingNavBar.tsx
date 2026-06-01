@@ -36,7 +36,7 @@ function PrimaryAudienceLink({ solution }: { solution: AudienceSolution }) {
     <NavigationMenuLink asChild>
       <Link
         href={audienceSolutionHref(solution.slug)}
-        className="group flex flex-row items-center gap-3 rounded-[15px] border border-black/8 bg-[#f7f3e9] px-3 py-3 text-black outline-none transition-[border-color,background-color] hover:border-black/18 hover:bg-[#f3eddf] focus-visible:ring-2 focus-visible:ring-emerald-500"
+        className="group flex flex-row items-center gap-3 rounded-[15px] border border-black/8 bg-[var(--ax-marketing-cream)] px-3 py-3 text-black outline-none transition-[border-color,background-color] hover:border-black/18 hover:bg-[var(--ax-marketing-cream)] focus-visible:ring-2 focus-visible:ring-emerald-500"
       >
         <span className="flex size-8 shrink-0 items-center justify-center rounded-[10px] bg-white text-black">
           <Icon className="size-4" />
@@ -132,20 +132,20 @@ function AudienceMegaMenu() {
         </section>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 border-t border-black/10 bg-[#fcfbf8] p-4">
+      <div className="grid grid-cols-2 gap-3 border-t border-black/10 bg-white p-4">
         <IntegrationCard
           asset="/integrations/quickbooks.png"
           assetAlt="QuickBooks"
           label="QuickBooks"
           copy="Publish reviewed bills to QuickBooks Online."
-          className="bg-[#d1fae5]"
+          className="bg-[var(--ax-marketing-mint)]"
         />
         <IntegrationCard
           asset="/integrations/xero.png"
           assetAlt="Xero"
           label="Xero export"
           copy="Export-ready handoff for Xero workflows."
-          className="bg-[#f7f3e9]"
+          className="bg-[var(--ax-marketing-cream)]"
         />
       </div>
     </div>
@@ -191,7 +191,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
         "fixed inset-x-0 top-0 z-50 h-[68px] border-b",
         "transition-[background-color,border-color,box-shadow] duration-200",
         scrolled
-          ? "border-border bg-background/95 shadow-[0_1px_0_0_hsl(var(--border))] backdrop-blur-xl"
+          ? "border-black/10 bg-white/95 shadow-[0_1px_0_0_rgba(0,0,0,0.06)] backdrop-blur-xl"
           : "border-transparent bg-transparent",
       )}
     >
