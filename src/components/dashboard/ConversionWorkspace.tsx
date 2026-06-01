@@ -1692,6 +1692,9 @@ export function ResultActions({
     },
     { all: 0, needs_review: 0, ready: 0, edited: 0, failed: 0, published: 0 } as Record<ResultFilter, number>
   )
+  // The "needs you" pile leads the board: anything flagged for review or failed.
+  // Drives the editorial lead line (count vs. the calm all-clear message).
+  const needsAttentionCount = filterCounts.needs_review + filterCounts.failed
   const filteredResultEntries = resultEntries.filter((entry) => {
     if (resultFilter === "all") return true
     if (resultFilter === "edited") return entry.edited
@@ -1974,14 +1977,14 @@ export function ResultActions({
       {isComplete ? (
         <div className="sticky top-[4.5rem] z-20 flex flex-wrap items-center gap-2 rounded-md border border-border bg-card/95 p-2 shadow-xs backdrop-blur-xl">
           <Button
-            variant="surface"
+            variant="ghost"
             onClick={() => {
               setEditedTables({})
               setComparisonIndex(null)
               setEditingCell(null)
               onReset()
             }}
-            className="h-9 gap-2 px-3 shadow-xs"
+            className="h-9 gap-2 px-3 text-foreground"
           >
             <RotateCcw className="h-4 w-4" />
             New batch
@@ -1998,9 +2001,9 @@ export function ResultActions({
             </Button>
           ) : null}
           <Button
-            variant="ink"
+            variant="ghost"
             onClick={safeResultFiles.length > 1 ? onShareAll : () => firstResultFile && onShareFile(firstResultFile)}
-            className="h-9 gap-2 px-3 shadow-xs"
+            className="h-9 gap-2 px-3 text-foreground"
           >
             <Share2 className="h-4 w-4" />
             Share
@@ -2023,10 +2026,10 @@ export function ResultActions({
             ))}
           </div>
           <Button
-            variant="reviewed"
+            variant="glossy"
             onClick={handleReviewedBatchDownload}
             disabled={reviewedDownloadBusy || unresolvedDuplicateCount > 0}
-            className="h-9 gap-2 px-3 shadow-xs"
+            className="h-9 gap-2 px-3"
           >
             {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             {unresolvedDuplicateCount > 0 ? "Resolve duplicates to export" : "Download reviewed batch"}
@@ -2055,6 +2058,13 @@ export function ResultActions({
             <p className="text-2xl font-bold tracking-tight text-foreground">
               Review board <span className="text-base font-medium text-muted-foreground">{safeResultFiles.length}</span>
             </p>
+            {needsAttentionCount > 0 ? (
+              <p className="mt-1 text-[15px] text-muted-foreground">
+                <span className="font-semibold text-foreground">{needsAttentionCount}</span> need{needsAttentionCount === 1 ? "s" : ""} you — the rest read cleanly.
+              </p>
+            ) : (
+              <p className="mt-1 text-[15px] text-muted-foreground">AxLiner prepared it. Nothing left to approve.</p>
+            )}
           </div>
         </div>
 
@@ -2092,7 +2102,7 @@ export function ResultActions({
             <Button
               type="button"
               size="sm"
-              variant="reviewed"
+              variant="warm"
               onClick={() => void markAllCleanReady()}
               disabled={bulkReadyBusy}
               className="h-8 gap-2 rounded-full px-3.5 text-xs"
@@ -2204,7 +2214,11 @@ export function ResultActions({
               }}
               className={cn(
                 "group cursor-pointer rounded-md border border-border bg-card p-3 shadow-sm outline-none transition duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary",
-                compact ? "min-h-[300px]" : "min-h-[375px]"
+                compact ? "min-h-[300px]" : "min-h-[375px]",
+                // Review-emphasis: a thin emerald-500 left rule makes the
+                // "needs you" pile lead the board at a glance.
+                (badge.state === "needs_review" || badge.state === "failed") &&
+                  "border-l-2 border-l-[var(--brand-green-ring)]"
               )}
             >
               {/* C11 — at-a-glance summary line: vendor · total · due · verdict,
@@ -2219,7 +2233,7 @@ export function ResultActions({
                   verdict: { tone: reviewLevel.tone, label: reviewLevel.summaryLabel },
                 })
                 return (
-                  <p className="mb-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground">
+                  <p className="mb-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] text-muted-foreground">
                     {line.parts.map((part, partIndex) => (
                       <span key={part.key} className="inline-flex items-center gap-1.5">
                         {partIndex > 0 ? <span aria-hidden className="text-muted-foreground/40">·</span> : null}
@@ -2283,7 +2297,7 @@ export function ResultActions({
                   {isTextOutput ? <FileText className="h-5 w-5 shrink-0 text-primary" /> : <FileSpreadsheet className="h-5 w-5 shrink-0 text-primary" />}
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-foreground">{file.filename || `Result ${index + 1}`}</p>
-                    <p className="text-xs font-semibold text-muted-foreground">
+                    <p className="text-[13px] font-medium text-muted-foreground">
                       {formatDocumentType(file.document_type)}
                       {file.source_page ? ` - page ${file.source_page}${file.source_page_count ? ` of ${file.source_page_count}` : ""}` : ""}
                     </p>
@@ -2318,14 +2332,14 @@ export function ResultActions({
                   ) : null}
                 </div>
               </div>
-              <div className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-xs">
+              <div className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-[13px]">
                 <div className="min-w-0">
-                  <p className="text-muted-foreground">{summary.identityLabel}</p>
-                  <p className="mt-1 truncate font-semibold text-foreground">{summary.identity}</p>
+                  <p className="text-[13px] font-medium text-muted-foreground">{summary.identityLabel}</p>
+                  <p className="mt-1 truncate text-[15px] font-semibold text-foreground">{summary.identity}</p>
                 </div>
                 <div className="min-w-0 text-right">
-                  <p className="text-muted-foreground">{summary.amountLabel}</p>
-                  <p className="mt-1 truncate font-semibold text-foreground">{summary.amount}</p>
+                  <p className="text-[13px] font-medium text-muted-foreground">{summary.amountLabel}</p>
+                  <p className="mt-1 truncate text-[15px] font-semibold text-foreground">{summary.amount}</p>
                 </div>
               </div>
 
@@ -2379,7 +2393,7 @@ export function ResultActions({
                 {file.document_type === "invoice" && ["ready", "published"].includes(file.review_status || "") ? (
                   <Button
                     size="sm"
-                    variant="warm"
+                    variant="ink"
                     onClick={(event) => {
                       event.stopPropagation()
                       void onSendToAccountsPayable?.(file)
@@ -2392,7 +2406,7 @@ export function ResultActions({
                 {file.document_id && !["ready", "published", "failed", "deleted"].includes(file.review_status || "") ? (
                   <Button
                     size="sm"
-                    variant="reviewed"
+                    variant="glossy"
                     onClick={(event) => {
                       event.stopPropagation()
                       void onMarkDocumentReady?.(file)
@@ -2406,12 +2420,12 @@ export function ResultActions({
                   <>
                     <Button
                       size="sm"
-                      variant="ink"
+                      variant="ghost"
                       onClick={(event) => {
                         event.stopPropagation()
                         onShareFile(file)
                       }}
-                      className="h-8 px-3 text-xs"
+                      className="h-8 px-3 text-xs text-foreground"
                     >
                       <Share2 className="h-3.5 w-3.5" />
                       Share
@@ -2421,7 +2435,7 @@ export function ResultActions({
                 {file.file_id || file.document_id ? (
                   <Button
                     size="sm"
-                    variant="ink"
+                    variant="warm"
                     onClick={(event) => {
                       event.stopPropagation()
                       onDownloadFile(file, index)
@@ -2479,7 +2493,7 @@ export function ResultActions({
               {comparisonFile.document_type === "invoice" && ["ready", "published"].includes(comparisonFile.review_status || "") ? (
                 <Button
                   size="sm"
-                  variant="warm"
+                  variant="ink"
                   onClick={() => void onSendToAccountsPayable?.(comparisonFile)}
                   className="h-9 px-3 text-xs"
                 >
@@ -2489,7 +2503,7 @@ export function ResultActions({
               {comparisonFile.document_id && !["ready", "published", "failed", "deleted"].includes(comparisonFile.review_status || "") ? (
                 <Button
                   size="sm"
-                  variant="reviewed"
+                  variant="glossy"
                   onClick={() => void onMarkDocumentReady?.(comparisonFile)}
                   className="h-9 px-3 text-xs"
                 >
@@ -2581,8 +2595,8 @@ export function ResultActions({
                   <div className="border-b border-border bg-muted/20 px-4 py-3">
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div>
-                        <p className="text-xs font-semibold text-foreground">Vendor memory</p>
-                        <p className="mt-0.5 text-[11px] text-muted-foreground">
+                        <p className="text-[13px] font-semibold text-foreground">Vendor memory</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
                           Saved suggestions stay separate until you choose values during review.
                         </p>
                       </div>
@@ -2908,13 +2922,15 @@ export function ResultActions({
                                 transition={{ duration: 0.18, ease: [0.04, 0.62, 0.23, 0.98] }}
                                 className={cn(
                                   "block overflow-hidden bg-white px-3 py-2.5",
-                                  needsYou && "bg-amber-50/40",
+                                  // Review-emphasis: a thin emerald-500 left rule
+                                  // leads the eye to the fields that still need you.
+                                  needsYou && "border-l-2 border-l-[var(--brand-green-ring)] bg-amber-50/40 pl-[10px]",
                                 )}
                                 onMouseEnter={showSource}
                                 onMouseLeave={() => setActiveSource(null)}
                                 onFocus={showSource}
                               >
-                                <span className="mb-1 flex items-center gap-1.5 text-[11px] font-medium text-gray-500">
+                                <span className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-gray-600">
                                   {field.label}
                                   {totalCopy ? (
                                     <AnomalyChip
@@ -2976,7 +2992,7 @@ export function ResultActions({
                               <Button
                                 type="button"
                                 size="sm"
-                                variant="reviewed"
+                                variant="glossy"
                                 onClick={() => void onMarkDocumentReady?.(comparisonFile)}
                                 className="h-8 rounded-full px-3 text-xs"
                               >
