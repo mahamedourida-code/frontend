@@ -1,21 +1,56 @@
-import { redirect } from "next/navigation"
+"use client"
 
-export default async function IntegrationsRedirect({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>
-}) {
-  const incoming = await searchParams
-  const params = new URLSearchParams()
+import { Suspense, useEffect } from "react"
+import { useRouter } from "next/navigation"
 
-  Object.entries(incoming).forEach(([key, value]) => {
-    if (Array.isArray(value)) {
-      value.forEach(item => params.append(key, item))
-    } else if (value !== undefined) {
-      params.set(key, value)
+import { DashboardShell } from "@/components/DashboardShell"
+import { AccountingConnectionsSection } from "@/components/dashboard/accounting-connections/AccountingConnectionsSection"
+import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
+import { PageHeader } from "@/components/dashboard/PageHeader"
+import { useAuth } from "@/hooks/useAuth"
+import { useWorkspaces } from "@/hooks/useWorkspaces"
+
+function IntegrationsFallback() {
+  return <DashboardRouteLoader label="Loading integrations" />
+}
+
+export default function IntegrationsPage() {
+  return (
+    <Suspense fallback={<IntegrationsFallback />}>
+      <IntegrationsContent />
+    </Suspense>
+  )
+}
+
+function IntegrationsContent() {
+  const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
+  const { activeWorkspace } = useWorkspaces(user)
+  const isOwner = !activeWorkspace || activeWorkspace.role === "owner"
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace("/sign-in?next=%2Fdashboard%2Fintegrations")
     }
-  })
+  }, [authLoading, router, user])
 
-  params.set("section", "accounting")
-  redirect(`/dashboard/settings?${params.toString()}`)
+  if (authLoading) {
+    return <IntegrationsFallback />
+  }
+
+  if (!user) {
+    return null
+  }
+
+  return (
+    <DashboardShell activeItem="integrations" title="Integrations" user={user}>
+      <PageHeader
+        title="Integrations"
+        description="Manage the accounting connection shared by this workspace."
+      />
+      <div className="max-w-3xl">
+        <AccountingConnectionsSection isOwner={isOwner} />
+      </div>
+    </DashboardShell>
+  )
 }

@@ -1,6 +1,7 @@
 "use client"
 
 import React, { Suspense, useState, useEffect } from "react"
+import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/utils/supabase/client"
 import { useAuth } from "@/hooks/useAuth"
@@ -19,7 +20,7 @@ import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { BillingSeal, CreditStack, PlanSwitch } from "@/components/BillingGlyphs"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
-import { billingApi, vendorMemoryApi, type BillingPlanKey, type VendorRule, type VendorRuleAutoMode, type VendorRuleFields } from "@/lib/api-client"
+import { accountsPayableApi, billingApi, vendorMemoryApi, type BillingPlanKey, type VendorRule, type VendorRuleAutoMode, type VendorRuleFields } from "@/lib/api-client"
 import {
   INVOICE_LANGUAGES,
   readInvoiceAutoDetect,
@@ -39,13 +40,13 @@ import {
   Check,
   FileSpreadsheet,
   DownloadCloud,
+  ExternalLink,
   Save,
   Loader2,
 } from "lucide-react"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
-import { AccountingConnectionsSection } from "@/components/dashboard/accounting-connections/AccountingConnectionsSection"
 import { clayButton } from "@/lib/clay-button"
 
 type SettingsSection = 'account' | 'billing' | 'accounting' | 'vendors' | 'preferences'
@@ -82,6 +83,8 @@ function SettingsContent() {
   const [vendorDrafts, setVendorDrafts] = useState<Record<string, VendorRuleFields>>({})
   const [vendorRulesLoading, setVendorRulesLoading] = useState(false)
   const [vendorRuleAction, setVendorRuleAction] = useState<string | null>(null)
+  const [poCsv, setPoCsv] = useState("")
+  const [poImportBusy, setPoImportBusy] = useState(false)
   const {
     billingStatus,
     limits,
@@ -284,6 +287,20 @@ function SettingsContent() {
     }
   }
 
+  const importPurchaseOrders = async () => {
+    if (!poCsv.trim() || !isOwner) return
+    setPoImportBusy(true)
+    try {
+      const result = await accountsPayableApi.importPurchaseOrders(poCsv, activeWorkspace?.id)
+      toast.success(`Imported ${result.imported} purchase order${result.imported === 1 ? "" : "s"}.`)
+      setPoCsv("")
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || "Could not import purchase orders.")
+    } finally {
+      setPoImportBusy(false)
+    }
+  }
+
   const loadVendorRules = async () => {
     setVendorRulesLoading(true)
     try {
@@ -411,7 +428,7 @@ function SettingsContent() {
 
   return (
     <DashboardShell activeItem="settings" title="Settings" user={user}>
-        <PageHeader title="Settings" description="Account, billing, vendors, and workspace preferences" />
+        <PageHeader title="Settings" description="Account, billing, accounting, vendors, and workspace preferences" />
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
           {/* Mobile Section Selector */}
           <div className="lg:hidden">
@@ -695,7 +712,7 @@ function SettingsContent() {
                         icon={<FileSpreadsheet />}
                         illustration="/illustrations/empty-vendors.png"
                         title="No saved vendors"
-                        description="Confirm an invoice or receipt in Convert Files, then remember the vendor from its review view."
+                        description="Confirm an invoice or receipt in Review, then remember the vendor."
                       />
                     ) : vendorRules.map(rule => (
                       <section key={rule.id} className="rounded-lg border border-border bg-card/50 p-4 backdrop-blur">
@@ -807,7 +824,85 @@ function SettingsContent() {
             )}
 
             {activeSection === 'accounting' && (
-              <AccountingConnectionsSection isOwner={isOwner} />
+              <div className="space-y-5">
+                <Card className="ax-glass-card overflow-hidden rounded-xl">
+                  <CardHeader className="p-5 sm:p-6">
+                    <div className="flex items-start gap-3">
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                        <DownloadCloud className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">Accounting connections</CardTitle>
+                        <CardDescription className="mt-1 max-w-xl leading-5">
+                          Manage the QuickBooks Online connection shared by this workspace from the Integrations page.
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="border-t border-border p-5 sm:p-6">
+                    <Button asChild variant="surface" size="sm">
+                      <Link href="/dashboard/integrations">
+                        Open integrations
+                        <ExternalLink className="size-4" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="ax-glass-card overflow-hidden rounded-xl">
+                  <CardHeader className="p-5 sm:p-6">
+                    <div className="flex items-start gap-3">
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                        <FileSpreadsheet className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">Purchase order import</CardTitle>
+                        <CardDescription className="mt-1 max-w-xl leading-5">
+                          Import open purchase orders for matching in Accounts payable. Existing PO numbers are updated.
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4 border-t border-border p-5 sm:p-6">
+                    {!isOwner ? (
+                      <p className="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+                        Ask the workspace owner to import purchase orders.
+                      </p>
+                    ) : (
+                      <>
+                        <div>
+                          <Label htmlFor="purchase-orders-csv">Purchase orders CSV</Label>
+                          <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                            Columns: <span className="font-mono text-foreground">po_number, vendor, date, total, remaining, currency</span>
+                          </p>
+                        </div>
+                        <textarea
+                          id="purchase-orders-csv"
+                          value={poCsv}
+                          onChange={(event) => setPoCsv(event.target.value)}
+                          placeholder={"po_number,vendor,date,total,remaining,currency\nPO-1001,Acme Ltd,2026-05-01,1200.00,1200.00,USD"}
+                          rows={7}
+                          className="w-full rounded-lg border border-border bg-background p-3 font-mono text-xs outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+                        />
+                        <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+                          <p className="text-xs text-muted-foreground">
+                            Applies to {activeWorkspace?.name || "the current workspace"}.
+                          </p>
+                          <Button
+                            variant="glossy"
+                            size="sm"
+                            onClick={() => void importPurchaseOrders()}
+                            disabled={poImportBusy || !poCsv.trim()}
+                          >
+                            {poImportBusy ? <Loader2 className="size-4 animate-spin" /> : null}
+                            {poImportBusy ? "Importing..." : "Import purchase orders"}
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {/* Preferences */}
