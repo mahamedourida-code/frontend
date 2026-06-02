@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, type ChangeEvent, type DragEvent } from "react"
+import { useEffect, useState, type ChangeEvent, type DragEvent } from "react"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
-import type { DocumentMode } from "@/lib/api-client"
+import { companyApi, type CompanySummary, type DocumentMode } from "@/lib/api-client"
 
 type UploadMode = Exclude<DocumentMode, "invoice_receipt">
 type OutputMode = "table" | "text" | "csv"
@@ -32,6 +32,9 @@ type ProgressiveUploadSheetProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   uploadedFiles: File[]
+  workspaceId?: string
+  selectedCompanyId: string
+  onSelectedCompanyIdChange: (companyId: string) => void
   pdfPageCounts: Record<number, number>
   isDragging: boolean
   isUploading: boolean
@@ -83,6 +86,9 @@ export function ProgressiveUploadSheet({
   open,
   onOpenChange,
   uploadedFiles,
+  workspaceId,
+  selectedCompanyId,
+  onSelectedCompanyIdChange,
   pdfPageCounts,
   isDragging,
   isUploading,
@@ -105,6 +111,9 @@ export function ProgressiveUploadSheet({
   onProcess,
   onCancel,
 }: ProgressiveUploadSheetProps) {
+  const [companies, setCompanies] = useState<CompanySummary[]>([])
+  const [companiesLoading, setCompaniesLoading] = useState(false)
+  const [companiesError, setCompaniesError] = useState("")
   const hasPdfs = uploadedFiles.some(isPdfFile)
   const pdfPages = uploadedFiles.reduce((total, file, index) => (
     total + (isPdfFile(file) ? (pdfPageCounts[index] || 1) : 0)
@@ -115,10 +124,40 @@ export function ProgressiveUploadSheet({
       ? "table"
       : documentMode
   const busy = isUploading || isProcessing
+  const canProcess = Boolean(workspaceId && selectedCompanyId)
 
   useEffect(() => {
     if (isProcessing) onOpenChange(false)
   }, [isProcessing, onOpenChange])
+
+  useEffect(() => {
+    if (!open || !workspaceId) return
+
+    let mounted = true
+    setCompaniesLoading(true)
+    setCompaniesError("")
+    companyApi.list(workspaceId)
+      .then(({ companies: records }) => {
+        if (!mounted) return
+        setCompanies(records)
+        const selectedStillExists = records.some(company => company.id === selectedCompanyId)
+        if (!selectedStillExists) {
+          onSelectedCompanyIdChange(records.find(company => company.is_default)?.id || records[0]?.id || "")
+        }
+      })
+      .catch(() => {
+        if (!mounted) return
+        setCompanies([])
+        setCompaniesError("Companies could not be loaded.")
+      })
+      .finally(() => {
+        if (mounted) setCompaniesLoading(false)
+      })
+
+    return () => {
+      mounted = false
+    }
+  }, [onSelectedCompanyIdChange, open, selectedCompanyId, workspaceId])
 
   return (
     <Sheet open={open} onOpenChange={(nextOpen) => {
@@ -135,7 +174,26 @@ export function ProgressiveUploadSheet({
 
         <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-5">
           <section className="space-y-3">
-            <StageLabel number={1}>Document mode</StageLabel>
+            <StageLabel number={1}>Company</StageLabel>
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-semibold text-muted-foreground">Assign this batch to</span>
+              <select
+                value={selectedCompanyId}
+                onChange={(event) => onSelectedCompanyIdChange(event.target.value)}
+                disabled={busy || companiesLoading || !workspaceId}
+                className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-ring/40"
+              >
+                <option value="">{companiesLoading ? "Loading companies..." : "Select a company"}</option>
+                {companies.map(company => (
+                  <option key={company.id} value={company.id}>{company.name}</option>
+                ))}
+              </select>
+            </label>
+            {companiesError ? <p className="text-xs font-semibold text-destructive">{companiesError}</p> : null}
+          </section>
+
+          <section className="space-y-3">
+            <StageLabel number={2}>Document mode</StageLabel>
             <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Document mode">
               {modeTabs.map(mode => (
                 <button
@@ -173,7 +231,7 @@ export function ProgressiveUploadSheet({
           </section>
 
           <section className="space-y-3">
-            <StageLabel number={2}>Documents</StageLabel>
+            <StageLabel number={3}>Documents</StageLabel>
             <div
               onDragOver={onDragOver}
               onDragLeave={onDragLeave}
@@ -255,30 +313,23 @@ export function ProgressiveUploadSheet({
 
           {hasPdfs ? (
             <section className="space-y-3">
-              <StageLabel number={3}>PDF segmentation</StageLabel>
+              <StageLabel number={4}>PDF segmentation</StageLabel>
               <div className="space-y-2 rounded-lg border border-border bg-background p-3">
-                <label className="flex items-start gap-3 rounded-md border border-[var(--brand-green-ring)] bg-[var(--brand-green)]/35 p-3">
-                  <input type="radio" checked readOnly className="mt-0.5 accent-emerald-600" />
+                <div className="flex items-start gap-3 rounded-md border border-[var(--brand-green-ring)] bg-[var(--brand-green)]/35 p-3">
+                  <FileText className="mt-0.5 size-4 shrink-0 text-[var(--brand-green-fg)]" />
                   <span>
                     <span className="block text-sm font-semibold text-foreground">Separate pages for review</span>
                     <span className="mt-0.5 block text-xs font-medium text-muted-foreground">
                       {pdfPages} PDF page{pdfPages === 1 ? "" : "s"} will become individual review items.
                     </span>
                   </span>
-                </label>
-                <label className="flex cursor-not-allowed items-start gap-3 rounded-md border border-border p-3 opacity-55">
-                  <input type="radio" disabled className="mt-0.5" />
-                  <span>
-                    <span className="block text-sm font-semibold text-foreground">Keep each PDF together</span>
-                    <span className="mt-0.5 block text-xs font-medium text-muted-foreground">Not supported by the current review pipeline.</span>
-                  </span>
-                </label>
+                </div>
               </div>
             </section>
           ) : null}
 
           <section className="space-y-3">
-            <StageLabel number={hasPdfs ? 4 : 3}>Output format</StageLabel>
+            <StageLabel number={hasPdfs ? 5 : 4}>Output format</StageLabel>
             <label className="block">
               <span className="mb-1.5 block text-xs font-semibold text-muted-foreground">Download format</span>
               <select
@@ -312,7 +363,7 @@ export function ProgressiveUploadSheet({
             variant="glossy"
             size="lg"
             onClick={onProcess}
-            disabled={!uploadedFiles.length || busy || noCredits}
+            disabled={!uploadedFiles.length || busy || noCredits || !canProcess}
             className="w-full"
           >
             {busy ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}

@@ -126,6 +126,9 @@ type ConversionWorkspaceProps = {
   recoveryLoading?: boolean
   onContinueLatestJob?: () => void
   uploadedFiles: File[]
+  workspaceId?: string
+  selectedCompanyId: string
+  onSelectedCompanyIdChange: (companyId: string) => void
   filePreviewUrls: Record<number, string>
   pdfPageCounts: Record<number, number>
   isDragging: boolean
@@ -2384,7 +2387,7 @@ export function ResultActions({
                   onClick={() => void onSendToAccountsPayable?.(comparisonFile)}
                   className="h-9 px-3 text-xs"
                 >
-                  Add to Accounts Payable
+                  Add to Bills
                 </Button>
               ) : null}
               {comparisonFile.document_id && !["ready", "published", "failed", "deleted"].includes(comparisonFile.review_status || "") ? (
@@ -3101,6 +3104,9 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     recoveryLoading,
     onContinueLatestJob,
     uploadedFiles,
+    workspaceId,
+    selectedCompanyId,
+    onSelectedCompanyIdChange,
     filePreviewUrls,
     pdfPageCounts,
     isDragging,
@@ -3195,6 +3201,9 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
         open={uploadSheetOpen}
         onOpenChange={setUploadSheetOpen}
         uploadedFiles={uploadedFiles}
+        workspaceId={workspaceId}
+        selectedCompanyId={selectedCompanyId}
+        onSelectedCompanyIdChange={onSelectedCompanyIdChange}
         pdfPageCounts={pdfPageCounts}
         isDragging={isDragging}
         isUploading={isUploading}

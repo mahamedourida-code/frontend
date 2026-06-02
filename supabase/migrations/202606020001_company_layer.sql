@@ -31,6 +31,8 @@ begin
 end;
 $$;
 
+revoke execute on function public.create_default_company_for_workspace() from public, anon, authenticated;
+
 drop trigger if exists create_default_company_after_workspace_insert on public.workspaces;
 create trigger create_default_company_after_workspace_insert
   after insert on public.workspaces
@@ -48,7 +50,7 @@ create policy "Workspace owners can view companies"
       select 1
       from public.workspaces
       where workspaces.id = companies.workspace_id
-        and workspaces.owner_user_id = auth.uid()
+        and workspaces.owner_user_id = (select auth.uid())
     )
   );
 
@@ -61,7 +63,7 @@ create policy "Workspace owners can create companies"
       select 1
       from public.workspaces
       where workspaces.id = companies.workspace_id
-        and workspaces.owner_user_id = auth.uid()
+        and workspaces.owner_user_id = (select auth.uid())
     )
   );
 
@@ -74,7 +76,7 @@ create policy "Workspace owners can update companies"
       select 1
       from public.workspaces
       where workspaces.id = companies.workspace_id
-        and workspaces.owner_user_id = auth.uid()
+        and workspaces.owner_user_id = (select auth.uid())
     )
   )
   with check (
@@ -82,7 +84,7 @@ create policy "Workspace owners can update companies"
       select 1
       from public.workspaces
       where workspaces.id = companies.workspace_id
-        and workspaces.owner_user_id = auth.uid()
+        and workspaces.owner_user_id = (select auth.uid())
     )
   );
 
@@ -95,7 +97,7 @@ create policy "Workspace owners can delete companies"
       select 1
       from public.workspaces
       where workspaces.id = companies.workspace_id
-        and workspaces.owner_user_id = auth.uid()
+        and workspaces.owner_user_id = (select auth.uid())
     )
   );
 

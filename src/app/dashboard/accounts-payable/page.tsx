@@ -284,7 +284,7 @@ function AccountsPayableContent() {
         ? current
         : null)
     } catch {
-      toast.error("Could not load Accounts Payable.")
+      toast.error("Could not load bills.")
     } finally {
       setLoading(false)
     }
@@ -447,7 +447,7 @@ function AccountsPayableContent() {
   const accounts = quickBooksReferences.filter(item => item.resource_type === "account" && item.active)
   const taxCodes = quickBooksReferences.filter(item => item.resource_type === "tax_code" && item.active)
 
-  // P8 — destination-aware copy so the coding form reads correctly for Xero.
+  // Keep coding labels aligned with the QuickBooks Bill destination.
   const labels = {
     supplier: "Supplier",
     supplierPlaceholder: "Select supplier",
@@ -721,8 +721,7 @@ function AccountsPayableContent() {
       const response = await accountsPayableApi.publish(activeItem.id)
       mergeItem(response.item)
       // C8 — calm publish moment. For a QuickBooks Bill, hold a brief deliberate
-      // confirmation paired with the success burst instead of only a toast. Xero
-      // (roadmap UI) keeps the lightweight toast.
+      // confirmation paired with the success burst instead of only a toast.
       if (!retryAttachment) {
         const anchor = activePublishRef.current
         const origin = anchor

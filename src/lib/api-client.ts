@@ -747,6 +747,8 @@ export interface UploadBatchMultipartOptions {
   output_format?: string
   consolidation_strategy?: string
   document_mode?: DocumentMode
+  workspace_id?: string
+  company_id?: string
   signal?: AbortSignal
   onUploadProgress?: (percent: number, event: AxiosProgressEvent) => void
 }
@@ -892,6 +894,8 @@ export const ocrApi = {
     formData.append('output_format', options?.output_format || 'xlsx')
     formData.append('consolidation_strategy', options?.consolidation_strategy || 'consolidated')
     formData.append('document_mode', options?.document_mode || 'table')
+    if (options?.workspace_id) formData.append('workspace_id', options.workspace_id)
+    if (options?.company_id) formData.append('company_id', options.company_id)
 
 
     // IMPORTANT: Override the default 'application/json' Content-Type

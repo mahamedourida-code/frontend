@@ -28,6 +28,7 @@ import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoade
 import { WorkspaceFilesPanel } from "@/components/dashboard/WorkspaceFilesPanel"
 import { ProcessingStages } from "@/components/dashboard/ProcessingStages"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
+import { useWorkspaces } from "@/hooks/useWorkspaces"
 import {
   ConversionWorkspace,
   type WorkspaceBanner,
@@ -174,6 +175,7 @@ export default function ProcessImagesPage() {
 
 export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?: ConversionDocumentMode }) {
   const { user, loading: authLoading } = useAuth()
+  const { activeWorkspace } = useWorkspaces(user)
   const router = useRouter()
   const searchParams = useSearchParams()
   
@@ -220,6 +222,7 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
   const [overridingDocumentId, setOverridingDocumentId] = useState<string | null>(null)
   const [firstImageUrl, setFirstImageUrl] = useState<string>('')
   const [activePreviewFileId, setActivePreviewFileId] = useState<string>('')
+  const [selectedCompanyId, setSelectedCompanyId] = useState(() => searchParams.get("company_id") || "")
   const [outputMode, setOutputMode] = useState<WorkspaceOutputMode>(documentMode === "notes" ? "text" : "table")
   const [activeDocumentMode, setActiveDocumentMode] = useState<ConversionDocumentMode>(documentMode)
   const reviewedExportFormat: "xlsx" | "csv" | "txt" =
@@ -303,6 +306,11 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
     appliedModeParamRef.current = requestedMode
     setActiveDocumentMode(nextMode)
     setOutputMode(nextMode === "notes" ? "text" : "table")
+  }, [searchParams])
+
+  useEffect(() => {
+    const requestedCompanyId = searchParams.get("company_id")
+    if (requestedCompanyId) setSelectedCompanyId(requestedCompanyId)
   }, [searchParams])
 
   useEffect(() => {
@@ -933,6 +941,8 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
               ? 'csv'
               : 'xlsx',
         documentMode: activeDocumentMode,
+        workspaceId: activeWorkspace?.id,
+        companyId: selectedCompanyId || undefined,
       })
       if (response && response.session_id) {
         connectWebSocket(response.session_id, response.job_id)
@@ -965,7 +975,7 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
       })
       showApiErrorToast(error, errorContext)
     }
-  }, [uploadedFiles, uploadBatch, connectWebSocket, maxUploadFiles, router, outputMode, activeDocumentMode, createFilePreviewUrl, noCredits])
+  }, [uploadedFiles, uploadBatch, connectWebSocket, maxUploadFiles, router, outputMode, activeDocumentMode, activeWorkspace?.id, selectedCompanyId, createFilePreviewUrl, noCredits])
 
   const handleCancelProcessing = useCallback(async () => {
     await cancelProcessing()
@@ -1707,11 +1717,11 @@ Best regards`
     if (!jobId || !file?.document_id) return
     try {
       await accountsPayableApi.createFromDocument(jobId, file.document_id)
-      toast.success("Invoice added to Accounts Payable.")
+      toast.success("Invoice added to Bills.")
       router.push("/dashboard/accounts-payable")
     } catch (error: any) {
       setWorkspaceBanner({
-        title: "Invoice was not added to Accounts Payable",
+        title: "Invoice was not added to Bills",
         description: error?.detail || error?.message || "Confirm the invoice and try again.",
         tone: "error",
       })
@@ -1917,7 +1927,7 @@ Best regards`
                   ? "Notes Mode"
                   : isAccountingDocumentMode
                     ? "Invoice and Receipt Mode"
-                    : "Convert Files"
+                    : "Review Documents"
       }
       eyebrow={isBankStatementMode ? "Statements" : isAccountingDocumentMode ? "Accounting" : activeDocumentMode === "notes" ? "Notes" : "Batch"}
       user={user}
@@ -2006,6 +2016,9 @@ Best regards`
         recoveryLoading={recoveryLoading}
         onContinueLatestJob={continueLatestJob}
         uploadedFiles={uploadedFiles}
+        workspaceId={activeWorkspace?.id}
+        selectedCompanyId={selectedCompanyId}
+        onSelectedCompanyIdChange={setSelectedCompanyId}
         filePreviewUrls={filePreviewUrls}
         pdfPageCounts={pdfPageCounts}
         isDragging={isDragging}
