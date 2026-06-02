@@ -11,9 +11,9 @@ import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoade
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
-import { AnomalyChip, AnomalyDot } from "@/components/dashboard/AnomalyChip"
+import { AnomalyChip } from "@/components/dashboard/AnomalyChip"
 import { ReviewScoreBadge } from "@/components/dashboard/ReviewScoreBadge"
-import { duplicateCopy, missingVatCopy, overPoCopy } from "@/lib/anomaly-reasons"
+import { missingVatCopy, overPoCopy } from "@/lib/anomaly-reasons"
 import { computeReviewScore, REVIEW_LEVEL_WEIGHT } from "@/lib/review-score"
 import { deriveMissingInfo } from "@/lib/missing-info"
 import { Button } from "@/components/ui/button"
@@ -38,12 +38,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import {
-  accountingDestinationApi,
   accountsPayableApi,
   clientIntakeApi,
   quickBooksApi,
-  xeroApi,
-  type AccountingDestination,
   type AccountsPayableDraftData,
   type AccountsPayableDuplicateWarning,
   type AccountsPayableItem,
@@ -54,7 +51,16 @@ import {
 } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
 
-type QueueFilter = "all" | "duplicates" | "missing_info" | AccountsPayableStatus
+type QueueFilter =
+  | "needs_attention"
+  | "ready_to_publish"
+  | "published"
+  | "duplicates"
+  | "missing_info"
+  | "failed"
+  | "discarded"
+
+type MoreFilter = Extract<QueueFilter, "duplicates" | "missing_info" | "failed" | "discarded">
 
 const queueStatuses: Array<{ value: AccountsPayableStatus; label: string }> = [
   { value: "needs_coding", label: "Needs coding" },
@@ -87,11 +93,22 @@ const dotColor: Record<"warning" | "review" | "info" | "success" | "error" | "ne
   neutral: "bg-muted-foreground/50",
 }
 
-const editableFields: Array<[keyof AccountsPayableDraftData, string, string]> = [
+const coreFields: Array<[keyof AccountsPayableDraftData, string, string]> = [
+  ["invoice_number", "Bill number", "Enter bill number"],
   ["invoice_date", "Invoice date", "YYYY-MM-DD"],
   ["due_date", "Due date", "YYYY-MM-DD"],
+]
+
+const advancedFields: Array<[keyof AccountsPayableDraftData, string, string]> = [
   ["reference", "Reference", "PO or bill reference"],
   ["currency", "Currency", "USD"],
+]
+
+const moreFilters: Array<{ value: MoreFilter; label: string }> = [
+  { value: "duplicates", label: "Duplicates" },
+  { value: "missing_info", label: "Missing info" },
+  { value: "failed", label: "Failed" },
+  { value: "discarded", label: "Discarded" },
 ]
 
 // C9 — bookkeeper-friendly words for the fields vendor memory remembers, so the
@@ -158,6 +175,33 @@ function amountLabel(item: AccountsPayableItem) {
   return `${item.draft_data.currency || ""} ${String(total)}`.trim()
 }
 
+function ledgerValue(value: unknown) {
+  if (value === undefined || value === null || value === "") return "-"
+  return String(value)
+}
+
+function shortDate(value: unknown) {
+  if (value === undefined || value === null || value === "") return "-"
+  return String(value).slice(0, 10)
+}
+
+function buildDraftUpdate(draft: AccountsPayableDraftData): AccountsPayableDraftData {
+  return {
+    vendor: draft.vendor,
+    vendor_ref_id: draft.vendor_ref_id,
+    invoice_number: draft.invoice_number,
+    invoice_date: draft.invoice_date,
+    due_date: draft.due_date,
+    account_category: draft.account_category,
+    account_ref_id: draft.account_ref_id,
+    tax_code: draft.tax_code,
+    tax_code_ref_id: draft.tax_code_ref_id,
+    reference: draft.reference,
+    currency: draft.currency,
+    line_items: draft.line_items,
+  }
+}
+
 function cloneDraft(item: AccountsPayableItem): AccountsPayableDraftData {
   return {
     ...item.draft_data,
@@ -166,7 +210,7 @@ function cloneDraft(item: AccountsPayableItem): AccountsPayableDraftData {
 }
 
 function AccountsPayableFallback() {
-  return <DashboardRouteLoader label="Loading Accounts Payable" />
+  return <DashboardRouteLoader label="Loading Bills" />
 }
 
 export default function AccountsPayablePage() {
@@ -186,22 +230,18 @@ function AccountsPayableContent() {
   const clientName = searchParams.get("clientName")
   const [clientJobIds, setClientJobIds] = useState<Set<string> | null>(null)
   const [items, setItems] = useState<AccountsPayableItem[]>([])
-  const [filter, setFilter] = useState<QueueFilter>("all")
+  const [filter, setFilter] = useState<QueueFilter>("needs_attention")
   const [activeId, setActiveId] = useState<string | null>(null)
   const [draft, setDraft] = useState<AccountsPayableDraftData>({})
   const [attachmentVisible, setAttachmentVisible] = useState(true)
-  const [nextStatus, setNextStatus] = useState<AccountsPayableStatus>("needs_coding")
   const [selectedReadyIds, setSelectedReadyIds] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [quickBooksConnection, setQuickBooksConnection] = useState<QuickBooksConnectionStatus | null>(null)
   const [quickBooksReferences, setQuickBooksReferences] = useState<QuickBooksReferenceItem[]>([])
-  const [destination, setDestination] = useState<AccountingDestination>("quickbooks")
   const [poDialogOpen, setPoDialogOpen] = useState(false)
   const [poList, setPoList] = useState<PurchaseOrder[]>([])
   const [poLoading, setPoLoading] = useState(false)
-  const [poImportOpen, setPoImportOpen] = useState(false)
-  const [poCsv, setPoCsv] = useState("")
   const [poBusy, setPoBusy] = useState(false)
   const [syncingReferences, setSyncingReferences] = useState(false)
   const [publishDialogOpen, setPublishDialogOpen] = useState(false)
@@ -242,7 +282,7 @@ function AccountsPayableContent() {
       setItems(response.items)
       setActiveId(current => current && response.items.some(item => item.id === current)
         ? current
-        : response.items[0]?.id || null)
+        : null)
     } catch {
       toast.error("Could not load Accounts Payable.")
     } finally {
@@ -254,20 +294,19 @@ function AccountsPayableContent() {
     if (user) void loadQueue()
   }, [user?.id])
 
-  const loadQuickBooks = async (sync = false, dest: AccountingDestination = destination) => {
-    const connector = dest === "xero" ? xeroApi : quickBooksApi
+  const loadQuickBooks = async (sync = false) => {
     try {
       setSyncingReferences(sync)
-      const status = sync ? await connector.sync() : await connector.status()
+      const status = sync ? await quickBooksApi.sync() : await quickBooksApi.status()
       setQuickBooksConnection(status)
       if (status.connected) {
-        const response = await connector.references()
+        const response = await quickBooksApi.references()
         setQuickBooksReferences(response.items)
       } else {
         setQuickBooksReferences([])
       }
     } catch {
-      if (sync) toast.error(`Could not refresh ${dest === "xero" ? "Xero" : "QuickBooks"} lists.`)
+      if (sync) toast.error("Could not refresh QuickBooks lists.")
     } finally {
       setSyncingReferences(false)
     }
@@ -275,12 +314,7 @@ function AccountsPayableContent() {
 
   useEffect(() => {
     if (!user) return
-    void accountingDestinationApi.get()
-      .then((dest) => {
-        setDestination(dest)
-        void loadQuickBooks(false, dest)
-      })
-      .catch(() => void loadQuickBooks(false, "quickbooks"))
+    void loadQuickBooks()
   }, [user?.id])
 
   // P9 — purchase order matching
@@ -313,29 +347,12 @@ function AccountsPayableContent() {
     }
   }
 
-  const importPos = async () => {
-    if (!poCsv.trim()) return
-    setPoBusy(true)
-    try {
-      const result = await accountsPayableApi.importPurchaseOrders(poCsv)
-      toast.success(`Imported ${result.imported} purchase order${result.imported === 1 ? "" : "s"}.`)
-      setPoCsv("")
-      setPoImportOpen(false)
-      if (poDialogOpen) await openPoDialog()
-    } catch (error: any) {
-      toast.error(error?.detail || error?.message || "Could not import purchase orders.")
-    } finally {
-      setPoBusy(false)
-    }
-  }
-
   const activeItem = items.find(item => item.id === activeId) || null
 
   useEffect(() => {
     if (!activeItem) return
     setDraft(cloneDraft(activeItem))
     setAttachmentVisible(activeItem.attachment_visible)
-    setNextStatus(activeItem.status)
   }, [activeItem?.id, activeItem?.updated_at])
 
   const counts = useMemo(() => {
@@ -395,8 +412,8 @@ function AccountsPayableContent() {
 
   const visibleItems = useMemo(() => {
     let base: AccountsPayableItem[]
-    if (filter === "all") {
-      base = items.filter(item => item.status !== "discarded")
+    if (filter === "needs_attention") {
+      base = items.filter(item => item.status === "needs_coding" || item.status === "needs_review")
     } else if (filter === "duplicates") {
       base = items.filter(item => hasActiveDuplicate(item))
     } else if (filter === "missing_info") {
@@ -425,21 +442,18 @@ function AccountsPayableContent() {
       ? Array.from(new Set(lineItems.flatMap(line => Object.keys(line)))).slice(0, 6)
       : ["description", "quantity", "unit_price", "line_total"]
   )
-  const activeLocked = activeItem?.status === "published"
+  const activeLocked = activeItem?.status === "published" || activeItem?.status === "discarded"
   const vendors = quickBooksReferences.filter(item => item.resource_type === "vendor" && item.active)
   const accounts = quickBooksReferences.filter(item => item.resource_type === "account" && item.active)
   const taxCodes = quickBooksReferences.filter(item => item.resource_type === "tax_code" && item.active)
 
   // P8 — destination-aware copy so the coding form reads correctly for Xero.
-  const isXero = destination === "xero"
-  const destName = isXero ? "Xero" : "QuickBooks"
   const labels = {
-    vendor: isXero ? "Xero contact" : "QuickBooks vendor",
-    vendorPlaceholder: isXero ? "Select contact" : "Select vendor",
-    vendorRefresh: isXero ? "Refresh contact list" : "Refresh vendor list",
-    account: isXero ? "Account" : "Expense account",
-    taxCode: isXero ? "Tax rate" : "Tax code",
-    publish: isXero ? "Publish to Xero" : "Publish to QuickBooks",
+    supplier: "Supplier",
+    supplierPlaceholder: "Select supplier",
+    supplierRefresh: "Refresh supplier list",
+    account: "Account",
+    taxCode: "VAT code",
   }
 
   /** P3 — vendor-rule pre-fill metadata stamped on creation. */
@@ -534,35 +548,17 @@ function AccountsPayableContent() {
     setSaving(true)
     try {
       const response = await accountsPayableApi.update(activeItem.id, {
-        draft_data: {
-          vendor: draft.vendor,
-          vendor_ref_id: draft.vendor_ref_id,
-          invoice_date: draft.invoice_date,
-          due_date: draft.due_date,
-          account_category: draft.account_category,
-          account_ref_id: draft.account_ref_id,
-          tax_code: draft.tax_code,
-          tax_code_ref_id: draft.tax_code_ref_id,
-          reference: draft.reference,
-          currency: draft.currency,
-          line_items: draft.line_items,
-        },
+        draft_data: buildDraftUpdate(draft),
         attachment_visible: attachmentVisible,
         status,
       })
       mergeItem(response.item)
-      setNextStatus(response.item.status)
-      toast.success(status ? "AP status updated." : "Draft bill saved.")
+      toast.success(status === "ready_to_publish" ? "Bill saved and marked ready." : status === "needs_coding" ? "Bill sent back for coding." : "Bill saved.")
     } catch (error: any) {
       toast.error(error?.detail || error?.message || "Could not save this draft bill.")
     } finally {
       setSaving(false)
     }
-  }
-
-  const applySelectedStatus = async () => {
-    if (!activeItem || nextStatus === activeItem.status) return
-    await persistDraft(nextStatus)
   }
 
   /**
@@ -582,19 +578,7 @@ function AccountsPayableContent() {
     setDraft(clearedDraft)
     try {
       const response = await accountsPayableApi.update(activeItem.id, {
-        draft_data: {
-          vendor: clearedDraft.vendor,
-          vendor_ref_id: clearedDraft.vendor_ref_id,
-          invoice_date: clearedDraft.invoice_date,
-          due_date: clearedDraft.due_date,
-          account_category: clearedDraft.account_category,
-          account_ref_id: clearedDraft.account_ref_id,
-          tax_code: clearedDraft.tax_code,
-          tax_code_ref_id: clearedDraft.tax_code_ref_id,
-          reference: clearedDraft.reference,
-          currency: clearedDraft.currency,
-          line_items: clearedDraft.line_items,
-        },
+        draft_data: buildDraftUpdate(clearedDraft),
         attachment_visible: attachmentVisible,
         acknowledge_auto_applied: true,
       })
@@ -730,19 +714,7 @@ function AccountsPayableContent() {
     try {
       if (!retryAttachment) {
         await accountsPayableApi.update(activeItem.id, {
-          draft_data: {
-            vendor: draft.vendor,
-            vendor_ref_id: draft.vendor_ref_id,
-            invoice_date: draft.invoice_date,
-            due_date: draft.due_date,
-            account_category: draft.account_category,
-            account_ref_id: draft.account_ref_id,
-            tax_code: draft.tax_code,
-            tax_code_ref_id: draft.tax_code_ref_id,
-            reference: draft.reference,
-            currency: draft.currency,
-            line_items: draft.line_items,
-          },
+          draft_data: buildDraftUpdate(draft),
           attachment_visible: attachmentVisible,
         })
       }
@@ -751,7 +723,7 @@ function AccountsPayableContent() {
       // C8 — calm publish moment. For a QuickBooks Bill, hold a brief deliberate
       // confirmation paired with the success burst instead of only a toast. Xero
       // (roadmap UI) keeps the lightweight toast.
-      if (!isXero && !retryAttachment) {
+      if (!retryAttachment) {
         const anchor = activePublishRef.current
         const origin = anchor
           ? (() => { const r = anchor.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 } })()
@@ -762,7 +734,7 @@ function AccountsPayableContent() {
           origin,
         })
       } else {
-        toast.success(retryAttachment ? "Source document attached in QuickBooks." : `Unpaid Bill created in ${destName}.`)
+        toast.success("Source document attached in QuickBooks.")
       }
     } catch (error: any) {
       toast.error(error?.detail || error?.message || "Could not publish this Bill.")
@@ -772,14 +744,14 @@ function AccountsPayableContent() {
     }
   }
 
-  if (authLoading || !user) return <DashboardRouteLoader label="Loading Accounts Payable" />
+  if (authLoading || !user) return <DashboardRouteLoader label="Loading Bills" />
 
   return (
-    <DashboardShell activeItem="accounts_payable" title="Accounts Payable" user={user} contentClassName="max-w-none px-3 py-4 sm:px-5 lg:px-6">
+    <DashboardShell activeItem="accounts_payable" title="Bills" user={user} contentClassName="max-w-none px-3 py-4 sm:px-5 lg:px-6">
       <div className="space-y-4">
         <PageHeader
-          title="Accounts Payable"
-          description="Reviewed invoices, drafted as QuickBooks Bills. AxLiner prepares it. You approve it."
+          title="Bills"
+          description="Review, code, and publish bills to QuickBooks."
           actions={selectedReadyIds.length ? (
             <MotionButton ref={publishTriggerRef} variant="glossy" onClick={openPublishDialog} disabled={saving || !quickBooksConnection?.connected} className="h-9 px-4">
               <Image src="/icons/qb-badge.png" alt="" width={16} height={16} className="mr-1 object-contain" />
@@ -801,301 +773,200 @@ function AccountsPayableContent() {
           </div>
         ) : null}
 
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3 text-sm">
-          <div>
-            <p className="font-medium text-foreground">
-              {destName} {quickBooksConnection?.connected ? `connected${quickBooksConnection.company_name ? ` to ${quickBooksConnection.company_name}` : ""}` : "not connected"}
-            </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              {isXero
-                ? "Select synced contacts and accounts before publishing a draft Bill to Xero."
-                : "Select synced vendors and expense accounts before publishing an unpaid Bill."}
-            </p>
-          </div>
-          <div className="flex gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-card px-3 py-2 text-xs">
+          <p className="font-medium text-foreground">
+            <span className="font-semibold">QuickBooks</span>
+            {quickBooksConnection?.connected
+              ? ` connected${quickBooksConnection.company_name ? ` to ${quickBooksConnection.company_name}` : ""}.`
+              : " setup required before publishing bills."}
+          </p>
+          <div className="flex items-center gap-2">
             {quickBooksConnection?.connected ? (
-              <Button variant="surface" size="sm" onClick={() => void loadQuickBooks(true)} disabled={syncingReferences}>
-                <img src="/site-icons/io/database.svg" className="h-4 w-4" alt="" />
+              <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => void loadQuickBooks(true)} disabled={syncingReferences}>
                 {syncingReferences ? "Refreshing..." : "Refresh lists"}
               </Button>
-            ) : (
-              <Button variant="surface" size="sm" className={cn(clayButton)} onClick={() => router.push("/dashboard/integrations")}>
-                Connect QuickBooks
-              </Button>
-            )}
+            ) : null}
+            <Button variant="surface" size="sm" className="h-7 px-3 text-xs" onClick={() => router.push("/dashboard/integrations")}>
+              Manage QuickBooks
+            </Button>
           </div>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-[minmax(320px,0.8fr)_minmax(560px,1.2fr)]">
-          <Card className="flex max-h-[40vh] xl:max-h-[700px] flex-col overflow-hidden rounded-md border-border shadow-xs">
-            {/* Filter pills */}
-            <div className="shrink-0 border-b border-border bg-card px-3 py-2.5">
-              <div className="flex flex-wrap gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setFilter("all")}
-                  className={cn(
-                    "ax-interactive inline-flex h-7 items-center gap-1 rounded-full px-3 text-xs font-medium",
-                    filter === "all"
-                      ? "bg-foreground text-background"
-                      : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                >
-                  All
-                  <span className="tabular-nums opacity-70">{items.length}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFilter("duplicates")}
-                  className={cn(
-                    "ax-interactive inline-flex h-7 items-center gap-1 rounded-full px-3 text-xs font-medium",
-                    filter === "duplicates"
-                      ? "bg-amber-500 text-white"
-                      : duplicateCount > 0
-                        ? "bg-amber-100 text-amber-900 hover:bg-amber-200"
-                        : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                >
-                  Duplicates
-                  <span className="tabular-nums opacity-80">{duplicateCount}</span>
-                </button>
-                {/* C10 — Missing-info group: documents lacking an expected field. */}
-                <button
-                  type="button"
-                  onClick={() => setFilter("missing_info")}
-                  className={cn(
-                    "ax-interactive inline-flex h-7 items-center gap-1 rounded-full px-3 text-xs font-medium",
-                    filter === "missing_info"
-                      ? "bg-amber-500 text-white"
-                      : missingInfoCount > 0
-                        ? "bg-amber-100 text-amber-900 hover:bg-amber-200"
-                        : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                >
-                  Missing info
-                  <span className="tabular-nums opacity-80">{missingInfoCount}</span>
-                </button>
+        <div className="space-y-4">
+          <Card className="overflow-hidden rounded-md border-border shadow-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-card px-3 py-2.5">
+              <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Bills queue">
                 {[
-                  { value: "needs_coding" as const, label: "Needs coding" },
-                  { value: "needs_review" as const, label: "Needs review" },
-                  { value: "ready_to_publish" as const, label: "Ready" },
-                  { value: "published" as const, label: "Published" },
-                  { value: "failed" as const, label: "Failed" },
-                  { value: "discarded" as const, label: "Discarded" },
-                ].map(pill => (
+                  { value: "needs_attention" as const, label: "Needs attention", count: counts.needs_coding + counts.needs_review },
+                  { value: "ready_to_publish" as const, label: "Ready to publish", count: counts.ready_to_publish },
+                  { value: "published" as const, label: "Published", count: counts.published },
+                ].map(tab => (
                   <button
-                    key={pill.value}
+                    key={tab.value}
                     type="button"
-                    onClick={() => setFilter(pill.value)}
+                    role="tab"
+                    aria-selected={filter === tab.value}
+                    onClick={() => setFilter(tab.value)}
                     className={cn(
                       "ax-interactive inline-flex h-7 items-center gap-1 rounded-full px-3 text-xs font-medium",
-                      filter === pill.value
+                      filter === tab.value
                         ? "bg-foreground text-background"
                         : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
                     )}
                   >
-                    {pill.label}
-                    <span className="tabular-nums opacity-70">{counts[pill.value]}</span>
+                    {tab.label}
+                    <span className="tabular-nums opacity-70">{tab.count}</span>
                   </button>
                 ))}
               </div>
-            </div>
-
-            {/* Column header */}
-            <div className="shrink-0 border-b border-border bg-card/95">
-              <div className="flex items-center gap-3 px-4 py-2">
-                <span className="size-4 shrink-0" />
-                <span className="flex-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">Vendor</span>
-                <span className="w-[72px] shrink-0 text-xs font-medium uppercase tracking-wider text-muted-foreground">Date</span>
-                <span className="w-[68px] shrink-0 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">Amount</span>
-                <span className="hidden w-[78px] shrink-0 text-xs font-medium uppercase tracking-wider text-muted-foreground sm:block">PO</span>
-                <span className="w-[84px] shrink-0 text-xs font-medium uppercase tracking-wider text-muted-foreground">Review</span>
-                <span className="w-[72px] shrink-0 text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</span>
-              </div>
-            </div>
-
-            {/* Scrollable rows */}
-            <div className="flex-1 overflow-y-auto">
-              {loading ? (
-                <div role="status" aria-label="Loading queue">
-                  {Array.from({ length: 6 }).map((_, index) => (
-                    <div
-                      key={`ap-skeleton-${index}`}
-                      className="relative flex h-14 w-full items-center gap-3 border-b border-border/50 px-4 last:border-b-0"
-                    >
-                      <span className="size-4 shrink-0" />
-                      <Skeleton className="h-3.5 flex-1 max-w-[180px]" />
-                      <Skeleton className="h-3 w-[60px] shrink-0" />
-                      <Skeleton className="h-3 w-[52px] shrink-0" />
-                      <Skeleton className="h-5 w-[64px] shrink-0 rounded-full" />
-                    </div>
-                  ))}
-                </div>
-              ) : visibleItems.length === 0 ? (
-                <EmptyState
-                  illustration="/illustrations/workspace-v2/empty-history.png"
-                  illustrationSize={120}
-                  icon={<ChevronLeft />}
-                  title="No invoices in this queue"
-                  description="Mark a reviewed invoice Ready, then add it from Convert Files."
-                  compact
-                />
-              ) : (
-                <AnimatePresence initial={false}>
-                  {visibleItems.map(item => {
-                    const tone = statusTone[item.status]
-                    const isActive = activeId === item.id
-                    const isReady = item.status === "ready_to_publish"
+              <details className="relative">
+                <summary
+                  className={cn(
+                    "ax-interactive flex h-7 cursor-pointer list-none items-center rounded-full px-3 text-xs font-medium [&::-webkit-details-marker]:hidden",
+                    moreFilters.some(option => option.value === filter)
+                      ? "bg-foreground text-background"
+                      : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground",
+                  )}
+                >
+                  More filters
+                </summary>
+                <div className="absolute right-0 z-20 mt-2 grid min-w-[180px] gap-1 rounded-md border border-border bg-card p-1.5 shadow-lg">
+                  {moreFilters.map(option => {
+                    const count =
+                      option.value === "duplicates" ? duplicateCount :
+                      option.value === "missing_info" ? missingInfoCount :
+                      counts[option.value]
                     return (
-                      <motion.div
-                        key={item.id}
-                        layout
-                        initial={{ opacity: 0, x: -12, height: 0 }}
-                        animate={{ opacity: 1, x: 0, height: "auto" }}
-                        exit={{ opacity: 0, x: -10, height: 0, marginBottom: 0 }}
-                        transition={{ duration: 0.18, ease: "easeOut" }}
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => setActiveId(item.id)}
-                        onKeyDown={event => {
-                          if (event.key === "Enter" || event.key === " ") {
-                            event.preventDefault()
-                            setActiveId(item.id)
-                          }
-                        }}
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => setFilter(option.value)}
                         className={cn(
-                          "ax-interactive relative flex h-14 w-full items-center gap-3 border-b border-border/50 px-4 text-left last:border-b-0",
-                          !isActive && "hover:bg-accent/30",
+                          "ax-interactive flex items-center justify-between rounded-md px-2.5 py-1.5 text-left text-xs font-medium",
+                          filter === option.value
+                            ? "bg-foreground text-background"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
                         )}
                       >
-                        {/* Sliding highlight — glides between rows like Linear */}
-                        {isActive && (
-                          <motion.div
-                            layoutId="ap-row-highlight"
-                            className="absolute inset-0 -z-10 bg-accent/50"
-                            transition={{ type: "spring", stiffness: 420, damping: 34 }}
-                          />
-                        )}
-
-                        {/* Left accent bar (kept; sits above the sliding highlight) */}
-                        <div className={cn(
-                          "absolute inset-y-0 left-0 w-[3px] transition-colors duration-150",
-                          isActive ? "bg-primary" : "bg-transparent"
-                        )} />
-
-                        {/* Status dot or checkbox for ready items */}
-                        <span
-                          className="size-4 shrink-0 flex items-center justify-center"
-                          onClick={isReady ? (e) => e.stopPropagation() : undefined}
-                        >
-                          {isReady ? (
-                            <Checkbox
-                              checked={selectedReadyIds.includes(item.id)}
-                              onCheckedChange={checked => toggleSelection(item.id, checked === true)}
-                              aria-label={`Select ${item.source_filename}`}
-                            />
-                          ) : (
-                            <span className={cn("block size-2 rounded-full", dotColor[tone])} />
-                          )}
-                        </span>
-
-                        {/* P4 / C7 — active duplicate flag on the row, with its "why" */}
-                        {hasActiveDuplicate(item) ? (() => {
-                          const warning = (item.duplicate_warnings || []).find(w => !w.dismissed)!
-                          const copy = duplicateCopy(warning)
-                          return (
-                            <AnomalyDot
-                              tone={copy.tone}
-                              title={copy.title}
-                              reason={copy.reason}
-                              ariaLabel="Possible duplicate"
-                              size={6}
-                            />
-                          )
-                        })() : null}
-
-                        {/* Vendor name + C10 missing-info chip */}
-                        <span className="flex min-w-0 flex-1 items-center gap-2">
-                          <span className="min-w-0 truncate text-sm font-medium text-foreground">
-                            {item.draft_data.vendor || "Vendor missing"}
-                          </span>
-                          {(() => {
-                            const missing = missingInfo.get(item.id)
-                            return missing?.missing && missing.copy ? (
-                              <span className="shrink-0" onClick={(e) => e.stopPropagation()}>
-                                <AnomalyChip
-                                  tone={missing.copy.tone}
-                                  title={missing.copy.title}
-                                  reason={missing.copy.reason}
-                                  label="Missing info"
-                                  className="hidden h-5 px-2 sm:inline-flex"
-                                />
-                              </span>
-                            ) : null
-                          })()}
-                        </span>
-
-                        {/* Invoice date */}
-                        <span className="w-[72px] shrink-0 text-xs text-muted-foreground">
-                          {item.draft_data.invoice_date ? String(item.draft_data.invoice_date).slice(0, 10) : "—"}
-                        </span>
-
-                        {/* Amount */}
-                        <span className="w-[68px] shrink-0 text-right text-xs font-mono tabular-nums text-foreground">
-                          {amountLabel(item)}
-                        </span>
-
-                        {/* P9 — PO match status */}
-                        <span className="hidden w-[88px] shrink-0 sm:block">
-                          <span
-                            className={cn(
-                              "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-bold",
-                              item.po_match_status === "exceeds"
-                                ? "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200"
-                                : item.po_match_status === "matched"
-                                  ? "border-emerald-700/30 bg-emerald-50 text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-200"
-                                  : "border-border bg-muted/50 text-muted-foreground",
-                            )}
-                          >
-                            {item.po_match_status !== "unmatched" ? (
-                              <span className={cn("size-1.5 rounded-full", item.po_match_status === "exceeds" ? "bg-amber-500" : "bg-emerald-600")} />
-                            ) : null}
-                            {item.po_match_status === "exceeds" ? "Exceeds" : item.po_match_status === "matched" ? "Matched" : "Unmatched"}
-                          </span>
-                        </span>
-
-                        {/* C1 — composite Review Score + "why this needs review" */}
-                        <span
-                          className="w-[84px] shrink-0"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <ReviewScoreBadge score={reviewScores.get(item.id) ?? computeReviewScore(item)} />
-                        </span>
-
-                        {/* Status badge */}
-                        <span className="w-[72px] shrink-0">
-                          <StatusBadge tone={tone}>{statusLabel(item.status)}</StatusBadge>
-                        </span>
-                      </motion.div>
+                        {option.label}
+                        <span className="ml-3 tabular-nums opacity-70">{count}</span>
+                      </button>
                     )
                   })}
-                </AnimatePresence>
-              )}
+                </div>
+              </details>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[1320px] text-left text-xs">
+                <thead className="border-b border-border bg-muted/30 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <tr>
+                    <th className="w-10 px-3 py-2" />
+                    <th className="min-w-[180px] px-3 py-2">Supplier</th>
+                    <th className="w-[124px] px-3 py-2">Bill number</th>
+                    <th className="w-[104px] px-3 py-2">Invoice date</th>
+                    <th className="w-[104px] px-3 py-2">Due date</th>
+                    <th className="min-w-[150px] px-3 py-2">Account</th>
+                    <th className="w-[112px] px-3 py-2">VAT code</th>
+                    <th className="w-[56px] px-3 py-2">Cur</th>
+                    <th className="w-[92px] px-3 py-2 text-right">Net</th>
+                    <th className="w-[92px] px-3 py-2 text-right">VAT</th>
+                    <th className="w-[100px] px-3 py-2 text-right">Total</th>
+                    <th className="w-[132px] px-3 py-2">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {loading ? (
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <tr key={`ap-skeleton-${index}`}>
+                        <td colSpan={12} className="px-3 py-3">
+                          <Skeleton className="h-4 w-full max-w-[920px]" />
+                        </td>
+                      </tr>
+                    ))
+                  ) : visibleItems.length === 0 ? (
+                    <tr>
+                      <td colSpan={12}>
+                        <EmptyState
+                          illustration="/illustrations/workspace-v2/empty-history.png"
+                          illustrationSize={100}
+                          icon={<ChevronLeft />}
+                          title="No bills in this queue"
+                          description="Bills appear here when they need review or are ready to publish."
+                          compact
+                        />
+                      </td>
+                    </tr>
+                  ) : (
+                    <AnimatePresence initial={false}>
+                      {visibleItems.map(item => {
+                        const tone = statusTone[item.status]
+                        const isActive = activeId === item.id
+                        const isReady = item.status === "ready_to_publish"
+                        const missing = missingInfo.get(item.id)
+                        return (
+                          <motion.tr
+                            key={item.id}
+                            layout
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.16, ease: "easeOut" }}
+                            tabIndex={0}
+                            onClick={() => setActiveId(item.id)}
+                            onKeyDown={event => {
+                              if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault()
+                                setActiveId(item.id)
+                              }
+                            }}
+                            className={cn(
+                              "ax-interactive cursor-pointer bg-card text-muted-foreground hover:bg-accent/30",
+                              isActive && "bg-accent/50",
+                            )}
+                          >
+                            <td className="px-3 py-2.5" onClick={isReady ? event => event.stopPropagation() : undefined}>
+                              {isReady ? (
+                                <Checkbox
+                                  checked={selectedReadyIds.includes(item.id)}
+                                  onCheckedChange={checked => toggleSelection(item.id, checked === true)}
+                                  aria-label={`Select ${item.source_filename}`}
+                                />
+                              ) : (
+                                <span className={cn("block size-2 rounded-full", dotColor[tone])} />
+                              )}
+                            </td>
+                            <td className="max-w-[240px] px-3 py-2.5">
+                              <div className="flex items-center gap-2">
+                                <span className="truncate font-medium text-foreground">{item.draft_data.vendor || "Supplier missing"}</span>
+                                {hasActiveDuplicate(item) ? <span className="size-1.5 shrink-0 rounded-full bg-amber-500" title="Possible duplicate" /> : null}
+                                {missing?.missing ? <span className="size-1.5 shrink-0 rounded-full bg-rose-500" title="Missing information" /> : null}
+                              </div>
+                            </td>
+                            <td className="px-3 py-2.5 font-mono tabular-nums">{ledgerValue(item.draft_data.invoice_number)}</td>
+                            <td className="px-3 py-2.5 tabular-nums">{shortDate(item.draft_data.invoice_date)}</td>
+                            <td className="px-3 py-2.5 tabular-nums">{shortDate(item.draft_data.due_date)}</td>
+                            <td className="max-w-[200px] truncate px-3 py-2.5">{ledgerValue(item.draft_data.account_category)}</td>
+                            <td className="max-w-[132px] truncate px-3 py-2.5">{ledgerValue(item.draft_data.tax_code)}</td>
+                            <td className="px-3 py-2.5 font-mono">{ledgerValue(item.draft_data.currency)}</td>
+                            <td className="px-3 py-2.5 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.subtotal)}</td>
+                            <td className="px-3 py-2.5 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.tax_amount)}</td>
+                            <td className="px-3 py-2.5 text-right font-mono font-medium tabular-nums text-foreground">{ledgerValue(item.draft_data.total)}</td>
+                            <td className="px-3 py-2.5"><StatusBadge tone={tone}>{statusLabel(item.status)}</StatusBadge></td>
+                          </motion.tr>
+                        )
+                      })}
+                    </AnimatePresence>
+                  )}
+                </tbody>
+              </table>
             </div>
           </Card>
 
+          {activeItem ? (
           <SpotlightCard className="rounded-md">
             <Card className="rounded-md border-border shadow-xs">
             <CardContent className="p-5">
-              {!activeItem ? (
-                <EmptyState
-                  icon={<ChevronLeft />}
-                  illustration="/illustrations/workspace-v2/select-invoice.png"
-                  illustrationSize={160}
-                  title="Select an invoice"
-                  description="Pick an item from the queue to start coding"
-                />
-              ) : (
                 <div className="space-y-5">
                   <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
                     <div>
@@ -1300,7 +1171,7 @@ function AccountsPayableContent() {
                           htmlFor="ap-vendor-ref"
                           dirty={valuesDiffer(draft.vendor_ref_id, activeItem.draft_data.vendor_ref_id)}
                         >
-                          {labels.vendor}
+                          {labels.supplier}
                         </FieldLabel>
                         {!activeLocked ? (
                           <button
@@ -1319,7 +1190,7 @@ function AccountsPayableContent() {
                         disabled={activeLocked || !quickBooksConnection?.connected}
                       >
                         <SelectTrigger id="ap-vendor-ref" className={inlineFieldClass}>
-                          <SelectValue placeholder={vendors.length ? labels.vendorPlaceholder : labels.vendorRefresh} />
+                          <SelectValue placeholder={vendors.length ? labels.supplierPlaceholder : labels.supplierRefresh} />
                         </SelectTrigger>
                         <SelectContent>
                           {vendors.map(vendor => (
@@ -1426,7 +1297,7 @@ function AccountsPayableContent() {
                         </SelectContent>
                       </Select>
                     </div>
-                    {editableFields.map(([field, label, placeholder]) => (
+                    {coreFields.map(([field, label, placeholder]) => (
                       <div key={field} className="space-y-1.5">
                         <FieldLabel
                           htmlFor={`ap-${field}`}
@@ -1452,31 +1323,57 @@ function AccountsPayableContent() {
                     </div>
                   </div>
 
-                  <label className="flex items-center gap-2 rounded-md border border-border px-3 py-2.5 text-sm text-foreground">
-                    <Checkbox
-                      checked={attachmentVisible}
-                      disabled={activeLocked}
-                      onCheckedChange={checked => setAttachmentVisible(checked === true)}
-                    />
-                    Attach source document to QuickBooks Bill
-                  </label>
-
-                  {activeItem.quickbooks_publication ? (
-                    <div className="rounded-md border border-border bg-muted/30 p-3 text-sm">
-                      <p className="font-medium text-foreground">
-                        QuickBooks publish: {activeItem.quickbooks_publication.status}
-                      </p>
-                      {activeItem.quickbooks_publication.quickbooks_bill_id ? (
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          Bill ID {activeItem.quickbooks_publication.quickbooks_bill_id}
-                          {activeItem.quickbooks_publication.attachment_status === "attached" ? " - source attached" : ""}
-                        </p>
-                      ) : null}
-                      {activeItem.quickbooks_publication.attachment_status === "failed" ? (
-                        <p className="mt-1 text-xs text-muted-foreground">The Bill exists; publish again to retry only its attachment.</p>
+                  <details className="rounded-md border border-border bg-muted/20">
+                    <summary className="ax-interactive cursor-pointer list-none px-3 py-2.5 text-sm font-semibold text-foreground [&::-webkit-details-marker]:hidden">
+                      Advanced details
+                    </summary>
+                    <div className="space-y-3 border-t border-border px-3 py-3">
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        {advancedFields.map(([field, label, placeholder]) => (
+                          <div key={field} className="space-y-1.5">
+                            <FieldLabel
+                              htmlFor={`ap-${field}`}
+                              dirty={valuesDiffer(draft[field], activeItem.draft_data[field])}
+                            >
+                              {label}
+                            </FieldLabel>
+                            <Input
+                              id={`ap-${field}`}
+                              value={String(draft[field] || "")}
+                              onChange={event => updateDraftField(field, event.target.value)}
+                              placeholder={placeholder}
+                              disabled={activeLocked}
+                              className={inlineFieldClass}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <label className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2.5 text-sm text-foreground">
+                        <Checkbox
+                          checked={attachmentVisible}
+                          disabled={activeLocked}
+                          onCheckedChange={checked => setAttachmentVisible(checked === true)}
+                        />
+                        Attach source document to QuickBooks Bill
+                      </label>
+                      {activeItem.quickbooks_publication ? (
+                        <div className="rounded-md border border-border bg-card p-3 text-sm">
+                          <p className="font-medium text-foreground">
+                            QuickBooks publish: {activeItem.quickbooks_publication.status}
+                          </p>
+                          {activeItem.quickbooks_publication.quickbooks_bill_id ? (
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              Bill ID {activeItem.quickbooks_publication.quickbooks_bill_id}
+                              {activeItem.quickbooks_publication.attachment_status === "attached" ? " - source attached" : ""}
+                            </p>
+                          ) : null}
+                          {activeItem.quickbooks_publication.attachment_status === "failed" ? (
+                            <p className="mt-1 text-xs text-muted-foreground">The Bill exists; publish again to retry only its attachment.</p>
+                          ) : null}
+                        </div>
                       ) : null}
                     </div>
-                  ) : null}
+                  </details>
 
                   <div>
                     <div className="mb-2 flex items-center justify-between gap-3">
@@ -1530,44 +1427,29 @@ function AccountsPayableContent() {
                     )}
                   </div>
 
-                  <div className="sticky bottom-0 z-10 -mx-5 -mb-5 flex flex-col gap-3 border-t border-border bg-background/95 px-5 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:relative sm:bottom-auto sm:mx-0 sm:mb-0 sm:flex-row sm:items-end sm:justify-between sm:bg-transparent sm:px-0 sm:py-4 sm:backdrop-blur-0 sm:supports-[backdrop-filter]:bg-transparent">
-                    <div className="w-full max-w-[230px] space-y-1.5">
-                      <FieldLabel htmlFor="ap-next-status">Status</FieldLabel>
-                      {activeLocked ? (
-                        <div className="flex h-9 items-center rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground">
-                          Published in {destName}
-                        </div>
-                      ) : (
-                        <Select value={nextStatus} onValueChange={value => setNextStatus(value as AccountsPayableStatus)}>
-                          <SelectTrigger id="ap-next-status" className={inlineFieldClass}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {queueStatuses.filter(status => status.value !== "published").map(status => (
-                              <SelectItem key={status.value} value={status.value}>
-                                {status.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {!activeLocked ? (
-                        <>
-                          <MotionButton variant="surface" onClick={() => void persistDraft()} disabled={saving} className={cn("h-9", clayButton)}>
-                            Save draft
-                          </MotionButton>
-                          <Button variant="reviewed" onClick={() => void applySelectedStatus()} disabled={saving || nextStatus === activeItem.status} className="h-9">
-                            Apply status
-                          </Button>
-                          {activeItem.status === "ready_to_publish" ? (
+                  <div className="sticky bottom-0 z-10 -mx-5 -mb-5 flex flex-wrap justify-end gap-2 border-t border-border bg-background/95 px-5 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:relative sm:bottom-auto sm:mx-0 sm:mb-0 sm:bg-transparent sm:px-0 sm:py-4 sm:backdrop-blur-0 sm:supports-[backdrop-filter]:bg-transparent">
+                    {!activeLocked ? (
+                      <>
+                        <MotionButton variant="surface" onClick={() => void persistDraft()} disabled={saving} className={cn("h-9", clayButton)}>
+                          Save changes
+                        </MotionButton>
+                        {activeItem.status === "ready_to_publish" ? (
+                          <>
+                            <Button variant="surface" onClick={() => void persistDraft("needs_coding")} disabled={saving} className="h-9">
+                              Return to coding
+                            </Button>
                             <MotionButton ref={activePublishRef} variant="glossy" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9">
-                              {labels.publish}
+                              Publish to QuickBooks
                             </MotionButton>
-                          ) : null}
-                        </>
-                      ) : null}
+                          </>
+                        ) : (
+                          <Button variant="reviewed" onClick={() => void persistDraft("ready_to_publish")} disabled={saving} className="h-9">
+                            Mark ready to publish
+                          </Button>
+                        )}
+                      </>
+                    ) : null}
+                    <div className="flex flex-wrap gap-2">
                       {activeItem.status === "published" && activeItem.quickbooks_publication?.attachment_status === "failed" ? (
                         <Button variant="surface" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9">
                           Retry attachment
@@ -1576,10 +1458,10 @@ function AccountsPayableContent() {
                     </div>
                   </div>
                 </div>
-              )}
             </CardContent>
           </Card>
           </SpotlightCard>
+          ) : null}
         </div>
       </div>
 
@@ -1711,10 +1593,7 @@ function AccountsPayableContent() {
           ) : poList.length === 0 ? (
             <div className="rounded-xl border-2 border-border bg-muted/30 p-5 text-center">
               <p className="text-sm font-bold text-foreground">No open purchase orders</p>
-              <p className="mt-1 text-xs font-semibold text-muted-foreground">Import a CSV of open POs to start matching.</p>
-              <Button variant="surface" size="sm" className="mt-3" onClick={() => { setPoDialogOpen(false); setPoImportOpen(true) }}>
-                Import POs (CSV)
-              </Button>
+              <p className="mt-1 text-xs font-semibold text-muted-foreground">No open purchase orders are available for this supplier.</p>
             </div>
           ) : (
             <div className="max-h-[320px] space-y-2 overflow-y-auto">
@@ -1753,42 +1632,8 @@ function AccountsPayableContent() {
             </div>
           )}
 
-          <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-between">
-            <Button variant="ghost" size="sm" onClick={() => { setPoDialogOpen(false); setPoImportOpen(true) }}>
-              Import POs (CSV)
-            </Button>
-            <Button variant="surface" size="sm" onClick={() => setPoDialogOpen(false)}>Close</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* P9 — CSV import dialog */}
-      <Dialog open={poImportOpen} onOpenChange={setPoImportOpen}>
-        <DialogContent className="gap-4 rounded-md sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base font-bold">
-              <span className="inline-flex size-6 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
-                <FileText className="size-3.5" />
-              </span>
-              Import purchase orders
-            </DialogTitle>
-            <DialogDescription className="text-sm font-medium leading-6">
-              Paste CSV with a header row. Columns: <span className="rounded bg-muted px-1 font-mono text-[12px] text-foreground">po_number, vendor, date, total, remaining, currency</span>. Existing PO numbers are updated.
-            </DialogDescription>
-          </DialogHeader>
-          <textarea
-            value={poCsv}
-            onChange={(event) => setPoCsv(event.target.value)}
-            placeholder={"po_number,vendor,date,total,remaining,currency\nPO-1001,Acme Ltd,2026-05-01,1200.00,1200.00,USD"}
-            rows={8}
-            className="w-full rounded-md border border-border bg-background p-3 font-mono text-xs outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
-          />
           <DialogFooter>
-            <Button variant="surface" onClick={() => setPoImportOpen(false)} disabled={poBusy} className="h-9 px-4">Cancel</Button>
-            <MotionButton variant="glossy" onClick={() => void importPos()} disabled={poBusy || !poCsv.trim()} className="h-9 px-4">
-              {poBusy ? <Loader2 className="size-4 animate-spin" /> : null}
-              Import
-            </MotionButton>
+            <Button variant="surface" size="sm" onClick={() => setPoDialogOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
