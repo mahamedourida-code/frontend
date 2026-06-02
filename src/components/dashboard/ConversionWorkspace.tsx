@@ -33,13 +33,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { MotionButton } from "@/components/ui/motion-button"
 import { BankReconciliationPanel } from "@/components/dashboard/BankReconciliationPanel"
 import { ConfidenceDot, ConfidenceLegend } from "@/components/dashboard/ConfidenceDot"
 import { AnomalyChip, type AnomalyTone } from "@/components/dashboard/AnomalyChip"
 import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
 import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
 import { SourceHighlightOverlay } from "@/components/dashboard/SourceHighlightOverlay"
+import { ProgressiveUploadSheet } from "@/components/dashboard/upload/ProgressiveUploadSheet"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { duplicateCopy } from "@/lib/anomaly-reasons"
 import { buildCardSummary } from "@/lib/card-summary"
@@ -1345,7 +1345,8 @@ export function ResultActions({
   const [confirmedFields, setConfirmedFields] = useState<Record<string, true>>({})
   const prefersReducedMotion = useReducedMotion()
   const [editedTables, setEditedTables] = useState<Record<string, any[][]>>({})
-  const [resultFilter, setResultFilter] = useState<ResultFilter>("all")
+  const [resultFilter, setResultFilter] = useState<ResultFilter>("needs_review")
+  const moreFiltersRef = useRef<HTMLDetailsElement>(null)
   // C4 — clean/high-confidence cards collapse to a one-line summary; this set
   // holds the keys of clean cards the reviewer has chosen to expand in place.
   const [expandedClean, setExpandedClean] = useState<Record<string, true>>({})
@@ -1384,9 +1385,10 @@ export function ResultActions({
       const badge = getOutputBadge(file)
       return badge.state === "needs_review"
     })
+    const hasReadyFiles = safeResultFiles.some((file) => getOutputBadge(file).state === "ready")
     const hasFailedFiles = safeResultFiles.some((file) => getOutputBadge(file).state === "failed")
 
-    setResultFilter(hasReviewFiles ? "needs_review" : hasFailedFiles ? "failed" : "all")
+    setResultFilter(hasReviewFiles ? "needs_review" : hasReadyFiles ? "ready" : hasFailedFiles ? "failed" : "all")
   }, [safeResultFiles.map((file) => file.file_id || file.filename || "").join("|")])
 
   useEffect(() => {
@@ -1517,9 +1519,6 @@ export function ResultActions({
     },
     { all: 0, needs_review: 0, ready: 0, edited: 0, failed: 0, published: 0 } as Record<ResultFilter, number>
   )
-  // The "needs you" pile leads the board: anything flagged for review or failed.
-  // Drives the editorial lead line (count vs. the calm all-clear message).
-  const needsAttentionCount = filterCounts.needs_review + filterCounts.failed
   const filteredResultEntries = resultEntries.filter((entry) => {
     if (resultFilter === "all") return true
     if (resultFilter === "edited") return entry.edited
@@ -1882,28 +1881,15 @@ export function ResultActions({
 
       <div className="pt-2">
         <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-2xl font-bold tracking-tight text-foreground">
-              Review board <span className="text-base font-medium text-muted-foreground">{safeResultFiles.length}</span>
-            </p>
-            {needsAttentionCount > 0 ? (
-              <p className="mt-1 text-[15px] text-muted-foreground">
-                <span className="font-semibold text-foreground">{needsAttentionCount}</span> need{needsAttentionCount === 1 ? "s" : ""} you — the rest read cleanly.
-              </p>
-            ) : (
-              <p className="mt-1 text-[15px] text-muted-foreground">AxLiner prepared it. Nothing left to approve.</p>
-            )}
-          </div>
+          <p className="text-2xl font-bold tracking-tight text-foreground">
+            Review board <span className="text-base font-medium text-muted-foreground">{safeResultFiles.length}</span>
+          </p>
         </div>
 
-        <div className="mb-4 flex flex-wrap gap-1.5">
+        <div className="mb-4 flex flex-wrap items-center gap-1.5">
           {([
-            ["all", "All"],
             ["needs_review", "Needs review"],
             ["ready", "Ready"],
-            ["edited", "Edited"],
-            ["failed", "Failed"],
-            ["published", "Published"],
           ] as Array<[ResultFilter, string]>).map(([value, label]) => (
             <button
               key={value}
@@ -1922,6 +1908,42 @@ export function ResultActions({
               </span>
             </button>
           ))}
+          <details ref={moreFiltersRef} className="group relative">
+            <summary className={cn(
+              buttonVariants({ variant: "surface", size: "sm" }),
+              "h-8 cursor-pointer list-none gap-1.5 px-3 text-xs [&::-webkit-details-marker]:hidden",
+              ["all", "edited", "published", "failed"].includes(resultFilter) && "border-[var(--brand-green-ring)]"
+            )}>
+              {["all", "edited", "published", "failed"].includes(resultFilter)
+                ? `More filters: ${resultFilter === "all" ? "All" : resultFilter[0].toUpperCase() + resultFilter.slice(1)}`
+                : "More filters"}
+              <ChevronDown className="size-3.5 transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="absolute left-0 top-10 z-30 w-44 space-y-1 rounded-md border border-border bg-card p-1.5 shadow-lg">
+              {([
+                ["all", "All"],
+                ["edited", "Edited"],
+                ["published", "Published"],
+                ["failed", "Failed"],
+              ] as Array<[ResultFilter, string]>).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => {
+                    setResultFilter(value)
+                    moreFiltersRef.current?.removeAttribute("open")
+                  }}
+                  className={cn(
+                    "flex h-8 w-full items-center justify-between rounded-sm px-2 text-xs font-semibold transition",
+                    resultFilter === value ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-accent"
+                  )}
+                >
+                  {label}
+                  <span className="text-[10px] text-muted-foreground">{filterCounts[value]}</span>
+                </button>
+              ))}
+            </div>
+          </details>
         </div>
 
         {/* C5 — sweep the clean pile + a hint to the keyboard sheet. */}
@@ -2020,9 +2042,9 @@ export function ResultActions({
                   label={reviewLevel.summaryLabel}
                   className="shrink-0"
                 />
-                <span className="ml-auto inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-foreground">
-                  Review
-                  <ChevronRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5" />
+                <span className="ml-auto inline-flex shrink-0 items-center text-muted-foreground">
+                  <span className="sr-only">Open review</span>
+                  <ChevronRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
                 </span>
               </motion.div>
             )
@@ -3090,7 +3112,9 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     isProcessing,
     isComplete,
     uploadedSizeMb,
+    creditAvailable,
     creditEstimate,
+    maxUploadFiles,
     processLabel,
     noCredits,
     resultFiles,
@@ -3137,34 +3161,27 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
   const hasResults = Boolean(isComplete && (
     (resultFiles?.length || 0) > 0 || (classifiedDocuments?.length || 0) > 0
   ))
-  const selectedMode =
-    documentMode === "invoice_receipt"
-      ? "invoice"
-      : documentMode
+  const [uploadSheetOpen, setUploadSheetOpen] = useState(false)
   const expectedOutputs = Math.max(creditEstimate || 0, uploadedFiles.length)
-  const modeOptions = [
-    { value: "auto", label: "Auto detect" },
-    { value: "invoice", label: "Invoice" },
-    { value: "receipt", label: "Receipt" },
-    { value: "bank_statement", label: "Bank statement" },
-    { value: "table", label: "Table" },
-    { value: "notes", label: "Notes" },
-  ] as const satisfies ReadonlyArray<{ value: Exclude<DocumentMode, "invoice_receipt">; label: string }>
-  const outputOptions = documentMode === "notes"
-    ? [
-        { value: "text", label: "Readable text" },
-        { value: "table", label: "Excel XLSX" },
-        { value: "csv", label: "CSV" },
-      ]
-    : [
-        { value: "table", label: "Excel XLSX" },
-        { value: "csv", label: "CSV" },
-      ]
 
   const handleModeChange = (mode: Exclude<DocumentMode, "invoice_receipt">) => {
     onDocumentModeChange?.(mode)
     onOutputModeChange(mode === "notes" ? "text" : "table")
   }
+
+  useEffect(() => {
+    const syncSheetWithHash = () => {
+      if (hasResults) {
+        setUploadSheetOpen(false)
+        return
+      }
+      if (window.location.hash === "#upload-files") setUploadSheetOpen(true)
+    }
+
+    syncSheetWithHash()
+    window.addEventListener("hashchange", syncSheetWithHash)
+    return () => window.removeEventListener("hashchange", syncSheetWithHash)
+  }, [hasResults])
 
   return (
     <div className="space-y-4">
@@ -3174,13 +3191,39 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
         onContinueLatestJob={onContinueLatestJob}
       />
       <WorkspaceErrorBanner banner={banner} onDismiss={onDismissBanner} />
+      <ProgressiveUploadSheet
+        open={uploadSheetOpen}
+        onOpenChange={setUploadSheetOpen}
+        uploadedFiles={uploadedFiles}
+        pdfPageCounts={pdfPageCounts}
+        isDragging={isDragging}
+        isUploading={isUploading}
+        isProcessing={isProcessing}
+        documentMode={documentMode}
+        outputMode={outputMode}
+        creditAvailable={creditAvailable}
+        creditEstimate={creditEstimate}
+        maxUploadFiles={maxUploadFiles}
+        noCredits={noCredits}
+        processLabel={processLabel}
+        onDocumentModeChange={handleModeChange}
+        onOutputModeChange={onOutputModeChange}
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        onDrop={onDrop}
+        onFileInput={onFileInput}
+        onRemoveFile={onRemoveFile}
+        onClearFiles={onClearFiles}
+        onProcess={onConvert}
+        onCancel={onCancel}
+      />
 
       <div className="space-y-3">
         <div className="grid gap-4">
           {!hasResults ? (
             <div className="space-y-5">
-              <section aria-labelledby="workspace-tools-title" className="border-b border-border pb-4">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <section id="upload-files" aria-labelledby="workspace-tools-title" className="space-y-4">
+                <div className="flex flex-col gap-4 border-b border-border pb-4 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#087a50]">New batch</p>
                     <h2 id="workspace-tools-title" className="mt-1 text-2xl font-bold tracking-tight text-foreground">
@@ -3190,85 +3233,59 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                       Send the whole folder. AxLiner separates mixed scans, handwritten pages, and photographed documents before review.
                     </p>
                   </div>
-                  <div className="flex flex-wrap gap-3">
-                    <label className="text-xs font-semibold text-muted-foreground">
-                      Document type
-                      <select
-                        value={selectedMode}
-                        onChange={(event) => handleModeChange(event.target.value as Exclude<DocumentMode, "invoice_receipt">)}
-                        disabled={isProcessing}
-                        className="mt-1 block h-10 min-w-[180px] rounded-md border border-border bg-card px-3 text-sm font-semibold text-foreground outline-none focus:ring-2 focus:ring-ring/40"
-                      >
-                        {modeOptions.map(mode => (
-                          <option key={mode.value} value={mode.value}>{mode.label}</option>
-                        ))}
-                      </select>
-                    </label>
-                    <label className="text-xs font-semibold text-muted-foreground">
-                      Output
-                      <select
-                        value={outputMode}
-                        onChange={(event) => onOutputModeChange(event.target.value as OutputMode)}
-                        disabled={isProcessing}
-                        className="mt-1 block h-10 min-w-[140px] rounded-md border border-border bg-card px-3 text-sm font-semibold text-foreground outline-none focus:ring-2 focus:ring-ring/40"
-                      >
-                        {outputOptions.map(format => (
-                          <option key={format.value} value={format.value}>{format.label}</option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
+                  <Button
+                    type="button"
+                    variant="glossy"
+                    onClick={() => setUploadSheetOpen(true)}
+                    disabled={isUploading || isProcessing}
+                    className="gap-2 px-5"
+                  >
+                    {uploadedFiles.length ? "Review upload" : "Add documents"}
+                    <ArrowRight className="size-4" />
+                  </Button>
                 </div>
-              </section>
 
-              <UploadDropzone
-                uploadedFiles={uploadedFiles}
-                filePreviewUrls={filePreviewUrls}
-                pdfPageCounts={pdfPageCounts}
-                isDragging={isDragging}
-                isProcessing={isProcessing}
-                onDragOver={onDragOver}
-                onDragLeave={onDragLeave}
-                onDrop={onDrop}
-                onFileInput={onFileInput}
-                onRemoveFile={onRemoveFile}
-                onClearFiles={onClearFiles}
-              />
-
-              {uploadedFiles.length || isUploading || isProcessing ? (
-                <div className="flex flex-col gap-3 px-1 sm:flex-row sm:items-center sm:justify-between">
+                <button
+                  type="button"
+                  onClick={() => setUploadSheetOpen(true)}
+                  disabled={isUploading || isProcessing}
+                  className="ax-interactive group flex w-full flex-col gap-4 rounded-xl border border-border bg-card/70 p-5 text-left shadow-xs transition hover:border-primary/45 hover:bg-card disabled:cursor-default disabled:opacity-60 sm:flex-row sm:items-center"
+                >
+                  <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-xs">
+                    <FolderUp className="size-5" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-base font-bold text-foreground">
+                      {uploadedFiles.length ? "Batch staged for processing" : "Start with a mixed document batch"}
+                    </span>
+                    <span className="mt-1 block text-sm font-medium leading-6 text-muted-foreground">
+                      {uploadedFiles.length
+                        ? "Review the files, mode, and estimated usage in the upload sheet before processing."
+                        : "Choose a mode, drop documents, and review PDF page handling in one focused upload sheet."}
+                    </span>
+                  </span>
                   {uploadedFiles.length ? (
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">{uploadedFiles.length} selected</p>
-                      <p className="text-xs font-semibold text-muted-foreground">
-                        {expectedOutputs} expected output{expectedOutputs === 1 ? "" : "s"} - {formatBytes(uploadedSizeMb * 1024 * 1024)}
-                      </p>
-                    </div>
-                  ) : <span />}
-                  <div className="flex flex-wrap gap-2 sm:justify-end">
-                    {(isUploading || isProcessing) && !isComplete ? (
-                      <Button
-                        variant="surface"
-                        onClick={onCancel}
-                        className="h-10 px-4"
-                      >
-                        <X className="mr-2 h-4 w-4" />
-                        Cancel
-                      </Button>
-                    ) : null}
-                    <MotionButton
-                      variant="glossy"
-                      size="lg"
-                      onClick={onConvert}
-                      disabled={!uploadedFiles.length || isProcessing || noCredits}
-                      className="h-11 gap-2 px-6 font-semibold"
-                    >
-                      {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
-                      {isProcessing ? "Converting" : processLabel}
-                    </MotionButton>
-                  </div>
-                </div>
-              ) : null}
+                    <span className="grid shrink-0 grid-cols-2 gap-x-4 gap-y-1 text-xs font-semibold text-muted-foreground sm:text-right">
+                      <span>{uploadedFiles.length} file{uploadedFiles.length === 1 ? "" : "s"}</span>
+                      <span>{expectedOutputs} credit{expectedOutputs === 1 ? "" : "s"}</span>
+                      <span className="col-span-2">{formatBytes(uploadedSizeMb * 1024 * 1024)}</span>
+                    </span>
+                  ) : (
+                    <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                  )}
+                </button>
+
+                {uploadedFiles.length ? (
+                  <SelectedFilesTray
+                    uploadedFiles={uploadedFiles}
+                    filePreviewUrls={filePreviewUrls}
+                    pdfPageCounts={pdfPageCounts}
+                    isProcessing={isProcessing}
+                    onRemoveFile={onRemoveFile}
+                    onClearFiles={onClearFiles}
+                  />
+                ) : null}
+              </section>
             </div>
           ) : null}
 

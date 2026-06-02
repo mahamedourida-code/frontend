@@ -1,0 +1,337 @@
+"use client"
+
+import { useEffect, type ChangeEvent, type DragEvent } from "react"
+import Link from "next/link"
+import {
+  ArrowRight,
+  FileImage,
+  FileText,
+  FolderUp,
+  Inbox,
+  Loader2,
+  Trash2,
+} from "lucide-react"
+
+import { Button, buttonVariants } from "@/components/ui/button"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
+import { cn } from "@/lib/utils"
+import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
+import type { DocumentMode } from "@/lib/api-client"
+
+type UploadMode = Exclude<DocumentMode, "invoice_receipt">
+type OutputMode = "table" | "text" | "csv"
+
+type ProgressiveUploadSheetProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  uploadedFiles: File[]
+  pdfPageCounts: Record<number, number>
+  isDragging: boolean
+  isUploading: boolean
+  isProcessing: boolean
+  documentMode: DocumentMode
+  outputMode: OutputMode
+  creditAvailable: number
+  creditEstimate: number
+  maxUploadFiles: number
+  noCredits: boolean
+  processLabel: string
+  onDocumentModeChange: (mode: UploadMode) => void
+  onOutputModeChange: (mode: OutputMode) => void
+  onDragOver: (event: DragEvent<HTMLDivElement>) => void
+  onDragLeave: (event: DragEvent<HTMLDivElement>) => void
+  onDrop: (event: DragEvent<HTMLDivElement>) => void
+  onFileInput: (event: ChangeEvent<HTMLInputElement>) => void
+  onRemoveFile: (index: number) => void
+  onClearFiles: () => void
+  onProcess: () => void
+  onCancel: () => void
+}
+
+const modeTabs: Array<{ value: UploadMode; label: string }> = [
+  { value: "auto", label: "Auto detect" },
+  { value: "invoice", label: "Purchases" },
+  { value: "receipt", label: "Receipts" },
+  { value: "bank_statement", label: "Bank statements" },
+  { value: "table", label: "Other" },
+]
+
+function fileSize(bytes: number) {
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
+
+function StageLabel({ number, children }: { number: number; children: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="flex size-5 items-center justify-center rounded-full bg-foreground text-[10px] font-bold text-background">
+        {number}
+      </span>
+      <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">{children}</p>
+    </div>
+  )
+}
+
+export function ProgressiveUploadSheet({
+  open,
+  onOpenChange,
+  uploadedFiles,
+  pdfPageCounts,
+  isDragging,
+  isUploading,
+  isProcessing,
+  documentMode,
+  outputMode,
+  creditAvailable,
+  creditEstimate,
+  maxUploadFiles,
+  noCredits,
+  processLabel,
+  onDocumentModeChange,
+  onOutputModeChange,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+  onFileInput,
+  onRemoveFile,
+  onClearFiles,
+  onProcess,
+  onCancel,
+}: ProgressiveUploadSheetProps) {
+  const hasPdfs = uploadedFiles.some(isPdfFile)
+  const pdfPages = uploadedFiles.reduce((total, file, index) => (
+    total + (isPdfFile(file) ? (pdfPageCounts[index] || 1) : 0)
+  ), 0)
+  const selectedTab = documentMode === "invoice_receipt"
+    ? "invoice"
+    : documentMode === "notes"
+      ? "table"
+      : documentMode
+  const busy = isUploading || isProcessing
+
+  useEffect(() => {
+    if (isProcessing) onOpenChange(false)
+  }, [isProcessing, onOpenChange])
+
+  return (
+    <Sheet open={open} onOpenChange={(nextOpen) => {
+      if (!busy) onOpenChange(nextOpen)
+    }}>
+      <SheetContent className="w-full gap-0 bg-card sm:max-w-[560px]">
+        <SheetHeader className="border-b border-border px-5 py-5 pr-12">
+          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#087a50]">New batch</p>
+          <SheetTitle className="text-xl font-bold tracking-tight">Upload documents</SheetTitle>
+          <SheetDescription className="leading-5">
+            Choose the batch context, add files, then send them to review.
+          </SheetDescription>
+        </SheetHeader>
+
+        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-5">
+          <section className="space-y-3">
+            <StageLabel number={1}>Document mode</StageLabel>
+            <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Document mode">
+              {modeTabs.map(mode => (
+                <button
+                  key={mode.value}
+                  type="button"
+                  role="tab"
+                  aria-selected={selectedTab === mode.value}
+                  onClick={() => onDocumentModeChange(mode.value === "table" && documentMode === "notes" ? "notes" : mode.value)}
+                  disabled={busy}
+                  className={cn(
+                    "inline-flex h-8 items-center rounded-full border px-3 text-xs font-semibold transition",
+                    selectedTab === mode.value
+                      ? "border-[var(--brand-green-ring)] bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-xs"
+                      : "border-border bg-background text-muted-foreground hover:bg-accent hover:text-foreground"
+                  )}
+                >
+                  {mode.label}
+                </button>
+              ))}
+            </div>
+            {selectedTab === "table" ? (
+              <label className="block">
+                <span className="mb-1.5 block text-xs font-semibold text-muted-foreground">Other document type</span>
+                <select
+                  value={documentMode === "notes" ? "notes" : "table"}
+                  onChange={(event) => onDocumentModeChange(event.target.value as UploadMode)}
+                  disabled={busy}
+                  className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-ring/40"
+                >
+                  <option value="table">Tables and forms</option>
+                  <option value="notes">Notes and handwriting</option>
+                </select>
+              </label>
+            ) : null}
+          </section>
+
+          <section className="space-y-3">
+            <StageLabel number={2}>Documents</StageLabel>
+            <div
+              onDragOver={onDragOver}
+              onDragLeave={onDragLeave}
+              onDrop={onDrop}
+              className={cn(
+                "rounded-lg border border-dashed px-4 py-5 text-center transition",
+                isDragging ? "border-[var(--brand-green-ring)] bg-[var(--brand-green)]/45" : "border-border bg-background/70"
+              )}
+            >
+              <FolderUp className="mx-auto size-6 text-muted-foreground" />
+              <p className="mt-2 text-sm font-semibold text-foreground">
+                {isDragging ? "Drop documents here" : "Drop a mixed batch here"}
+              </p>
+              <p className="mt-1 text-xs font-medium text-muted-foreground">PDFs, scans, and photographed documents</p>
+              <label
+                htmlFor="progressive-upload-input"
+                className={cn(
+                  buttonVariants({ variant: "surface", size: "sm" }),
+                  "mt-3 cursor-pointer",
+                  busy && "pointer-events-none opacity-50"
+                )}
+              >
+                Browse files
+              </label>
+              <input
+                id="progressive-upload-input"
+                type="file"
+                multiple
+                accept={acceptedUploadMimeTypes}
+                onChange={onFileInput}
+                disabled={busy}
+                className="hidden"
+              />
+            </div>
+
+            {uploadedFiles.length ? (
+              <div className="overflow-hidden rounded-lg border border-border bg-background">
+                <div className="flex items-center justify-between border-b border-border px-3 py-2">
+                  <p className="text-xs font-semibold text-muted-foreground">
+                    {uploadedFiles.length} of {maxUploadFiles} files selected
+                  </p>
+                  <Button type="button" variant="ghost" size="sm" onClick={onClearFiles} disabled={busy} className="h-7 px-2 text-xs">
+                    Clear
+                  </Button>
+                </div>
+                <div className="max-h-48 divide-y divide-border overflow-y-auto">
+                  {uploadedFiles.map((file, index) => {
+                    const pdf = isPdfFile(file)
+                    const pageCount = pdfPageCounts[index]
+                    return (
+                      <div key={`${file.name}-${file.size}-${index}`} className="flex items-center gap-3 px-3 py-2.5">
+                        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-primary">
+                          {pdf ? <FileText className="size-4" /> : <FileImage className="size-4" />}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-semibold text-foreground">{file.name}</span>
+                          <span className="block truncate text-xs font-medium text-muted-foreground">
+                            {pdf ? `${pageCount || 1} page${pageCount === 1 ? "" : "s"}` : "Image"} - {fileSize(file.size)}
+                          </span>
+                        </span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => onRemoveFile(index)}
+                          disabled={busy}
+                          className="size-8 text-muted-foreground hover:text-foreground"
+                          aria-label={`Remove ${file.name}`}
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            ) : null}
+          </section>
+
+          {hasPdfs ? (
+            <section className="space-y-3">
+              <StageLabel number={3}>PDF segmentation</StageLabel>
+              <div className="space-y-2 rounded-lg border border-border bg-background p-3">
+                <label className="flex items-start gap-3 rounded-md border border-[var(--brand-green-ring)] bg-[var(--brand-green)]/35 p-3">
+                  <input type="radio" checked readOnly className="mt-0.5 accent-emerald-600" />
+                  <span>
+                    <span className="block text-sm font-semibold text-foreground">Separate pages for review</span>
+                    <span className="mt-0.5 block text-xs font-medium text-muted-foreground">
+                      {pdfPages} PDF page{pdfPages === 1 ? "" : "s"} will become individual review items.
+                    </span>
+                  </span>
+                </label>
+                <label className="flex cursor-not-allowed items-start gap-3 rounded-md border border-border p-3 opacity-55">
+                  <input type="radio" disabled className="mt-0.5" />
+                  <span>
+                    <span className="block text-sm font-semibold text-foreground">Keep each PDF together</span>
+                    <span className="mt-0.5 block text-xs font-medium text-muted-foreground">Not supported by the current review pipeline.</span>
+                  </span>
+                </label>
+              </div>
+            </section>
+          ) : null}
+
+          <section className="space-y-3">
+            <StageLabel number={hasPdfs ? 4 : 3}>Output format</StageLabel>
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-semibold text-muted-foreground">Download format</span>
+              <select
+                value={outputMode}
+                onChange={(event) => onOutputModeChange(event.target.value as OutputMode)}
+                disabled={busy}
+                className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-ring/40"
+              >
+                {documentMode === "notes" ? <option value="text">Readable text</option> : null}
+                <option value="table">Excel XLSX</option>
+                <option value="csv">CSV</option>
+              </select>
+            </label>
+          </section>
+        </div>
+
+        <SheetFooter className="gap-3 border-t border-border bg-card px-5 py-4">
+          <div className="flex items-center justify-between gap-4 rounded-lg bg-muted/60 px-3 py-2.5">
+            <div>
+              <p className="text-xs font-semibold text-muted-foreground">Estimated usage</p>
+              <p className="mt-0.5 text-sm font-bold text-foreground">
+                {creditEstimate} page{creditEstimate === 1 ? "" : "s"} / {creditEstimate} credit{creditEstimate === 1 ? "" : "s"}
+              </p>
+            </div>
+            <p className="text-right text-xs font-semibold text-muted-foreground">
+              {creditAvailable.toLocaleString()} available
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="glossy"
+            size="lg"
+            onClick={onProcess}
+            disabled={!uploadedFiles.length || busy || noCredits}
+            className="w-full"
+          >
+            {busy ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
+            {busy ? "Processing documents" : processLabel}
+          </Button>
+          {busy ? (
+            <Button type="button" variant="surface" onClick={onCancel} className="w-full">
+              Cancel processing
+            </Button>
+          ) : null}
+          <Link
+            href="/dashboard/inbox"
+            className="ax-interactive inline-flex items-center justify-center gap-2 text-xs font-semibold text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          >
+            <Inbox className="size-3.5" />
+            Prefer email intake? Open inbox
+          </Link>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+  )
+}
