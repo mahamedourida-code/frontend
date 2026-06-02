@@ -487,13 +487,23 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       </div>
 
       {/* Add padding to body content to account for fixed bottom nav */}
-      <style jsx global>{`
-        @media (max-width: ${isAuthenticated ? "767px" : "1023px"}) {
-          body {
-            padding-bottom: calc(4.75rem + env(safe-area-inset-bottom));
+      {isAuthenticated ? (
+        <style jsx global>{`
+          @media (max-width: 767px) {
+            body {
+              padding-bottom: calc(4.75rem + env(safe-area-inset-bottom));
+            }
           }
-        }
-      `}</style>
+        `}</style>
+      ) : (
+        <style jsx global>{`
+          @media (max-width: 1023px) {
+            body {
+              padding-bottom: calc(4.75rem + env(safe-area-inset-bottom));
+            }
+          }
+        `}</style>
+      )}
     </>
   )
 }
