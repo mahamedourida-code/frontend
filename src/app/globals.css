@@ -434,9 +434,9 @@
   --ax-action-highlight: #22c98b;
   --ax-action-base: #079765;
   --ax-action-depth: #056746;
-  --ax-upgrade-highlight: #e9ff9c;
-  --ax-upgrade-base: #d4ff6f;
-  --ax-upgrade-depth: #b9ec45;
+  --ax-upgrade-highlight: #a98b68;
+  --ax-upgrade-base: var(--brand-clay);
+  --ax-upgrade-depth: var(--brand-clay-ring);
   --status-success-bg: hsl(143 70% 94%);
   --status-success-fg: hsl(143 55% 26%);
   --status-warning-bg: hsl(38 92% 92%);
@@ -568,9 +568,9 @@
   --ax-action-highlight: #22c98b;
   --ax-action-base: #079765;
   --ax-action-depth: #056746;
-  --ax-upgrade-highlight: #e9ff9c;
-  --ax-upgrade-base: #d4ff6f;
-  --ax-upgrade-depth: #b9ec45;
+  --ax-upgrade-highlight: #a98b68;
+  --ax-upgrade-base: var(--brand-clay);
+  --ax-upgrade-depth: var(--brand-clay-ring);
   --status-success-bg: hsl(143 50% 14%);
   --status-success-fg: hsl(143 62% 70%);
   --status-warning-bg: hsl(28 50% 14%);

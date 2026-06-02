@@ -41,6 +41,7 @@ import {
   ReceiptText,
   Building2,
   Inbox,
+  PlugZap,
   Users,
   ScanLine,
 } from "lucide-react"
@@ -135,21 +136,9 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
 
   const mainNavItems: MobileNavItem[] = [
     {
-      label: "Home",
+      label: "Companies",
       href: "/dashboard",
-      icon: Home,
-      show: isAuthenticated
-    },
-    {
-      label: "Clients",
-      href: "/dashboard/clients",
-      icon: Users,
-      show: isAuthenticated
-    },
-    {
-      label: "Activity",
-      href: "/history",
-      icon: Activity,
+      icon: Building2,
       show: isAuthenticated
     },
     {
@@ -165,9 +154,21 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       show: isAuthenticated
     },
     {
-      label: "Accounts payable",
+      label: "Bills",
       href: "/dashboard/accounts-payable",
       icon: ReceiptText,
+      show: isAuthenticated
+    },
+    {
+      label: "Activity",
+      href: "/history",
+      icon: Activity,
+      show: isAuthenticated
+    },
+    {
+      label: "Integrations",
+      href: "/dashboard/integrations",
+      icon: PlugZap,
       show: isAuthenticated
     },
     {
@@ -228,7 +229,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
     onClick: () => void
   }> = isAuthenticated
     ? [
-        { label: "Home", icon: Home, active: pathname === "/dashboard", onClick: () => handleNavigation("/dashboard") },
+        { label: "Companies", icon: Building2, active: pathname === "/dashboard" || pathname.startsWith("/dashboard/companies/"), onClick: () => handleNavigation("/dashboard") },
         { label: "Review", icon: BookCheck, active: pathname === "/dashboard/client", onClick: () => handleNavigation("/dashboard/client") },
         { label: "Inbox", icon: Inbox, active: pathname === "/dashboard/inbox", onClick: () => handleNavigation("/dashboard/inbox") },
       ]

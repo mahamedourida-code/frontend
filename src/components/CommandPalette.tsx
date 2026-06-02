@@ -5,15 +5,16 @@ import { useRouter } from "next/navigation"
 import {
   Activity,
   BookCheck,
+  Building2,
   FileSpreadsheet,
   FileText,
   Inbox,
+  PlugZap,
   ReceiptText,
   RefreshCw,
   Search,
   Settings,
   Upload,
-  Users,
 } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
 import { cn } from "@/lib/utils"
@@ -39,14 +40,14 @@ const GROUP_LABELS: Record<CommandGroup, string> = {
 
 const GROUP_ORDER: CommandGroup[] = ["navigate", "act", "find"]
 
-// Navigate: every dashboard route (mirrors WorkspaceSidebar + workflow docs)
+// Navigate: every accountant workspace route (mirrors WorkspaceSidebar).
 const NAVIGATE_ITEMS: CommandItem[] = [
-  { id: "nav-home",     group: "navigate", label: "Home",             hint: "Workspace", keywords: "dashboard overview",           icon: Activity,    href: "/dashboard" },
-  { id: "nav-clients",  group: "navigate", label: "Clients",          hint: "Workspace", keywords: "companies customers",          icon: Users,       href: "/dashboard/clients" },
-  { id: "nav-activity", group: "navigate", label: "Activity",         hint: "Workspace", keywords: "history saved jobs results",   icon: Activity,    href: "/history" },
+  { id: "nav-companies", group: "navigate", label: "Companies",        hint: "Workspace", keywords: "clients customers home",        icon: Building2,   href: "/dashboard" },
   { id: "nav-inbox",    group: "navigate", label: "Inbox",            hint: "Workspace", keywords: "intake client submissions",    icon: Inbox,       href: "/dashboard/inbox" },
   { id: "nav-review",   group: "navigate", label: "Review batches",   hint: "Workspace", keywords: "documents exceptions results", icon: BookCheck,   href: "/dashboard/client" },
-  { id: "nav-ap",       group: "navigate", label: "Accounts payable", hint: "Workspace", keywords: "ap queue draft bills",         icon: ReceiptText, href: "/dashboard/accounts-payable" },
+  { id: "nav-bills",    group: "navigate", label: "Bills",            hint: "Workspace", keywords: "accounts payable ap queue",    icon: ReceiptText, href: "/dashboard/accounts-payable" },
+  { id: "nav-activity", group: "navigate", label: "Activity",         hint: "Workspace", keywords: "history saved jobs results",   icon: Activity,    href: "/history" },
+  { id: "nav-integrations", group: "navigate", label: "Integrations", hint: "Workspace", keywords: "quickbooks accounting sync",    icon: PlugZap,     href: "/dashboard/integrations" },
   { id: "nav-settings", group: "navigate", label: "Settings",         hint: "Workspace", keywords: "account billing plan",         icon: Settings,    href: "/dashboard/settings" },
 ]
 
@@ -54,7 +55,7 @@ const NAVIGATE_ITEMS: CommandItem[] = [
 const ACT_ITEMS: CommandItem[] = [
   { id: "act-upload",      group: "act", label: "Upload documents",         hint: "New batch",              keywords: "new add files import scan",     icon: Upload,          href: "/dashboard/client#upload-files" },
   { id: "act-refresh-qbo", group: "act", label: "Refresh QuickBooks lists", hint: "Accounting connection", keywords: "sync vendors accounts tax qbo", icon: RefreshCw,       href: "/dashboard/integrations" },
-  { id: "act-import-pos",  group: "act", label: "Import purchase orders",   hint: "Accounts payable",       keywords: "po pos bills coding",           icon: FileSpreadsheet, href: "/dashboard/accounts-payable" },
+  { id: "act-import-pos",  group: "act", label: "Import purchase orders",   hint: "Bills",                  keywords: "po pos bills coding",           icon: FileSpreadsheet, href: "/dashboard/accounts-payable" },
 ]
 
 function fuzzyScore(haystack: string, query: string): number {

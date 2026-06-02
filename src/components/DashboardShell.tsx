@@ -174,7 +174,7 @@ export function DashboardShell({
                 className="ax-interactive group inline-flex h-10 w-full max-w-xl items-center gap-2.5 rounded-full border border-border bg-muted/40 px-4 text-sm text-muted-foreground transition-colors hover:border-border hover:bg-muted/70 hover:text-foreground"
               >
                 <Search className="size-4 shrink-0 opacity-70" />
-                <span className="truncate">Search documents, vendors, batches…</span>
+                <span className="truncate">Search companies, documents, batches...</span>
                 <kbd className="ms-auto hidden shrink-0 rounded-md border border-border bg-background px-1.5 py-0.5 font-sans text-[10px] font-medium text-muted-foreground sm:inline-flex">
                   ⌘K
                 </kbd>
@@ -212,7 +212,7 @@ export function DashboardShell({
                 </Link>
               )}
 
-              {/* The ONE mint element above the fold — straight to the review board. */}
+              {/* The one mint action above the fold goes straight to the mixed-batch workspace. */}
               <Button asChild variant="glossy" className="hidden h-9 px-4 text-[13px] font-bold sm:inline-flex">
                 <Link href="/dashboard/client#upload-files">
                   <Upload className="size-4" />

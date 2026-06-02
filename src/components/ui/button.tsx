@@ -29,9 +29,10 @@ const buttonVariants = cva(
         // (inset top highlight + layered drop shadow).
         ink:
           "border border-foreground/80 bg-foreground bg-[linear-gradient(180deg,color-mix(in_srgb,var(--foreground)_88%,#fff)_0%,var(--foreground)_70%)] text-background shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_1px_2px_0_rgba(0,0,0,0.25),0_2px_6px_-1px_rgba(0,0,0,0.2)] hover:brightness-110 active:translate-y-px",
-        // Upgrade — uses the dedicated buto.png artwork (glossy pill) with white text.
+        // Upgrade compatibility alias — keep existing callers on `lime` while the
+        // visual treatment moves to the accountant-shell clay pill.
         lime:
-          "border-0 bg-transparent bg-[url('/buto.png')] bg-[length:100%_100%] bg-center bg-no-repeat text-white font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.45)] hover:brightness-[1.06] active:translate-y-px",
+          "bg-[var(--brand-clay)] text-[var(--brand-clay-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.45),0_0_0_1px_var(--brand-clay-ring),0_1px_3px_0_rgba(58,42,24,0.28)] hover:bg-[var(--brand-clay-hover)] active:translate-y-px",
         // Confirm/reviewed action — same ink treatment as `ink`.
         reviewed:
           "border border-foreground/80 bg-foreground bg-[linear-gradient(180deg,color-mix(in_srgb,var(--foreground)_86%,#fff)_0%,var(--foreground)_72%)] text-background shadow-[0_1px_2px_rgba(0,0,0,0.18)] hover:brightness-110 active:translate-y-px",

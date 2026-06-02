@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 import Link from "next/link"
-import { Activity, BookCheck, Home, Inbox, ReceiptText, Settings, Users, type LucideIcon } from "lucide-react"
+import { Activity, BookCheck, Building2, Inbox, PlugZap, ReceiptText, Settings, type LucideIcon } from "lucide-react"
 import { AxMark } from "@/components/AppIcon"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { cn } from "@/lib/utils"
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 export type WorkspaceSidebarItemKey =
   | "overview"
   | "clients"
+  | "companies"
   | "activity"
   | "inbox"
   | "review"
@@ -30,7 +31,7 @@ interface WorkspaceSidebarProps {
 type SidebarItem = {
   key: Extract<
     WorkspaceSidebarItemKey,
-    "overview" | "clients" | "activity" | "inbox" | "review" | "accounts_payable" | "settings"
+    "companies" | "activity" | "inbox" | "review" | "accounts_payable" | "integrations" | "settings"
   >
   label: string
   href: string
@@ -40,12 +41,12 @@ type SidebarItem = {
 const SIDEBAR_W = 232
 
 const NAV_ITEMS: SidebarItem[] = [
-  { key: "overview", label: "Home", href: "/dashboard", icon: Home },
-  { key: "clients", label: "Clients", href: "/dashboard/clients", icon: Users },
-  { key: "activity", label: "Activity", href: "/history", icon: Activity },
+  { key: "companies", label: "Companies", href: "/dashboard", icon: Building2 },
   { key: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
   { key: "review", label: "Review", href: "/dashboard/client", icon: BookCheck },
-  { key: "accounts_payable", label: "Accounts payable", href: "/dashboard/accounts-payable", icon: ReceiptText },
+  { key: "accounts_payable", label: "Bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
+  { key: "activity", label: "Activity", href: "/history", icon: Activity },
+  { key: "integrations", label: "Integrations", href: "/dashboard/integrations", icon: PlugZap },
   { key: "settings", label: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
@@ -55,9 +56,9 @@ function useReviewCount(): number {
 }
 
 function normalizeActiveItem(activeItem: WorkspaceSidebarItemKey): SidebarItem["key"] | null {
+  if (activeItem === "overview" || activeItem === "clients") return "companies"
   if (activeItem === "process") return "review"
   if (activeItem === "history") return "activity"
-  if (activeItem === "integrations") return "settings"
   if (activeItem === "pricing") return null
   return activeItem
 }
