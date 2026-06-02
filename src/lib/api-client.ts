@@ -436,6 +436,7 @@ export interface AccountsPayableItem {
   id: string
   owner_user_id: string
   workspace_id: string
+  company_id?: string | null
   document_id: string
   job_id: string
   status: AccountsPayableStatus
@@ -480,6 +481,7 @@ export interface QuickBooksReferenceItem {
 export interface JobDocumentRecord {
   id: string
   job_id: string
+  company_id?: string | null
   original_filename: string
   source_content_type?: string | null
   selected_mode: DocumentMode
@@ -565,6 +567,28 @@ export interface WorkspaceRecord {
   owner_user_id: string
   name: string
   role: 'owner' | 'reviewer'
+  created_at: string
+  updated_at: string
+}
+
+export interface CompanyDocumentCounts {
+  purchases: number
+  receipts: number
+  bank_statements: number
+  other: number
+  needs_review: number
+}
+
+export interface CompanySummary {
+  id: string
+  workspace_id: string
+  name: string
+  is_default: boolean
+  document_counts: CompanyDocumentCounts
+  bills: number
+  last_upload_at?: string | null
+  quickbooks_connected: boolean
+  quickbooks_company_name?: string | null
   created_at: string
   updated_at: string
 }
@@ -1238,11 +1262,12 @@ export const vendorMemoryApi = {
 export const accountsPayableApi = {
   list: async (
     status?: AccountsPayableStatus,
-    options?: { duplicatesOnly?: boolean },
+    options?: { duplicatesOnly?: boolean; companyId?: string },
   ): Promise<{ items: AccountsPayableItem[]; total: number }> => {
     const params: Record<string, string | boolean> = {}
     if (status) params.status = status
     if (options?.duplicatesOnly) params.duplicates_only = true
+    if (options?.companyId) params.company_id = options.companyId
     const response = await apiClient.get<{ items: AccountsPayableItem[]; total: number }>('/api/v1/accounts-payable', {
       params: Object.keys(params).length ? params : undefined,
     })
@@ -1260,7 +1285,7 @@ export const accountsPayableApi = {
   update: async (
     itemId: string,
     updates: {
-      draft_data?: Pick<AccountsPayableDraftData, 'vendor' | 'vendor_ref_id' | 'invoice_date' | 'due_date' | 'account_category' | 'account_ref_id' | 'tax_code' | 'tax_code_ref_id' | 'reference' | 'currency' | 'line_items'>
+      draft_data?: Pick<AccountsPayableDraftData, 'vendor' | 'vendor_ref_id' | 'invoice_number' | 'invoice_date' | 'due_date' | 'account_category' | 'account_ref_id' | 'tax_code' | 'tax_code_ref_id' | 'reference' | 'currency' | 'line_items'>
       attachment_visible?: boolean
       status?: AccountsPayableStatus
       reason?: string
@@ -1424,6 +1449,33 @@ export const emailIntakeApi = {
       params: workspaceId ? { workspace_id: workspaceId } : undefined,
     })
     return response.data
+  },
+}
+
+export const companyApi = {
+  list: async (workspaceId: string): Promise<{ companies: CompanySummary[]; total: number }> => {
+    const response = await apiClient.get<{ companies: CompanySummary[]; total: number }>('/api/v1/companies', {
+      params: { workspace_id: workspaceId },
+    })
+    return response.data
+  },
+
+  create: async (workspaceId: string, payload: { name: string }): Promise<CompanySummary> => {
+    const response = await apiClient.post<{ company: CompanySummary }>('/api/v1/companies', {
+      workspace_id: workspaceId,
+      ...payload,
+    })
+    return response.data.company
+  },
+
+  get: async (companyId: string): Promise<CompanySummary> => {
+    const response = await apiClient.get<{ company: CompanySummary }>(`/api/v1/companies/${companyId}`)
+    return response.data.company
+  },
+
+  update: async (companyId: string, payload: { name?: string }): Promise<CompanySummary> => {
+    const response = await apiClient.patch<{ company: CompanySummary }>(`/api/v1/companies/${companyId}`, payload)
+    return response.data.company
   },
 }
 
