@@ -834,7 +834,7 @@ function SettingsContent() {
                       <div>
                         <CardTitle className="text-lg">Accounting connections</CardTitle>
                         <CardDescription className="mt-1 max-w-xl leading-5">
-                          Manage the QuickBooks Online connection shared by this workspace from the Integrations page.
+                          Choose QuickBooks or Xero and manage the accounting connection shared by this workspace.
                         </CardDescription>
                       </div>
                     </div>

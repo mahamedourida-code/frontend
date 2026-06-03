@@ -3,7 +3,7 @@
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-import { ChevronLeft, Clock3, Loader2, Search, Upload } from "lucide-react"
+import { ChevronLeft, Clock3, Loader2, Search } from "lucide-react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -211,14 +211,6 @@ export function DashboardShell({
                   <span className="text-xs opacity-75">{activeJob.progress}</span>
                 </Link>
               )}
-
-              {/* The one mint action above the fold goes straight to the mixed-batch workspace. */}
-              <Button asChild variant="glossy" className="hidden h-9 px-4 text-[13px] font-bold sm:inline-flex">
-                <Link href="/dashboard/client#upload-files">
-                  <Upload className="size-4" />
-                  Upload documents
-                </Link>
-              </Button>
 
               <NotificationsBell />
               <HelpMenu />

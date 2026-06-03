@@ -46,10 +46,10 @@ function IntegrationsContent() {
     <DashboardShell activeItem="integrations" title="Integrations" user={user}>
       <PageHeader
         title="Integrations"
-        description="Manage the accounting connection shared by this workspace."
+        description="Choose where reviewed draft bills publish and keep accounting lists in sync."
       />
       <div className="max-w-3xl">
-        <AccountingConnectionsSection isOwner={isOwner} />
+        <AccountingConnectionsSection isOwner={isOwner} workspaceId={activeWorkspace?.id} />
       </div>
     </DashboardShell>
   )

@@ -271,7 +271,7 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
 
           {/* Help */}
           <DropdownMenuItem asChild className="h-9 gap-2 rounded-lg px-2 text-[13px] font-medium">
-            <Link href="/blogs" onClick={() => setOpen(false)}>
+            <Link href="/dashboard/guide" onClick={() => setOpen(false)}>
               <BookOpen className="size-4" />
               Docs &amp; guides
             </Link>

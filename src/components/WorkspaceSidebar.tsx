@@ -2,8 +2,9 @@
 
 import { useEffect } from "react"
 import Link from "next/link"
-import { Activity, BookCheck, Building2, Inbox, PlugZap, ReceiptText, Settings, type LucideIcon } from "lucide-react"
+import { Activity, BookCheck, BookOpenText, Building2, Inbox, PlugZap, ReceiptText, Settings, Upload, type LucideIcon } from "lucide-react"
 import { AxMark } from "@/components/AppIcon"
+import { Button } from "@/components/ui/button"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { cn } from "@/lib/utils"
 
@@ -19,6 +20,7 @@ export type WorkspaceSidebarItemKey =
   | "process"
   | "history"
   | "integrations"
+  | "guide"
   | "pricing"
 
 interface WorkspaceSidebarProps {
@@ -31,7 +33,7 @@ interface WorkspaceSidebarProps {
 type SidebarItem = {
   key: Extract<
     WorkspaceSidebarItemKey,
-    "companies" | "activity" | "inbox" | "review" | "accounts_payable" | "integrations" | "settings"
+    "companies" | "activity" | "inbox" | "review" | "accounts_payable" | "integrations" | "guide" | "settings"
   >
   label: string
   href: string
@@ -44,9 +46,10 @@ const NAV_ITEMS: SidebarItem[] = [
   { key: "companies", label: "Companies", href: "/dashboard", icon: Building2 },
   { key: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
   { key: "review", label: "Review", href: "/dashboard/client", icon: BookCheck },
-  { key: "accounts_payable", label: "Bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
+  { key: "accounts_payable", label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
   { key: "activity", label: "Activity", href: "/history", icon: Activity },
   { key: "integrations", label: "Integrations", href: "/dashboard/integrations", icon: PlugZap },
+  { key: "guide", label: "Guide", href: "/dashboard/guide", icon: BookOpenText },
   { key: "settings", label: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
@@ -82,13 +85,20 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
       <Link
         href="/dashboard"
         aria-label="AxLiner home"
-        className="ax-interactive mx-3 mt-3 flex h-12 items-center gap-2.5 rounded-lg px-2 hover:bg-sidebar-accent/60"
+        className="ax-interactive mx-3 mt-3 flex h-12 items-center gap-2.5 rounded-lg px-2 outline-none hover:bg-sidebar-accent/60 focus-visible:ring-2 focus-visible:ring-ring/45"
       >
         <AxMark className="h-7 w-auto" />
         <span className="text-[16px] font-bold tracking-tight text-foreground">AxLiner</span>
       </Link>
 
-      <nav aria-label="Sections" className="mt-5 flex flex-1 flex-col px-3 pb-4">
+      <Button asChild variant="glossy" className="mx-3 mt-3 h-10 justify-start px-3 text-[13px] font-bold">
+        <Link href="/dashboard/client#upload-files">
+          <Upload className="size-4" />
+          Upload documents
+        </Link>
+      </Button>
+
+      <nav aria-label="Sections" className="mt-4 flex flex-1 flex-col px-3 pb-4">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon
           const isActive = normalizedActiveItem === item.key
@@ -101,7 +111,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
               href={item.href}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "ax-interactive relative flex h-11 items-center gap-3 rounded-lg px-3 text-[14px] font-semibold",
+                "ax-interactive relative flex h-11 items-center gap-3 rounded-lg px-3 text-[14px] font-semibold outline-none focus-visible:ring-2 focus-visible:ring-ring/45",
                 item.key === "settings" && "mt-auto",
                 isActive
                   ? "bg-sidebar-accent text-sidebar-accent-foreground"

@@ -119,13 +119,13 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
             <TableHeader className="bg-muted/40">
               <TableRow className="hover:bg-transparent">
                 <TableHead className="min-w-[230px] px-4">Company</TableHead>
-                <TableHead>QuickBooks</TableHead>
+                <TableHead>Accounting</TableHead>
                 <TableHead className="text-right">Purchases</TableHead>
                 <TableHead className="text-right">Receipts</TableHead>
                 <TableHead className="text-right">Bank statements</TableHead>
                 <TableHead className="text-right">Other</TableHead>
                 <TableHead className="text-right">Needs review</TableHead>
-                <TableHead className="text-right">Bills</TableHead>
+                <TableHead className="text-right">Draft bills</TableHead>
                 <TableHead className="min-w-[130px] px-4">Last upload</TableHead>
               </TableRow>
             </TableHeader>
@@ -164,13 +164,13 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
                       </Link>
                     </TableCell>
                     <TableCell>
-                      {company.quickbooksConnected ? (
+                      {company.accountingConnected ? (
                         <div>
                           <span className="inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-900">
-                            Connected
+                            {company.accountingProvider === "xero" ? "Xero" : "QuickBooks"}
                           </span>
-                          {company.quickbooksCompanyName ? (
-                            <p className="mt-1 max-w-[150px] truncate text-xs text-muted-foreground">{company.quickbooksCompanyName}</p>
+                          {company.accountingCompanyName ? (
+                            <p className="mt-1 max-w-[150px] truncate text-xs text-muted-foreground">{company.accountingCompanyName}</p>
                           ) : null}
                         </div>
                       ) : (

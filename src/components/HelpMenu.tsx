@@ -47,7 +47,7 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
       { keys: ["K"], label: "Previous document" },
       { keys: ["A"], label: "Approve / mark ready" },
       { keys: ["E"], label: "Edit first flagged field" },
-      { keys: ["P"], label: "Publish to QuickBooks" },
+      { keys: ["P"], label: "Publish reviewed draft" },
       { keys: ["⌘", "↵"], label: "Confirm" },
     ],
   },
@@ -151,7 +151,7 @@ export function HelpMenu() {
         key: "docs",
         icon: BookOpen,
         label: "Docs & guides",
-        href: "/blogs",
+        href: "/dashboard/guide",
       },
       {
         key: "support",

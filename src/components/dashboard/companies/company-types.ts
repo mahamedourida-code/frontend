@@ -3,6 +3,9 @@ export type CompanySummary = {
   name: string
   quickbooksConnected: boolean
   quickbooksCompanyName: string | null
+  accountingProvider: "quickbooks" | "xero"
+  accountingConnected: boolean
+  accountingCompanyName: string | null
   purchases: number
   receipts: number
   bankStatements: number
@@ -38,6 +41,9 @@ export function normalizeCompany(value: unknown): CompanySummary {
     name: firstString(company.name, company.company_name) || "Untitled company",
     quickbooksConnected: Boolean(company.quickbooks_connected ?? quickbooks.connected),
     quickbooksCompanyName: firstString(company.quickbooks_company_name, quickbooks.company_name),
+    accountingProvider: company.accounting_destination === "xero" ? "xero" : "quickbooks",
+    accountingConnected: Boolean(company.accounting_connected ?? company.quickbooks_connected ?? quickbooks.connected),
+    accountingCompanyName: firstString(company.accounting_company_name, company.quickbooks_company_name, quickbooks.company_name),
     purchases: firstNumber(company.purchases, company.purchase_count, counts.purchases),
     receipts: firstNumber(company.receipts, company.receipt_count, counts.receipts),
     bankStatements: firstNumber(company.bank_statements, company.bank_statement_count, counts.bank_statements),

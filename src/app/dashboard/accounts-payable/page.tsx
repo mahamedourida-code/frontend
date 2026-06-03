@@ -1,6 +1,7 @@
 "use client"
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react"
+import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { AnimatePresence, motion } from "framer-motion"
@@ -38,16 +39,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import {
+  accountingDestinationApi,
   accountsPayableApi,
   clientIntakeApi,
   quickBooksApi,
+  xeroApi,
+  type AccountingDestination,
   type AccountsPayableDraftData,
   type AccountsPayableDuplicateWarning,
   type AccountsPayableItem,
   type AccountsPayableStatus,
+  type AccountingConnectionStatus,
+  type AccountingReferenceItem,
   type PurchaseOrder,
-  type QuickBooksConnectionStatus,
-  type QuickBooksReferenceItem,
+  type XeroBillPublication,
 } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
 
@@ -82,6 +87,10 @@ const statusTone: Record<AccountsPayableStatus, "warning" | "review" | "info" | 
 
 function hasActiveDuplicate(item: AccountsPayableItem) {
   return (item.duplicate_warnings || []).some((warning) => !warning.dismissed)
+}
+
+function xeroPublication(item?: AccountsPayableItem | null) {
+  return (item as (AccountsPayableItem & { xero_publication?: XeroBillPublication | null }) | null)?.xero_publication || null
 }
 
 const dotColor: Record<"warning" | "review" | "info" | "success" | "error" | "neutral", string> = {
@@ -210,7 +219,7 @@ function cloneDraft(item: AccountsPayableItem): AccountsPayableDraftData {
 }
 
 function AccountsPayableFallback() {
-  return <DashboardRouteLoader label="Loading Bills" />
+  return <DashboardRouteLoader label="Loading draft bills" />
 }
 
 export default function AccountsPayablePage() {
@@ -237,8 +246,10 @@ function AccountsPayableContent() {
   const [selectedReadyIds, setSelectedReadyIds] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [quickBooksConnection, setQuickBooksConnection] = useState<QuickBooksConnectionStatus | null>(null)
-  const [quickBooksReferences, setQuickBooksReferences] = useState<QuickBooksReferenceItem[]>([])
+  const [accountingDestination, setAccountingDestination] = useState<AccountingDestination | null>(null)
+  const [accountingConnection, setAccountingConnection] = useState<AccountingConnectionStatus | null>(null)
+  const [accountingReferences, setAccountingReferences] = useState<AccountingReferenceItem[]>([])
+  const [accountingConnectionLoading, setAccountingConnectionLoading] = useState(true)
   const [poDialogOpen, setPoDialogOpen] = useState(false)
   const [poList, setPoList] = useState<PurchaseOrder[]>([])
   const [poLoading, setPoLoading] = useState(false)
@@ -284,7 +295,7 @@ function AccountsPayableContent() {
         ? current
         : null)
     } catch {
-      toast.error("Could not load bills.")
+      toast.error("Could not load draft bills.")
     } finally {
       setLoading(false)
     }
@@ -294,28 +305,41 @@ function AccountsPayableContent() {
     if (user) void loadQueue()
   }, [user?.id])
 
-  const loadQuickBooks = async (sync = false) => {
+  const loadAccountingDestination = async (sync = false) => {
+    setAccountingConnectionLoading(true)
+    if (!sync) {
+      setAccountingDestination(null)
+      setAccountingConnection(null)
+      setAccountingReferences([])
+    }
     try {
       setSyncingReferences(sync)
-      const status = sync ? await quickBooksApi.sync() : await quickBooksApi.status()
-      setQuickBooksConnection(status)
+      const destination = await accountingDestinationApi.get(activeWorkspace?.id)
+      const status = destination === "xero"
+        ? sync ? await xeroApi.sync(activeWorkspace?.id) : await xeroApi.status(activeWorkspace?.id)
+        : sync ? await quickBooksApi.sync(activeWorkspace?.id) : await quickBooksApi.status(activeWorkspace?.id)
+      setAccountingDestination(destination)
+      setAccountingConnection(status)
       if (status.connected) {
-        const response = await quickBooksApi.references()
-        setQuickBooksReferences(response.items)
+        const response = destination === "xero"
+          ? await xeroApi.references(undefined, activeWorkspace?.id)
+          : await quickBooksApi.references(undefined, activeWorkspace?.id)
+        setAccountingReferences(response.items)
       } else {
-        setQuickBooksReferences([])
+        setAccountingReferences([])
       }
     } catch {
-      if (sync) toast.error("Could not refresh QuickBooks lists.")
+      if (sync) toast.error("Could not refresh accounting lists.")
     } finally {
       setSyncingReferences(false)
+      setAccountingConnectionLoading(false)
     }
   }
 
   useEffect(() => {
     if (!user) return
-    void loadQuickBooks()
-  }, [user?.id])
+    void loadAccountingDestination()
+  }, [user?.id, activeWorkspace?.id])
 
   // P9 — purchase order matching
   const openPoDialog = async () => {
@@ -348,6 +372,7 @@ function AccountsPayableContent() {
   }
 
   const activeItem = items.find(item => item.id === activeId) || null
+  const activeXeroPublication = xeroPublication(activeItem)
 
   useEffect(() => {
     if (!activeItem) return
@@ -443,11 +468,27 @@ function AccountsPayableContent() {
       : ["description", "quantity", "unit_price", "line_total"]
   )
   const activeLocked = activeItem?.status === "published" || activeItem?.status === "discarded"
-  const vendors = quickBooksReferences.filter(item => item.resource_type === "vendor" && item.active)
-  const accounts = quickBooksReferences.filter(item => item.resource_type === "account" && item.active)
-  const taxCodes = quickBooksReferences.filter(item => item.resource_type === "tax_code" && item.active)
+  const vendors = accountingReferences.filter(item => item.resource_type === "vendor" && item.active)
+  const accounts = accountingReferences.filter(item => item.resource_type === "account" && item.active)
+  const taxCodes = accountingReferences.filter(item => item.resource_type === "tax_code" && item.active)
+  const destinationName = accountingDestination === "xero" ? "Xero" : accountingDestination === "quickbooks" ? "QuickBooks" : "accounting destination"
+  const isQuickBooks = accountingDestination === "quickbooks"
+  const activeAccountingPublication =
+    accountingDestination === "xero"
+      ? activeXeroPublication
+      : isQuickBooks
+        ? activeItem?.quickbooks_publication
+        : null
+  const canRetryAttachment =
+    activeItem?.status === "published" &&
+    activeAccountingPublication?.attachment_status === "failed"
+  const destinationBadgeSrc = accountingDestination === "xero"
+    ? "/integrations/xero-mark.jpg"
+    : accountingDestination === "quickbooks"
+      ? "/icons/qb-badge.png"
+      : null
 
-  // Keep coding labels aligned with the QuickBooks Bill destination.
+  // Keep coding labels aligned with the selected accounting destination.
   const labels = {
     supplier: "Supplier",
     supplierPlaceholder: "Select supplier",
@@ -503,11 +544,11 @@ function AccountsPayableContent() {
     setDraft(current => ({ ...current, [field]: value }))
   }
 
-  const selectQuickBooksReference = (
+  const selectAccountingReference = (
     idField: "vendor_ref_id" | "account_ref_id" | "tax_code_ref_id",
     labelField: "vendor" | "account_category" | "tax_code",
     value: string,
-    references: QuickBooksReferenceItem[],
+    references: AccountingReferenceItem[],
   ) => {
     const selected = references.find(item => item.external_id === value)
     setDraft(current => ({
@@ -553,7 +594,7 @@ function AccountsPayableContent() {
         status,
       })
       mergeItem(response.item)
-      toast.success(status === "ready_to_publish" ? "Bill saved and marked ready." : status === "needs_coding" ? "Bill sent back for coding." : "Bill saved.")
+      toast.success(status === "ready_to_publish" ? "Draft bill saved and marked ready." : status === "needs_coding" ? "Draft bill sent back for coding." : "Draft bill saved.")
     } catch (error: any) {
       toast.error(error?.detail || error?.message || "Could not save this draft bill.")
     } finally {
@@ -678,7 +719,7 @@ function AccountsPayableContent() {
       })
       setSelectedReadyIds(current => current.filter(id => failedIds.has(id)))
       if (response.items.length) {
-        toast.success(`${response.items.length} unpaid Bill${response.items.length === 1 ? "" : "s"} created in QuickBooks.`)
+        toast.success(`${response.items.length} draft bill${response.items.length === 1 ? "" : "s"} published to ${destinationName}.`)
         const anchor = confirmPublishRef.current || publishTriggerRef.current
         if (anchor) {
           const rect = anchor.getBoundingClientRect()
@@ -704,10 +745,10 @@ function AccountsPayableContent() {
       const over = activeItem.matched_po.over_by ? ` by ${activeItem.matched_po.over_by}` : ""
       if (!window.confirm(`This invoice exceeds PO ${activeItem.matched_po.po_number}${over}. Publish anyway?`)) return
     }
-    const retryAttachment = activeItem.status === "published" && activeItem.quickbooks_publication?.attachment_status === "failed"
+    const retryAttachment = activeItem.status === "published" && activeAccountingPublication?.attachment_status === "failed"
     if (retryAttachment) {
-      if (!window.confirm("Retry attaching the source document to the existing QuickBooks Bill?")) return
-    } else if (!window.confirm("Create one unpaid Bill in QuickBooks from this reviewed invoice?")) {
+      if (!window.confirm(`Retry attaching the source document to the existing ${destinationName} draft bill?`)) return
+    } else if (!window.confirm(`Publish one reviewed draft bill to ${destinationName}?`)) {
       return
     }
     setSaving(true)
@@ -720,9 +761,9 @@ function AccountsPayableContent() {
       }
       const response = await accountsPayableApi.publish(activeItem.id)
       mergeItem(response.item)
-      // C8 — calm publish moment. For a QuickBooks Bill, hold a brief deliberate
-      // confirmation paired with the success burst instead of only a toast.
-      if (!retryAttachment) {
+      // The shared confirmation is QuickBooks-specific. Xero keeps the calm
+      // publish result in-page and uses a destination-aware toast here.
+      if (!retryAttachment && isQuickBooks) {
         const anchor = activePublishRef.current
         const origin = anchor
           ? (() => { const r = anchor.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 } })()
@@ -733,31 +774,47 @@ function AccountsPayableContent() {
           origin,
         })
       } else {
-        toast.success("Source document attached in QuickBooks.")
+        toast.success(retryAttachment ? `Source document attached in ${destinationName}.` : `Draft bill published to ${destinationName}.`)
       }
     } catch (error: any) {
-      toast.error(error?.detail || error?.message || "Could not publish this Bill.")
+      toast.error(error?.detail || error?.message || "Could not publish this draft bill.")
       await loadQueue()
     } finally {
       setSaving(false)
     }
   }
 
-  if (authLoading || !user) return <DashboardRouteLoader label="Loading Bills" />
+  if (authLoading || !user) return <DashboardRouteLoader label="Loading draft bills" />
 
   return (
-    <DashboardShell activeItem="accounts_payable" title="Bills" user={user} contentClassName="max-w-none px-3 py-4 sm:px-5 lg:px-6">
+    <DashboardShell activeItem="accounts_payable" title="Draft bills" user={user} contentClassName="max-w-none px-3 py-4 sm:px-5 lg:px-6">
       <div className="space-y-4">
         <PageHeader
-          title="Bills"
-          description="Review, code, and publish bills to QuickBooks."
+          title="Draft bills"
+          description={`Review invoice drafts, code exceptions, and publish approved bills to ${destinationName}.`}
           actions={selectedReadyIds.length ? (
-            <MotionButton ref={publishTriggerRef} variant="glossy" onClick={openPublishDialog} disabled={saving || !quickBooksConnection?.connected} className="h-9 px-4">
-              <Image src="/icons/qb-badge.png" alt="" width={16} height={16} className="mr-1 object-contain" />
+            <MotionButton ref={publishTriggerRef} variant="glossy" onClick={openPublishDialog} disabled={saving || !accountingConnection?.connected} className="h-9 px-4">
+              {destinationBadgeSrc ? <Image src={destinationBadgeSrc} alt="" width={16} height={16} className="mr-1 size-4 rounded-sm object-contain" /> : null}
               Publish {selectedReadyIds.length} {selectedReadyIds.length === 1 ? "bill" : "bills"}
             </MotionButton>
           ) : undefined}
         />
+
+        <div className="grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-3">
+          {[
+            { step: "01", title: "Review invoices", copy: "Confirm the extracted invoice details." },
+            { step: "02", title: "Prepare drafts", copy: "Code suppliers, accounts, and VAT." },
+            { step: "03", title: "Publish", copy: `Send approved draft bills to ${destinationName}.` },
+          ].map(stage => (
+            <div key={stage.step} className="flex items-center gap-3 bg-card px-3 py-2.5">
+              <span className="font-mono text-[10px] font-semibold tabular-nums text-primary">{stage.step}</span>
+              <div>
+                <p className="text-xs font-semibold text-foreground">{stage.title}</p>
+                <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">{stage.copy}</p>
+              </div>
+            </div>
+          ))}
+        </div>
 
         {/* P11 — client filter chip */}
         {clientId ? (
@@ -774,19 +831,21 @@ function AccountsPayableContent() {
 
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-card px-3 py-2 text-xs">
           <p className="font-medium text-foreground">
-            <span className="font-semibold">QuickBooks</span>
-            {quickBooksConnection?.connected
-              ? ` connected${quickBooksConnection.company_name ? ` to ${quickBooksConnection.company_name}` : ""}.`
-              : " setup required before publishing bills."}
+            <span className="font-semibold">{destinationName}</span>
+            {accountingConnectionLoading
+              ? " connection is being checked."
+              : accountingConnection?.connected
+                ? ` connected${accountingConnection.company_name ? ` to ${accountingConnection.company_name}` : ""}.`
+                : " setup required before publishing draft bills."}
           </p>
           <div className="flex items-center gap-2">
-            {quickBooksConnection?.connected ? (
-              <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => void loadQuickBooks(true)} disabled={syncingReferences}>
+            {accountingConnection?.connected ? (
+              <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => void loadAccountingDestination(true)} disabled={syncingReferences}>
                 {syncingReferences ? "Refreshing..." : "Refresh lists"}
               </Button>
             ) : null}
             <Button variant="surface" size="sm" className="h-7 px-3 text-xs" onClick={() => router.push("/dashboard/integrations")}>
-              Manage QuickBooks
+              Manage integration
             </Button>
           </div>
         </div>
@@ -794,7 +853,7 @@ function AccountsPayableContent() {
         <div className="space-y-4">
           <Card className="overflow-hidden rounded-md border-border shadow-xs">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-card px-3 py-2.5">
-              <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Bills queue">
+              <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Draft bills queue">
                 {[
                   { value: "needs_attention" as const, label: "Needs attention", count: counts.needs_coding + counts.needs_review },
                   { value: "ready_to_publish" as const, label: "Ready to publish", count: counts.ready_to_publish },
@@ -807,10 +866,10 @@ function AccountsPayableContent() {
                     aria-selected={filter === tab.value}
                     onClick={() => setFilter(tab.value)}
                     className={cn(
-                      "ax-interactive inline-flex h-7 items-center gap-1 rounded-full px-3 text-xs font-medium",
+                      "ax-interactive inline-flex h-7 items-center gap-1 rounded-full border px-3 text-xs font-medium",
                       filter === tab.value
-                        ? "bg-foreground text-background"
-                        : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                        ? "border-primary/25 bg-primary/10 text-primary"
+                        : "border-transparent bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
                     )}
                   >
                     {tab.label}
@@ -821,10 +880,10 @@ function AccountsPayableContent() {
               <details className="relative">
                 <summary
                   className={cn(
-                    "ax-interactive flex h-7 cursor-pointer list-none items-center rounded-full px-3 text-xs font-medium [&::-webkit-details-marker]:hidden",
+                    "ax-interactive flex h-7 cursor-pointer list-none items-center rounded-full border px-3 text-xs font-medium [&::-webkit-details-marker]:hidden",
                     moreFilters.some(option => option.value === filter)
-                      ? "bg-foreground text-background"
-                      : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground",
+                      ? "border-primary/25 bg-primary/10 text-primary"
+                      : "border-transparent bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground",
                   )}
                 >
                   More filters
@@ -843,7 +902,7 @@ function AccountsPayableContent() {
                         className={cn(
                           "ax-interactive flex items-center justify-between rounded-md px-2.5 py-1.5 text-left text-xs font-medium",
                           filter === option.value
-                            ? "bg-foreground text-background"
+                            ? "bg-primary/10 text-primary"
                             : "text-muted-foreground hover:bg-muted hover:text-foreground",
                         )}
                       >
@@ -890,8 +949,24 @@ function AccountsPayableContent() {
                           illustration="/illustrations/workspace-v2/empty-history.png"
                           illustrationSize={100}
                           icon={<ChevronLeft />}
-                          title="No bills in this queue"
-                          description="Bills appear here when they need review or are ready to publish."
+                          title={items.length ? "No draft bills in this queue" : "Start your draft-bill workflow"}
+                          description={items.length ? "No draft bills match this view." : "Review extracted invoices first, or upload a new folder to prepare draft bills."}
+                          action={!items.length ? (
+                            <div className="flex flex-col items-center gap-2">
+                              <Button asChild variant="glossy" size="sm">
+                                <Link href="/dashboard/client?mode=invoice">
+                                  Review invoices
+                                  <span className="text-[10px] font-bold uppercase tracking-wider opacity-70">Recommended</span>
+                                </Link>
+                              </Button>
+                              <Button asChild variant="surface" size="sm">
+                                <Link href="/dashboard/client#upload-files">Upload documents</Link>
+                              </Button>
+                              <Link href="/blogs" className="ax-interactive text-xs font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+                                Guide
+                              </Link>
+                            </div>
+                          ) : undefined}
                           compact
                         />
                       </td>
@@ -1135,7 +1210,7 @@ function AccountsPayableContent() {
                               className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-emerald-300/70 bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-emerald-800 dark:border-emerald-800/60 dark:bg-emerald-900/50 dark:text-emerald-200"
                             >
                               <Sparkles className="size-3" />
-                              AxLiner learned this from you — it&apos;ll code this vendor for you next time.
+                              Saved for this supplier. Future invoices can use the same coding.
                             </motion.div>
                           ) : null}
                         </AnimatePresence>
@@ -1185,8 +1260,8 @@ function AccountsPayableContent() {
                       </div>
                       <Select
                         value={String(draft.vendor_ref_id || "")}
-                        onValueChange={value => selectQuickBooksReference("vendor_ref_id", "vendor", value, vendors)}
-                        disabled={activeLocked || !quickBooksConnection?.connected}
+                        onValueChange={value => selectAccountingReference("vendor_ref_id", "vendor", value, vendors)}
+                        disabled={activeLocked || !accountingConnection?.connected}
                       >
                         <SelectTrigger id="ap-vendor-ref" className={inlineFieldClass}>
                           <SelectValue placeholder={vendors.length ? labels.supplierPlaceholder : labels.supplierRefresh} />
@@ -1246,8 +1321,8 @@ function AccountsPayableContent() {
                       </FieldLabel>
                       <Select
                         value={String(draft.account_ref_id || "")}
-                        onValueChange={value => selectQuickBooksReference("account_ref_id", "account_category", value, accounts)}
-                        disabled={activeLocked || !quickBooksConnection?.connected}
+                        onValueChange={value => selectAccountingReference("account_ref_id", "account_category", value, accounts)}
+                        disabled={activeLocked || !accountingConnection?.connected}
                       >
                         <SelectTrigger id="ap-account-ref" className={inlineFieldClass}>
                           <SelectValue placeholder={accounts.length ? "Select account" : "Refresh account list"} />
@@ -1282,8 +1357,8 @@ function AccountsPayableContent() {
                       </div>
                       <Select
                         value={String(draft.tax_code_ref_id || "none")}
-                        onValueChange={value => selectQuickBooksReference("tax_code_ref_id", "tax_code", value, taxCodes)}
-                        disabled={activeLocked || !quickBooksConnection?.connected}
+                        onValueChange={value => selectAccountingReference("tax_code_ref_id", "tax_code", value, taxCodes)}
+                        disabled={activeLocked || !accountingConnection?.connected}
                       >
                         <SelectTrigger id="ap-tax-ref" className={inlineFieldClass}>
                           <SelectValue placeholder="No tax code" />
@@ -1353,9 +1428,9 @@ function AccountsPayableContent() {
                           disabled={activeLocked}
                           onCheckedChange={checked => setAttachmentVisible(checked === true)}
                         />
-                        Attach source document to QuickBooks Bill
+                        Attach source document when publishing to {destinationName}
                       </label>
-                      {activeItem.quickbooks_publication ? (
+                      {isQuickBooks && activeItem.quickbooks_publication ? (
                         <div className="rounded-md border border-border bg-card p-3 text-sm">
                           <p className="font-medium text-foreground">
                             QuickBooks publish: {activeItem.quickbooks_publication.status}
@@ -1368,6 +1443,22 @@ function AccountsPayableContent() {
                           ) : null}
                           {activeItem.quickbooks_publication.attachment_status === "failed" ? (
                             <p className="mt-1 text-xs text-muted-foreground">The Bill exists; publish again to retry only its attachment.</p>
+                          ) : null}
+                        </div>
+                      ) : null}
+                      {accountingDestination === "xero" && activeXeroPublication ? (
+                        <div className="rounded-md border border-border bg-card p-3 text-sm">
+                          <p className="font-medium text-foreground">
+                            Xero publish: {activeXeroPublication.status}
+                          </p>
+                          {activeXeroPublication.xero_invoice_id ? (
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              Invoice ID {activeXeroPublication.xero_invoice_id}
+                              {activeXeroPublication.attachment_status === "attached" ? " - source attached" : ""}
+                            </p>
+                          ) : null}
+                          {activeXeroPublication.attachment_status === "failed" ? (
+                            <p className="mt-1 text-xs text-muted-foreground">The draft bill exists in Xero; publish again to retry only its attachment.</p>
                           ) : null}
                         </div>
                       ) : null}
@@ -1437,8 +1528,8 @@ function AccountsPayableContent() {
                             <Button variant="surface" onClick={() => void persistDraft("needs_coding")} disabled={saving} className="h-9">
                               Return to coding
                             </Button>
-                            <MotionButton ref={activePublishRef} variant="glossy" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9">
-                              Publish to QuickBooks
+                            <MotionButton ref={activePublishRef} variant="glossy" onClick={() => void publishActive()} disabled={saving || !accountingConnection?.connected} className="h-9">
+                              Publish to {destinationName}
                             </MotionButton>
                           </>
                         ) : (
@@ -1449,8 +1540,8 @@ function AccountsPayableContent() {
                       </>
                     ) : null}
                     <div className="flex flex-wrap gap-2">
-                      {activeItem.status === "published" && activeItem.quickbooks_publication?.attachment_status === "failed" ? (
-                        <Button variant="surface" onClick={() => void publishActive()} disabled={saving || !quickBooksConnection?.connected} className="h-9">
+                      {canRetryAttachment ? (
+                        <Button variant="surface" onClick={() => void publishActive()} disabled={saving || !accountingConnection?.connected} className="h-9">
                           Retry attachment
                         </Button>
                       ) : null}
@@ -1473,13 +1564,13 @@ function AccountsPayableContent() {
         <DialogContent className="gap-5 rounded-md sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2.5 text-base font-semibold">
-              <Image src="/icons/qb-badge.png" alt="" width={20} height={20} className="object-contain" />
-              {publishResult ? "Publish complete" : `Publish ${selectedReadyIds.length} ${selectedReadyIds.length === 1 ? "bill" : "bills"} to QuickBooks`}
+              {destinationBadgeSrc ? <Image src={destinationBadgeSrc} alt="" width={20} height={20} className="size-5 rounded-sm object-contain" /> : null}
+              {publishResult ? "Publish complete" : `Publish ${selectedReadyIds.length} ${selectedReadyIds.length === 1 ? "bill" : "bills"} to ${destinationName}`}
             </DialogTitle>
             <DialogDescription className="text-sm leading-6">
               {publishResult
                 ? "The bulk publish finished. Failed items remain in the queue and can be retried."
-                : `You are publishing ${selectedReadyIds.length} draft ${selectedReadyIds.length === 1 ? "bill" : "bills"} to QuickBooks Online. This cannot be undone.`}
+                : `You are publishing ${selectedReadyIds.length} draft ${selectedReadyIds.length === 1 ? "bill" : "bills"} to ${destinationName}. This cannot be undone.`}
             </DialogDescription>
           </DialogHeader>
 
@@ -1490,7 +1581,7 @@ function AccountsPayableContent() {
                 {publishResult.failed.length > 0 ? (
                   <StatusBadge tone="error">{publishResult.failed.length} failed</StatusBadge>
                 ) : (
-                  <span className="text-xs font-medium text-muted-foreground">All selected bills landed in QuickBooks.</span>
+                  <span className="text-xs font-medium text-muted-foreground">All selected draft bills landed in {destinationName}.</span>
                 )}
               </div>
               {publishResult.failed.length > 0 ? (
@@ -1514,7 +1605,7 @@ function AccountsPayableContent() {
           ) : (
             <div className="rounded-md border border-border">
               <p className="border-b border-border bg-muted/30 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Selected bills
+                Selected draft bills
               </p>
               <ul className="max-h-[260px] divide-y divide-border overflow-y-auto">
                 {selectedReadyIds.map((id) => {
@@ -1549,7 +1640,7 @@ function AccountsPayableContent() {
                   ref={confirmPublishRef}
                   variant="glossy"
                   onClick={() => void confirmPublishSelected()}
-                  disabled={publishing || !quickBooksConnection?.connected || !selectedReadyIds.length}
+                  disabled={publishing || !accountingConnection?.connected || !selectedReadyIds.length}
                   className="h-9 px-4"
                 >
                   {publishing ? (
@@ -1559,7 +1650,7 @@ function AccountsPayableContent() {
                     </>
                   ) : (
                     <>
-                      <Image src="/icons/qb-badge.png" alt="" width={16} height={16} className="object-contain" />
+                      {destinationBadgeSrc ? <Image src={destinationBadgeSrc} alt="" width={16} height={16} className="size-4 rounded-sm object-contain" /> : null}
                       Confirm publish
                     </>
                   )}

@@ -23,16 +23,19 @@ function rulesFor(variant: ButtonProps["variant"], size: ButtonProps["size"]): G
   if (size === "icon") return null
 
   switch (variant) {
+    case "critical":
     case "glossy":
       return {
-        hover: { scale: 1.025, boxShadow: "0 4px 20px hsl(var(--primary) / 0.35)" },
+        hover: { scale: 1.025, boxShadow: "0 4px 20px rgba(5, 150, 105, 0.24)" },
         tap: { scale: 0.96 },
       }
+    case "clay":
     case "lime":
       return {
         hover: { scale: 1.025 },
         tap: { scale: 0.96 },
       }
+    case "warm":
     case "surface":
     case "ink":
     case "reviewed":

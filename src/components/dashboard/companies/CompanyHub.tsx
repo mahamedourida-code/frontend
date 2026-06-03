@@ -9,12 +9,10 @@ import {
   Building2,
   FileText,
   Inbox,
-  Landmark,
   Loader2,
   PlugZap,
   ReceiptText,
   RefreshCw,
-  Upload,
 } from "lucide-react"
 
 import { DashboardShell } from "@/components/DashboardShell"
@@ -24,7 +22,6 @@ import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/hooks/useAuth"
 import { companyApi } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
@@ -37,10 +34,8 @@ type CompanyApi = {
   get: (companyId: string) => Promise<unknown>
 }
 
-type HubTab = "overview" | "inbox" | "review" | "bills" | "accounting"
-
 type WorkflowTab = {
-  id: Exclude<HubTab, "overview">
+  id: "inbox" | "review" | "bills" | "accounting"
   label: string
   description: string
   action: string
@@ -67,9 +62,9 @@ const WORKFLOW_TABS: WorkflowTab[] = [
   },
   {
     id: "bills",
-    label: "Bills",
-    description: "Check draft bills and move reviewed invoices toward QuickBooks Online.",
-    action: "Open company bills",
+    label: "Draft bills",
+    description: "Code reviewed supplier invoices, then publish them to your accounting software.",
+    action: "Open draft bills",
     href: (companyId) => `/dashboard/accounts-payable?company_id=${encodeURIComponent(companyId)}`,
     icon: ReceiptText,
   },
@@ -92,7 +87,7 @@ function formatDate(value: string | null) {
   }
 }
 
-function MetricCard({
+function SummaryItem({
   label,
   value,
   icon: Icon,
@@ -104,41 +99,37 @@ function MetricCard({
   attention?: boolean
 }) {
   return (
-    <Card className="gap-0 rounded-xl py-0 shadow-sm">
-      <CardContent className="flex items-center gap-3 p-4">
-        <span className={cn("flex size-10 items-center justify-center rounded-full bg-muted text-muted-foreground", attention && value && "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200")}>
-          <Icon className="size-5" />
-        </span>
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">{label}</p>
-          <p className={cn("mt-1 text-2xl font-bold tabular-nums text-foreground", attention && value && "text-amber-700 dark:text-amber-300")}>{value}</p>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="flex min-w-0 items-center gap-3 bg-card px-4 py-3">
+      <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground", attention && value && "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200")}>
+        <Icon className="size-4" />
+      </span>
+      <div className="min-w-0">
+        <p className="truncate text-[11px] font-bold uppercase tracking-[0.1em] text-muted-foreground">{label}</p>
+        <p className={cn("mt-0.5 text-lg font-bold tabular-nums text-foreground", attention && value && "text-amber-700 dark:text-amber-300")}>{value}</p>
+      </div>
+    </div>
   )
 }
 
-function WorkflowPanel({ tab, companyId }: { tab: WorkflowTab; companyId: string }) {
+function WorkflowRow({ tab, companyId }: { tab: WorkflowTab; companyId: string }) {
   const Icon = tab.icon
 
   return (
-    <Card className="rounded-xl">
-      <CardContent className="flex flex-col items-start gap-4 p-5 sm:flex-row sm:items-center">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
-          <Icon className="size-5" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <h2 className="text-lg font-bold text-foreground">{tab.label}</h2>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{tab.description}</p>
-        </div>
-        <Button asChild variant="surface" size="sm">
-          <Link href={tab.href(companyId)}>
-            {tab.action}
-            <ArrowRight className="size-4" />
-          </Link>
-        </Button>
-      </CardContent>
-    </Card>
+    <div className="flex flex-col items-start gap-3 px-4 py-4 sm:flex-row sm:items-center">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+        <Icon className="size-4" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <h2 className="text-sm font-bold text-foreground">{tab.label}</h2>
+        <p className="mt-0.5 max-w-2xl text-sm text-muted-foreground">{tab.description}</p>
+      </div>
+      <Button asChild variant="surface" size="sm">
+        <Link href={tab.href(companyId)}>
+          {tab.action}
+          <ArrowRight className="size-4" />
+        </Link>
+      </Button>
+    </div>
   )
 }
 
@@ -178,8 +169,6 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
     return <DashboardRouteLoader label="Loading company" />
   }
 
-  const uploadHref = `/dashboard/client?company_id=${encodeURIComponent(companyId)}#upload-files`
-
   return (
     <DashboardShell activeItem="companies" title={company?.name || "Company"} user={user}>
       <PageHeader
@@ -189,14 +178,6 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
           <Link href="/dashboard" className="font-semibold text-muted-foreground hover:text-foreground">
             Companies
           </Link>
-        }
-        actions={
-          <Button asChild variant="glossy" size="sm">
-            <Link href={uploadHref}>
-              <Upload className="size-4" />
-              Upload docs
-            </Link>
-          </Button>
         }
       />
 
@@ -222,39 +203,22 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
           />
         </Card>
       ) : (
-        <Tabs defaultValue="overview" className="gap-5">
-          <div className="overflow-x-auto pb-1">
-            <TabsList className="h-auto min-w-max rounded-full bg-muted/70 p-1">
-              <TabsTrigger value="overview" className="rounded-full px-4">Overview</TabsTrigger>
-              {WORKFLOW_TABS.map((tab) => (
-                <TabsTrigger key={tab.id} value={tab.id} className="rounded-full px-4">
-                  {tab.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
+        <div className="space-y-5">
+          <div className="overflow-hidden rounded-xl border border-border bg-border">
+            <div className="grid gap-px sm:grid-cols-2 xl:grid-cols-4">
+              <SummaryItem label="Purchases" value={company.purchases} icon={FileText} />
+              <SummaryItem label="Receipts" value={company.receipts} icon={ReceiptText} />
+              <SummaryItem label="Needs review" value={company.needsReview} icon={BookCheck} attention />
+              <SummaryItem label="Draft bills" value={company.bills} icon={ReceiptText} />
+            </div>
           </div>
 
-          <TabsContent value="overview" className="space-y-5">
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <MetricCard label="Purchases" value={company.purchases} icon={FileText} />
-              <MetricCard label="Receipts" value={company.receipts} icon={ReceiptText} />
-              <MetricCard label="Needs review" value={company.needsReview} icon={BookCheck} attention />
-              <MetricCard label="Bills" value={company.bills} icon={Landmark} />
-            </div>
-
-            <div className="grid gap-3 lg:grid-cols-2">
-              {WORKFLOW_TABS.map((tab) => (
-                <WorkflowPanel key={tab.id} tab={tab} companyId={companyId} />
-              ))}
-            </div>
-          </TabsContent>
-
-          {WORKFLOW_TABS.map((tab) => (
-            <TabsContent key={tab.id} value={tab.id}>
-              <WorkflowPanel tab={tab} companyId={companyId} />
-            </TabsContent>
-          ))}
-        </Tabs>
+          <Card className="divide-y divide-border rounded-xl py-0 shadow-xs">
+            {WORKFLOW_TABS.map((tab) => (
+              <WorkflowRow key={tab.id} tab={tab} companyId={companyId} />
+            ))}
+          </Card>
+        </div>
       )}
     </DashboardShell>
   )

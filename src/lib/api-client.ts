@@ -391,6 +391,17 @@ export interface QuickBooksBillPublication {
   updated_at?: string | null
 }
 
+export interface XeroBillPublication {
+  id: string
+  status: 'publishing' | 'published' | 'failed' | 'indeterminate'
+  xero_invoice_id?: string | null
+  attachment_status?: 'pending' | 'attached' | 'failed' | 'not_requested' | null
+  failure_details?: Array<{ stage?: string; message?: string; at?: string }>
+  attempted_at?: string | null
+  published_at?: string | null
+  updated_at?: string | null
+}
+
 export type ReceiptPublishingDestination = 'expense' | 'bill'
 
 export interface ReceiptQuickBooksPublishRequest {
@@ -456,6 +467,7 @@ export interface AccountsPayableItem {
   updated_at: string
   published_at?: string | null
   quickbooks_publication?: QuickBooksBillPublication | null
+  xero_publication?: XeroBillPublication | null
 }
 
 export interface QuickBooksConnectionStatus {
@@ -477,6 +489,9 @@ export interface QuickBooksReferenceItem {
   details?: Record<string, unknown>
   synced_at: string
 }
+
+export type AccountingConnectionStatus = QuickBooksConnectionStatus
+export type AccountingReferenceItem = QuickBooksReferenceItem
 
 export interface JobDocumentRecord {
   id: string
@@ -589,6 +604,9 @@ export interface CompanySummary {
   last_upload_at?: string | null
   quickbooks_connected: boolean
   quickbooks_company_name?: string | null
+  accounting_destination?: AccountingDestination
+  accounting_connected?: boolean
+  accounting_company_name?: string | null
   created_at: string
   updated_at: string
 }
@@ -1301,7 +1319,7 @@ export const accountsPayableApi = {
   },
 
   publish: async (itemId: string): Promise<{ item: AccountsPayableItem }> => {
-    const response = await apiClient.post<{ item: AccountsPayableItem }>(`/api/v1/accounts-payable/${itemId}/publish/quickbooks`)
+    const response = await apiClient.post<{ item: AccountsPayableItem }>(`/api/v1/accounts-payable/${itemId}/publish`)
     return response.data
   },
 
@@ -1350,7 +1368,7 @@ export const accountsPayableApi = {
   },
 
   bulkPublish: async (itemIds: string[]): Promise<{ items: AccountsPayableItem[]; failures: Array<{ item_id: string; detail: string }>; total: number }> => {
-    const response = await apiClient.post<{ items: AccountsPayableItem[]; failures: Array<{ item_id: string; detail: string }>; total: number }>('/api/v1/accounts-payable/publish/quickbooks', {
+    const response = await apiClient.post<{ items: AccountsPayableItem[]; failures: Array<{ item_id: string; detail: string }>; total: number }>('/api/v1/accounts-payable/publish', {
       item_ids: itemIds,
     })
     return response.data
@@ -1358,30 +1376,41 @@ export const accountsPayableApi = {
 }
 
 export const quickBooksApi = {
-  status: async (): Promise<QuickBooksConnectionStatus> => {
-    const response = await apiClient.get<QuickBooksConnectionStatus>('/api/v1/integrations/quickbooks/status')
-    return response.data
-  },
-
-  connect: async (): Promise<{ authorization_url: string }> => {
-    const response = await apiClient.post<{ authorization_url: string }>('/api/v1/integrations/quickbooks/connect', {})
-    return response.data
-  },
-
-  sync: async (): Promise<QuickBooksConnectionStatus> => {
-    const response = await apiClient.post<QuickBooksConnectionStatus>('/api/v1/integrations/quickbooks/sync', {})
-    return response.data
-  },
-
-  references: async (resourceType?: QuickBooksReferenceItem['resource_type']): Promise<{ items: QuickBooksReferenceItem[]; total: number }> => {
-    const response = await apiClient.get<{ items: QuickBooksReferenceItem[]; total: number }>('/api/v1/integrations/quickbooks/reference-data', {
-      params: resourceType ? { resource_type: resourceType } : undefined,
+  status: async (workspaceId?: string): Promise<QuickBooksConnectionStatus> => {
+    const response = await apiClient.get<QuickBooksConnectionStatus>('/api/v1/integrations/quickbooks/status', {
+      params: workspaceId ? { workspace_id: workspaceId } : undefined,
     })
     return response.data
   },
 
-  disconnect: async (): Promise<QuickBooksConnectionStatus> => {
-    const response = await apiClient.delete<QuickBooksConnectionStatus>('/api/v1/integrations/quickbooks')
+  connect: async (workspaceId?: string): Promise<{ authorization_url: string }> => {
+    const response = await apiClient.post<{ authorization_url: string }>('/api/v1/integrations/quickbooks/connect', {
+      workspace_id: workspaceId,
+    })
+    return response.data
+  },
+
+  sync: async (workspaceId?: string): Promise<QuickBooksConnectionStatus> => {
+    const response = await apiClient.post<QuickBooksConnectionStatus>('/api/v1/integrations/quickbooks/sync', {
+      workspace_id: workspaceId,
+    })
+    return response.data
+  },
+
+  references: async (resourceType?: QuickBooksReferenceItem['resource_type'], workspaceId?: string): Promise<{ items: QuickBooksReferenceItem[]; total: number }> => {
+    const response = await apiClient.get<{ items: QuickBooksReferenceItem[]; total: number }>('/api/v1/integrations/quickbooks/reference-data', {
+      params: {
+        ...(resourceType ? { resource_type: resourceType } : {}),
+        ...(workspaceId ? { workspace_id: workspaceId } : {}),
+      },
+    })
+    return response.data
+  },
+
+  disconnect: async (workspaceId?: string): Promise<QuickBooksConnectionStatus> => {
+    const response = await apiClient.delete<QuickBooksConnectionStatus>('/api/v1/integrations/quickbooks', {
+      params: workspaceId ? { workspace_id: workspaceId } : undefined,
+    })
     return response.data
   },
 }
@@ -1410,15 +1439,20 @@ export const xeroApi = {
     return response.data
   },
 
-  references: async (resourceType?: QuickBooksReferenceItem['resource_type']): Promise<{ items: QuickBooksReferenceItem[]; total: number }> => {
+  references: async (resourceType?: QuickBooksReferenceItem['resource_type'], workspaceId?: string): Promise<{ items: QuickBooksReferenceItem[]; total: number }> => {
     const response = await apiClient.get<{ items: QuickBooksReferenceItem[]; total: number }>('/api/v1/integrations/xero/reference-data', {
-      params: resourceType ? { resource_type: resourceType } : undefined,
+      params: {
+        ...(resourceType ? { resource_type: resourceType } : {}),
+        ...(workspaceId ? { workspace_id: workspaceId } : {}),
+      },
     })
     return response.data
   },
 
-  disconnect: async (): Promise<QuickBooksConnectionStatus> => {
-    const response = await apiClient.delete<QuickBooksConnectionStatus>('/api/v1/integrations/xero')
+  disconnect: async (workspaceId?: string): Promise<QuickBooksConnectionStatus> => {
+    const response = await apiClient.delete<QuickBooksConnectionStatus>('/api/v1/integrations/xero', {
+      params: workspaceId ? { workspace_id: workspaceId } : undefined,
+    })
     return response.data
   },
 }

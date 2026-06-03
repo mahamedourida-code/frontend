@@ -217,6 +217,7 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
   const resultPreviewsRef = useRef<Record<string, ResultPreview>>({})
   const [resultSourceTrace, setResultSourceTrace] = useState<Record<string, ResultSourceTrace>>({})
   const [jobDocuments, setJobDocuments] = useState<JobDocumentRecord[]>([])
+  const [draftBillItemIds, setDraftBillItemIds] = useState<Record<string, string>>({})
   const [quickBooksConnection, setQuickBooksConnection] = useState<QuickBooksConnectionStatus | null>(null)
   const [quickBooksReferences, setQuickBooksReferences] = useState<QuickBooksReferenceItem[]>([])
   const [overridingDocumentId, setOverridingDocumentId] = useState<string | null>(null)
@@ -326,6 +327,30 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
   useEffect(() => {
     wakeUpBackendSilently()
   }, [])
+
+  useEffect(() => {
+    if (!user || !jobId) {
+      setDraftBillItemIds({})
+      return
+    }
+
+    let cancelled = false
+    setDraftBillItemIds({})
+    accountsPayableApi.list()
+      .then(response => {
+        if (cancelled) return
+        const handedOff = response.items.reduce<Record<string, string>>((items, item) => {
+          if (item.job_id === jobId) items[item.document_id] = item.id
+          return items
+        }, {})
+        setDraftBillItemIds(current => ({ ...handedOff, ...current }))
+      })
+      .catch(() => undefined)
+
+    return () => {
+      cancelled = true
+    }
+  }, [jobId, user?.id])
 
   useEffect(() => {
     if (entitlementLimits) setLimits(entitlementLimits)
@@ -927,6 +952,7 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
       setTextPreview('')
       setFirstImageUrl('')
       setActivePreviewFileId('')
+      setDraftBillItemIds({})
       setWorkspaceBanner(null)
 
       if (uploadedFiles.length > 0) {
@@ -1005,6 +1031,7 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
     setResultPreviews({})
     resultPreviewsRef.current = {}
     setResultSourceTrace({})
+    setDraftBillItemIds({})
     setFirstImageUrl('')
     setActivePreviewFileId('')
     
@@ -1716,17 +1743,17 @@ Best regards`
   const handleSendToAccountsPayable = useCallback(async (file: any) => {
     if (!jobId || !file?.document_id) return
     try {
-      await accountsPayableApi.createFromDocument(jobId, file.document_id)
-      toast.success("Invoice added to Bills.")
-      router.push("/dashboard/accounts-payable")
+      const response = await accountsPayableApi.createFromDocument(jobId, file.document_id)
+      setDraftBillItemIds(current => ({ ...current, [file.document_id]: response.item.id }))
+      toast.success("Invoice sent to draft bills.")
     } catch (error: any) {
       setWorkspaceBanner({
-        title: "Invoice was not added to Bills",
+        title: "Invoice was not sent to draft bills",
         description: error?.detail || error?.message || "Confirm the invoice and try again.",
         tone: "error",
       })
     }
-  }, [jobId, router])
+  }, [jobId])
 
   const loadQuickBooksReferences = useCallback(async (sync = false) => {
     try {
@@ -1855,6 +1882,7 @@ Best regards`
     return {
       ...tracedFile,
       document_id: durableDocument?.id || tracedFile.document_id,
+      draft_bill_item_id: draftBillItemIds[durableDocument?.id || tracedFile.document_id || ""],
       processing_unit_id: durableExtraction?.processing_unit_id,
       review_status: durableDocument?.review_status || durableExtraction?.review_status,
       review_grid: Array.isArray(reviewGrid) ? reviewGrid as any[][] : undefined,

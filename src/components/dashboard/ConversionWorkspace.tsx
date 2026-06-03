@@ -1,9 +1,10 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "react"
+import { useCallback, useEffect, useRef, useState, type ChangeEvent, type DragEvent, type MouseEvent as ReactMouseEvent } from "react"
 import {
   AlertCircle,
   ArrowRight,
+  BookOpen,
   Check,
   ChevronDown,
   ChevronLeft,
@@ -15,6 +16,7 @@ import {
   FileSpreadsheet,
   FileText,
   FolderUp,
+  Inbox,
   Keyboard,
   Languages,
   ListChecks,
@@ -88,6 +90,7 @@ type ResultFile = {
   size_bytes?: number
   input_preview_url?: string
   document_id?: string
+  draft_bill_item_id?: string
   processing_unit_id?: string
   source_page?: number | null
   source_page_count?: number | null
@@ -191,6 +194,82 @@ function formatBytes(bytes: number) {
   if (!bytes) return "0 MB"
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
+
+function ReviewWorkflowStrip({ className }: { className?: string }) {
+  const steps = [
+    ["1", "Verify extraction"],
+    ["2", "Code draft bills"],
+    ["3", "Publish"],
+  ] as const
+
+  return (
+    <div
+      className={cn("flex flex-wrap items-center gap-1.5 text-xs font-semibold text-muted-foreground", className)}
+      aria-label="Review workflow"
+    >
+      {steps.map(([number, label], index) => (
+        <div key={number} className="contents">
+          {index > 0 ? <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/55" /> : null}
+          <span
+            className={cn(
+              "inline-flex h-8 items-center gap-2 rounded-full border px-3",
+              index === 0
+                ? "border-[var(--brand-green-ring)] bg-[var(--brand-green)] text-[var(--brand-green-fg)]"
+                : "border-border bg-card text-muted-foreground"
+            )}
+          >
+            <span className="tabular-nums">{number}</span>
+            {label}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function InvoiceDraftBillAction({
+  file,
+  onSendToAccountsPayable,
+  stopPropagation = false,
+  className,
+}: {
+  file: ResultFile
+  onSendToAccountsPayable?: (file: ResultFile) => void | Promise<void>
+  stopPropagation?: boolean
+  className?: string
+}) {
+  if (file.document_type !== "invoice" || !["ready", "published"].includes(file.review_status || "")) return null
+
+  const stopCardClick = (event: ReactMouseEvent<HTMLElement>) => {
+    if (stopPropagation) event.stopPropagation()
+  }
+
+  if (file.draft_bill_item_id) {
+    return (
+      <Button asChild size="sm" variant="ghost" className={className}>
+        <a href="/dashboard/accounts-payable" onClick={stopCardClick}>
+          Open draft bills
+        </a>
+      </Button>
+    )
+  }
+
+  if (!onSendToAccountsPayable) return null
+
+  return (
+    <Button
+      size="sm"
+      variant="ink"
+      onClick={(event) => {
+        stopCardClick(event)
+        void onSendToAccountsPayable(file)
+      }}
+      className={className}
+    >
+      Send to draft bills
+    </Button>
+  )
 }
 
 function WorkspaceErrorBanner({ banner, onDismiss }: { banner?: WorkspaceBanner | null; onDismiss?: () => void }) {
@@ -1883,11 +1962,17 @@ export function ResultActions({
       ) : null}
 
       <div className="pt-2">
-        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <p className="text-2xl font-bold tracking-tight text-foreground">
-            Review board <span className="text-base font-medium text-muted-foreground">{safeResultFiles.length}</span>
-          </p>
+        <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-2xl font-bold tracking-tight text-foreground">
+              Verify extraction <span className="text-base font-medium text-muted-foreground">{safeResultFiles.length}</span>
+            </p>
+            <p className="mt-1 text-sm font-medium text-muted-foreground">
+              Check extracted fields against each source. Mark ready confirms extraction only.
+            </p>
+          </div>
         </div>
+        <ReviewWorkflowStrip className="mb-4" />
 
         <div className="mb-4 flex flex-wrap items-center gap-1.5">
           {([
@@ -2244,19 +2329,12 @@ export function ResultActions({
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 ) : null}
-                {file.document_type === "invoice" && ["ready", "published"].includes(file.review_status || "") ? (
-                  <Button
-                    size="sm"
-                    variant="ink"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      void onSendToAccountsPayable?.(file)
-                    }}
-                    className="h-8 px-3 text-xs"
-                  >
-                    Add to AP
-                  </Button>
-                ) : null}
+                <InvoiceDraftBillAction
+                  file={file}
+                  onSendToAccountsPayable={onSendToAccountsPayable}
+                  stopPropagation
+                  className="h-8 px-3 text-xs"
+                />
                 {file.document_id && !["ready", "published", "failed", "deleted"].includes(file.review_status || "") ? (
                   <Button
                     size="sm"
@@ -2266,6 +2344,7 @@ export function ResultActions({
                       void onMarkDocumentReady?.(file)
                     }}
                     className="h-8 px-3 text-xs"
+                    title="Confirms extracted fields only"
                   >
                     Mark ready
                   </Button>
@@ -2380,22 +2459,18 @@ export function ResultActions({
                   </div>
                 </details>
               ) : null}
-              {comparisonFile.document_type === "invoice" && ["ready", "published"].includes(comparisonFile.review_status || "") ? (
-                <Button
-                  size="sm"
-                  variant="ink"
-                  onClick={() => void onSendToAccountsPayable?.(comparisonFile)}
-                  className="h-9 px-3 text-xs"
-                >
-                  Add to Bills
-                </Button>
-              ) : null}
+              <InvoiceDraftBillAction
+                file={comparisonFile}
+                onSendToAccountsPayable={onSendToAccountsPayable}
+                className="h-9 px-3 text-xs"
+              />
               {comparisonFile.document_id && !["ready", "published", "failed", "deleted"].includes(comparisonFile.review_status || "") ? (
                 <Button
                   size="sm"
                   variant="glossy"
                   onClick={() => void onMarkDocumentReady?.(comparisonFile)}
                   className="h-9 px-3 text-xs"
+                  title="Confirms extracted fields only"
                 >
                   Mark ready
                 </Button>
@@ -2885,8 +2960,9 @@ export function ResultActions({
                                 variant="glossy"
                                 onClick={() => void onMarkDocumentReady?.(comparisonFile)}
                                 className="h-8 rounded-full px-3 text-xs"
+                                title="Confirms extracted fields only"
                               >
-                                Mark reviewed
+                                Mark ready
                               </Button>
                             ) : null}
                           </div>
@@ -3069,10 +3145,10 @@ export function ResultActions({
             {([
               [["J"], "Next document"],
               [["K"], "Previous document"],
-              [["A"], "Approve / mark ready"],
+              [["A"], "Confirm extraction / mark ready"],
               [["E"], "Edit first flagged field"],
-              [["P"], "Publish to QuickBooks"],
-              [["⌘", "↵"], "Confirm — mark ready"],
+              [["P"], "Publish receipt"],
+              [["⌘", "↵"], "Confirm extraction / mark ready"],
               [["?"], "Open this sheet"],
             ] as Array<[string[], string]>).map(([keys, label]) => (
               <div key={label} className="flex items-center justify-between gap-3">
@@ -3117,7 +3193,6 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     isUploading,
     isProcessing,
     isComplete,
-    uploadedSizeMb,
     creditAvailable,
     creditEstimate,
     maxUploadFiles,
@@ -3168,8 +3243,6 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     (resultFiles?.length || 0) > 0 || (classifiedDocuments?.length || 0) > 0
   ))
   const [uploadSheetOpen, setUploadSheetOpen] = useState(false)
-  const expectedOutputs = Math.max(creditEstimate || 0, uploadedFiles.length)
-
   const handleModeChange = (mode: Exclude<DocumentMode, "invoice_receipt">) => {
     onDocumentModeChange?.(mode)
     onOutputModeChange(mode === "notes" ? "text" : "table")
@@ -3230,18 +3303,23 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
       <div className="space-y-3">
         <div className="grid gap-4">
           {!hasResults ? (
-            <div className="space-y-5">
+            <div className="space-y-4">
               <section id="upload-files" aria-labelledby="workspace-tools-title" className="space-y-4">
-                <div className="flex flex-col gap-4 border-b border-border pb-4 sm:flex-row sm:items-end sm:justify-between">
+                <div className="border-b border-border pb-4">
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#087a50]">New batch</p>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#087a50]">Review</p>
                     <h2 id="workspace-tools-title" className="mt-1 text-2xl font-bold tracking-tight text-foreground">
-                      Upload documents
+                      Verify extracted documents
                     </h2>
                     <p className="mt-1 max-w-2xl text-sm font-medium leading-6 text-muted-foreground">
-                      Send the whole folder. AxLiner separates mixed scans, handwritten pages, and photographed documents before review.
+                      Upload a batch or open inbox submissions. Mark ready confirms extraction before invoices move to draft bills.
                     </p>
                   </div>
+                </div>
+
+                <ReviewWorkflowStrip />
+
+                <div className="flex flex-wrap items-center gap-2">
                   <Button
                     type="button"
                     variant="glossy"
@@ -3249,40 +3327,34 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                     disabled={isUploading || isProcessing}
                     className="gap-2 px-5"
                   >
-                    {uploadedFiles.length ? "Review upload" : "Add documents"}
-                    <ArrowRight className="size-4" />
+                    <FolderUp className="size-4" />
+                    Upload documents
+                  </Button>
+                  <Button asChild variant="surface">
+                    <a href="/dashboard/inbox">
+                      <Inbox className="size-4" />
+                      Open inbox
+                    </a>
+                  </Button>
+                  <Button asChild variant="ghost">
+                    <a href="/dashboard/guide">
+                      <BookOpen className="size-4" />
+                      Guide
+                    </a>
                   </Button>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setUploadSheetOpen(true)}
-                  disabled={isUploading || isProcessing}
-                  className="ax-interactive group flex w-full flex-col gap-4 rounded-xl border border-border bg-card/70 p-5 text-left shadow-xs transition hover:border-primary/45 hover:bg-card disabled:cursor-default disabled:opacity-60 sm:flex-row sm:items-center"
-                >
-                  <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-xs">
-                    <FolderUp className="size-5" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-base font-bold text-foreground">
-                      {uploadedFiles.length ? "Batch staged for processing" : "Start with a mixed document batch"}
-                    </span>
-                    <span className="mt-1 block text-sm font-medium leading-6 text-muted-foreground">
-                      {uploadedFiles.length
-                        ? "Review the files, mode, and estimated usage in the upload sheet before processing."
-                        : "Choose a mode, drop documents, and review PDF page handling in one focused upload sheet."}
-                    </span>
-                  </span>
-                  {uploadedFiles.length ? (
-                    <span className="grid shrink-0 grid-cols-2 gap-x-4 gap-y-1 text-xs font-semibold text-muted-foreground sm:text-right">
-                      <span>{uploadedFiles.length} file{uploadedFiles.length === 1 ? "" : "s"}</span>
-                      <span>{expectedOutputs} credit{expectedOutputs === 1 ? "" : "s"}</span>
-                      <span className="col-span-2">{formatBytes(uploadedSizeMb * 1024 * 1024)}</span>
-                    </span>
-                  ) : (
-                    <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-                  )}
-                </button>
+                {uploadedFiles.length ? (
+                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-card px-3 py-2.5 text-sm">
+                    <p className="font-medium text-foreground">
+                      {uploadedFiles.length} file{uploadedFiles.length === 1 ? "" : "s"} staged. Review mode and usage before processing.
+                    </p>
+                    <Button type="button" size="sm" variant="surface" onClick={() => setUploadSheetOpen(true)} className="h-8 px-3 text-xs">
+                      Review upload
+                      <ArrowRight className="size-3.5" />
+                    </Button>
+                  </div>
+                ) : null}
 
                 {uploadedFiles.length ? (
                   <SelectedFilesTray

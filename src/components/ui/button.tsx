@@ -5,11 +5,12 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "ax-interactive inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "ax-interactive inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
-        default: "border border-border bg-card text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground active:translate-y-px",
+        default:
+          "border border-[var(--button-surface-ring)] bg-[var(--button-surface)] text-[var(--button-ink)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.78),0_1px_3px_0_rgba(15,23,42,0.1)] hover:bg-[var(--button-surface-hover)] active:translate-y-px",
         critical:
           "bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_1px_3px_0_rgba(0,0,0,0.12)] hover:bg-[var(--brand-green-hover)] active:translate-y-px",
         // Primary green CTA — the soft mint section-background green, given
@@ -20,11 +21,10 @@ const buttonVariants = cva(
         // with a brown definition ring and dark ink label.
         warm:
           "bg-[var(--button-warm)] text-[var(--button-ink)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.82),0_0_0_1px_var(--button-warm-ring),0_1px_3px_0_rgba(84,59,32,0.14)] hover:bg-[var(--button-warm-hover)] active:translate-y-px",
-        // Warm clay CTA — a real mid-brown fill from the landing warm family,
-        // paired with strong near-black ink text and the Tella-style definition
-        // (inset top highlight + brown ring + soft drop shadow). Pairs with green.
+        // Light clay special action — quieter than mint, with a warm ring and
+        // dark ink label. Reserved for actions such as Upgrade.
         clay:
-          "bg-[var(--brand-clay)] text-[var(--brand-clay-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.45),0_0_0_1px_var(--brand-clay-ring),0_1px_3px_0_rgba(58,42,24,0.28)] hover:bg-[var(--brand-clay-hover)] active:translate-y-px",
+          "bg-[var(--brand-clay)] text-[var(--brand-clay-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.68),0_0_0_1px_var(--brand-clay-ring),0_1px_3px_0_rgba(58,42,24,0.18)] hover:bg-[var(--brand-clay-hover)] active:translate-y-px",
         // Black/ink CTA — high-contrast solid with Tella-style definition
         // (inset top highlight + layered drop shadow).
         ink:
@@ -32,7 +32,7 @@ const buttonVariants = cva(
         // Upgrade compatibility alias — keep existing callers on `lime` while the
         // visual treatment moves to the accountant-shell clay pill.
         lime:
-          "bg-[var(--brand-clay)] text-[var(--brand-clay-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.45),0_0_0_1px_var(--brand-clay-ring),0_1px_3px_0_rgba(58,42,24,0.28)] hover:bg-[var(--brand-clay-hover)] active:translate-y-px",
+          "bg-[var(--brand-clay)] text-[var(--brand-clay-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.68),0_0_0_1px_var(--brand-clay-ring),0_1px_3px_0_rgba(58,42,24,0.18)] hover:bg-[var(--brand-clay-hover)] active:translate-y-px",
         // Confirm/reviewed action — same ink treatment as `ink`.
         reviewed:
           "border border-foreground/80 bg-foreground bg-[linear-gradient(180deg,color-mix(in_srgb,var(--foreground)_86%,#fff)_0%,var(--foreground)_72%)] text-background shadow-[0_1px_2px_rgba(0,0,0,0.18)] hover:brightness-110 active:translate-y-px",

@@ -367,32 +367,29 @@
   --popover-foreground: hsl(222 47% 11%);
   --primary: hsl(160 84% 39%);
   --primary-foreground: hsl(164 80% 9%);
-  /* Fixed brand green for buttons — the soft mint that backgrounds the landing
-     "Throw us the whole folder." band (emerald-100). Identical in light & dark;
-     buttons must NEVER swap to the dark-mode green. A brighter emerald ring +
-     soft shadow give the pale fill its "definition" (Tella-style). */
-  --brand-green: #d1fae5;        /* emerald-100 — section background, button fill */
-  --brand-green-hover: #a7f3d0;  /* emerald-200 */
-  --brand-green-fg: #171717;     /* dark ink label */
-  --brand-green-ring: #10b981;   /* emerald-500 — 1px definition ring */
+  /* Fixed brand green for buttons: the soft mint from the landing workspace band.
+     Identical in light & dark so CTA hierarchy never theme-flips. */
+  --brand-green: #d1fae5;
+  --brand-green-hover: #a7f3d0;
+  --brand-green-fg: #064e3b;
+  --brand-green-ring: #10b981;
   --button-ink: #171717;
-  /* Warm brown/clay button — a real, premium mid-brown derived from the
-     landing warm family (cream / warm charcoal), with a near-black ink label.
-     Fixed in :root so it never theme-flips, same rule as --brand-green*. */
-  --brand-clay: #8a6d4b;        /* mid warm brown — fill */
-  --brand-clay-hover: #7a5c3a;  /* deeper warm brown — hover */
-  --brand-clay-fg: #171717;     /* near-black ink label */
-  --brand-clay-ring: #5e472d;   /* deep brown — 1px definition ring */
+  /* Light clay is reserved for special actions such as Upgrade. It stays
+     quieter than the primary mint while keeping a clear brown definition. */
+  --brand-clay: #eadcc8;
+  --brand-clay-hover: #dfccb2;
+  --brand-clay-fg: #2f2418;
+  --brand-clay-ring: #b49168;
   --button-warm: #f7f3e9;
   --button-warm-hover: #eee6d5;
-  --button-warm-ring: #b49b72;
-  --button-surface: #f3f4f4;
+  --button-warm-ring: #c8b186;
+  --button-surface: #f4f5f5;
   --button-surface-hover: #e7e9e8;
-  --button-surface-ring: #c5cac8;
+  --button-surface-ring: #cbd1ce;
   --ax-marketing-page: #ffffff;
   --ax-marketing-ink: #171717;
   --ax-marketing-muted: #404040;
-  --ax-marketing-mint: var(--brand-green);
+  --ax-marketing-mint: #d1fae5;
   --ax-marketing-cream: var(--button-warm);
   --secondary: hsl(220 14% 96%);
   --secondary-foreground: hsl(222 47% 11%);

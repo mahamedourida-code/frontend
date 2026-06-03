@@ -30,6 +30,7 @@ import {
 import {
   Menu,
   BookCheck,
+  BookOpenText,
   ChevronRight,
   Home,
   LogIn,
@@ -154,7 +155,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       show: isAuthenticated
     },
     {
-      label: "Bills",
+      label: "Draft bills",
       href: "/dashboard/accounts-payable",
       icon: ReceiptText,
       show: isAuthenticated
@@ -169,6 +170,12 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       label: "Integrations",
       href: "/dashboard/integrations",
       icon: PlugZap,
+      show: isAuthenticated
+    },
+    {
+      label: "Guide",
+      href: "/dashboard/guide",
+      icon: BookOpenText,
       show: isAuthenticated
     },
     {

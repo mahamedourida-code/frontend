@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import {
   Activity,
+  BookOpen,
   BookCheck,
   Building2,
   FileSpreadsheet,
@@ -45,16 +46,17 @@ const NAVIGATE_ITEMS: CommandItem[] = [
   { id: "nav-companies", group: "navigate", label: "Companies",        hint: "Workspace", keywords: "clients customers home",        icon: Building2,   href: "/dashboard" },
   { id: "nav-inbox",    group: "navigate", label: "Inbox",            hint: "Workspace", keywords: "intake client submissions",    icon: Inbox,       href: "/dashboard/inbox" },
   { id: "nav-review",   group: "navigate", label: "Review batches",   hint: "Workspace", keywords: "documents exceptions results", icon: BookCheck,   href: "/dashboard/client" },
-  { id: "nav-bills",    group: "navigate", label: "Bills",            hint: "Workspace", keywords: "accounts payable ap queue",    icon: ReceiptText, href: "/dashboard/accounts-payable" },
+  { id: "nav-bills",    group: "navigate", label: "Draft bills",      hint: "Workspace", keywords: "accounts payable ap queue coding", icon: ReceiptText, href: "/dashboard/accounts-payable" },
   { id: "nav-activity", group: "navigate", label: "Activity",         hint: "Workspace", keywords: "history saved jobs results",   icon: Activity,    href: "/history" },
-  { id: "nav-integrations", group: "navigate", label: "Integrations", hint: "Workspace", keywords: "quickbooks accounting sync",    icon: PlugZap,     href: "/dashboard/integrations" },
+  { id: "nav-integrations", group: "navigate", label: "Integrations", hint: "Workspace", keywords: "quickbooks xero accounting sync", icon: PlugZap,     href: "/dashboard/integrations" },
+  { id: "nav-guide",    group: "navigate", label: "Guide",            hint: "Workspace", keywords: "help onboarding workflow docs", icon: BookOpen,    href: "/dashboard/guide" },
   { id: "nav-settings", group: "navigate", label: "Settings",         hint: "Workspace", keywords: "account billing plan",         icon: Settings,    href: "/dashboard/settings" },
 ]
 
 // Act: actions that already have a destination (no invented endpoints)
 const ACT_ITEMS: CommandItem[] = [
   { id: "act-upload",      group: "act", label: "Upload documents",         hint: "New batch",              keywords: "new add files import scan",     icon: Upload,          href: "/dashboard/client#upload-files" },
-  { id: "act-refresh-qbo", group: "act", label: "Refresh QuickBooks lists", hint: "Accounting connection", keywords: "sync vendors accounts tax qbo", icon: RefreshCw,       href: "/dashboard/integrations" },
+  { id: "act-refresh-accounting", group: "act", label: "Refresh accounting lists", hint: "Accounting connection", keywords: "sync vendors accounts tax qbo xero", icon: RefreshCw, href: "/dashboard/integrations" },
   { id: "act-import-pos",  group: "act", label: "Import purchase orders",   hint: "Settings",               keywords: "po pos bills coding",           icon: FileSpreadsheet, href: "/dashboard/settings?section=preferences" },
 ]
 
