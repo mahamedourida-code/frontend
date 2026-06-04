@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { Symbol } from "@/components/dashboard/Symbol"
 
 type SectionTone = "default" | "active" | "muted"
 
@@ -18,6 +19,8 @@ interface WorkspaceSectionProps {
   step?: React.ReactNode
   /** One calm line under the title. */
   hint?: React.ReactNode
+  /** Optional raw caricature symbol (file stem under /public/symbols). */
+  symbol?: string
   /** Right-aligned controls in the header. */
   actions?: React.ReactNode
   tone?: SectionTone
@@ -40,6 +43,7 @@ export function WorkspaceSection({
   title,
   step,
   hint,
+  symbol,
   actions,
   tone = "default",
   children,
@@ -64,6 +68,7 @@ export function WorkspaceSection({
         )}
       >
         <div className="flex min-w-0 items-start gap-2.5">
+          {symbol ? <Symbol name={symbol} size="inline" className="mt-0.5" /> : null}
           {step !== undefined && step !== null ? (
             <span className="mt-px shrink-0 font-mono text-[13px] font-semibold tabular-nums text-emerald-600">
               {step}

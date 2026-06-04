@@ -1202,16 +1202,18 @@ function BookkeeperBreakdown({ figures, layout = "row" }: { figures: BookkeeperF
   const check = vatCheck(figures.subtotal, figures.vat, figures.total)
   // vatCheck's "neutral" maps onto AnomalyChip's caution (no plain neutral tone).
   const chipTone: AnomalyTone = check.tone === "good" ? "good" : "caution"
-  const cells: Array<[string, string]> = [
-    [FIELD_LABEL.net, fmt(figures.subtotal)],
-    [FIELD_LABEL.vat, fmt(figures.vat)],
-    [FIELD_LABEL.gross, fmt(figures.total)],
+  // Key figures carry colour on the label (Net = ink, VAT = amber, Total =
+  // emerald) while the value stays black — colour marks meaning, not grey.
+  const cells: Array<[string, string, string]> = [
+    [FIELD_LABEL.net, fmt(figures.subtotal), "text-foreground"],
+    [FIELD_LABEL.vat, fmt(figures.vat), "text-amber-600"],
+    [FIELD_LABEL.gross, fmt(figures.total), "text-emerald-700"],
   ]
   return (
     <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-1.5", layout === "grid" && "w-full")}>
-      {cells.map(([label, value]) => (
+      {cells.map(([label, value, labelColor]) => (
         <span key={label} className="inline-flex items-baseline gap-1.5">
-          <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</span>
+          <span className={cn("text-[11px] font-bold uppercase tracking-wide", labelColor)}>{label}</span>
           <span className="text-[13px] font-semibold tabular-nums text-foreground">{value}</span>
         </span>
       ))}
@@ -1330,7 +1332,7 @@ function ResultThumb({ file, preview, isTextOutput, compact = false }: { file: R
             {line}
           </span>
         )) : (
-          <span className="text-[10px] font-semibold text-gray-500">Text output</span>
+          <span className="text-[10px] font-semibold text-foreground">Text output</span>
         )}
       </div>
     )
@@ -2855,11 +2857,11 @@ export function ResultActions({
                           <p className="truncate text-sm font-semibold">{comparisonSummary?.identity || comparisonFile.filename || "Document"}</p>
                           {isHandwrittenDocument(comparisonFile) ? <HandwrittenBadge variant="label" /> : null}
                         </div>
-                        <p className="mt-0.5 text-xs text-gray-500">{formatDocumentType(comparisonFile.document_type)}</p>
+                        <p className="mt-0.5 text-xs text-foreground">{formatDocumentType(comparisonFile.document_type)}</p>
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
                         {invoiceLanguage !== "en" ? (
-                          <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold text-slate-600 dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-300">
+                          <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold text-foreground dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-300">
                             <Languages className="size-2.5 text-sky-600" />
                             {invoiceLanguageName(invoiceLanguage)} schema
                           </span>
@@ -3020,7 +3022,7 @@ export function ResultActions({
                             existing "mark reviewed" handler as the single next step. */}
                         {collapseConfident && uncertainCount === 0 ? (
                           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-slate-50/70 px-4 py-2.5">
-                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground">
                               <Check className="size-3.5 shrink-0 text-emerald-600" />
                               Nothing left to check on this document.
                             </span>
@@ -3100,7 +3102,7 @@ export function ResultActions({
                         </table>
                       </>
                     ) : (
-                      <p className="p-4 text-sm text-gray-500">No line rows detected.</p>
+                      <p className="p-4 text-sm text-foreground">No line rows detected.</p>
                     )}
                     {comparisonFile.document_type === "bank_statement" ? (
                       <BankReconciliationPanel data={reviewData(comparisonFile)} />
@@ -3379,6 +3381,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
               <WorkspaceSection
                 id="upload-files"
                 step="1"
+                symbol="upload-tray"
                 tone={isProcessing ? "muted" : "active"}
                 title="Upload documents"
                 hint="Invoices, receipts, bank statements and tables — PDF or image, scanned or photographed."
@@ -3440,9 +3443,10 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
               {isProcessing ? (
                 <WorkspaceSection
                   step="2"
+                  symbol="processing-gears"
                   tone="active"
                   title="Reading your batch"
-                  hint="We're extracting fields from every page. This box clears the moment results are ready to verify."
+                  hint="Extracting fields from every page — clears when results are ready to verify."
                 >
                   <div className="flex items-center gap-3 text-sm font-medium text-muted-foreground">
                     <Loader2 className="size-4 animate-spin text-primary" />
