@@ -42,6 +42,7 @@ import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { InboxSummaryStrip } from "@/components/dashboard/InboxSummaryStrip"
 import { FIELD_LABEL, workspaceStage } from "@/lib/review-vocab"
 import { vatCheck } from "@/lib/bookkeeper-copy"
+import { Symbol } from "@/components/dashboard/Symbol"
 import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
 import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
 import { SourceHighlightOverlay } from "@/components/dashboard/SourceHighlightOverlay"
@@ -487,12 +488,7 @@ export function UploadDropzone({
     >
       <div className={cn("px-4 py-5 text-center sm:px-6", uploadedFiles.length ? "min-h-[240px]" : "flex min-h-[300px] flex-col items-center justify-center")}>
         {!uploadedFiles.length ? (
-          <img
-            src="/illustrations/workspace-minimal/upload-documents.png"
-            alt=""
-            role="presentation"
-            className="mb-2 h-24 w-auto object-contain sm:h-28"
-          />
+          <Symbol name="paper-pile" size="hero" className="mx-auto mb-2" alt="" />
         ) : (
           <FolderUp className="mx-auto mb-3 h-7 w-7 text-emerald-600" />
         )}
@@ -2028,9 +2024,10 @@ export function ResultActions({
         <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="flex items-center gap-2 text-2xl font-bold tracking-tight text-foreground">
-              {/* P3 — step chip matches the upload/processing boxes so the three
-                  phases read as one numbered flow. */}
-              <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-muted font-mono text-[11px] font-semibold tabular-nums text-muted-foreground">3</span>
+              {/* P3 — raw symbol + emerald step numeral matches the upload/processing
+                  boxes so the three phases read as one numbered flow. */}
+              <Symbol name="review-magnify" size="badge" className="-my-1" alt="" />
+              <span className="font-mono text-sm font-semibold tabular-nums text-emerald-600">3</span>
               Verify extraction <span className="text-base font-medium text-muted-foreground">{safeResultFiles.length}</span>
             </p>
             <p className="mt-1 text-sm font-medium text-muted-foreground">
@@ -2483,12 +2480,7 @@ export function ResultActions({
           )
         }) : (
           <div className="rounded-md border border-dashed border-border bg-card p-5 text-center">
-            <img
-              src="/illustrations/workspace-minimal/review-empty.png"
-              alt=""
-              role="presentation"
-              className="mx-auto mb-2 h-16 w-auto object-contain"
-            />
+            <Symbol name="ai-mascot" size="hero" className="mx-auto mb-2" alt="" />
             <p className="text-sm font-semibold text-foreground">No files in this view</p>
             <p className="mt-1 text-xs font-semibold text-muted-foreground">The full batch is still available.</p>
             <Button

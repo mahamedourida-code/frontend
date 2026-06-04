@@ -4,11 +4,12 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-const SIZE: Record<"inline" | "medium" | "hero", string> = {
+const SIZE = {
   inline: "h-8 w-8",
+  badge: "h-10 w-10 sm:h-11 sm:w-11",
   medium: "h-16 w-16 sm:h-20 sm:w-20",
-  hero: "h-32 w-32 sm:h-40 sm:w-40",
-}
+  hero: "h-28 w-28 sm:h-36 sm:w-36",
+} as const
 
 interface SymbolProps {
   /** File stem under /public/symbols, e.g. "invoice" → /symbols/invoice.png */

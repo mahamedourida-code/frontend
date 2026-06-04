@@ -68,7 +68,7 @@ export function WorkspaceSection({
         )}
       >
         <div className="flex min-w-0 items-start gap-2.5">
-          {symbol ? <Symbol name={symbol} size="inline" className="mt-0.5" /> : null}
+          {symbol ? <Symbol name={symbol} size="badge" className="-my-1" /> : null}
           {step !== undefined && step !== null ? (
             <span className="mt-px shrink-0 font-mono text-[13px] font-semibold tabular-nums text-emerald-600">
               {step}
