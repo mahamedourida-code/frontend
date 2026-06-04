@@ -60,8 +60,8 @@ function EmptyState({
       ) : (
         <div
           className={cn(
-            "flex items-center justify-center rounded-full bg-muted text-muted-foreground",
-            compact ? "size-9 [&_svg]:size-4" : "size-11 [&_svg]:size-5",
+            "text-slate-300 dark:text-slate-600",
+            compact ? "[&_svg]:size-7" : "[&_svg]:size-9",
           )}
         >
           {icon}
@@ -89,7 +89,7 @@ function EmptyState({
           {steps.map((step, index) => (
             <li key={index} className="flex items-start gap-2.5 text-sm text-muted-foreground">
               <span
-                className="mt-px flex size-5 shrink-0 items-center justify-center rounded-full border border-[var(--brand-green-ring)] bg-[var(--brand-green)] text-[0.7rem] font-semibold text-[var(--brand-green-fg)]"
+                className="mt-px shrink-0 font-mono text-[0.8rem] font-semibold tabular-nums text-emerald-600"
                 aria-hidden="true"
               >
                 {index + 1}

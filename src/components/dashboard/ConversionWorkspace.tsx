@@ -2859,8 +2859,8 @@ export function ResultActions({
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
                         {invoiceLanguage !== "en" ? (
-                          <span className="inline-flex items-center gap-1 rounded-md border border-emerald-700/30 bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-200">
-                            <Languages className="size-2.5" />
+                          <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold text-slate-600 dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-300">
+                            <Languages className="size-2.5 text-sky-600" />
                             {invoiceLanguageName(invoiceLanguage)} schema
                           </span>
                         ) : null}
@@ -2880,7 +2880,7 @@ export function ResultActions({
                           <Button
                             type="button"
                             size="sm"
-                            variant="glossy"
+                            variant="surface"
                             className="h-7 px-2.5 text-[11px] font-bold"
                             onClick={() => {
                               writeInvoiceLanguage(suggestedLanguage)
