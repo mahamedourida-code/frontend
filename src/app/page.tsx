@@ -11,7 +11,6 @@ import { AppLogo } from "@/components/AppIcon";
 import { BrandVisualFrame } from "@/components/BrandVisual";
 import { VideoPlaceholder } from "@/components/landing/VideoPlaceholder";
 import { FeatureHoverCards } from "@/components/landing/FeatureHoverCards";
-import { MessyRealityShowcase } from "@/components/landing/MessyRealityShowcase";
 import { VerifiableShowcase } from "@/components/landing/VerifiableShowcase";
 import { OutcomeStats } from "@/components/landing/OutcomeStats";
 import { TypewriterWord } from "@/components/landing/TypewriterWord";
@@ -44,62 +43,52 @@ function loadGsap() {
   return gsapLoadPromise;
 }
 
+// Who AxLiner is for — the client types a bookkeeper / accounting team keeps
+// the books for. Every card stays on the core promise: messy documents →
+// reviewed entries → published to QuickBooks. Not a generic OCR "industries"
+// grid.
 const solutionCards = [
   {
-    title: "Accounting",
+    title: "Accounting firms",
     href: "/solutions/accounting",
     asset: "/solution/accounting.svg",
     description:
-      "Automate the most time-consuming parts of accounting workflows. Extract clean spreadsheet data from receipts, invoices, bank statements, and expense reports so teams can reduce manual entry and focus on review.",
-  },
-  {
-    title: "Banking",
-    href: "/solutions/banking",
-    asset: "/solution/banking.svg",
-    description:
-      "Modernize document-heavy financial operations with structured extraction for checks, loan applications, statements, onboarding packets, and KYC documents while keeping every row ready for downstream review.",
-  },
-  {
-    title: "Backoffice Automation",
-    href: "/solutions/backoffice-automation",
-    asset: "/solution/Backoffice%20Automation.svg",
-    description:
-      "Remove repetitive data entry from internal operations. Turn invoices, forms, receipts, and handwritten tables into usable Excel files that can feed finance, admin, and operations workflows.",
+      "Clear the monthly close faster. Drop a client's whole folder of invoices, receipts, and bank statements, let AxLiner classify and extract each one, then review the flagged fields and publish straight to QuickBooks.",
   },
   {
     title: "Construction",
     href: "/solutions/construction",
     asset: "/solution/Construction.svg",
     description:
-      "Convert site notes, delivery forms, checklists, material logs, and handwritten field tables into clean spreadsheets so project teams can keep records current without retyping paperwork.",
+      "Keep job costs current without retyping. Turn supplier invoices, delivery dockets, and material receipts into reviewed entries — coded by vendor and ready to post to the books, with uncertain fields flagged for you.",
   },
   {
-    title: "CPG Brands",
-    href: "/solutions/cpg-brands",
-    asset: "/solution/CPG%20Brands.svg",
-    description:
-      "Process retail forms, inventory sheets, distributor paperwork, purchase records, and field reports into structured data that merchandising and operations teams can compare quickly.",
-  },
-  {
-    title: "FinTech",
-    href: "/solutions/fintech",
-    asset: "/solution/FinTech.svg",
-    description:
-      "Build document intake flows for financial products without asking users or operators to key in every table manually. Extract page-level data into spreadsheets that are easy to validate.",
-  },
-  {
-    title: "Healthcare",
-    href: "/solutions/healthcare",
-    asset: "/solution/Healthcare.svg",
-    description:
-      "Digitize handwritten logs, intake forms, lab sheets, inventory notes, and administrative records while preserving the table structure needed for review, reporting, and internal handoff.",
-  },
-  {
-    title: "Real Estate",
+    title: "Property & real estate",
     href: "/solutions/real-estate",
     asset: "/solution/Real%20Estate.svg",
     description:
-      "Turn lease packets, inspection forms, closing checklists, rent rolls, and property records into organized spreadsheets for brokers, managers, and operations teams.",
+      "Stay on top of the books across every unit. Process vendor invoices, utility bills, and bank statements into reviewed entries, then publish to QuickBooks — no copy-pasting from PDFs and photos.",
+  },
+  {
+    title: "Retail & e-commerce",
+    href: "/solutions/cpg-brands",
+    asset: "/solution/CPG%20Brands.svg",
+    description:
+      "Reconcile the stack of supplier invoices and receipts behind every sale. AxLiner reads them in one batch, catches duplicates before they hit your books, and hands you reviewed entries to approve.",
+  },
+  {
+    title: "Restaurants & hospitality",
+    href: "/solutions/backoffice-automation",
+    asset: "/solution/Backoffice%20Automation.svg",
+    description:
+      "Tame the daily pile of supplier invoices and till receipts. Batch them in, review the flagged lines, and post coded bills to QuickBooks — so the books stay current without late nights of data entry.",
+  },
+  {
+    title: "Professional services",
+    href: "/solutions/fintech",
+    asset: "/solution/FinTech.svg",
+    description:
+      "Keep client and overhead spend in order. Convert invoices, expense receipts, and statements into reviewed entries, pre-coded by vendor memory and ready to publish — you just approve.",
   },
 ];
 
@@ -592,9 +581,6 @@ export default function Home() {
             <FeatureHoverCards cards={solutionCards} className="w-full" />
           </div>
         </ScrollAnimatedSection>
-
-        {/* ── Messy reality → clean reviewed entry — the differentiator proof ── */}
-        <MessyRealityShowcase />
           </div>
         </div>
         </div>
@@ -633,7 +619,7 @@ export default function Home() {
               className="mt-16 flex flex-wrap items-center justify-center gap-x-16 gap-y-12 sm:gap-x-24 lg:gap-x-28"
             >
               {[
-                { src: "/integrations/quickbooks.png", alt: "QuickBooks", label: "QuickBooks", h: 64 },
+                { src: "/integrations/quickbooks-qb.png", alt: "QuickBooks", label: "QuickBooks", h: 76 },
                 { src: "/integrations/xero.png", alt: "Xero", label: "Xero", h: 88 },
                 { src: "/integrations/gmail.webp", alt: "Gmail", label: "Gmail", h: 72 },
                 { src: "/drive.png", alt: "Google Drive", label: "Google Drive", h: 92 },
