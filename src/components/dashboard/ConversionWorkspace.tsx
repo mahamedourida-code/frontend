@@ -38,6 +38,10 @@ import {
 import { BankReconciliationPanel } from "@/components/dashboard/BankReconciliationPanel"
 import { ConfidenceDot, ConfidenceLegend } from "@/components/dashboard/ConfidenceDot"
 import { AnomalyChip, type AnomalyTone } from "@/components/dashboard/AnomalyChip"
+import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
+import { InboxSummaryStrip } from "@/components/dashboard/InboxSummaryStrip"
+import { FIELD_LABEL, workspaceStage } from "@/lib/review-vocab"
+import { vatCheck, MESSY_DOCS_COPY } from "@/lib/bookkeeper-copy"
 import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
 import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
 import { SourceHighlightOverlay } from "@/components/dashboard/SourceHighlightOverlay"
@@ -1136,6 +1140,8 @@ function resultSummary(file: ResultFile) {
   const type = file.document_type
   // C11 — a date the at-a-glance summary line can show. Undefined when the
   // document type carries no due/payment date, so the line omits it cleanly.
+  // C16 — invoices/receipts carry a Net / VAT / Total breakdown plus a
+  // reconciliation verdict so the first review surface speaks bookkeeper.
   if (type === "invoice") {
     return {
       identityLabel: "Vendor",
@@ -1143,6 +1149,7 @@ function resultSummary(file: ResultFile) {
       amountLabel: "Total",
       amount: [data.currency, data.total].filter(Boolean).join(" ") || "-",
       due: data.due_date,
+      bookkeeper: { currency: data.currency, subtotal: data.subtotal, vat: data.tax_vat_amount, total: data.total },
     }
   }
   if (type === "receipt") {
@@ -1152,6 +1159,7 @@ function resultSummary(file: ResultFile) {
       amountLabel: "Total",
       amount: [data.currency, data.total].filter(Boolean).join(" ") || "-",
       due: data.date,
+      bookkeeper: { currency: data.currency, subtotal: data.subtotal, vat: data.tax_vat_amount, total: data.total },
     }
   }
   if (type === "bank_statement") {
@@ -1161,6 +1169,7 @@ function resultSummary(file: ResultFile) {
       amountLabel: "Closing balance",
       amount: [data.currency, data.closing_balance].filter(Boolean).join(" ") || "-",
       due: undefined,
+      bookkeeper: undefined,
     }
   }
   if (type === "notes") {
@@ -1171,6 +1180,7 @@ function resultSummary(file: ResultFile) {
       amountLabel: "Tables",
       amount: String(Array.isArray(data.tables) ? data.tables.length : 0),
       due: undefined,
+      bookkeeper: undefined,
     }
   }
   return {
@@ -1179,7 +1189,43 @@ function resultSummary(file: ResultFile) {
     amountLabel: "Rows",
     amount: String(Array.isArray(file.review_grid) ? Math.max(file.review_grid.length - 1, 0) : "-"),
     due: undefined,
+    bookkeeper: undefined,
   }
+}
+
+type BookkeeperFigures = { currency?: any; subtotal?: any; vat?: any; total?: any }
+
+// C16 — the bookkeeper breakdown: Net / VAT / Total surfaced from the extracted
+// fields plus a one-glance reconciliation chip (vatCheck). Reuses AnomalyChip so
+// it matches the rest of the board; only renders for invoice/receipt docs.
+function BookkeeperBreakdown({ figures, layout = "row" }: { figures: BookkeeperFigures; layout?: "row" | "grid" }) {
+  const currency = figures.currency ? String(figures.currency) : ""
+  const fmt = (value: any) => (value === undefined || value === null || value === "" ? "-" : [currency, value].filter(Boolean).join(" "))
+  const check = vatCheck(figures.subtotal, figures.vat, figures.total)
+  // vatCheck's "neutral" maps onto AnomalyChip's caution (no plain neutral tone).
+  const chipTone: AnomalyTone = check.tone === "good" ? "good" : "caution"
+  const cells: Array<[string, string]> = [
+    [FIELD_LABEL.net, fmt(figures.subtotal)],
+    [FIELD_LABEL.vat, fmt(figures.vat)],
+    [FIELD_LABEL.gross, fmt(figures.total)],
+  ]
+  return (
+    <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-1.5", layout === "grid" && "w-full")}>
+      {cells.map(([label, value]) => (
+        <span key={label} className="inline-flex items-baseline gap-1.5">
+          <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</span>
+          <span className="text-[13px] font-semibold tabular-nums text-foreground">{value}</span>
+        </span>
+      ))}
+      <AnomalyChip
+        tone={chipTone}
+        title={check.label}
+        reason={check.detail}
+        label={check.state === "ok" ? `✓ ${check.label}` : check.label}
+        className="h-5 shrink-0"
+      />
+    </div>
+  )
 }
 
 function structuredRows(file: ResultFile, language: InvoiceLanguage = "en"): { columns: string[]; rows: any[][]; pathRoot?: string } | null {
@@ -1561,7 +1607,6 @@ export function ResultActions({
     (total, file) => total + activeDuplicateWarnings(file).length,
     0,
   )
-  const comparisonDuplicateWarning = comparisonFile ? activeDuplicateWarnings(comparisonFile)[0] : undefined
   const comparisonVendorEligible = comparisonFile?.document_type === "invoice" || comparisonFile?.document_type === "receipt"
   const comparisonCanRememberVendor = Boolean(
     comparisonVendorEligible &&
@@ -1600,6 +1645,24 @@ export function ResultActions({
       return counts
     },
     { all: 0, needs_review: 0, ready: 0, edited: 0, failed: 0, published: 0 } as Record<ResultFilter, number>
+  )
+  // C18 — the inbox strip's piles, bucketed by the shared bookkeeper lifecycle
+  // so the workspace counts read the same as the AP queue. Processing counts any
+  // file still in flight; everything else falls into needs you / ready / published.
+  const inboxCounts = resultEntries.reduce(
+    (counts, entry) => {
+      const raw = entry.file.review_status || entry.file.status
+      if (raw === "processing" || raw === "pending" || raw === "queued") {
+        counts.processing += 1
+        return counts
+      }
+      const stage = workspaceStage(entry.file.review_status)
+      if (stage === "ready") counts.ready += 1
+      else if (stage === "published") counts.published += 1
+      else if (stage === "needs_you" || stage === "failed") counts.needsYou += 1
+      return counts
+    },
+    { processing: 0, needsYou: 0, ready: 0, published: 0 },
   )
   const filteredResultEntries = resultEntries.filter((entry) => {
     if (resultFilter === "all") return true
@@ -1964,7 +2027,10 @@ export function ResultActions({
       <div className="pt-2">
         <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-2xl font-bold tracking-tight text-foreground">
+            <p className="flex items-center gap-2 text-2xl font-bold tracking-tight text-foreground">
+              {/* P3 — step chip matches the upload/processing boxes so the three
+                  phases read as one numbered flow. */}
+              <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-muted font-mono text-[11px] font-semibold tabular-nums text-muted-foreground">3</span>
               Verify extraction <span className="text-base font-medium text-muted-foreground">{safeResultFiles.length}</span>
             </p>
             <p className="mt-1 text-sm font-medium text-muted-foreground">
@@ -1972,6 +2038,16 @@ export function ResultActions({
             </p>
           </div>
         </div>
+        {/* C18 — a glanceable inbox strip: processing · needs you · ready ·
+            published. Clicking a pile jumps the board filter to match. */}
+        <InboxSummaryStrip
+          className="mb-4"
+          processing={inboxCounts.processing}
+          needsYou={inboxCounts.needsYou}
+          ready={inboxCounts.ready}
+          published={inboxCounts.published}
+          onSelect={(pile) => setResultFilter(pile === "needs_you" ? "needs_review" : pile)}
+        />
         <ReviewWorkflowStrip className="mb-4" />
 
         <div className="mb-4 flex flex-wrap items-center gap-1.5">
@@ -2118,6 +2194,22 @@ export function ResultActions({
                 <span className="min-w-[84px] shrink-0 text-right font-semibold tabular-nums text-foreground">
                   {summary.amount}
                 </span>
+                {/* C16 — a compact Net+VAT=Total reconciliation chip on the collapsed
+                    row so a clean/mismatch verdict reads without expanding. */}
+                {(() => {
+                  const figures = summary.bookkeeper
+                  if (!figures) return null
+                  const check = vatCheck(figures.subtotal, figures.vat, figures.total)
+                  return (
+                    <AnomalyChip
+                      tone={check.tone === "good" ? "good" : "caution"}
+                      title={check.label}
+                      reason={check.detail}
+                      label={check.state === "ok" ? "✓ Adds up" : check.label}
+                      className="hidden h-5 shrink-0 md:inline-flex"
+                    />
+                  )
+                })()}
                 {cardDue ? (
                   <span className="hidden min-w-[92px] shrink-0 text-xs text-muted-foreground xl:inline">
                     {cardDue.text}
@@ -2281,6 +2373,13 @@ export function ResultActions({
                   <p className="mt-1 truncate text-[15px] font-semibold text-foreground">{summary.amount}</p>
                 </div>
               </div>
+              {/* C16 — Net / VAT / Total + reconciliation verdict for invoices and
+                  receipts, so the card speaks bookkeeper before you even open it. */}
+              {summary.bookkeeper ? (
+                <div className="mt-3 border-t border-border pt-3">
+                  <BookkeeperBreakdown figures={summary.bookkeeper} layout="grid" />
+                </div>
+              ) : null}
 
               {duplicateWarning ? (
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
@@ -2528,34 +2627,8 @@ export function ResultActions({
               </div>
 
               <div key={comparisonKey} className="max-h-[74vh] min-h-[420px] overflow-auto rounded-md border border-border bg-white">
-                {comparisonFile && comparisonDuplicateWarning ? (
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900">
-                    <span className="flex min-w-0 items-center gap-2">
-                      <span className="truncate font-medium">{comparisonDuplicateWarning.message}</span>
-                      {(() => {
-                        const copy = duplicateCopy(comparisonDuplicateWarning)
-                        return (
-                          <AnomalyChip
-                            tone={copy.tone}
-                            title={copy.title}
-                            reason={copy.reason}
-                            label="Why"
-                            className="h-5 shrink-0 bg-white/70"
-                          />
-                        )
-                      })()}
-                    </span>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="surface"
-                      onClick={() => void onOverrideDuplicateWarning?.(comparisonFile, comparisonDuplicateWarning.id)}
-                      className="h-7 border-amber-300 bg-white px-2.5 text-[11px] text-amber-950 hover:bg-amber-100"
-                    >
-                      Keep separate
-                    </Button>
-                  </div>
-                ) : null}
+                {/* C17 — the duplicate banner lives on the expanded card; not
+                    re-rendered here to avoid two identical warnings per document. */}
                 {comparisonFile && comparisonVendorEligible ? (
                   <div className="border-b border-border bg-muted/20 px-4 py-3">
                     <div className="flex flex-wrap items-start justify-between gap-2">
@@ -3304,19 +3377,15 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
         <div className="grid gap-4">
           {!hasResults ? (
             <div className="space-y-4">
-              <section id="upload-files" aria-labelledby="workspace-tools-title" className="space-y-4">
-                <div className="border-b border-border pb-4">
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#087a50]">Review</p>
-                    <h2 id="workspace-tools-title" className="mt-1 text-2xl font-bold tracking-tight text-foreground">
-                      Verify extracted documents
-                    </h2>
-                    <p className="mt-1 max-w-2xl text-sm font-medium leading-6 text-muted-foreground">
-                      Upload a batch or open inbox submissions. Mark ready confirms extraction before invoices move to draft bills.
-                    </p>
-                  </div>
-                </div>
-
+              {/* P1 — step 1: the upload box, leaning on the messy-docs promise. */}
+              <WorkspaceSection
+                id="upload-files"
+                step="1"
+                tone={isProcessing ? "muted" : "active"}
+                title={MESSY_DOCS_COPY.uploadTitle}
+                hint={MESSY_DOCS_COPY.uploadHintShort}
+                contentClassName="space-y-4"
+              >
                 <ReviewWorkflowStrip />
 
                 <div className="flex flex-wrap items-center gap-2">
@@ -3366,10 +3435,28 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                     onClearFiles={onClearFiles}
                   />
                 ) : null}
-              </section>
+              </WorkspaceSection>
+
+              {/* P2 — step 2: a calm "we're reading the batch" box, only while a
+                  batch is in flight, so processing reads as its own step. */}
+              {isProcessing ? (
+                <WorkspaceSection
+                  step="2"
+                  tone="active"
+                  title="Reading your batch"
+                  hint="We're extracting fields from every page. This box clears the moment results are ready to verify."
+                >
+                  <div className="flex items-center gap-3 text-sm font-medium text-muted-foreground">
+                    <Loader2 className="size-4 animate-spin text-primary" />
+                    {processLabel || "Processing documents..."}
+                  </div>
+                </WorkspaceSection>
+              ) : null}
             </div>
           ) : null}
 
+          {/* P3 — step 3: the verify-extraction board. ResultActions carries its
+              own "Verify extraction" header, so this wrapper stays header-light. */}
           <div className="space-y-4">
             <AutoDetectionPanel
               documents={classifiedDocuments}
