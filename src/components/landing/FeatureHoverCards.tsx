@@ -103,7 +103,7 @@ type FeatureHoverCardsProps = {
 
 export function FeatureHoverCards({ cards, className }: FeatureHoverCardsProps) {
   return (
-    <div className={cn("grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4", className)}>
+    <div className={cn("grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3", className)}>
       {cards.map((card, i) => (
         <HoverCard
           key={card.title}

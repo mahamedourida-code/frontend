@@ -126,15 +126,10 @@ export function OutcomeStats() {
           transition={{ duration: 0.6, ease: easeOut }}
           className="mx-auto max-w-2xl text-center"
         >
-          <p className="ax-eyebrow text-neutral-700">The outcome</p>
-          <h2 id="outcome-stats-heading" className="ax-h2 mt-3 font-bold text-neutral-950">
+          <h2 id="outcome-stats-heading" className="ax-h2 font-bold text-neutral-950">
             Less typing. Fewer mistakes. More{" "}
             <TypewriterWord words={["reviewed", "coded", "posted", "approved"]} highlight />, faster.
           </h2>
-          <p className="ax-body mt-4 font-semibold text-neutral-700">
-            The work AxLiner takes off bookkeepers and accounting teams across every batch, every
-            client, and every messy document.
-          </p>
         </motion.div>
 
         {/* ── The four outcome counters ── */}
@@ -143,17 +138,6 @@ export function OutcomeStats() {
             <OutcomeStat key={stat.label} stat={stat} index={index} animate={animate} />
           ))}
         </dl>
-
-        {/* honest footnote — these are aggregate outcomes, not a guarantee */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.5, ease: easeOut, delay: 0.2 }}
-          className="mt-14 text-center text-[12px] font-semibold uppercase tracking-[0.16em] text-neutral-600"
-        >
-          Aggregate outcomes across AxLiner accounts
-        </motion.p>
       </div>
     </section>
   )

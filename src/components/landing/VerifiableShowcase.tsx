@@ -54,8 +54,7 @@ export function VerifiableShowcase() {
           transition={{ duration: 0.6, ease: easeOut }}
           className="mx-auto max-w-2xl text-center"
         >
-          <p className="ax-eyebrow text-neutral-700">Verifiable, not invisible</p>
-          <h2 id="verifiable-heading" className="ax-h2 mt-3 font-bold text-neutral-950">
+          <h2 id="verifiable-heading" className="ax-h2 font-bold text-neutral-950">
             See where every number came from.
           </h2>
           <p className="ax-body mt-4 font-semibold text-neutral-700">

@@ -341,34 +341,8 @@ export default function Home() {
                 <Button variant="glossy" asChild className="h-[52px] rounded-full px-10 text-base font-bold">
                   <NextLink href="/dashboard/client">Start free</NextLink>
                 </Button>
-                <button
-                  type="button"
-                  onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
-                  className="ax-interactive text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-                >
-                  See how it works ↓
-                </button>
               </div>
 
-              <div className="mt-7 flex items-center justify-center gap-3">
-                <div className="flex -space-x-2">
-                  {[0, 1, 2, 3, 4].map((i) => (
-                    <Image
-                      key={i}
-                      src={`/avatars/${i}.webp`}
-                      alt={`User ${i + 1}`}
-                      width={40}
-                      height={40}
-                      className="h-10 w-10 rounded-full border-2 border-white object-cover shadow-sm"
-                    />
-                  ))}
-                </div>
-                <div className="h-9 w-px bg-border" />
-                <div className="text-left">
-                  <p className="text-sm font-bold leading-none text-neutral-950">5,000+</p>
-                  <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600">bookkeepers &amp; accountants</p>
-                </div>
-              </div>
             </div>
 
             {/* Tella / Screen-Studio-style video placeholder — drop the recording in here */}
@@ -378,11 +352,7 @@ export default function Home() {
               transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
               className="relative mx-auto mt-14 max-w-[1040px] lg:mt-16"
             >
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -inset-x-10 -top-8 bottom-0 -z-10 rounded-[3rem] bg-gradient-to-b from-[#d1fae5]/70 via-[#d1fae5]/25 to-transparent blur-2xl"
-              />
-              <div className="rounded-[1.5rem] border border-emerald-200/70 bg-white/70 p-2 shadow-[0_28px_80px_-28px_rgba(16,185,129,0.4)] backdrop-blur-sm sm:rounded-[2.25rem] sm:p-3">
+              <div className="rounded-[1.5rem] border border-black/10 bg-white p-2 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.35)] sm:rounded-[2.25rem] sm:p-3">
                 <div className="relative aspect-video w-full overflow-hidden rounded-[1.1rem] bg-neutral-950 ring-1 ring-black/5 sm:rounded-[1.6rem]">
                   {/* window chrome */}
                   <div className="absolute inset-x-0 top-0 z-10 flex h-9 items-center gap-1.5 bg-neutral-900/90 px-4">
@@ -401,7 +371,7 @@ export default function Home() {
                   />
                   {/* play button */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="flex size-20 items-center justify-center rounded-full bg-[#d1fae5] text-[#064e3b] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.7),0_10px_34px_-8px_rgba(16,185,129,0.7)] transition-transform duration-200 hover:scale-105">
+                    <div className="flex size-20 items-center justify-center rounded-full bg-[#d1fae5] text-[#064e3b] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.7),0_8px_22px_-10px_rgba(0,0,0,0.35)] transition-transform duration-200 hover:scale-105">
                       <svg viewBox="0 0 16 16" fill="currentColor" className="ml-1 size-7" aria-hidden="true">
                         <path d="M3 2.25 14.5 8 3 13.75V2.25Z" />
                       </svg>
@@ -415,8 +385,6 @@ export default function Home() {
             </motion.div>
           </div>
         </section>
-
-        <TestimonialsMarquee />
 
           </div>
         </div>
@@ -562,6 +530,9 @@ export default function Home() {
           </div>
         </div>
 
+        {/* ── Organizations testimonials — moved beneath the QuickBooks band ── */}
+        <TestimonialsMarquee />
+
         {/* Why Choose Us Section — white band, dark text + cycling typewriter */}
         <ScrollAnimatedSection id="features" className="relative z-20 bg-white pt-20 pb-24 text-neutral-950 lg:pt-24 lg:pb-28">
           <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
@@ -592,7 +563,7 @@ export default function Home() {
         <OutcomeStats />
 
         {/* ── Integrations band — large raw logos of the tools we plug into ── */}
-        <section className="relative z-10 overflow-hidden bg-[#f7f3e9] py-20 lg:py-28">
+        <section className="relative z-10 overflow-hidden bg-white py-20 lg:py-28">
           <div className="mx-auto max-w-[1280px] px-4 text-center sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
@@ -671,8 +642,7 @@ export default function Home() {
           <div className="container relative z-10 mx-auto max-w-[1540px] px-4 sm:px-6 lg:px-8">
             <div className="grid gap-10 lg:grid-cols-[minmax(360px,0.82fr)_minmax(520px,1.18fr)] lg:items-center">
               <div data-animate="headline">
-                <p className="ax-eyebrow text-black">Security</p>
-                <h2 className="ax-h2 ax-marketing-section-title mt-3 max-w-2xl font-bold text-neutral-950">
+                <h2 className="ax-h2 ax-marketing-section-title max-w-2xl font-bold text-neutral-950">
                   Your data never leaves the review board uninvited.
                 </h2>
 
