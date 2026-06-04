@@ -65,7 +65,7 @@ export function WorkspaceSection({
       >
         <div className="flex min-w-0 items-start gap-2.5">
           {step !== undefined && step !== null ? (
-            <span className="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-muted font-mono text-[11px] font-semibold tabular-nums text-muted-foreground">
+            <span className="mt-px shrink-0 font-mono text-[13px] font-semibold tabular-nums text-emerald-600">
               {step}
             </span>
           ) : null}

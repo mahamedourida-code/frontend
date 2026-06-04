@@ -394,7 +394,10 @@
   --secondary: hsl(220 14% 96%);
   --secondary-foreground: hsl(222 47% 11%);
   --muted: hsl(220 14% 96%);
-  --muted-foreground: hsl(215 16% 18%);
+  /* Secondary text. Was 18% L, which read as flat black and collapsed the
+     text hierarchy — now a true mid-gray so labels/captions sit clearly below
+     primary foreground while staying AA-legible on white. */
+  --muted-foreground: hsl(215 15% 42%);
   --accent: hsl(220 14% 94%);
   --accent-foreground: hsl(222 47% 11%);
   --destructive: hsl(0 84% 60%);

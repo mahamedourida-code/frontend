@@ -41,7 +41,7 @@ import { AnomalyChip, type AnomalyTone } from "@/components/dashboard/AnomalyChi
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { InboxSummaryStrip } from "@/components/dashboard/InboxSummaryStrip"
 import { FIELD_LABEL, workspaceStage } from "@/lib/review-vocab"
-import { vatCheck, MESSY_DOCS_COPY } from "@/lib/bookkeeper-copy"
+import { vatCheck } from "@/lib/bookkeeper-copy"
 import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
 import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
 import { SourceHighlightOverlay } from "@/components/dashboard/SourceHighlightOverlay"
@@ -494,15 +494,13 @@ export function UploadDropzone({
             className="mb-2 h-24 w-auto object-contain sm:h-28"
           />
         ) : (
-          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-md border border-border bg-card shadow-xs">
-            <FolderUp className="h-5 w-5 text-foreground" />
-          </div>
+          <FolderUp className="mx-auto mb-3 h-7 w-7 text-emerald-600" />
         )}
         <h3 className="text-xl font-semibold tracking-tight text-foreground">
           {isDragging ? "Drop documents to upload" : uploadedFiles.length ? "Add more documents" : "Upload documents"}
         </h3>
         <p className="mt-1.5 text-sm font-medium text-muted-foreground">
-          Drag in a folder or select scans, photos, and PDFs. Handwritten documents are welcome.
+          Drag in a folder, or select scans, photos and PDFs.
         </p>
         <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
           <label
@@ -870,7 +868,7 @@ export function ResultPreviewPanel({
                   <table className="w-full border-collapse text-sm text-gray-950">
                     <tbody>
                       {tablePreviewData.map((row, rowIndex) => (
-                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-emerald-50 font-semibold" : "bg-white"}>
+                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-slate-50 font-semibold text-slate-700" : "bg-white"}>
                           {row.map((cell, cellIndex) => (
                             <td key={cellIndex} className="border border-gray-200 px-3 py-2 text-left text-gray-950">
                               {cell || ""}
@@ -901,7 +899,7 @@ export function ResultPreviewPanel({
                 <table className="w-full border-collapse text-sm text-gray-950">
                   <tbody>
                     {tablePreviewData.map((row, rowIndex) => (
-                      <tr key={rowIndex} className={rowIndex === 0 ? "bg-emerald-50 font-semibold" : "bg-white"}>
+                      <tr key={rowIndex} className={rowIndex === 0 ? "bg-slate-50 font-semibold text-slate-700" : "bg-white"}>
                         {row.map((cell, cellIndex) => (
                           <td key={cellIndex} className="border border-gray-200 px-3 py-2 text-left text-gray-950">
                             {cell || ""}
@@ -934,7 +932,7 @@ export function ResultPreviewPanel({
               <table className="w-full border-collapse text-sm text-gray-950">
                 <tbody>
                   {tablePreviewData.map((row, rowIndex) => (
-                    <tr key={rowIndex} className={rowIndex === 0 ? "bg-emerald-50 font-semibold" : "bg-white"}>
+                    <tr key={rowIndex} className={rowIndex === 0 ? "bg-slate-50 font-semibold text-slate-700" : "bg-white"}>
                       {row.map((cell, cellIndex) => (
                         <td key={cellIndex} className="border border-gray-200 px-3 py-2 text-left text-gray-950">
                           {cell || ""}
@@ -3021,9 +3019,9 @@ export function ResultActions({
                         {/* C3 — once nothing's left to triage in the collapsed view, offer the
                             existing "mark reviewed" handler as the single next step. */}
                         {collapseConfident && uncertainCount === 0 ? (
-                          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-emerald-50/50 px-4 py-2.5">
-                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800">
-                              <Check className="size-3.5 shrink-0" />
+                          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-slate-50/70 px-4 py-2.5">
+                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+                              <Check className="size-3.5 shrink-0 text-emerald-600" />
                               Nothing left to check on this document.
                             </span>
                             {comparisonFile.document_id && !["ready", "published", "failed", "deleted"].includes(comparisonFile.review_status || "") ? (
@@ -3123,17 +3121,17 @@ export function ResultActions({
                         const isHandwrittenRow = isHandwrittenDocument(comparisonFile) && rowIndex > 0
                         const rowTier = isHandwrittenRow ? getRowConfidenceTier(comparisonFile, rowIndex) : null
                         return (
-                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-primary text-primary-foreground" : rowIndex % 2 === 0 ? "bg-emerald-50" : "bg-white"}>
+                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-slate-100 text-slate-700" : rowIndex % 2 === 0 ? "bg-slate-50" : "bg-white"}>
                           {isHandwrittenDocument(comparisonFile) ? (
                             <td
                               className={cn(
                                 "w-7 border border-gray-200 px-1.5 text-center align-middle",
-                                rowIndex === 0 ? "border-white/20" : "",
+                                rowIndex === 0 ? "border-slate-200" : "",
                               )}
                               aria-hidden={rowIndex === 0}
                             >
                               {rowIndex === 0 ? (
-                                <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-primary-foreground/85">·</span>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-slate-400">·</span>
                               ) : (
                                 <ConfidenceDot tier={rowTier} size={8} withRing />
                               )}
@@ -3157,7 +3155,7 @@ export function ResultActions({
                                 }}
                                 className={cn(
                                   "min-w-[120px] border border-gray-200 px-3 py-2 text-left font-medium",
-                                  rowIndex === 0 ? "border-white/20" : "hover:bg-emerald-50"
+                                  rowIndex === 0 ? "border-slate-200" : "hover:bg-slate-50"
                                 )}
                               >
                                 {isEditing ? (
@@ -3377,13 +3375,13 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
         <div className="grid gap-4">
           {!hasResults ? (
             <div className="space-y-4">
-              {/* P1 — step 1: the upload box, leaning on the messy-docs promise. */}
+              {/* P1 — step 1: the upload box. */}
               <WorkspaceSection
                 id="upload-files"
                 step="1"
                 tone={isProcessing ? "muted" : "active"}
-                title={MESSY_DOCS_COPY.uploadTitle}
-                hint={MESSY_DOCS_COPY.uploadHintShort}
+                title="Upload documents"
+                hint="Invoices, receipts, bank statements and tables — PDF or image, scanned or photographed."
                 contentClassName="space-y-4"
               >
                 <ReviewWorkflowStrip />
