@@ -9,6 +9,7 @@ import { ChevronLeft, FileText, Loader2, Sparkles } from "lucide-react"
 import Image from "next/image"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
+import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
@@ -20,7 +21,7 @@ import { deriveMissingInfo } from "@/lib/missing-info"
 import { Button } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
 import { clayButton } from "@/lib/clay-button"
-import { Card, CardContent } from "@/components/ui/card"
+import { CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PublishSuccessBurst } from "@/components/dashboard/PublishSuccessBurst"
@@ -800,22 +801,6 @@ function AccountsPayableContent() {
           ) : undefined}
         />
 
-        <div className="grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-3">
-          {[
-            { step: "01", title: "Review invoices", copy: "Confirm the extracted invoice details." },
-            { step: "02", title: "Prepare drafts", copy: "Code suppliers, accounts, and VAT." },
-            { step: "03", title: "Publish", copy: `Send approved draft bills to ${destinationName}.` },
-          ].map(stage => (
-            <div key={stage.step} className="flex items-center gap-3 bg-card px-3 py-2.5">
-              <span className="font-mono text-[10px] font-semibold tabular-nums text-primary">{stage.step}</span>
-              <div>
-                <p className="text-xs font-semibold text-foreground">{stage.title}</p>
-                <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">{stage.copy}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
         {/* P11 — client filter chip */}
         {clientId ? (
           <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
@@ -851,7 +836,12 @@ function AccountsPayableContent() {
         </div>
 
         <div className="space-y-4">
-          <Card className="overflow-hidden rounded-md border-border shadow-xs">
+          <WorkspaceSection
+            step="1"
+            title="Review invoices"
+            hint="Confirm the extracted details, then code each draft."
+            contentClassName="p-0"
+          >
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-card px-3 py-2.5">
               <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Draft bills queue">
                 {[
@@ -1035,19 +1025,25 @@ function AccountsPayableContent() {
                 </tbody>
               </table>
             </div>
-          </Card>
+          </WorkspaceSection>
 
           {activeItem ? (
           <SpotlightCard className="rounded-md">
-            <Card className="rounded-md border-border shadow-xs">
-            <CardContent className="p-5">
+            <WorkspaceSection
+              tone="active"
+              step="2"
+              title="Prepare draft bill"
+              hint={`Code the supplier, account, and VAT, then publish to ${destinationName}.`}
+              contentClassName="p-0"
+            >
+            <CardContent className="p-4 sm:p-5">
                 <div className="space-y-5">
                   <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
-                    <div>
+                    <div className="min-w-0">
                       <h2 className="text-[19px] font-bold tracking-tight text-foreground">{draft.vendor || "Vendor missing"}</h2>
-                      <p className="mt-1 text-[13px] text-muted-foreground">{activeItem.source_filename}</p>
+                      <p className="mt-1 break-all text-[13px] text-muted-foreground">{activeItem.source_filename}</p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       {activeItem.source_access_url ? (
                         <Button asChild variant="surface" size="sm" className="h-8">
                           <a href={activeItem.source_access_url} target="_blank" rel="noreferrer">View attachment</a>
@@ -1517,7 +1513,7 @@ function AccountsPayableContent() {
                     )}
                   </div>
 
-                  <div className="sticky bottom-0 z-10 -mx-5 -mb-5 flex flex-wrap justify-end gap-2 border-t border-border bg-background/95 px-5 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:relative sm:bottom-auto sm:mx-0 sm:mb-0 sm:bg-transparent sm:px-0 sm:py-4 sm:backdrop-blur-0 sm:supports-[backdrop-filter]:bg-transparent">
+                  <div className="sticky bottom-0 z-10 -mx-4 -mb-4 flex flex-wrap justify-end gap-2 border-t border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:relative sm:bottom-auto sm:mx-0 sm:mb-0 sm:bg-transparent sm:px-0 sm:py-4 sm:backdrop-blur-0 sm:supports-[backdrop-filter]:bg-transparent">
                     {!activeLocked ? (
                       <>
                         <MotionButton variant="surface" onClick={() => void persistDraft()} disabled={saving} className={cn("h-9", clayButton)}>
@@ -1549,7 +1545,7 @@ function AccountsPayableContent() {
                   </div>
                 </div>
             </CardContent>
-          </Card>
+            </WorkspaceSection>
           </SpotlightCard>
           ) : null}
         </div>

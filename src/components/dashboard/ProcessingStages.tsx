@@ -17,18 +17,30 @@ type ProcessingStagesProps = {
 /**
  * Narrated processing stages — replaces a naked "Processing…" spinner with the
  * stages we already move through, derived from the single progress percentage
- * we track (no fabricated per-phase timing). Reading document → Detecting
- * supplier → Extracting fields → Checking duplicates → Ready for review.
+ * we track (no fabricated per-phase timing). Reading the document → Recognising
+ * the supplier → Pulling out the figures → Checking for duplicates → Ready for
+ * your review.
  *
  * Calm fintech "labeled loader" treatment: emerald accents, the active stage
- * pulses, done stages check off. Honours `prefers-reduced-motion`.
+ * pulses, done stages check off, with a quiet line of reassurance that the work
+ * is already happening. Honours `prefers-reduced-motion`.
  */
 const STAGES = [
-  "Reading document",
-  "Detecting supplier",
-  "Extracting fields",
-  "Checking duplicates",
-  "Ready for review",
+  "Reading the document",
+  "Recognising the supplier",
+  "Pulling out the figures",
+  "Checking for duplicates",
+  "Ready for your review",
+] as const
+
+// A short, calm sub-line shown under each stage while it's the active one —
+// reassurance that messy input is being handled, not that the user must wait.
+const STAGE_HINTS = [
+  "Making sense of the layout — handwriting, photos and scans included.",
+  "Matching the letterhead against suppliers you've seen before.",
+  "Reading dates, line items, VAT and totals off the page.",
+  "Comparing against recent documents so nothing gets entered twice.",
+  "Everything's extracted — give it a quick look before it's exported.",
 ] as const
 
 // Percent thresholds at which each stage is considered reached. The active
@@ -57,7 +69,7 @@ export function ProcessingStages({ progress, isComplete, className }: Processing
           <li
             key={label}
             aria-current={isActive ? "step" : undefined}
-            className="flex items-center gap-2.5"
+            className="flex items-start gap-2.5"
           >
             <span
               className={cn(
@@ -97,28 +109,44 @@ export function ProcessingStages({ progress, isComplete, className }: Processing
                 )}
               </AnimatePresence>
             </span>
-            <motion.span
-              animate={
-                isActive && !prefersReducedMotion
-                  ? { opacity: [0.6, 1, 0.6] }
-                  : { opacity: 1 }
-              }
-              transition={
-                isActive && !prefersReducedMotion
-                  ? { repeat: Infinity, duration: 1.8, ease: "easeInOut" }
-                  : { duration: 0.2 }
-              }
-              className={cn(
-                "text-sm",
-                isDone
-                  ? "font-medium text-foreground"
-                  : isActive
-                    ? "font-semibold text-foreground"
-                    : "text-muted-foreground/60",
-              )}
-            >
-              {label}
-            </motion.span>
+            <span className="flex min-w-0 flex-col">
+              <motion.span
+                animate={
+                  isActive && !prefersReducedMotion
+                    ? { opacity: [0.6, 1, 0.6] }
+                    : { opacity: 1 }
+                }
+                transition={
+                  isActive && !prefersReducedMotion
+                    ? { repeat: Infinity, duration: 1.8, ease: "easeInOut" }
+                    : { duration: 0.2 }
+                }
+                className={cn(
+                  "text-sm leading-tight",
+                  isDone
+                    ? "font-medium text-foreground"
+                    : isActive
+                      ? "font-semibold text-foreground"
+                      : "text-muted-foreground/60",
+                )}
+              >
+                {label}
+              </motion.span>
+              <AnimatePresence initial={false}>
+                {isActive ? (
+                  <motion.span
+                    key="hint"
+                    initial={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                    transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                    className="mt-0.5 block overflow-hidden text-xs leading-snug text-muted-foreground/70"
+                  >
+                    {STAGE_HINTS[index]}
+                  </motion.span>
+                ) : null}
+              </AnimatePresence>
+            </span>
           </li>
         )
       })}
