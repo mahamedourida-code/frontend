@@ -498,6 +498,18 @@ export function UploadDropzone({
         <p className="mt-1.5 text-sm font-medium text-muted-foreground">
           Drag in a folder, or select scans, photos and PDFs.
         </p>
+        {!uploadedFiles.length ? (
+          <div className="mt-4 flex flex-col items-center gap-1.5">
+            <div className="flex items-center justify-center gap-4 sm:gap-6">
+              {(["invoice", "receipt", "bank-statement", "spreadsheet", "handwritten-note"] as const).map((n) => (
+                <Symbol key={n} name={n} size="medium" className="h-12 w-12 sm:h-14 sm:w-14" alt="" />
+              ))}
+            </div>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Invoices · Receipts · Bank statements · Tables · Handwriting
+            </span>
+          </div>
+        ) : null}
         <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
           <label
             htmlFor="workspace-file-upload"
