@@ -132,15 +132,6 @@ const faqItems = [
 ];
 
 
-// Static outcome stats — restrained, Nanonets-style proof numbers. These are
-// not wired to a live aggregate source yet (see manual_setup_requirements.md);
-// keep them honest and round. A5 will replace these with real count-up data.
-const proofStats = [
-  { value: "1.2M+", label: "documents reviewed" },
-  { value: "60k+", label: "hours of data entry saved" },
-  { value: "38k+", label: "duplicate entries caught" },
-];
-
 type FooterIconProps = {
   className?: string;
 };
@@ -433,29 +424,6 @@ export default function Home() {
                 </div>
               </div>
             </motion.div>
-
-            {/* Proof stat strip — Nanonets-style outcome numbers, not feature claims */}
-            <motion.dl
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.6 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="mx-auto mt-12 grid max-w-2xl grid-cols-3 gap-px overflow-hidden rounded-2xl border border-border bg-border"
-            >
-              {proofStats.map((stat) => (
-                <div key={stat.label} className="bg-white px-4 py-5 text-center">
-                  <dt className="sr-only">{stat.label}</dt>
-                  <dd>
-                    <span className="block text-2xl font-bold leading-none tracking-tight text-neutral-950 sm:text-3xl">
-                      {stat.value}
-                    </span>
-                    <span className="mt-2 block text-[11px] font-semibold uppercase leading-snug tracking-[0.12em] text-neutral-600">
-                      {stat.label}
-                    </span>
-                  </dd>
-                </div>
-              ))}
-            </motion.dl>
           </div>
         </section>
 
@@ -605,9 +573,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── Messy reality → clean reviewed entry (A2 proof section) ── */}
-        <MessyRealityShowcase />
-
         {/* Why Choose Us Section — white band, dark text + cycling typewriter */}
         <ScrollAnimatedSection id="features" className="relative z-20 bg-white pt-20 pb-24 text-neutral-950 lg:pt-24 lg:pb-28">
           <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
@@ -627,6 +592,9 @@ export default function Home() {
             <FeatureHoverCards cards={solutionCards} className="w-full" />
           </div>
         </ScrollAnimatedSection>
+
+        {/* ── Messy reality → clean reviewed entry — the differentiator proof ── */}
+        <MessyRealityShowcase />
           </div>
         </div>
         </div>

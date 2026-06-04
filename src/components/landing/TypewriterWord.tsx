@@ -14,8 +14,13 @@ type TypewriterWordProps = {
   deletingSpeed?: number
   /** ms to hold on a fully-typed word before deleting. */
   pause?: number
-  /** Caret colour (defaults to the warm clay brown). */
+  /** Caret colour class (defaults depend on variant). */
   caretClassName?: string
+  /**
+   * Wrap the word in a brand-green "highlighter" pill (black text on
+   * `#d1fae5`). Use on white / light backgrounds where the green pops.
+   */
+  highlight?: boolean
 }
 
 /**
@@ -30,6 +35,7 @@ export function TypewriterWord({
   deletingSpeed = 38,
   pause = 1500,
   caretClassName,
+  highlight = false,
 }: TypewriterWordProps) {
   const reduceMotion = useReducedMotion()
   const [text, setText] = useState("")
@@ -65,14 +71,23 @@ export function TypewriterWord({
   }, [text, deleting, wordIndex, words, reduceMotion, typingSpeed, deletingSpeed, pause])
 
   return (
-    <span className={cn("inline-flex items-baseline whitespace-nowrap", className)}>
+    <span
+      className={cn(
+        "whitespace-nowrap",
+        highlight
+          ? "inline-flex items-center rounded-lg bg-[#d1fae5] px-2.5 py-[0.06em] text-neutral-950 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_rgba(16,185,129,0.35)]"
+          : "inline-flex items-baseline",
+        className,
+      )}
+    >
       {/* aria-live so screen readers announce the changing word */}
       <span aria-live="polite">{text || "​"}</span>
       {!reduceMotion && (
         <motion.span
           aria-hidden
           className={cn(
-            "ml-[0.06em] inline-block h-[0.92em] w-[0.07em] translate-y-[0.08em] rounded-full bg-[#8a5a2b]",
+            "ml-[0.06em] inline-block h-[0.92em] w-[0.07em] translate-y-[0.08em] rounded-full",
+            highlight ? "bg-emerald-700" : "bg-[#8a5a2b]",
             caretClassName,
           )}
           animate={{ opacity: [1, 1, 0, 0] }}

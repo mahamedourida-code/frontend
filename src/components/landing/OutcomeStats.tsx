@@ -3,6 +3,7 @@
 import type { Ref } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import { useCountUp } from "@/hooks/useCountUp"
+import { TypewriterWord } from "@/components/landing/TypewriterWord"
 
 /* ──────────────────────────────────────────────────────────────
    A5 — Outcome stat band (Nanonets / Stampli "lead with the
@@ -127,7 +128,8 @@ export function OutcomeStats() {
         >
           <p className="ax-eyebrow text-neutral-700">The outcome</p>
           <h2 id="outcome-stats-heading" className="ax-h2 mt-3 font-bold text-neutral-950">
-            Less typing. Fewer mistakes. More reviewed, faster.
+            Less typing. Fewer mistakes. More{" "}
+            <TypewriterWord words={["reviewed", "coded", "posted", "approved"]} highlight />, faster.
           </h2>
           <p className="ax-body mt-4 font-semibold text-neutral-700">
             The work AxLiner takes off bookkeepers and accounting teams across every batch, every
