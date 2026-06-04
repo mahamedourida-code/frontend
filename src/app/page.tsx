@@ -14,6 +14,7 @@ import { FeatureHoverCards } from "@/components/landing/FeatureHoverCards";
 import { MessyRealityShowcase } from "@/components/landing/MessyRealityShowcase";
 import { VerifiableShowcase } from "@/components/landing/VerifiableShowcase";
 import { OutcomeStats } from "@/components/landing/OutcomeStats";
+import { TypewriterWord } from "@/components/landing/TypewriterWord";
 
 import NextLink from "next/link";
 import { GoogleOneTap } from "@/components/GoogleOneTap";
@@ -607,16 +608,20 @@ export default function Home() {
         {/* ── Messy reality → clean reviewed entry (A2 proof section) ── */}
         <MessyRealityShowcase />
 
-        {/* Why Choose Us Section — warm band, dark text */}
-        <ScrollAnimatedSection id="features" className="ax-marketing-band-warm relative z-20 bg-[#f7f3e9] pt-20 pb-24 text-neutral-950 lg:pt-24 lg:pb-28">
+        {/* Why Choose Us Section — white band, dark text + cycling typewriter */}
+        <ScrollAnimatedSection id="features" className="relative z-20 bg-white pt-20 pb-24 text-neutral-950 lg:pt-24 lg:pb-28">
           <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
             <div className="mb-14" data-animate="headline">
               <h2 className="ax-h2 ax-marketing-section-title font-bold text-neutral-950">
-                Turn every document batch into reviewed accounting work.
+                <span className="block">
+                  Turn every{" "}
+                  <TypewriterWord
+                    words={["invoice", "receipt", "bank statement", "handwritten table", "expense report"]}
+                    className="text-[#8a5a2b]"
+                  />
+                </span>
+                <span className="block">into reviewed accounting work.</span>
               </h2>
-              <p className="ax-body ax-marketing-lead mt-4 max-w-2xl font-semibold text-neutral-950">
-                From invoices and receipts to statements and handwritten tables: one controlled path to review, export, and publish.
-              </p>
             </div>
 
             <FeatureHoverCards cards={solutionCards} className="w-full" />
