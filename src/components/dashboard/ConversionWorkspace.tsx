@@ -1125,6 +1125,18 @@ function formatDocumentType(type?: string) {
   return labels[type || ""] || "Document"
 }
 
+// Maps a detected document type to its raw caricature symbol in /public/symbols.
+const DOCUMENT_TYPE_SYMBOL: Record<string, string> = {
+  invoice: "invoice",
+  receipt: "receipt",
+  bank_statement: "bank-statement",
+  notes: "handwritten-note",
+  table: "spreadsheet",
+}
+function documentTypeSymbol(type?: string): string | undefined {
+  return DOCUMENT_TYPE_SYMBOL[type || ""]
+}
+
 function reviewData(file: ResultFile) {
   return file.reviewed_data && typeof file.reviewed_data === "object" ? file.reviewed_data : {}
 }
@@ -1207,6 +1219,7 @@ function BookkeeperBreakdown({ figures, layout = "row" }: { figures: BookkeeperF
   ]
   return (
     <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-1.5", layout === "grid" && "w-full")}>
+      <Symbol name="vat-box" size="inline" className="h-7 w-7 shrink-0" alt="" />
       {cells.map(([label, value, labelColor]) => (
         <span key={label} className="inline-flex items-baseline gap-1.5">
           <span className={cn("text-[11px] font-bold uppercase tracking-wide", labelColor)}>{label}</span>
@@ -2177,6 +2190,9 @@ export function ResultActions({
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-foreground text-[11px] font-bold text-background">
                   {index + 1}
                 </span>
+                {documentTypeSymbol(file.document_type) ? (
+                  <Symbol name={documentTypeSymbol(file.document_type)!} size="inline" className="h-9 w-9 shrink-0" alt="" />
+                ) : null}
                 <span className="min-w-[180px] flex-1">
                   <span className="block truncate font-semibold text-foreground">{file.filename || summary.identity}</span>
                   <span className="mt-0.5 block truncate text-xs font-medium text-muted-foreground">
@@ -2381,6 +2397,7 @@ export function ResultActions({
               {duplicateWarning ? (
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
                   <span className="flex min-w-0 items-center gap-2">
+                    <Symbol name="duplicate" size="inline" className="h-7 w-7 shrink-0" alt="" />
                     <span className="truncate font-medium">{duplicateWarning.message}</span>
                     {(() => {
                       const copy = duplicateCopy(duplicateWarning)
@@ -2824,7 +2841,11 @@ export function ResultActions({
                             }
                             className="h-9 px-4 text-xs"
                           >
-                            {receiptPublishing ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : null}
+                            {receiptPublishing ? (
+                              <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <Symbol name="sync-publish" size="inline" className="mr-1.5 h-5 w-5" alt="" />
+                            )}
                             Publish {receiptDestination || "receipt"}
                           </Button>
                           <Button
