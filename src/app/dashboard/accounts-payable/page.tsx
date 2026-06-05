@@ -937,8 +937,8 @@ function AccountsPayableContent() {
                     <tr>
                       <td colSpan={12}>
                         <EmptyState
-                          illustration="/symbols/code-journal-entry.png"
-                          illustrationSize={100}
+                          illustration="/symbols/firstsight-draft-bills-empty.png"
+                          illustrationSize={170}
                           icon={<ChevronLeft />}
                           title={items.length ? "No draft bills in this queue" : "Start your draft-bill workflow"}
                           description={items.length ? "No draft bills match this view." : "Review extracted invoices first, or upload a new folder to prepare draft bills."}

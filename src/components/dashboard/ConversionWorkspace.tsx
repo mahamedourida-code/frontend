@@ -490,7 +490,7 @@ export function UploadDropzone({
     >
       <div className={cn("px-4 py-5 text-center sm:px-6", uploadedFiles.length ? "min-h-[240px]" : "flex min-h-[300px] flex-col items-center justify-center")}>
         {!uploadedFiles.length ? (
-          <Symbol name="paper-pile" size="hero" className="mx-auto mb-2" alt="" />
+          <Symbol name="firstsight-workspace-launcher" size="hero" className="mx-auto mb-2" alt="" />
         ) : (
           <FolderUp className="mx-auto mb-3 h-7 w-7 text-emerald-600" />
         )}
@@ -2511,7 +2511,7 @@ export function ResultActions({
           )
         }) : (
           <div className="rounded-md border border-dashed border-border bg-card p-5 text-center">
-            <Symbol name="ai-mascot" size="hero" className="mx-auto mb-2" alt="" />
+            <Symbol name="firstsight-review-empty" size="hero" className="mx-auto mb-2" alt="" />
             <p className="text-sm font-semibold text-foreground">No files in this view</p>
             <p className="mt-1 text-xs font-semibold text-muted-foreground">The full batch is still available.</p>
             <Button
