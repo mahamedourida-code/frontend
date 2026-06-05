@@ -12,11 +12,11 @@ const buttonVariants = cva(
         default:
           "border border-[var(--button-surface-ring)] bg-[var(--button-surface)] text-[var(--button-ink)] shadow-sm hover:bg-[var(--button-surface-hover)] active:translate-y-px",
         critical:
-          "border-2 border-[var(--brand-green)] bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-sm transition-colors hover:bg-transparent hover:text-[var(--brand-green)] active:translate-y-px",
+          "border-2 border-[var(--brand-green)] bg-[var(--brand-green)] text-black shadow-sm transition-colors hover:border-black hover:bg-white hover:text-black active:translate-y-px",
         // Primary green CTA — the soft mint section-background green, given
         // definition by an emerald ring + inset highlight + soft shadow (Tella).
         glossy:
-          "border-2 border-[var(--brand-green)] bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-sm transition-colors hover:bg-transparent hover:text-[var(--brand-green)] active:translate-y-px",
+          "border-2 border-[var(--brand-green)] bg-[var(--brand-green)] text-black shadow-sm transition-colors hover:border-black hover:bg-white hover:text-black active:translate-y-px",
         // Warm supporting action — lifted from the landing mega-menu panel,
         // with a brown definition ring and dark ink label.
         warm:

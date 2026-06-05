@@ -369,10 +369,10 @@
   --primary-foreground: hsl(164 80% 9%);
   /* Primary CTA green — the exact bright cyan-aqua pill (sampled from the
      reference). Identical in light & dark so CTA hierarchy never theme-flips. */
-  --brand-green: #71f7ec;
-  --brand-green-hover: #4fe9dd;
-  --brand-green-fg: #052b2b;
-  --brand-green-ring: #2dd4bf;
+  --brand-green: #00FFFF;
+  --brand-green-hover: #00e0e0;
+  --brand-green-fg: #000000;
+  --brand-green-ring: #06b6d4;
   --button-ink: #171717;
   /* Light clay is reserved for special actions such as Upgrade. It stays
      quieter than the primary mint while keeping a clear brown definition. */
