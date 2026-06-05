@@ -54,3 +54,6 @@ SECURITY_FIXES.md
 
 # backend directory (should be in separate repo)
 backend/
+
+# Playwright QA artifacts
+.playwright-mcp/
