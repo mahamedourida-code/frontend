@@ -256,7 +256,7 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
                   className={cn(
                     "ax-interactive inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-full border text-[12px] font-medium transition-colors",
                     active
-                      ? "border-emerald-500 bg-[#d1fae5] text-[#064e3b]"
+                      ? "border-emerald-500 bg-[var(--brand-green)] text-[#064e3b]"
                       : "border-border bg-card text-muted-foreground hover:text-foreground",
                   )}
                 >

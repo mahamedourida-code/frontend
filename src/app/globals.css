@@ -365,7 +365,7 @@
   --card-foreground: hsl(222 47% 11%);
   --popover: hsl(0 0% 100%);
   --popover-foreground: hsl(222 47% 11%);
-  --primary: hsl(160 84% 39%);
+  --primary: hsl(189 94% 43%);
   --primary-foreground: hsl(164 80% 9%);
   /* Primary CTA green — the exact bright cyan-aqua pill (sampled from the
      reference). Identical in light & dark so CTA hierarchy never theme-flips. */
@@ -392,7 +392,7 @@
   --ax-marketing-page: #ffffff;
   --ax-marketing-ink: #171717;
   --ax-marketing-muted: #404040;
-  --ax-marketing-mint: #d1fae5;
+  --ax-marketing-mint: var(--brand-green);
   --ax-marketing-cream: var(--button-warm);
   --secondary: hsl(220 14% 96%);
   --secondary-foreground: hsl(222 47% 11%);
@@ -406,7 +406,7 @@
   --destructive-foreground: hsl(210 40% 98%);
   --border: hsl(220 13% 91%);
   --input: hsl(220 13% 91%);
-  --ring: hsl(160 84% 38%);
+  --ring: hsl(189 94% 41%);
   --chart-1: hsl(160 84% 39%);
   --chart-2: hsl(160 76% 38%);
   --chart-3: hsl(83 54% 42%);
@@ -728,7 +728,7 @@ body {
     --card-foreground: #171717;
     --popover: #ffffff;
     --popover-foreground: #171717;
-    --primary: hsl(160 84% 39%);
+    --primary: hsl(189 94% 43%);
     --primary-foreground: #171717;
     --secondary: #f3f4f4;
     --secondary-foreground: #171717;
@@ -738,7 +738,7 @@ body {
     --accent-foreground: #171717;
     --border: #e5e7eb;
     --input: #e5e7eb;
-    --ring: hsl(160 84% 38%);
+    --ring: hsl(189 94% 41%);
   }
 
   .ax-marketing-container,

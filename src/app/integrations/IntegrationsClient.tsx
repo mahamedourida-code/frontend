@@ -103,7 +103,7 @@ export default function IntegrationsClient() {
         {/* soft mint glow behind hero text */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-gradient-to-b from-[#d1fae5]/40 via-[#d1fae5]/10 to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-gradient-to-b from-[var(--brand-green)]/40 via-[var(--brand-green)]/10 to-transparent"
         />
         <div className="relative mx-auto max-w-[1280px]">
           <motion.div
@@ -114,7 +114,7 @@ export default function IntegrationsClient() {
           >
             <motion.span
               variants={fadeIn}
-              className="inline-flex items-center rounded-full bg-[#d1fae5] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#064e3b]"
+              className="inline-flex items-center rounded-full bg-[var(--brand-green)] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#064e3b]"
             >
               Integrations
             </motion.span>
@@ -137,7 +137,7 @@ export default function IntegrationsClient() {
             <motion.div variants={fadeIn} className="flex flex-col items-center gap-3 sm:flex-row">
               <NextLink
                 href="/dashboard/client"
-                className="inline-flex h-12 items-center rounded-full bg-[#d1fae5] px-8 text-sm font-bold text-[#064e3b] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_6px_22px_-8px_rgba(16,185,129,0.55)] transition-all hover:bg-[#a7f3d0]"
+                className="inline-flex h-12 items-center rounded-full bg-[var(--brand-green)] px-8 text-sm font-bold text-[#064e3b] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_6px_22px_-8px_rgba(16,185,129,0.55)] transition-all hover:bg-[var(--brand-green-hover)]"
               >
                 Get started free →
               </NextLink>
@@ -203,7 +203,7 @@ export default function IntegrationsClient() {
       </section>
 
       {/* ── How it connects — 3 steps ────────────────────────────────────── */}
-      <section className="bg-[#d1fae5] px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+      <section className="bg-[var(--brand-green)] px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
         <div className="mx-auto max-w-[1280px]">
           <motion.div
             initial="hidden"
@@ -262,7 +262,7 @@ export default function IntegrationsClient() {
           >
             {/* left: text */}
             <motion.div variants={fadeUp} className="flex flex-col gap-5">
-              <span className="inline-flex w-fit items-center rounded-full bg-[#d1fae5] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#064e3b]">
+              <span className="inline-flex w-fit items-center rounded-full bg-[var(--brand-green)] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#064e3b]">
                 Real-world capture
               </span>
               <h2 className="ax-marketing-section-title text-[34px] font-bold leading-tight tracking-tight text-neutral-950 md:text-[42px]">
@@ -320,7 +320,7 @@ export default function IntegrationsClient() {
 
             {/* right: text */}
             <motion.div variants={fadeUp} className="flex flex-col gap-5 lg:order-last">
-              <span className="inline-flex w-fit items-center rounded-full bg-[#d1fae5] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#064e3b]">
+              <span className="inline-flex w-fit items-center rounded-full bg-[var(--brand-green)] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#064e3b]">
                 Review board
               </span>
               <h2 className="ax-marketing-section-title text-[34px] font-bold leading-tight tracking-tight text-neutral-950 md:text-[42px]">

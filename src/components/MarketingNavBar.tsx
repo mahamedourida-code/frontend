@@ -73,7 +73,7 @@ function IconRowLink({ row }: { row: IconRow }) {
         href={row.href}
         className="group grid grid-cols-[48px_1fr] items-center gap-4 rounded-[16px] p-3.5 text-black outline-none transition-colors hover:bg-black/[0.04] focus-visible:ring-2 focus-visible:ring-black/15"
       >
-        <span className="flex size-12 shrink-0 items-center justify-center rounded-[13px] bg-[#d1fae5] text-black">
+        <span className="flex size-12 shrink-0 items-center justify-center rounded-[13px] bg-[var(--brand-green)] text-black">
           <Icon className="size-[22px]" strokeWidth={2} />
         </span>
         <span className="min-w-0">
@@ -163,7 +163,7 @@ function FeaturesMegaMenu() {
               href="/for-accountants-and-bookkeepers/batch-review-board"
               className="group block rounded-[16px] border border-black/10 bg-white p-4 text-black transition-colors hover:border-black/25"
             >
-              <span className="flex size-11 items-center justify-center rounded-[13px] bg-[#d1fae5] text-black">
+              <span className="flex size-11 items-center justify-center rounded-[13px] bg-[var(--brand-green)] text-black">
                 <Columns2 className="size-[22px]" strokeWidth={2} />
               </span>
               <span className="mt-3.5 block text-[17px] font-bold leading-5">Batch Review Board</span>
@@ -175,7 +175,7 @@ function FeaturesMegaMenu() {
               href="/ocr"
               className="group block rounded-[16px] border border-black/10 bg-white p-4 text-black transition-colors hover:border-black/25"
             >
-              <span className="flex size-11 items-center justify-center rounded-[13px] bg-[#d1fae5] text-black">
+              <span className="flex size-11 items-center justify-center rounded-[13px] bg-[var(--brand-green)] text-black">
                 <ScanLine className="size-[22px]" strokeWidth={2} />
               </span>
               <span className="mt-3.5 block text-[17px] font-bold leading-5">OCR engine</span>
@@ -197,7 +197,7 @@ function FeaturesMegaMenu() {
         </span>
         <Link
           href="/dashboard/integrations"
-          className="ml-auto inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-[#d1fae5] px-5 text-[15px] font-bold text-black shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_1px_3px_0_rgba(0,0,0,0.12)] transition-colors hover:bg-[#a7f3d0]"
+          className="ml-auto inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-[var(--brand-green)] px-5 text-[15px] font-bold text-black shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_1px_3px_0_rgba(0,0,0,0.12)] transition-colors hover:bg-[var(--brand-green-hover)]"
         >
           Connect <ArrowRight className="size-4" />
         </Link>
@@ -237,7 +237,7 @@ function SecondaryAudienceLink({ solution }: { solution: AudienceSolution }) {
     <NavigationMenuLink asChild>
       <Link
         href={audienceSolutionHref(solution.slug)}
-        className="group flex flex-row items-center gap-2 rounded-[11px] px-2.5 py-2 text-[15px] font-semibold leading-5 text-black outline-none transition-colors hover:bg-[#d1fae5] focus-visible:ring-2 focus-visible:ring-black/15"
+        className="group flex flex-row items-center gap-2 rounded-[11px] px-2.5 py-2 text-[15px] font-semibold leading-5 text-black outline-none transition-colors hover:bg-[var(--brand-green)] focus-visible:ring-2 focus-visible:ring-black/15"
       >
         {solution.menuLabel}
         <ArrowRight className="ml-auto size-3.5 shrink-0 opacity-35 transition-[opacity,transform] group-hover:translate-x-0.5 group-hover:opacity-100" />
@@ -297,7 +297,7 @@ function AudienceMegaMenu() {
                   className="rounded-[16px] border border-black/10 bg-white p-3.5"
                 >
                   <div className="flex items-center gap-2.5 border-b border-black/10 pb-3">
-                    <span className="flex size-8 items-center justify-center rounded-[10px] bg-[#d1fae5] text-black">
+                    <span className="flex size-8 items-center justify-center rounded-[10px] bg-[var(--brand-green)] text-black">
                       <Icon className="size-4" />
                     </span>
                     <p className="text-[15px] font-bold leading-5 text-black">{group.label}</p>
@@ -320,7 +320,7 @@ function AudienceMegaMenu() {
           assetAlt="QuickBooks"
           label="QuickBooks"
           href="/dashboard/integrations"
-          className="bg-[#d1fae5] hover:bg-[#a7f3d0]"
+          className="bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)]"
         />
         <IntegrationCard
           asset="/integrations/xero.png"

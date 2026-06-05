@@ -97,7 +97,7 @@ export default function IntegrationsPage() {
           <div className="mt-4 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <NextLink
               href="/dashboard/client"
-              className="inline-flex h-14 items-center rounded-full bg-[#d1fae5] px-10 text-base font-bold text-black shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_6px_22px_-8px_rgba(16,185,129,0.55)] transition-all hover:bg-[#a7f3d0]"
+              className="inline-flex h-14 items-center rounded-full bg-[var(--brand-green)] px-10 text-base font-bold text-black shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_6px_22px_-8px_rgba(16,185,129,0.55)] transition-all hover:bg-[var(--brand-green-hover)]"
             >
               Start free →
             </NextLink>
@@ -129,7 +129,7 @@ export default function IntegrationsPage() {
                   aria-label={label}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:-translate-y-0.5 hover:bg-[#d1fae5] hover:text-black"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:-translate-y-0.5 hover:bg-[var(--brand-green)] hover:text-black"
                 >
                   <Icon className="h-4 w-4" />
                 </a>

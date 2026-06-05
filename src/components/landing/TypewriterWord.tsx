@@ -18,7 +18,7 @@ type TypewriterWordProps = {
   caretClassName?: string
   /**
    * Wrap the word in a brand-green "highlighter" pill (black text on
-   * `#d1fae5`). Use on white / light backgrounds where the green pops.
+   * `var(--brand-green)`). Use on white / light backgrounds where the green pops.
    */
   highlight?: boolean
 }

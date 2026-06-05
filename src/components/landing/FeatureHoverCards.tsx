@@ -13,7 +13,7 @@ type SolutionCard = {
 }
 
 /* Calm brand surfaces alternate so the grid stays easy to scan. */
-const CARD_SURFACES = ["bg-[#d1fae5]", "bg-[#f7f3e9]"]
+const CARD_SURFACES = ["bg-[var(--brand-green)]", "bg-[#f7f3e9]"]
 
 /* ── Single card ──────────────────────────────────────────────── */
 

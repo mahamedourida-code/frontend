@@ -307,7 +307,7 @@ export default function OCRPage() {
                   />
                   {/* Confidence badge overlay */}
                   <div className="absolute bottom-4 left-4 flex items-center gap-2.5 rounded-full bg-white/95 px-4 py-2.5 shadow-[0_2px_12px_rgba(0,0,0,0.15)] backdrop-blur-sm">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#d1fae5]">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--brand-green)]">
                       <svg
                         className="h-4 w-4 text-emerald-700"
                         fill="none"
@@ -422,7 +422,7 @@ export default function OCRPage() {
                     {/* Text side */}
                     <div className={isEven ? "lg:order-1" : "lg:order-2"}>
                       <div className="inline-flex items-center gap-3">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#d1fae5] text-sm font-bold text-emerald-800 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_#10b981,0_1px_3px_0_rgba(0,0,0,0.12)]">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--brand-green)] text-sm font-bold text-emerald-800 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_#10b981,0_1px_3px_0_rgba(0,0,0,0.12)]">
                           {step.number}
                         </span>
                         <span className="text-sm font-bold uppercase tracking-widest text-neutral-400">
@@ -455,7 +455,7 @@ export default function OCRPage() {
         </section>
 
         {/* ── Confidence flags + Review Board ──────────────────────────── */}
-        <section className="bg-[#d1fae5] py-20 lg:py-28">
+        <section className="bg-[var(--brand-green)] py-20 lg:py-28">
           <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
             <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
 
@@ -604,7 +604,7 @@ export default function OCRPage() {
                 <motion.div
                   key={type.label}
                   variants={childFadeUp}
-                  className="flex items-center gap-2.5 rounded-full border border-neutral-200 bg-neutral-50 px-5 py-3 text-[15px] font-semibold text-neutral-800 transition-colors hover:border-emerald-300 hover:bg-[#d1fae5] hover:text-emerald-900"
+                  className="flex items-center gap-2.5 rounded-full border border-neutral-200 bg-neutral-50 px-5 py-3 text-[15px] font-semibold text-neutral-800 transition-colors hover:border-emerald-300 hover:bg-[var(--brand-green)] hover:text-emerald-900"
                 >
                   <span className="text-lg" role="img" aria-hidden="true">
                     {type.icon}
@@ -667,7 +667,7 @@ export default function OCRPage() {
             >
               <NextLink
                 href="/dashboard/client"
-                className="inline-flex h-14 items-center rounded-full bg-[#d1fae5] px-10 text-base font-bold text-black shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_6px_22px_-8px_rgba(16,185,129,0.55)] transition-all hover:bg-[#a7f3d0]"
+                className="inline-flex h-14 items-center rounded-full bg-[var(--brand-green)] px-10 text-base font-bold text-black shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_6px_22px_-8px_rgba(16,185,129,0.55)] transition-all hover:bg-[var(--brand-green-hover)]"
               >
                 Start free →
               </NextLink>
@@ -709,7 +709,7 @@ export default function OCRPage() {
                   aria-label={label}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:-translate-y-0.5 hover:bg-[#d1fae5] hover:text-black"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:-translate-y-0.5 hover:bg-[var(--brand-green)] hover:text-black"
                 >
                   <Icon className="h-4 w-4" />
                 </a>

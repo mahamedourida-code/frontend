@@ -101,7 +101,7 @@ export default function BlogsPage() {
                   Featured / {featured.eyebrow}
                 </p>
                 <h2 className="mt-5 text-3xl font-bold leading-[1.1] tracking-tight text-neutral-900 sm:text-4xl lg:text-[42px]">
-                  <span className="bg-[linear-gradient(to_bottom,transparent_62%,#a7f3d0_62%,#a7f3d0_92%,transparent_92%)] decoration-clone box-decoration-clone px-0.5 group-hover:bg-[linear-gradient(to_bottom,transparent_60%,#6ee7b7_60%,#6ee7b7_94%,transparent_94%)]">
+                  <span className="bg-[linear-gradient(to_bottom,transparent_62%,var(--brand-green-hover)_62%,var(--brand-green-hover)_92%,transparent_92%)] decoration-clone box-decoration-clone px-0.5 group-hover:bg-[linear-gradient(to_bottom,transparent_60%,#6ee7b7_60%,#6ee7b7_94%,transparent_94%)]">
                     {featured.title}
                   </span>
                 </h2>

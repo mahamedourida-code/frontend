@@ -149,7 +149,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
       </section>
 
       <section className="ax-marketing-container-editorial pb-20">
-        <div className="ax-marketing-band-mint overflow-hidden rounded-md border-2 border-neutral-900 bg-[#d1fae5] p-6 text-black shadow-sm sm:p-8 lg:p-10">
+        <div className="ax-marketing-band-mint overflow-hidden rounded-md border-2 border-neutral-900 bg-[var(--brand-green)] p-6 text-black shadow-sm sm:p-8 lg:p-10">
           <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
               <p className="ax-marketing-eyebrow text-black">

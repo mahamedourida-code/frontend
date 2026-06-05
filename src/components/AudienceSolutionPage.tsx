@@ -120,7 +120,7 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
         </div>
       </section>
 
-      <section className="ax-marketing-band-mint border-t border-black/20 bg-[#d1fae5]">
+      <section className="ax-marketing-band-mint border-t border-black/20 bg-[var(--brand-green)]">
         <div className="ax-marketing-container-reading flex flex-col gap-7 py-14 sm:py-16 lg:flex-row lg:items-center lg:justify-between lg:py-20">
           <div>
             <p className="ax-marketing-eyebrow text-black">Start with the next client batch</p>

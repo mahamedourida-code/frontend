@@ -206,7 +206,7 @@ export default function ProductsPage() {
         </motion.div>
 
         {/* CTA Section */}
-        <section className="ax-marketing-band-mint rounded-2xl bg-[#d1fae5] p-12 text-center">
+        <section className="ax-marketing-band-mint rounded-2xl bg-[var(--brand-green)] p-12 text-center">
           <h2 className="ax-marketing-section-title text-black mb-4">
             Ready to Automate Your Data Entry?
           </h2>

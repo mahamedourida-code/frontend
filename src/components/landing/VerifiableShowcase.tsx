@@ -115,7 +115,7 @@ export function VerifiableShowcase() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6, ease: easeOut, delay: 0.08 }}
-            className="relative flex flex-col overflow-hidden rounded-3xl bg-[#d1fae5] p-8 ring-1 ring-black/10"
+            className="relative flex flex-col overflow-hidden rounded-3xl bg-[var(--brand-green)] p-8 ring-1 ring-black/10"
           >
             <div className="flex items-center gap-2.5">
               <span className="size-2.5 rounded-full bg-emerald-600" aria-hidden />
