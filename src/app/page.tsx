@@ -14,6 +14,7 @@ import { FeatureHoverCards } from "@/components/landing/FeatureHoverCards";
 import { VerifiableShowcase } from "@/components/landing/VerifiableShowcase";
 import { OutcomeStats } from "@/components/landing/OutcomeStats";
 import { TypewriterWord } from "@/components/landing/TypewriterWord";
+import { ScrollGrowSection } from "@/components/landing/ScrollGrowSection";
 
 import NextLink from "next/link";
 import { GoogleOneTap } from "@/components/GoogleOneTap";
@@ -440,6 +441,8 @@ export default function Home() {
         </ScrollAnimatedSection>
           </div>
         </div>
+
+        <ScrollGrowSection />
 
         <div className="relative isolate overflow-hidden">
           <div
