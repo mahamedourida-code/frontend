@@ -372,7 +372,7 @@ export default function Home() {
                   />
                   {/* play button */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="flex size-20 items-center justify-center rounded-full bg-[#d1fae5] text-[#064e3b] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.7),0_8px_22px_-10px_rgba(0,0,0,0.35)] transition-transform duration-200 hover:scale-105">
+                    <div className="flex size-20 items-center justify-center rounded-full bg-[var(--brand-green)] text-[#064e3b] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.7),0_8px_22px_-10px_rgba(0,0,0,0.35)] transition-transform duration-200 hover:scale-105">
                       <svg viewBox="0 0 16 16" fill="currentColor" className="ml-1 size-7" aria-hidden="true">
                         <path d="M3 2.25 14.5 8 3 13.75V2.25Z" />
                       </svg>
@@ -452,7 +452,7 @@ export default function Home() {
           />
           <div className="relative z-10">
         {/* ── Alternating feature band ── */}
-        <div id="how-it-works" className="ax-marketing-band-mint bg-[#d1fae5] text-neutral-950">
+        <div id="how-it-works" className="ax-marketing-band-mint bg-[var(--brand-green)] text-neutral-950">
           <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
 
             {/* A — text left · video right */}
@@ -524,7 +524,7 @@ export default function Home() {
                 <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
                   Connect your QuickBooks Online company. Code invoices with vendor, account, and tax. Publish a draft Bill with the original document attached. If anything fails, retry without creating a duplicate.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full bg-[var(--brand-green)] px-8 text-sm font-bold text-neutral-950 shadow-sm transition-colors hover:bg-[var(--brand-green-hover)]">
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border-2 border-neutral-950 bg-neutral-950 px-8 text-sm font-bold text-white shadow-sm transition-colors hover:bg-transparent hover:text-neutral-950">
                   Start free
                 </NextLink>
               </div>
@@ -740,7 +740,7 @@ export default function Home() {
                   aria-label={label}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:-translate-y-0.5 hover:bg-[#d1fae5] hover:text-black"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:-translate-y-0.5 hover:bg-[var(--brand-green)] hover:text-black"
                 >
                   <Icon className="h-4 w-4" />
                 </a>

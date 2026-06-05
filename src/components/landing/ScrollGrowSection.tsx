@@ -34,7 +34,7 @@ export function ScrollGrowSection() {
   // Smooth the raw scroll progress so the scrub feels fluid, not jumpy.
   const p = useSpring(scrollYProgress, { stiffness: 120, damping: 28, mass: 0.35 })
 
-  const scale = useTransform(p, [0, 0.82], [0.58, 1], { clamp: true })
+  const scale = useTransform(p, [0, 0.82], [0.5, 1], { clamp: true })
   const radius = useTransform(p, [0, 0.82], [40, 0], { clamp: true })
   const transform = useMotionTemplate`scale(${scale})`
 
@@ -47,7 +47,7 @@ export function ScrollGrowSection() {
         {/* Growing image: left-anchored panel -> full-bleed */}
         <motion.div
           style={prefersReduced ? undefined : { transform, borderRadius: radius }}
-          className="absolute inset-0 origin-left overflow-hidden rounded-[40px] will-change-transform"
+          className="absolute inset-0 origin-center overflow-hidden rounded-[40px] will-change-transform"
         >
           <Image
             src="/landing/businessman-crossing.jpg"
