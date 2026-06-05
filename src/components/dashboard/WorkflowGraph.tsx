@@ -29,7 +29,7 @@ const MODES: GraphNode[] = [
   { label: "Notes", href: "/dashboard/client?mode=notes", symbol: "handwritten-note" },
 ]
 
-const RAIL = "#8a6d46"
+const RAIL = "#0a0a0a"
 
 function NodeBox({
   node,
@@ -44,10 +44,7 @@ function NodeBox({
     <Link
       href={node.href}
       className={cn(
-        "ax-interactive group relative flex items-center gap-3 rounded-2xl border px-4 py-3.5 text-left shadow-[inset_0_1px_0_0_rgba(255,255,255,0.7),0_2px_6px_-1px_rgba(15,23,42,0.12)] outline-none transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-[var(--brand-green-ring)]",
-        tone === "top"
-          ? "border-[#8a6d46] bg-[var(--brand-green)] text-[var(--brand-green-fg)]"
-          : "border-[#c9ac82] bg-card text-foreground hover:bg-accent/40",
+        "ax-interactive group relative flex items-center gap-3 rounded-2xl border border-neutral-800 bg-neutral-950 px-4 py-3.5 text-left text-white shadow-[0_2px_10px_-3px_rgba(0,0,0,0.55)] outline-none transition-all hover:-translate-y-0.5 hover:bg-neutral-800 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-white/40",
         className,
       )}
     >

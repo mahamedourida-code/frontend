@@ -1230,7 +1230,7 @@ function BookkeeperBreakdown({ figures, layout = "row" }: { figures: BookkeeperF
   ]
   return (
     <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-1.5", layout === "grid" && "w-full")}>
-      <Symbol name="code-vat-chip" size="inline" className="h-12 w-12 shrink-0" alt="" />
+      <Symbol name="code-vat-chip" size="inline" className="h-14 w-14 shrink-0" alt="" />
       {cells.map(([label, value]) => (
         <span key={label} className="inline-flex items-baseline gap-1.5">
           <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{label}</span>
@@ -2202,7 +2202,7 @@ export function ResultActions({
                   {index + 1}
                 </span>
                 {documentTypeSymbol(file.document_type) ? (
-                  <Symbol name={documentTypeSymbol(file.document_type)!} size="inline" className="h-12 w-12 shrink-0 sm:h-14 sm:w-14" alt="" />
+                  <Symbol name={documentTypeSymbol(file.document_type)!} size="inline" className="h-16 w-16 shrink-0 sm:h-20 sm:w-20" alt="" />
                 ) : null}
                 <span className="min-w-[180px] flex-1">
                   <span className="block truncate font-semibold text-foreground">{file.filename || summary.identity}</span>
@@ -2408,7 +2408,7 @@ export function ResultActions({
               {duplicateWarning ? (
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
                   <span className="flex min-w-0 items-center gap-2">
-                    <Symbol name="duplicate" size="inline" className="h-11 w-11 shrink-0" alt="" />
+                    <Symbol name="duplicate" size="inline" className="h-12 w-12 shrink-0 sm:h-14 sm:w-14" alt="" />
                     <span className="truncate font-medium">{duplicateWarning.message}</span>
                     {(() => {
                       const copy = duplicateCopy(duplicateWarning)
