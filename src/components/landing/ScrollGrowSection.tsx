@@ -24,25 +24,27 @@ export function ScrollGrowSection() {
   const ref = useRef<HTMLDivElement | null>(null)
   const prefersReduced = useReducedMotion()
 
-  // `end end` maps progress 0 -> 1 across the full sticky scrub, so the image
-  // reaches full-bleed right at the end of the section.
+  // `start end` -> `start start`: the scrub runs while the section RISES into
+  // view — from its first partial appearance at the bottom of the screen until
+  // its top reaches the top — so the image is already growing the moment it
+  // appears, no boring pinned wait.
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start start", "end end"],
+    offset: ["start end", "start start"],
   })
 
   // Smooth the raw scroll progress so the scrub feels fluid, not jumpy.
-  const p = useSpring(scrollYProgress, { stiffness: 120, damping: 28, mass: 0.35 })
+  const p = useSpring(scrollYProgress, { stiffness: 130, damping: 28, mass: 0.3 })
 
-  const scale = useTransform(p, [0, 0.82], [0.5, 1], { clamp: true })
-  const radius = useTransform(p, [0, 0.82], [40, 0], { clamp: true })
+  const scale = useTransform(p, [0, 1], [0.5, 1], { clamp: true })
+  const radius = useTransform(p, [0, 1], [40, 0], { clamp: true })
   const transform = useMotionTemplate`scale(${scale})`
 
-  // The headline is always visible and rises up — quick, then settles.
-  const textY = useTransform(p, [0, 0.55], [54, -28], { clamp: true })
+  // The headline is always visible and rises up as the image grows in.
+  const textY = useTransform(p, [0, 1], [52, -14], { clamp: true })
 
   return (
-    <section ref={ref} className="relative h-[260vh] bg-white">
+    <section ref={ref} className="relative h-[150vh] bg-white">
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         {/* Growing image: left-anchored panel -> full-bleed */}
         <motion.div

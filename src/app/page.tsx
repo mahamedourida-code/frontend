@@ -390,7 +390,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative z-20 isolate bg-white px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+        <div className="relative z-20 isolate bg-white py-16 sm:py-20 lg:py-24">
         <div
           ref={contrastSectionRef}
           className="relative mx-auto max-w-[1280px] text-foreground"
@@ -443,6 +443,10 @@ export default function Home() {
         </div>
 
         <ScrollGrowSection />
+
+        {/* White breathing room so the full-bleed scroll image isn't visually
+            linked to the "Throw us the whole folder" band below. */}
+        <section aria-hidden className="h-20 w-full bg-white sm:h-28" />
 
         <div className="relative isolate overflow-hidden">
           <div
