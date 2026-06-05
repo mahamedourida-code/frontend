@@ -28,7 +28,7 @@ export default function StartPage() {
   }
 
   return (
-    <DashboardShell activeItem="client" title="Workspace" user={user} showBack={false}>
+    <DashboardShell activeItem="overview" title="Workspace" user={user} showBack={false}>
       <PageHeader
         title="Where do you want to go?"
         description="Jump straight into a workflow, or start a new batch of documents."
