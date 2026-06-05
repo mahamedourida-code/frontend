@@ -5,18 +5,18 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "ax-interactive inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "ax-interactive inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
         default:
           "border border-[var(--button-surface-ring)] bg-[var(--button-surface)] text-[var(--button-ink)] shadow-sm hover:bg-[var(--button-surface-hover)] active:translate-y-px",
         critical:
-          "border-2 border-[var(--brand-green)] bg-[var(--brand-green)] text-black shadow-sm transition-colors hover:border-black hover:bg-white hover:text-black active:translate-y-px",
+          "border-2 border-[var(--brand-green)] bg-[var(--brand-green)] text-black shadow-sm transition-colors hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4 active:translate-y-px",
         // Primary green CTA — the soft mint section-background green, given
         // definition by an emerald ring + inset highlight + soft shadow (Tella).
         glossy:
-          "border-2 border-[var(--brand-green)] bg-[var(--brand-green)] text-black shadow-sm transition-colors hover:border-black hover:bg-white hover:text-black active:translate-y-px",
+          "border-2 border-[var(--brand-green)] bg-[var(--brand-green)] text-black shadow-sm transition-colors hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4 active:translate-y-px",
         // Warm supporting action — lifted from the landing mega-menu panel,
         // with a brown definition ring and dark ink label.
         warm:

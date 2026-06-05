@@ -75,7 +75,7 @@ export function TypewriterWord({
       className={cn(
         "whitespace-nowrap",
         highlight
-          ? "inline-flex items-center rounded-lg bg-[#d1fae5] px-2.5 py-[0.06em] text-neutral-950 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_rgba(16,185,129,0.35)]"
+          ? "inline-flex items-center rounded-md bg-[var(--brand-green)] px-2.5 py-[0.06em] text-black shadow-[inset_0_1px_0_0_rgba(255,255,255,0.5),0_0_0_1px_var(--brand-green-ring)]"
           : "inline-flex items-baseline",
         className,
       )}
@@ -87,7 +87,7 @@ export function TypewriterWord({
           aria-hidden
           className={cn(
             "ml-[0.06em] inline-block h-[0.92em] w-[0.07em] translate-y-[0.08em] rounded-full",
-            highlight ? "bg-emerald-700" : "bg-[#8a5a2b]",
+            highlight ? "bg-[var(--brand-green-ring)]" : "bg-[var(--brand-brown)]",
             caretClassName,
           )}
           animate={{ opacity: [1, 1, 0, 0] }}
