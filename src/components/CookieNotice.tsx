@@ -41,15 +41,15 @@ export function CookieNotice() {
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1], delay: 0.5 }}
           role="dialog"
           aria-label="Cookie notice"
-          className="fixed bottom-5 left-5 z-[60] w-[min(94vw,500px)] rounded-[20px] bg-[var(--brand-green)] p-6 text-black shadow-[0_16px_54px_-16px_rgba(0,0,0,0.55)]"
+          className="fixed bottom-5 left-5 z-[60] w-[min(94vw,500px)] rounded-[20px] bg-[var(--brand-green)] px-7 py-9 text-black shadow-[0_16px_54px_-16px_rgba(0,0,0,0.55)]"
         >
-          <p className="text-xl font-extrabold tracking-tight text-black">Notice</p>
-          <p className="mt-3 text-[17px] font-medium leading-7 text-black">
+          <p className="text-2xl font-extrabold tracking-tight text-black">Notice</p>
+          <p className="mt-4 text-[17px] font-medium leading-8 text-black">
             We use cookies to keep AxLiner running smoothly, remember your preferences, and understand
             how the site is used. Some cookies are essential; others help us see how the site is used so
             we can improve it. By choosing Accept, you agree to our use of all cookies.
           </p>
-          <div className="mt-6 flex items-center justify-between gap-4">
+          <div className="mt-8 flex items-center justify-between gap-4">
             <Link
               href="/privacy-policy"
               className="ax-interactive text-base font-semibold text-black underline decoration-black/50 underline-offset-4 hover:decoration-black"
@@ -59,7 +59,7 @@ export function CookieNotice() {
             <button
               type="button"
               onClick={accept}
-              className="ax-interactive rounded-full bg-white px-9 py-3.5 text-base font-bold text-black shadow-sm transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
+              className="ax-interactive rounded-full border-2 border-black bg-transparent px-9 py-3 text-base font-bold text-black transition-colors duration-150 hover:bg-black hover:text-white active:translate-y-px"
             >
               Accept
             </button>
