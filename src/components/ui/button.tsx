@@ -10,35 +10,35 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "border border-[var(--button-surface-ring)] bg-[var(--button-surface)] text-[var(--button-ink)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.78),0_1px_3px_0_rgba(15,23,42,0.1)] hover:bg-[var(--button-surface-hover)] active:translate-y-px",
+          "border border-[var(--button-surface-ring)] bg-[var(--button-surface)] text-[var(--button-ink)] shadow-sm hover:bg-[var(--button-surface-hover)] active:translate-y-px",
         critical:
-          "bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_1px_3px_0_rgba(0,0,0,0.12)] hover:bg-[var(--brand-green-hover)] active:translate-y-px",
+          "bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-sm hover:bg-[var(--brand-green-hover)] active:translate-y-px",
         // Primary green CTA — the soft mint section-background green, given
         // definition by an emerald ring + inset highlight + soft shadow (Tella).
         glossy:
-          "bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_1px_3px_0_rgba(0,0,0,0.12)] hover:bg-[var(--brand-green-hover)] active:translate-y-px",
+          "bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-sm hover:bg-[var(--brand-green-hover)] active:translate-y-px",
         // Warm supporting action — lifted from the landing mega-menu panel,
         // with a brown definition ring and dark ink label.
         warm:
-          "bg-[var(--button-warm)] text-[var(--button-ink)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.82),0_0_0_1px_var(--button-warm-ring),0_1px_3px_0_rgba(84,59,32,0.14)] hover:bg-[var(--button-warm-hover)] active:translate-y-px",
+          "border border-[var(--button-warm-ring)] bg-[var(--button-warm)] text-[var(--button-ink)] shadow-sm hover:bg-[var(--button-warm-hover)] active:translate-y-px",
         // Light clay special action — quieter than mint, with a warm ring and
         // dark ink label. Reserved for actions such as Upgrade.
         clay:
-          "bg-[var(--brand-clay)] text-[var(--brand-clay-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.68),0_0_0_1px_var(--brand-clay-ring),0_1px_3px_0_rgba(58,42,24,0.18)] hover:bg-[var(--brand-clay-hover)] active:translate-y-px",
+          "bg-[var(--brand-clay)] text-[var(--brand-clay-fg)] shadow-sm hover:bg-[var(--brand-clay-hover)] active:translate-y-px",
         // Black/ink CTA — high-contrast solid with Tella-style definition
         // (inset top highlight + layered drop shadow).
         ink:
-          "border border-foreground/80 bg-foreground bg-[linear-gradient(180deg,color-mix(in_srgb,var(--foreground)_88%,#fff)_0%,var(--foreground)_70%)] text-background shadow-[inset_0_1px_0_0_rgba(255,255,255,0.14),0_1px_2px_0_rgba(0,0,0,0.25),0_2px_6px_-1px_rgba(0,0,0,0.2)] hover:brightness-110 active:translate-y-px",
+          "bg-foreground text-background shadow-sm hover:opacity-90 active:translate-y-px",
         // Upgrade compatibility alias — keep existing callers on `lime` while the
         // visual treatment moves to the accountant-shell clay pill.
         lime:
-          "bg-[var(--brand-clay)] text-[var(--brand-clay-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.68),0_0_0_1px_var(--brand-clay-ring),0_1px_3px_0_rgba(58,42,24,0.18)] hover:bg-[var(--brand-clay-hover)] active:translate-y-px",
+          "bg-[var(--brand-clay)] text-[var(--brand-clay-fg)] shadow-sm hover:bg-[var(--brand-clay-hover)] active:translate-y-px",
         // Confirm/reviewed action — same ink treatment as `ink`.
         reviewed:
-          "border border-foreground/80 bg-foreground bg-[linear-gradient(180deg,color-mix(in_srgb,var(--foreground)_86%,#fff)_0%,var(--foreground)_72%)] text-background shadow-[0_1px_2px_rgba(0,0,0,0.18)] hover:brightness-110 active:translate-y-px",
+          "bg-foreground text-background shadow-sm hover:opacity-90 active:translate-y-px",
         // Neutral secondary surface button.
         surface:
-          "border border-[var(--button-surface-ring)] bg-[var(--button-surface)] text-[var(--button-ink)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.78),0_1px_3px_0_rgba(15,23,42,0.1)] hover:bg-[var(--button-surface-hover)] active:translate-y-px",
+          "border border-[var(--button-surface-ring)] bg-[var(--button-surface)] text-[var(--button-ink)] shadow-sm hover:bg-[var(--button-surface-hover)] active:translate-y-px",
         destructive:
           "bg-destructive text-white shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:brightness-95 active:translate-y-px focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
         outline:

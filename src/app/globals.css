@@ -367,12 +367,12 @@
   --popover-foreground: hsl(222 47% 11%);
   --primary: hsl(160 84% 39%);
   --primary-foreground: hsl(164 80% 9%);
-  /* Primary CTA green — the bright aqua-mint pill. Identical in light & dark so
-     CTA hierarchy never theme-flips. */
-  --brand-green: #5eead4;
-  --brand-green-hover: #2dd4bf;
-  --brand-green-fg: #06302b;
-  --brand-green-ring: #14b8a6;
+  /* Primary CTA green — the exact bright cyan-aqua pill (sampled from the
+     reference). Identical in light & dark so CTA hierarchy never theme-flips. */
+  --brand-green: #71f7ec;
+  --brand-green-hover: #4fe9dd;
+  --brand-green-fg: #052b2b;
+  --brand-green-ring: #2dd4bf;
   --button-ink: #171717;
   /* Light clay is reserved for special actions such as Upgrade. It stays
      quieter than the primary mint while keeping a clear brown definition. */

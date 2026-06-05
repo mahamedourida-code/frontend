@@ -215,12 +215,6 @@ export function DashboardShell({
               <NotificationsBell />
               <HelpMenu />
 
-              {!isPaid && (
-                <Button asChild variant="lime" className="hidden h-9 px-5 text-[13px] font-bold sm:inline-flex">
-                  <Link href="/pricing">Upgrade</Link>
-                </Button>
-              )}
-
               <AccountMenu
                 user={user}
                 planLabel={billingLoading && !billingStatus ? "Plan" : formatPlan(plan)}

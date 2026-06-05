@@ -51,7 +51,7 @@ function NodeBox({
         className,
       )}
     >
-      {node.symbol ? <Symbol name={node.symbol} size="badge" className="h-11 w-11 shrink-0 sm:h-12 sm:w-12" alt="" /> : null}
+      {node.symbol ? <Symbol name={node.symbol} size="badge" className="h-14 w-14 shrink-0 sm:h-16 sm:w-16" alt="" /> : null}
       <span className="min-w-0">
         <span className="block truncate text-base font-semibold leading-tight">{node.label}</span>
         {node.hint ? <span className="block truncate text-xs font-medium opacity-70">{node.hint}</span> : null}

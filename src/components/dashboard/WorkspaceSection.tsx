@@ -7,8 +7,8 @@ type SectionTone = "default" | "active" | "muted"
 
 const toneAccent: Record<SectionTone, string> = {
   default: "",
-  // A quiet emerald left rail marks the step you're on — calm, not loud.
-  active: "before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:rounded-l-[inherit] before:bg-[var(--brand-green-ring)] before:content-['']",
+  // The active step reads via a quiet full emerald-tinted ring (no side stripe).
+  active: "ring-1 ring-inset ring-[var(--brand-green-ring)]/30",
   muted: "opacity-90",
 }
 

@@ -521,8 +521,8 @@ export default function Home() {
                 <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
                   Connect your QuickBooks Online company. Code invoices with vendor, account, and tax. Publish a draft Bill with the original document attached. If anything fails, retry without creating a duplicate.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full bg-[var(--brand-green)] px-8 text-sm font-bold text-neutral-950 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_1px_3px_0_rgba(0,0,0,0.12)] transition-colors hover:bg-[var(--brand-green-hover)]">
-                  Start free →
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full bg-[var(--brand-green)] px-8 text-sm font-bold text-neutral-950 shadow-sm transition-colors hover:bg-[var(--brand-green-hover)]">
+                  Start free
                 </NextLink>
               </div>
             </div>
