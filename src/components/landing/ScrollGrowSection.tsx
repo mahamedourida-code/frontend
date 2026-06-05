@@ -23,22 +23,24 @@ export function ScrollGrowSection() {
   const ref = useRef<HTMLDivElement | null>(null)
   const prefersReduced = useReducedMotion()
 
+  // `end end` maps progress 0 -> 1 across the full sticky scrub, so the image
+  // actually reaches full-bleed by the end of the section (not mid-way).
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start start", "end start"],
+    offset: ["start start", "end end"],
   })
 
   // Smooth the raw scroll progress so the scrub is fluid, not jumpy.
   const p = useSpring(scrollYProgress, { stiffness: 90, damping: 26, mass: 0.4 })
 
-  // Small centered card -> full-bleed by ~85% of the scrub, then hold.
-  const scale = useTransform(p, [0, 0.85], [0.46, 1], { clamp: true })
-  const radius = useTransform(p, [0, 0.85], [40, 0], { clamp: true })
+  // Small centered card -> full-bleed by ~78% of the scrub, then hold full.
+  const scale = useTransform(p, [0, 0.78], [0.46, 1], { clamp: true })
+  const radius = useTransform(p, [0, 0.78], [40, 0], { clamp: true })
   const transform = useMotionTemplate`scale(${scale})`
 
   // Headline rises in once the image is large enough to sit behind it.
-  const textOpacity = useTransform(p, [0.42, 0.72], [0, 1], { clamp: true })
-  const textY = useTransform(p, [0.42, 0.85], [56, 0], { clamp: true })
+  const textOpacity = useTransform(p, [0.4, 0.7], [0, 1], { clamp: true })
+  const textY = useTransform(p, [0.4, 0.8], [56, 0], { clamp: true })
 
   return (
     <section ref={ref} className="relative h-[280vh] bg-white">
