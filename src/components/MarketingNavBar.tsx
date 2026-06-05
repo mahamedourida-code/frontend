@@ -404,13 +404,13 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
 
   const flatLink = cn(
     navigationMenuTriggerStyle(),
-    "rounded-[8px] bg-transparent px-3 text-[16px] font-semibold text-black",
+    "h-10 rounded-[8px] bg-transparent px-3.5 text-[15px] font-semibold text-black",
     "transition-colors hover:bg-black/[0.05] hover:text-black",
     "focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent",
   );
 
   const dropdownTrigger = cn(
-    "h-9 rounded-[8px] bg-transparent px-3 text-[16px] font-semibold",
+    "h-10 rounded-[8px] bg-transparent px-3.5 text-[15px] font-semibold",
     "text-black transition-colors hover:bg-black/[0.05] hover:text-black",
     "focus:bg-transparent focus:ring-0 focus-visible:ring-2 focus-visible:ring-black/15",
     "data-[state=open]:bg-black/[0.05] data-[state=open]:text-black data-[state=open]:hover:bg-black/[0.05]",
@@ -420,16 +420,16 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
   return (
     <nav
       className={cn(
-        "fixed inset-x-0 top-0 z-50 h-[68px] border-b",
+        "fixed inset-x-0 top-0 z-50 h-[84px] border-b",
         "transition-[background-color,border-color,box-shadow] duration-200",
         scrolled
           ? "border-black/10 bg-white/95 shadow-[0_1px_0_0_rgba(0,0,0,0.06)] backdrop-blur-xl"
           : "border-transparent bg-transparent",
       )}
     >
-      <div className="mx-auto flex h-full max-w-[1500px] items-center justify-between px-4 sm:px-5 lg:px-9">
+      <div className="mx-auto flex h-full max-w-[1500px] items-center justify-between px-5 sm:px-7 lg:px-12">
         <Link href="/" aria-label="AxLiner home" className="flex-shrink-0">
-          <AppLogo className="h-7 w-auto" />
+          <AppLogo className="h-9 w-auto" />
         </Link>
 
         <div className="hidden flex-1 items-center justify-center lg:flex">
@@ -481,23 +481,31 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
           </NavigationMenu>
         </div>
 
-        <div className="hidden items-center gap-2 lg:flex">
+        <div className="hidden items-center gap-2.5 lg:flex">
           {loading ? (
-            <div className="h-9 w-[170px]" aria-hidden="true" />
+            <div className="h-11 w-[280px]" aria-hidden="true" />
           ) : isAuthenticated ? (
-            <Button variant="glossy" asChild className="h-10 px-5 text-sm font-bold">
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
+            <>
+              <Button variant="surface" asChild className="h-11 px-5 text-[15px] font-semibold">
+                <Link href="/contact">Talk to us</Link>
+              </Button>
+              <Button variant="glossy" asChild className="h-11 px-5 text-[15px] font-bold">
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+            </>
           ) : (
             <>
               <Button
                 asChild
                 variant="ghost"
-                className="h-10 px-4 text-sm font-semibold text-black hover:bg-black/[0.05] hover:text-black"
+                className="h-11 px-4 text-[15px] font-semibold text-black hover:bg-black/[0.05] hover:text-black"
               >
                 <Link href="/sign-in?next=%2Fdashboard%2Fclient">Log in</Link>
               </Button>
-              <Button variant="glossy" asChild className="h-10 px-5 text-sm font-bold">
+              <Button variant="surface" asChild className="h-11 px-5 text-[15px] font-semibold">
+                <Link href="/contact">Talk to us</Link>
+              </Button>
+              <Button variant="glossy" asChild className="h-11 px-5 text-[15px] font-bold">
                 <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign up</Link>
               </Button>
             </>

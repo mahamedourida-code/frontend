@@ -36,8 +36,12 @@ export function ScrollGrowSection() {
   // Smooth the raw scroll progress so the scrub feels fluid, not jumpy.
   const p = useSpring(scrollYProgress, { stiffness: 130, damping: 28, mass: 0.3 })
 
-  const scale = useTransform(p, [0, 1], [0.5, 1], { clamp: true })
-  const radius = useTransform(p, [0, 1], [40, 0], { clamp: true })
+  // Starts clearly SMALL the moment the section first peeks in at the bottom
+  // (a little centered card), then grows to full-bleed (scale 1, edge-to-edge).
+  // The grow finishes by ~0.85 of the scrub so it's at full-bleed slightly
+  // before the section settles — no awkward dead hold at the top of travel.
+  const scale = useTransform(p, [0, 0.85], [0.34, 1], { clamp: true })
+  const radius = useTransform(p, [0, 0.85], [40, 0], { clamp: true })
   const transform = useMotionTemplate`scale(${scale})`
 
   // The headline is always visible and rises up as the image grows in.

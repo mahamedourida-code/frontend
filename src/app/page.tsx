@@ -315,6 +315,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="relative z-10">
+        {/* ── 1 · HERO (white) ── */}
         <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden bg-white">
           <div
             ref={topBackgroundRef}
@@ -332,14 +333,15 @@ export default function Home() {
               <h1 className="ax-h1 ax-marketing-display font-bold text-black">
                 The review layer between{" "}
                 <br className="hidden sm:block" />
-                messy invoices and your books.
+                messy invoices and your{" "}
+                <TypewriterWord words={["books", "ledger", "close"]} className="font-bold text-[var(--brand-brown)]" />.
               </h1>
               <p className="ax-body ax-marketing-lead mx-auto mt-6 font-semibold text-neutral-950">
                 AxLiner reads the documents other tools refuse: handwriting, phone photos, and wrinkled receipts. It checks them and gets every entry one keystroke from QuickBooks Online. You stay in control.
               </p>
 
               <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                <Button variant="glossy" asChild className="h-[52px] rounded-full px-10 text-base font-bold">
+                <Button variant="glossy" asChild className="h-[52px] rounded-md px-10 text-base font-bold">
                   <NextLink href="/dashboard/client">Start free</NextLink>
                 </Button>
               </div>
@@ -372,7 +374,7 @@ export default function Home() {
                   />
                   {/* play button */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="flex size-20 items-center justify-center rounded-full bg-[var(--brand-green)] text-[#064e3b] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.7),0_8px_22px_-10px_rgba(0,0,0,0.35)] transition-transform duration-200 hover:scale-105">
+                    <div className="flex size-20 items-center justify-center rounded-full bg-[var(--brand-green)] text-black shadow-[inset_0_1px_0_0_rgba(255,255,255,0.7),0_8px_22px_-10px_rgba(0,0,0,0.35)] transition-transform duration-200 hover:scale-105">
                       <svg viewBox="0 0 16 16" fill="currentColor" className="ml-1 size-7" aria-hidden="true">
                         <path d="M3 2.25 14.5 8 3 13.75V2.25Z" />
                       </svg>
@@ -390,13 +392,104 @@ export default function Home() {
           </div>
         </div>
 
+        {/* ── 2 · "Throw us the whole folder" — full-bleed cyan band (now SECOND) ── */}
+        <div className="relative isolate overflow-hidden">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
+            style={{ backgroundColor: "#ffffff" }}
+          />
+          <div className="relative z-10">
+        <div id="how-it-works" className="ax-marketing-band-mint bg-[var(--brand-green)] text-neutral-950">
+          <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
+
+            {/* A — text left · video right */}
+            <div className="grid items-center gap-10 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
+              <div data-animate="headline">
+                <h3 className="ax-h2 ax-marketing-section-title max-w-lg font-bold text-neutral-950">
+                  Throw us the whole folder.
+                </h3>
+                <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
+                  Invoices, receipts, bank statements: drop them all at once. AxLiner classifies each file automatically and extracts on the right schema. No sorting, no separate uploads.
+                </p>
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
+                  See how it works →
+                </NextLink>
+              </div>
+              <div className="overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/10 sm:p-8" data-animate="stagger">
+                <VideoPlaceholder caption="Auto-detect: 40 mixed files classified in one batch" />
+              </div>
+            </div>
+
+            {/* B — video left · text right */}
+            <div className="grid items-center gap-10 border-t border-black/15 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
+              <div className="order-last overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/10 sm:p-8 lg:order-first" data-animate="stagger">
+                <VideoPlaceholder caption="Review board: source document side-by-side with extracted data" />
+              </div>
+              <div data-animate="headline">
+                <h3 className="ax-h2 ax-marketing-section-title max-w-lg font-bold text-neutral-950">
+                  See everything before it touches QuickBooks.
+                </h3>
+                <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
+                  Every extracted document lands in your review board before export. Original image on the left, editable cells on the right. Click to correct, tab to move on.
+                </p>
+                <p className="ax-body ax-marketing-body mt-5 font-bold text-neutral-950">
+                  AxLiner prepares it. You approve it.
+                </p>
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
+                  Explore the review board →
+                </NextLink>
+              </div>
+            </div>
+
+            {/* C — text left · video right */}
+            <div className="grid items-center gap-10 border-t border-black/15 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
+              <div data-animate="headline">
+                <h3 className="ax-h2 ax-marketing-section-title max-w-lg font-bold text-neutral-950">
+                  The messy stuff. WhatsApp photos. Handwritten receipts.
+                </h3>
+                <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
+                  Other tools claim accuracy on clean PDFs. AxLiner was built for the document your client photographed in bad light and sent over WhatsApp. Per-field confidence flags tell you exactly which cells to check.
+                </p>
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
+                  Try with a handwritten document →
+                </NextLink>
+              </div>
+              <div className="overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/10 sm:p-8" data-animate="stagger">
+                <VideoPlaceholder caption="Handwritten receipt → structured spreadsheet with confidence flags" />
+              </div>
+            </div>
+
+            {/* D — video left · text right */}
+            <div className="grid items-center gap-10 border-t border-black/15 py-20 pb-28 lg:grid-cols-2 lg:gap-20 lg:py-28 lg:pb-36">
+              <div className="order-last overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/10 sm:p-8 lg:order-first" data-animate="stagger">
+                <VideoPlaceholder caption="AP queue: code, review, and publish bills to QuickBooks in one screen" />
+              </div>
+              <div data-animate="headline">
+                <h3 className="ax-h2 ax-marketing-section-title max-w-lg font-bold text-neutral-950">
+                  Reviewed, coded, posted. No copy-pasting.
+                </h3>
+                <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
+                  Connect your QuickBooks Online company. Code invoices with vendor, account, and tax. Publish a draft Bill with the original document attached. If anything fails, retry without creating a duplicate.
+                </p>
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-black bg-white px-8 text-sm font-bold text-black shadow-sm transition-colors hover:bg-black hover:text-white">
+                  Start free
+                </NextLink>
+              </div>
+            </div>
+
+          </div>
+        </div>
+          </div>
+        </div>
+
+        {/* ── 3 · Trusted-by marquee (white) ── */}
         <div className="relative z-20 isolate bg-white py-16 sm:py-20 lg:py-24">
         <div
           ref={contrastSectionRef}
           className="relative mx-auto max-w-[1280px] text-foreground"
         >
           <div className="relative z-10">
-        {/* Companies Section - Trusted By */}
         <ScrollAnimatedSection id="trusted" className="w-full overflow-hidden py-5">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -413,7 +506,7 @@ export default function Home() {
                   [1, 2, 3, 4, 5, 6, 7, 8, 9].map((imgNum) => (
                     <Card
                       key={`${setIndex}-${imgNum}`}
-                      className="flex-shrink-0 border border-gray-200 bg-white transition-all duration-300 hover:border-primary/30 hover:shadow-md dark:border-gray-200 dark:bg-white w-[108px] h-[70px]"
+                      className="flex-shrink-0 border border-gray-200 bg-white transition-all duration-300 hover:border-[var(--brand-green)]/40 hover:shadow-md dark:border-gray-200 dark:bg-white w-[108px] h-[70px]"
                     >
                       <CardContent className="p-2 flex items-center justify-center w-full h-full">
                         <Image
@@ -427,7 +520,7 @@ export default function Home() {
                             target.style.display = 'none';
                             const parent = target.parentElement;
                             if (parent) {
-                              parent.innerHTML = `<span class="text-xs font-medium text-muted-foreground">Company ${imgNum}</span>`;
+                              parent.innerHTML = `<span class="text-xs font-bold text-black">Company ${imgNum}</span>`;
                             }
                           }}
                         />
@@ -441,13 +534,9 @@ export default function Home() {
         </ScrollAnimatedSection>
           </div>
         </div>
+        </div>
 
-        <ScrollGrowSection />
-
-        {/* White breathing room so the full-bleed scroll image isn't visually
-            linked to the "Throw us the whole folder" band below. */}
-        <section aria-hidden className="h-20 w-full bg-white sm:h-28" />
-
+        {/* ── 4 · Why Choose Us — white band, brown cycling typewriter ── */}
         <div className="relative isolate overflow-hidden">
           <div
             aria-hidden="true"
@@ -455,92 +544,6 @@ export default function Home() {
             style={{ backgroundColor: "#ffffff" }}
           />
           <div className="relative z-10">
-        {/* ── Alternating feature band ── */}
-        <div id="how-it-works" className="ax-marketing-band-mint bg-[var(--brand-green)] text-neutral-950">
-          <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
-
-            {/* A — text left · video right */}
-            <div className="grid items-center gap-10 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
-              <div data-animate="headline">
-                <h3 className="ax-h2 ax-marketing-section-title max-w-lg font-bold text-neutral-950">
-                  Throw us the whole folder.
-                </h3>
-                <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
-                  Invoices, receipts, bank statements: drop them all at once. AxLiner classifies each file automatically and extracts on the right schema. No sorting, no separate uploads.
-                </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
-                  See how it works →
-                </NextLink>
-              </div>
-              <div className="overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-emerald-300/40 sm:p-8" data-animate="stagger">
-                <VideoPlaceholder caption="Auto-detect: 40 mixed files classified in one batch" />
-              </div>
-            </div>
-
-            {/* B — video left · text right */}
-            <div className="grid items-center gap-10 border-t border-emerald-300/60 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
-              <div className="order-last overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-emerald-300/40 sm:p-8 lg:order-first" data-animate="stagger">
-                <VideoPlaceholder caption="Review board: source document side-by-side with extracted data" />
-              </div>
-              <div data-animate="headline">
-                <h3 className="ax-h2 ax-marketing-section-title max-w-lg font-bold text-neutral-950">
-                  See everything before it touches QuickBooks.
-                </h3>
-                <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
-                  Every extracted document lands in your review board before export. Original image on the left, editable cells on the right. Click to correct, tab to move on.
-                </p>
-                <p className="ax-body ax-marketing-body mt-5 font-bold text-neutral-950">
-                  AxLiner prepares it. You approve it.
-                </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
-                  Explore the review board →
-                </NextLink>
-              </div>
-            </div>
-
-            {/* C — text left · video right */}
-            <div className="grid items-center gap-10 border-t border-emerald-300/60 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
-              <div data-animate="headline">
-                <h3 className="ax-h2 ax-marketing-section-title max-w-lg font-bold text-neutral-950">
-                  The messy stuff. WhatsApp photos. Handwritten receipts.
-                </h3>
-                <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
-                  Other tools claim accuracy on clean PDFs. AxLiner was built for the document your client photographed in bad light and sent over WhatsApp. Per-field confidence flags tell you exactly which cells to check.
-                </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
-                  Try with a handwritten document →
-                </NextLink>
-              </div>
-              <div className="overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-emerald-300/40 sm:p-8" data-animate="stagger">
-                <VideoPlaceholder caption="Handwritten receipt → structured spreadsheet with confidence flags" />
-              </div>
-            </div>
-
-            {/* D — video left · text right */}
-            <div className="grid items-center gap-10 border-t border-emerald-300/60 py-20 pb-28 lg:grid-cols-2 lg:gap-20 lg:py-28 lg:pb-36">
-              <div className="order-last overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-emerald-300/40 sm:p-8 lg:order-first" data-animate="stagger">
-                <VideoPlaceholder caption="AP queue: code, review, and publish bills to QuickBooks in one screen" />
-              </div>
-              <div data-animate="headline">
-                <h3 className="ax-h2 ax-marketing-section-title max-w-lg font-bold text-neutral-950">
-                  Reviewed, coded, posted. No copy-pasting.
-                </h3>
-                <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
-                  Connect your QuickBooks Online company. Code invoices with vendor, account, and tax. Publish a draft Bill with the original document attached. If anything fails, retry without creating a duplicate.
-                </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-full border-2 border-[var(--brand-green)] bg-[var(--brand-green)] px-8 text-sm font-bold text-black shadow-sm transition-colors hover:border-black hover:bg-white hover:text-black">
-                  Start free
-                </NextLink>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        {/* ── Organizations testimonials — moved beneath the QuickBooks band ── */}
-        <TestimonialsMarquee />
-
-        {/* Why Choose Us Section — white band, dark text + cycling typewriter */}
         <ScrollAnimatedSection id="features" className="relative z-20 bg-white pt-20 pb-24 text-neutral-950 lg:pt-24 lg:pb-28">
           <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
             <div className="mb-14" data-animate="headline">
@@ -549,10 +552,13 @@ export default function Home() {
                   Turn every{" "}
                   <TypewriterWord
                     words={["invoice", "receipt", "bank statement", "handwritten table", "expense report"]}
-                    className="text-[#8a5a2b]"
+                    className="font-bold text-[var(--brand-brown)]"
                   />
                 </span>
-                <span className="block">into reviewed accounting work.</span>
+                <span className="block">
+                  into reviewed{" "}
+                  <TypewriterWord words={["accounting work", "ledger entries", "draft bills"]} className="font-bold text-[var(--brand-brown)]" />.
+                </span>
               </h2>
             </div>
 
@@ -561,15 +567,20 @@ export default function Home() {
         </ScrollAnimatedSection>
           </div>
         </div>
-        </div>
 
-        {/* ── Verifiable, not invisible — black-box AI vs AxLiner ── */}
+        {/* ── 5 · Scroll-grow cinematic section (white) ── */}
+        <ScrollGrowSection />
+
+        {/* ── 6 · Verifiable, not invisible (white) ── */}
         <VerifiableShowcase />
 
-        {/* ── Outcome stat band (A5) — animated count-up social proof ── */}
+        {/* ── 7 · Organizations testimonials (white) ── */}
+        <TestimonialsMarquee />
+
+        {/* ── 8 · Outcome stat band — animated count-up social proof (white) ── */}
         <OutcomeStats />
 
-        {/* ── Integrations band — large raw logos of the tools we plug into ── */}
+        {/* ── 9 · Integrations band — large raw logos (white) ── */}
         <section className="relative z-10 overflow-hidden bg-white py-20 lg:py-28">
           <div className="mx-auto max-w-[1280px] px-4 text-center sm:px-6 lg:px-8">
             <motion.div
@@ -579,7 +590,8 @@ export default function Home() {
               transition={{ duration: 0.55, ease: "easeOut" }}
             >
               <h2 className="ax-h2 ax-marketing-section-title mx-auto max-w-3xl font-bold text-neutral-950">
-                Works with the tools you already use.
+                Works with the tools you{" "}
+                <TypewriterWord words={["already use", "trust", "live in"]} className="font-bold text-[var(--brand-brown)]" />.
               </h2>
               <p className="ax-body ax-marketing-body mx-auto mt-5 max-w-2xl font-semibold text-neutral-950">
                 Pull documents in from email and Drive, publish reviewed entries straight to your accounting system. No new place to learn.
@@ -618,7 +630,7 @@ export default function Home() {
                     style={{ height: logo.h, width: "auto" }}
                     className="object-contain"
                   />
-                  <span className="text-sm font-bold uppercase tracking-[0.16em] text-neutral-700">
+                  <span className="text-sm font-bold uppercase tracking-[0.16em] text-black">
                     {logo.label}
                   </span>
                 </motion.li>
@@ -627,57 +639,66 @@ export default function Home() {
           </div>
         </section>
 
-        <div className="relative isolate overflow-hidden">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
-            style={{ backgroundColor: "#ffffff" }}
-          />
+        {/* ── 10 · Security + FAQ — redesigned to match the system (white) ── */}
+        <div className="relative isolate overflow-hidden bg-white">
           <div className="relative z-10">
-        <ScrollAnimatedSection id="security" className="relative z-10 overflow-hidden py-16 lg:py-20">
-          <div
-            ref={securityBandRef}
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-0"
-            style={{
-              backgroundColor: "#ffffff",
-              boxShadow: "0 -24px 60px rgb(0 0 0 / 0.06)",
-              clipPath:
-                "polygon(0 4%, 12% 2.8%, 25% 4.6%, 40% 2.4%, 58% 4.3%, 75% 2.7%, 100% 4%, 100% 100%, 0 100%)",
-            }}
-          />
-          <div className="container relative z-10 mx-auto max-w-[1540px] px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-10 lg:grid-cols-[minmax(360px,0.82fr)_minmax(520px,1.18fr)] lg:items-center">
-              <div data-animate="headline">
-                <h2 className="ax-h2 ax-marketing-section-title max-w-2xl font-bold text-neutral-950">
-                  Your data never leaves the review board uninvited.
-                </h2>
+        <ScrollAnimatedSection id="security" className="relative z-10 overflow-hidden bg-white py-20 lg:py-28">
+          <div className="container relative z-10 mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
+            {/* Heading — matches the white-section type scale, brown accent */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.55, ease: "easeOut" }}
+              className="mx-auto max-w-3xl text-center"
+              data-animate="headline"
+            >
+              <p className="ax-eyebrow text-[var(--brand-brown)]">Security</p>
+              <h2 className="ax-h2 ax-marketing-section-title mt-3 font-bold text-neutral-950">
+                Your data never leaves the review board{" "}
+                <TypewriterWord words={["uninvited", "without you", "unreviewed"]} className="font-bold text-[var(--brand-brown)]" />.
+              </h2>
+              <p className="ax-body ax-marketing-body mx-auto mt-5 max-w-2xl font-semibold text-neutral-950">
+                Documents are processed and deleted after export. No training on your data, no persistent storage beyond your retention window, no third-party sharing — built around GDPR, SOC 2, and HIPAA-conscious workflows from day one.
+              </p>
+            </motion.div>
 
-                <BrandVisualFrame treatment="photo" className="mt-8 max-w-[500px]">
-                    <Image
-                      src="/secu.webp"
-                      alt="Secure digital document processing"
-                      width={760}
-                      height={420}
-                      sizes="(min-width: 1024px) 40vw, 100vw"
-                      className="h-[210px] w-full rounded-md object-cover object-center sm:h-[240px] lg:h-[260px]"
-                    />
+            {/* Body — image card + checklist, consistent rounded cards */}
+            <div className="mt-16 grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.55, ease: "easeOut" }}
+                data-animate="stagger"
+              >
+                <BrandVisualFrame treatment="photo" className="max-w-[560px]">
+                  <Image
+                    src="/secu.webp"
+                    alt="Secure digital document processing"
+                    width={760}
+                    height={420}
+                    sizes="(min-width: 1024px) 45vw, 100vw"
+                    className="h-[240px] w-full rounded-md object-cover object-center sm:h-[280px] lg:h-[320px]"
+                  />
                 </BrandVisualFrame>
-              </div>
+              </motion.div>
 
-              <div className="lg:pt-8" data-animate="stagger">
-                <p className="ax-body ax-marketing-body mt-0 max-w-3xl text-neutral-950">
-                  Documents are processed and deleted after export. No training on your data, no persistent storage beyond your retention window, no third-party sharing. Built around GDPR, SOC 2, and HIPAA-conscious workflows from day one.
-                </p>
-
-                <div className="mt-8 space-y-5">
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.55, ease: "easeOut", delay: 0.1 }}
+                data-animate="stagger"
+              >
+                <div className="space-y-5">
                   {[
                     "ISO 27001-aligned security controls",
                     "Built for GDPR, SOC 2, CCPA and HIPAA-conscious workflows",
                     "Secure infrastructure across Supabase, Fly.io and Vercel",
                   ].map((item) => (
-                    <div key={item} className="flex items-start gap-4 text-base text-neutral-950 sm:text-lg">
-                      <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-primary text-primary">
+                    <div key={item} className="flex items-start gap-4 text-base font-semibold text-neutral-950 sm:text-lg">
+                      <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-[var(--brand-green)] text-[var(--brand-green)]">
                         <span className="h-2.5 w-1.5 rotate-45 border-b-2 border-r-2 border-current" />
                       </span>
                       <span>{item}</span>
@@ -686,27 +707,29 @@ export default function Home() {
                 </div>
 
                 <Button
-                  variant="surface"
-                  className="mt-9 h-11 px-7 text-sm font-semibold"
+                  variant="glossy"
+                  className="mt-9 h-11 rounded-md px-7 text-sm font-bold"
                   asChild
                 >
-                  <NextLink href="/security">More Information</NextLink>
+                  <NextLink href="/security">More information</NextLink>
                 </Button>
-              </div>
+              </motion.div>
             </div>
 
-            <div className="mx-auto mt-16 max-w-[928px] lg:mt-20" data-animate="headline">
-              <p className="ax-eyebrow text-black">FAQ</p>
+            {/* FAQ */}
+            <div className="mx-auto mt-20 max-w-[928px] text-center" data-animate="headline">
+              <p className="ax-eyebrow text-[var(--brand-brown)]">FAQ</p>
               <h3 className="ax-h2 ax-marketing-section-title mt-3 font-bold text-neutral-950">
-                Questions we hear from bookkeepers.
+                Questions we hear from{" "}
+                <TypewriterWord words={["bookkeepers", "accountants", "controllers"]} className="font-bold text-[var(--brand-brown)]" />.
               </h3>
             </div>
 
-            <div className="mx-auto mt-10 max-w-[928px] border-y border-border text-left" data-animate="stagger">
+            <div className="mx-auto mt-10 max-w-[928px] text-left" data-animate="stagger">
               {faqItems.map((item, index) => (
                 <details
                   key={item.question}
-                  className="group border-b border-border last:border-b-0"
+                  className="group border-b border-black/10 last:border-b-0"
                   open={index === 0}
                 >
                   <summary className="flex min-h-[70px] cursor-pointer list-none items-center justify-between gap-6 py-4 text-lg font-semibold text-neutral-950 [&::-webkit-details-marker]:hidden">
@@ -717,7 +740,7 @@ export default function Home() {
                     </span>
                   </summary>
                   <div className="pb-7 pr-10">
-                    <p className="ax-body ax-marketing-body text-neutral-900">{item.answer}</p>
+                    <p className="ax-body ax-marketing-body font-semibold text-neutral-900">{item.answer}</p>
                   </div>
                 </details>
               ))}
@@ -732,7 +755,7 @@ export default function Home() {
       <footer className="relative z-10 bg-black text-white">
         <div className="mx-auto max-w-[1200px] px-4 pt-16 pb-10 sm:px-6 lg:px-8 lg:pt-20">
           {/* Logo + social row */}
-          <div className="flex flex-col gap-6 border-b border-white/12 pb-10 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-6 pb-10 sm:flex-row sm:items-center sm:justify-between">
             <NextLink href="/" aria-label="AxLiner home" className="inline-flex items-center">
               <AppLogo className="h-8 w-auto invert" />
             </NextLink>
@@ -752,19 +775,19 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Link columns */}
-          <div className="grid grid-cols-2 gap-10 py-12 sm:grid-cols-3 lg:grid-cols-5 lg:gap-8">
+          {/* Link columns — cyan titles, raw white bigger sub-links, no dividers */}
+          <div className="grid grid-cols-2 gap-12 py-12 sm:grid-cols-3 lg:grid-cols-5 lg:gap-8">
             {footerColumns.map((column) => (
               <div key={column.title}>
-                <p className="text-[15px] font-bold text-white">
+                <p className="text-lg font-bold text-[var(--brand-green)]">
                   {column.title}
                 </p>
-                <ul className="mt-5 space-y-3.5">
+                <ul className="mt-6 space-y-4">
                   {column.links.map((link) => (
                     <li key={`${column.title}-${link.label}`}>
                       <NextLink
                         href={link.href}
-                        className="text-[14px] font-medium text-white/70 transition-opacity hover:text-white hover:opacity-100"
+                        className="text-[17px] font-semibold text-white transition-opacity hover:opacity-70"
                       >
                         {link.label}
                       </NextLink>
@@ -776,19 +799,19 @@ export default function Home() {
           </div>
 
           {/* Bottom legal row */}
-          <div className="flex flex-col gap-6 border-t border-white/12 pt-8 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-[13px] font-medium text-white/70">
+          <div className="flex flex-col gap-6 pt-8 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-[15px] font-semibold text-white">
               © 2026 AxLiner Inc. All rights reserved.
             </p>
 
             <div className="flex flex-wrap items-center gap-6">
-              <NextLink href="/contact" className="text-[13px] font-medium text-white/70 transition-colors hover:text-white">
+              <NextLink href="/contact" className="text-[15px] font-semibold text-white transition-opacity hover:opacity-70">
                 Contact Us
               </NextLink>
-              <NextLink href="/privacy-policy" className="text-[13px] font-medium text-white/70 transition-colors hover:text-white">
+              <NextLink href="/privacy-policy" className="text-[15px] font-semibold text-white transition-opacity hover:opacity-70">
                 Privacy Policy
               </NextLink>
-              <NextLink href="/end-user-license-agreement" className="text-[13px] font-medium text-white/70 transition-colors hover:text-white">
+              <NextLink href="/end-user-license-agreement" className="text-[15px] font-semibold text-white transition-opacity hover:opacity-70">
                 Terms &amp; Conditions
               </NextLink>
             </div>
