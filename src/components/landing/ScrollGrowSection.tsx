@@ -12,43 +12,42 @@ import {
 } from "framer-motion"
 
 /**
- * Scroll-scrubbed hero: a single image that starts as a small centered card and
- * grows to a full-bleed, edge-to-edge image as the section scrolls through a
- * sticky viewport. The scroll progress is spring-smoothed so the scrub feels
- * fluid. Right-aligned headline rises in over the image (white, with the final
- * word + subtitle in the brand aqua). White section background. Reduced-motion
- * renders the end state statically. (transform/opacity only, GPU-accelerated.)
+ * Scroll-scrubbed hero. The image grows from a left-anchored panel to a
+ * full-bleed, edge-to-edge image as the section scrolls through a sticky
+ * viewport (origin-left keeps the left side — where the text sits — always
+ * covered). The headline lives in its own layer (not inside the scaling image),
+ * is visible the whole time, left-aligned, and drifts up as you scroll: quick
+ * but smooth. White section background; white text with the final word + the
+ * subtitle in brand aqua. transform/opacity only; reduced-motion = end state.
  */
 export function ScrollGrowSection() {
   const ref = useRef<HTMLDivElement | null>(null)
   const prefersReduced = useReducedMotion()
 
   // `end end` maps progress 0 -> 1 across the full sticky scrub, so the image
-  // actually reaches full-bleed by the end of the section (not mid-way).
+  // reaches full-bleed right at the end of the section.
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
   })
 
-  // Smooth the raw scroll progress so the scrub is fluid, not jumpy.
-  const p = useSpring(scrollYProgress, { stiffness: 90, damping: 26, mass: 0.4 })
+  // Smooth the raw scroll progress so the scrub feels fluid, not jumpy.
+  const p = useSpring(scrollYProgress, { stiffness: 120, damping: 28, mass: 0.35 })
 
-  // Small centered card -> full-bleed by ~78% of the scrub, then hold full.
-  const scale = useTransform(p, [0, 0.78], [0.46, 1], { clamp: true })
-  const radius = useTransform(p, [0, 0.78], [40, 0], { clamp: true })
+  const scale = useTransform(p, [0, 0.82], [0.58, 1], { clamp: true })
+  const radius = useTransform(p, [0, 0.82], [40, 0], { clamp: true })
   const transform = useMotionTemplate`scale(${scale})`
 
-  // Headline rises in once the image is large enough to sit behind it.
-  const textOpacity = useTransform(p, [0.4, 0.7], [0, 1], { clamp: true })
-  const textY = useTransform(p, [0.4, 0.8], [56, 0], { clamp: true })
+  // The headline is always visible and rises up — quick, then settles.
+  const textY = useTransform(p, [0, 0.55], [54, -28], { clamp: true })
 
   return (
-    <section ref={ref} className="relative h-[280vh] bg-white">
+    <section ref={ref} className="relative h-[260vh] bg-white">
       <div className="sticky top-0 h-screen w-full overflow-hidden">
-        {/* Growing image: small centered card -> full-bleed */}
+        {/* Growing image: left-anchored panel -> full-bleed */}
         <motion.div
           style={prefersReduced ? undefined : { transform, borderRadius: radius }}
-          className="absolute inset-0 origin-center overflow-hidden rounded-[40px] will-change-transform"
+          className="absolute inset-0 origin-left overflow-hidden rounded-[40px] will-change-transform"
         >
           <Image
             src="/landing/businessman-crossing.jpg"
@@ -57,14 +56,14 @@ export function ScrollGrowSection() {
             sizes="100vw"
             className="object-cover"
           />
-          {/* Scrim weighted to the right so the right-aligned text stays legible. */}
-          <div className="absolute inset-0 bg-gradient-to-l from-black/75 via-black/35 to-black/10" />
+          {/* Left-weighted scrim keeps the left-aligned white text legible. */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-black/5" />
         </motion.div>
 
-        {/* Right-aligned headline that rises in */}
+        {/* Headline layer (separate from the scaling image) */}
         <motion.div
-          style={prefersReduced ? undefined : { opacity: textOpacity, y: textY }}
-          className="pointer-events-none absolute inset-y-0 right-[6vw] flex max-w-[680px] flex-col items-end justify-center text-right"
+          style={prefersReduced ? undefined : { y: textY }}
+          className="pointer-events-none absolute inset-y-0 left-[6vw] z-10 flex max-w-[640px] flex-col items-start justify-center text-left [text-shadow:0_2px_28px_rgba(0,0,0,0.45)]"
         >
           <h2 className="text-balance text-5xl font-black leading-[0.95] tracking-tight text-white sm:text-7xl md:text-8xl">
             Built for how finance actually{" "}
