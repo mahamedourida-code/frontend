@@ -8,8 +8,9 @@ const STORAGE_KEY = "axliner-cookie-consent"
 
 /**
  * First-visit cookie notice: a fixed bottom-left aqua card that slides up once,
- * persists the choice in localStorage, and animates out on Accept. Modelled on
- * the reap.global pattern; AxLiner brand + copy. Reduced-motion safe.
+ * persists the choice in localStorage, and animates out on Accept. Sized to
+ * match the reap.global card (≈500×356, 24px padding, 20px radius, 20px bold
+ * heading) with AxLiner brand + copy. All text is pure black. Reduced-motion safe.
  */
 export function CookieNotice() {
   const [visible, setVisible] = useState(false)
@@ -40,25 +41,25 @@ export function CookieNotice() {
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1], delay: 0.5 }}
           role="dialog"
           aria-label="Cookie notice"
-          className="fixed bottom-4 left-4 z-[60] w-[min(92vw,500px)] rounded-[20px] bg-[var(--brand-green)] p-6 text-[#052b2b] shadow-[0_12px_44px_-14px_rgba(0,0,0,0.5)]"
+          className="fixed bottom-5 left-5 z-[60] w-[min(94vw,500px)] rounded-[20px] bg-[var(--brand-green)] p-6 text-black shadow-[0_16px_54px_-16px_rgba(0,0,0,0.55)]"
         >
-          <p className="text-sm font-bold tracking-tight">Notice</p>
-          <p className="mt-2 text-sm leading-6 text-[#06403b]">
-            We use cookies to keep AxLiner running smoothly, remember your preferences, and learn how the
-            site is used. Some are essential; others help us improve your experience. By choosing Accept,
-            you agree to our use of cookies.
+          <p className="text-xl font-extrabold tracking-tight text-black">Notice</p>
+          <p className="mt-3 text-[17px] font-medium leading-7 text-black">
+            We use cookies to keep AxLiner running smoothly, remember your preferences, and understand
+            how the site is used. Some cookies are essential; others help us see how the site is used so
+            we can improve it. By choosing Accept, you agree to our use of all cookies.
           </p>
-          <div className="mt-5 flex items-center justify-between gap-3">
+          <div className="mt-6 flex items-center justify-between gap-4">
             <Link
               href="/privacy-policy"
-              className="ax-interactive text-sm font-semibold underline decoration-[#052b2b]/40 underline-offset-4 hover:decoration-[#052b2b]"
+              className="ax-interactive text-base font-semibold text-black underline decoration-black/50 underline-offset-4 hover:decoration-black"
             >
               Privacy Policy
             </Link>
             <button
               type="button"
               onClick={accept}
-              className="ax-interactive rounded-full bg-white px-7 py-2 text-sm font-bold text-[#052b2b] shadow-sm transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
+              className="ax-interactive rounded-full bg-white px-9 py-3.5 text-base font-bold text-black shadow-sm transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
             >
               Accept
             </button>
