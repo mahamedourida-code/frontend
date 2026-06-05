@@ -5,6 +5,7 @@ import "../styles/mobile-nav.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ProcessingStateProvider } from "@/contexts/ProcessingStateContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { CookieNotice } from "@/components/CookieNotice";
 import { Toaster } from "sonner";
 
 const inter = Inter({
@@ -102,6 +103,7 @@ export default function RootLayout({
                 position="top-right"
                 toastOptions={{ duration: 3500, className: "ax-toast ax-interactive" }}
               />
+              <CookieNotice />
             </ProcessingStateProvider>
           </AuthProvider>
         </ThemeProvider>
