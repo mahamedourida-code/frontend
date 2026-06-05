@@ -202,31 +202,32 @@ function formatBytes(bytes: number) {
 }
 
 function ReviewWorkflowStrip({ className }: { className?: string }) {
+  // The three coding steps, each fronted by a minimal accounting-code symbol so
+  // the workflow reads as "verify → code → publish" at a glance.
   const steps = [
-    ["1", "Verify extraction"],
-    ["2", "Code draft bills"],
-    ["3", "Publish"],
+    { n: "1", label: "Verify extraction", hint: "Check fields against the source", symbol: "code-confidence-tick" },
+    { n: "2", label: "Code draft bills", hint: "Supplier · account · VAT", symbol: "code-map-to-account" },
+    { n: "3", label: "Publish", hint: "Post to QuickBooks / Xero", symbol: "code-post-entry" },
   ] as const
 
   return (
-    <div
-      className={cn("flex flex-wrap items-center gap-1.5 text-xs font-semibold text-muted-foreground", className)}
-      aria-label="Review workflow"
-    >
-      {steps.map(([number, label], index) => (
-        <div key={number} className="contents">
-          {index > 0 ? <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/55" /> : null}
-          <span
-            className={cn(
-              "inline-flex h-8 items-center gap-2 rounded-full border px-3",
-              index === 0
-                ? "border-[var(--brand-green-ring)] bg-[var(--brand-green)] text-[var(--brand-green-fg)]"
-                : "border-border bg-card text-muted-foreground"
-            )}
-          >
-            <span className="tabular-nums">{number}</span>
-            {label}
-          </span>
+    <div className={cn("grid gap-2 sm:grid-cols-3", className)} aria-label="Review workflow">
+      {steps.map((step, index) => (
+        <div
+          key={step.n}
+          className={cn(
+            "flex items-center gap-3 rounded-xl border bg-card px-3 py-2.5 transition-colors",
+            index === 0 ? "border-[var(--brand-green-ring)]" : "border-border",
+          )}
+        >
+          <Symbol name={step.symbol} size="medium" className="h-11 w-11 shrink-0" alt="" />
+          <div className="min-w-0">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
+              <span className="font-mono text-xs text-emerald-600">{step.n}</span>
+              {step.label}
+            </p>
+            <p className="truncate text-xs text-muted-foreground">{step.hint}</p>
+          </div>
         </div>
       ))}
     </div>

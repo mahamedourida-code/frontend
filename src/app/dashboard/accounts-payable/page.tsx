@@ -838,6 +838,7 @@ function AccountsPayableContent() {
         <div className="space-y-4">
           <WorkspaceSection
             step="1"
+            symbol="code-extract-field"
             title="Review invoices"
             hint="Confirm the extracted details, then code each draft."
             contentClassName="p-0"
@@ -1032,6 +1033,7 @@ function AccountsPayableContent() {
             <WorkspaceSection
               tone="active"
               step="2"
+              symbol="code-map-to-account"
               title="Prepare draft bill"
               hint={`Code the supplier, account, and VAT, then publish to ${destinationName}.`}
               contentClassName="p-0"
