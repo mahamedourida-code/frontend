@@ -30,13 +30,13 @@ Transparent-background illustrations for the AxLiner accounting workspace — tu
 - **Size:** hero
 - **Prompt:** A central emerald hub node with three faint dotted connector lines reaching outward to three empty rounded socket outlines (no logos, generic), inviting the user to plug in their first source. The hub has a soft mint halo; sockets are clay outlines in brown. Balanced radial composition, lots of air, professional and clear. — Style: clean, professional, minimal flat/duotone illustration with confident geometric line-work and generous negative space (the restraint of a premium fintech/accounting brand — Mercury, Ramp, Linear); subtle depth at most, never childish. Palette: emerald #10b981 / mint #d1fae5 / deep emerald #064e3b mixed tastefully with warm clay #eadcc8 and browns #6b4f2e / #8a6d46 — emerald-led or emerald+brown duotone, cohesive across the set. Crisp strokes, rounded joins, tidy grid. Transparent background (PNG with alpha), no frame, isolated subject, centered with even margin.
 
-### Saved-vendors empty state
+### Saved-vendors empty state(*)
 - **File:** `/public/symbols/firstsight-vendors-empty.png`
 - **Where it's used:** vendor memory page, no remembered suppliers yet
 - **Size:** hero
 - **Prompt:** A clean address-card / rolodex card in clay with a brown spine and an empty emerald name-line, beside a faint outline of a second card waiting to be added, with a small dotted emerald "+" at the corner. Suggests supplier memory about to be built. Orderly, professional, calm negative space. — Style: clean, professional, minimal flat/duotone illustration with confident geometric line-work and generous negative space (the restraint of a premium fintech/accounting brand — Mercury, Ramp, Linear); subtle depth at most, never childish. Palette: emerald #10b981 / mint #d1fae5 / deep emerald #064e3b mixed tastefully with warm clay #eadcc8 and browns #6b4f2e / #8a6d46 — emerald-led or emerald+brown duotone, cohesive across the set. Crisp strokes, rounded joins, tidy grid. Transparent background (PNG with alpha), no frame, isolated subject, centered with even margin.
 
-### History empty state
+### History empty state(*)
 - **File:** `/public/symbols/firstsight-history-empty.png`
 - **Where it's used:** history / past batches page, nothing processed yet
 - **Size:** hero
@@ -56,7 +56,7 @@ Transparent-background illustrations for the AxLiner accounting workspace — tu
 
 ## After interaction (result / success states)
 
-### Batch finished processing
+### Batch finished processing(*)
 - **File:** `/public/symbols/success-batch-done.png`
 - **Where it's used:** workspace, the moment a whole batch finishes extracting
 - **Size:** hero

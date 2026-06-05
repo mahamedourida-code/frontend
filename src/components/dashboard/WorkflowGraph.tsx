@@ -29,7 +29,7 @@ const MODES: GraphNode[] = [
   { label: "Notes", href: "/dashboard/client?mode=notes", symbol: "handwritten-note" },
 ]
 
-const RAIL = "var(--brand-green-ring)"
+const RAIL = "#8a6d46"
 
 function NodeBox({
   node,
@@ -44,18 +44,17 @@ function NodeBox({
     <Link
       href={node.href}
       className={cn(
-        "ax-interactive group relative flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_1px_3px_0_rgba(0,0,0,0.12)] outline-none transition-all hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[var(--brand-green-ring)]",
-        tone === "top" &&
-          "border border-[var(--brand-green-ring)] bg-[var(--brand-green)] text-[var(--brand-green-fg)]",
-        tone !== "top" &&
-          "border border-[color:#b49168] bg-[var(--brand-clay)] text-[#2f2418] hover:bg-[var(--brand-clay-hover)]",
+        "ax-interactive group relative flex items-center gap-3 rounded-2xl border px-4 py-3.5 text-left shadow-[inset_0_1px_0_0_rgba(255,255,255,0.7),0_2px_6px_-1px_rgba(15,23,42,0.12)] outline-none transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-[var(--brand-green-ring)]",
+        tone === "top"
+          ? "border-[#8a6d46] bg-[var(--brand-green)] text-[var(--brand-green-fg)]"
+          : "border-[#c9ac82] bg-card text-foreground hover:bg-accent/40",
         className,
       )}
     >
-      {node.symbol ? <Symbol name={node.symbol} size="inline" className="h-9 w-9 shrink-0" alt="" /> : null}
+      {node.symbol ? <Symbol name={node.symbol} size="badge" className="h-11 w-11 shrink-0 sm:h-12 sm:w-12" alt="" /> : null}
       <span className="min-w-0">
-        <span className="block truncate text-sm font-semibold leading-tight">{node.label}</span>
-        {node.hint ? <span className="block truncate text-[11px] font-medium opacity-70">{node.hint}</span> : null}
+        <span className="block truncate text-base font-semibold leading-tight">{node.label}</span>
+        {node.hint ? <span className="block truncate text-xs font-medium opacity-70">{node.hint}</span> : null}
       </span>
     </Link>
   )

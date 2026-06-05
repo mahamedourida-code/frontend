@@ -43,7 +43,6 @@ import { InboxSummaryStrip } from "@/components/dashboard/InboxSummaryStrip"
 import { FIELD_LABEL, workspaceStage } from "@/lib/review-vocab"
 import { vatCheck } from "@/lib/bookkeeper-copy"
 import { Symbol } from "@/components/dashboard/Symbol"
-import { WorkflowGraph } from "@/components/dashboard/WorkflowGraph"
 import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
 import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
 import { SourceHighlightOverlay } from "@/components/dashboard/SourceHighlightOverlay"
@@ -221,7 +220,7 @@ function ReviewWorkflowStrip({ className }: { className?: string }) {
             index === 0 ? "border-[var(--brand-green-ring)]" : "border-border",
           )}
         >
-          <Symbol name={step.symbol} size="medium" className="h-14 w-14 shrink-0 sm:h-16 sm:w-16" alt="" />
+          <Symbol name={step.symbol} size="medium" className="h-16 w-16 shrink-0 sm:h-20 sm:w-20" alt="" />
           <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
               <span className="font-mono text-xs text-emerald-600">{step.n}</span>
@@ -1224,19 +1223,17 @@ function BookkeeperBreakdown({ figures, layout = "row" }: { figures: BookkeeperF
   const check = vatCheck(figures.subtotal, figures.vat, figures.total)
   // vatCheck's "neutral" maps onto AnomalyChip's caution (no plain neutral tone).
   const chipTone: AnomalyTone = check.tone === "good" ? "good" : "caution"
-  // Key figures carry colour on the label (Net = ink, VAT = amber, Total =
-  // emerald) while the value stays black — colour marks meaning, not grey.
-  const cells: Array<[string, string, string]> = [
-    [FIELD_LABEL.net, fmt(figures.subtotal), "text-foreground"],
-    [FIELD_LABEL.vat, fmt(figures.vat), "text-amber-600"],
-    [FIELD_LABEL.gross, fmt(figures.total), "text-emerald-700"],
+  const cells: Array<[string, string]> = [
+    [FIELD_LABEL.net, fmt(figures.subtotal)],
+    [FIELD_LABEL.vat, fmt(figures.vat)],
+    [FIELD_LABEL.gross, fmt(figures.total)],
   ]
   return (
     <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-1.5", layout === "grid" && "w-full")}>
-      <Symbol name="code-vat-chip" size="inline" className="h-10 w-10 shrink-0" alt="" />
-      {cells.map(([label, value, labelColor]) => (
+      <Symbol name="code-vat-chip" size="inline" className="h-12 w-12 shrink-0" alt="" />
+      {cells.map(([label, value]) => (
         <span key={label} className="inline-flex items-baseline gap-1.5">
-          <span className={cn("text-[11px] font-bold uppercase tracking-wide", labelColor)}>{label}</span>
+          <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{label}</span>
           <span className="text-[13px] font-semibold tabular-nums text-foreground">{value}</span>
         </span>
       ))}
@@ -2205,7 +2202,7 @@ export function ResultActions({
                   {index + 1}
                 </span>
                 {documentTypeSymbol(file.document_type) ? (
-                  <Symbol name={documentTypeSymbol(file.document_type)!} size="inline" className="h-11 w-11 shrink-0" alt="" />
+                  <Symbol name={documentTypeSymbol(file.document_type)!} size="inline" className="h-12 w-12 shrink-0 sm:h-14 sm:w-14" alt="" />
                 ) : null}
                 <span className="min-w-[180px] flex-1">
                   <span className="block truncate font-semibold text-foreground">{file.filename || summary.identity}</span>
@@ -2411,7 +2408,7 @@ export function ResultActions({
               {duplicateWarning ? (
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
                   <span className="flex min-w-0 items-center gap-2">
-                    <Symbol name="duplicate" size="inline" className="h-9 w-9 shrink-0" alt="" />
+                    <Symbol name="duplicate" size="inline" className="h-11 w-11 shrink-0" alt="" />
                     <span className="truncate font-medium">{duplicateWarning.message}</span>
                     {(() => {
                       const copy = duplicateCopy(duplicateWarning)
@@ -2858,7 +2855,7 @@ export function ResultActions({
                             {receiptPublishing ? (
                               <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
                             ) : (
-                              <Symbol name="sync-publish" size="inline" className="mr-1.5 h-7 w-7" alt="" />
+                              <Symbol name="sync-publish" size="inline" className="mr-1.5 h-8 w-8" alt="" />
                             )}
                             Publish {receiptDestination || "receipt"}
                           </Button>
@@ -3404,17 +3401,6 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
         <div className="grid gap-4">
           {!hasResults ? (
             <div className="space-y-4">
-              {/* First-sight launcher: a clickable button-graph of where to go,
-                  shown only on the truly empty screen (no staged files yet). */}
-              {!uploadedFiles.length && !isProcessing ? (
-                <WorkspaceSection
-                  title="Jump in"
-                  hint="Pick where you want to go — or upload a batch below."
-                  contentClassName="py-6"
-                >
-                  <WorkflowGraph />
-                </WorkspaceSection>
-              ) : null}
               {/* P1 — step 1: the upload box. */}
               <WorkspaceSection
                 id="upload-files"
