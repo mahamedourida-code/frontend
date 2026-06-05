@@ -1232,7 +1232,7 @@ function BookkeeperBreakdown({ figures, layout = "row" }: { figures: BookkeeperF
   ]
   return (
     <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-1.5", layout === "grid" && "w-full")}>
-      <Symbol name="vat-box" size="inline" className="h-7 w-7 shrink-0" alt="" />
+      <Symbol name="code-vat-chip" size="inline" className="h-8 w-8 shrink-0" alt="" />
       {cells.map(([label, value, labelColor]) => (
         <span key={label} className="inline-flex items-baseline gap-1.5">
           <span className={cn("text-[11px] font-bold uppercase tracking-wide", labelColor)}>{label}</span>
