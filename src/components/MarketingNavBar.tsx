@@ -1,22 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowRight,
-  Inbox,
-  ListChecks,
   Columns2,
-  Brain,
   ShieldAlert,
-  GitBranch,
   RefreshCcw,
   ScanLine,
   FileText,
-  GraduationCap,
-  ScrollText,
-  Wrench,
   Gift,
   LifeBuoy,
   UserRound,
@@ -38,7 +29,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import { useAuth } from "@/hooks/useAuth";
 import {
-  AudienceSolution,
   audienceSolutionGroups,
   audienceSolutionHref,
   getAudienceSolutionBySlug,
@@ -48,161 +38,158 @@ import { cn } from "@/lib/utils";
 
 const primaryAudienceSolutions = primaryAudienceSlugs.map(getAudienceSolutionBySlug);
 
-/* ── shared menu primitives ─────────────────────────────────────────────── */
+/* ── shared card-grid mega-menu primitives ──────────────────────────────── */
 
-type IconRow = {
-  icon: LucideIcon;
-  label: string;
-  tag?: string;
-  href: string;
+/* Two accent rhythms for the hover-fill. Default is a near-invisible surface
+   on white; on hover / keyboard focus the whole card fills with the brand
+   color while the text stays black. Most cards fill cyan; a couple fill brown. */
+type Accent = "cyan" | "brown";
+
+const accentFill: Record<Accent, string> = {
+  cyan: "hover:bg-[var(--brand-green)] focus-visible:bg-[var(--brand-green)] data-[active]:bg-[var(--brand-green)]",
+  brown: "hover:bg-[var(--brand-brown)] focus-visible:bg-[var(--brand-brown)] data-[active]:bg-[var(--brand-brown)]",
 };
 
-function MenuEyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="px-1 text-[12px] font-bold uppercase tracking-[0.18em] text-black/55">
-      {children}
-    </p>
-  );
-}
+const cardBase =
+  "ax-interactive group relative flex flex-col rounded-xl bg-black/[0.03] text-black outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-black/20";
 
-function IconRowLink({ row }: { row: IconRow }) {
-  const Icon = row.icon;
+type FeaturedCardProps = {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  href: string;
+  accent: Accent;
+};
+
+/* Wide left card (~1.6x a normal card): raw icon top-left, then title +
+   one-line description anchored near the bottom. */
+function FeaturedCard({ icon: Icon, title, description, href, accent }: FeaturedCardProps) {
   return (
     <NavigationMenuLink asChild>
-      <Link
-        href={row.href}
-        className="group grid grid-cols-[48px_1fr] items-center gap-4 rounded-[16px] p-3.5 text-black outline-none transition-colors hover:bg-black/[0.04] focus-visible:ring-2 focus-visible:ring-black/15"
-      >
-        <span className="flex size-12 shrink-0 items-center justify-center text-black">
-          <Icon className="size-[22px]" strokeWidth={2} />
-        </span>
-        <span className="min-w-0">
-          <span className="block text-[17px] font-bold leading-5 text-black">{row.label}</span>
-          {row.tag ? (
-            <span className="mt-0.5 block text-[13px] font-medium leading-tight text-black/55">{row.tag}</span>
-          ) : null}
+      <Link href={href} className={cn(cardBase, "h-full basis-0 grow-[1.6] justify-between p-6", accentFill[accent])}>
+        <Icon className="size-7 text-black" strokeWidth={2} />
+        <span className="mt-12 block">
+          <span className="block text-[20px] font-bold leading-6 text-black">{title}</span>
+          <span className="mt-1.5 block text-[13px] font-medium leading-snug text-black/70">{description}</span>
         </span>
       </Link>
     </NavigationMenuLink>
   );
 }
 
-function TextSubLink({ icon: Icon, label, href }: { icon: LucideIcon; label: string; href: string }) {
+type StandaloneCardProps = {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  href: string;
+  accent: Accent;
+};
+
+/* Equal-width standalone card: raw icon top-left, title + one-line description. */
+function StandaloneCard({ icon: Icon, title, description, href, accent }: StandaloneCardProps) {
   return (
     <NavigationMenuLink asChild>
-      <Link
-        href={href}
-        className="group flex items-center gap-3 rounded-[12px] px-3 py-3 text-[16px] font-semibold leading-5 text-black outline-none transition-colors hover:bg-white focus-visible:ring-2 focus-visible:ring-black/15"
-      >
-        <Icon className="size-[18px] shrink-0 text-black" strokeWidth={2} />
-        {label}
-        <ArrowRight className="ml-auto size-4 shrink-0 text-black/40 transition-transform group-hover:translate-x-0.5" />
+      <Link href={href} className={cn(cardBase, "h-full basis-0 grow justify-between p-5", accentFill[accent])}>
+        <Icon className="size-[22px] text-black" strokeWidth={2} />
+        <span className="mt-8 block">
+          <span className="block text-[15px] font-bold leading-5 text-black">{title}</span>
+          <span className="mt-1 block text-[13px] font-medium leading-snug text-black/70">{description}</span>
+        </span>
       </Link>
     </NavigationMenuLink>
+  );
+}
+
+type CompactCardProps = {
+  title: string;
+  description: string;
+  href: string;
+  accent: Accent;
+};
+
+/* Small card used inside the stacked column: bold title + one-line
+   description, no big icon. */
+function CompactCard({ title, description, href, accent }: CompactCardProps) {
+  return (
+    <NavigationMenuLink asChild>
+      <Link href={href} className={cn(cardBase, "h-full justify-center p-5", accentFill[accent])}>
+        <span className="block text-[15px] font-bold leading-5 text-black">{title}</span>
+        <span className="mt-1 block text-[13px] font-medium leading-snug text-black/70">{description}</span>
+      </Link>
+    </NavigationMenuLink>
+  );
+}
+
+type SubItem = { title: string; description: string; href: string; accent: Accent };
+
+/* Stacked column of 2–3 compact sub-items, equal-height with the cards beside it. */
+function StackedColumn({ items }: { items: SubItem[] }) {
+  return (
+    <div className="flex h-full basis-0 grow-[1.1] flex-col gap-3">
+      {items.map((item) => (
+        <div key={item.title} className="flex grow flex-col">
+          <CompactCard title={item.title} description={item.description} href={item.href} accent={item.accent} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* Shared panel shell: centered, generous width, one horizontal row of cards. */
+function MenuPanel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="w-[1140px] overflow-hidden rounded-[24px] border border-black/10 bg-white p-3 text-black shadow-[0_24px_60px_-28px_rgba(0,0,0,0.3)]">
+      <div className="flex items-stretch gap-3">{children}</div>
+    </div>
   );
 }
 
 /* ── Features mega-menu ─────────────────────────────────────────────────── */
 
-const featureRows: IconRow[] = [
-  {
-    icon: Inbox,
-    label: "Inbox",
-    tag: "Email, upload, photo",
-    href: "/dashboard/inbox",
-  },
-  {
-    icon: ListChecks,
-    label: "Processing Queue",
-    tag: "Grouped by status",
-    href: "/dashboard/client",
-  },
-  {
-    icon: Columns2,
-    label: "Review Board",
-    tag: "Side-by-side check",
-    href: "/dashboard/client",
-  },
-  {
-    icon: Brain,
-    label: "Vendor Memory",
-    tag: "Learns each supplier",
-    href: "/for-accountants-and-bookkeepers/batch-review-board",
-  },
-  {
-    icon: ShieldAlert,
-    label: "Duplicate Detection",
-    tag: "Catches anomalies",
-    href: "/dashboard/client",
-  },
-  {
-    icon: GitBranch,
-    label: "Approval Workflows",
-    tag: "Clean sign-off",
-    href: "/for-accountants-and-bookkeepers/team-review",
-  },
-];
-
 function FeaturesMegaMenu() {
   return (
-    <div className="w-[900px] overflow-hidden rounded-[24px] border border-black/10 bg-white text-black shadow-[0_24px_60px_-28px_rgba(0,0,0,0.3)]">
-      <div className="grid grid-cols-[1fr_320px]">
-        <section className="p-6">
-          <MenuEyebrow>The workflow</MenuEyebrow>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            {featureRows.map((row) => (
-              <IconRowLink key={row.label} row={row} />
-            ))}
-          </div>
-        </section>
-
-        <section className="bg-[#f7f3e9] p-6">
-          <MenuEyebrow>Why AxLiner</MenuEyebrow>
-          <div className="mt-4 space-y-3.5">
-            <Link
-              href="/for-accountants-and-bookkeepers/batch-review-board"
-              className="group block rounded-[16px] border border-black/10 bg-white p-4 text-black transition-colors hover:border-black/25"
-            >
-              <span className="flex size-11 items-center justify-center text-black">
-                <Columns2 className="size-[22px]" strokeWidth={2} />
-              </span>
-              <span className="mt-3.5 block text-[17px] font-bold leading-5">Batch Review Board</span>
-              <span className="mt-1 block text-[13px] font-medium leading-tight text-black/55">
-                Fix exceptions before export
-              </span>
-            </Link>
-            <Link
-              href="/ocr"
-              className="group block rounded-[16px] border border-black/10 bg-white p-4 text-black transition-colors hover:border-black/25"
-            >
-              <span className="flex size-11 items-center justify-center text-black">
-                <ScanLine className="size-[22px]" strokeWidth={2} />
-              </span>
-              <span className="mt-3.5 block text-[17px] font-bold leading-5">OCR engine</span>
-              <span className="mt-1 block text-[13px] font-medium leading-tight text-black/55">
-                Reads handwriting, photos, receipts
-              </span>
-            </Link>
-          </div>
-        </section>
-      </div>
-
-      <div className="flex items-center gap-4 border-t border-black/10 bg-white px-6 py-4">
-        <RefreshCcw className="size-7 shrink-0 text-black" strokeWidth={2} />
-        <span className="min-w-0">
-          <span className="block text-[16px] font-bold leading-5 text-black">Accounting Sync</span>
-          <span className="mt-0.5 block text-[13px] font-medium leading-tight text-black/55">
-            One-click to QuickBooks Online
-          </span>
-        </span>
-        <Link
-          href="/dashboard/integrations"
-          className="ml-auto inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-[var(--brand-green)] px-5 text-[15px] font-bold text-black shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_1px_3px_0_rgba(0,0,0,0.12)] transition-colors hover:bg-[var(--brand-green-hover)]"
-        >
-          Connect <ArrowRight className="size-4" />
-        </Link>
-      </div>
-    </div>
+    <MenuPanel>
+      <FeaturedCard
+        icon={Columns2}
+        title="Batch review board"
+        description="Fix every exception before export."
+        href="/for-accountants-and-bookkeepers/batch-review-board"
+        accent="brown"
+      />
+      <StackedColumn
+        items={[
+          { title: "Inbox", description: "Email, upload, or photo intake.", href: "/dashboard/inbox", accent: "cyan" },
+          { title: "Processing queue", description: "Every batch grouped by status.", href: "/dashboard/client", accent: "cyan" },
+          {
+            title: "Vendor memory",
+            description: "Learns each supplier as you go.",
+            href: "/for-accountants-and-bookkeepers/batch-review-board",
+            accent: "cyan",
+          },
+        ]}
+      />
+      <StandaloneCard
+        icon={ShieldAlert}
+        title="Duplicate detection"
+        description="Catches repeats and anomalies."
+        href="/dashboard/client"
+        accent="cyan"
+      />
+      <StandaloneCard
+        icon={RefreshCcw}
+        title="Publish to QuickBooks"
+        description="Reviewed drafts, one click out."
+        href="/dashboard/integrations"
+        accent="brown"
+      />
+      <StandaloneCard
+        icon={ScanLine}
+        title="OCR engine"
+        description="Reads handwriting and photos."
+        href="/ocr"
+        accent="cyan"
+      />
+    </MenuPanel>
   );
 }
 
@@ -213,174 +200,93 @@ const primaryAudienceIcons: Record<string, LucideIcon> = {
   "accounting-practices": Building2,
 };
 
-function PrimaryAudienceLink({ solution }: { solution: AudienceSolution }) {
-  const Icon = primaryAudienceIcons[solution.slug] ?? UserRound;
-
-  return (
-    <NavigationMenuLink asChild>
-      <Link
-        href={audienceSolutionHref(solution.slug)}
-        className="group flex flex-row items-center gap-3.5 rounded-[16px] border border-black/10 bg-[#f7f3e9] px-4 py-3.5 text-black outline-none transition-colors hover:border-black/25 focus-visible:ring-2 focus-visible:ring-black/15"
-      >
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-[12px] bg-white text-black">
-          <Icon className="size-5" />
-        </span>
-        <span className="text-[16px] font-bold leading-5">{solution.menuLabel}</span>
-        <ArrowRight className="ml-auto size-4 shrink-0 text-black/45 transition-transform group-hover:translate-x-0.5" />
-      </Link>
-    </NavigationMenuLink>
-  );
-}
-
-function SecondaryAudienceLink({ solution }: { solution: AudienceSolution }) {
-  return (
-    <NavigationMenuLink asChild>
-      <Link
-        href={audienceSolutionHref(solution.slug)}
-        className="group flex flex-row items-center gap-2 rounded-[11px] px-2.5 py-2 text-[15px] font-semibold leading-5 text-black outline-none transition-colors hover:bg-black/[0.05] focus-visible:ring-2 focus-visible:ring-black/15"
-      >
-        {solution.menuLabel}
-        <ArrowRight className="ml-auto size-3.5 shrink-0 opacity-35 transition-[opacity,transform] group-hover:translate-x-0.5 group-hover:opacity-100" />
-      </Link>
-    </NavigationMenuLink>
-  );
-}
-
-type IntegrationCardProps = {
-  asset: string;
-  assetAlt: string;
-  label: string;
-  href: string;
-  className: string;
-};
-
-function IntegrationCard({ asset, assetAlt, label, href, className }: IntegrationCardProps) {
-  return (
-    <NavigationMenuLink asChild>
-      <Link
-        href={href}
-        className={cn(
-          "group flex items-center gap-4 rounded-[16px] px-5 py-4 text-black outline-none transition-colors focus-visible:ring-2 focus-visible:ring-black/15",
-          className,
-        )}
-      >
-        <Image src={asset} alt={assetAlt} width={120} height={44} className="h-10 w-auto object-contain" />
-        <span className="text-[17px] font-bold leading-5">{label}</span>
-        <ArrowRight className="ml-auto size-4 shrink-0 text-black/40 transition-transform group-hover:translate-x-0.5" />
-      </Link>
-    </NavigationMenuLink>
-  );
-}
-
 function AudienceMegaMenu() {
+  const featured = primaryAudienceSolutions[0];
+  const FeaturedIcon = primaryAudienceIcons[featured.slug] ?? UserRound;
+  const second = primaryAudienceSolutions[1];
+
+  // Re-render the existing audience data as the same card-grid + hover-fill.
+  const prepare = audienceSolutionGroups[0];
+  const review = audienceSolutionGroups[1];
+  const finish = audienceSolutionGroups[2];
+
+  const stackedSlugs: SubItem[] = [...prepare.slugs, ...review.slugs.slice(0, 1)].map((slug, i): SubItem => {
+    const s = getAudienceSolutionBySlug(slug);
+    return {
+      title: s.menuLabel,
+      description: s.eyebrow,
+      href: audienceSolutionHref(slug),
+      accent: i === 1 ? "brown" : "cyan",
+    };
+  });
+
+  const finishCards = finish.slugs.map((slug) => getAudienceSolutionBySlug(slug));
+
   return (
-    <div className="w-[940px] overflow-hidden rounded-[24px] border border-black/10 bg-white text-black shadow-[0_24px_60px_-28px_rgba(0,0,0,0.3)]">
-      <div className="grid grid-cols-[260px_1fr]">
-        <section className="border-r border-black/10 p-6">
-          <MenuEyebrow>For your practice</MenuEyebrow>
-          <div className="mt-4 space-y-2.5">
-            {primaryAudienceSolutions.map((solution) => (
-              <PrimaryAudienceLink key={solution.slug} solution={solution} />
-            ))}
-          </div>
-        </section>
-
-        <section className="p-6">
-          <MenuEyebrow>Accounting workflow</MenuEyebrow>
-          <div className="mt-4 grid grid-cols-3 gap-4">
-            {audienceSolutionGroups.map((group) => {
-              const Icon = group.icon;
-
-              return (
-                <div
-                  key={group.label}
-                  className="rounded-[16px] border border-black/10 bg-white p-3.5"
-                >
-                  <div className="flex items-center gap-2.5 border-b border-black/10 pb-3">
-                    <span className="flex size-8 items-center justify-center text-black">
-                      <Icon className="size-4" />
-                    </span>
-                    <p className="text-[15px] font-bold leading-5 text-black">{group.label}</p>
-                  </div>
-                  <div className="mt-2.5 space-y-0.5">
-                    {group.slugs.map((slug) => (
-                      <SecondaryAudienceLink key={slug} solution={getAudienceSolutionBySlug(slug)} />
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4 border-t border-black/10 bg-white p-5">
-        <IntegrationCard
-          asset="/integrations/quickbooks.png"
-          assetAlt="QuickBooks"
-          label="QuickBooks"
-          href="/dashboard/integrations"
-          className="bg-[var(--brand-green)] hover:bg-[var(--brand-green-hover)]"
+    <MenuPanel>
+      <FeaturedCard
+        icon={FeaturedIcon}
+        title={featured.menuLabel}
+        description="A calm path from folder to reviewed books."
+        href={audienceSolutionHref(featured.slug)}
+        accent="brown"
+      />
+      <StackedColumn items={stackedSlugs} />
+      <StandaloneCard
+        icon={primaryAudienceIcons[second.slug] ?? Building2}
+        title={second.menuLabel}
+        description="Intake to reviewer sign-off, visible."
+        href={audienceSolutionHref(second.slug)}
+        accent="cyan"
+      />
+      {finishCards.map((s, i) => (
+        <StandaloneCard
+          key={s.slug}
+          icon={finish.icon}
+          title={s.menuLabel}
+          description={s.eyebrow}
+          href={audienceSolutionHref(s.slug)}
+          accent={i === 0 ? "cyan" : "brown"}
         />
-        <IntegrationCard
-          asset="/integrations/xero.png"
-          assetAlt="Xero"
-          label="Xero export"
-          href="/dashboard/integrations"
-          className="bg-[#f7f3e9] hover:bg-[#efe7d4]"
-        />
-      </div>
-    </div>
+      ))}
+    </MenuPanel>
   );
 }
 
 /* ── Resources dropdown ─────────────────────────────────────────────────── */
 
-const resourcePrimary: IconRow[] = [
-  {
-    icon: FileText,
-    label: "Blog",
-    tag: "Playbooks & guides",
-    href: "/blogs",
-  },
-  {
-    icon: GraduationCap,
-    label: "Learn AxLiner",
-    tag: "Walkthroughs",
-    href: "/blogs",
-  },
-];
-
-const resourceAdditional: { icon: LucideIcon; label: string; href: string }[] = [
-  { icon: ScrollText, label: "Changelog", href: "#" },
-  { icon: Wrench, label: "Tools", href: "#" },
-  { icon: Gift, label: "Affiliate program", href: "#" },
-  { icon: LifeBuoy, label: "Help and support", href: "/contact" },
-];
-
 function ResourcesMenu() {
   return (
-    <div className="w-[680px] overflow-hidden rounded-[24px] border border-black/10 bg-white text-black shadow-[0_24px_60px_-28px_rgba(0,0,0,0.3)]">
-      <div className="grid grid-cols-[1fr_270px]">
-        <section className="p-6">
-          <MenuEyebrow>Learn</MenuEyebrow>
-          <div className="mt-4 space-y-2">
-            {resourcePrimary.map((row) => (
-              <IconRowLink key={row.label} row={row} />
-            ))}
-          </div>
-        </section>
-
-        <section className="bg-[#f7f3e9] p-6">
-          <MenuEyebrow>Additional resources</MenuEyebrow>
-          <div className="mt-4 space-y-1">
-            {resourceAdditional.map((item) => (
-              <TextSubLink key={item.label} icon={item.icon} label={item.label} href={item.href} />
-            ))}
-          </div>
-        </section>
-      </div>
-    </div>
+    <MenuPanel>
+      <FeaturedCard
+        icon={FileText}
+        title="Blog"
+        description="Playbooks and guides for the close."
+        href="/blogs"
+        accent="brown"
+      />
+      <StackedColumn
+        items={[
+          { title: "Learn AxLiner", description: "Short product walkthroughs.", href: "/blogs", accent: "cyan" },
+          { title: "Changelog", description: "What shipped, recently.", href: "#", accent: "cyan" },
+          { title: "Tools", description: "Free utilities for bookkeepers.", href: "#", accent: "brown" },
+        ]}
+      />
+      <StandaloneCard
+        icon={Gift}
+        title="Affiliate program"
+        description="Earn by referring practices."
+        href="#"
+        accent="cyan"
+      />
+      <StandaloneCard
+        icon={LifeBuoy}
+        title="Help and support"
+        description="Reach the team directly."
+        href="/contact"
+        accent="cyan"
+      />
+    </MenuPanel>
   );
 }
 
@@ -433,13 +339,13 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
         </Link>
 
         <div className="hidden flex-1 items-center justify-center lg:flex">
-          <NavigationMenu viewport={false}>
+          <NavigationMenu viewport={false} delayDuration={0} skipDelayDuration={0}>
             <NavigationMenuList className="gap-0">
               <NavigationMenuItem>
                 <NavigationMenuTrigger className={dropdownTrigger}>
                   Features
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="left-0 xl:left-0">
+                <NavigationMenuContent className="-left-[40px] xl:-left-[80px]">
                   <FeaturesMegaMenu />
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -448,7 +354,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
                 <NavigationMenuTrigger className={dropdownTrigger}>
                   For Accountants &amp; Bookkeepers
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="-left-[240px] xl:-left-[180px] 2xl:-left-[120px]">
+                <NavigationMenuContent className="-left-[300px] xl:-left-[320px]">
                   <AudienceMegaMenu />
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -457,7 +363,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
                 <NavigationMenuTrigger className={dropdownTrigger}>
                   Resources
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="-left-[300px] xl:-left-[260px]">
+                <NavigationMenuContent className="-left-[560px] xl:-left-[560px]">
                   <ResourcesMenu />
                 </NavigationMenuContent>
               </NavigationMenuItem>
