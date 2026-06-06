@@ -420,7 +420,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
   return (
     <nav
       className={cn(
-        "fixed inset-x-0 top-0 z-50 h-[84px] border-b",
+        "fixed inset-x-0 top-[var(--axn-bar,0px)] z-50 h-[84px] border-b",
         "transition-[background-color,border-color,box-shadow] duration-200",
         scrolled
           ? "border-black/10 bg-white/95 shadow-[0_1px_0_0_rgba(0,0,0,0.06)] backdrop-blur-xl"
@@ -486,11 +486,11 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
             <div className="h-11 w-[280px]" aria-hidden="true" />
           ) : isAuthenticated ? (
             <>
-              <Button variant="surface" asChild className="h-11 px-5 text-[15px] font-semibold">
-                <Link href="/contact">Talk to us</Link>
-              </Button>
-              <Button variant="glossy" asChild className="h-11 px-5 text-[15px] font-bold">
+              <Button variant="glossy" asChild className="h-11 px-5 text-[15px] font-bold bg-[var(--brand-brown)] border-[var(--brand-brown)] hover:border-black">
                 <Link href="/dashboard">Dashboard</Link>
+              </Button>
+              <Button variant="ghost" asChild className="h-11 px-5 text-[15px] font-semibold bg-white text-black shadow-none border border-black/10 hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4">
+                <Link href="/contact">Talk to us</Link>
               </Button>
             </>
           ) : (
@@ -502,11 +502,11 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
               >
                 <Link href="/sign-in?next=%2Fdashboard%2Fclient">Log in</Link>
               </Button>
-              <Button variant="surface" asChild className="h-11 px-5 text-[15px] font-semibold">
-                <Link href="/contact">Talk to us</Link>
-              </Button>
-              <Button variant="glossy" asChild className="h-11 px-5 text-[15px] font-bold">
+              <Button variant="glossy" asChild className="h-11 px-5 text-[15px] font-bold bg-[var(--brand-brown)] border-[var(--brand-brown)] hover:border-black">
                 <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign up</Link>
+              </Button>
+              <Button variant="ghost" asChild className="h-11 px-5 text-[15px] font-semibold bg-white text-black shadow-none border border-black/10 hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4">
+                <Link href="/contact">Talk to us</Link>
               </Button>
             </>
           )}

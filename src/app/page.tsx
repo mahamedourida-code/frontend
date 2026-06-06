@@ -316,7 +316,7 @@ export default function Home() {
       <MarketingNavBar onSectionClick={scrollToSection} />
 
       {/* Hero Section */}
-      <main className="relative z-10">
+      <main className="relative z-10 pt-[var(--axn-bar,0px)]">
         {/* ── 1 · HERO (white) ── */}
         <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden bg-white">
           <div
