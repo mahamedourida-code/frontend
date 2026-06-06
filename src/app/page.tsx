@@ -19,6 +19,7 @@ import { ScrollGrowSection } from "@/components/landing/ScrollGrowSection";
 import NextLink from "next/link";
 import { GoogleOneTap } from "@/components/GoogleOneTap";
 import { MarketingNavBar } from "@/components/MarketingNavBar";
+import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { useAuth } from "@/hooks/useAuth";
 
 const TestimonialsMarquee = dynamic(
@@ -311,6 +312,7 @@ export default function Home() {
 
   return (
     <div className="ax-marketing-page relative min-h-screen bg-white text-neutral-950">
+      <AnnouncementBar />
       <MarketingNavBar onSectionClick={scrollToSection} />
 
       {/* Hero Section */}
@@ -334,7 +336,7 @@ export default function Home() {
                 The review layer between{" "}
                 <br className="hidden sm:block" />
                 messy invoices and your{" "}
-                <TypewriterWord words={["books", "ledger", "close"]} className="font-bold text-[var(--brand-brown)]" />.
+                <span className="font-bold text-[var(--brand-brown)]">books</span>.
               </h1>
               <p className="ax-body ax-marketing-lead mx-auto mt-6 font-semibold text-neutral-950">
                 AxLiner reads the documents other tools refuse: handwriting, phone photos, and wrinkled receipts. It checks them and gets every entry one keystroke from QuickBooks Online. You stay in control.
@@ -536,6 +538,9 @@ export default function Home() {
         </div>
         </div>
 
+        {/* ── Scroll-grow cinematic section (white), before the features band ── */}
+        <ScrollGrowSection />
+
         {/* ── 4 · Why Choose Us — white band, brown cycling typewriter ── */}
         <div className="relative isolate overflow-hidden">
           <div
@@ -557,7 +562,7 @@ export default function Home() {
                 </span>
                 <span className="block">
                   into reviewed{" "}
-                  <TypewriterWord words={["accounting work", "ledger entries", "draft bills"]} className="font-bold text-[var(--brand-brown)]" />.
+                  <span className="font-bold">accounting work</span>.
                 </span>
               </h2>
             </div>
@@ -567,9 +572,6 @@ export default function Home() {
         </ScrollAnimatedSection>
           </div>
         </div>
-
-        {/* ── 5 · Scroll-grow cinematic section (white) ── */}
-        <ScrollGrowSection />
 
         {/* ── 6 · Verifiable, not invisible (white) ── */}
         <VerifiableShowcase />
@@ -591,7 +593,7 @@ export default function Home() {
             >
               <h2 className="ax-h2 ax-marketing-section-title mx-auto max-w-3xl font-bold text-neutral-950">
                 Works with the tools you{" "}
-                <TypewriterWord words={["already use", "trust", "live in"]} className="font-bold text-[var(--brand-brown)]" />.
+                <span className="font-bold">already use</span>.
               </h2>
               <p className="ax-body ax-marketing-body mx-auto mt-5 max-w-2xl font-semibold text-neutral-950">
                 Pull documents in from email and Drive, publish reviewed entries straight to your accounting system. No new place to learn.
@@ -656,7 +658,7 @@ export default function Home() {
               <p className="ax-eyebrow text-[var(--brand-brown)]">Security</p>
               <h2 className="ax-h2 ax-marketing-section-title mt-3 font-bold text-neutral-950">
                 Your data never leaves the review board{" "}
-                <TypewriterWord words={["uninvited", "without you", "unreviewed"]} className="font-bold text-[var(--brand-brown)]" />.
+                <span className="font-bold text-[var(--brand-brown)]">uninvited</span>.
               </h2>
               <p className="ax-body ax-marketing-body mx-auto mt-5 max-w-2xl font-semibold text-neutral-950">
                 Documents are processed and deleted after export. No training on your data, no persistent storage beyond your retention window, no third-party sharing — built around GDPR, SOC 2, and HIPAA-conscious workflows from day one.
@@ -721,7 +723,7 @@ export default function Home() {
               <p className="ax-eyebrow text-[var(--brand-brown)]">FAQ</p>
               <h3 className="ax-h2 ax-marketing-section-title mt-3 font-bold text-neutral-950">
                 Questions we hear from{" "}
-                <TypewriterWord words={["bookkeepers", "accountants", "controllers"]} className="font-bold text-[var(--brand-brown)]" />.
+                <span className="font-bold">bookkeepers</span>.
               </h3>
             </div>
 

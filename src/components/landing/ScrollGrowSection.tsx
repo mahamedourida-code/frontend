@@ -48,7 +48,7 @@ export function ScrollGrowSection() {
   const textY = useTransform(p, [0, 1], [52, -14], { clamp: true })
 
   return (
-    <section ref={ref} className="relative h-[150vh] bg-white">
+    <section ref={ref} className="relative h-[112vh] bg-white">
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         {/* Growing image: left-anchored panel -> full-bleed */}
         <motion.div
