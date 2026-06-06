@@ -412,7 +412,7 @@ export default function Home() {
                   Throw us the whole folder.
                 </h3>
                 <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
-                  Invoices, receipts, bank statements: drop them all at once. AxLiner classifies each file automatically and extracts on the right schema. No sorting, no separate uploads.
+                  Invoices, receipts, statements — drop them all at once. AxLiner sorts and extracts each one on the right schema.
                 </p>
                 <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
                   See how it works →
@@ -433,10 +433,7 @@ export default function Home() {
                   See everything before it touches QuickBooks.
                 </h3>
                 <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
-                  Every extracted document lands in your review board before export. Original image on the left, editable cells on the right. Click to correct, tab to move on.
-                </p>
-                <p className="ax-body ax-marketing-body mt-5 font-bold text-neutral-950">
-                  AxLiner prepares it. You approve it.
+                  Every document lands in your review board first: source on the left, editable fields on the right. AxLiner prepares it, you approve it.
                 </p>
                 <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
                   Explore the review board →
@@ -451,7 +448,7 @@ export default function Home() {
                   The messy stuff. WhatsApp photos. Handwritten receipts.
                 </h3>
                 <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
-                  Other tools claim accuracy on clean PDFs. AxLiner was built for the document your client photographed in bad light and sent over WhatsApp. Per-field confidence flags tell you exactly which cells to check.
+                  Built for the receipt photographed in bad light, not just clean PDFs. Confidence flags show you exactly which fields to check.
                 </p>
                 <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
                   Try with a handwritten document →
@@ -472,7 +469,7 @@ export default function Home() {
                   Reviewed, coded, posted. No copy-pasting.
                 </h3>
                 <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
-                  Connect your QuickBooks Online company. Code invoices with vendor, account, and tax. Publish a draft Bill with the original document attached. If anything fails, retry without creating a duplicate.
+                  Code each bill with vendor, account, and tax, then publish a draft to QuickBooks with the document attached.
                 </p>
                 <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-black bg-white px-8 text-sm font-bold text-black shadow-sm transition-colors hover:bg-black hover:text-white">
                   Start free

@@ -73,7 +73,7 @@ function IconRowLink({ row }: { row: IconRow }) {
         href={row.href}
         className="group grid grid-cols-[48px_1fr] items-center gap-4 rounded-[16px] p-3.5 text-black outline-none transition-colors hover:bg-black/[0.04] focus-visible:ring-2 focus-visible:ring-black/15"
       >
-        <span className="flex size-12 shrink-0 items-center justify-center rounded-[13px] bg-[var(--brand-green)] text-black">
+        <span className="flex size-12 shrink-0 items-center justify-center text-black">
           <Icon className="size-[22px]" strokeWidth={2} />
         </span>
         <span className="min-w-0">
@@ -163,7 +163,7 @@ function FeaturesMegaMenu() {
               href="/for-accountants-and-bookkeepers/batch-review-board"
               className="group block rounded-[16px] border border-black/10 bg-white p-4 text-black transition-colors hover:border-black/25"
             >
-              <span className="flex size-11 items-center justify-center rounded-[13px] bg-[var(--brand-green)] text-black">
+              <span className="flex size-11 items-center justify-center text-black">
                 <Columns2 className="size-[22px]" strokeWidth={2} />
               </span>
               <span className="mt-3.5 block text-[17px] font-bold leading-5">Batch Review Board</span>
@@ -175,7 +175,7 @@ function FeaturesMegaMenu() {
               href="/ocr"
               className="group block rounded-[16px] border border-black/10 bg-white p-4 text-black transition-colors hover:border-black/25"
             >
-              <span className="flex size-11 items-center justify-center rounded-[13px] bg-[var(--brand-green)] text-black">
+              <span className="flex size-11 items-center justify-center text-black">
                 <ScanLine className="size-[22px]" strokeWidth={2} />
               </span>
               <span className="mt-3.5 block text-[17px] font-bold leading-5">OCR engine</span>
@@ -188,7 +188,7 @@ function FeaturesMegaMenu() {
       </div>
 
       <div className="flex items-center gap-4 border-t border-black/10 bg-white px-6 py-4">
-        <Image src="/integrations/quickbooks.png" alt="QuickBooks" width={56} height={36} className="h-8 w-auto object-contain" />
+        <RefreshCcw className="size-7 shrink-0 text-black" strokeWidth={2} />
         <span className="min-w-0">
           <span className="block text-[16px] font-bold leading-5 text-black">Accounting Sync</span>
           <span className="mt-0.5 block text-[13px] font-medium leading-tight text-black/55">
@@ -237,7 +237,7 @@ function SecondaryAudienceLink({ solution }: { solution: AudienceSolution }) {
     <NavigationMenuLink asChild>
       <Link
         href={audienceSolutionHref(solution.slug)}
-        className="group flex flex-row items-center gap-2 rounded-[11px] px-2.5 py-2 text-[15px] font-semibold leading-5 text-black outline-none transition-colors hover:bg-[var(--brand-green)] focus-visible:ring-2 focus-visible:ring-black/15"
+        className="group flex flex-row items-center gap-2 rounded-[11px] px-2.5 py-2 text-[15px] font-semibold leading-5 text-black outline-none transition-colors hover:bg-black/[0.05] focus-visible:ring-2 focus-visible:ring-black/15"
       >
         {solution.menuLabel}
         <ArrowRight className="ml-auto size-3.5 shrink-0 opacity-35 transition-[opacity,transform] group-hover:translate-x-0.5 group-hover:opacity-100" />
@@ -297,7 +297,7 @@ function AudienceMegaMenu() {
                   className="rounded-[16px] border border-black/10 bg-white p-3.5"
                 >
                   <div className="flex items-center gap-2.5 border-b border-black/10 pb-3">
-                    <span className="flex size-8 items-center justify-center rounded-[10px] bg-[var(--brand-green)] text-black">
+                    <span className="flex size-8 items-center justify-center text-black">
                       <Icon className="size-4" />
                     </span>
                     <p className="text-[15px] font-bold leading-5 text-black">{group.label}</p>
@@ -489,7 +489,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
               <Button variant="glossy" asChild className="h-11 px-5 text-[15px] font-bold bg-[var(--brand-brown)] border-[var(--brand-brown)] hover:border-black">
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
-              <Button variant="ghost" asChild className="h-11 px-5 text-[15px] font-semibold bg-white text-black shadow-none border border-black/10 hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4">
+              <Button variant="ghost" asChild className="h-11 px-5 text-[15px] font-semibold bg-white text-black shadow-none border-2 border-black hover:bg-black hover:text-white">
                 <Link href="/contact">Talk to us</Link>
               </Button>
             </>
@@ -498,14 +498,14 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
               <Button
                 asChild
                 variant="ghost"
-                className="h-11 px-4 text-[15px] font-semibold text-black hover:bg-black/[0.05] hover:text-black"
+                className="h-11 px-4 text-[15px] font-semibold text-black hover:bg-transparent hover:text-[var(--brand-green)]"
               >
                 <Link href="/sign-in?next=%2Fdashboard%2Fclient">Log in</Link>
               </Button>
               <Button variant="glossy" asChild className="h-11 px-5 text-[15px] font-bold bg-[var(--brand-brown)] border-[var(--brand-brown)] hover:border-black">
                 <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign up</Link>
               </Button>
-              <Button variant="ghost" asChild className="h-11 px-5 text-[15px] font-semibold bg-white text-black shadow-none border border-black/10 hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4">
+              <Button variant="ghost" asChild className="h-11 px-5 text-[15px] font-semibold bg-white text-black shadow-none border-2 border-black hover:bg-black hover:text-white">
                 <Link href="/contact">Talk to us</Link>
               </Button>
             </>
