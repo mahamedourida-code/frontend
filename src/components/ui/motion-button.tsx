@@ -26,32 +26,32 @@ function rulesFor(variant: ButtonProps["variant"], size: ButtonProps["size"]): G
     case "critical":
     case "glossy":
       return {
-        hover: { scale: 1.025, boxShadow: "0 4px 20px rgba(5, 150, 105, 0.24)" },
-        tap: { scale: 0.96 },
+        hover: {},
+        tap: {},
       }
     case "clay":
     case "lime":
       return {
-        hover: { scale: 1.025 },
-        tap: { scale: 0.96 },
+        hover: {},
+        tap: {},
       }
     case "warm":
     case "surface":
     case "ink":
     case "reviewed":
       return {
-        hover: { scale: 1.015 },
-        tap: { scale: 0.96 },
+        hover: {},
+        tap: {},
       }
     case "destructive":
       return {
-        hover: { scale: 1.015 },
-        tap: { scale: 0.95, filter: "brightness(1.08)" },
+        hover: {},
+        tap: {},
       }
     default:
       return {
-        hover: { scale: 1.015 },
-        tap: { scale: 0.96 },
+        hover: {},
+        tap: {},
       }
   }
 }

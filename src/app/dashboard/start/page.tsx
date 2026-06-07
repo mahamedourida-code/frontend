@@ -31,7 +31,6 @@ export default function StartPage() {
     <DashboardShell activeItem="overview" title="Workspace" user={user} showBack={false}>
       <PageHeader
         title="Where do you want to go?"
-        description="Throw us the whole folder — then jump straight into a workflow or start a fresh batch."
       />
       <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
         <WorkflowGraph />

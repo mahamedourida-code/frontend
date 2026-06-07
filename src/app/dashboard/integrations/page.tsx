@@ -45,10 +45,7 @@ function IntegrationsContent() {
 
   return (
     <DashboardShell activeItem="integrations" title="Integrations" user={user}>
-      <PageHeader
-        title="Integrations"
-        description="Choose where reviewed draft bills publish and keep accounting lists in sync."
-      />
+      <PageHeader title="Integrations" />
       <div className="max-w-3xl space-y-8">
         <section className="flex flex-col items-center gap-5 px-6 pt-6 pb-2 text-center sm:pt-10">
           <Symbol name="firstsight-sources-empty" size="hero" className="h-56 w-56 sm:h-64 sm:w-64" alt="" />
@@ -60,8 +57,7 @@ function IntegrationsContent() {
               No sources connected yet
             </h2>
             <p className="text-sm leading-relaxed text-foreground/70">
-              Link QuickBooks below, then sync your suppliers, accounts, and VAT codes. Once
-              connected, every reviewed draft bill publishes straight to your books.
+              Connect QuickBooks to publish reviewed draft bills.
             </p>
           </div>
         </section>

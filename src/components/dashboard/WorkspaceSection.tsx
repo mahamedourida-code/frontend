@@ -56,7 +56,7 @@ export function WorkspaceSection({
     <section
       id={id}
       className={cn(
-        "relative overflow-hidden rounded-md border border-border bg-card shadow-sm",
+        "relative overflow-hidden rounded-md border border-border bg-card shadow-none",
         toneAccent[tone],
         className,
       )}
@@ -81,7 +81,7 @@ export function WorkspaceSection({
             ) : null}
           </div>
         </div>
-        {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
+        {actions ? <div className="flex shrink-0 items-center gap-3">{actions}</div> : null}
       </header>
       <div className={cn("px-4 py-4 sm:px-5", contentClassName)}>{children}</div>
     </section>

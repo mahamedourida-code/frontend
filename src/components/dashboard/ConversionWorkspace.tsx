@@ -681,7 +681,7 @@ export function SelectedFilesTray({
                   if (previewUrl) setSelectedPreview({ url: previewUrl, name: file.name })
                 }
               }}
-              className="group cursor-pointer rounded-lg border border-border bg-card/70 p-2 outline-none transition hover:-translate-y-0.5 hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary"
+              className="group cursor-pointer rounded-lg border border-border bg-card/70 p-2 outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary"
             >
               <div className="relative mb-2 aspect-[4/3] overflow-hidden rounded-lg border border-border bg-white">
                 {previewUrl ? (
@@ -701,7 +701,7 @@ export function SelectedFilesTray({
                     setSelectedPreview(null)
                   }}
                   disabled={isProcessing}
-                  className="absolute right-1 top-1 h-7 w-7 bg-card/88 text-foreground opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-accent group-hover:opacity-100"
+                  className="absolute right-1 top-1 h-7 w-7 bg-card/88 text-foreground opacity-0 shadow-none backdrop-blur transition-opacity hover:bg-accent group-hover:opacity-100"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
@@ -1974,7 +1974,7 @@ export function ResultActions({
     <>
     <div className="space-y-2.5">
       {isComplete ? (
-        <div className="sticky top-[4.5rem] z-20 flex flex-wrap items-center gap-2 rounded-md border border-border bg-card/95 p-2 shadow-xs backdrop-blur-xl">
+        <div className="sticky top-[4.5rem] z-20 flex flex-wrap items-center gap-3 rounded-md border border-border bg-card/95 p-2 shadow-none backdrop-blur-xl">
           <Button
             variant="ghost"
             onClick={() => {
@@ -2007,13 +2007,13 @@ export function ResultActions({
               More actions
               <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
             </summary>
-            <div className="absolute right-0 top-11 z-30 w-56 space-y-2 rounded-md border border-border bg-card p-2 shadow-lg">
+             <div className="absolute right-0 top-11 z-30 w-56 space-y-2 rounded-md border border-border bg-card p-2 shadow-none">
               {!isSaved ? (
                 <Button
                   onClick={onSaveToHistory}
                   disabled={isSaving}
                   variant="clay"
-                  className="h-9 w-full justify-start gap-2 px-3 shadow-xs"
+                  className="h-9 w-full justify-start gap-2 px-3 shadow-none"
                 >
                   {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                   Save to history
@@ -2043,7 +2043,7 @@ export function ResultActions({
                 <Button
                   variant="destructive"
                   onClick={() => void onDeleteBatch()}
-                  className="h-9 w-full justify-start gap-2 px-3 shadow-xs"
+                  className="h-9 w-full justify-start gap-2 px-3 shadow-none"
                 >
                   <Trash2 className="h-4 w-4" />
                   Delete batch
@@ -2081,7 +2081,7 @@ export function ResultActions({
         />
         <ReviewWorkflowStrip className="mb-4" />
 
-        <div className="mb-4 flex flex-wrap items-center gap-1.5">
+        <div className="mb-4 flex flex-wrap items-center gap-3">
           {([
             ["needs_review", "Needs review"],
             ["ready", "Ready"],
@@ -2091,10 +2091,10 @@ export function ResultActions({
               type="button"
               onClick={() => setResultFilter(value)}
               className={cn(
-                "inline-flex h-8 items-center gap-2 rounded-full border px-3 text-xs font-semibold transition",
+                "inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border-2 px-3 text-xs font-semibold transition-colors",
                 resultFilter === value
-                  ? "border-border bg-accent text-accent-foreground"
-                  : "border-border bg-card text-foreground hover:bg-accent"
+                  ? "border-[var(--brand-brown)] bg-[var(--brand-brown)] text-black hover:border-black hover:bg-white hover:underline hover:decoration-1 hover:underline-offset-4"
+                  : "border-black bg-white text-black hover:bg-black hover:text-white"
               )}
             >
               {label}
@@ -2107,14 +2107,14 @@ export function ResultActions({
             <summary className={cn(
               buttonVariants({ variant: "surface", size: "sm" }),
               "h-8 cursor-pointer list-none gap-1.5 px-3 text-xs [&::-webkit-details-marker]:hidden",
-              ["all", "edited", "published", "failed"].includes(resultFilter) && "border-[var(--brand-green-ring)]"
+              ["all", "edited", "published", "failed"].includes(resultFilter) && "border-[var(--brand-brown)]"
             )}>
               {["all", "edited", "published", "failed"].includes(resultFilter)
                 ? `More filters: ${resultFilter === "all" ? "All" : resultFilter[0].toUpperCase() + resultFilter.slice(1)}`
                 : "More filters"}
               <ChevronDown className="size-3.5 transition-transform group-open:rotate-180" />
             </summary>
-            <div className="absolute left-0 top-10 z-30 w-44 space-y-1 rounded-md border border-border bg-card p-1.5 shadow-lg">
+            <div className="absolute left-0 top-10 z-30 w-44 space-y-1 rounded-md border border-border bg-card p-1.5 shadow-none">
               {([
                 ["all", "All"],
                 ["edited", "Edited"],
@@ -2129,8 +2129,10 @@ export function ResultActions({
                     moreFiltersRef.current?.removeAttribute("open")
                   }}
                   className={cn(
-                    "flex h-8 w-full items-center justify-between rounded-sm px-2 text-xs font-semibold transition",
-                    resultFilter === value ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-accent"
+                    "flex h-8 w-full cursor-pointer items-center justify-between rounded-md border-2 px-2 text-xs font-semibold transition-colors",
+                    resultFilter === value
+                      ? "border-[var(--brand-brown)] bg-[var(--brand-brown)] text-black"
+                      : "border-black bg-white text-black hover:bg-black hover:text-white"
                   )}
                 >
                   {label}
@@ -2142,7 +2144,7 @@ export function ResultActions({
         </div>
 
         {/* C5 — sweep the clean pile + a hint to the keyboard sheet. */}
-        <div className="mb-4 flex flex-wrap items-center gap-2">
+        <div className="mb-4 flex flex-wrap items-center gap-3">
           {cleanReadyEntries.length ? (
             <Button
               type="button"
@@ -2150,7 +2152,7 @@ export function ResultActions({
               variant="clay"
               onClick={() => void markAllCleanReady()}
               disabled={bulkReadyBusy}
-              className="h-8 gap-2 rounded-full px-3.5 text-xs"
+              className="h-8 gap-2 rounded-md px-3.5 text-xs"
             >
               {bulkReadyBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ListChecks className="h-3.5 w-3.5" />}
               Mark {cleanReadyEntries.length} clean ready
@@ -2159,7 +2161,7 @@ export function ResultActions({
           <button
             type="button"
             onClick={() => setShortcutsOpen(true)}
-            className="ax-interactive inline-flex h-8 items-center gap-2 rounded-full border border-border bg-card px-3 text-xs font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground"
+            className="ax-interactive inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border-2 border-black bg-white px-3 text-xs font-semibold text-black transition-colors hover:bg-black hover:text-white"
           >
             <Keyboard className="h-3.5 w-3.5" />
             Shortcuts
@@ -2203,7 +2205,7 @@ export function ResultActions({
                   }
                 }}
                 className={cn(
-                  "group flex cursor-pointer flex-wrap items-center gap-x-3 gap-y-2 rounded-md border border-border bg-card px-3 py-3 text-sm shadow-xs outline-none transition duration-200 hover:border-primary/30 hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-primary sm:flex-nowrap",
+                  "group flex cursor-pointer flex-wrap items-center gap-x-3 gap-y-2 rounded-md border border-border bg-card px-3 py-3 text-sm shadow-none outline-none transition-colors duration-200 hover:border-black hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-primary sm:flex-nowrap",
                   (badge.state === "needs_review" || badge.state === "failed") && "border-l-2 border-l-[var(--brand-green-ring)]"
                 )}
                 aria-label={`${summary.identity} — ${reviewLevel.summaryLabel}, open review`}
@@ -2278,7 +2280,7 @@ export function ResultActions({
                 }
               }}
               className={cn(
-                "group cursor-pointer rounded-md border border-border bg-card p-3 shadow-sm outline-none transition duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary",
+                "group cursor-pointer rounded-md border border-border bg-card p-3 shadow-none outline-none transition-colors duration-200 hover:border-black hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-primary",
                 compact ? "min-h-[300px]" : "min-h-[375px]",
                 // Review-emphasis: a thin emerald-500 left rule makes the
                 // "needs you" pile lead the board at a glance.
@@ -2448,7 +2450,7 @@ export function ResultActions({
                 </div>
               ) : null}
 
-              <div className="mt-3 flex justify-end gap-2">
+              <div className="mt-3 flex justify-end gap-3">
                 {file.document_id && onDeleteDocument ? (
                   <Button
                     size="sm"
@@ -2533,7 +2535,7 @@ export function ResultActions({
               size="sm"
               variant="surface"
               onClick={() => setResultFilter("all")}
-              className="mt-5 h-9 rounded-full px-4 text-xs"
+              className="mt-5 h-9 rounded-md px-4 text-xs"
             >
               Show all files
             </Button>
@@ -2553,14 +2555,14 @@ export function ResultActions({
           }}
         >
           <div className="relative w-full max-w-[1240px] rounded-md border border-border bg-card p-3 shadow-xl sm:p-4">
-            <div className="absolute right-4 top-4 z-10 flex items-center gap-2">
+            <div className="absolute right-4 top-4 z-10 flex items-center gap-3">
               {comparisonFile.file_id || comparisonFile.document_id ? (
                 <details className="group relative">
                   <summary className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-9 cursor-pointer list-none gap-1.5 px-3 text-xs [&::-webkit-details-marker]:hidden")}>
                     Actions
                     <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
                   </summary>
-                  <div className="absolute right-0 top-11 z-20 w-44 space-y-2 rounded-md border border-border bg-card p-2 shadow-lg">
+                  <div className="absolute right-0 top-11 z-20 w-44 space-y-2 rounded-md border border-border bg-card p-2 shadow-none">
                     {comparisonFile.file_id ? (
                       <Button
                         size="sm"
@@ -2965,7 +2967,7 @@ export function ResultActions({
                             <button
                               type="button"
                               onClick={() => setOnlyUncertain(!collapseConfident)}
-                              className="ax-interactive inline-flex h-7 items-center gap-1.5 rounded-full border border-border bg-white px-3 text-[11px] font-semibold text-gray-700 hover:bg-gray-50"
+                              className="ax-interactive inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border-2 border-black bg-white px-3 text-[11px] font-semibold text-black hover:bg-black hover:text-white"
                             >
                               {collapseConfident ? (
                                 <>
@@ -3046,7 +3048,7 @@ export function ResultActions({
                                     <button
                                       type="button"
                                       onClick={() => setConfirmedFields(prev => ({ ...prev, [field.path]: true }))}
-                                      className="ax-interactive inline-flex h-8 shrink-0 items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 text-[11px] font-semibold text-emerald-800 hover:bg-emerald-100"
+                                      className="ax-interactive inline-flex h-8 shrink-0 cursor-pointer items-center gap-1 rounded-md border-2 border-[var(--brand-brown)] bg-[var(--brand-brown)] px-2.5 text-[11px] font-semibold text-black hover:border-black hover:bg-white hover:underline hover:decoration-1 hover:underline-offset-4"
                                       aria-label={`Confirm ${field.label}`}
                                     >
                                       <Check className="size-3.5" />
@@ -3443,7 +3445,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
               >
                 <ReviewWorkflowStrip />
 
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-3">
                   <Button
                     type="button"
                     variant="glossy"

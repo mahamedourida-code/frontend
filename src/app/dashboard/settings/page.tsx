@@ -429,7 +429,7 @@ function SettingsContent() {
 
   return (
     <DashboardShell activeItem="settings" title="Settings" user={user}>
-        <PageHeader title="Settings" description="Account, billing, accounting, vendors, and workspace preferences" />
+        <PageHeader title="Settings" />
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
           {/* Mobile Section Selector */}
           <div className="lg:hidden">
@@ -470,7 +470,7 @@ function SettingsContent() {
                             className={cn(
                               "ax-interactive relative w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm",
                               activeSection === item.id
-                                ? "bg-accent text-accent-foreground font-medium shadow-sm"
+                                ? "bg-accent text-accent-foreground font-medium shadow-none"
                                 : "text-muted-foreground hover:text-foreground hover:bg-accent"
                             )}
                           >
@@ -503,7 +503,6 @@ function SettingsContent() {
                       </div>
                       <div>
                         <CardTitle className="text-base lg:text-lg">Profile Information</CardTitle>
-                        <CardDescription className="text-xs lg:text-sm">Update your personal details</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
@@ -530,7 +529,7 @@ function SettingsContent() {
                       <p className="text-[13px] font-medium text-muted-foreground">Email cannot be changed</p>
                     </div>
 
-                    <div className="flex justify-end gap-2 lg:gap-3 pt-3 lg:pt-4 border-t">
+                    <div className="flex justify-end gap-3 lg:gap-4 pt-3 lg:pt-4 border-t">
                       <Button
                         variant="surface"
                         size="sm"
@@ -609,16 +608,13 @@ function SettingsContent() {
                         {noCredits && (
                           <div className="mt-4 rounded-xl border border-primary/20 bg-card/60 p-4 backdrop-blur">
                             <p className="text-sm font-semibold text-primary">No credits left</p>
-                            <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                              Pick a Lemon Squeezy plan to keep converting handwritten images and PDF pages.
-                            </p>
                           </div>
                         )}
 
-                        <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+                        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                           <Button
                             variant="surface"
-                            className={cn("h-11 rounded-lg", clayButton)}
+                            className={cn("h-11 rounded-md", clayButton)}
                             onClick={openBillingPortal}
                             disabled={!hasBillingPortal || billingAction === "portal"}
                           >
@@ -626,7 +622,7 @@ function SettingsContent() {
                           </Button>
                           <Button
                             variant="lime"
-                            className="h-11 rounded-lg"
+                            className="h-11 rounded-md"
                             onClick={() => window.location.assign("/pricing")}
                           >
                             {noCredits ? "Buy credits" : "Compare plans"}
@@ -639,7 +635,6 @@ function SettingsContent() {
                           <PlanSwitch className="h-7 w-7 shrink-0 text-primary" />
                           <div>
                             <h3 className="font-semibold text-foreground">Upgrade path</h3>
-                            <p className="text-sm text-muted-foreground">Checkout opens in Lemon Squeezy.</p>
                           </div>
                         </div>
 
@@ -652,21 +647,21 @@ function SettingsContent() {
                               type="button"
                               onClick={() => startCheckout(plan.checkout_key as BillingPlanKey)}
                               disabled={billingAction === plan.checkout_key || !plan.checkout_available}
-                              className="ax-interactive group flex w-full items-center justify-between gap-3 rounded-lg border border-border bg-card/50 p-4 text-left hover:border-primary/40 hover:bg-card/65 disabled:cursor-wait disabled:opacity-70"
+                              className="ax-interactive group flex w-full cursor-pointer items-center justify-between gap-3 rounded-md border-2 border-[var(--brand-brown)] bg-[var(--brand-brown)] p-4 text-left text-black hover:border-black hover:bg-white hover:underline hover:decoration-1 hover:underline-offset-4 disabled:cursor-wait disabled:opacity-70"
                             >
                               <span>
-                                <span className="block text-sm font-semibold text-foreground">
+                                <span className="block text-sm font-semibold text-black">
                                   {plan.name} {plan.interval === "year" ? "annual" : "monthly"} · {plan.price_formatted}
                                 </span>
-                                <span className="mt-1 block text-xs text-muted-foreground">{plan.included_volume}</span>
+                                <span className="mt-1 block text-xs text-black/70">{plan.included_volume}</span>
                               </span>
-                              <span className="h-2.5 w-2.5 rounded-full bg-primary shadow-[0_0_0_6px_rgb(20 83 45 / 0.12)] transition group-hover:scale-110" />
+                              <span className="h-2.5 w-2.5 rounded-full bg-black" />
                             </button>
                           ))}
                         </div>
 
                         <div className="mt-5 rounded-lg border border-border bg-card/40 p-4 text-sm text-muted-foreground">
-                          Current batch size and file limits come from the backend:
+                          Batch limits:
                           <span className="ml-1 font-bold text-foreground">
                             {limits ? `${limits.max_files_per_batch} files, ${limits.max_file_size_mb} MB each` : "loading live limits"}
                           </span>
@@ -694,7 +689,7 @@ function SettingsContent() {
                           </span>
                         </div>
                         <CardDescription className="mt-1 max-w-xl leading-5">
-                          Rules saved after confirmed invoice or receipt review. AxLiner shows these as suggestions and never posts them automatically.
+                          Saved after confirmed invoice or receipt review.
                         </CardDescription>
                       </div>
                     </div>
@@ -705,7 +700,6 @@ function SettingsContent() {
                         compact
                         icon={<Loader2 className="animate-spin h-5 w-5" />}
                         title="Loading vendors"
-                        description="Fetching your saved vendor rules"
                       />
                     ) : vendorRules.length === 0 ? (
                       <div className="flex flex-col items-center gap-5 px-6 py-10 text-center">
@@ -720,9 +714,7 @@ function SettingsContent() {
                             No remembered suppliers yet
                           </h3>
                           <p className="text-sm leading-relaxed text-foreground/70">
-                            Confirm an invoice or receipt in Review, then choose &ldquo;remember this
-                            vendor.&rdquo; AxLiner saves the coding defaults and suggests them next
-                            time the same supplier shows up.
+                            Confirm an invoice or receipt in Review to save coding defaults.
                           </p>
                         </div>
                       </div>
@@ -751,7 +743,7 @@ function SettingsContent() {
                             </p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-3">
                             <Button
                               size="sm"
                               variant="surface"
@@ -781,10 +773,10 @@ function SettingsContent() {
                               </p>
                               <p className="mt-1 text-xs text-foreground">
                                 {(rule.auto_mode || 'suggest') === 'auto_ready'
-                                  ? 'Next invoice from this vendor is pre-filled and moved to Ready for your approval. You still publish it.'
+                                  ? 'Pre-fill and move to Ready for approval.'
                                   : (rule.auto_mode || 'suggest') === 'auto_fill'
-                                    ? 'Next invoice from this vendor is pre-filled. You still confirm before publishing.'
-                                    : 'Next invoice from this vendor surfaces this rule as a suggestion only.'}
+                                    ? 'Pre-fill, then confirm before publishing.'
+                                    : 'Show as a suggestion only.'}
                               </p>
                             </div>
                             <Select
@@ -853,9 +845,6 @@ function SettingsContent() {
                       </div>
                       <div>
                         <CardTitle className="text-lg">Accounting connections</CardTitle>
-                        <CardDescription className="mt-1 max-w-xl leading-5">
-                          Choose QuickBooks or Xero and manage the accounting connection shared by this workspace.
-                        </CardDescription>
                       </div>
                     </div>
                   </CardHeader>
@@ -864,8 +853,7 @@ function SettingsContent() {
                       <div className="flex items-center gap-4">
                         <Symbol name="success-published" size="medium" className="h-24 w-24" alt="" />
                         <p className="max-w-xs text-sm leading-relaxed text-foreground/70">
-                          Once connected, every reviewed draft bill publishes straight to your
-                          accounting software — never paid or approved automatically.
+                          Reviewed draft bills publish to QuickBooks. AxLiner never pays them.
                         </p>
                       </div>
                       <Button asChild variant="surface" size="sm" className="shrink-0">
@@ -887,7 +875,7 @@ function SettingsContent() {
                       <div>
                         <CardTitle className="text-lg">Purchase order import</CardTitle>
                         <CardDescription className="mt-1 max-w-xl leading-5">
-                          Import open purchase orders for matching in Accounts payable. Existing PO numbers are updated.
+                          Import open purchase orders for AP matching.
                         </CardDescription>
                       </div>
                     </div>
@@ -913,10 +901,7 @@ function SettingsContent() {
                           rows={7}
                           className="w-full rounded-lg border border-border bg-background p-3 font-mono text-xs outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
                         />
-                        <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
-                          <p className="text-xs text-muted-foreground">
-                            Applies to {activeWorkspace?.name || "the current workspace"}.
-                          </p>
+                        <div className="flex justify-end border-t border-border pt-4">
                           <Button
                             variant="glossy"
                             size="sm"
@@ -946,7 +931,6 @@ function SettingsContent() {
                       </div>
                       <div>
                         <CardTitle>Processing Settings</CardTitle>
-                        <CardDescription>Configure automatic actions</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
@@ -954,9 +938,6 @@ function SettingsContent() {
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="auto-download">Auto Download</Label>
-                        <p className="text-xs text-muted-foreground">
-                          Automatically download files when processing completes
-                        </p>
                       </div>
                       <Switch
                         id="auto-download"
@@ -972,9 +953,6 @@ function SettingsContent() {
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="auto-save">Auto Save to History</Label>
-                        <p className="text-xs text-muted-foreground">
-                          Automatically save processed files to your history
-                        </p>
                       </div>
                       <Switch
                         id="auto-save"
@@ -992,7 +970,7 @@ function SettingsContent() {
                       <div className="space-y-0.5">
                         <Label htmlFor="invoice-language">Invoice language</Label>
                         <p className="text-xs text-muted-foreground">
-                          Adapts review-board field labels (TVA, Montant HT/TTC, Fournisseur…). Display only — the OCR language is set below.
+                          Review-board labels only; OCR language stays separate.
                         </p>
                       </div>
                       <Select
@@ -1020,9 +998,6 @@ function SettingsContent() {
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="invoice-autodetect">Auto-detect invoice language</Label>
-                        <p className="text-xs text-muted-foreground">
-                          Suggest switching the schema when an invoice contains another language&apos;s tax fields
-                        </p>
                       </div>
                       <Switch
                         id="invoice-autodetect"
@@ -1046,7 +1021,6 @@ function SettingsContent() {
                       </div>
                       <div>
                         <CardTitle>OCR Detection Language</CardTitle>
-                        <CardDescription>Set the language for text recognition</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
@@ -1108,9 +1082,6 @@ function SettingsContent() {
                           </SelectItem>
                         </SelectContent>
                       </Select>
-                      <p className="text-xs text-muted-foreground">
-                        Changes will take effect immediately
-                      </p>
                     </div>
                   </CardContent>
                 </Card>

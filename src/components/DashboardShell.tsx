@@ -141,7 +141,7 @@ export function DashboardShell({
   }, [processingState, recoverableJob])
 
   return (
-    <div className="ax-page-bg min-h-svh text-foreground">
+    <div className="min-h-svh bg-white text-foreground">
       <WorkspaceSidebar activeItem={activeItem} user={user} />
 
       <div className="ax-dashboard-content relative z-10 min-w-0">
@@ -171,7 +171,7 @@ export function DashboardShell({
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive group inline-flex h-10 w-full max-w-xl items-center gap-2.5 rounded-full border border-border bg-muted/40 px-4 text-sm text-muted-foreground transition-colors hover:border-border hover:bg-muted/70 hover:text-foreground"
+                className="ax-interactive group inline-flex h-10 w-full max-w-xl cursor-pointer items-center gap-2.5 rounded-md border-2 border-black bg-white px-4 text-sm font-semibold text-black transition-colors hover:bg-black hover:text-white"
               >
                 <Search className="size-4 shrink-0 opacity-70" />
                 <span className="truncate">Search companies, documents, batches...</span>
@@ -182,12 +182,12 @@ export function DashboardShell({
             </div>
 
             {/* RIGHT: calm cluster — job pill, notifications, help, upgrade, account */}
-            <div className="ms-auto flex min-w-0 items-center gap-2">
+            <div className="ms-auto flex min-w-0 items-center gap-3">
               {/* Mobile: compact ⌘K search trigger (full bar lives on md+) */}
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive inline-flex size-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground md:hidden"
+                className="ax-interactive inline-flex size-9 cursor-pointer items-center justify-center rounded-md border-2 border-black bg-white text-black hover:bg-black hover:text-white md:hidden"
               >
                 <Search className="size-4" />
               </button>
@@ -196,10 +196,10 @@ export function DashboardShell({
                 <Link
                   href={activeJob.href}
                   className={cn(
-                    "ax-interactive hidden h-9 items-center gap-2 rounded-full border px-3 text-sm font-medium sm:inline-flex",
+                    "ax-interactive hidden h-9 cursor-pointer items-center gap-2 rounded-md border-2 px-3 text-sm font-medium shadow-none sm:inline-flex",
                     activeJob.tone === "ready"
-                      ? "border-border bg-background text-foreground hover:bg-accent"
-                      : "border-foreground bg-foreground text-background hover:bg-foreground/88"
+                      ? "border-black bg-white text-black hover:bg-black hover:text-white"
+                      : "border-black bg-black text-white hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4"
                   )}
                 >
                   {activeJob.tone === "ready" ? (

@@ -194,7 +194,7 @@ export function ProgressiveUploadSheet({
 
           <section className="space-y-3">
             <StageLabel number={2}>Document mode</StageLabel>
-            <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Document mode">
+            <div className="flex flex-wrap gap-3" role="tablist" aria-label="Document mode">
               {modeTabs.map(mode => (
                 <button
                   key={mode.value}
@@ -204,10 +204,10 @@ export function ProgressiveUploadSheet({
                   onClick={() => onDocumentModeChange(mode.value === "table" && documentMode === "notes" ? "notes" : mode.value)}
                   disabled={busy}
                   className={cn(
-                    "inline-flex h-8 items-center rounded-full border px-3 text-xs font-semibold transition",
+                    "inline-flex h-8 cursor-pointer items-center rounded-md border-2 px-3 text-xs font-semibold transition-colors",
                     selectedTab === mode.value
-                      ? "border-[var(--brand-green-ring)] bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-xs"
-                      : "border-border bg-background text-muted-foreground hover:bg-accent hover:text-foreground"
+                      ? "border-[var(--brand-brown)] bg-[var(--brand-brown)] text-black hover:border-black hover:bg-white hover:underline hover:decoration-1 hover:underline-offset-4"
+                      : "border-black bg-white text-black hover:bg-black hover:text-white"
                   )}
                 >
                   {mode.label}

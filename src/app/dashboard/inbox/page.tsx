@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { clayButton } from "@/lib/clay-button"
@@ -70,8 +71,8 @@ const SOURCE_TINT: Record<"direct_upload" | "email" | "client_link" | "google_dr
   direct_upload: "border-border bg-muted/50 text-foreground",
   email: "border-violet-200 bg-violet-50 text-violet-900 dark:border-violet-900/60 dark:bg-violet-950/40 dark:text-violet-200",
   client_link: "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200",
-  google_drive: "border-blue-200 bg-blue-50 text-blue-900 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-200",
-  dropbox: "border-sky-200 bg-sky-50 text-sky-900 dark:border-sky-900/60 dark:bg-sky-950/40 dark:text-sky-200",
+  google_drive: "border-border bg-muted/50 text-foreground",
+  dropbox: "border-border bg-muted/50 text-foreground",
 }
 
 function SourceBadge({ kind }: { kind: keyof typeof SOURCE_LABEL }) {
@@ -333,8 +334,7 @@ export default function EmailInboxPage() {
     <DashboardShell activeItem="inbox" title="Inbox" user={user} showBack={false}>
       <div className="max-w-6xl space-y-5">
         <PageHeader
-          title="Email intake"
-          description="Forward invoice and receipt attachments into Auto detect."
+          title="Inbox"
           actions={
             <Button variant="surface" size="sm" onClick={() => void loadInbox()} disabled={loading}>
               <RefreshCw className={cn("size-4", loading && "animate-spin")} />
@@ -354,31 +354,32 @@ export default function EmailInboxPage() {
                   <Image src="/icons/share.png" alt="" width={20} height={20} className="object-contain opacity-85" loading="lazy" />
                   <p className="text-sm font-semibold text-foreground">Client upload links</p>
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">Links expire after 7 days and submit files directly to this inbox.</p>
 
-                <div className="mt-4 flex gap-2">
+                <div className="mt-4 flex gap-3">
                   <Input value={linkLabel} onChange={event => setLinkLabel(event.target.value)} placeholder="Client documents" />
-                  <Button variant="glossy" onClick={() => void createClientLink()} disabled={actionBusy === "link"}>
-                    <Link2 className="size-4" />
-                    Create
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="glossy" onClick={() => void createClientLink()} disabled={actionBusy === "link"}>
+                        <Link2 className="size-4" />
+                        Create
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">Creates a 7-day client upload link.</TooltipContent>
+                  </Tooltip>
                 </div>
 
                 {newUploadUrl ? (
                   <div className="mt-3 space-y-2">
-                    <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
+                    <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/40 px-3 py-2">
                       <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Upload</span>
                       <p className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">{newUploadUrl}</p>
                       <Button variant="surface" size="sm" onClick={() => void navigator.clipboard.writeText(newUploadUrl)}>Copy</Button>
                     </div>
-                    <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
+                    <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/40 px-3 py-2">
                       <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Status</span>
                       <p className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">{newUploadUrl.replace("/upload/", "/status/")}</p>
                       <Button variant="surface" size="sm" onClick={() => void navigator.clipboard.writeText(newUploadUrl.replace("/upload/", "/status/"))}>Copy</Button>
                     </div>
-                    <p className="text-[13px] font-medium leading-5 text-muted-foreground">
-                      Share the upload link to collect documents; share the status link so the client can track progress without emailing you.
-                    </p>
                   </div>
                 ) : null}
 
@@ -447,14 +448,18 @@ export default function EmailInboxPage() {
                   <Image src="/icons/reviewer.png" alt="" width={20} height={20} className="object-contain opacity-85" loading="lazy" />
                   <p className="text-sm font-semibold text-foreground">Reviewers</p>
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">Reviewers can edit and export batches, not manage connections or deletion.</p>
 
-                <div className="mt-4 flex gap-2">
+                <div className="mt-4 flex gap-3">
                   <Input type="email" value={reviewerEmail} onChange={event => setReviewerEmail(event.target.value)} placeholder="reviewer@firm.com" />
-                  <Button variant="surface" onClick={() => void inviteReviewer()} disabled={actionBusy === "reviewer"}>
-                    <UserPlus className="size-4" />
-                    Add
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="surface" onClick={() => void inviteReviewer()} disabled={actionBusy === "reviewer"}>
+                        <UserPlus className="size-4" />
+                        Add
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">Adds reviewer edit and export access.</TooltipContent>
+                  </Tooltip>
                 </div>
 
                 <div className="mt-3 space-y-2">
@@ -487,14 +492,16 @@ export default function EmailInboxPage() {
                   <p className="mt-2 break-all font-mono text-sm font-medium text-foreground">
                     {address?.address || "Provisioning address…"}
                   </p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Supported images and PDFs are stored for 30 days and enter the review board with their email origin.
-                  </p>
                 </div>
-                <Button variant="surface" onClick={() => void copyAddress()} disabled={!address} className="shrink-0">
-                  {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-                  {copied ? "Copied!" : "Copy address"}
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="surface" onClick={() => void copyAddress()} disabled={!address} className="shrink-0">
+                      {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+                      {copied ? "Copied!" : "Copy address"}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">Copy the forwarding address.</TooltipContent>
+                </Tooltip>
               </div>
               {loadError ? (
                 <p className="mt-3 text-sm text-destructive">{loadError}</p>
@@ -510,9 +517,6 @@ export default function EmailInboxPage() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold text-foreground">Connected sources</p>
-                  <p className="mt-1 max-w-prose text-sm text-muted-foreground">
-                    Watch a Google Drive or Dropbox folder. New files drop into this inbox automatically — no manual upload from the client.
-                  </p>
                 </div>
               </div>
 
@@ -525,10 +529,7 @@ export default function EmailInboxPage() {
                     <div key={provider} className="rounded-xl border border-border bg-card/60 p-4">
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2.5">
-                          <span className={cn(
-                            "inline-flex size-9 items-center justify-center rounded-md",
-                            provider === "google_drive" ? "bg-blue-500/10 text-blue-600" : "bg-sky-500/10 text-sky-600",
-                          )}>
+                          <span className="inline-flex size-9 items-center justify-center rounded-md bg-muted text-muted-foreground">
                             <FolderInput className="size-4.5" />
                           </span>
                           <div>
@@ -554,7 +555,7 @@ export default function EmailInboxPage() {
                           <div className="mt-3 space-y-1.5">
                             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Watched folder</p>
                             {folderDraft?.id === source.id ? (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-3">
                                 <Input
                                   value={folderDraft.value}
                                   onChange={(event) => setFolderDraft({ id: source.id, value: event.target.value })}
@@ -583,7 +584,7 @@ export default function EmailInboxPage() {
                             <span>
                               Last sync: {source.last_synced_at ? formatReceivedAt(source.last_synced_at) : "never"}
                             </span>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-3">
                               <Button size="sm" variant="surface" className="h-7 px-2 text-xs" onClick={() => void triggerSync(source.id)} disabled={actionBusy === source.id}>
                                 <RefreshCw className={cn("size-3", actionBusy === source.id && "animate-spin")} />
                                 Sync now
@@ -596,7 +597,7 @@ export default function EmailInboxPage() {
                           {source.last_sync_status === "pending_implementation" ? (
                             <p className="mt-3 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-2 text-[11px] leading-4 text-amber-900">
                               <AlertTriangle className="mt-0.5 size-3 shrink-0" />
-                              Folder polling is queued — files will start arriving once the scheduled poller lands.
+                              Folder polling is queued.
                             </p>
                           ) : null}
                         </>
@@ -612,11 +613,6 @@ export default function EmailInboxPage() {
                             {connectingProvider === provider ? <RefreshCw className="size-3.5 animate-spin" /> : configured ? <PlugZap className="size-3.5" /> : <Plug className="size-3.5" />}
                             {configured ? `Connect ${label}` : "Setup pending"}
                           </Button>
-                          {!configured ? (
-                            <p className="mt-2 text-[11px] leading-4 text-muted-foreground">
-                              The provider OAuth app must be registered before this button works. See <span className="font-mono">manual_setup_requirements.md → Prompt P6</span>.
-                            </p>
-                          ) : null}
                         </div>
                       )}
                     </div>
@@ -639,7 +635,7 @@ export default function EmailInboxPage() {
         <Card className="overflow-hidden">
           <CardContent className="p-0">
             {loading ? (
-              <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading submissions" description="Fetching client uploads" /></div>
+              <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading submissions" /></div>
             ) : submissions.length === 0 ? (
               <div className="py-6">
                 <EmptyState
@@ -648,7 +644,6 @@ export default function EmailInboxPage() {
                   illustrationSize={260}
                   eyebrow="Intake"
                   title="No submissions yet"
-                  description="Share an upload link above and client files land right here, ready for the review board."
                 />
               </div>
             ) : (
@@ -738,7 +733,7 @@ export default function EmailInboxPage() {
         <Card className="overflow-hidden">
           <CardContent className="p-0">
             {loading ? (
-              <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading imports" description="Fetching forwarded documents" /></div>
+              <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading imports" /></div>
             ) : messages.length === 0 ? (
               <div className="py-6">
                 <EmptyState
@@ -747,7 +742,6 @@ export default function EmailInboxPage() {
                   illustrationSize={260}
                   eyebrow="Email"
                   title="Inbox zero"
-                  description="Forward invoices and receipts to your intake address and new attachments queue up here for review."
                 />
               </div>
             ) : (

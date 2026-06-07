@@ -243,6 +243,9 @@
   .ax-interactive:active {
     transform: scale(0.98);
   }
+  .ax-interactive[data-slot="button"]:active {
+    transform: none;
+  }
 
   @keyframes ax-march {
     to { stroke-dashoffset: -12; }
@@ -304,10 +307,7 @@
 
   .ax-page-bg {
     position: relative;
-    background:
-      radial-gradient(115% 72% at 50% 0%, color-mix(in srgb, var(--primary) 9%, transparent) 0%, transparent 55%),
-      radial-gradient(80% 55% at 100% 100%, color-mix(in srgb, var(--primary) 6%, transparent) 0%, transparent 55%),
-      var(--background);
+    background: #ffffff;
   }
 
   .ax-page-bg::before {
@@ -713,6 +713,11 @@ body {
     @apply bg-background text-foreground;
     min-height: 100%;
     letter-spacing: 0;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  [data-slot="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
   }
 }
 
