@@ -9,53 +9,42 @@ import { Symbol } from "@/components/dashboard/Symbol"
 type GraphNode = {
   label: string
   href: string
-  symbol?: string
+  symbol: string
   hint?: string
+}
+
+// The root node — the workspace itself.
+const ROOT: GraphNode = {
+  label: "Your workspace",
+  href: "/dashboard/client#upload-files",
+  symbol: "nav-workspace-node",
+  hint: "Everything starts here",
 }
 
 // Tier 2 — the primary destinations.
 const PRIMARY: GraphNode[] = [
-  { label: "Upload & review", href: "/dashboard/client#upload-files", symbol: "upload-tray", hint: "Drop a batch" },
-  { label: "Draft bills", href: "/dashboard/accounts-payable", symbol: "code-map-to-account", hint: "Code & publish" },
-  { label: "Inbox", href: "/dashboard/inbox", symbol: "folder-drop", hint: "Incoming docs" },
+  { label: "Upload & review", href: "/dashboard/client#upload-files", symbol: "nav-step-1-upload", hint: "Drop a batch" },
+  { label: "Draft bills", href: "/dashboard/accounts-payable", symbol: "nav-node-draft-bills", hint: "Code & publish" },
+  { label: "Inbox", href: "/dashboard/inbox", symbol: "nav-node-inbox", hint: "Incoming docs" },
 ]
 
 // Tier 3 — quick mode launchers (the page reads ?mode=…).
 const MODES: GraphNode[] = [
-  { label: "Invoices", href: "/dashboard/client?mode=invoice", symbol: "invoice" },
-  { label: "Receipts", href: "/dashboard/client?mode=receipt", symbol: "receipt" },
-  { label: "Bank statements", href: "/dashboard/client?mode=bank_statement", symbol: "bank-statement" },
-  { label: "Tables", href: "/dashboard/client?mode=table", symbol: "spreadsheet" },
-  { label: "Notes", href: "/dashboard/client?mode=notes", symbol: "handwritten-note" },
+  { label: "Invoices", href: "/dashboard/client?mode=invoice", symbol: "nav-node-invoices" },
+  { label: "Receipts", href: "/dashboard/client?mode=receipt", symbol: "nav-node-receipts" },
+  { label: "Bank statements", href: "/dashboard/client?mode=bank_statement", symbol: "nav-node-bank-statements" },
+  { label: "Tables", href: "/dashboard/client?mode=table", symbol: "nav-node-tables" },
+  { label: "Notes", href: "/dashboard/client?mode=notes", symbol: "nav-node-notes" },
 ]
 
-const RAIL = "#0a0a0a"
+// How a batch travels — a light 1·2·3 strip above the tree.
+const STEPS = [
+  { symbol: "nav-step-1-upload", label: "Upload", hint: "Throw us the whole folder" },
+  { symbol: "nav-step-2-review", label: "Review", hint: "Fix exceptions on the board" },
+  { symbol: "nav-step-3-publish", label: "Publish", hint: "Export or send to QuickBooks" },
+]
 
-function NodeBox({
-  node,
-  tone,
-  className,
-}: {
-  node: GraphNode
-  tone: "top" | "primary" | "leaf"
-  className?: string
-}) {
-  return (
-    <Link
-      href={node.href}
-      className={cn(
-        "ax-interactive group relative flex items-center gap-3 rounded-2xl border border-neutral-800 bg-neutral-950 px-4 py-3.5 text-left text-white shadow-[0_2px_10px_-3px_rgba(0,0,0,0.55)] outline-none transition-all hover:-translate-y-0.5 hover:bg-neutral-800 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-white/40",
-        className,
-      )}
-    >
-      {node.symbol ? <Symbol name={node.symbol} size="badge" className="h-14 w-14 shrink-0 sm:h-16 sm:w-16" alt="" /> : null}
-      <span className="min-w-0">
-        <span className="block truncate text-base font-semibold leading-tight">{node.label}</span>
-        {node.hint ? <span className="block truncate text-xs font-medium opacity-70">{node.hint}</span> : null}
-      </span>
-    </Link>
-  )
-}
+const RAIL = "#10b981" // emerald-500 connectors
 
 /** Vertical connector stub. */
 function Stub({ className }: { className?: string }) {
@@ -63,42 +52,113 @@ function Stub({ className }: { className?: string }) {
 }
 
 /**
- * The "button-graph" — a clickable org-chart launcher styled like the reference:
- * an emerald top node over clay/brown destination nodes joined by emerald
- * connectors. On ≥sm it renders as a tree; on mobile it collapses to clean
- * grouped link rows. Real <Link>s, keyboard-accessible.
+ * A node = a big, RAW emblem (free-standing art, no dark tile / ring / chip)
+ * over a legible label. The whole thing is one clickable target with a soft
+ * hover lift; the emblem itself never sits in a box.
+ */
+function Node({
+  node,
+  size,
+  className,
+}: {
+  node: GraphNode
+  size: "root" | "primary" | "leaf"
+  className?: string
+}) {
+  const emblem =
+    size === "root"
+      ? "h-24 w-24 sm:h-28 sm:w-28"
+      : size === "primary"
+        ? "h-20 w-20 sm:h-24 sm:w-24"
+        : "h-16 w-16 sm:h-20 sm:w-20"
+
+  return (
+    <Link
+      href={node.href}
+      className={cn(
+        "ax-interactive group flex flex-col items-center gap-2 rounded-2xl px-3 py-2 text-center outline-none transition-transform duration-200 hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-emerald-400/60",
+        className,
+      )}
+    >
+      <Symbol
+        name={node.symbol}
+        size="medium"
+        className={cn(emblem, "transition-transform duration-200 group-hover:scale-105")}
+        alt=""
+      />
+      <span className="flex flex-col">
+        <span
+          className={cn(
+            "font-semibold leading-tight text-white",
+            size === "leaf" ? "text-sm" : "text-base",
+          )}
+        >
+          {node.label}
+        </span>
+        {node.hint ? (
+          <span className="text-xs font-medium leading-tight text-white/80">{node.hint}</span>
+        ) : null}
+      </span>
+    </Link>
+  )
+}
+
+/**
+ * The workspace launcher — a raw, emblem-first org-chart. An emerald workspace
+ * node sits at the top, branching down to the primary destinations and the
+ * five document-mode leaves, all joined by thin emerald connectors. Every
+ * symbol reads as free-standing art on the page background. On mobile it
+ * collapses to clean grouped rows.
  */
 export function WorkflowGraph({ className }: { className?: string }) {
   return (
     <nav aria-label="Workspace launcher" className={cn("w-full", className)}>
+      {/* How it flows — light step strip */}
+      <ol className="mx-auto mb-10 flex max-w-3xl flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-start sm:gap-2">
+        {STEPS.map((step, i) => (
+          <li
+            key={step.label}
+            className="flex flex-1 items-center gap-3 sm:flex-col sm:items-center sm:gap-2 sm:text-center"
+          >
+            <Symbol name={step.symbol} size="medium" className="h-16 w-16 sm:h-20 sm:w-20" alt="" />
+            <span className="flex flex-col sm:items-center">
+              <span className="text-sm font-semibold leading-tight text-white">
+                {i + 1}. {step.label}
+              </span>
+              <span className="text-xs font-medium leading-tight text-white/80">{step.hint}</span>
+            </span>
+          </li>
+        ))}
+      </ol>
+
       {/* Tree (sm and up) */}
       <div className="hidden flex-col items-center sm:flex">
-        <NodeBox node={{ label: "Your workspace", href: "/dashboard/client#upload-files", symbol: "review-magnify" }} tone="top" />
-        <Stub className="h-5" />
+        <Node node={ROOT} size="root" />
+        <Stub className="h-6" />
 
         {/* Tier 2 rail + nodes */}
         <div className="relative w-full max-w-3xl">
           <span aria-hidden className="absolute left-[16.66%] right-[16.66%] top-0 h-px" style={{ background: RAIL }} />
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-4">
             {PRIMARY.map((node) => (
               <div key={node.href} className="flex flex-col items-center">
-                <Stub className="h-5" />
-                <NodeBox node={node} tone="primary" className="w-full" />
+                <Stub className="h-6" />
+                <Node node={node} size="primary" className="w-full" />
               </div>
             ))}
           </div>
         </div>
 
-        <Stub className="h-5" />
+        <Stub className="h-6" />
 
         {/* Tier 3 rail + mode leaves */}
         <div className="relative w-full max-w-4xl">
           <span aria-hidden className="absolute left-[10%] right-[10%] top-0 h-px" style={{ background: RAIL }} />
-          <div className="grid grid-cols-5 gap-2.5">
+          <div className="grid grid-cols-5 gap-3">
             {MODES.map((node) => (
               <div key={node.href} className="flex flex-col items-center">
-                <Stub className="h-5" />
-                <NodeBox node={node} tone="leaf" className="w-full" />
+                <Stub className="h-6" />
+                <Node node={node} size="leaf" className="w-full" />
               </div>
             ))}
           </div>
@@ -106,16 +166,16 @@ export function WorkflowGraph({ className }: { className?: string }) {
       </div>
 
       {/* Stacked (mobile) */}
-      <div className="space-y-3 sm:hidden">
-        <NodeBox node={{ label: "Your workspace", href: "/dashboard/client#upload-files", symbol: "review-magnify" }} tone="top" />
-        <div className="space-y-2">
+      <div className="space-y-6 sm:hidden">
+        <Node node={ROOT} size="root" className="mx-auto" />
+        <div className="grid grid-cols-3 gap-3">
           {PRIMARY.map((node) => (
-            <NodeBox key={node.href} node={node} tone="primary" />
+            <Node key={node.href} node={node} size="primary" />
           ))}
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-3">
           {MODES.map((node) => (
-            <NodeBox key={node.href} node={node} tone="leaf" />
+            <Node key={node.href} node={node} size="leaf" />
           ))}
         </div>
       </div>

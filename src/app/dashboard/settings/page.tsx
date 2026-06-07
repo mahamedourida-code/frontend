@@ -46,6 +46,7 @@ import {
 } from "lucide-react"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
+import { Symbol } from "@/components/dashboard/Symbol"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { clayButton } from "@/lib/clay-button"
 
@@ -707,18 +708,35 @@ function SettingsContent() {
                         description="Fetching your saved vendor rules"
                       />
                     ) : vendorRules.length === 0 ? (
-                      <EmptyState
-                        compact
-                        icon={<FileSpreadsheet />}
-                        illustration="/symbols/code-account-badge.png"
-                        illustrationSize={150}
-                        title="No saved vendors"
-                        description="Confirm an invoice or receipt in Review, then remember the vendor."
-                      />
+                      <div className="flex flex-col items-center gap-5 px-6 py-10 text-center">
+                        <Symbol
+                          name="firstsight-vendors-empty"
+                          size="hero"
+                          className="h-56 w-56 sm:h-64 sm:w-64"
+                          alt=""
+                        />
+                        <div className="max-w-sm space-y-2">
+                          <h3 className="text-lg font-semibold tracking-tight text-foreground">
+                            No remembered suppliers yet
+                          </h3>
+                          <p className="text-sm leading-relaxed text-foreground/70">
+                            Confirm an invoice or receipt in Review, then choose &ldquo;remember this
+                            vendor.&rdquo; AxLiner saves the coding defaults and suggests them next
+                            time the same supplier shows up.
+                          </p>
+                        </div>
+                      </div>
                     ) : vendorRules.map(rule => (
                       <section key={rule.id} className="rounded-lg border border-border bg-card/50 p-4 backdrop-blur">
                         <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div>
+                          <div className="flex items-start gap-3">
+                            <Symbol
+                              name="success-vendor-remembered"
+                              size="badge"
+                              className="mt-0.5 h-12 w-12"
+                              alt=""
+                            />
+                            <div>
                             <div className="flex flex-wrap items-center gap-2">
                               <h3 className="text-sm font-semibold text-foreground">{rule.display_name}</h3>
                               <span className="rounded-md border border-border bg-background px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
@@ -731,6 +749,7 @@ function SettingsContent() {
                             <p className="mt-1 text-xs text-muted-foreground">
                               Approved {formatDate(rule.approved_at)}
                             </p>
+                            </div>
                           </div>
                           <div className="flex items-center gap-2">
                             <Button
@@ -841,12 +860,21 @@ function SettingsContent() {
                     </div>
                   </CardHeader>
                   <CardContent className="border-t border-border p-5 sm:p-6">
-                    <Button asChild variant="surface" size="sm">
-                      <Link href="/dashboard/integrations">
-                        Open integrations
-                        <ExternalLink className="size-4" />
-                      </Link>
-                    </Button>
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex items-center gap-4">
+                        <Symbol name="success-published" size="medium" className="h-24 w-24" alt="" />
+                        <p className="max-w-xs text-sm leading-relaxed text-foreground/70">
+                          Once connected, every reviewed draft bill publishes straight to your
+                          accounting software — never paid or approved automatically.
+                        </p>
+                      </div>
+                      <Button asChild variant="surface" size="sm" className="shrink-0">
+                        <Link href="/dashboard/integrations">
+                          Open integrations
+                          <ExternalLink className="size-4" />
+                        </Link>
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
 

@@ -5,12 +5,12 @@ import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { AnimatePresence, motion } from "framer-motion"
-import { ChevronLeft, FileText, Loader2, Sparkles } from "lucide-react"
+import { FileText, Loader2, Sparkles } from "lucide-react"
 import Image from "next/image"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
-import { EmptyState } from "@/components/dashboard/EmptyState"
+import { Symbol } from "@/components/dashboard/Symbol"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { AnomalyChip } from "@/components/dashboard/AnomalyChip"
@@ -936,14 +936,23 @@ function AccountsPayableContent() {
                   ) : visibleItems.length === 0 ? (
                     <tr>
                       <td colSpan={12}>
-                        <EmptyState
-                          illustration="/symbols/firstsight-draft-bills-empty.png"
-                          illustrationSize={220}
-                          icon={<ChevronLeft />}
-                          title={items.length ? "No draft bills in this queue" : "Start your draft-bill workflow"}
-                          description={items.length ? "No draft bills match this view." : "Review extracted invoices first, or upload a new folder to prepare draft bills."}
-                          action={!items.length ? (
-                            <div className="flex flex-col items-center gap-2">
+                        <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+                          <Symbol
+                            name="firstsight-draft-bills-empty"
+                            size="hero"
+                            className="h-56 w-56 sm:h-72 sm:w-72"
+                            alt=""
+                          />
+                          <h3 className="mt-8 text-xl font-bold tracking-tight text-foreground">
+                            {items.length ? "Nothing waiting in this queue" : "Turn that stack of invoices into draft bills"}
+                          </h3>
+                          <p className="mt-2 max-w-md text-sm leading-relaxed text-foreground/70">
+                            {items.length
+                              ? "No draft bills match this view. Try another filter."
+                              : "Review your extracted invoices, then code each one here and publish the approved bills straight to your accounting software."}
+                          </p>
+                          {!items.length ? (
+                            <div className="mt-7 flex flex-col items-center gap-3">
                               <Button asChild variant="glossy" size="sm">
                                 <Link href="/dashboard/client?mode=invoice">
                                   Review invoices
@@ -953,13 +962,12 @@ function AccountsPayableContent() {
                               <Button asChild variant="surface" size="sm">
                                 <Link href="/dashboard/client#upload-files">Upload documents</Link>
                               </Button>
-                              <Link href="/blogs" className="ax-interactive text-xs font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
-                                Guide
+                              <Link href="/blogs" className="ax-interactive text-xs font-semibold text-foreground/60 underline-offset-4 hover:text-foreground hover:underline">
+                                Read the guide
                               </Link>
                             </div>
-                          ) : undefined}
-                          compact
-                        />
+                          ) : null}
+                        </div>
                       </td>
                     </tr>
                   ) : (
@@ -1236,6 +1244,32 @@ function AccountsPayableContent() {
                     </div>
                   ) : null}
 
+                  {!activeLocked ? (
+                    <div className="flex flex-wrap items-center gap-x-9 gap-y-5 py-1">
+                      <div className="flex items-center gap-3">
+                        <Symbol name="code-account-tag" size="inline" className="h-14 w-14" alt="" />
+                        <div>
+                          <p className="text-sm font-bold text-foreground">Pick the account</p>
+                          <p className="text-xs text-foreground/70">Where this spend lands in the ledger.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Symbol name="code-coa-tree" size="inline" className="h-14 w-14" alt="" />
+                        <div>
+                          <p className="text-sm font-bold text-foreground">Map to your chart</p>
+                          <p className="text-xs text-foreground/70">Match it to a GL account number.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Symbol name="code-vat-chip" size="inline" className="h-14 w-14" alt="" />
+                        <div>
+                          <p className="text-sm font-bold text-foreground">Set the VAT code</p>
+                          <p className="text-xs text-foreground/70">Apply the right tax rate.</p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between gap-2">
@@ -1331,6 +1365,12 @@ function AccountsPayableContent() {
                           ))}
                         </SelectContent>
                       </Select>
+                      {draft.account_ref_id ? (
+                        <div className="flex items-center gap-2 pt-1">
+                          <Symbol name="code-4000-chip" size="inline" className="h-12 w-12" alt="" />
+                          <span className="text-xs font-semibold text-foreground/70">Mapped to your chart of accounts.</span>
+                        </div>
+                      ) : null}
                     </div>
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between gap-2">
@@ -1368,6 +1408,12 @@ function AccountsPayableContent() {
                           ))}
                         </SelectContent>
                       </Select>
+                      {draft.tax_code_ref_id ? (
+                        <div className="flex items-center gap-2 pt-1">
+                          <Symbol name="code-rate-20-tile" size="inline" className="h-12 w-12" alt="" />
+                          <span className="text-xs font-semibold text-foreground/70">Tax rate applied to this bill.</span>
+                        </div>
+                      ) : null}
                     </div>
                     {coreFields.map(([field, label, placeholder]) => (
                       <div key={field} className="space-y-1.5">
@@ -1394,6 +1440,18 @@ function AccountsPayableContent() {
                       </div>
                     </div>
                   </div>
+
+                  {draft.due_date ? (
+                    <div className="flex items-center gap-4 py-1">
+                      <Symbol name="code-aging-timeline" size="medium" className="h-24 w-24 sm:h-28 sm:w-28" alt="" />
+                      <div>
+                        <p className="text-sm font-bold text-foreground">Payment due {shortDate(draft.due_date)}</p>
+                        <p className="mt-0.5 max-w-sm text-xs leading-relaxed text-foreground/70">
+                          This bill carries through to your aging once it&apos;s published — current today, overdue after the due date.
+                        </p>
+                      </div>
+                    </div>
+                  ) : null}
 
                   <details className="rounded-md border border-border bg-muted/20">
                     <summary className="ax-interactive cursor-pointer list-none px-3 py-2.5 text-sm font-semibold text-foreground [&::-webkit-details-marker]:hidden">
@@ -1515,6 +1573,18 @@ function AccountsPayableContent() {
                     )}
                   </div>
 
+                  {activeItem.status === "ready_to_publish" && !activeLocked ? (
+                    <div className="flex items-center gap-4 py-1">
+                      <Symbol name="success-bill-ready" size="medium" className="h-28 w-28 sm:h-32 sm:w-32" alt="" />
+                      <div>
+                        <p className="text-base font-bold text-foreground">Coded and ready</p>
+                        <p className="mt-0.5 max-w-sm text-sm leading-relaxed text-foreground/70">
+                          Every field is filled in. Publish it to {destinationName} as a draft bill, or send it back for another look.
+                        </p>
+                      </div>
+                    </div>
+                  ) : null}
+
                   <div className="sticky bottom-0 z-10 -mx-4 -mb-4 flex flex-wrap justify-end gap-2 border-t border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:relative sm:bottom-auto sm:mx-0 sm:mb-0 sm:bg-transparent sm:px-0 sm:py-4 sm:backdrop-blur-0 sm:supports-[backdrop-filter]:bg-transparent">
                     {!activeLocked ? (
                       <>
@@ -1574,6 +1644,14 @@ function AccountsPayableContent() {
 
           {publishResult ? (
             <div className="space-y-3">
+              {publishResult.succeeded > 0 && publishResult.failed.length === 0 ? (
+                <div className="flex flex-col items-center py-2 text-center">
+                  <Symbol name="success-approved" size="hero" className="h-48 w-48 sm:h-56 sm:w-56" alt="" />
+                  <p className="mt-4 text-base font-bold text-foreground">
+                    {publishResult.succeeded} {publishResult.succeeded === 1 ? "bill" : "bills"} published to {destinationName}
+                  </p>
+                </div>
+              ) : null}
               <div className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-muted/40 px-3 py-2.5 text-sm">
                 <StatusBadge tone="success">{publishResult.succeeded} published</StatusBadge>
                 {publishResult.failed.length > 0 ? (

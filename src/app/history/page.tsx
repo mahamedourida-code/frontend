@@ -42,6 +42,7 @@ import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
+import { Symbol } from "@/components/dashboard/Symbol"
 import { SkeletonTableRow } from "@/components/dashboard/SkeletonCard"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 
@@ -532,6 +533,23 @@ function HistoryContent() {
           </div>
         )}
 
+        {/* Export-ready accent — spreadsheets to download, journals to post */}
+        {!isLoading && filteredJobs.filter(job => job.status === "completed" && job.result_url).length > 0 && (
+          <div className="mb-4 flex items-center gap-4">
+            <Symbol name="success-exported-excel" size="inline" className="h-16 w-16 sm:h-20 sm:w-20" />
+            <div className="min-w-0">
+              <p className="text-[15px] font-bold tracking-tight text-foreground">
+                {filteredJobs.filter(job => job.status === "completed" && job.result_url).length} file
+                {filteredJobs.filter(job => job.status === "completed" && job.result_url).length === 1 ? "" : "s"} ready to export
+              </p>
+              <p className="mt-0.5 text-sm text-foreground/70">
+                Download the reviewed spreadsheets, or reopen a batch to post its journal entries.
+              </p>
+            </div>
+            <Symbol name="code-journal-entry" size="inline" className="ml-auto hidden h-16 w-16 sm:block sm:h-20 sm:w-20" />
+          </div>
+        )}
+
         {/* Table Controls */}
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 mb-3 lg:mb-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 lg:gap-4 w-full lg:w-auto">
@@ -717,14 +735,14 @@ function HistoryContent() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-32">
+                  <TableCell colSpan={columns.length} className="py-10">
                     <EmptyState
                       icon={<FileSpreadsheet />}
                       illustration="/symbols/filing-cabinet.png"
-                      illustrationSize={150}
+                      illustrationSize={260}
+                      eyebrow="Archive"
                       title="No saved files yet"
-                      description="Save processed files to see them here"
-                      compact
+                      description="Reviewed batches you export land in this cabinet — every spreadsheet and journal, ready to reopen."
                     />
                   </TableCell>
                 </TableRow>

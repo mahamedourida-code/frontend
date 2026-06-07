@@ -487,9 +487,14 @@ export function UploadDropzone({
         isDragging ? "border-primary bg-card/85 scale-[0.997]" : "border-border bg-card/50 hover:border-primary/50"
       )}
     >
-      <div className={cn("px-4 py-5 text-center sm:px-6", uploadedFiles.length ? "min-h-[240px]" : "flex min-h-[300px] flex-col items-center justify-center")}>
+      <div className={cn("px-4 py-5 text-center sm:px-6", uploadedFiles.length ? "min-h-[240px]" : "flex min-h-[420px] flex-col items-center justify-center")}>
         {!uploadedFiles.length ? (
-          <Symbol name="firstsight-workspace-launcher" size="hero" className="mx-auto mb-2" alt="" />
+          <Symbol
+            name="firstsight-workspace-launcher"
+            size="hero"
+            className="mx-auto mb-5 h-56 w-56 sm:h-72 sm:w-72"
+            alt=""
+          />
         ) : (
           <FolderUp className="mx-auto mb-3 h-7 w-7 text-emerald-600" />
         )}
@@ -1228,9 +1233,14 @@ function BookkeeperBreakdown({ figures, layout = "row" }: { figures: BookkeeperF
     [FIELD_LABEL.vat, fmt(figures.vat)],
     [FIELD_LABEL.gross, fmt(figures.total)],
   ]
+  // The leading symbol speaks the reconciliation verdict at a glance: a
+  // balanced "=" when Net+VAT ties to Total, a variance mark when it doesn't,
+  // and the plain VAT chip when we can't check (missing figures).
+  const verdictSymbol =
+    check.state === "ok" ? "code-balanced-equals" : check.state === "mismatch" ? "code-variance" : "code-vat-chip"
   return (
     <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-1.5", layout === "grid" && "w-full")}>
-      <Symbol name="code-vat-chip" size="inline" className="h-14 w-14 shrink-0" alt="" />
+      <Symbol name={verdictSymbol} size="inline" className="h-14 w-14 shrink-0" alt="" />
       {cells.map(([label, value]) => (
         <span key={label} className="inline-flex items-baseline gap-1.5">
           <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{label}</span>
@@ -2507,16 +2517,23 @@ export function ResultActions({
             </motion.div>
           )
         }) : (
-          <div className="rounded-md border border-dashed border-border bg-card p-5 text-center">
-            <Symbol name="firstsight-review-empty" size="hero" className="mx-auto mb-2" alt="" />
-            <p className="text-sm font-semibold text-foreground">No files in this view</p>
-            <p className="mt-1 text-xs font-semibold text-muted-foreground">The full batch is still available.</p>
+          <div className="flex min-h-[360px] flex-col items-center justify-center px-6 py-12 text-center">
+            <Symbol
+              name="firstsight-review-empty"
+              size="hero"
+              className="mx-auto mb-6 h-56 w-56 sm:h-72 sm:w-72"
+              alt=""
+            />
+            <p className="text-lg font-semibold text-foreground">Nothing to review in this view</p>
+            <p className="mt-1.5 max-w-sm text-sm font-semibold text-foreground">
+              This filter is clear — your full batch is still right here.
+            </p>
             <Button
               type="button"
               size="sm"
               variant="surface"
               onClick={() => setResultFilter("all")}
-              className="mt-3 h-8 px-3 text-xs"
+              className="mt-5 h-9 rounded-full px-4 text-xs"
             >
               Show all files
             </Button>
@@ -2939,7 +2956,7 @@ export function ResultActions({
                               </>
                             ) : (
                               <>
-                                <Check className="size-3.5 shrink-0 text-emerald-600" />
+                                <Symbol name="success-fields-verified" size="inline" className="h-12 w-12 shrink-0 sm:h-14 sm:w-14" alt="" />
                                 Every field reads cleanly
                               </>
                             )}
@@ -3035,6 +3052,8 @@ export function ResultActions({
                                       <Check className="size-3.5" />
                                       Looks right
                                     </button>
+                                  ) : confirmedFields[field.path] ? (
+                                    <Symbol name="code-confidence-tick" size="inline" className="h-12 w-12 shrink-0" alt="Confirmed" />
                                   ) : null}
                                 </div>
                               </motion.label>
@@ -3126,7 +3145,18 @@ export function ResultActions({
                         </table>
                       </>
                     ) : (
-                      <p className="p-4 text-sm text-foreground">No line rows detected.</p>
+                      <div className="flex min-h-[320px] flex-col items-center justify-center px-6 py-12 text-center">
+                        <Symbol
+                          name="firstsight-tables-empty"
+                          size="hero"
+                          className="mx-auto mb-6 h-56 w-56 sm:h-72 sm:w-72"
+                          alt=""
+                        />
+                        <p className="text-lg font-semibold text-foreground">No line rows on this document</p>
+                        <p className="mt-1.5 max-w-sm text-sm font-semibold text-foreground">
+                          The header fields above are still captured — there just weren&apos;t any itemised rows to extract.
+                        </p>
+                      </div>
                     )}
                     {comparisonFile.document_type === "bank_statement" ? (
                       <BankReconciliationPanel data={reviewData(comparisonFile)} />

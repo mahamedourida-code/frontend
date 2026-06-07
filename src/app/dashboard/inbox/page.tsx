@@ -641,7 +641,16 @@ export default function EmailInboxPage() {
             {loading ? (
               <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading submissions" description="Fetching client uploads" /></div>
             ) : submissions.length === 0 ? (
-              <div className="py-4"><EmptyState compact icon={<Inbox />} illustration="/symbols/firstsight-inbox-empty.png" illustrationSize={170} title="No submissions yet" description="Clients can upload via a shared link you create above." /></div>
+              <div className="py-6">
+                <EmptyState
+                  icon={<Inbox />}
+                  illustration="/symbols/firstsight-inbox-empty.png"
+                  illustrationSize={260}
+                  eyebrow="Intake"
+                  title="No submissions yet"
+                  description="Share an upload link above and client files land right here, ready for the review board."
+                />
+              </div>
             ) : (
               <>
                 {/* Desktop table */}
@@ -731,7 +740,16 @@ export default function EmailInboxPage() {
             {loading ? (
               <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading imports" description="Fetching forwarded documents" /></div>
             ) : messages.length === 0 ? (
-              <div className="py-4"><EmptyState compact icon={<Inbox />} illustration="/symbols/firstsight-inbox-empty.png" illustrationSize={170} title="No emailed documents yet" description="New attachments will appear here for review." /></div>
+              <div className="py-6">
+                <EmptyState
+                  icon={<Inbox />}
+                  illustration="/symbols/success-inbox-zero.png"
+                  illustrationSize={260}
+                  eyebrow="Email"
+                  title="Inbox zero"
+                  description="Forward invoices and receipts to your intake address and new attachments queue up here for review."
+                />
+              </div>
             ) : (
               <div className="divide-y divide-border">
                 {messages.map((message) => {
