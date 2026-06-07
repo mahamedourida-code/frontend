@@ -111,7 +111,7 @@ function StatCard({
   sparkData,
 }: CardConfig & { sparkData: { count: number }[] }) {
   return (
-    <div className="group relative flex overflow-hidden rounded-[14px] border border-border bg-card transition-[box-shadow,border-color] duration-200 hover:border-primary/30 hover:[box-shadow:var(--shadow-elevated)]">
+    <div className="group relative flex overflow-hidden rounded-[14px] border border-border bg-card shadow-none transition-colors duration-200 hover:border-[var(--workspace-selection-border)]">
       {/* Left accent bar */}
       <div className={`w-1 shrink-0 self-stretch ${accentClass}`} />
 

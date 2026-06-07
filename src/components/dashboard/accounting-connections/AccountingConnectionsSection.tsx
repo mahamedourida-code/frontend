@@ -36,6 +36,14 @@ const providers: Array<{
   { id: "xero", name: "Xero", logo: "/integrations/xero.png", api: xeroApi },
 ]
 
+const workspacePrimaryButton =
+  "border-2 !border-[var(--brand-brown-fg)] !bg-[var(--brand-brown-fg)] !text-white !shadow-none hover:!border-black hover:!bg-white hover:!text-black hover:underline hover:decoration-1 hover:underline-offset-4"
+
+const workspaceSurfaceButton =
+  "border-2 !border-black !bg-white !text-black !shadow-none hover:!bg-black hover:!text-white"
+
+const workspaceWarmPanel = "border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)]"
+
 function formatSynced(value?: string | null) {
   if (!value) return "Not synced yet"
   try {
@@ -173,7 +181,7 @@ export function AccountingConnectionsSection({
 
   return (
     <div className="space-y-5">
-      <section className="rounded-xl border border-border bg-card p-4 shadow-xs sm:p-5">
+      <section className="rounded-xl border border-border bg-card p-4 shadow-none sm:p-5">
         <div>
           <p className="text-sm font-bold text-foreground">Publishing destination</p>
           <p className="mt-1 text-sm leading-6 text-muted-foreground">
@@ -193,8 +201,8 @@ export function AccountingConnectionsSection({
                 className={cn(
                   "ax-interactive flex min-h-20 items-center gap-3 rounded-xl border px-4 py-3 text-left transition disabled:cursor-default disabled:opacity-70",
                   selected
-                    ? "border-[var(--brand-green-ring)] bg-[var(--brand-green)]/55 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.72)]"
-                    : "border-border bg-background hover:bg-muted/45",
+                    ? "border-[var(--brand-brown-fg)] bg-[var(--button-warm)]"
+                    : "border-border bg-background hover:border-[var(--button-warm-ring)] hover:bg-[var(--button-warm)]",
                 )}
               >
                 <span className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-border bg-white p-2">
@@ -206,7 +214,7 @@ export function AccountingConnectionsSection({
                     {selected ? "Selected for draft bills" : "Choose as destination"}
                   </span>
                 </span>
-                {selected ? <Check className="ms-auto size-4 shrink-0 text-[var(--brand-green-fg)]" /> : null}
+                {selected ? <Check className="ms-auto size-4 shrink-0 text-[var(--brand-brown-fg)]" /> : null}
               </button>
             )
           })}
@@ -222,7 +230,7 @@ export function AccountingConnectionsSection({
         </div>
       ) : null}
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs">
+      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-none">
         {providers.map((provider, index) => {
           const connection = connections[provider.id]
           const busy = action?.startsWith(`${provider.id}:`)
@@ -255,16 +263,16 @@ export function AccountingConnectionsSection({
                   <div className="flex shrink-0 flex-wrap gap-2">
                     {connection.connected ? (
                       <>
-                        <Button variant="surface" size="sm" onClick={() => void sync(provider.id)} disabled={Boolean(action) || loading}>
+                        <Button variant="surface" size="sm" className={workspaceSurfaceButton} onClick={() => void sync(provider.id)} disabled={Boolean(action) || loading}>
                           <RefreshCw className={cn("size-4", action === `${provider.id}:sync` && "animate-spin")} />
                           Sync lists
                         </Button>
-                        <Button variant="ghost" size="sm" onClick={() => void disconnect(provider.id)} disabled={Boolean(action)}>
+                        <Button variant="surface" size="sm" className={workspaceSurfaceButton} onClick={() => void disconnect(provider.id)} disabled={Boolean(action)}>
                           Disconnect
                         </Button>
                       </>
                     ) : (
-                      <Button variant={destination === provider.id ? "glossy" : "warm"} size="sm" onClick={() => void connect(provider.id)} disabled={Boolean(action) || loading}>
+                      <Button variant="glossy" size="sm" className={workspacePrimaryButton} onClick={() => void connect(provider.id)} disabled={Boolean(action) || loading}>
                         {action === `${provider.id}:connect` ? "Connecting..." : `Connect ${provider.id === "xero" ? "Xero" : "QuickBooks"}`}
                       </Button>
                     )}
@@ -276,8 +284,8 @@ export function AccountingConnectionsSection({
         })}
       </div>
 
-      <div className="flex items-start gap-3 rounded-xl border border-border bg-muted/30 px-4 py-3.5">
-        <ShieldCheck className="mt-0.5 size-5 shrink-0 text-primary" />
+      <div className={cn("flex items-start gap-3 rounded-xl border px-4 py-3.5", workspaceWarmPanel)}>
+        <ShieldCheck className="mt-0.5 size-5 shrink-0 text-[var(--brand-brown-fg)]" />
         <div>
           <h3 className="text-sm font-semibold text-foreground">Controlled publishing</h3>
           <p className="mt-1 text-sm leading-6 text-muted-foreground">

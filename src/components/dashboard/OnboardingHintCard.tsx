@@ -19,9 +19,8 @@ interface OnboardingHintCardProps {
 /**
  * A calm, self-contained onboarding card that restates the brand promise —
  * "throw us the whole folder, we read the mess" — as a quiet reassurance the
- * workspace can adopt above an upload zone. Soft emerald-mint surface, a
- * rounded-full pill frame, and a Tella-style definition shadow, matching the
- * rest of the dashboard. Honours `prefers-reduced-motion`.
+ * workspace can adopt above an upload zone. Soft brown surface and rounded
+ * frame, matching the rest of the dashboard. Honours `prefers-reduced-motion`.
  *
  * Purely presentational: no page imports, no data fetching.
  */
@@ -34,17 +33,17 @@ function OnboardingHintCard({ title, hint, action, className }: OnboardingHintCa
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        "flex flex-col items-center gap-3 rounded-3xl border border-[var(--brand-green-ring)] bg-[var(--brand-green)] px-6 py-7 text-center shadow-[0_1px_0_0_rgba(255,255,255,0.6)_inset,0_8px_24px_-12px_rgba(6,78,59,0.25)]",
+        "flex flex-col items-center gap-3 rounded-3xl border border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)] px-6 py-7 text-center shadow-none",
         className,
       )}
     >
-      <span className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[var(--brand-green-fg)]/70">
+      <span className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[var(--brand-brown-fg)]">
         How AxLiner works
       </span>
-      <h3 className="text-lg font-semibold tracking-tight text-[var(--brand-green-fg)]">
+      <h3 className="text-lg font-semibold tracking-tight text-[var(--brand-brown-deep)]">
         {title ?? MESSY_DOCS_COPY.uploadTitle}
       </h3>
-      <p className="max-w-sm text-sm leading-relaxed text-[var(--brand-green-fg)]/80">
+      <p className="max-w-sm text-sm leading-relaxed text-foreground/75">
         {hint ?? MESSY_DOCS_COPY.uploadHint}
       </p>
       {action ? <div className="mt-1">{action}</div> : null}

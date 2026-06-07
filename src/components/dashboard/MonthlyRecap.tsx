@@ -186,24 +186,24 @@ function RecapStat({ block, animate }: { block: StatBlock; animate: boolean }) {
     <motion.div
       variants={CARD_ITEM}
       className={cn(
-        "relative overflow-hidden rounded-2xl border border-emerald-500/15 bg-card p-5",
+        "relative overflow-hidden rounded-2xl border border-[var(--workspace-popout-border)] bg-card p-5 shadow-none",
         block.hero && "sm:col-span-2",
       )}
     >
-      {/* soft mint wash to tie it to the brand band */}
+      {/* soft brown wash to tie it to the workspace palette */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-70"
         style={{
           background:
-            "radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, #d1fae5 55%, transparent) 0%, transparent 55%)",
+            "radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--workspace-popout-bg) 90%, transparent) 0%, transparent 55%)",
         }}
       />
       <div className="relative flex items-start justify-between gap-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-emerald-900/70 dark:text-emerald-200/80">
+        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--brand-brown-fg)]">
           {block.label}
         </p>
-        <span className="flex size-7 items-center justify-center rounded-full bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring)]">
+        <span className="flex size-7 items-center justify-center rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-selection-bg)] text-[var(--brand-brown-deep)] shadow-none">
           <block.Icon className="size-3.5" />
         </span>
       </div>
@@ -288,23 +288,23 @@ function RecapBody({ metrics }: { metrics: RecapMetrics }) {
 
   return (
     <div className="overflow-hidden rounded-xl">
-      {/* Header band — calm emerald, editorial */}
-      <div className="relative overflow-hidden border-b border-emerald-500/15 bg-[color-mix(in_srgb,#d1fae5_45%,var(--background))] px-6 pb-6 pt-7">
+      {/* Header band — calm official tint, editorial */}
+      <div className="relative overflow-hidden border-b border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)] px-6 pb-6 pt-7">
         <div
           aria-hidden
           className="pointer-events-none absolute -right-10 -top-12 size-44 rounded-full opacity-40"
-          style={{ background: "radial-gradient(circle, color-mix(in srgb, #10b981 30%, transparent), transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, color-mix(in srgb, var(--brand-brown) 28%, transparent), transparent 70%)" }}
         />
-        <div className="relative flex items-center gap-2 text-emerald-900/70 dark:text-emerald-200/80">
+        <div className="relative flex items-center gap-2 text-[var(--brand-brown-fg)]">
           <Sparkles className="size-4" />
           <span className="text-xs font-semibold uppercase tracking-[0.14em]">This month with AxLiner</span>
         </div>
         <DialogTitle asChild>
-          <h2 className="relative mt-2 text-2xl font-bold tracking-tight text-emerald-950 dark:text-emerald-50">
+          <h2 className="relative mt-2 text-2xl font-bold tracking-tight text-[var(--brand-brown-deep)]">
             {monthLabel()}
           </h2>
         </DialogTitle>
-        <p className="relative mt-1 max-w-md text-sm font-medium text-emerald-900/70 dark:text-emerald-100/70">
+        <p className="relative mt-1 max-w-md text-sm font-medium text-foreground/70">
           A calm recap of the work AxLiner did alongside you — yours to share with your clients.
         </p>
       </div>
@@ -375,20 +375,20 @@ export function MonthlyRecapCard({ className }: { className?: string }) {
         type="button"
         onClick={() => handleOpenChange(true)}
         className={cn(
-          "ax-interactive group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl border border-emerald-500/20 bg-[color-mix(in_srgb,#d1fae5_30%,var(--card))] p-5 text-left transition-shadow hover:[box-shadow:var(--shadow-elevated)]",
+          "ax-interactive group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl border border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)] p-5 text-left transition-colors hover:bg-[var(--workspace-popout-hover)]",
           className,
         )}
       >
         <div
           aria-hidden
           className="pointer-events-none absolute -right-6 -top-8 size-32 rounded-full opacity-50 transition-transform duration-500 group-hover:scale-110"
-          style={{ background: "radial-gradient(circle, color-mix(in srgb, #10b981 28%, transparent), transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, color-mix(in srgb, var(--brand-brown) 24%, transparent), transparent 70%)" }}
         />
-        <span className="relative flex size-11 shrink-0 items-center justify-center rounded-full bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_1px_3px_0_rgba(0,0,0,0.12)]">
+        <span className="relative flex size-11 shrink-0 items-center justify-center rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-selection-bg)] text-[var(--brand-brown-deep)] shadow-none">
           <Sparkles className="size-5" />
         </span>
         <div className="relative min-w-0 flex-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.1em] text-emerald-900/70 dark:text-emerald-200/80">
+          <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[var(--brand-brown-deep)]">
             New
           </p>
           <p className="truncate text-[15px] font-bold text-foreground">This month with AxLiner</p>
@@ -396,7 +396,7 @@ export function MonthlyRecapCard({ className }: { className?: string }) {
             Your recap — invoices reviewed, hours saved, ready to share.
           </p>
         </div>
-        <span className="relative shrink-0 rounded-full bg-card px-3 py-1 text-xs font-semibold text-foreground shadow-[0_0_0_1px_var(--brand-green-ring)]">
+        <span className="relative shrink-0 rounded-full border border-[var(--workspace-selection-border)] bg-white px-3 py-1 text-xs font-semibold text-[var(--brand-brown-deep)] shadow-none">
           View recap
         </span>
       </button>
@@ -408,7 +408,7 @@ export function MonthlyRecapCard({ className }: { className?: string }) {
         >
           {loading || !metrics ? (
             <div className="flex h-72 flex-col items-center justify-center gap-3 px-6">
-              <span className="flex size-10 items-center justify-center rounded-full bg-[var(--brand-green)] text-[var(--brand-green-fg)]">
+              <span className="flex size-10 items-center justify-center rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-selection-bg)] text-[var(--brand-brown-deep)]">
                 <Sparkles className="size-5 animate-pulse" />
               </span>
               <DialogTitle className="text-sm font-medium text-muted-foreground">

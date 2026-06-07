@@ -57,7 +57,7 @@ export function SkeletonDocumentCard({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex h-[200px] w-[160px] flex-col gap-2 rounded-md border border-border bg-card p-2 shadow-xs",
+        "flex h-[200px] w-[160px] flex-col gap-2 rounded-md border border-border bg-card p-2 shadow-none",
         className,
       )}
     >

@@ -62,13 +62,13 @@ export function PublishConfirmation({ state, onClose }: PublishConfirmationProps
             transition={{ type: "spring", stiffness: 260, damping: 24 }}
           >
             <motion.div
-              className="relative mb-5 flex size-14 items-center justify-center rounded-full bg-[var(--brand-green)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_1px_3px_0_rgba(0,0,0,0.12)]"
+              className="relative mb-5 flex size-14 items-center justify-center rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-selection-bg)] text-[var(--brand-brown-deep)] shadow-none"
               initial={prefersReducedMotion ? false : { scale: 0.6, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 320, damping: 18, delay: 0.05 }}
             >
-              <Check className="size-7 text-[var(--brand-green-fg)]" strokeWidth={2.75} />
-              <span className="absolute -bottom-1 -right-1 inline-flex size-6 items-center justify-center rounded-full bg-card shadow-[0_0_0_1px_rgba(0,0,0,0.08)]">
+              <Check className="size-7" strokeWidth={2.75} />
+              <span className="absolute -bottom-1 -right-1 inline-flex size-6 items-center justify-center rounded-full border border-border bg-card shadow-none">
                 <Image src="/icons/qb-badge.png" alt="QuickBooks" width={16} height={16} className="object-contain" />
               </span>
             </motion.div>

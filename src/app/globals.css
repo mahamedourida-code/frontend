@@ -314,10 +314,23 @@
     content: none;
   }
 
+  .ax-dashboard-content :is(
+    [data-slot="card"],
+    .ax-glass-card,
+    .ax-glass-header,
+    .ax-surface,
+    [class*="shadow-"],
+    [class*="[box-shadow:"],
+    [class*="drop-shadow"]
+  ) {
+    box-shadow: none !important;
+    filter: none !important;
+  }
+
   .ax-glass-card {
     background: color-mix(in srgb, var(--card) 72%, transparent) !important;
     border: 1px solid color-mix(in srgb, var(--border) 80%, transparent) !important;
-    box-shadow: var(--shadow-md);
+    box-shadow: none;
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
   }
@@ -325,7 +338,7 @@
   .ax-glass-header {
     background: color-mix(in srgb, var(--primary) 92%, transparent) !important;
     border-color: color-mix(in srgb, var(--border) 55%, transparent) !important;
-    box-shadow: var(--shadow-md);
+    box-shadow: none;
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
   }
@@ -376,6 +389,13 @@
   --brand-green-ring: #0e7490;
   --brand-brown: #A98467;
   --brand-brown-fg: #6b4f2e;
+  --brand-brown-dark: #6b4f2e;
+  --brand-brown-deep: #3f2a1d;
+  --workspace-popout-bg: #f7f1ec;
+  --workspace-popout-border: #d8c2b0;
+  --workspace-popout-hover: #fffaf6;
+  --workspace-selection-bg: #efe2d8;
+  --workspace-selection-border: #b99272;
   --button-ink: #171717;
   /* Light clay is reserved for special actions such as Upgrade. It stays
      quieter than the primary mint while keeping a clear brown definition. */

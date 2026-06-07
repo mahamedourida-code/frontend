@@ -20,7 +20,6 @@ import { computeReviewScore, REVIEW_LEVEL_WEIGHT } from "@/lib/review-score"
 import { deriveMissingInfo } from "@/lib/missing-info"
 import { Button } from "@/components/ui/button"
 import { MotionButton } from "@/components/ui/motion-button"
-import { clayButton } from "@/lib/clay-button"
 import { CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -121,6 +120,14 @@ const moreFilters: Array<{ value: MoreFilter; label: string }> = [
   { value: "discarded", label: "Discarded" },
 ]
 
+const workspacePrimaryButton =
+  "border-2 !border-[var(--brand-brown-fg)] !bg-[var(--brand-brown-fg)] !text-white !shadow-none hover:!border-black hover:!bg-white hover:!text-black hover:underline hover:decoration-1 hover:underline-offset-4"
+
+const workspaceSurfaceButton =
+  "border-2 !border-black !bg-white !text-black !shadow-none hover:!bg-black hover:!text-white"
+
+const workspaceWarmPanel = "border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)]"
+
 // C9 — bookkeeper-friendly words for the fields vendor memory remembers, so the
 // pre-fill notice reads as a memory ("category, terms, tax") not raw draft keys.
 const MEMORY_FIELD_LABELS: Record<string, string> = {
@@ -137,7 +144,7 @@ const MEMORY_FIELD_LABELS: Record<string, string> = {
 const LEARNED_HINT_STORAGE_KEY = "axliner.ap.vendor-memory-learned-seen"
 
 const inlineFieldClass =
-  "h-9 rounded-lg transition-[border-color,box-shadow] duration-150 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-0"
+  "h-9 rounded-lg transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-0"
 
 function FieldLabel({
   htmlFor,
@@ -160,7 +167,7 @@ function FieldLabel({
         <span
           aria-label="Unsaved change"
           title="Unsaved change"
-          className="size-1.5 shrink-0 rounded-full bg-amber-400 shadow-[0_0_0_2px_hsl(var(--background))]"
+          className="size-1.5 shrink-0 rounded-full bg-amber-400"
         />
       ) : null}
     </div>
@@ -794,7 +801,7 @@ function AccountsPayableContent() {
           title="Draft bills"
           description={`Review invoice drafts, code exceptions, and publish approved bills to ${destinationName}.`}
           actions={selectedReadyIds.length ? (
-            <MotionButton ref={publishTriggerRef} variant="glossy" onClick={openPublishDialog} disabled={saving || !accountingConnection?.connected} className="h-9 px-4">
+            <MotionButton ref={publishTriggerRef} variant="glossy" onClick={openPublishDialog} disabled={saving || !accountingConnection?.connected} className={cn("h-9 px-4", workspacePrimaryButton)}>
               {destinationBadgeSrc ? <Image src={destinationBadgeSrc} alt="" width={16} height={16} className="mr-1 size-4 rounded-sm object-contain" /> : null}
               Publish {selectedReadyIds.length} {selectedReadyIds.length === 1 ? "bill" : "bills"}
             </MotionButton>
@@ -803,18 +810,18 @@ function AccountsPayableContent() {
 
         {/* P11 — client filter chip */}
         {clientId ? (
-          <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
+          <div className={cn("flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm", workspaceWarmPanel)}>
             <span className="font-medium text-foreground">
-              Filtered to <span className="text-primary">{clientName || "client"}</span>
+              Filtered to <span className="text-[var(--brand-brown-fg)]">{clientName || "client"}</span>
               {clientJobIds ? ` · ${visibleItems.length} item${visibleItems.length === 1 ? "" : "s"}` : " · loading…"}
             </span>
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => router.push("/dashboard/accounts-payable")}>
+            <Button variant="surface" size="sm" className={cn("h-7 px-2 text-xs", workspaceSurfaceButton)} onClick={() => router.push("/dashboard/accounts-payable")}>
               Clear filter
             </Button>
           </div>
         ) : null}
 
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-card px-3 py-2 text-xs">
+        <div className={cn("flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2 text-xs", workspaceWarmPanel)}>
           <p className="font-medium text-foreground">
             <span className="font-semibold">{destinationName}</span>
             {accountingConnectionLoading
@@ -825,11 +832,11 @@ function AccountsPayableContent() {
           </p>
           <div className="flex items-center gap-2">
             {accountingConnection?.connected ? (
-              <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => void loadAccountingDestination(true)} disabled={syncingReferences}>
+              <Button variant="surface" size="sm" className={cn("h-7 px-2 text-xs", workspaceSurfaceButton)} onClick={() => void loadAccountingDestination(true)} disabled={syncingReferences}>
                 {syncingReferences ? "Refreshing..." : "Refresh lists"}
               </Button>
             ) : null}
-            <Button variant="surface" size="sm" className="h-7 px-3 text-xs" onClick={() => router.push("/dashboard/integrations")}>
+            <Button variant="surface" size="sm" className={cn("h-7 px-3 text-xs", workspaceSurfaceButton)} onClick={() => router.push("/dashboard/integrations")}>
               Manage integration
             </Button>
           </div>
@@ -859,8 +866,8 @@ function AccountsPayableContent() {
                     className={cn(
                       "ax-interactive inline-flex h-7 items-center gap-1 rounded-full border px-3 text-xs font-medium",
                       filter === tab.value
-                        ? "border-primary/25 bg-primary/10 text-primary"
-                        : "border-transparent bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
+                        ? "border-[var(--brand-brown-fg)] bg-[var(--brand-brown-fg)] text-white"
+                        : "border-black bg-white text-black hover:bg-black hover:text-white"
                     )}
                   >
                     {tab.label}
@@ -873,13 +880,13 @@ function AccountsPayableContent() {
                   className={cn(
                     "ax-interactive flex h-7 cursor-pointer list-none items-center rounded-full border px-3 text-xs font-medium [&::-webkit-details-marker]:hidden",
                     moreFilters.some(option => option.value === filter)
-                      ? "border-primary/25 bg-primary/10 text-primary"
-                      : "border-transparent bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground",
+                      ? "border-[var(--brand-brown-fg)] bg-[var(--brand-brown-fg)] text-white"
+                      : "border-black bg-white text-black hover:bg-black hover:text-white",
                   )}
                 >
                   More filters
                 </summary>
-                <div className="absolute right-0 z-20 mt-2 grid min-w-[180px] gap-1 rounded-md border border-border bg-card p-1.5 shadow-lg">
+                <div className={cn("absolute right-0 z-20 mt-2 grid min-w-[180px] gap-1 rounded-md border p-1.5 shadow-none", workspaceWarmPanel)}>
                   {moreFilters.map(option => {
                     const count =
                       option.value === "duplicates" ? duplicateCount :
@@ -893,8 +900,8 @@ function AccountsPayableContent() {
                         className={cn(
                           "ax-interactive flex items-center justify-between rounded-md px-2.5 py-1.5 text-left text-xs font-medium",
                           filter === option.value
-                            ? "bg-primary/10 text-primary"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                            ? "bg-[var(--brand-brown-fg)] text-white"
+                            : "bg-white text-black hover:bg-black hover:text-white",
                         )}
                       >
                         {option.label}
@@ -953,13 +960,13 @@ function AccountsPayableContent() {
                           </p>
                           {!items.length ? (
                             <div className="mt-7 flex flex-col items-center gap-3">
-                              <Button asChild variant="glossy" size="sm">
+                              <Button asChild variant="glossy" size="sm" className={workspacePrimaryButton}>
                                 <Link href="/dashboard/client?mode=invoice">
                                   Review invoices
                                   <span className="text-[10px] font-bold uppercase tracking-wider opacity-70">Recommended</span>
                                 </Link>
                               </Button>
-                              <Button asChild variant="surface" size="sm">
+                              <Button asChild variant="surface" size="sm" className={workspaceSurfaceButton}>
                                 <Link href="/dashboard/client#upload-files">Upload documents</Link>
                               </Button>
                               <Link href="/blogs" className="ax-interactive text-xs font-semibold text-foreground/60 underline-offset-4 hover:text-foreground hover:underline">
@@ -1128,7 +1135,7 @@ function AccountsPayableContent() {
                             size="sm"
                             onClick={() => setDismissDraft({ warningId: warning.id, reason: "" })}
                             disabled={dismissing || discarding || activeLocked}
-                            className="h-8 px-3 text-xs"
+                            className={cn("h-8 px-3 text-xs", workspaceSurfaceButton)}
                           >
                             Dismiss…
                           </Button>
@@ -1161,7 +1168,7 @@ function AccountsPayableContent() {
                               size="sm"
                               onClick={() => setDismissDraft(null)}
                               disabled={dismissing}
-                              className="h-8 px-3 text-xs"
+                              className={cn("h-8 px-3 text-xs", workspaceSurfaceButton)}
                             >
                               Cancel
                             </Button>
@@ -1170,7 +1177,7 @@ function AccountsPayableContent() {
                               size="sm"
                               onClick={() => void dismissDuplicateWarning()}
                               disabled={dismissing}
-                              className={cn("h-8 px-3 text-xs", clayButton)}
+                              className={cn("h-8 px-3 text-xs", workspacePrimaryButton)}
                             >
                               {dismissing ? "Dismissing…" : "Dismiss warning"}
                             </Button>
@@ -1181,24 +1188,24 @@ function AccountsPayableContent() {
                   ))}
 
                   {autoAppliedRule ? (
-                    <div className="flex flex-wrap items-start justify-between gap-3 rounded-md border-2 border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900/60 dark:bg-emerald-950/40">
+                    <div className={cn("flex flex-wrap items-start justify-between gap-3 rounded-md border-2 p-3", workspaceWarmPanel)}>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+                        <p className="text-xs font-bold uppercase tracking-wider text-[var(--brand-brown-fg)]">
                           {autoAppliedRule.mode === "auto_ready" ? "Pre-filled & moved to Ready for your approval" : "Pre-filled from memory"}
                         </p>
-                        <p className="mt-1 text-sm font-semibold text-emerald-900 dark:text-emerald-100">
+                        <p className="mt-1 text-sm font-semibold text-foreground">
                           {autoAppliedRule.ruleName}
                         </p>
                         {autoAppliedRule.learnedLabels.length ? (
                           <>
-                            <p className="mt-1 text-xs text-emerald-900/80 dark:text-emerald-100/80">
+                            <p className="mt-1 text-xs text-foreground/70">
                               Remembered from your past invoices — {autoAppliedRule.learnedLabels.join(", ")}.
                             </p>
                             <div className="mt-2 flex flex-wrap gap-1.5">
                               {autoAppliedRule.learnedLabels.map((label) => (
                                 <span
                                   key={label}
-                                  className="rounded-full border border-emerald-300/70 bg-white/70 px-2 py-0.5 text-[11px] font-semibold capitalize text-emerald-800 dark:border-emerald-800/60 dark:bg-emerald-900/40 dark:text-emerald-200"
+                                  className="rounded-full border border-[var(--button-warm-ring)] bg-white/70 px-2 py-0.5 text-[11px] font-semibold capitalize text-[var(--brand-brown-fg)]"
                                 >
                                   {label}
                                 </span>
@@ -1213,7 +1220,7 @@ function AccountsPayableContent() {
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -4 }}
                               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                              className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-emerald-300/70 bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-emerald-800 dark:border-emerald-800/60 dark:bg-emerald-900/50 dark:text-emerald-200"
+                              className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-[var(--button-warm-ring)] bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-[var(--brand-brown-fg)]"
                             >
                               <Sparkles className="size-3" />
                               Saved for this supplier. Future invoices can use the same coding.
@@ -1226,13 +1233,13 @@ function AccountsPayableContent() {
                         size="sm"
                         disabled={saving || activeLocked}
                         onClick={() => void overrideAutoFill()}
-                        className="h-8 shrink-0 px-3 text-xs"
+                        className={cn("h-8 shrink-0 px-3 text-xs", workspaceSurfaceButton)}
                       >
                         Override
                       </Button>
                     </div>
                   ) : activeItem.vendor_suggestion ? (
-                    <div className="rounded-md border border-border bg-muted/30 p-3">
+                    <div className={cn("rounded-md border p-3", workspaceWarmPanel)}>
                       <p className="text-xs font-semibold text-foreground">Remembered suggestions</p>
                       <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
                         {Object.entries(activeItem.vendor_suggestion.suggested_fields).map(([key, value]) => (
@@ -1283,7 +1290,7 @@ function AccountsPayableContent() {
                           <button
                             type="button"
                             onClick={() => void openPoDialog()}
-                            className="ax-interactive inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 underline-offset-2 hover:text-emerald-800 hover:underline"
+                            className="ax-interactive inline-flex items-center gap-1 text-[11px] font-bold text-[var(--brand-brown-fg)] underline-offset-2 hover:text-black hover:underline"
                           >
                             <FileText className="size-3" />
                             {activeItem.matched_po ? "Change PO" : "Match PO"}
@@ -1309,7 +1316,7 @@ function AccountsPayableContent() {
                           "mt-1.5 rounded-md border px-2.5 py-1.5 text-[11px]",
                           activeItem.po_match_status === "exceeds"
                             ? "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200"
-                            : "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200",
+                            : "border-[var(--button-warm-ring)] bg-[var(--button-warm)] text-[var(--brand-brown-fg)]",
                         )}>
                           <div className="flex items-center justify-between gap-2">
                             <span className="flex items-center gap-1.5">
@@ -1435,7 +1442,7 @@ function AccountsPayableContent() {
                     ))}
                     <div className="space-y-1.5">
                       <FieldLabel>Invoice total</FieldLabel>
-                      <div className="flex h-9 items-center rounded-lg border border-border bg-muted/40 px-3 text-sm font-semibold text-foreground">
+                      <div className={cn("flex h-9 items-center rounded-lg border px-3 text-sm font-semibold text-foreground", workspaceWarmPanel)}>
                         {amountLabel(activeItem)}
                       </div>
                     </div>
@@ -1453,7 +1460,7 @@ function AccountsPayableContent() {
                     </div>
                   ) : null}
 
-                  <details className="rounded-md border border-border bg-muted/20">
+                  <details className={cn("rounded-md border", workspaceWarmPanel)}>
                     <summary className="ax-interactive cursor-pointer list-none px-3 py-2.5 text-sm font-semibold text-foreground [&::-webkit-details-marker]:hidden">
                       Advanced details
                     </summary>
@@ -1478,7 +1485,7 @@ function AccountsPayableContent() {
                           </div>
                         ))}
                       </div>
-                      <label className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2.5 text-sm text-foreground">
+                      <label className="flex items-center gap-2 rounded-md border border-border bg-white px-3 py-2.5 text-sm text-black">
                         <Checkbox
                           checked={attachmentVisible}
                           disabled={activeLocked}
@@ -1525,7 +1532,7 @@ function AccountsPayableContent() {
                     <div className="mb-2 flex items-center justify-between gap-3">
                       <p className="text-sm font-semibold text-foreground">Line items</p>
                       {!activeLocked ? (
-                        <Button type="button" variant="surface" size="sm" onClick={addLineItem} className="h-8 text-xs">
+                        <Button type="button" variant="surface" size="sm" onClick={addLineItem} className={cn("h-8 text-xs", workspaceSurfaceButton)}>
                           Add line
                         </Button>
                       ) : null}
@@ -1558,7 +1565,7 @@ function AccountsPayableContent() {
                                 ))}
                                 {!activeLocked ? (
                                   <td className="p-1.5">
-                                    <Button type="button" size="sm" variant="ghost" onClick={() => removeLineItem(rowIndex)} className="h-8 px-2 text-xs">
+                                    <Button type="button" size="sm" variant="surface" onClick={() => removeLineItem(rowIndex)} className={cn("h-8 px-2 text-xs", workspaceSurfaceButton)}>
                                       Remove
                                     </Button>
                                   </td>
@@ -1588,20 +1595,20 @@ function AccountsPayableContent() {
                   <div className="sticky bottom-0 z-10 -mx-4 -mb-4 flex flex-wrap justify-end gap-2 border-t border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:relative sm:bottom-auto sm:mx-0 sm:mb-0 sm:bg-transparent sm:px-0 sm:py-4 sm:backdrop-blur-0 sm:supports-[backdrop-filter]:bg-transparent">
                     {!activeLocked ? (
                       <>
-                        <MotionButton variant="surface" onClick={() => void persistDraft()} disabled={saving} className={cn("h-9", clayButton)}>
+                        <MotionButton variant="surface" onClick={() => void persistDraft()} disabled={saving} className={cn("h-9", workspacePrimaryButton)}>
                           Save changes
                         </MotionButton>
                         {activeItem.status === "ready_to_publish" ? (
                           <>
-                            <Button variant="surface" onClick={() => void persistDraft("needs_coding")} disabled={saving} className="h-9">
+                            <Button variant="surface" onClick={() => void persistDraft("needs_coding")} disabled={saving} className={cn("h-9", workspaceSurfaceButton)}>
                               Return to coding
                             </Button>
-                            <MotionButton ref={activePublishRef} variant="glossy" onClick={() => void publishActive()} disabled={saving || !accountingConnection?.connected} className="h-9">
+                            <MotionButton ref={activePublishRef} variant="glossy" onClick={() => void publishActive()} disabled={saving || !accountingConnection?.connected} className={cn("h-9", workspacePrimaryButton)}>
                               Publish to {destinationName}
                             </MotionButton>
                           </>
                         ) : (
-                          <Button variant="reviewed" onClick={() => void persistDraft("ready_to_publish")} disabled={saving} className="h-9">
+                          <Button variant="reviewed" onClick={() => void persistDraft("ready_to_publish")} disabled={saving} className={cn("h-9", workspacePrimaryButton)}>
                             Mark ready to publish
                           </Button>
                         )}
@@ -1609,7 +1616,7 @@ function AccountsPayableContent() {
                     ) : null}
                     <div className="flex flex-wrap gap-2">
                       {canRetryAttachment ? (
-                        <Button variant="surface" onClick={() => void publishActive()} disabled={saving || !accountingConnection?.connected} className="h-9">
+                        <Button variant="surface" onClick={() => void publishActive()} disabled={saving || !accountingConnection?.connected} className={cn("h-9", workspaceSurfaceButton)}>
                           Retry attachment
                         </Button>
                       ) : null}
@@ -1652,7 +1659,7 @@ function AccountsPayableContent() {
                   </p>
                 </div>
               ) : null}
-              <div className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-muted/40 px-3 py-2.5 text-sm">
+              <div className={cn("flex flex-wrap items-center gap-2 rounded-md border px-3 py-2.5 text-sm", workspaceWarmPanel)}>
                 <StatusBadge tone="success">{publishResult.succeeded} published</StatusBadge>
                 {publishResult.failed.length > 0 ? (
                   <StatusBadge tone="error">{publishResult.failed.length} failed</StatusBadge>
@@ -1662,7 +1669,7 @@ function AccountsPayableContent() {
               </div>
               {publishResult.failed.length > 0 ? (
                 <div className="rounded-md border border-border">
-                  <p className="border-b border-border bg-muted/30 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <p className={cn("border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground", workspaceWarmPanel)}>
                     Failed items
                   </p>
                   <ul className="max-h-[200px] divide-y divide-border overflow-y-auto">
@@ -1680,7 +1687,7 @@ function AccountsPayableContent() {
             </div>
           ) : (
             <div className="rounded-md border border-border">
-              <p className="border-b border-border bg-muted/30 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <p className={cn("border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground", workspaceWarmPanel)}>
                 Selected draft bills
               </p>
               <ul className="max-h-[260px] divide-y divide-border overflow-y-auto">
@@ -1704,12 +1711,12 @@ function AccountsPayableContent() {
 
           <DialogFooter>
             {publishResult ? (
-              <MotionButton variant="glossy" onClick={closePublishDialog} className="h-9 px-4">
+              <MotionButton variant="glossy" onClick={closePublishDialog} className={cn("h-9 px-4", workspacePrimaryButton)}>
                 Close
               </MotionButton>
             ) : (
               <>
-                <Button variant="surface" onClick={closePublishDialog} disabled={publishing} className="h-9 px-4">
+                <Button variant="surface" onClick={closePublishDialog} disabled={publishing} className={cn("h-9 px-4", workspaceSurfaceButton)}>
                   Cancel
                 </Button>
                 <MotionButton
@@ -1717,7 +1724,7 @@ function AccountsPayableContent() {
                   variant="glossy"
                   onClick={() => void confirmPublishSelected()}
                   disabled={publishing || !accountingConnection?.connected || !selectedReadyIds.length}
-                  className="h-9 px-4"
+                  className={cn("h-9 px-4", workspacePrimaryButton)}
                 >
                   {publishing ? (
                     <>
@@ -1742,7 +1749,7 @@ function AccountsPayableContent() {
         <DialogContent className="gap-4 rounded-md sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base font-bold">
-              <span className="inline-flex size-6 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+              <span className="inline-flex size-6 items-center justify-center rounded-md bg-[var(--button-warm)] text-[var(--brand-brown-fg)]">
                 <FileText className="size-3.5" />
               </span>
               Match a purchase order
@@ -1757,7 +1764,7 @@ function AccountsPayableContent() {
               <Loader2 className="mr-2 size-4 animate-spin" /> Loading purchase orders…
             </div>
           ) : poList.length === 0 ? (
-            <div className="rounded-xl border-2 border-border bg-muted/30 p-5 text-center">
+            <div className={cn("rounded-xl border-2 p-5 text-center", workspaceWarmPanel)}>
               <p className="text-sm font-bold text-foreground">No open purchase orders</p>
               <p className="mt-1 text-xs font-semibold text-muted-foreground">No open purchase orders are available for this supplier.</p>
             </div>
@@ -1773,22 +1780,22 @@ function AccountsPayableContent() {
                     onClick={() => void matchPo(po.id)}
                     disabled={poBusy}
                     className={cn(
-                      "ax-interactive flex w-full items-center justify-between gap-3 rounded-lg border-2 bg-card px-3 py-2.5 text-left transition-colors",
+                      "ax-interactive flex w-full items-center justify-between gap-3 rounded-lg border-2 bg-white px-3 py-2.5 text-left text-black transition-colors",
                       exceeds
-                        ? "border-amber-200 hover:border-amber-400 hover:bg-amber-50/60 dark:border-amber-900/50"
-                        : "border-border hover:border-emerald-700/40 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20",
+                        ? "border-amber-300 hover:border-amber-500 hover:bg-amber-50"
+                        : "border-border hover:border-[var(--button-warm-ring)] hover:bg-[var(--button-warm)]",
                     )}
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-bold text-foreground">PO {po.po_number}</p>
-                      <p className="text-xs font-semibold text-muted-foreground">
+                      <p className="truncate text-sm font-bold text-black">PO {po.po_number}</p>
+                      <p className="text-xs font-semibold text-neutral-600">
                         {po.vendor_name || "—"}{po.po_date ? ` · ${po.po_date}` : ""}
                       </p>
                     </div>
                     <div className="shrink-0 text-right">
-                      <p className="font-mono text-sm font-semibold tabular-nums text-foreground">{po.currency || ""} {Number(po.total).toFixed(2)}</p>
+                      <p className="font-mono text-sm font-semibold tabular-nums text-black">{po.currency || ""} {Number(po.total).toFixed(2)}</p>
                       {po.remaining_amount != null ? (
-                        <p className="text-[11px] font-medium text-muted-foreground">Remaining {Number(po.remaining_amount).toFixed(2)}</p>
+                        <p className="text-[11px] font-medium text-neutral-600">Remaining {Number(po.remaining_amount).toFixed(2)}</p>
                       ) : null}
                       {exceeds ? <p className="text-[11px] font-bold text-amber-700">Invoice exceeds PO</p> : null}
                     </div>
@@ -1799,7 +1806,7 @@ function AccountsPayableContent() {
           )}
 
           <DialogFooter>
-            <Button variant="surface" size="sm" onClick={() => setPoDialogOpen(false)}>Close</Button>
+            <Button variant="surface" size="sm" className={workspaceSurfaceButton} onClick={() => setPoDialogOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

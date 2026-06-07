@@ -19,7 +19,6 @@ import { Input } from "@/components/ui/input"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
-import { clayButton } from "@/lib/clay-button"
 import {
   clientIntakeApi,
   connectedSourcesApi,
@@ -34,6 +33,14 @@ import {
   type WorkspaceMember,
 } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
+
+const workspacePrimaryButton =
+  "border-2 !border-[var(--brand-brown-fg)] !bg-[var(--brand-brown-fg)] !text-white !shadow-none hover:!border-black hover:!bg-white hover:!text-black hover:underline hover:decoration-1 hover:underline-offset-4"
+
+const workspaceSurfaceButton =
+  "border-2 !border-black !bg-white !text-black !shadow-none hover:!bg-black hover:!text-white"
+
+const workspaceWarmPanel = "border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)]"
 
 function formatReceivedAt(value: string) {
   return new Intl.DateTimeFormat(undefined, {
@@ -336,7 +343,7 @@ export default function EmailInboxPage() {
         <PageHeader
           title="Inbox"
           actions={
-            <Button variant="surface" size="sm" onClick={() => void loadInbox()} disabled={loading}>
+            <Button variant="surface" size="sm" onClick={() => void loadInbox()} disabled={loading} className={workspaceSurfaceButton}>
               <RefreshCw className={cn("size-4", loading && "animate-spin")} />
               Refresh
             </Button>
@@ -348,7 +355,7 @@ export default function EmailInboxPage() {
           <div className="grid gap-4 lg:grid-cols-2">
 
             {/* Client upload links */}
-            <Card>
+            <Card className="!shadow-none">
               <CardContent className="p-5">
                 <div className="flex items-center gap-2">
                   <Image src="/icons/share.png" alt="" width={20} height={20} className="object-contain opacity-85" loading="lazy" />
@@ -359,7 +366,7 @@ export default function EmailInboxPage() {
                   <Input value={linkLabel} onChange={event => setLinkLabel(event.target.value)} placeholder="Client documents" />
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="glossy" onClick={() => void createClientLink()} disabled={actionBusy === "link"}>
+                      <Button variant="glossy" onClick={() => void createClientLink()} disabled={actionBusy === "link"} className={workspacePrimaryButton}>
                         <Link2 className="size-4" />
                         Create
                       </Button>
@@ -370,15 +377,15 @@ export default function EmailInboxPage() {
 
                 {newUploadUrl ? (
                   <div className="mt-3 space-y-2">
-                    <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/40 px-3 py-2">
+                    <div className={cn("flex items-center gap-3 rounded-lg border px-3 py-2", workspaceWarmPanel)}>
                       <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Upload</span>
                       <p className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">{newUploadUrl}</p>
-                      <Button variant="surface" size="sm" onClick={() => void navigator.clipboard.writeText(newUploadUrl)}>Copy</Button>
+                      <Button variant="surface" size="sm" className={workspaceSurfaceButton} onClick={() => void navigator.clipboard.writeText(newUploadUrl)}>Copy</Button>
                     </div>
-                    <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/40 px-3 py-2">
+                    <div className={cn("flex items-center gap-3 rounded-lg border px-3 py-2", workspaceWarmPanel)}>
                       <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Status</span>
                       <p className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">{newUploadUrl.replace("/upload/", "/status/")}</p>
-                      <Button variant="surface" size="sm" onClick={() => void navigator.clipboard.writeText(newUploadUrl.replace("/upload/", "/status/"))}>Copy</Button>
+                      <Button variant="surface" size="sm" className={workspaceSurfaceButton} onClick={() => void navigator.clipboard.writeText(newUploadUrl.replace("/upload/", "/status/"))}>Copy</Button>
                     </div>
                   </div>
                 ) : null}
@@ -404,7 +411,7 @@ export default function EmailInboxPage() {
                               <td className="px-3 py-2.5 text-muted-foreground">{formatExpiry(link.expires_at)}</td>
                               <td className="px-3 py-2.5">
                                 {link.enabled ? (
-                                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
+                                  <Button variant="surface" size="sm" className={cn("h-7 px-2 text-xs", workspaceSurfaceButton)} onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
                                     Revoke
                                   </Button>
                                 ) : (
@@ -429,7 +436,7 @@ export default function EmailInboxPage() {
                             </p>
                           </div>
                           {link.enabled ? (
-                            <Button variant="ghost" size="sm" className="h-7 shrink-0 px-2 text-xs" onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
+                            <Button variant="surface" size="sm" className={cn("h-7 shrink-0 px-2 text-xs", workspaceSurfaceButton)} onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
                               Revoke
                             </Button>
                           ) : null}
@@ -442,7 +449,7 @@ export default function EmailInboxPage() {
             </Card>
 
             {/* Reviewers */}
-            <Card>
+            <Card className="!shadow-none">
               <CardContent className="p-5">
                 <div className="flex items-center gap-2">
                   <Image src="/icons/reviewer.png" alt="" width={20} height={20} className="object-contain opacity-85" loading="lazy" />
@@ -453,7 +460,7 @@ export default function EmailInboxPage() {
                   <Input type="email" value={reviewerEmail} onChange={event => setReviewerEmail(event.target.value)} placeholder="reviewer@firm.com" />
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="surface" onClick={() => void inviteReviewer()} disabled={actionBusy === "reviewer"}>
+                      <Button variant="surface" onClick={() => void inviteReviewer()} disabled={actionBusy === "reviewer"} className={workspacePrimaryButton}>
                         <UserPlus className="size-4" />
                         Add
                       </Button>
@@ -470,7 +477,7 @@ export default function EmailInboxPage() {
                         <p className="mt-0.5 text-xs capitalize text-muted-foreground">{member.status}</p>
                       </div>
                       {member.status !== "revoked" ? (
-                        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => void revokeReviewer(member.id)} disabled={actionBusy === member.id}>
+                        <Button variant="surface" size="sm" className={cn("h-7 px-2 text-xs", workspaceSurfaceButton)} onClick={() => void revokeReviewer(member.id)} disabled={actionBusy === member.id}>
                           Remove
                         </Button>
                       ) : null}
@@ -484,7 +491,7 @@ export default function EmailInboxPage() {
 
         {/* Email address card */}
         {activeWorkspace?.role === "owner" ? (
-          <Card>
+          <Card className="!shadow-none">
             <CardContent className="p-5">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -495,7 +502,7 @@ export default function EmailInboxPage() {
                 </div>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="surface" onClick={() => void copyAddress()} disabled={!address} className="shrink-0">
+                    <Button variant="surface" onClick={() => void copyAddress()} disabled={!address} className={cn("shrink-0", workspaceSurfaceButton)}>
                       {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
                       {copied ? "Copied!" : "Copy address"}
                     </Button>
@@ -512,7 +519,7 @@ export default function EmailInboxPage() {
 
         {/* P6 — Connected sources (Google Drive / Dropbox watch folders) */}
         {activeWorkspace?.role === "owner" ? (
-          <Card>
+          <Card className="!shadow-none">
             <CardContent className="p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -526,7 +533,7 @@ export default function EmailInboxPage() {
                   const configured = providersConfigured[provider]
                   const label = provider === "google_drive" ? "Google Drive" : "Dropbox"
                   return (
-                    <div key={provider} className="rounded-xl border border-border bg-card/60 p-4">
+                    <div key={provider} className={cn("rounded-xl border p-4", workspaceWarmPanel)}>
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2.5">
                           <span className="inline-flex size-9 items-center justify-center rounded-md bg-muted text-muted-foreground">
@@ -562,10 +569,10 @@ export default function EmailInboxPage() {
                                   placeholder={provider === "google_drive" ? "AxLiner intake" : "/AxLiner intake"}
                                   className="h-9"
                                 />
-                                <Button size="sm" variant="surface" onClick={() => void saveWatchedFolder(source.id)} disabled={actionBusy === source.id} className={cn("shrink-0", clayButton)}>
+                                <Button size="sm" variant="surface" onClick={() => void saveWatchedFolder(source.id)} disabled={actionBusy === source.id} className={cn("shrink-0", workspacePrimaryButton)}>
                                   Save
                                 </Button>
-                                <Button size="sm" variant="ghost" onClick={() => setFolderDraft(null)} className="shrink-0">
+                                <Button size="sm" variant="ghost" onClick={() => setFolderDraft(null)} className="shrink-0 shadow-none">
                                   <X className="size-3.5" />
                                 </Button>
                               </div>
@@ -574,7 +581,7 @@ export default function EmailInboxPage() {
                                 <p className="min-w-0 truncate text-sm font-medium text-foreground">
                                   {source.watched_folder || <span className="text-muted-foreground">No folder set</span>}
                                 </p>
-                                <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setFolderDraft({ id: source.id, value: source.watched_folder || "" })}>
+                                <Button size="sm" variant="surface" className={cn("h-7 px-2 text-xs", workspaceSurfaceButton)} onClick={() => setFolderDraft({ id: source.id, value: source.watched_folder || "" })}>
                                   Edit
                                 </Button>
                               </div>
@@ -585,7 +592,7 @@ export default function EmailInboxPage() {
                               Last sync: {source.last_synced_at ? formatReceivedAt(source.last_synced_at) : "never"}
                             </span>
                             <div className="flex items-center gap-3">
-                              <Button size="sm" variant="surface" className="h-7 px-2 text-xs" onClick={() => void triggerSync(source.id)} disabled={actionBusy === source.id}>
+                              <Button size="sm" variant="surface" className={cn("h-7 px-2 text-xs", workspaceSurfaceButton)} onClick={() => void triggerSync(source.id)} disabled={actionBusy === source.id}>
                                 <RefreshCw className={cn("size-3", actionBusy === source.id && "animate-spin")} />
                                 Sync now
                               </Button>
@@ -606,7 +613,7 @@ export default function EmailInboxPage() {
                           <Button
                             variant="surface"
                             size="sm"
-                            className={cn("w-full", clayButton)}
+                            className={cn("w-full", workspacePrimaryButton)}
                             onClick={() => void startConnectProvider(provider)}
                             disabled={!configured || connectingProvider === provider}
                           >
@@ -632,7 +639,7 @@ export default function EmailInboxPage() {
           <Badge variant="outline">{submissions.reduce((count, submission) => count + submission.file_count, 0)} files</Badge>
         </div>
 
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden !shadow-none">
           <CardContent className="p-0">
             {loading ? (
               <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading submissions" /></div>
@@ -679,7 +686,7 @@ export default function EmailInboxPage() {
                             </td>
                             <td className="px-4 py-3">
                               {submission.job_id ? (
-                                <Button asChild variant="surface" size="sm" className="h-7">
+                                <Button asChild variant="surface" size="sm" className={cn("h-7", workspaceSurfaceButton)}>
                                   <Link href={`/dashboard/client?job_id=${encodeURIComponent(submission.job_id)}`}>Review</Link>
                                 </Button>
                               ) : null}
@@ -707,7 +714,7 @@ export default function EmailInboxPage() {
                             <span className="text-xs text-muted-foreground">{submission.file_count} file{submission.file_count !== 1 ? "s" : ""}</span>
                           </div>
                           {submission.job_id ? (
-                            <Button asChild variant="surface" size="sm" className="h-7">
+                            <Button asChild variant="surface" size="sm" className={cn("h-7", workspaceSurfaceButton)}>
                               <Link href={`/dashboard/client?job_id=${encodeURIComponent(submission.job_id)}`}>Review</Link>
                             </Button>
                           ) : null}
@@ -730,7 +737,7 @@ export default function EmailInboxPage() {
           <Badge variant="outline">{importCount} files</Badge>
         </div>
 
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden !shadow-none">
           <CardContent className="p-0">
             {loading ? (
               <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading imports" /></div>
@@ -763,7 +770,7 @@ export default function EmailInboxPage() {
                       <p className="text-sm text-muted-foreground">{formatReceivedAt(message.received_at)}</p>
                       <StatusBadge tone={tone}>{state}</StatusBadge>
                       {message.job_id ? (
-                        <Button asChild variant="surface" size="sm" className="h-7">
+                        <Button asChild variant="surface" size="sm" className={cn("h-7", workspaceSurfaceButton)}>
                           <Link href={`/dashboard/client?job_id=${encodeURIComponent(message.job_id)}`}>Review</Link>
                         </Button>
                       ) : (

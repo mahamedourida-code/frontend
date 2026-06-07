@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
  * Source highlighting on the review split-pane (C2 — the cheap 80%).
  *
  * When a field on the right is hovered / focused, we text-match its value
- * against the document's OCR text (`sourceText`) and float a small emerald
+ * against the document's OCR text (`sourceText`) and float a small tinted
  * "source" excerpt over the document preview, with the matched value
  * highlighted in the line. This is the Microsoft-Dynamics "eyeball → highlight
  * on the document" affordance and the legal-AI "show me where it says that",
@@ -59,14 +59,14 @@ export function SourceHighlightOverlay({
             className,
           )}
         >
-          <div className="rounded-md border border-emerald-300 bg-emerald-50/95 px-3 py-2 shadow-[0_1px_3px_0_rgba(0,0,0,0.12)] backdrop-blur">
-            <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-800">
+          <div className="rounded-md border border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)] px-3 py-2 shadow-none backdrop-blur">
+            <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--brand-brown-fg)]">
               <Quote className="size-3" />
               {label ? `Found "${label}" here` : "Found on the document"}
             </p>
-            <p className="mt-1 text-xs leading-5 text-emerald-950">
+            <p className="mt-1 text-xs leading-5 text-[var(--brand-brown-deep)]">
               {match.line.slice(0, match.matchStart)}
-              <mark className="rounded-[3px] bg-emerald-300/80 px-0.5 font-semibold text-emerald-950">
+              <mark className="rounded-[3px] bg-[var(--workspace-selection-bg)] px-0.5 font-semibold text-[var(--brand-brown-deep)]">
                 {match.line.slice(match.matchStart, match.matchEnd)}
               </mark>
               {match.line.slice(match.matchEnd)}

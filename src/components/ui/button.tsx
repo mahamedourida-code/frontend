@@ -12,22 +12,22 @@ const buttonVariants = cva(
         default:
           "border-2 border-black bg-white text-black hover:bg-black hover:text-white",
         critical:
-          "border-2 border-[var(--brand-brown)] bg-[var(--brand-brown)] text-black hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4",
+          "border-2 border-[var(--brand-brown-dark)] bg-[var(--brand-brown-dark)] text-white hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4",
         // Primary CTA - landing sign-up treatment.
         glossy:
-          "border-2 border-[var(--brand-brown)] bg-[var(--brand-brown)] text-black hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4",
+          "border-2 border-[var(--brand-brown-dark)] bg-[var(--brand-brown-dark)] text-white hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4",
         // Warm supporting action - same brown treatment.
         warm:
-          "border-2 border-[var(--brand-brown)] bg-[var(--brand-brown)] text-black hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4",
+          "border-2 border-[var(--brand-brown-dark)] bg-[var(--brand-brown-dark)] text-white hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4",
         // Clay/lime compatibility aliases keep the brown CTA treatment.
         clay:
-          "border-2 border-[var(--brand-brown)] bg-[var(--brand-brown)] text-black hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4",
+          "border-2 border-[var(--brand-brown-dark)] bg-[var(--brand-brown-dark)] text-white hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4",
         // High-contrast CTA, shadowless.
         ink:
           "border-2 border-black bg-black text-white hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4",
         // Upgrade compatibility alias.
         lime:
-          "border-2 border-[var(--brand-brown)] bg-[var(--brand-brown)] text-black hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4",
+          "border-2 border-[var(--brand-brown-dark)] bg-[var(--brand-brown-dark)] text-white hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4",
         // Confirm/reviewed action - same ink treatment as `ink`.
         reviewed:
           "border-2 border-black bg-black text-white hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4",
@@ -39,7 +39,7 @@ const buttonVariants = cva(
         outline:
           "border-2 border-black bg-white text-black hover:bg-black hover:text-white",
         secondary:
-          "border-2 border-[var(--brand-brown)] bg-[var(--brand-brown)] text-black hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4",
+          "border-2 border-[var(--brand-brown-dark)] bg-[var(--brand-brown-dark)] text-white hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4",
         ghost:
           "bg-transparent text-black hover:bg-transparent hover:text-black",
         link: "text-primary underline-offset-4 hover:underline",

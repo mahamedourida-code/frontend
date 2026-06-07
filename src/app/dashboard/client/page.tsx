@@ -1969,7 +1969,7 @@ Best regards`
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-3 rounded-md border border-border bg-card px-4 py-3 shadow-xs"
+            className="mb-3 rounded-md border border-border bg-card px-4 py-3 shadow-none"
             role="status"
             aria-live="polite"
           >

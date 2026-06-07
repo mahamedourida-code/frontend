@@ -127,6 +127,13 @@ type ResultPreview = {
   loading?: boolean
 }
 
+const workspacePrimaryControlClass =
+  "border-2 border-[var(--brand-brown-fg)] bg-[var(--brand-brown-fg)] text-white hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4 focus-visible:ring-black/25"
+const workspaceNormalControlClass =
+  "border-2 border-black bg-white text-black hover:bg-black hover:text-white focus-visible:ring-black/20"
+const workspacePanelSurfaceClass =
+  "border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)]"
+
 type ConversionWorkspaceProps = {
   banner?: WorkspaceBanner | null
   onDismissBanner?: () => void
@@ -216,14 +223,14 @@ function ReviewWorkflowStrip({ className }: { className?: string }) {
         <div
           key={step.n}
           className={cn(
-            "flex items-center gap-3 rounded-xl border bg-card px-3 py-2.5 transition-colors",
-            index === 0 ? "border-[var(--brand-green-ring)]" : "border-border",
+            "flex items-center gap-3 rounded-xl border bg-[var(--button-warm)] px-3 py-2.5 transition-colors",
+            index === 0 ? "border-[var(--brand-brown-fg)]" : "border-[var(--button-warm-ring)]",
           )}
         >
           <Symbol name={step.symbol} size="medium" className="h-16 w-16 shrink-0 sm:h-20 sm:w-20" alt="" />
           <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
-              <span className="font-mono text-xs text-emerald-600">{step.n}</span>
+              <span className="font-mono text-xs text-[var(--brand-brown-fg)]">{step.n}</span>
               {step.label}
             </p>
             <p className="truncate text-xs text-muted-foreground">{step.hint}</p>
@@ -285,10 +292,10 @@ function WorkspaceErrorBanner({ banner, onDismiss }: { banner?: WorkspaceBanner 
   return (
     <div
       className={cn(
-        "mb-4 flex flex-col gap-3 rounded-md border p-4 shadow-sm backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between",
+        "mb-4 flex flex-col gap-3 rounded-md border p-4 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between",
         banner.tone === "error" && "border-rose-200 bg-rose-50/88 text-rose-950",
         banner.tone === "warning" && "border-amber-200 bg-amber-50/88 text-amber-950",
-        (!banner.tone || banner.tone === "info") && "border-border bg-card/70 text-foreground"
+        (!banner.tone || banner.tone === "info") && "border-[var(--button-warm-ring)] bg-[var(--button-warm)] text-foreground"
       )}
     >
       <div className="flex min-w-0 items-start gap-3">
@@ -337,7 +344,7 @@ function AutoDetectionPanel({
   const selectableModes = Object.keys(labels) as ResolvedDocumentMode[]
 
   return (
-    <section className="rounded-xl border border-border bg-card p-4 shadow-xs">
+    <section className={cn("rounded-xl border p-4", workspacePanelSurfaceClass)}>
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
           <h3 className="text-base font-semibold text-foreground">Detected document types</h3>
@@ -366,7 +373,7 @@ function AutoDetectionPanel({
                     "rounded-md border px-2 py-0.5 font-medium",
                     needsSelection
                       ? "border-amber-200 bg-amber-50 text-amber-800"
-                      : "border-border bg-muted text-foreground"
+                      : "border-[var(--button-warm-ring)] bg-white text-foreground"
                   )}>
                     {needsSelection
                       ? "Needs review"
@@ -425,7 +432,7 @@ function ResumeBatchBanner({
   if (!latestRecoverableJob) return null
 
   return (
-    <div className="mb-3 flex flex-col gap-3 rounded-md border border-border bg-card p-3 text-foreground shadow-xs sm:flex-row sm:items-center sm:justify-between">
+    <div className={cn("mb-3 flex flex-col gap-3 rounded-md border p-3 text-foreground sm:flex-row sm:items-center sm:justify-between", workspacePanelSurfaceClass)}>
       <div className="flex items-center gap-3">
         <Loader2 className="h-4 w-4 text-muted-foreground" />
         <div>
@@ -439,7 +446,7 @@ function ResumeBatchBanner({
         variant="clay"
         onClick={onContinueLatestJob}
         disabled={recoveryLoading}
-        className="h-9 px-4"
+        className={cn("h-9 px-4", workspacePrimaryControlClass)}
       >
         {recoveryLoading ? "Resuming..." : "Open batch"}
       </Button>
@@ -484,7 +491,7 @@ export function UploadDropzone({
       onDrop={onDrop}
       className={cn(
         "relative overflow-hidden rounded-md border border-dashed transition-all duration-200",
-        isDragging ? "border-primary bg-card/85 scale-[0.997]" : "border-border bg-card/50 hover:border-primary/50"
+        isDragging ? "scale-[0.997] border-[var(--brand-brown-fg)] bg-[var(--brand-clay)]" : "border-[var(--button-warm-ring)] bg-[var(--button-warm)] hover:border-black"
       )}
     >
       <div className={cn("px-4 py-5 text-center sm:px-6", uploadedFiles.length ? "min-h-[240px]" : "flex min-h-[420px] flex-col items-center justify-center")}>
@@ -496,7 +503,7 @@ export function UploadDropzone({
             alt=""
           />
         ) : (
-          <FolderUp className="mx-auto mb-3 h-7 w-7 text-emerald-600" />
+          <FolderUp className="mx-auto mb-3 h-7 w-7 text-[var(--brand-brown-fg)]" />
         )}
         <h3 className="text-xl font-semibold tracking-tight text-foreground">
           {isDragging ? "Drop documents to upload" : uploadedFiles.length ? "Add more documents" : "Upload documents"}
@@ -522,6 +529,7 @@ export function UploadDropzone({
             className={cn(
               buttonVariants({ variant: "glossy", size: "default" }),
               "h-9 cursor-pointer px-4 font-medium",
+              workspacePrimaryControlClass,
               isProcessing && "pointer-events-none opacity-55"
             )}
           >
@@ -552,7 +560,7 @@ export function UploadDropzone({
         />
 
         {uploadedFiles.length ? (
-          <div className="mx-auto mt-5 max-w-3xl divide-y divide-border overflow-hidden rounded-md border border-border bg-card text-left">
+          <div className="mx-auto mt-5 max-w-3xl divide-y divide-[var(--button-warm-ring)] overflow-hidden rounded-md border border-[var(--button-warm-ring)] bg-white text-left">
             {uploadedFiles.map((file, index) => {
               const pdf = isPdfFile(file)
               const pageCount = pdfPageCounts[index]
@@ -570,7 +578,7 @@ export function UploadDropzone({
                     disabled={!previewUrl}
                     className="ax-interactive flex min-w-0 flex-1 items-center gap-3 text-left disabled:cursor-default"
                   >
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-primary">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-[var(--button-warm)] text-[var(--brand-brown-fg)]">
                       {pdf ? <FileText className="h-4 w-4" /> : <FileImage className="h-4 w-4" />}
                     </span>
                     <span className="min-w-0">
@@ -608,7 +616,7 @@ export function UploadDropzone({
             if (event.target === event.currentTarget) setSelectedPreview(null)
           }}
         >
-          <div className="w-full max-w-4xl overflow-hidden rounded-md border border-border bg-card p-4 shadow-xl">
+          <div className={cn("w-full max-w-4xl overflow-hidden rounded-md border p-4", workspacePanelSurfaceClass)}>
             <div className="mb-3 flex items-center justify-between gap-3">
               <p className="truncate text-sm font-semibold text-foreground">{selectedPreview.name}</p>
               <Button
@@ -649,7 +657,7 @@ export function SelectedFilesTray({
 
   return (
     <>
-    <div className="rounded-md border border-border bg-card/50 p-3 backdrop-blur-xl">
+    <div className={cn("rounded-md border p-3 backdrop-blur-xl", workspacePanelSurfaceClass)}>
       <div className="mb-3 flex items-center justify-between gap-3">
         <p className="text-sm font-semibold text-foreground">Selected files</p>
         <Button
@@ -681,14 +689,14 @@ export function SelectedFilesTray({
                   if (previewUrl) setSelectedPreview({ url: previewUrl, name: file.name })
                 }
               }}
-              className="group cursor-pointer rounded-lg border border-border bg-card/70 p-2 outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary"
+              className="group cursor-pointer rounded-lg border border-[var(--button-warm-ring)] bg-white p-2 outline-none transition-colors hover:border-black hover:bg-[var(--button-warm)] focus-visible:ring-2 focus-visible:ring-black/20"
             >
               <div className="relative mb-2 aspect-[4/3] overflow-hidden rounded-lg border border-border bg-white">
                 {previewUrl ? (
                   <img src={previewUrl} alt="" className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center">
-                    {pdf ? <FileText className="h-5 w-5 text-primary" /> : <FileImage className="h-5 w-5 text-primary" />}
+                    {pdf ? <FileText className="h-5 w-5 text-[var(--brand-brown-fg)]" /> : <FileImage className="h-5 w-5 text-[var(--brand-brown-fg)]" />}
                   </div>
                 )}
                 {isProcessing ? <ProcessingScanOverlay /> : null}
@@ -701,7 +709,7 @@ export function SelectedFilesTray({
                     setSelectedPreview(null)
                   }}
                   disabled={isProcessing}
-                  className="absolute right-1 top-1 h-7 w-7 bg-card/88 text-foreground opacity-0 shadow-none backdrop-blur transition-opacity hover:bg-accent group-hover:opacity-100"
+                  className="absolute right-1 top-1 h-7 w-7 bg-white/90 text-foreground opacity-0 backdrop-blur transition-opacity hover:bg-black hover:text-white group-hover:opacity-100"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
@@ -724,7 +732,7 @@ export function SelectedFilesTray({
             if (event.target === event.currentTarget) setSelectedPreview(null)
           }}
         >
-          <div className="w-full max-w-4xl overflow-hidden rounded-md border border-border bg-card p-4 shadow-xl">
+          <div className={cn("w-full max-w-4xl overflow-hidden rounded-md border p-4", workspacePanelSurfaceClass)}>
             <div className="mb-3 flex items-center justify-between gap-3">
               <p className="truncate text-sm font-semibold text-foreground">{selectedPreview.name}</p>
               <Button
@@ -802,15 +810,15 @@ export function ResultPreviewPanel({
 
   if (!isComplete || !resultFiles?.length) {
     return (
-      <div className="flex min-h-[300px] flex-col justify-between rounded-md border border-border bg-card/50 p-4 backdrop-blur-xl">
+      <div className={cn("flex min-h-[300px] flex-col justify-between rounded-md border p-4 backdrop-blur-xl", workspacePanelSurfaceClass)}>
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Result</p>
           <p className="mt-2 text-lg font-semibold text-foreground">Review board</p>
         </div>
         <div className="grid gap-2">
-          <div className="h-9 rounded-md bg-card/65" />
-          <div className="h-9 w-4/5 rounded-md bg-card/60" />
-          <div className="h-9 w-3/5 rounded-md bg-card/50" />
+          <div className="h-9 rounded-md bg-white/75" />
+          <div className="h-9 w-4/5 rounded-md bg-white/65" />
+          <div className="h-9 w-3/5 rounded-md bg-white/55" />
         </div>
       </div>
     )
@@ -818,7 +826,7 @@ export function ResultPreviewPanel({
 
   return (
     <>
-    <div className="rounded-md border border-border bg-card/50 p-3 backdrop-blur-xl">
+    <div className={cn("rounded-md border p-3 backdrop-blur-xl", workspacePanelSurfaceClass)}>
       <div
         ref={containerRef}
         className="flex min-h-[290px] gap-0 xl:gap-0"
@@ -845,7 +853,7 @@ export function ResultPreviewPanel({
                     setImagePreviewOpen(true)
                   }
                 }}
-                className="flex min-h-[260px] cursor-zoom-in items-center justify-center overflow-hidden rounded-lg border border-border bg-card/70 outline-none transition hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary"
+                className="flex min-h-[260px] cursor-zoom-in items-center justify-center overflow-hidden rounded-lg border border-[var(--button-warm-ring)] bg-white outline-none transition hover:border-black hover:bg-[var(--button-warm)] focus-visible:ring-2 focus-visible:ring-black/20"
               >
                 <img src={firstImageUrl} alt="Original uploaded file" className="max-h-[420px] w-full object-contain" />
               </div>
@@ -882,7 +890,7 @@ export function ResultPreviewPanel({
                   <table className="w-full border-collapse text-sm text-gray-950">
                     <tbody>
                       {tablePreviewData.map((row, rowIndex) => (
-                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-slate-50 font-semibold text-slate-700" : "bg-white"}>
+                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-[var(--button-warm)] font-semibold text-foreground" : "bg-white"}>
                           {row.map((cell, cellIndex) => (
                             <td key={cellIndex} className="border border-gray-200 px-3 py-2 text-left text-gray-950">
                               {cell || ""}
@@ -913,7 +921,7 @@ export function ResultPreviewPanel({
                 <table className="w-full border-collapse text-sm text-gray-950">
                   <tbody>
                     {tablePreviewData.map((row, rowIndex) => (
-                      <tr key={rowIndex} className={rowIndex === 0 ? "bg-slate-50 font-semibold text-slate-700" : "bg-white"}>
+                      <tr key={rowIndex} className={rowIndex === 0 ? "bg-[var(--button-warm)] font-semibold text-foreground" : "bg-white"}>
                         {row.map((cell, cellIndex) => (
                           <td key={cellIndex} className="border border-gray-200 px-3 py-2 text-left text-gray-950">
                             {cell || ""}
@@ -946,7 +954,7 @@ export function ResultPreviewPanel({
               <table className="w-full border-collapse text-sm text-gray-950">
                 <tbody>
                   {tablePreviewData.map((row, rowIndex) => (
-                    <tr key={rowIndex} className={rowIndex === 0 ? "bg-slate-50 font-semibold text-slate-700" : "bg-white"}>
+                    <tr key={rowIndex} className={rowIndex === 0 ? "bg-[var(--button-warm)] font-semibold text-foreground" : "bg-white"}>
                       {row.map((cell, cellIndex) => (
                         <td key={cellIndex} className="border border-gray-200 px-3 py-2 text-left text-gray-950">
                           {cell || ""}
@@ -972,7 +980,7 @@ export function ResultPreviewPanel({
             if (event.target === event.currentTarget) setImagePreviewOpen(false)
           }}
         >
-          <div className="w-full max-w-4xl overflow-hidden rounded-md border border-border bg-card p-4 shadow-xl">
+          <div className={cn("w-full max-w-4xl overflow-hidden rounded-md border p-4", workspacePanelSurfaceClass)}>
             <div className="mb-3 flex items-center justify-between gap-3">
               <p className="truncate text-sm font-semibold text-foreground">{resultFiles[0]?.filename || "Input preview"}</p>
               <Button
@@ -1030,7 +1038,7 @@ function getOutputBadge(file: ResultFile) {
   }
 
   if (file.review_status === "edited") {
-    return { state: "edited" as const, label: "Edited", className: "border-primary/20 bg-primary/10 text-primary" }
+    return { state: "edited" as const, label: "Edited", className: "border-[var(--button-warm-ring)] bg-[var(--button-warm)] text-[var(--brand-brown-fg)]" }
   }
 
   if (file.review_status === "ready") {
@@ -1071,7 +1079,7 @@ function isHighValue(file: ResultFile): boolean {
 
 /**
  * C4 — collapse the review board by risk. Reuses the C1 review-score idea
- * (High / Review / Flagged → emerald / amber / rose) but reads the signals we
+ * (High / Review / Flagged → success / amber / rose) but reads the signals we
  * already derive for the conversion queue via `getOutputBadge`. A card is
  * "clean" only when nothing asks for your attention: not needs-review, not
  * failed, no live duplicate warning. Clean cards collapse to a quiet one-line
@@ -1080,7 +1088,7 @@ function isHighValue(file: ResultFile): boolean {
  *
  * C14 layers stakes on top: a clean card whose total is high-value (`highValue`)
  * still auto-expands so the reviewer sees the full source evidence — it stays
- * emerald/clean in tone (nothing is wrong) but carries a soft amber
+ * clean in tone (nothing is wrong) but carries a soft amber
  * "high value — worth a double-check" cue rendered alongside.
  */
 function deriveReviewLevel(file: ResultFile, badge: ReturnType<typeof getOutputBadge>): {
@@ -1347,8 +1355,8 @@ function ResultThumb({ file, preview, isTextOutput, compact = false }: { file: R
   const height = compact ? "min-h-[196px]" : "min-h-[255px]"
   if (preview?.loading) {
     return (
-      <div className={cn("flex h-full items-center justify-center rounded-md border border-border bg-background", height)}>
-        <Loader2 className="h-4 w-4 animate-spin text-primary" />
+      <div className={cn("flex h-full items-center justify-center rounded-md border border-[var(--button-warm-ring)] bg-white", height)}>
+        <Loader2 className="h-4 w-4 animate-spin text-[var(--brand-brown-fg)]" />
       </div>
     )
   }
@@ -1356,7 +1364,7 @@ function ResultThumb({ file, preview, isTextOutput, compact = false }: { file: R
   if (isTextOutput || preview?.text) {
     const lines = (preview?.text || "").split(/\r?\n/).filter(Boolean).slice(0, 5)
     return (
-      <div className={cn("flex h-full flex-col gap-2 overflow-hidden rounded-md border border-border bg-white p-4", height)}>
+      <div className={cn("flex h-full flex-col gap-2 overflow-hidden rounded-md border border-[var(--button-warm-ring)] bg-white p-4", height)}>
         {lines.length ? lines.map((line, index) => (
           <span key={index} className="truncate text-xs font-semibold text-gray-700">
             {line}
@@ -1371,8 +1379,8 @@ function ResultThumb({ file, preview, isTextOutput, compact = false }: { file: R
   if (structured) {
     const rows = structured.rows.slice(0, compact ? 3 : 5)
     return (
-      <div className={cn("overflow-hidden rounded-md border border-border bg-white", height)}>
-        <div className="grid grid-cols-2 border-b border-border bg-muted/35 px-3 py-2 text-[11px] font-medium text-muted-foreground">
+      <div className={cn("overflow-hidden rounded-md border border-[var(--button-warm-ring)] bg-white", height)}>
+        <div className="grid grid-cols-2 border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-3 py-2 text-[11px] font-medium text-muted-foreground">
           <span className="truncate">{summary.identityLabel}</span>
           <span className="text-right">{summary.amountLabel}</span>
           <span className="truncate text-sm font-semibold text-foreground">{summary.identity}</span>
@@ -1393,25 +1401,25 @@ function ResultThumb({ file, preview, isTextOutput, compact = false }: { file: R
   const rows = preview?.table?.length ? preview.table.slice(0, 5) : []
 
   return (
-    <div className={cn("h-full overflow-hidden rounded-md border border-border bg-white", height)}>
-      <div className="grid grid-cols-4 bg-primary">
+    <div className={cn("h-full overflow-hidden rounded-md border border-[var(--button-warm-ring)] bg-white", height)}>
+      <div className="grid grid-cols-4 bg-[var(--brand-brown-fg)]">
         {Array.from({ length: 4 }).map((_, index) => (
           <span key={index} className="h-5 border-r border-white/20 last:border-r-0" />
         ))}
       </div>
       {rows.length ? rows.map((row, rowIndex) => (
-        <div key={rowIndex} className="grid grid-cols-4 border-b border-gray-200 last:border-b-0">
+        <div key={rowIndex} className="grid grid-cols-4 border-b border-[var(--button-warm-ring)] last:border-b-0">
           {Array.from({ length: 4 }).map((_, cellIndex) => (
-            <span key={cellIndex} className="truncate border-r border-gray-200 px-3 py-2 text-xs font-medium text-gray-800 last:border-r-0">
+            <span key={cellIndex} className="truncate border-r border-[var(--button-warm-ring)] px-3 py-2 text-xs font-medium text-gray-800 last:border-r-0">
               {row?.[cellIndex] || " "}
             </span>
           ))}
         </div>
       )) : (
         <div className="grid gap-1.5 p-3">
-          <div className="h-2 rounded bg-gray-200" />
-          <div className="h-2 w-4/5 rounded bg-gray-200" />
-          <div className="h-2 w-3/5 rounded bg-gray-200" />
+          <div className="h-2 rounded bg-[var(--button-warm)]" />
+          <div className="h-2 w-4/5 rounded bg-[var(--button-warm)]" />
+          <div className="h-2 w-3/5 rounded bg-[var(--button-warm)]" />
         </div>
       )}
     </div>
@@ -1974,7 +1982,7 @@ export function ResultActions({
     <>
     <div className="space-y-2.5">
       {isComplete ? (
-        <div className="sticky top-[4.5rem] z-20 flex flex-wrap items-center gap-3 rounded-md border border-border bg-card/95 p-2 shadow-none backdrop-blur-xl">
+        <div className={cn("sticky top-[4.5rem] z-20 flex flex-wrap items-center gap-3 rounded-md border p-2 backdrop-blur-xl", workspacePanelSurfaceClass)}>
           <Button
             variant="ghost"
             onClick={() => {
@@ -1992,13 +2000,13 @@ export function ResultActions({
             variant="glossy"
             onClick={handleReviewedBatchDownload}
             disabled={reviewedDownloadBusy || unresolvedDuplicateCount > 0}
-            className="h-9 gap-2 px-3"
+            className={cn("h-9 gap-2 px-3", workspacePrimaryControlClass)}
           >
             {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             {unresolvedDuplicateCount > 0 ? "Resolve duplicates to export" : "Download reviewed batch"}
           </Button>
           {editedCount > 0 && !isTextOutput ? (
-            <span className="inline-flex h-9 items-center rounded-md border border-border bg-muted px-3 text-xs font-semibold text-foreground">
+            <span className="inline-flex h-9 items-center rounded-md border border-[var(--button-warm-ring)] bg-white px-3 text-xs font-semibold text-foreground">
               {editedCount} edited
             </span>
           ) : null}
@@ -2007,13 +2015,13 @@ export function ResultActions({
               More actions
               <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
             </summary>
-             <div className="absolute right-0 top-11 z-30 w-56 space-y-2 rounded-md border border-border bg-card p-2 shadow-none">
+             <div className={cn("absolute right-0 top-11 z-30 w-56 space-y-2 rounded-md border p-2", workspacePanelSurfaceClass)}>
               {!isSaved ? (
                 <Button
                   onClick={onSaveToHistory}
                   disabled={isSaving}
                   variant="clay"
-                  className="h-9 w-full justify-start gap-2 px-3 shadow-none"
+                  className={cn("h-9 w-full justify-start gap-2 px-3", workspacePrimaryControlClass)}
                 >
                   {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                   Save to history
@@ -2043,7 +2051,7 @@ export function ResultActions({
                 <Button
                   variant="destructive"
                   onClick={() => void onDeleteBatch()}
-                  className="h-9 w-full justify-start gap-2 px-3 shadow-none"
+                  className="h-9 w-full justify-start gap-2 px-3"
                 >
                   <Trash2 className="h-4 w-4" />
                   Delete batch
@@ -2058,10 +2066,10 @@ export function ResultActions({
         <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="flex items-center gap-2 text-2xl font-bold tracking-tight text-foreground">
-              {/* P3 — raw symbol + emerald step numeral matches the upload/processing
+              {/* P3 — raw symbol + brown step numeral matches the upload/processing
                   boxes so the three phases read as one numbered flow. */}
               <Symbol name="review-magnify" size="badge" className="-my-1" alt="" />
-              <span className="font-mono text-sm font-semibold tabular-nums text-emerald-600">3</span>
+              <span className="font-mono text-sm font-semibold tabular-nums text-[var(--brand-brown-fg)]">3</span>
               Verify extraction <span className="text-base font-medium text-muted-foreground">{safeResultFiles.length}</span>
             </p>
             <p className="mt-1 text-sm font-medium text-muted-foreground">
@@ -2091,14 +2099,14 @@ export function ResultActions({
               type="button"
               onClick={() => setResultFilter(value)}
               className={cn(
-                "inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border-2 px-3 text-xs font-semibold transition-colors",
+                "ax-interactive inline-flex h-8 cursor-pointer items-center gap-2 rounded-md px-3 text-xs font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 resultFilter === value
-                  ? "border-[var(--brand-brown)] bg-[var(--brand-brown)] text-black hover:border-black hover:bg-white hover:underline hover:decoration-1 hover:underline-offset-4"
-                  : "border-black bg-white text-black hover:bg-black hover:text-white"
+                  ? workspacePrimaryControlClass
+                  : workspaceNormalControlClass
               )}
             >
               {label}
-              <span className={cn("rounded-sm px-1.5 py-0.5 text-[10px]", resultFilter === value ? "bg-card text-foreground" : "bg-muted text-muted-foreground")}>
+              <span className={cn("rounded-sm px-1.5 py-0.5 text-[10px]", resultFilter === value ? "bg-white text-black" : "bg-[var(--button-warm)] text-foreground")}>
                 {filterCounts[value]}
               </span>
             </button>
@@ -2107,14 +2115,14 @@ export function ResultActions({
             <summary className={cn(
               buttonVariants({ variant: "surface", size: "sm" }),
               "h-8 cursor-pointer list-none gap-1.5 px-3 text-xs [&::-webkit-details-marker]:hidden",
-              ["all", "edited", "published", "failed"].includes(resultFilter) && "border-[var(--brand-brown)]"
+              ["all", "edited", "published", "failed"].includes(resultFilter) && workspacePrimaryControlClass
             )}>
               {["all", "edited", "published", "failed"].includes(resultFilter)
                 ? `More filters: ${resultFilter === "all" ? "All" : resultFilter[0].toUpperCase() + resultFilter.slice(1)}`
                 : "More filters"}
               <ChevronDown className="size-3.5 transition-transform group-open:rotate-180" />
             </summary>
-            <div className="absolute left-0 top-10 z-30 w-44 space-y-1 rounded-md border border-border bg-card p-1.5 shadow-none">
+             <div className={cn("absolute left-0 top-10 z-30 w-44 space-y-1 rounded-md border p-1.5", workspacePanelSurfaceClass)}>
               {([
                 ["all", "All"],
                 ["edited", "Edited"],
@@ -2129,14 +2137,14 @@ export function ResultActions({
                     moreFiltersRef.current?.removeAttribute("open")
                   }}
                   className={cn(
-                    "flex h-8 w-full cursor-pointer items-center justify-between rounded-md border-2 px-2 text-xs font-semibold transition-colors",
+                    "group ax-interactive flex h-8 w-full cursor-pointer items-center justify-between rounded-md px-2 text-xs font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                     resultFilter === value
-                      ? "border-[var(--brand-brown)] bg-[var(--brand-brown)] text-black"
-                      : "border-black bg-white text-black hover:bg-black hover:text-white"
+                      ? workspacePrimaryControlClass
+                      : workspaceNormalControlClass
                   )}
                 >
                   {label}
-                  <span className="text-[10px] text-muted-foreground">{filterCounts[value]}</span>
+                  <span className={cn("text-[10px]", resultFilter === value ? "text-white/80 group-hover:text-black/70" : "text-muted-foreground")}>{filterCounts[value]}</span>
                 </button>
               ))}
             </div>
@@ -2152,7 +2160,7 @@ export function ResultActions({
               variant="clay"
               onClick={() => void markAllCleanReady()}
               disabled={bulkReadyBusy}
-              className="h-8 gap-2 rounded-md px-3.5 text-xs"
+              className={cn("h-8 gap-2 rounded-md px-3.5 text-xs", workspacePrimaryControlClass)}
             >
               {bulkReadyBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ListChecks className="h-3.5 w-3.5" />}
               Mark {cleanReadyEntries.length} clean ready
@@ -2161,11 +2169,11 @@ export function ResultActions({
           <button
             type="button"
             onClick={() => setShortcutsOpen(true)}
-            className="ax-interactive inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border-2 border-black bg-white px-3 text-xs font-semibold text-black transition-colors hover:bg-black hover:text-white"
+            className={cn("inline-flex h-8 cursor-pointer items-center gap-2 rounded-md px-3 text-xs font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background", workspaceNormalControlClass)}
           >
             <Keyboard className="h-3.5 w-3.5" />
             Shortcuts
-            <kbd className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-md border border-border bg-muted px-1 font-sans text-[10px] font-semibold text-foreground">?</kbd>
+            <kbd className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-md border border-black/15 bg-white px-1 font-sans text-[10px] font-semibold text-foreground">?</kbd>
           </button>
         </div>
 
@@ -2205,8 +2213,8 @@ export function ResultActions({
                   }
                 }}
                 className={cn(
-                  "group flex cursor-pointer flex-wrap items-center gap-x-3 gap-y-2 rounded-md border border-border bg-card px-3 py-3 text-sm shadow-none outline-none transition-colors duration-200 hover:border-black hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-primary sm:flex-nowrap",
-                  (badge.state === "needs_review" || badge.state === "failed") && "border-l-2 border-l-[var(--brand-green-ring)]"
+                  "group flex cursor-pointer flex-wrap items-center gap-x-3 gap-y-2 rounded-md border border-[var(--button-warm-ring)] bg-white px-3 py-3 text-sm outline-none transition-colors duration-200 hover:border-black hover:bg-[var(--button-warm)] focus-visible:ring-2 focus-visible:ring-black/20 sm:flex-nowrap",
+                  (badge.state === "needs_review" || badge.state === "failed") && "border-l-2 border-l-[var(--brand-brown-fg)]"
                 )}
                 aria-label={`${summary.identity} — ${reviewLevel.summaryLabel}, open review`}
               >
@@ -2280,12 +2288,12 @@ export function ResultActions({
                 }
               }}
               className={cn(
-                "group cursor-pointer rounded-md border border-border bg-card p-3 shadow-none outline-none transition-colors duration-200 hover:border-black hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-primary",
+                "group cursor-pointer rounded-md border border-[var(--button-warm-ring)] bg-white p-3 outline-none transition-colors duration-200 hover:border-black hover:bg-[var(--button-warm)] focus-visible:ring-2 focus-visible:ring-black/20",
                 compact ? "min-h-[300px]" : "min-h-[375px]",
-                // Review-emphasis: a thin emerald-500 left rule makes the
+                // Review-emphasis: a thin brown left rule makes the
                 // "needs you" pile lead the board at a glance.
                 (badge.state === "needs_review" || badge.state === "failed") &&
-                  "border-l-2 border-l-[var(--brand-green-ring)]"
+                  "border-l-2 border-l-[var(--brand-brown-fg)]"
               )}
             >
               {/* C11 — at-a-glance summary line: vendor · total · due · verdict,
@@ -2315,7 +2323,7 @@ export function ResultActions({
                         <span
                           className={cn(
                             "font-semibold",
-                            line.verdict.tone === "good" && "text-emerald-700",
+                            line.verdict.tone === "good" && "text-[var(--status-success-fg)]",
                             line.verdict.tone === "caution" && "text-amber-700",
                             line.verdict.tone === "risk" && "text-rose-700",
                           )}
@@ -2348,8 +2356,8 @@ export function ResultActions({
                       className={cn("h-full w-full object-contain", compact ? "min-h-[196px]" : "min-h-[255px]")}
                     />
                   ) : (
-                    <div className={cn("flex h-full items-center justify-center bg-muted", compact ? "min-h-[196px]" : "min-h-[255px]")}>
-                      <FileImage className="h-7 w-7 text-primary/65" />
+                    <div className={cn("flex h-full items-center justify-center bg-[var(--button-warm)]", compact ? "min-h-[196px]" : "min-h-[255px]")}>
+                      <FileImage className="h-7 w-7 text-[var(--brand-brown-fg)]" />
                     </div>
                   )}
                 </div>
@@ -2361,7 +2369,7 @@ export function ResultActions({
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-foreground text-[11px] font-bold text-background">
                     {index + 1}
                   </span>
-                  {isTextOutput ? <FileText className="h-5 w-5 shrink-0 text-primary" /> : <FileSpreadsheet className="h-5 w-5 shrink-0 text-primary" />}
+                  {isTextOutput ? <FileText className="h-5 w-5 shrink-0 text-[var(--brand-brown-fg)]" /> : <FileSpreadsheet className="h-5 w-5 shrink-0 text-[var(--brand-brown-fg)]" />}
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-foreground">{file.filename || `Result ${index + 1}`}</p>
                     <p className="text-[13px] font-medium text-muted-foreground">
@@ -2376,7 +2384,7 @@ export function ResultActions({
                     {badge.label}
                   </span>
                   {edited && badge.state !== "edited" ? (
-                    <span className="rounded-md border border-primary/20 bg-primary/10 px-2 py-1 text-[10px] font-semibold text-primary">
+                    <span className="rounded-md border border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-2 py-1 text-[10px] font-semibold text-[var(--brand-brown-fg)]">
                       Edited
                     </span>
                   ) : null}
@@ -2391,7 +2399,7 @@ export function ResultActions({
                           return next
                         })
                       }}
-                      className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition hover:bg-accent"
+                      className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-black bg-white text-black transition-colors hover:bg-black hover:text-white"
                       aria-label="Collapse clean summary"
                     >
                       <ChevronUp className="h-3.5 w-3.5" />
@@ -2443,7 +2451,7 @@ export function ResultActions({
                       event.stopPropagation()
                       void onOverrideDuplicateWarning?.(file, duplicateWarning.id)
                     }}
-                    className="h-7 border-amber-300 bg-white px-2.5 text-[11px] text-amber-950 hover:bg-amber-100"
+                    className="h-7 px-2.5 text-[11px]"
                   >
                     Keep separate
                   </Button>
@@ -2479,7 +2487,7 @@ export function ResultActions({
                       event.stopPropagation()
                       void onMarkDocumentReady?.(file)
                     }}
-                    className="h-8 px-3 text-xs"
+                    className={cn("h-8 px-3 text-xs", workspacePrimaryControlClass)}
                     title="Confirms extracted fields only"
                   >
                     Mark ready
@@ -2489,12 +2497,12 @@ export function ResultActions({
                   <>
                     <Button
                       size="sm"
-                      variant="ghost"
+                      variant="surface"
                       onClick={(event) => {
                         event.stopPropagation()
                         onShareFile(file)
                       }}
-                      className="h-8 px-3 text-xs text-foreground"
+                      className="h-8 px-3 text-xs"
                     >
                       <Share2 className="h-3.5 w-3.5" />
                       Share
@@ -2509,7 +2517,7 @@ export function ResultActions({
                       event.stopPropagation()
                       onDownloadFile(file, index)
                     }}
-                    className="h-8 px-3 text-xs"
+                    className={cn("h-8 px-3 text-xs", workspacePrimaryControlClass)}
                   >
                     <Download className="h-3.5 w-3.5" />
                     Download
@@ -2554,7 +2562,7 @@ export function ResultActions({
             }
           }}
         >
-          <div className="relative w-full max-w-[1240px] rounded-md border border-border bg-card p-3 shadow-xl sm:p-4">
+          <div className={cn("relative w-full max-w-[1240px] rounded-md border p-3 sm:p-4", workspacePanelSurfaceClass)}>
             <div className="absolute right-4 top-4 z-10 flex items-center gap-3">
               {comparisonFile.file_id || comparisonFile.document_id ? (
                 <details className="group relative">
@@ -2562,7 +2570,7 @@ export function ResultActions({
                     Actions
                     <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
                   </summary>
-                  <div className="absolute right-0 top-11 z-20 w-44 space-y-2 rounded-md border border-border bg-card p-2 shadow-none">
+                  <div className={cn("absolute right-0 top-11 z-20 w-44 space-y-2 rounded-md border p-2", workspacePanelSurfaceClass)}>
                     {comparisonFile.file_id ? (
                       <Button
                         size="sm"
@@ -2576,9 +2584,9 @@ export function ResultActions({
                     ) : null}
                     <Button
                       size="sm"
-                      variant="clay"
-                      onClick={() => onDownloadFile(comparisonFile, comparisonIndex ?? undefined)}
-                      className="h-9 w-full justify-start gap-1.5 px-3 text-xs"
+                        variant="clay"
+                        onClick={() => onDownloadFile(comparisonFile, comparisonIndex ?? undefined)}
+                        className={cn("h-9 w-full justify-start gap-1.5 px-3 text-xs", workspacePrimaryControlClass)}
                     >
                       <Download className="h-3.5 w-3.5" />
                       Download
@@ -2607,7 +2615,7 @@ export function ResultActions({
                   size="sm"
                   variant="glossy"
                   onClick={() => void onMarkDocumentReady?.(comparisonFile)}
-                  className="h-9 px-3 text-xs"
+                  className={cn("h-9 px-3 text-xs", workspacePrimaryControlClass)}
                   title="Confirms extracted fields only"
                 >
                   Mark ready
@@ -2650,7 +2658,7 @@ export function ResultActions({
             ) : null}
 
             <div className="grid max-h-[84vh] gap-3 overflow-auto pt-12 lg:grid-cols-[0.92fr_1.08fr]">
-              <div className="relative flex min-h-[420px] items-center justify-center overflow-hidden rounded-md border border-border bg-white">
+              <div className="relative flex min-h-[420px] items-center justify-center overflow-hidden rounded-md border border-[var(--button-warm-ring)] bg-white">
                 {comparisonImageUrl ? (
                   <img src={comparisonImageUrl} alt="Input preview" className="max-h-[74vh] w-full object-contain" />
                 ) : (
@@ -2665,11 +2673,11 @@ export function ResultActions({
                 />
               </div>
 
-              <div key={comparisonKey} className="max-h-[74vh] min-h-[420px] overflow-auto rounded-md border border-border bg-white">
+              <div key={comparisonKey} className="max-h-[74vh] min-h-[420px] overflow-auto rounded-md border border-[var(--button-warm-ring)] bg-white">
                 {/* C17 — the duplicate banner lives on the expanded card; not
                     re-rendered here to avoid two identical warnings per document. */}
                 {comparisonFile && comparisonVendorEligible ? (
-                  <div className="border-b border-border bg-muted/20 px-4 py-3">
+                  <div className="border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-4 py-3">
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div>
                         <p className="text-[13px] font-semibold text-foreground">Vendor memory</p>
@@ -2678,7 +2686,7 @@ export function ResultActions({
                         </p>
                       </div>
                       {comparisonFile.vendor_suggestion ? (
-                        <span className="rounded-md border border-border bg-background px-2 py-1 text-[10px] font-semibold text-foreground">
+                          <span className="rounded-md border border-[var(--button-warm-ring)] bg-white px-2 py-1 text-[10px] font-semibold text-foreground">
                           Remembered vendor
                         </span>
                       ) : null}
@@ -2688,7 +2696,7 @@ export function ResultActions({
                         {visibleVendorRuleInputs.map(field => {
                           const value = comparisonFile.vendor_suggestion?.suggested_fields[field.key]
                           return value ? (
-                            <span key={field.key} className="rounded-md border border-border bg-background px-2 py-1 text-[11px] text-foreground">
+                            <span key={field.key} className="rounded-md border border-[var(--button-warm-ring)] bg-white px-2 py-1 text-[11px] text-foreground">
                               <span className="text-muted-foreground">{field.label}: </span>{value}
                             </span>
                           ) : null
@@ -2705,7 +2713,7 @@ export function ResultActions({
                                 value={comparisonVendorDraft[field.key] || ""}
                                 onChange={(event) => updateVendorDraft(field.key, event.target.value)}
                                 placeholder={field.placeholder}
-                                className="ax-interactive mt-1 h-8 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+                                className="ax-interactive mt-1 h-8 w-full rounded-md border border-[var(--button-warm-ring)] bg-white px-2 text-xs text-foreground outline-none focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-black/15"
                               />
                             </label>
                           ))}
@@ -2733,7 +2741,7 @@ export function ResultActions({
                   </div>
                 ) : null}
                 {comparisonFile && isReceiptComparison ? (
-                  <div className="border-b border-border bg-card px-4 py-4">
+                  <div className="border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-4 py-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <p className="text-xs font-semibold text-foreground">QuickBooks destination</p>
@@ -2742,7 +2750,7 @@ export function ResultActions({
                         </p>
                       </div>
                       {receiptPublication ? (
-                        <span className="rounded-md border border-border bg-muted px-2 py-1 text-[10px] font-semibold text-foreground">
+                        <span className="rounded-md border border-[var(--button-warm-ring)] bg-white px-2 py-1 text-[10px] font-semibold text-foreground">
                           {receiptPublication.destination === "expense" ? "Expense" : "Bill"} - {receiptPublication.status}
                         </span>
                       ) : null}
@@ -2773,14 +2781,14 @@ export function ResultActions({
                               key={value}
                               onClick={() => setReceiptDestination(value)}
                               className={cn(
-                                "rounded-md border p-3 text-left transition",
+                                "group ax-interactive rounded-md p-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                                 receiptDestination === value
-                                  ? "border-primary bg-primary/10"
-                                  : "border-border bg-background hover:bg-accent"
+                                  ? "border-2 border-[var(--brand-brown-fg)] bg-[var(--brand-brown-fg)] text-white hover:border-black hover:bg-white hover:text-black focus-visible:ring-black/25"
+                                  : workspaceNormalControlClass
                               )}
                             >
-                              <span className="block text-xs font-semibold text-foreground">{title}</span>
-                              <span className="mt-0.5 block text-[11px] text-muted-foreground">{subtitle}</span>
+                              <span className={cn("block text-xs font-semibold", receiptDestination === value ? "text-white group-hover:text-black" : "text-foreground")}>{title}</span>
+                              <span className={cn("mt-0.5 block text-[11px]", receiptDestination === value ? "text-white/80 group-hover:text-black/70" : "text-muted-foreground")}>{subtitle}</span>
                             </button>
                           ))}
                         </div>
@@ -2869,7 +2877,7 @@ export function ResultActions({
                               (receiptDestination === "bill" && !receiptVendorRefId) ||
                               (receiptDestination === "expense" && !receiptPaymentAccountRefId)
                             }
-                            className="h-9 px-4 text-xs"
+                            className={cn("h-9 px-4 text-xs", workspacePrimaryControlClass)}
                           >
                             {receiptPublishing ? (
                               <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
@@ -2904,8 +2912,8 @@ export function ResultActions({
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
                         {invoiceLanguage !== "en" ? (
-                          <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold text-foreground dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-300">
-                            <Languages className="size-2.5 text-sky-600" />
+                          <span className="inline-flex items-center gap-1 rounded-md border border-black bg-white px-2 py-1 text-[10px] font-bold text-black">
+                            <Languages className="size-2.5 text-[var(--brand-brown-fg)]" />
                             {invoiceLanguageName(invoiceLanguage)} schema
                           </span>
                         ) : null}
@@ -2949,8 +2957,8 @@ export function ResultActions({
                         {/* C3 — "Review only the uncertain fields": a calm summary + toggle.
                             When there's nothing to triage we say so; otherwise we offer the
                             focused view and a way back to the full document. */}
-                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-gray-50/70 px-4 py-2.5">
-                          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-700">
+                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-4 py-2.5">
+                          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground">
                             {uncertainCount > 0 ? (
                               <>
                                 <span className="inline-block size-1.5 shrink-0 rounded-full bg-amber-400" />
@@ -2967,7 +2975,7 @@ export function ResultActions({
                             <button
                               type="button"
                               onClick={() => setOnlyUncertain(!collapseConfident)}
-                              className="ax-interactive inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border-2 border-black bg-white px-3 text-[11px] font-semibold text-black hover:bg-black hover:text-white"
+                              className={cn("inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-[11px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background", workspaceNormalControlClass)}
                             >
                               {collapseConfident ? (
                                 <>
@@ -3003,9 +3011,9 @@ export function ResultActions({
                                 transition={{ duration: 0.18, ease: [0.04, 0.62, 0.23, 0.98] }}
                                 className={cn(
                                   "block overflow-hidden bg-white px-3 py-2.5",
-                                  // Review-emphasis: a thin emerald-500 left rule
+                                  // Review-emphasis: a thin brown left rule
                                   // leads the eye to the fields that still need you.
-                                  needsYou && "border-l-2 border-l-[var(--brand-green-ring)] bg-amber-50/40 pl-[10px]",
+                                  needsYou && "border-l-2 border-l-[var(--brand-brown-fg)] bg-[var(--button-warm)] pl-[10px]",
                                 )}
                                 onMouseEnter={showSource}
                                 onMouseLeave={() => setActiveSource(null)}
@@ -3042,13 +3050,13 @@ export function ResultActions({
                                         void updateStructuredValue(comparisonFile, [field.path], event.target.value)
                                       }
                                     }}
-                                    className="ax-interactive h-8 w-full rounded-md border border-transparent bg-gray-50 px-2 text-sm font-medium text-gray-950 outline-none focus:border-primary/35 focus:bg-white focus:ring-2 focus:ring-primary/15"
+                                    className="ax-interactive h-8 w-full rounded-md border border-[var(--button-warm-ring)] bg-white px-2 text-sm font-medium text-gray-950 outline-none focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-black/15"
                                   />
                                   {needsYou ? (
                                     <button
                                       type="button"
                                       onClick={() => setConfirmedFields(prev => ({ ...prev, [field.path]: true }))}
-                                      className="ax-interactive inline-flex h-8 shrink-0 cursor-pointer items-center gap-1 rounded-md border-2 border-[var(--brand-brown)] bg-[var(--brand-brown)] px-2.5 text-[11px] font-semibold text-black hover:border-black hover:bg-white hover:underline hover:decoration-1 hover:underline-offset-4"
+                                      className={cn("inline-flex h-8 shrink-0 cursor-pointer items-center gap-1 rounded-md px-2.5 text-[11px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background", workspacePrimaryControlClass)}
                                       aria-label={`Confirm ${field.label}`}
                                     >
                                       <Check className="size-3.5" />
@@ -3066,9 +3074,9 @@ export function ResultActions({
                         {/* C3 — once nothing's left to triage in the collapsed view, offer the
                             existing "mark reviewed" handler as the single next step. */}
                         {collapseConfident && uncertainCount === 0 ? (
-                          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-slate-50/70 px-4 py-2.5">
+                          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-4 py-2.5">
                             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                              <Check className="size-3.5 shrink-0 text-emerald-600" />
+                              <Check className="size-3.5 shrink-0 text-[var(--brand-brown-fg)]" />
                               Nothing left to check on this document.
                             </span>
                             {comparisonFile.document_id && !["ready", "published", "failed", "deleted"].includes(comparisonFile.review_status || "") ? (
@@ -3077,7 +3085,7 @@ export function ResultActions({
                                 size="sm"
                                 variant="glossy"
                                 onClick={() => void onMarkDocumentReady?.(comparisonFile)}
-                                className="h-8 rounded-full px-3 text-xs"
+                                className={cn("h-8 rounded-full px-3 text-xs", workspacePrimaryControlClass)}
                                 title="Confirms extracted fields only"
                               >
                                 Mark ready
@@ -3090,10 +3098,10 @@ export function ResultActions({
                     {comparisonRows?.rows.length ? (
                       <>
                         {comparisonHandwritten ? (
-                          <ConfidenceLegend className="border-b border-border bg-gray-50/60 px-3 py-2" />
+                          <ConfidenceLegend className="border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-3 py-2" />
                         ) : null}
                         <table className="w-full min-w-[640px] border-collapse text-xs">
-                          <thead className="sticky top-[61px] bg-gray-50 text-gray-600">
+                          <thead className="sticky top-[61px] bg-[var(--button-warm)] text-foreground">
                             <tr>
                               {comparisonHandwritten ? (
                                 <th className="w-7 border-b border-border px-2 py-2" aria-label="Confidence" />
@@ -3105,7 +3113,7 @@ export function ResultActions({
                           </thead>
                           <tbody>
                             {comparisonRows.rows.map((row, rowIndex) => (
-                              <tr key={rowIndex} className="odd:bg-white even:bg-gray-50/70">
+                              <tr key={rowIndex} className="odd:bg-white even:bg-[var(--button-warm)]">
                                 {comparisonHandwritten ? (
                                   <td className="border-b border-border px-2 py-1.5 text-center align-middle">
                                     <ConfidenceDot tier={getRowConfidenceTier(comparisonFile, rowIndex + 1)} size={8} withRing />
@@ -3136,7 +3144,7 @@ export function ResultActions({
                                           )
                                         }
                                       }}
-                                      className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-xs text-gray-950 outline-none focus:border-primary/35 focus:bg-white focus:ring-2 focus:ring-primary/15"
+                                      className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-xs text-gray-950 outline-none focus:border-[var(--brand-brown-fg)] focus:bg-white focus:ring-2 focus:ring-black/15"
                                     />
                                   </td>
                                   )
@@ -3171,7 +3179,7 @@ export function ResultActions({
                 ) : comparisonTable.length ? (
                   <>
                   {comparisonHandwritten ? (
-                    <ConfidenceLegend className="border-b border-border bg-gray-50/60 px-3 py-2" />
+                    <ConfidenceLegend className="border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-3 py-2" />
                   ) : null}
                   <table className="w-full min-w-[680px] border-collapse text-sm text-gray-950">
                     <tbody>
@@ -3179,7 +3187,7 @@ export function ResultActions({
                         const isHandwrittenRow = isHandwrittenDocument(comparisonFile) && rowIndex > 0
                         const rowTier = isHandwrittenRow ? getRowConfidenceTier(comparisonFile, rowIndex) : null
                         return (
-                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-slate-100 text-slate-700" : rowIndex % 2 === 0 ? "bg-slate-50" : "bg-white"}>
+                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-[var(--button-warm)] text-foreground" : rowIndex % 2 === 0 ? "bg-[var(--button-warm)]" : "bg-white"}>
                           {isHandwrittenDocument(comparisonFile) ? (
                             <td
                               className={cn(
@@ -3213,7 +3221,7 @@ export function ResultActions({
                                 }}
                                 className={cn(
                                   "min-w-[120px] border border-gray-200 px-3 py-2 text-left font-medium",
-                                  rowIndex === 0 ? "border-slate-200" : "hover:bg-slate-50"
+                                  rowIndex === 0 ? "border-[var(--button-warm-ring)]" : "hover:bg-[var(--button-warm)]"
                                 )}
                               >
                                 {isEditing ? (
@@ -3229,7 +3237,7 @@ export function ResultActions({
                                         event.currentTarget.blur()
                                       }
                                     }}
-                                    className="ax-interactive w-full rounded-md border border-primary/30 bg-white px-2 py-1 text-sm text-gray-950 outline-none ring-2 ring-primary/15"
+                                    className="ax-interactive w-full rounded-md border border-[var(--brand-brown-fg)] bg-white px-2 py-1 text-sm text-gray-950 outline-none ring-2 ring-black/15"
                                   />
                                 ) : (
                                   <span className={cn(!value && "text-gray-950/30")}>
@@ -3247,7 +3255,7 @@ export function ResultActions({
                   </>
                 ) : (
                   <div className="flex min-h-[420px] items-center justify-center gap-2 text-sm font-semibold text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                    <Loader2 className="h-4 w-4 animate-spin text-[var(--brand-brown-fg)]" />
                     Preparing preview
                   </div>
                 )}
@@ -3286,7 +3294,7 @@ export function ResultActions({
                   {keys.map((k, i) => (
                     <kbd
                       key={i}
-                      className="inline-flex h-6 min-w-[1.5rem] items-center justify-center rounded-md border border-border bg-muted px-1.5 font-sans text-[11px] font-semibold text-foreground"
+                      className="inline-flex h-6 min-w-[1.5rem] items-center justify-center rounded-md border border-[var(--button-warm-ring)] bg-white px-1.5 font-sans text-[11px] font-semibold text-foreground"
                     >
                       {k}
                     </kbd>
@@ -3505,7 +3513,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                   hint="Extracting fields from every page — clears when results are ready to verify."
                 >
                   <div className="flex items-center gap-3 text-sm font-medium text-muted-foreground">
-                    <Loader2 className="size-4 animate-spin text-primary" />
+                    <Loader2 className="size-4 animate-spin text-[var(--brand-brown-fg)]" />
                     {processLabel || "Processing documents..."}
                   </div>
                 </WorkspaceSection>

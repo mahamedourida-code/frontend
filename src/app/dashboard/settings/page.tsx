@@ -48,10 +48,17 @@ import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { Symbol } from "@/components/dashboard/Symbol"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
-import { clayButton } from "@/lib/clay-button"
 
 type SettingsSection = 'account' | 'billing' | 'accounting' | 'vendors' | 'preferences'
 type Theme = 'dark' | 'light' | 'system'
+
+const workspacePrimaryButton =
+  "border-2 !border-[var(--brand-brown-fg)] !bg-[var(--brand-brown-fg)] !text-white !shadow-none hover:!border-black hover:!bg-white hover:!text-black hover:underline hover:decoration-1 hover:underline-offset-4"
+
+const workspaceSurfaceButton =
+  "border-2 !border-black !bg-white !text-black !shadow-none hover:!bg-black hover:!text-white"
+
+const workspaceWarmPanel = "border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)]"
 
 function SettingsFallback() {
   return <DashboardRouteLoader label="Loading settings" />
@@ -456,7 +463,7 @@ function SettingsContent() {
 
           {/* Sidebar Navigation */}
           <nav className="hidden lg:block w-64 shrink-0">
-            <Card className="ax-glass-card">
+            <Card className="ax-glass-card !shadow-none">
               <CardContent className="p-3 lg:p-4">
                 <div className="space-y-1">
                   {sidebarSections.map((section) => (
@@ -470,7 +477,7 @@ function SettingsContent() {
                             className={cn(
                               "ax-interactive relative w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm",
                               activeSection === item.id
-                                ? "bg-accent text-accent-foreground font-medium shadow-none"
+                                ? "bg-accent text-accent-foreground font-medium"
                                 : "text-muted-foreground hover:text-foreground hover:bg-accent"
                             )}
                           >
@@ -495,7 +502,7 @@ function SettingsContent() {
             {activeSection === 'account' && (
               <div className="space-y-4 lg:space-y-6">
                 {/* Profile Information */}
-                <Card className="ax-glass-card">
+                <Card className="ax-glass-card !shadow-none">
                   <CardHeader className="p-5">
                     <div className="flex items-center gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -534,7 +541,7 @@ function SettingsContent() {
                         variant="surface"
                         size="sm"
                         onClick={() => setFullName(user?.user_metadata?.full_name || "")}
-                        className="h-9"
+                        className={cn("h-9", workspaceSurfaceButton)}
                       >
                         Cancel
                       </Button>
@@ -543,7 +550,7 @@ function SettingsContent() {
                         size="sm"
                         onClick={handleUpdateProfile}
                         disabled={loading}
-                        className="h-9"
+                        className={cn("h-9", workspacePrimaryButton)}
                       >
                         {loading ? "Saving..." : "Save Changes"}
                       </Button>
@@ -555,7 +562,7 @@ function SettingsContent() {
 
             {activeSection === 'billing' && (
               <div className="space-y-5 lg:space-y-6">
-                <Card className="ax-glass-card overflow-hidden rounded-xl">
+                <Card className="ax-glass-card overflow-hidden rounded-xl !shadow-none">
                   <CardContent className="p-0">
                     <div className="grid gap-0 lg:grid-cols-[1.05fr_0.95fr]">
                       <div className="p-5 sm:p-6">
@@ -570,7 +577,7 @@ function SettingsContent() {
                         </div>
 
                         <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                          <div className="rounded-xl border border-border bg-card/50 p-4 backdrop-blur">
+                          <div className={cn("rounded-xl border p-4 backdrop-blur", workspaceWarmPanel)}>
                             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Status</p>
                             <p className="mt-2 text-xl font-semibold text-foreground">
                               {checkoutSyncState === "pending"
@@ -578,7 +585,7 @@ function SettingsContent() {
                                 : currentSubscription?.status || (billingStatus?.plan === "free" ? "free" : "active")}
                             </p>
                           </div>
-                          <div className="rounded-xl border border-border bg-card/50 p-4 backdrop-blur">
+                          <div className={cn("rounded-xl border p-4 backdrop-blur", workspaceWarmPanel)}>
                             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Renew date</p>
                             <p className="mt-2 text-xl font-semibold text-foreground">
                               {formatDate(currentSubscription?.renews_at || currentSubscription?.ends_at)}
@@ -586,7 +593,7 @@ function SettingsContent() {
                           </div>
                         </div>
 
-                        <div className="mt-4 rounded-xl border border-border bg-card/50 p-4 backdrop-blur">
+                        <div className={cn("mt-4 rounded-xl border p-4 backdrop-blur", workspaceWarmPanel)}>
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
                               <CreditStack className="h-6 w-6 text-primary" />
@@ -606,15 +613,15 @@ function SettingsContent() {
                         </div>
 
                         {noCredits && (
-                          <div className="mt-4 rounded-xl border border-primary/20 bg-card/60 p-4 backdrop-blur">
-                            <p className="text-sm font-semibold text-primary">No credits left</p>
+                          <div className={cn("mt-4 rounded-xl border p-4 backdrop-blur", workspaceWarmPanel)}>
+                            <p className="text-sm font-semibold text-[var(--brand-brown-fg)]">No credits left</p>
                           </div>
                         )}
 
                         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                           <Button
                             variant="surface"
-                            className={cn("h-11 rounded-md", clayButton)}
+                            className={cn("h-11 rounded-md", workspaceSurfaceButton)}
                             onClick={openBillingPortal}
                             disabled={!hasBillingPortal || billingAction === "portal"}
                           >
@@ -622,7 +629,7 @@ function SettingsContent() {
                           </Button>
                           <Button
                             variant="lime"
-                            className="h-11 rounded-md"
+                            className={cn("h-11 rounded-md", workspacePrimaryButton)}
                             onClick={() => window.location.assign("/pricing")}
                           >
                             {noCredits ? "Buy credits" : "Compare plans"}
@@ -630,7 +637,7 @@ function SettingsContent() {
                         </div>
                       </div>
 
-                      <div className="border-t border-border bg-card/25 p-5 backdrop-blur lg:border-l lg:border-t-0 sm:p-6">
+                      <div className={cn("border-t p-5 backdrop-blur lg:border-l lg:border-t-0 sm:p-6", workspaceWarmPanel)}>
                         <div className="flex items-center gap-3">
                           <PlanSwitch className="h-7 w-7 shrink-0 text-primary" />
                           <div>
@@ -647,20 +654,23 @@ function SettingsContent() {
                               type="button"
                               onClick={() => startCheckout(plan.checkout_key as BillingPlanKey)}
                               disabled={billingAction === plan.checkout_key || !plan.checkout_available}
-                              className="ax-interactive group flex w-full cursor-pointer items-center justify-between gap-3 rounded-md border-2 border-[var(--brand-brown)] bg-[var(--brand-brown)] p-4 text-left text-black hover:border-black hover:bg-white hover:underline hover:decoration-1 hover:underline-offset-4 disabled:cursor-wait disabled:opacity-70"
+                              className={cn(
+                                "ax-interactive group flex w-full cursor-pointer items-center justify-between gap-3 rounded-md p-4 text-left disabled:cursor-wait disabled:opacity-70",
+                                workspacePrimaryButton,
+                              )}
                             >
                               <span>
-                                <span className="block text-sm font-semibold text-black">
+                                <span className="block text-sm font-semibold text-white group-hover:text-black">
                                   {plan.name} {plan.interval === "year" ? "annual" : "monthly"} · {plan.price_formatted}
                                 </span>
-                                <span className="mt-1 block text-xs text-black/70">{plan.included_volume}</span>
+                                <span className="mt-1 block text-xs text-white/75 group-hover:text-black/70">{plan.included_volume}</span>
                               </span>
-                              <span className="h-2.5 w-2.5 rounded-full bg-black" />
+                              <span className="h-2.5 w-2.5 rounded-full bg-white group-hover:bg-black" />
                             </button>
                           ))}
                         </div>
 
-                        <div className="mt-5 rounded-lg border border-border bg-card/40 p-4 text-sm text-muted-foreground">
+                        <div className={cn("mt-5 rounded-lg border p-4 text-sm text-muted-foreground", workspaceWarmPanel)}>
                           Batch limits:
                           <span className="ml-1 font-bold text-foreground">
                             {limits ? `${limits.max_files_per_batch} files, ${limits.max_file_size_mb} MB each` : "loading live limits"}
@@ -675,7 +685,7 @@ function SettingsContent() {
 
             {activeSection === 'vendors' && isOwner && (
               <div className="space-y-5">
-                <Card className="ax-glass-card overflow-hidden rounded-xl">
+                <Card className="ax-glass-card overflow-hidden rounded-xl !shadow-none">
                   <CardHeader className="p-5 sm:p-6">
                     <div className="flex items-start gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -719,7 +729,7 @@ function SettingsContent() {
                         </div>
                       </div>
                     ) : vendorRules.map(rule => (
-                      <section key={rule.id} className="rounded-lg border border-border bg-card/50 p-4 backdrop-blur">
+                      <section key={rule.id} className="rounded-lg border border-border bg-card/50 p-4 backdrop-blur shadow-none">
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div className="flex items-start gap-3">
                             <Symbol
@@ -765,7 +775,7 @@ function SettingsContent() {
                           </div>
                         </div>
 
-                        <div className="mt-4 rounded-md border border-border bg-muted/30 p-3">
+                        <div className={cn("mt-4 rounded-md border p-3", workspaceWarmPanel)}>
                           <div className="flex flex-wrap items-start justify-between gap-3">
                             <div className="min-w-0">
                               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -823,7 +833,7 @@ function SettingsContent() {
                             variant="surface"
                             disabled={vendorRuleAction === rule.id}
                             onClick={() => void saveVendorRule(rule)}
-                            className={cn("h-9 rounded-md px-4", clayButton)}
+                            className={cn("h-9 rounded-md px-4", workspacePrimaryButton)}
                           >
                             {vendorRuleAction === rule.id ? 'Saving...' : 'Save changes'}
                           </Button>
@@ -837,7 +847,7 @@ function SettingsContent() {
 
             {activeSection === 'accounting' && (
               <div className="space-y-5">
-                <Card className="ax-glass-card overflow-hidden rounded-xl">
+                <Card className="ax-glass-card overflow-hidden rounded-xl !shadow-none">
                   <CardHeader className="p-5 sm:p-6">
                     <div className="flex items-start gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -856,7 +866,7 @@ function SettingsContent() {
                           Reviewed draft bills publish to QuickBooks. AxLiner never pays them.
                         </p>
                       </div>
-                      <Button asChild variant="surface" size="sm" className="shrink-0">
+                      <Button asChild variant="surface" size="sm" className={cn("shrink-0", workspaceSurfaceButton)}>
                         <Link href="/dashboard/integrations">
                           Open integrations
                           <ExternalLink className="size-4" />
@@ -866,7 +876,7 @@ function SettingsContent() {
                   </CardContent>
                 </Card>
 
-                <Card className="ax-glass-card overflow-hidden rounded-xl">
+                <Card className="ax-glass-card overflow-hidden rounded-xl !shadow-none">
                   <CardHeader className="p-5 sm:p-6">
                     <div className="flex items-start gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -882,7 +892,7 @@ function SettingsContent() {
                   </CardHeader>
                   <CardContent className="space-y-4 border-t border-border p-5 sm:p-6">
                     {!isOwner ? (
-                      <p className="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+                      <p className={cn("rounded-lg border px-4 py-3 text-sm text-muted-foreground", workspaceWarmPanel)}>
                         Ask the workspace owner to import purchase orders.
                       </p>
                     ) : (
@@ -907,6 +917,7 @@ function SettingsContent() {
                             size="sm"
                             onClick={() => void importPurchaseOrders()}
                             disabled={poImportBusy || !poCsv.trim()}
+                            className={workspacePrimaryButton}
                           >
                             {poImportBusy ? <Loader2 className="size-4 animate-spin" /> : null}
                             {poImportBusy ? "Importing..." : "Import purchase orders"}
@@ -923,7 +934,7 @@ function SettingsContent() {
             {activeSection === 'preferences' && (
               <div className="space-y-6">
                 {/* Processing Settings */}
-                <Card className="ax-glass-card">
+                <Card className="ax-glass-card !shadow-none">
                   <CardHeader className="p-5">
                     <div className="flex items-center gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -1013,7 +1024,7 @@ function SettingsContent() {
                 </Card>
 
                 {/* OCR Detection Language */}
-                <Card className="ax-glass-card">
+                <Card className="ax-glass-card !shadow-none">
                   <CardHeader className="p-5">
                     <div className="flex items-center gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">

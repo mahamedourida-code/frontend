@@ -213,7 +213,7 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
             </div>
           </div>
 
-          <Card className="divide-y divide-border rounded-xl py-0 shadow-xs">
+          <Card className="divide-y divide-border rounded-xl py-0 shadow-none">
             {WORKFLOW_TABS.map((tab) => (
               <WorkflowRow key={tab.id} tab={tab} companyId={companyId} />
             ))}

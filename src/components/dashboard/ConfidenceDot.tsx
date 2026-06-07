@@ -53,7 +53,7 @@ export function ConfidenceDot({
         className={cn(
           "inline-block shrink-0 rounded-full",
           TIER_COLOR[tier],
-          withRing && "shadow-[0_0_0_2px_hsl(var(--background))]",
+          withRing && "ring-2 ring-background",
           className,
         )}
       />

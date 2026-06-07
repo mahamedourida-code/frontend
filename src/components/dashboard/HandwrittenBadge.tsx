@@ -26,7 +26,7 @@ export function HandwrittenBadge({ variant = "pill", className, text }: Handwrit
         aria-label="Handwritten document"
         title="Handwritten document"
         className={cn(
-          "inline-flex size-[14px] items-center justify-center rounded-full border border-white/60 bg-amber-500 text-white shadow-sm",
+          "inline-flex size-[14px] items-center justify-center rounded-full border border-white/60 bg-amber-500 text-white shadow-none",
           className,
         )}
       >
