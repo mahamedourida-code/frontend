@@ -419,7 +419,7 @@ export default function Home() {
                 </NextLink>
               </div>
               <div className="overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/10 sm:p-8" data-animate="stagger">
-                <VideoPlaceholder caption="Auto-detect: 40 mixed files classified in one batch" />
+                <VideoPlaceholder caption="Auto-detect: a folder of mixed files, sorted onto the right schema" />
               </div>
             </div>
 
