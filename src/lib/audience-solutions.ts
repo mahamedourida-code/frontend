@@ -44,7 +44,7 @@ export const audienceSolutions: AudienceSolution[] = [
     summary:
       "Upload mixed invoices, receipts, statements, and notes as one batch. AxLiner classifies the files, extracts the accounting details, and gives you one calm review board for the exceptions.",
     proof:
-      "Keep the review step in your hands, then export clean files or publish reviewed draft bills to QuickBooks Online.",
+      "Keep the review step in your hands, then export clean files or publish reviewed draft bills to QuickBooks or Xero.",
     benefits: [
       {
         title: "Protect your close-day focus",
@@ -59,7 +59,7 @@ export const audienceSolutions: AudienceSolution[] = [
       {
         title: "Finish with a useful output",
         description:
-          "Download corrected spreadsheets or send reviewed invoice drafts into QuickBooks Online.",
+          "Download corrected spreadsheets or send reviewed invoice drafts into QuickBooks or Xero.",
       },
     ],
     workflow: [
@@ -87,7 +87,7 @@ export const audienceSolutions: AudienceSolution[] = [
     summary:
       "AxLiner helps practices process document-heavy client work without turning the close into a chain of private spreadsheets and status messages.",
     proof:
-      "Collect files, review exceptions, coordinate reviewers, and prepare draft bills for QuickBooks Online from a workflow shaped around accounting operations.",
+      "Collect files, review exceptions, coordinate reviewers, and prepare draft bills for QuickBooks or Xero from a workflow shaped around accounting operations.",
     benefits: [
       {
         title: "Standardize client intake",
@@ -102,7 +102,7 @@ export const audienceSolutions: AudienceSolution[] = [
       {
         title: "Publish after review",
         description:
-          "Prepare reviewed draft bills for QuickBooks Online without auto-approving or paying anything.",
+          "Prepare reviewed draft bills for QuickBooks or Xero without auto-approving or paying anything.",
       },
     ],
     workflow: [
@@ -116,7 +116,7 @@ export const audienceSolutions: AudienceSolution[] = [
       },
       {
         title: "Move approved drafts downstream",
-        description: "Publish reviewed draft bills to QuickBooks Online with control intact.",
+        description: "Publish reviewed draft bills to QuickBooks or Xero with control intact.",
       },
     ],
     related: ["client-intake", "team-review", "accounts-payable-queue"],
@@ -208,7 +208,7 @@ export const audienceSolutions: AudienceSolution[] = [
     eyebrow: "Review the exceptions",
     headline: "Review the batch where the source document and the corrected row stay together.",
     summary:
-      "AxLiner gives bookkeepers a focused review board for the fields and rows that need judgment before a spreadsheet export or QuickBooks handoff.",
+      "AxLiner gives bookkeepers a focused review board for the fields and rows that need judgment before a spreadsheet export or QuickBooks or Xero handoff.",
     proof:
       "Confidence flags direct attention without pretending that accounting review can be replaced by a blanket accuracy percentage.",
     benefits: [
@@ -276,7 +276,7 @@ export const audienceSolutions: AudienceSolution[] = [
       },
       {
         title: "Hand off the reviewed batch",
-        description: "Move corrected work to export or a controlled QuickBooks publishing step.",
+        description: "Move corrected work to export or a controlled QuickBooks or Xero publishing step.",
       },
     ],
     related: ["accounting-practices", "batch-review-board", "accounts-payable-queue"],
@@ -328,7 +328,7 @@ export const audienceSolutions: AudienceSolution[] = [
     eyebrow: "Finish the books",
     headline: "Turn reviewed invoice batches into an AP queue your practice can actually follow.",
     summary:
-      "AxLiner keeps reviewed invoice drafts together for coding and controlled QuickBooks Online publishing, so the AP handoff stays visible after extraction.",
+      "AxLiner keeps reviewed invoice drafts together for coding and controlled QuickBooks or Xero publishing, so the AP handoff stays visible after extraction.",
     proof:
       "The queue is for reviewed draft bills only. AxLiner never pays vendors, reconciles accounts, or auto-approves bills.",
     benefits: [
@@ -342,7 +342,7 @@ export const audienceSolutions: AudienceSolution[] = [
       },
       {
         title: "Publish in a deliberate batch",
-        description: "Send reviewed draft bills to QuickBooks Online after the practice is ready.",
+        description: "Send reviewed draft bills to QuickBooks or Xero after the practice is ready.",
       },
     ],
     workflow: [
@@ -356,7 +356,7 @@ export const audienceSolutions: AudienceSolution[] = [
       },
       {
         title: "Publish the drafts",
-        description: "Move controlled draft bills into QuickBooks Online for the accounting team.",
+        description: "Move controlled draft bills into QuickBooks or Xero for the accounting team.",
       },
     ],
     related: ["accounting-practices", "team-review", "quickbooks-draft-bills"],

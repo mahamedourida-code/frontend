@@ -238,7 +238,7 @@ export function NotificationsBell() {
               <GroupedList
                 items={items}
                 onJump={handleJump}
-                emptyLabel="Finished jobs, duplicate flags and QuickBooks alerts will show up here."
+                emptyLabel="Finished jobs, duplicate flags and accounting alerts will show up here."
               />
             </TabsContent>
             <TabsContent value="unread" className="m-0">

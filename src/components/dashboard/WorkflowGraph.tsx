@@ -41,7 +41,7 @@ const MODES: GraphNode[] = [
 const STEPS = [
   { symbol: "nav-step-1-upload", label: "Upload", hint: "Throw us the whole folder" },
   { symbol: "nav-step-2-review", label: "Review", hint: "Fix exceptions on the board" },
-  { symbol: "nav-step-3-publish", label: "Publish", hint: "Export or send to QuickBooks" },
+  { symbol: "nav-step-3-publish", label: "Publish", hint: "Export or send to QuickBooks or Xero" },
 ]
 
 const RAIL = "#10b981" // emerald-500 connectors

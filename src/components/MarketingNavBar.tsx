@@ -177,7 +177,7 @@ function FeaturesMegaMenu() {
       />
       <StandaloneCard
         icon={RefreshCcw}
-        title="Publish to QuickBooks"
+        title="Publish to QuickBooks & Xero"
         description="Reviewed drafts, one click out."
         href="/dashboard/integrations"
         accent="brown"

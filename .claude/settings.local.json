@@ -17,6 +17,8 @@
     "supabase",
     "ref",
     "vercel",
-    "playwright"
-  ]
+    "playwright",
+    "shadcn"
+  ],
+  "enableAllProjectMcpServers": true
 }

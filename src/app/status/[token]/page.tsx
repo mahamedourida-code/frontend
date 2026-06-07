@@ -33,9 +33,9 @@ function stageSentence(stage: ClientStatusStage, filename: string, submittedAt: 
   const name = filename || "Your document"
   switch (stage) {
     case "done":
-      return `${name} from ${dateLabel} has been reviewed and posted to QuickBooks.`
+      return `${name} from ${dateLabel} has been reviewed and posted to your accounting software.`
     case "reviewed":
-      return `${name} from ${dateLabel} has been reviewed and is being posted to QuickBooks.`
+      return `${name} from ${dateLabel} has been reviewed and is being posted to your accounting software.`
     case "processing":
       return `${name} from ${dateLabel} was received and is being processed.`
     default:

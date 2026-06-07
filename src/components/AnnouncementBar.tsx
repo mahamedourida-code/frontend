@@ -51,7 +51,7 @@ export function AnnouncementBar() {
         >
           <div className="flex items-center gap-3 px-10">
             <p className="truncate text-[13.5px] font-semibold text-black">
-              New in AxLiner: batch review board + one-click publishing to QuickBooks.
+              New in AxLiner: batch review board + one-click publishing to QuickBooks & Xero.
             </p>
             <Link
               href="/whats-new"

@@ -57,7 +57,7 @@ function IntegrationsContent() {
               No sources connected yet
             </h2>
             <p className="text-sm leading-relaxed text-foreground/70">
-              Connect QuickBooks to publish reviewed draft bills.
+              Connect QuickBooks or Xero to publish reviewed draft bills.
             </p>
           </div>
         </section>

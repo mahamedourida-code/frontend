@@ -1579,7 +1579,7 @@ Best regards`
   const handleDeleteStoredDocument = async (file: any) => {
     if (!jobId || !file?.document_id) return
     const confirmed = window.confirm(
-      "Permanently delete this stored document, its extracted values, reviewed edits, and generated files? Existing QuickBooks records are not removed.",
+      "Permanently delete this stored document, its extracted values, reviewed edits, and generated files? Existing accounting records are not removed.",
     )
     if (!confirmed) return
     try {
@@ -1602,7 +1602,7 @@ Best regards`
   const handleDeleteStoredBatch = async () => {
     if (!jobId) return
     const confirmed = window.confirm(
-      "Permanently delete this batch, including source files, outputs, extracted values, and review edits? Existing QuickBooks records are not removed.",
+      "Permanently delete this batch, including source files, outputs, extracted values, and review edits? Existing accounting records are not removed.",
     )
     if (!confirmed) return
     try {

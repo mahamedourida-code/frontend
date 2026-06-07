@@ -4,7 +4,7 @@ import { MarketingNavBar } from "@/components/MarketingNavBar"
 
 export const metadata: Metadata = {
   title: "What's new — AxLiner",
-  description: "The latest in AxLiner: the batch review board, vendor memory, and one-click publishing to QuickBooks Online.",
+  description: "The latest in AxLiner: the batch review board, vendor memory, and one-click publishing to QuickBooks Online and Xero.",
 }
 
 const updates = [
@@ -17,8 +17,8 @@ const updates = [
     body: "AxLiner learns how you code each supplier — account, tax, and terms — and pre-fills the next bill from the same vendor. You stay in control; review is always one click.",
   },
   {
-    title: "Publish to QuickBooks Online",
-    body: "Send a reviewed draft bill straight to QuickBooks with the original document attached. If anything fails, retry safely without creating a duplicate.",
+    title: "Publish to QuickBooks & Xero",
+    body: "Send a reviewed draft bill straight to QuickBooks or Xero with the original document attached. If anything fails, retry safely without creating a duplicate.",
   },
   {
     title: "Duplicate & anomaly checks",

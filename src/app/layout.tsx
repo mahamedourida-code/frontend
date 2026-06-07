@@ -21,8 +21,8 @@ const caveat = Caveat({
 
 export const metadata: Metadata = {
   title: "AxLiner — Invoice & Document Review for Bookkeepers",
-  description: "Process invoices, receipts, bank statements, and handwritten documents in one batch. Review everything before it touches QuickBooks. No per-client minimums.",
-  keywords: ["invoice processing", "bookkeeper software", "document OCR", "QuickBooks invoice import", "bank statement extraction", "accounts payable automation", "handwritten OCR", "Axliner"],
+  description: "Process invoices, receipts, bank statements, and handwritten documents in one batch. Review everything before it touches QuickBooks or Xero. No per-client minimums.",
+  keywords: ["invoice processing", "bookkeeper software", "document OCR", "QuickBooks invoice import", "Xero invoice import", "bank statement extraction", "accounts payable automation", "handwritten OCR", "Axliner"],
   robots: {
     index: true,
     follow: true,
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   openGraph: {
     title: "AxLiner — Invoice & Document Review for Bookkeepers",
-    description: "Process invoices, receipts, bank statements, and handwritten documents in one batch. Reviewed by you before QuickBooks.",
+    description: "Process invoices, receipts, bank statements, and handwritten documents in one batch. Reviewed by you before QuickBooks or Xero.",
     url: "https://axliner.com/",
     siteName: "Axliner",
     type: "website",
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "AxLiner — Invoice & Document Review for Bookkeepers",
-    description: "Process invoices, receipts, bank statements, and handwritten documents in one batch. Reviewed by you before QuickBooks.",
+    description: "Process invoices, receipts, bank statements, and handwritten documents in one batch. Reviewed by you before QuickBooks or Xero.",
     images: ['https://axliner.com/og-image.png'],
   },
 };

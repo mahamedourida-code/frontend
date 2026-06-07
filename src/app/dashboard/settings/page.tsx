@@ -863,7 +863,7 @@ function SettingsContent() {
                       <div className="flex items-center gap-4">
                         <Symbol name="success-published" size="medium" className="h-24 w-24" alt="" />
                         <p className="max-w-xs text-sm leading-relaxed text-foreground/70">
-                          Reviewed draft bills publish to QuickBooks. AxLiner never pays them.
+                          Reviewed draft bills publish to QuickBooks or Xero. AxLiner never pays them.
                         </p>
                       </div>
                       <Button asChild variant="surface" size="sm" className={cn("shrink-0", workspaceSurfaceButton)}>

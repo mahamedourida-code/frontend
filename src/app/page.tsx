@@ -55,7 +55,7 @@ const solutionCards = [
     href: "/solutions/accounting",
     asset: "/solution/accounting.svg",
     description:
-      "Clear the monthly close faster. Drop a client's whole folder of invoices, receipts, and bank statements, let AxLiner classify and extract each one, then review the flagged fields and publish straight to QuickBooks.",
+      "Clear the monthly close faster. Drop a client's whole folder of invoices, receipts, and bank statements, let AxLiner classify and extract each one, then review the flagged fields and publish straight to QuickBooks or Xero.",
   },
   {
     title: "Construction",
@@ -69,7 +69,7 @@ const solutionCards = [
     href: "/solutions/real-estate",
     asset: "/solution/Real%20Estate.svg",
     description:
-      "Stay on top of the books across every unit. Process vendor invoices, utility bills, and bank statements into reviewed entries, then publish to QuickBooks — no copy-pasting from PDFs and photos.",
+      "Stay on top of the books across every unit. Process vendor invoices, utility bills, and bank statements into reviewed entries, then publish to QuickBooks or Xero — no copy-pasting from PDFs and photos.",
   },
   {
     title: "Retail & e-commerce",
@@ -83,7 +83,7 @@ const solutionCards = [
     href: "/solutions/backoffice-automation",
     asset: "/solution/Backoffice%20Automation.svg",
     description:
-      "Tame the daily pile of supplier invoices and till receipts. Batch them in, review the flagged lines, and post coded bills to QuickBooks — so the books stay current without late nights of data entry.",
+      "Tame the daily pile of supplier invoices and till receipts. Batch them in, review the flagged lines, and post coded bills to QuickBooks or Xero — so the books stay current without late nights of data entry.",
   },
   {
     title: "Professional services",
@@ -339,7 +339,7 @@ export default function Home() {
                 <span className="font-bold text-[var(--brand-brown)]">books</span>.
               </h1>
               <p className="ax-body ax-marketing-lead mx-auto mt-6 font-semibold text-neutral-950">
-                AxLiner reads the documents other tools refuse: handwriting, phone photos, and wrinkled receipts. It checks them and gets every entry one keystroke from QuickBooks Online. You stay in control.
+                AxLiner reads the documents other tools refuse: handwriting, phone photos, and wrinkled receipts. It checks them and gets every entry one keystroke from QuickBooks or Xero. You stay in control.
               </p>
 
               <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -430,7 +430,7 @@ export default function Home() {
               </div>
               <div data-animate="headline">
                 <h3 className="ax-h2 ax-marketing-section-title max-w-lg font-bold text-neutral-950">
-                  See everything before it touches QuickBooks.
+                  See everything before it touches QuickBooks or Xero.
                 </h3>
                 <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
                   Every document lands in your review board first: source on the left, editable fields on the right. AxLiner prepares it, you approve it.
@@ -462,14 +462,14 @@ export default function Home() {
             {/* D — video left · text right */}
             <div className="grid items-center gap-10 border-t border-black/15 py-20 pb-28 lg:grid-cols-2 lg:gap-20 lg:py-28 lg:pb-36">
               <div className="order-last overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/10 sm:p-8 lg:order-first" data-animate="stagger">
-                <VideoPlaceholder caption="AP queue: code, review, and publish bills to QuickBooks in one screen" />
+                <VideoPlaceholder caption="AP queue: code, review, and publish bills to QuickBooks or Xero in one screen" />
               </div>
               <div data-animate="headline">
                 <h3 className="ax-h2 ax-marketing-section-title max-w-lg font-bold text-neutral-950">
                   Reviewed, coded, posted. No copy-pasting.
                 </h3>
                 <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
-                  Code each bill with vendor, account, and tax, then publish a draft to QuickBooks with the document attached.
+                  Code each bill with vendor, account, and tax, then publish a draft to QuickBooks or Xero with the document attached.
                 </p>
                 <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-black bg-white px-8 text-sm font-bold text-black shadow-sm transition-colors hover:bg-black hover:text-white">
                   Start free
