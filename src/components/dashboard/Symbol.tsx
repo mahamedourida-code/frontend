@@ -5,10 +5,10 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 const SIZE = {
-  inline: "h-11 w-11 sm:h-12 sm:w-12",
-  badge: "h-14 w-14 sm:h-16 sm:w-16",
-  medium: "h-24 w-24 sm:h-28 sm:w-28",
-  hero: "h-48 w-48 sm:h-64 sm:w-64",
+  inline: "h-12 w-12 sm:h-14 sm:w-14",
+  badge: "h-16 w-16 sm:h-20 sm:w-20",
+  medium: "h-28 w-28 sm:h-32 sm:w-32",
+  hero: "h-56 w-56 sm:h-72 sm:w-72",
 } as const
 
 interface SymbolProps {

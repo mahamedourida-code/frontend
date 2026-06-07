@@ -2222,7 +2222,7 @@ export function ResultActions({
                   {index + 1}
                 </span>
                 {documentTypeSymbol(file.document_type) ? (
-                  <Symbol name={documentTypeSymbol(file.document_type)!} size="inline" className="h-16 w-16 shrink-0 sm:h-20 sm:w-20" alt="" />
+                  <Symbol name={documentTypeSymbol(file.document_type)!} size="inline" className="h-20 w-20 shrink-0 sm:h-24 sm:w-24" alt="" />
                 ) : null}
                 <span className="min-w-[180px] flex-1">
                   <span className="block truncate font-semibold text-foreground">{file.filename || summary.identity}</span>

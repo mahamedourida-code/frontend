@@ -67,10 +67,10 @@ function Node({
 }) {
   const emblem =
     size === "root"
-      ? "h-24 w-24 sm:h-28 sm:w-28"
+      ? "h-36 w-36 sm:h-48 sm:w-48"
       : size === "primary"
-        ? "h-20 w-20 sm:h-24 sm:w-24"
-        : "h-16 w-16 sm:h-20 sm:w-20"
+        ? "h-28 w-28 sm:h-36 sm:w-36"
+        : "h-24 w-24 sm:h-28 sm:w-28"
 
   return (
     <Link
@@ -120,7 +120,7 @@ export function WorkflowGraph({ className }: { className?: string }) {
             key={step.label}
             className="flex flex-1 items-center gap-3 sm:flex-col sm:items-center sm:gap-2 sm:text-center"
           >
-            <Symbol name={step.symbol} size="medium" className="h-16 w-16 sm:h-20 sm:w-20" alt="" />
+            <Symbol name={step.symbol} size="medium" className="h-24 w-24 sm:h-28 sm:w-28" alt="" />
             <span className="flex flex-col sm:items-center">
               <span className="text-sm font-semibold leading-tight text-white">
                 {i + 1}. {step.label}
