@@ -20,7 +20,11 @@ import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { BillingSeal, CreditStack, PlanSwitch } from "@/components/BillingGlyphs"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
-import { accountsPayableApi, billingApi, vendorMemoryApi, type BillingPlanKey, type VendorRule, type VendorRuleAutoMode, type VendorRuleFields } from "@/lib/api-client"
+import { accountApi, accountsPayableApi, billingApi, vendorMemoryApi, workspaceApi, type BillingPlanKey, type VendorRule, type VendorRuleAutoMode, type VendorRuleFields } from "@/lib/api-client"
+import { InlineAction } from "@/components/ui/inline-action"
+import { SettingRow } from "@/components/dashboard/SettingRow"
+import { DangerZone } from "@/components/dashboard/DangerZone"
+import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog"
 import {
   INVOICE_LANGUAGES,
   readInvoiceAutoDetect,
@@ -75,7 +79,7 @@ export default function SettingsPage() {
 function SettingsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, loading: authLoading } = useAuth()
+  const { user, loading: authLoading, signOut } = useAuth()
   const { activeWorkspace } = useWorkspaces(user)
   const isOwner = !activeWorkspace || activeWorkspace.role === "owner"
   const { theme: currentTheme, setTheme } = useTheme()
@@ -405,6 +409,51 @@ function SettingsContent() {
     }
   }
 
+  // Danger zone state
+  const [deleteAccountOpen, setDeleteAccountOpen] = useState(false)
+  const [deleteWorkspaceOpen, setDeleteWorkspaceOpen] = useState(false)
+  const [leavingWorkspace, setLeavingWorkspace] = useState(false)
+  const workspaceId = activeWorkspace?.id
+  const workspaceName = activeWorkspace?.name || "this workspace"
+
+  const handleDeleteAccount = async () => {
+    try {
+      await accountApi.delete()
+      toast.success("Account deleted.")
+      await signOut()
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || "Could not delete your account.")
+      throw error
+    } finally {
+      window.location.assign("/")
+    }
+  }
+
+  const handleLeaveWorkspace = async () => {
+    if (!workspaceId) return
+    setLeavingWorkspace(true)
+    try {
+      await workspaceApi.leave(workspaceId)
+      toast.success("You left the workspace.")
+      window.location.assign("/dashboard")
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || "Could not leave the workspace.")
+      setLeavingWorkspace(false)
+    }
+  }
+
+  const handleDeleteWorkspace = async () => {
+    if (!workspaceId) return
+    try {
+      await workspaceApi.delete(workspaceId)
+      toast.success("Workspace deleted.")
+      window.location.assign("/dashboard")
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || "Could not delete the workspace.")
+      throw error
+    }
+  }
+
   const creditTotal = billingStatus?.credits?.total_credits ?? 0
   const creditUsed = billingStatus?.credits?.used_credits ?? 0
   const creditAvailable = billingStatus?.credits?.available_credits ?? 0
@@ -536,15 +585,12 @@ function SettingsContent() {
                       <p className="text-[13px] font-medium text-muted-foreground">Email cannot be changed</p>
                     </div>
 
-                    <div className="flex justify-end gap-3 lg:gap-4 pt-3 lg:pt-4 border-t">
-                      <Button
-                        variant="surface"
-                        size="sm"
+                    <div className="flex items-center justify-end gap-5 pt-3 lg:pt-4 border-t">
+                      <InlineAction
                         onClick={() => setFullName(user?.user_metadata?.full_name || "")}
-                        className={cn("h-9", workspaceSurfaceButton)}
                       >
-                        Cancel
-                      </Button>
+                        Reset
+                      </InlineAction>
                       <Button
                         variant="glossy"
                         size="sm"
@@ -557,6 +603,74 @@ function SettingsContent() {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* Danger zone — account */}
+                <DangerZone
+                  title="Delete account"
+                  description="Permanently delete your account and everything you own. This cannot be undone."
+                >
+                  <Button
+                    variant="dangerOutline"
+                    size="sm"
+                    onClick={() => setDeleteAccountOpen(true)}
+                  >
+                    Delete account
+                  </Button>
+                </DangerZone>
+
+                {/* Danger zone — workspace */}
+                {activeWorkspace && (
+                  <DangerZone
+                    title="Workspace"
+                    description={
+                      isOwner
+                        ? `Deleting "${workspaceName}" removes its documents, members, and connections for everyone.`
+                        : `Leave "${workspaceName}". You can be re-invited later.`
+                    }
+                  >
+                    {!isOwner && (
+                      <Button
+                        variant="dangerOutline"
+                        size="sm"
+                        onClick={() => void handleLeaveWorkspace()}
+                        disabled={leavingWorkspace}
+                      >
+                        {leavingWorkspace ? "Leaving…" : "Leave workspace"}
+                      </Button>
+                    )}
+                    {isOwner && (
+                      <Button
+                        variant="dangerOutline"
+                        size="sm"
+                        onClick={() => setDeleteWorkspaceOpen(true)}
+                      >
+                        Delete entire workspace
+                      </Button>
+                    )}
+                  </DangerZone>
+                )}
+
+                <ConfirmDeleteDialog
+                  open={deleteAccountOpen}
+                  onOpenChange={setDeleteAccountOpen}
+                  title="Delete account"
+                  description="This permanently deletes your account and all data you own. You'll be signed out."
+                  confirmText="DELETE"
+                  confirmLabel="Delete account"
+                  onConfirm={handleDeleteAccount}
+                />
+
+                {activeWorkspace && (
+                  <ConfirmDeleteDialog
+                    open={deleteWorkspaceOpen}
+                    onOpenChange={setDeleteWorkspaceOpen}
+                    title="Delete entire workspace"
+                    description={`This permanently deletes "${workspaceName}" and all of its documents, members, and connections.`}
+                    confirmText={activeWorkspace.name}
+                    confirmLabel="Delete workspace"
+                    onConfirm={handleDeleteWorkspace}
+                  />
+                )}
               </div>
             )}
 
@@ -753,25 +867,20 @@ function SettingsContent() {
                             </p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-3">
-                            <Button
-                              size="sm"
-                              variant="surface"
+                          <div className="flex items-center gap-5">
+                            <InlineAction
                               disabled={vendorRuleAction === rule.id}
                               onClick={() => void toggleVendorRule(rule)}
-                              className="h-8 rounded-md px-3 text-xs"
                             >
                               {rule.enabled ? 'Disable' : 'Enable'}
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
+                            </InlineAction>
+                            <InlineAction
+                              tone="danger"
                               disabled={vendorRuleAction === rule.id}
                               onClick={() => void deleteVendorRule(rule)}
-                              className="h-8 rounded-md px-3 text-xs"
                             >
                               Delete
-                            </Button>
+                            </InlineAction>
                           </div>
                         </div>
 
@@ -828,15 +937,12 @@ function SettingsContent() {
                           ))}
                         </div>
                         <div className="mt-4 flex justify-end">
-                          <Button
-                            size="sm"
-                            variant="surface"
+                          <InlineAction
                             disabled={vendorRuleAction === rule.id}
                             onClick={() => void saveVendorRule(rule)}
-                            className={cn("h-9 rounded-md px-4", workspacePrimaryButton)}
                           >
-                            {vendorRuleAction === rule.id ? 'Saving...' : 'Save changes'}
-                          </Button>
+                            {vendorRuleAction === rule.id ? 'Saving…' : 'Save changes'}
+                          </InlineAction>
                         </div>
                       </section>
                     ))}
@@ -866,12 +972,12 @@ function SettingsContent() {
                           Reviewed draft bills publish to QuickBooks or Xero. AxLiner never pays them.
                         </p>
                       </div>
-                      <Button asChild variant="surface" size="sm" className={cn("shrink-0", workspaceSurfaceButton)}>
+                      <InlineAction asChild className="shrink-0">
                         <Link href="/dashboard/integrations">
                           Open integrations
                           <ExternalLink className="size-4" />
                         </Link>
-                      </Button>
+                      </InlineAction>
                     </div>
                   </CardContent>
                 </Card>
