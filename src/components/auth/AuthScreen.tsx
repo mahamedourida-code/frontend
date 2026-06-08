@@ -148,7 +148,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
         <section className="flex min-h-screen flex-col px-6 py-6 sm:px-10 lg:px-16">
           <header className="flex items-center justify-between">
             <Link href="/" aria-label="AxLiner home" className="text-foreground">
-              <AppLogo className="h-8 w-auto" />
+              <AppLogo className="h-11 w-auto" />
             </Link>
             <Link
               href={isSignUp ? `/sign-in?next=${encodeURIComponent(nextPath)}` : `/sign-up?next=${encodeURIComponent(nextPath)}`}

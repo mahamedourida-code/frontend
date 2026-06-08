@@ -148,7 +148,7 @@ export default function SharePage() {
       <div className="ax-page-bg min-h-screen">
         <div className="container relative z-10 mx-auto px-4 py-16 max-w-4xl">
           <div className="flex items-center justify-center mb-8">
-            <AppIcon size={48} />
+            <AppIcon size={64} />
           </div>
           
           <Card className="ax-glass-card border-muted">
@@ -174,7 +174,7 @@ export default function SharePage() {
       <div className="ax-page-bg min-h-screen">
         <div className="container relative z-10 mx-auto px-4 py-16 max-w-4xl">
           <div className="flex items-center justify-center mb-8">
-            <AppIcon size={48} />
+            <AppIcon size={64} />
           </div>
           
           <Card className="ax-glass-card border-destructive/50">
@@ -210,7 +210,7 @@ export default function SharePage() {
       <div className="container relative z-10 mx-auto px-4 py-16 max-w-4xl">
         {/* Header */}
         <div className="flex items-center justify-center mb-8">
-          <AppIcon size={48} />
+          <AppIcon size={64} />
         </div>
         
         <Card className="ax-glass-card">

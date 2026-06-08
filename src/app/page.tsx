@@ -756,7 +756,7 @@ export default function Home() {
           {/* Logo + social row */}
           <div className="flex flex-col gap-6 pb-10 sm:flex-row sm:items-center sm:justify-between">
             <NextLink href="/" aria-label="AxLiner home" className="inline-flex items-center">
-              <AppLogo className="h-8 w-auto invert" />
+              <AppLogo className="h-11 w-auto invert" />
             </NextLink>
             <div className="flex items-center gap-3">
               {footerSocialLinks.map(({ label, href, Icon }) => (

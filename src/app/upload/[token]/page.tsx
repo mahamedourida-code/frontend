@@ -188,7 +188,7 @@ export default function ClientUploadPage() {
         style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <header className="px-6 pt-6">
-          <AppLogo className="h-7 w-auto" />
+          <AppLogo className="h-10 w-auto" />
         </header>
         <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
           <div className="flex size-20 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-4 ring-emerald-700/10 dark:bg-emerald-900/40 dark:text-emerald-300">
@@ -261,7 +261,7 @@ export default function ClientUploadPage() {
       {/* Header */}
       <header className="px-5 pb-3 pt-5 sm:px-6 sm:pt-6">
         <div className="flex items-center justify-between border-b-2 border-foreground/10 pb-4">
-          <AppLogo className="h-6 w-auto sm:h-7" />
+          <AppLogo className="h-9 w-auto sm:h-10" />
           {expiresLabel ? (
             <span className="rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-bold text-muted-foreground">
               Expires {expiresLabel}

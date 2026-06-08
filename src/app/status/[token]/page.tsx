@@ -146,7 +146,7 @@ export default function ClientStatusPage() {
     >
       <div className="mx-auto max-w-2xl px-5 py-6 sm:px-6 sm:py-10">
         <header className="flex items-center justify-between border-b-2 border-foreground/10 pb-4">
-          <AppLogo className="h-6 w-auto sm:h-7" />
+          <AppLogo className="h-9 w-auto sm:h-10" />
           <button
             type="button"
             onClick={() => void load(true)}

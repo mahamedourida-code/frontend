@@ -119,7 +119,7 @@ export default function IntegrationsPage() {
         <div className="mx-auto max-w-[1200px] px-4 pt-16 pb-10 sm:px-6 lg:px-8 lg:pt-20">
           <div className="flex flex-col gap-6 border-b border-white/12 pb-10 sm:flex-row sm:items-center sm:justify-between">
             <NextLink href="/" aria-label="AxLiner home" className="inline-flex items-center">
-              <AppLogo className="h-8 w-auto invert" />
+              <AppLogo className="h-11 w-auto invert" />
             </NextLink>
             <div className="flex items-center gap-3">
               {footerSocialLinks.map(({ label, href, Icon }) => (

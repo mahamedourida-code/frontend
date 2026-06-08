@@ -87,7 +87,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         aria-label="AxLiner home"
         className="ax-interactive mx-3 mt-3 flex h-12 items-center gap-2.5 rounded-lg px-2 outline-none hover:bg-sidebar-accent/60 focus-visible:ring-2 focus-visible:ring-ring/45"
       >
-        <AxMark className="h-7 w-auto" />
+        <AxMark className="h-9 w-auto" />
         <span className="text-[16px] font-bold tracking-tight text-foreground">AxLiner</span>
       </Link>
 

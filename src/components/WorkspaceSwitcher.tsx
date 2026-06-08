@@ -128,7 +128,7 @@ export function WorkspaceSwitcher({ user, onSignOut, menuSide = "right" }: Works
             type="button"
             className="ax-interactive flex h-14 w-full items-center gap-3 rounded-lg px-2 text-start text-foreground hover:bg-sidebar-accent"
           >
-            <AxMark className="h-6 w-auto shrink-0" />
+            <AxMark className="h-8 w-auto shrink-0" />
             <span className="min-w-0 flex-1 truncate text-[15px] font-semibold tracking-tight">
               {triggerLabel}
             </span>

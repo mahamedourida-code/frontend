@@ -335,7 +335,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
     >
       <div className="mx-auto flex h-full max-w-[1500px] items-center justify-between px-5 sm:px-7 lg:px-12">
         <Link href="/" aria-label="AxLiner home" className="flex-shrink-0">
-          <AppLogo className="h-9 w-auto" />
+          <AppLogo className="h-12 w-auto" />
         </Link>
 
         <div className="hidden flex-1 items-center justify-center lg:flex">

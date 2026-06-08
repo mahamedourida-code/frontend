@@ -17,7 +17,7 @@ function withHeight(className: string, fallback: string) {
 }
 
 // Symbol mark (the AxLiner glyph) — scales by height, width follows the ratio.
-export function AppIcon({ className = '', size = 24 }: AppIconProps) {
+export function AppIcon({ className = '', size = 36 }: AppIconProps) {
   return (
     <Image
       src="/symbol.svg"
@@ -32,7 +32,7 @@ export function AppIcon({ className = '', size = 24 }: AppIconProps) {
 }
 
 // Alternative minimal version (same symbol)
-export function AppIconMinimal({ className = '', size = 24 }: AppIconProps) {
+export function AppIconMinimal({ className = '', size = 36 }: AppIconProps) {
   return (
     <Image
       src="/symbol.svg"
@@ -55,7 +55,7 @@ export function AxMark({ className = '' }: { className?: string }) {
       alt="Ax"
       width={SYMBOL_W}
       height={SYMBOL_H}
-      className={`dark:invert ${withHeight(className, 'h-7 w-auto')}`.trim()}
+      className={`dark:invert ${withHeight(className, 'h-10 w-auto')}`.trim()}
       priority
       unoptimized
     />
@@ -72,7 +72,7 @@ export function AppLogo({ className = '' }: { className?: string }) {
       alt="AxLiner"
       width={565}
       height={208}
-      className={`dark:invert ${withHeight(className, 'h-7 w-auto')}`.trim()}
+      className={`dark:invert ${withHeight(className, 'h-10 w-auto')}`.trim()}
       priority
       unoptimized
     />
