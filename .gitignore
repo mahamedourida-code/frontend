@@ -57,3 +57,5 @@ backend/
 
 # Playwright QA artifacts
 .playwright-mcp/
+
+.claude/worktrees/
