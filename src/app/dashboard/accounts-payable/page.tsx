@@ -970,9 +970,9 @@ function AccountsPayableContent() {
                               <Button asChild variant="surface" size="sm" className={workspaceSurfaceButton}>
                                 <Link href="/dashboard/client#upload-files">Upload documents</Link>
                               </Button>
-                              <Link href="/blogs" className="ax-interactive text-xs font-semibold text-foreground/60 underline-offset-4 hover:text-foreground hover:underline">
-                                Read the guide
-                              </Link>
+                              <InlineAction asChild className="text-xs">
+                                <Link href="/blogs">Read the guide</Link>
+                              </InlineAction>
                             </div>
                           ) : null}
                         </div>
@@ -1170,7 +1170,7 @@ function AccountsPayableContent() {
                               size="sm"
                               onClick={() => void dismissDuplicateWarning()}
                               disabled={dismissing}
-                              className={cn("h-8 px-3 text-xs", workspacePrimaryButton)}
+                              className="h-8 px-3 text-xs"
                             >
                               {dismissing ? "Dismissing…" : "Dismiss warning"}
                             </Button>
@@ -1582,7 +1582,7 @@ function AccountsPayableContent() {
                   <div className="sticky bottom-0 z-10 -mx-4 -mb-4 flex flex-wrap justify-end gap-2 border-t border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:relative sm:bottom-auto sm:mx-0 sm:mb-0 sm:bg-transparent sm:px-0 sm:py-4 sm:backdrop-blur-0 sm:supports-[backdrop-filter]:bg-transparent">
                     {!activeLocked ? (
                       <>
-                        <MotionButton variant="surface" onClick={() => void persistDraft()} disabled={saving} className={cn("h-9", workspacePrimaryButton)}>
+                        <MotionButton variant="surface" onClick={() => void persistDraft()} disabled={saving} className="h-9">
                           Save changes
                         </MotionButton>
                         {activeItem.status === "ready_to_publish" ? (
@@ -1595,7 +1595,7 @@ function AccountsPayableContent() {
                             </MotionButton>
                           </>
                         ) : (
-                          <Button variant="reviewed" onClick={() => void persistDraft("ready_to_publish")} disabled={saving} className={cn("h-9", workspacePrimaryButton)}>
+                          <Button variant="reviewed" onClick={() => void persistDraft("ready_to_publish")} disabled={saving} className="h-9">
                             Mark ready to publish
                           </Button>
                         )}
@@ -1698,7 +1698,7 @@ function AccountsPayableContent() {
 
           <DialogFooter>
             {publishResult ? (
-              <MotionButton variant="glossy" onClick={closePublishDialog} className={cn("h-9 px-4", workspacePrimaryButton)}>
+              <MotionButton variant="surface" onClick={closePublishDialog} className="h-9 px-4">
                 Close
               </MotionButton>
             ) : (

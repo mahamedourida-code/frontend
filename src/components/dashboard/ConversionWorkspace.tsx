@@ -28,6 +28,7 @@ import {
   X,
 } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
+import { InlineAction } from "@/components/ui/inline-action"
 import {
   Dialog,
   DialogContent,
@@ -260,20 +261,18 @@ function InvoiceDraftBillAction({
 
   if (file.draft_bill_item_id) {
     return (
-      <Button asChild size="sm" variant="ghost" className={className}>
+      <InlineAction asChild className={className}>
         <a href="/dashboard/accounts-payable" onClick={stopCardClick}>
           Open draft bills
         </a>
-      </Button>
+      </InlineAction>
     )
   }
 
   if (!onSendToAccountsPayable) return null
 
   return (
-    <Button
-      size="sm"
-      variant="ink"
+    <InlineAction
       onClick={(event) => {
         stopCardClick(event)
         void onSendToAccountsPayable(file)
@@ -281,13 +280,12 @@ function InvoiceDraftBillAction({
       className={className}
     >
       Send to draft bills
-    </Button>
+    </InlineAction>
   )
 }
 
 function WorkspaceErrorBanner({ banner, onDismiss }: { banner?: WorkspaceBanner | null; onDismiss?: () => void }) {
   if (!banner) return null
-  const isUpgradeAction = /upgrade|plans|credits|billing/i.test(banner.actionLabel || "")
 
   return (
     <div
@@ -307,7 +305,7 @@ function WorkspaceErrorBanner({ banner, onDismiss }: { banner?: WorkspaceBanner 
       </div>
       <div className="flex items-center gap-2">
         {banner.actionLabel && banner.onAction ? (
-          <Button variant={isUpgradeAction ? "lime" : "surface"} onClick={banner.onAction} className="h-9 px-4">
+          <Button variant="surface" onClick={banner.onAction} className="h-9 px-4">
             {banner.actionLabel}
           </Button>
         ) : null}
@@ -403,7 +401,7 @@ function AutoDetectionPanel({
                 <Button
                   type="button"
                   size="sm"
-                  variant={needsSelection ? "glossy" : "surface"}
+                  variant="surface"
                   disabled={busy || (!needsSelection && selectedMode === document.resolved_mode)}
                   onClick={() => onOverrideDocumentMode?.(document.id, selectedMode)}
                   className="h-9 px-3"
@@ -442,14 +440,13 @@ function ResumeBatchBanner({
           </p>
         </div>
       </div>
-      <Button
-        variant="clay"
+      <InlineAction
         onClick={onContinueLatestJob}
         disabled={recoveryLoading}
-        className={cn("h-9 px-4", workspacePrimaryControlClass)}
+        className="shrink-0"
       >
         {recoveryLoading ? "Resuming..." : "Open batch"}
-      </Button>
+      </InlineAction>
     </div>
   )
 }
@@ -2020,8 +2017,8 @@ export function ResultActions({
                 <Button
                   onClick={onSaveToHistory}
                   disabled={isSaving}
-                  variant="clay"
-                  className={cn("h-9 w-full justify-start gap-2 px-3", workspacePrimaryControlClass)}
+                  variant="surface"
+                  className="h-9 w-full justify-start gap-2 px-3"
                 >
                   {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                   Save to history
@@ -2157,10 +2154,10 @@ export function ResultActions({
             <Button
               type="button"
               size="sm"
-              variant="clay"
+              variant="surface"
               onClick={() => void markAllCleanReady()}
               disabled={bulkReadyBusy}
-              className={cn("h-8 gap-2 rounded-md px-3.5 text-xs", workspacePrimaryControlClass)}
+              className="h-8 gap-2 rounded-md px-3.5 text-xs"
             >
               {bulkReadyBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ListChecks className="h-3.5 w-3.5" />}
               Mark {cleanReadyEntries.length} clean ready
@@ -2482,46 +2479,40 @@ export function ResultActions({
                 {file.document_id && !["ready", "published", "failed", "deleted"].includes(file.review_status || "") ? (
                   <Button
                     size="sm"
-                    variant="glossy"
+                    variant="surface"
                     onClick={(event) => {
                       event.stopPropagation()
                       void onMarkDocumentReady?.(file)
                     }}
-                    className={cn("h-8 px-3 text-xs", workspacePrimaryControlClass)}
+                    className="h-8 px-3 text-xs"
                     title="Confirms extracted fields only"
                   >
                     Mark ready
                   </Button>
                 ) : null}
                 {file.file_id ? (
-                  <>
-                    <Button
-                      size="sm"
-                      variant="surface"
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        onShareFile(file)
-                      }}
-                      className="h-8 px-3 text-xs"
-                    >
-                      <Share2 className="h-3.5 w-3.5" />
-                      Share
-                    </Button>
-                  </>
+                  <InlineAction
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      onShareFile(file)
+                    }}
+                    className="h-8 px-1 text-xs"
+                  >
+                    <Share2 className="h-3.5 w-3.5" />
+                    Share
+                  </InlineAction>
                 ) : null}
                 {file.file_id || file.document_id ? (
-                  <Button
-                    size="sm"
-                    variant="clay"
+                  <InlineAction
                     onClick={(event) => {
                       event.stopPropagation()
                       onDownloadFile(file, index)
                     }}
-                    className={cn("h-8 px-3 text-xs", workspacePrimaryControlClass)}
+                    className="h-8 px-1 text-xs"
                   >
                     <Download className="h-3.5 w-3.5" />
                     Download
-                  </Button>
+                  </InlineAction>
                 ) : null}
               </div>
             </motion.div>
@@ -2584,9 +2575,9 @@ export function ResultActions({
                     ) : null}
                     <Button
                       size="sm"
-                        variant="clay"
+                        variant="surface"
                         onClick={() => onDownloadFile(comparisonFile, comparisonIndex ?? undefined)}
-                        className={cn("h-9 w-full justify-start gap-1.5 px-3 text-xs", workspacePrimaryControlClass)}
+                        className="h-9 w-full justify-start gap-1.5 px-3 text-xs"
                     >
                       <Download className="h-3.5 w-3.5" />
                       Download
@@ -2613,9 +2604,9 @@ export function ResultActions({
               {comparisonFile.document_id && !["ready", "published", "failed", "deleted"].includes(comparisonFile.review_status || "") ? (
                 <Button
                   size="sm"
-                  variant="glossy"
+                  variant="surface"
                   onClick={() => void onMarkDocumentReady?.(comparisonFile)}
-                  className={cn("h-9 px-3 text-xs", workspacePrimaryControlClass)}
+                  className="h-9 px-3 text-xs"
                   title="Confirms extracted fields only"
                 >
                   Mark ready
@@ -2765,9 +2756,9 @@ export function ResultActions({
                     ) : !quickBooksConnection?.connected ? (
                       <div className="mt-3 flex flex-wrap items-center gap-2">
                         <p className="text-xs text-muted-foreground">Connect QuickBooks before publishing receipts.</p>
-                        <a href="/dashboard/integrations" className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-8 px-3 text-xs")}>
-                          Open integrations
-                        </a>
+                        <InlineAction asChild>
+                          <a href="/dashboard/integrations">Open integrations</a>
+                        </InlineAction>
                       </div>
                     ) : (
                       <div className="mt-4 space-y-3">
@@ -2886,15 +2877,12 @@ export function ResultActions({
                             )}
                             Publish {receiptDestination || "receipt"}
                           </Button>
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="surface"
+                          <InlineAction
                             onClick={() => void onRefreshQuickBooksReferences?.()}
-                            className="h-9 px-3 text-xs"
+                            className="px-1"
                           >
                             Refresh QuickBooks lists
-                          </Button>
+                          </InlineAction>
                         </div>
                       </div>
                     )}
@@ -3053,15 +3041,14 @@ export function ResultActions({
                                     className="ax-interactive h-8 w-full rounded-md border border-[var(--button-warm-ring)] bg-white px-2 text-sm font-medium text-gray-950 outline-none focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-black/15"
                                   />
                                   {needsYou ? (
-                                    <button
-                                      type="button"
+                                    <InlineAction
                                       onClick={() => setConfirmedFields(prev => ({ ...prev, [field.path]: true }))}
-                                      className={cn("inline-flex h-8 shrink-0 cursor-pointer items-center gap-1 rounded-md px-2.5 text-[11px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background", workspacePrimaryControlClass)}
+                                      className="h-8 shrink-0 px-1 text-[11px]"
                                       aria-label={`Confirm ${field.label}`}
                                     >
                                       <Check className="size-3.5" />
                                       Looks right
-                                    </button>
+                                    </InlineAction>
                                   ) : confirmedFields[field.path] ? (
                                     <Symbol name="code-confidence-tick" size="inline" className="h-12 w-12 shrink-0" alt="Confirmed" />
                                   ) : null}
@@ -3083,9 +3070,9 @@ export function ResultActions({
                               <Button
                                 type="button"
                                 size="sm"
-                                variant="glossy"
+                                variant="surface"
                                 onClick={() => void onMarkDocumentReady?.(comparisonFile)}
-                                className={cn("h-8 rounded-full px-3 text-xs", workspacePrimaryControlClass)}
+                                className="h-8 px-3 text-xs"
                                 title="Confirms extracted fields only"
                               >
                                 Mark ready

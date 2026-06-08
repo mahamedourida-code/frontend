@@ -732,15 +732,7 @@ function SettingsContent() {
                           </div>
                         )}
 
-                        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                          <Button
-                            variant="surface"
-                            className={cn("h-11 rounded-md", workspaceSurfaceButton)}
-                            onClick={openBillingPortal}
-                            disabled={!hasBillingPortal || billingAction === "portal"}
-                          >
-                            {billingAction === "portal" ? "Opening..." : "Manage billing"}
-                          </Button>
+                        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
                           <Button
                             variant="lime"
                             className={cn("h-11 rounded-md", workspacePrimaryButton)}
@@ -748,6 +740,12 @@ function SettingsContent() {
                           >
                             {noCredits ? "Buy credits" : "Compare plans"}
                           </Button>
+                          <InlineAction
+                            onClick={openBillingPortal}
+                            disabled={!hasBillingPortal || billingAction === "portal"}
+                          >
+                            {billingAction === "portal" ? "Opening..." : "Manage billing"}
+                          </InlineAction>
                         </div>
                       </div>
 
@@ -770,16 +768,16 @@ function SettingsContent() {
                               disabled={billingAction === plan.checkout_key || !plan.checkout_available}
                               className={cn(
                                 "ax-interactive group flex w-full cursor-pointer items-center justify-between gap-3 rounded-md p-4 text-left disabled:cursor-wait disabled:opacity-70",
-                                workspacePrimaryButton,
+                                workspaceSurfaceButton,
                               )}
                             >
                               <span>
-                                <span className="block text-sm font-semibold text-white group-hover:text-black">
+                                <span className="block text-sm font-semibold text-black group-hover:text-white">
                                   {plan.name} {plan.interval === "year" ? "annual" : "monthly"} · {plan.price_formatted}
                                 </span>
-                                <span className="mt-1 block text-xs text-white/75 group-hover:text-black/70">{plan.included_volume}</span>
+                                <span className="mt-1 block text-xs text-black/70 group-hover:text-white/75">{plan.included_volume}</span>
                               </span>
-                              <span className="h-2.5 w-2.5 rounded-full bg-white group-hover:bg-black" />
+                              <span className="h-2.5 w-2.5 rounded-full bg-black group-hover:bg-white" />
                             </button>
                           ))}
                         </div>

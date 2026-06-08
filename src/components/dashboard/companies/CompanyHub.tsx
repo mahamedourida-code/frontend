@@ -242,10 +242,10 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
             title="Company unavailable"
             description="This company could not be loaded."
             action={
-              <Button variant="surface" size="sm" onClick={() => void load()}>
+              <InlineAction onClick={() => void load()}>
                 <RefreshCw className="size-4" />
                 Try again
-              </Button>
+              </InlineAction>
             }
           />
         </Card>
@@ -288,10 +288,10 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
               if (e.key === "Enter") void submitRename()
             }}
           />
-          <DialogFooter>
-            <Button variant="surface" size="sm" onClick={() => setRenameOpen(false)} disabled={renaming}>
+          <DialogFooter className="items-center gap-4">
+            <InlineAction onClick={() => setRenameOpen(false)} disabled={renaming}>
               Cancel
-            </Button>
+            </InlineAction>
             <Button variant="reviewed" size="sm" onClick={() => void submitRename()} disabled={renaming}>
               {renaming ? "Saving…" : "Save"}
             </Button>

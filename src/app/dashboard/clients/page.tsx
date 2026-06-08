@@ -125,7 +125,7 @@ export default function ClientsPage() {
                   title="No clients yet"
                   description="Add your first client to start collecting and reviewing their documents."
                   action={
-                    <Button variant="glossy" size="sm" onClick={() => setAddOpen(true)} className={workspacePrimaryButton}>
+                    <Button variant="surface" size="sm" onClick={() => setAddOpen(true)}>
                       <Plus className="size-4" />
                       Add client
                     </Button>
@@ -177,10 +177,10 @@ export default function ClientsPage() {
               if (event.key === "Enter") void createClient()
             }}
           />
-          <DialogFooter>
-            <Button variant="surface" size="sm" onClick={() => setAddOpen(false)} disabled={creating}>
+          <DialogFooter className="items-center gap-4">
+            <InlineAction onClick={() => setAddOpen(false)} disabled={creating}>
               Cancel
-            </Button>
+            </InlineAction>
             <Button
               variant="glossy"
               size="sm"
