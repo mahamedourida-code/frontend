@@ -24,7 +24,7 @@ function PageHeader({
         {breadcrumb ? <div className="mb-2 text-xs text-muted-foreground">{breadcrumb}</div> : null}
         <AnimatedPageTitle title={title} />
         {description ? (
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+          <p className="mt-1 text-sm font-normal text-foreground">{description}</p>
         ) : null}
       </div>
       {actions ? (
