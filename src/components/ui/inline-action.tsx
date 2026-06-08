@@ -31,7 +31,7 @@ export const InlineAction = React.forwardRef<HTMLButtonElement, InlineActionProp
           "ax-interactive inline-flex cursor-pointer items-center gap-1 rounded-sm text-sm font-semibold underline-offset-4 outline-none transition-colors hover:underline focus-visible:underline disabled:pointer-events-none disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4",
           tone === "danger"
             ? "text-red-600 hover:text-red-700"
-            : "text-[var(--brand-green)] hover:text-[var(--brand-green-hover)]",
+            : "text-[var(--brand-link)] hover:text-[var(--brand-link-hover)]",
           className,
         )}
         {...props}
