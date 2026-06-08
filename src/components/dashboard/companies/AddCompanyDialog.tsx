@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { InlineAction } from "@/components/ui/inline-action"
 import { Input } from "@/components/ui/input"
 import { companyApi } from "@/lib/api-client"
 
@@ -53,22 +54,22 @@ export function AddCompanyDialog({ workspaceId, onCreated }: AddCompanyDialogPro
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="surface" size="sm" disabled={!workspaceId}>
+        <InlineAction disabled={!workspaceId}>
           <Plus className="size-4" />
           Add company
-        </Button>
+        </InlineAction>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <div className="flex size-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
+          <div className="flex size-10 items-center justify-center rounded-full bg-muted text-foreground">
             <Building2 className="size-5" />
           </div>
           <DialogTitle>Add company</DialogTitle>
-          <DialogDescription>
-            Create a company workspace for its mixed document batches, review queue, and draft bills.
+          <DialogDescription className="font-normal text-foreground">
+            A workspace for its document batches, review queue, and draft bills.
           </DialogDescription>
         </DialogHeader>
-        <form className="space-y-4" onSubmit={submit}>
+        <form className="space-y-5" onSubmit={submit}>
           <Input
             autoFocus
             value={name}
@@ -78,10 +79,10 @@ export function AddCompanyDialog({ workspaceId, onCreated }: AddCompanyDialogPro
           />
           {error ? <p className="text-sm font-medium text-destructive">{error}</p> : null}
           <DialogFooter>
-            <Button type="button" variant="surface" onClick={() => setOpen(false)}>
+            <InlineAction onClick={() => setOpen(false)}>
               Cancel
-            </Button>
-            <Button type="submit" variant="glossy" disabled={saving || !name.trim()}>
+            </InlineAction>
+            <Button type="submit" variant="reviewed" disabled={saving || !name.trim()}>
               {saving ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
               Add company
             </Button>
