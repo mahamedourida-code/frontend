@@ -38,9 +38,6 @@ import { cn } from "@/lib/utils"
 const workspacePrimaryButton =
   "border-2 !border-[var(--brand-brown-fg)] !bg-[var(--brand-brown-fg)] !text-white !shadow-none hover:!border-black hover:!bg-white hover:!text-black hover:underline hover:decoration-1 hover:underline-offset-4"
 
-const workspaceSurfaceButton =
-  "border-2 !border-black !bg-white !text-black !shadow-none hover:!bg-black hover:!text-white"
-
 const workspaceWarmPanel = "border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)]"
 
 function formatReceivedAt(value: string) {
@@ -461,7 +458,7 @@ export default function EmailInboxPage() {
                   <Input type="email" value={reviewerEmail} onChange={event => setReviewerEmail(event.target.value)} placeholder="reviewer@firm.com" />
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="surface" onClick={() => void inviteReviewer()} disabled={actionBusy === "reviewer"} className={workspacePrimaryButton}>
+                      <Button variant="glossy" onClick={() => void inviteReviewer()} disabled={actionBusy === "reviewer"} className={workspacePrimaryButton}>
                         <UserPlus className="size-4" />
                         Add
                       </Button>
@@ -614,7 +611,7 @@ export default function EmailInboxPage() {
                           <Button
                             variant="surface"
                             size="sm"
-                            className={cn("w-full", workspacePrimaryButton)}
+                            className="w-full"
                             onClick={() => void startConnectProvider(provider)}
                             disabled={!configured || connectingProvider === provider}
                           >
