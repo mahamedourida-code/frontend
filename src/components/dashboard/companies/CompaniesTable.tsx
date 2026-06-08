@@ -9,8 +9,8 @@ import { AddCompanyDialog } from "@/components/dashboard/companies/AddCompanyDia
 import { companiesFromResponse, type CompanySummary } from "@/components/dashboard/companies/company-types"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { SkeletonTableRow } from "@/components/dashboard/SkeletonCard"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { InlineAction } from "@/components/ui/inline-action"
 import { Input } from "@/components/ui/input"
 import {
   Table,
@@ -99,11 +99,11 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
               className="h-9 rounded-full bg-background pl-9"
             />
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="surface" size="sm" onClick={() => void load()} disabled={loading} aria-label="Refresh companies">
+          <div className="flex items-center gap-5">
+            <InlineAction onClick={() => void load()} disabled={loading} aria-label="Refresh companies">
               <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
               Refresh
-            </Button>
+            </InlineAction>
             <AddCompanyDialog workspaceId={workspaceId} onCreated={() => void load()} />
           </div>
         </div>
@@ -147,7 +147,7 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
                 visibleCompanies.map((company) => (
                   <TableRow
                     key={company.id}
-                    className="ax-interactive cursor-pointer hover:bg-emerald-50/55 dark:hover:bg-emerald-950/20"
+                    className="ax-interactive cursor-pointer hover:bg-blue-50/60 dark:hover:bg-blue-950/20"
                     onClick={() => router.push(`/dashboard/companies/${encodeURIComponent(company.id)}`)}
                   >
                     <TableCell className="px-4">
@@ -166,7 +166,7 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
                     <TableCell>
                       {company.accountingConnected ? (
                         <div>
-                          <span className="inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-900">
+                          <span className="inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-xs font-bold text-blue-900">
                             {company.accountingProvider === "xero" ? "Xero" : "QuickBooks"}
                           </span>
                           {company.accountingCompanyName ? (
