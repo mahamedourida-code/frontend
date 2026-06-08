@@ -16,6 +16,7 @@ import {
 } from "@tanstack/react-table"
 import { ArrowUpDown, Download, RefreshCw, FileSpreadsheet, FileText, FileImage, Calendar, DownloadCloud, Trash2, CalendarIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { InlineAction } from "@/components/ui/inline-action"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -504,12 +505,11 @@ function HistoryContent() {
     >
         <PageHeader
           title="Saved Files"
-          description="Download or delete your processed conversion history"
           actions={
-            <Button variant="surface" size="sm" onClick={refresh} disabled={isLoading} className="h-9">
-              <RefreshCw className={cn("me-2 size-4", isLoading && "animate-spin")} />
+            <InlineAction onClick={refresh} disabled={isLoading}>
+              <RefreshCw className={cn("size-4", isLoading && "animate-spin")} />
               Refresh
-            </Button>
+            </InlineAction>
           }
         />
 
@@ -542,7 +542,7 @@ function HistoryContent() {
                 {filteredJobs.filter(job => job.status === "completed" && job.result_url).length} file
                 {filteredJobs.filter(job => job.status === "completed" && job.result_url).length === 1 ? "" : "s"} ready to export
               </p>
-              <p className="mt-0.5 text-sm text-foreground/70">
+              <p className="mt-0.5 text-sm font-normal text-foreground">
                 Download the reviewed spreadsheets, or reopen a batch to post its journal entries.
               </p>
             </div>
@@ -556,46 +556,55 @@ function HistoryContent() {
             {/* Date Filter */}
             <div className="flex items-center gap-1 lg:gap-2 overflow-x-auto w-full sm:w-auto">
               <Button
-                variant={dateFilter === "today" ? "default" : "surface"}
+                variant="surface"
                 size="sm"
                 onClick={() => {
                   setDateFilter("today")
                   setDate(undefined)
                 }}
-                className="h-8 text-xs flex-shrink-0 ax-interactive"
+                className={cn(
+                  "h-8 text-xs flex-shrink-0 ax-interactive",
+                  dateFilter === "today" && "text-[var(--brand-link)] ring-1 ring-[var(--brand-link)]"
+                )}
               >
                 Today
               </Button>
               <Button
-                variant={dateFilter === "week" ? "default" : "surface"}
+                variant="surface"
                 size="sm"
                 onClick={() => {
                   setDateFilter("week")
                   setDate(undefined)
                 }}
-                className="h-8 text-xs flex-shrink-0 ax-interactive"
+                className={cn(
+                  "h-8 text-xs flex-shrink-0 ax-interactive",
+                  dateFilter === "week" && "text-[var(--brand-link)] ring-1 ring-[var(--brand-link)]"
+                )}
               >
                 7D
               </Button>
               <Button
-                variant={dateFilter === "month" ? "default" : "surface"}
+                variant="surface"
                 size="sm"
                 onClick={() => {
                   setDateFilter("month")
                   setDate(undefined)
                 }}
-                className="h-8 text-xs flex-shrink-0 ax-interactive"
+                className={cn(
+                  "h-8 text-xs flex-shrink-0 ax-interactive",
+                  dateFilter === "month" && "text-[var(--brand-link)] ring-1 ring-[var(--brand-link)]"
+                )}
               >
                 30D
               </Button>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    variant={date ? "default" : "surface"}
+                    variant="surface"
                     size="sm"
                     className={cn(
                       "ax-interactive h-8 w-[120px] lg:w-[180px] justify-start text-left font-normal text-xs flex-shrink-0",
-                      !date && "text-muted-foreground"
+                      date ? "text-[var(--brand-link)] ring-1 ring-[var(--brand-link)]" : "text-foreground"
                     )}
                   >
                     <CalendarIcon className="mr-1 lg:mr-2 h-3 w-3 lg:h-4 lg:w-4" />

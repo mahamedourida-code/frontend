@@ -25,10 +25,10 @@ export default function DashboardPage() {
 
   return (
     <DashboardShell activeItem="companies" title="Companies" user={user} showBack={false}>
-      <div className="space-y-5">
+      <div className="space-y-8">
         <PageHeader
           title="Companies"
-          description="Keep every client company, mixed document batch, and accounting handoff in one place."
+          description="Every client company, its batches, and accounting handoff in one place."
         />
         <CompaniesTable workspaceId={activeWorkspace?.id} />
       </div>

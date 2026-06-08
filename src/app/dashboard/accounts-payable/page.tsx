@@ -843,14 +843,8 @@ function AccountsPayableContent() {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <WorkspaceSection
-            step="1"
-            symbol="code-extract-field"
-            title="Review invoices"
-            hint="Confirm the extracted details, then code each draft."
-            contentClassName="p-0"
-          >
+        <div className="space-y-6">
+          <section className="relative overflow-hidden rounded-md border border-border bg-card shadow-none">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-card px-3 py-2.5">
               <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Draft bills queue">
                 {[
@@ -1042,13 +1036,12 @@ function AccountsPayableContent() {
                 </tbody>
               </table>
             </div>
-          </WorkspaceSection>
+          </section>
 
           {activeItem ? (
           <SpotlightCard className="rounded-md">
             <WorkspaceSection
               tone="active"
-              step="2"
               symbol="code-map-to-account"
               title="Prepare draft bill"
               hint={`Code the supplier, account, and VAT, then publish to ${destinationName}.`}
@@ -1059,7 +1052,7 @@ function AccountsPayableContent() {
                   <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
                     <div className="min-w-0">
                       <h2 className="text-[19px] font-bold tracking-tight text-foreground">{draft.vendor || "Vendor missing"}</h2>
-                      <p className="mt-1 break-all text-[13px] text-muted-foreground">{activeItem.source_filename}</p>
+                      <p className="mt-1 break-all text-[13px] text-foreground">{activeItem.source_filename}</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       {activeItem.source_access_url ? (
@@ -1486,13 +1479,13 @@ function AccountsPayableContent() {
                             QuickBooks publish: {activeItem.quickbooks_publication.status}
                           </p>
                           {activeItem.quickbooks_publication.quickbooks_bill_id ? (
-                            <p className="mt-1 text-xs text-muted-foreground">
+                            <p className="mt-1 text-xs text-foreground">
                               Bill ID {activeItem.quickbooks_publication.quickbooks_bill_id}
                               {activeItem.quickbooks_publication.attachment_status === "attached" ? " - source attached" : ""}
                             </p>
                           ) : null}
                           {activeItem.quickbooks_publication.attachment_status === "failed" ? (
-                            <p className="mt-1 text-xs text-muted-foreground">The Bill exists; publish again to retry only its attachment.</p>
+                            <p className="mt-1 text-xs text-foreground">The Bill exists; publish again to retry only its attachment.</p>
                           ) : null}
                         </div>
                       ) : null}
@@ -1502,13 +1495,13 @@ function AccountsPayableContent() {
                             Xero publish: {activeXeroPublication.status}
                           </p>
                           {activeXeroPublication.xero_invoice_id ? (
-                            <p className="mt-1 text-xs text-muted-foreground">
+                            <p className="mt-1 text-xs text-foreground">
                               Invoice ID {activeXeroPublication.xero_invoice_id}
                               {activeXeroPublication.attachment_status === "attached" ? " - source attached" : ""}
                             </p>
                           ) : null}
                           {activeXeroPublication.attachment_status === "failed" ? (
-                            <p className="mt-1 text-xs text-muted-foreground">The draft bill exists in Xero; publish again to retry only its attachment.</p>
+                            <p className="mt-1 text-xs text-foreground">The draft bill exists in Xero; publish again to retry only its attachment.</p>
                           ) : null}
                         </div>
                       ) : null}
@@ -1563,7 +1556,7 @@ function AccountsPayableContent() {
                         </table>
                       </div>
                     ) : (
-                      <p className="rounded-md border border-dashed border-border p-3 text-sm text-muted-foreground">No line items detected.</p>
+                      <p className="rounded-md border border-dashed border-border p-3 text-sm text-foreground">No line items detected.</p>
                     )}
                   </div>
 
@@ -1629,7 +1622,7 @@ function AccountsPayableContent() {
               {destinationBadgeSrc ? <Image src={destinationBadgeSrc} alt="" width={20} height={20} className="size-5 rounded-sm object-contain" /> : null}
               {publishResult ? "Publish complete" : `Publish ${selectedReadyIds.length} ${selectedReadyIds.length === 1 ? "bill" : "bills"} to ${destinationName}`}
             </DialogTitle>
-            <DialogDescription className="text-sm leading-6">
+            <DialogDescription className="text-sm font-normal leading-6 text-foreground">
               {publishResult
                 ? "The bulk publish finished. Failed items remain in the queue and can be retried."
                 : `You are publishing ${selectedReadyIds.length} draft ${selectedReadyIds.length === 1 ? "bill" : "bills"} to ${destinationName}. This cannot be undone.`}
@@ -1651,7 +1644,7 @@ function AccountsPayableContent() {
                 {publishResult.failed.length > 0 ? (
                   <StatusBadge tone="error">{publishResult.failed.length} failed</StatusBadge>
                 ) : (
-                  <span className="text-xs font-medium text-muted-foreground">All selected draft bills landed in {destinationName}.</span>
+                  <span className="text-xs font-medium text-foreground">All selected draft bills landed in {destinationName}.</span>
                 )}
               </div>
               {publishResult.failed.length > 0 ? (
@@ -1664,7 +1657,7 @@ function AccountsPayableContent() {
                       <li key={`${row.vendor}-${index}`} className="px-3 py-2.5 text-sm">
                         <p className="font-medium text-foreground">{row.vendor}</p>
                         {row.reason ? (
-                          <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{row.reason}</p>
+                          <p className="mt-0.5 text-xs leading-5 text-foreground">{row.reason}</p>
                         ) : null}
                       </li>
                     ))}
@@ -1741,7 +1734,7 @@ function AccountsPayableContent() {
               </span>
               Match a purchase order
             </DialogTitle>
-            <DialogDescription className="text-sm font-medium leading-6">
+            <DialogDescription className="text-sm font-normal leading-6 text-foreground">
               Open POs{draft.vendor ? ` for ${draft.vendor}` : ""}. Selecting one links it to this invoice.
             </DialogDescription>
           </DialogHeader>
@@ -1753,7 +1746,7 @@ function AccountsPayableContent() {
           ) : poList.length === 0 ? (
             <div className={cn("rounded-xl border-2 p-5 text-center", workspaceWarmPanel)}>
               <p className="text-sm font-bold text-foreground">No open purchase orders</p>
-              <p className="mt-1 text-xs font-semibold text-muted-foreground">No open purchase orders are available for this supplier.</p>
+              <p className="mt-1 text-xs font-normal text-foreground">No open purchase orders are available for this supplier.</p>
             </div>
           ) : (
             <div className="max-h-[320px] space-y-2 overflow-y-auto">

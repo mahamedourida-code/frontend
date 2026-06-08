@@ -519,11 +519,7 @@ export default function EmailInboxPage() {
         {activeWorkspace?.role === "owner" ? (
           <Card className="!shadow-none">
             <CardContent className="p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-foreground">Connected sources</p>
-                </div>
-              </div>
+              <p className="text-sm font-semibold text-foreground">Connected sources</p>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {(["google_drive", "dropbox"] as ConnectedSourceProvider[]).map((provider) => {
@@ -540,9 +536,9 @@ export default function EmailInboxPage() {
                           <div>
                             <p className="text-sm font-semibold text-foreground">{label}</p>
                             {source?.account_email ? (
-                              <p className="truncate text-xs text-muted-foreground">{source.account_email}</p>
+                              <p className="truncate text-xs font-normal text-foreground">{source.account_email}</p>
                             ) : (
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-xs font-normal text-foreground">
                                 {configured ? "Not connected" : "OAuth not configured"}
                               </p>
                             )}

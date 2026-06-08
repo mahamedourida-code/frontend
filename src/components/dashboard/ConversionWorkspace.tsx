@@ -228,13 +228,13 @@ function ReviewWorkflowStrip({ className }: { className?: string }) {
             index === 0 ? "border-[var(--brand-brown-fg)]" : "border-[var(--button-warm-ring)]",
           )}
         >
-          <Symbol name={step.symbol} size="medium" className="h-16 w-16 shrink-0 sm:h-20 sm:w-20" alt="" />
+          <Symbol name={step.symbol} size="medium" className="h-28 w-28 shrink-0 sm:h-32 sm:w-32" alt="" />
           <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
               <span className="font-mono text-xs text-[var(--brand-brown-fg)]">{step.n}</span>
               {step.label}
             </p>
-            <p className="truncate text-xs text-muted-foreground">{step.hint}</p>
+            <p className="truncate text-xs font-normal text-foreground">{step.hint}</p>
           </div>
         </div>
       ))}
