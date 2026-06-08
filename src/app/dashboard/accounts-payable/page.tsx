@@ -19,6 +19,7 @@ import { missingVatCopy, overPoCopy } from "@/lib/anomaly-reasons"
 import { computeReviewScore, REVIEW_LEVEL_WEIGHT } from "@/lib/review-score"
 import { deriveMissingInfo } from "@/lib/missing-info"
 import { Button } from "@/components/ui/button"
+import { InlineAction } from "@/components/ui/inline-action"
 import { MotionButton } from "@/components/ui/motion-button"
 import { CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -815,9 +816,9 @@ function AccountsPayableContent() {
               Filtered to <span className="text-[var(--brand-brown-fg)]">{clientName || "client"}</span>
               {clientJobIds ? ` · ${visibleItems.length} item${visibleItems.length === 1 ? "" : "s"}` : " · loading…"}
             </span>
-            <Button variant="surface" size="sm" className={cn("h-7 px-2 text-xs", workspaceSurfaceButton)} onClick={() => router.push("/dashboard/accounts-payable")}>
+            <InlineAction onClick={() => router.push("/dashboard/accounts-payable")}>
               Clear filter
-            </Button>
+            </InlineAction>
           </div>
         ) : null}
 
@@ -830,15 +831,15 @@ function AccountsPayableContent() {
                 ? ` connected${accountingConnection.company_name ? ` to ${accountingConnection.company_name}` : ""}.`
                 : " setup required before publishing draft bills."}
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             {accountingConnection?.connected ? (
-              <Button variant="surface" size="sm" className={cn("h-7 px-2 text-xs", workspaceSurfaceButton)} onClick={() => void loadAccountingDestination(true)} disabled={syncingReferences}>
+              <InlineAction onClick={() => void loadAccountingDestination(true)} disabled={syncingReferences}>
                 {syncingReferences ? "Refreshing..." : "Refresh lists"}
-              </Button>
+              </InlineAction>
             ) : null}
-            <Button variant="surface" size="sm" className={cn("h-7 px-3 text-xs", workspaceSurfaceButton)} onClick={() => router.push("/dashboard/integrations")}>
+            <InlineAction onClick={() => router.push("/dashboard/integrations")}>
               Manage integration
-            </Button>
+            </InlineAction>
           </div>
         </div>
 
@@ -1062,9 +1063,9 @@ function AccountsPayableContent() {
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       {activeItem.source_access_url ? (
-                        <Button asChild variant="surface" size="sm" className="h-8">
+                        <InlineAction asChild>
                           <a href={activeItem.source_access_url} target="_blank" rel="noreferrer">View attachment</a>
-                        </Button>
+                        </InlineAction>
                       ) : null}
                       <ReviewScoreBadge
                         score={reviewScores.get(activeItem.id) ?? computeReviewScore(activeItem)}
@@ -1129,25 +1130,20 @@ function AccountsPayableContent() {
                             </button>
                           ) : null}
                         </div>
-                        <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-                          <Button
-                            variant="surface"
-                            size="sm"
+                        <div className="flex shrink-0 items-center gap-4">
+                          <InlineAction
                             onClick={() => setDismissDraft({ warningId: warning.id, reason: "" })}
                             disabled={dismissing || discarding || activeLocked}
-                            className={cn("h-8 px-3 text-xs", workspaceSurfaceButton)}
                           >
                             Dismiss…
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
+                          </InlineAction>
+                          <InlineAction
+                            tone="danger"
                             onClick={() => void discardActive()}
                             disabled={dismissing || discarding || activeLocked}
-                            className="h-8 px-3 text-xs"
                           >
                             Discard this one
-                          </Button>
+                          </InlineAction>
                         </div>
                       </div>
                       {dismissDraft?.warningId === warning.id ? (
@@ -1162,16 +1158,13 @@ function AccountsPayableContent() {
                             disabled={dismissing}
                             className="h-9 rounded-md"
                           />
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="surface"
-                              size="sm"
+                          <div className="flex items-center justify-end gap-4">
+                            <InlineAction
                               onClick={() => setDismissDraft(null)}
                               disabled={dismissing}
-                              className={cn("h-8 px-3 text-xs", workspaceSurfaceButton)}
                             >
                               Cancel
-                            </Button>
+                            </InlineAction>
                             <Button
                               variant="surface"
                               size="sm"
@@ -1228,15 +1221,13 @@ function AccountsPayableContent() {
                           ) : null}
                         </AnimatePresence>
                       </div>
-                      <Button
-                        variant="surface"
-                        size="sm"
+                      <InlineAction
                         disabled={saving || activeLocked}
                         onClick={() => void overrideAutoFill()}
-                        className={cn("h-8 shrink-0 px-3 text-xs", workspaceSurfaceButton)}
+                        className="shrink-0"
                       >
                         Override
-                      </Button>
+                      </InlineAction>
                     </div>
                   ) : activeItem.vendor_suggestion ? (
                     <div className={cn("rounded-md border p-3", workspaceWarmPanel)}>
@@ -1287,14 +1278,10 @@ function AccountsPayableContent() {
                           {labels.supplier}
                         </FieldLabel>
                         {!activeLocked ? (
-                          <button
-                            type="button"
-                            onClick={() => void openPoDialog()}
-                            className="ax-interactive inline-flex items-center gap-1 text-[11px] font-bold text-[var(--brand-brown-fg)] underline-offset-2 hover:text-black hover:underline"
-                          >
+                          <InlineAction onClick={() => void openPoDialog()} className="text-xs [&_svg]:size-3">
                             <FileText className="size-3" />
                             {activeItem.matched_po ? "Change PO" : "Match PO"}
-                          </button>
+                          </InlineAction>
                         ) : null}
                       </div>
                       <Select
@@ -1532,9 +1519,9 @@ function AccountsPayableContent() {
                     <div className="mb-2 flex items-center justify-between gap-3">
                       <p className="text-sm font-semibold text-foreground">Line items</p>
                       {!activeLocked ? (
-                        <Button type="button" variant="surface" size="sm" onClick={addLineItem} className={cn("h-8 text-xs", workspaceSurfaceButton)}>
+                        <InlineAction onClick={addLineItem}>
                           Add line
-                        </Button>
+                        </InlineAction>
                       ) : null}
                     </div>
                     {lineItems.length ? (
@@ -1565,9 +1552,9 @@ function AccountsPayableContent() {
                                 ))}
                                 {!activeLocked ? (
                                   <td className="p-1.5">
-                                    <Button type="button" size="sm" variant="surface" onClick={() => removeLineItem(rowIndex)} className={cn("h-8 px-2 text-xs", workspaceSurfaceButton)}>
+                                    <InlineAction tone="danger" onClick={() => removeLineItem(rowIndex)} className="text-xs">
                                       Remove
-                                    </Button>
+                                    </InlineAction>
                                   </td>
                                 ) : null}
                               </tr>
@@ -1600,9 +1587,9 @@ function AccountsPayableContent() {
                         </MotionButton>
                         {activeItem.status === "ready_to_publish" ? (
                           <>
-                            <Button variant="surface" onClick={() => void persistDraft("needs_coding")} disabled={saving} className={cn("h-9", workspaceSurfaceButton)}>
+                            <InlineAction onClick={() => void persistDraft("needs_coding")} disabled={saving} className="px-2">
                               Return to coding
-                            </Button>
+                            </InlineAction>
                             <MotionButton ref={activePublishRef} variant="glossy" onClick={() => void publishActive()} disabled={saving || !accountingConnection?.connected} className={cn("h-9", workspacePrimaryButton)}>
                               Publish to {destinationName}
                             </MotionButton>
@@ -1716,9 +1703,9 @@ function AccountsPayableContent() {
               </MotionButton>
             ) : (
               <>
-                <Button variant="surface" onClick={closePublishDialog} disabled={publishing} className={cn("h-9 px-4", workspaceSurfaceButton)}>
+                <InlineAction onClick={closePublishDialog} disabled={publishing} className="px-2">
                   Cancel
-                </Button>
+                </InlineAction>
                 <MotionButton
                   ref={confirmPublishRef}
                   variant="glossy"
@@ -1806,7 +1793,7 @@ function AccountsPayableContent() {
           )}
 
           <DialogFooter>
-            <Button variant="surface" size="sm" className={workspaceSurfaceButton} onClick={() => setPoDialogOpen(false)}>Close</Button>
+            <InlineAction onClick={() => setPoDialogOpen(false)}>Close</InlineAction>
           </DialogFooter>
         </DialogContent>
       </Dialog>
