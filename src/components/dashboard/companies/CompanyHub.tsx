@@ -14,14 +14,26 @@ import {
   ReceiptText,
   RefreshCw,
 } from "lucide-react"
+import { toast } from "sonner"
 
 import { DashboardShell } from "@/components/DashboardShell"
 import { companyFromResponse, type CompanySummary } from "@/components/dashboard/companies/company-types"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
+import { DangerZone } from "@/components/dashboard/DangerZone"
+import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { InlineAction } from "@/components/ui/inline-action"
+import { Input } from "@/components/ui/input"
 import { useAuth } from "@/hooks/useAuth"
 import { companyApi } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
@@ -100,11 +112,11 @@ function SummaryItem({
 }) {
   return (
     <div className="flex min-w-0 items-center gap-3 bg-card px-4 py-3">
-      <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground", attention && value && "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200")}>
+      <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-foreground", attention && value && "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200")}>
         <Icon className="size-4" />
       </span>
       <div className="min-w-0">
-        <p className="truncate text-[11px] font-bold uppercase tracking-[0.1em] text-muted-foreground">{label}</p>
+        <p className="truncate text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">{label}</p>
         <p className={cn("mt-0.5 text-lg font-bold tabular-nums text-foreground", attention && value && "text-amber-700 dark:text-amber-300")}>{value}</p>
       </div>
     </div>
@@ -116,19 +128,19 @@ function WorkflowRow({ tab, companyId }: { tab: WorkflowTab; companyId: string }
 
   return (
     <div className="flex flex-col items-start gap-3 px-4 py-4 sm:flex-row sm:items-center">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
         <Icon className="size-4" />
       </span>
       <div className="min-w-0 flex-1">
         <h2 className="text-sm font-bold text-foreground">{tab.label}</h2>
-        <p className="mt-0.5 max-w-2xl text-sm text-muted-foreground">{tab.description}</p>
+        <p className="mt-0.5 max-w-2xl text-sm text-foreground">{tab.description}</p>
       </div>
-      <Button asChild variant="surface" size="sm">
+      <InlineAction asChild>
         <Link href={tab.href(companyId)}>
           {tab.action}
           <ArrowRight className="size-4" />
         </Link>
-      </Button>
+      </InlineAction>
     </div>
   )
 }
@@ -139,6 +151,10 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
   const [company, setCompany] = useState<CompanySummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
+  const [renameOpen, setRenameOpen] = useState(false)
+  const [nameDraft, setNameDraft] = useState("")
+  const [renaming, setRenaming] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -165,6 +181,36 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
     void load()
   }, [load])
 
+  const openRename = () => {
+    setNameDraft(company?.name || "")
+    setRenameOpen(true)
+  }
+
+  const submitRename = async () => {
+    const cleaned = nameDraft.trim()
+    if (!cleaned || cleaned === company?.name) {
+      setRenameOpen(false)
+      return
+    }
+    setRenaming(true)
+    try {
+      await companyApi.update(companyId, { name: cleaned })
+      toast.success("Client renamed.")
+      setRenameOpen(false)
+      await load()
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || "Could not rename this client.")
+    } finally {
+      setRenaming(false)
+    }
+  }
+
+  const deleteClient = async () => {
+    await companyApi.delete(companyId)
+    toast.success("Client deleted.")
+    router.push("/dashboard/clients")
+  }
+
   if (authLoading || !user) {
     return <DashboardRouteLoader label="Loading company" />
   }
@@ -175,15 +221,16 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
         title={company?.name || "Company"}
         description={company ? `Last upload: ${formatDate(company.lastUploadAt)}` : "Company workspace"}
         breadcrumb={
-          <Link href="/dashboard" className="font-semibold text-muted-foreground hover:text-foreground">
-            Companies
+          <Link href="/dashboard/clients" className="font-semibold text-foreground hover:underline">
+            Clients
           </Link>
         }
+        actions={company ? <InlineAction onClick={openRename}>Rename</InlineAction> : undefined}
       />
 
       {loading ? (
         <Card className="rounded-xl">
-          <CardContent className="flex items-center gap-2 p-6 text-sm font-medium text-muted-foreground">
+          <CardContent className="flex items-center gap-2 p-6 text-sm font-medium text-foreground">
             <Loader2 className="size-4 animate-spin" />
             Loading company workspace...
           </CardContent>
@@ -218,8 +265,51 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
               <WorkflowRow key={tab.id} tab={tab} companyId={companyId} />
             ))}
           </Card>
+
+          <DangerZone description="Deleting a client removes it as a label. Its documents and bills are kept but detached.">
+            <Button variant="dangerOutline" size="sm" onClick={() => setDeleteOpen(true)}>
+              Delete client
+            </Button>
+          </DangerZone>
         </div>
       )}
+
+      <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Rename client</DialogTitle>
+          </DialogHeader>
+          <Input
+            value={nameDraft}
+            onChange={(e) => setNameDraft(e.target.value)}
+            autoFocus
+            placeholder="Client name"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") void submitRename()
+            }}
+          />
+          <DialogFooter>
+            <Button variant="surface" size="sm" onClick={() => setRenameOpen(false)} disabled={renaming}>
+              Cancel
+            </Button>
+            <Button variant="reviewed" size="sm" onClick={() => void submitRename()} disabled={renaming}>
+              {renaming ? "Saving…" : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {company ? (
+        <ConfirmDeleteDialog
+          open={deleteOpen}
+          onOpenChange={setDeleteOpen}
+          title="Delete client"
+          description="This removes the client. Its documents and bills are kept but detached from it."
+          confirmText={company.name}
+          confirmLabel="Delete client"
+          onConfirm={deleteClient}
+        />
+      ) : null}
     </DashboardShell>
   )
 }
