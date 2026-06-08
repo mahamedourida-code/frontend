@@ -254,6 +254,55 @@ one-line confirm) is a single editable constant: `HIGH_VALUE_THRESHOLD` in
 `src/components/dashboard/ConversionWorkspace.tsx` (default `5000`). Edit that one number to
 retune the bar; it is pure presentation over the extracted total — no migration, no backend change.
 
+## Request a Demo - Lead Capture + Scheduling
+
+The `/demo` page (`src/app/demo/page.tsx` + `src/components/demo/DemoFlow.tsx`) collects a lead
+(Name, Work Email, Company, optional "What are you looking to automate?"), stores it via the public
+backend endpoint `POST /api/v1/demo/lead`, then shows a Calendly scheduler, then a confirmation. Two
+manual pieces:
+
+### 1. Calendly account + scheduling link
+
+1. Create/lasso a Calendly event type for the demo call (e.g. "AxLiner demo, 30 min").
+2. Optional but recommended: add one **custom question** so the prefilled company name lands on the
+   booking — the embed passes the company as `a1`.
+3. Copy the event URL (e.g. `https://calendly.com/axliner/demo`) and set it as a **frontend** env var
+   in Vercel (public-safe, no secret):
+
+   ```
+   NEXT_PUBLIC_CALENDLY_URL=https://calendly.com/<org>/<event>
+   ```
+
+   The page prefills name/email/company into the embed and listens for `calendly.event_scheduled` to
+   advance to the confirmation. **If this var is unset**, the form still captures the lead and shows a
+   "Request received, we'll email you to schedule" confirmation (graceful fallback) — no crash.
+
+### 2. Supabase `demo_leads` table
+
+The backend inserts leads into a `demo_leads` table via the service-role client. The endpoint is
+resilient (it logs and still returns `{ok:true}` if the insert fails, so the prospect is never
+blocked), but leads are only persisted once the table exists. Create it once against the production
+Supabase project (`iawkqvdtktnvxqgpupvt`), via the Supabase SQL editor or a migration:
+
+```sql
+CREATE TABLE IF NOT EXISTS public.demo_leads (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  work_email text NOT NULL,
+  company text NOT NULL,
+  automation_goal text,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- Lock it down: only the service role (backend) writes/reads; no public/anon access.
+ALTER TABLE public.demo_leads ENABLE ROW LEVEL SECURITY;
+```
+
+No RLS policies are added on purpose — the service-role key used by the backend bypasses RLS, and
+leaving the table with RLS on + zero policies means anon/auth clients can't read or write it. After
+creating the table, run the Supabase advisors and submit one test lead from `/demo` to confirm a row
+lands.
+
 ## Rule For Later Prompts
 
 After each later prompt, append a new section here only if it adds a manual provider step, API credential, dashboard configuration, compliance action, or user authorization step. If a prompt needs no manual action, do not add a section.

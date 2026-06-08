@@ -14,33 +14,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/hooks/useAuth"
 import { createClient } from "@/utils/supabase/client"
+import { testimonialSet } from "@/lib/testimonials"
 
 type AuthMode = "sign-in" | "sign-up"
 type Provider = "google"
-
-const testimonialSet = [
-  {
-    quote:
-      "AxLiner gives our bookkeeping team clean Excel files from handwritten expense sheets before month-end review starts.",
-    name: "Mara Ellis",
-    title: "Senior Bookkeeper, Ledger North",
-    avatar: "/testimonial/aa.jpg",
-  },
-  {
-    quote:
-      "We upload paper invoices and field notes in one batch, then review the spreadsheet instead of rebuilding every row.",
-    name: "Daniel Rowe",
-    title: "Accounting Operations Lead",
-    avatar: "/testimonial/zz.jpg",
-  },
-  {
-    quote:
-      "For bank statement photos and handwritten logs, the team starts from structured rows instead of a blank workbook.",
-    name: "Nadia Clarke",
-    title: "Payroll & Reconciliation Manager",
-    avatar: "/testimonial/ee.jpg",
-  },
-]
 
 function AuthFallback() {
   return (

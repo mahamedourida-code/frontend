@@ -1578,6 +1578,19 @@ export const accountApi = {
   },
 }
 
+export const demoApi = {
+  // Public: capture a "request a demo" lead before scheduling (works unauthenticated).
+  submitLead: async (payload: {
+    name: string
+    work_email: string
+    company: string
+    automation_goal?: string
+  }): Promise<{ ok: boolean }> => {
+    const response = await apiClient.post('/api/v1/demo/lead', payload)
+    return response.data
+  },
+}
+
 export const clientIntakeApi = {
   listLinks: async (workspaceId: string): Promise<{ links: ClientUploadLink[]; total: number }> => {
     const response = await apiClient.get('/api/v1/client-intake/links', { params: { workspace_id: workspaceId } })
