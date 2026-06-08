@@ -582,7 +582,7 @@ function SettingsContent() {
                         disabled
                         className="bg-muted h-9 lg:h-10"
                       />
-                      <p className="text-[13px] font-medium text-muted-foreground">Email cannot be changed</p>
+                      <p className="text-[13px] font-normal text-foreground">Email cannot be changed</p>
                     </div>
 
                     <div className="flex items-center justify-end gap-5 pt-3 lg:pt-4 border-t">
@@ -713,7 +713,7 @@ function SettingsContent() {
                               <CreditStack className="h-6 w-6 text-primary" />
                               <div>
                                 <p className="text-sm font-bold text-foreground">Credits</p>
-                                <p className="text-xs text-muted-foreground">{creditAvailable} available of {creditTotal}</p>
+                                <p className="text-xs font-normal text-foreground">{creditAvailable} available of {creditTotal}</p>
                               </div>
                             </div>
                             <p className="text-sm font-bold text-primary">{creditUsed} used</p>
@@ -782,7 +782,7 @@ function SettingsContent() {
                           ))}
                         </div>
 
-                        <div className={cn("mt-5 rounded-lg border p-4 text-sm text-muted-foreground", workspaceWarmPanel)}>
+                        <div className={cn("mt-5 rounded-lg border p-4 text-sm font-normal text-foreground", workspaceWarmPanel)}>
                           Batch limits:
                           <span className="ml-1 font-bold text-foreground">
                             {limits ? `${limits.max_files_per_batch} files, ${limits.max_file_size_mb} MB each` : "loading live limits"}
@@ -810,7 +810,7 @@ function SettingsContent() {
                             Owner only
                           </span>
                         </div>
-                        <CardDescription className="mt-1 max-w-xl leading-5">
+                        <CardDescription className="mt-1 max-w-xl font-normal leading-5 text-foreground">
                           Saved after confirmed invoice or receipt review.
                         </CardDescription>
                       </div>
@@ -835,7 +835,7 @@ function SettingsContent() {
                           <h3 className="text-lg font-semibold tracking-tight text-foreground">
                             No remembered suppliers yet
                           </h3>
-                          <p className="text-sm leading-relaxed text-foreground/70">
+                          <p className="text-sm font-normal leading-relaxed text-foreground">
                             Confirm an invoice or receipt in Review to save coding defaults.
                           </p>
                         </div>
@@ -860,7 +860,7 @@ function SettingsContent() {
                                 {rule.enabled ? 'Enabled' : 'Disabled'}
                               </StatusBadge>
                             </div>
-                            <p className="mt-1 text-xs text-muted-foreground">
+                            <p className="mt-1 text-xs font-normal text-foreground">
                               Approved {formatDate(rule.approved_at)}
                             </p>
                             </div>
@@ -888,7 +888,7 @@ function SettingsContent() {
                               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                 Auto-apply mode
                               </p>
-                              <p className="mt-1 text-xs text-foreground">
+                              <p className="mt-1 text-xs font-normal text-foreground">
                                 {(rule.auto_mode || 'suggest') === 'auto_ready'
                                   ? 'Pre-fill and move to Ready for approval.'
                                   : (rule.auto_mode || 'suggest') === 'auto_fill'
@@ -924,7 +924,7 @@ function SettingsContent() {
                             .filter(([field]) => rule.applies_to !== 'receipt' || field !== 'destination_treatment')
                             .map(([field, label, placeholder]) => (
                             <label key={field} className="space-y-1.5">
-                              <span className="block text-xs font-medium text-muted-foreground">{label}</span>
+                              <span className="block text-xs font-medium text-foreground">{label}</span>
                               <Input
                                 value={vendorDrafts[rule.id]?.[field] || ''}
                                 onChange={(event) => updateVendorDraft(rule.id, field, event.target.value)}
@@ -963,13 +963,10 @@ function SettingsContent() {
                     </div>
                   </CardHeader>
                   <CardContent className="border-t border-border p-5 sm:p-6">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="flex items-center gap-4">
-                        <Symbol name="success-published" size="medium" className="h-24 w-24" alt="" />
-                        <p className="max-w-xs text-sm leading-relaxed text-foreground/70">
-                          Reviewed draft bills publish to QuickBooks or Xero. AxLiner never pays them.
-                        </p>
-                      </div>
+                    <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="max-w-md text-sm font-normal leading-relaxed text-foreground">
+                        Reviewed draft bills publish to QuickBooks or Xero. AxLiner never pays them.
+                      </p>
                       <InlineAction asChild className="shrink-0">
                         <Link href="/dashboard/integrations">
                           Open integrations
@@ -988,7 +985,7 @@ function SettingsContent() {
                       </div>
                       <div>
                         <CardTitle className="text-lg">Purchase order import</CardTitle>
-                        <CardDescription className="mt-1 max-w-xl leading-5">
+                        <CardDescription className="mt-1 max-w-xl font-normal leading-5 text-foreground">
                           Import open purchase orders for AP matching.
                         </CardDescription>
                       </div>
@@ -996,14 +993,14 @@ function SettingsContent() {
                   </CardHeader>
                   <CardContent className="space-y-4 border-t border-border p-5 sm:p-6">
                     {!isOwner ? (
-                      <p className={cn("rounded-lg border px-4 py-3 text-sm text-muted-foreground", workspaceWarmPanel)}>
+                      <p className={cn("rounded-lg border px-4 py-3 text-sm font-normal text-foreground", workspaceWarmPanel)}>
                         Ask the workspace owner to import purchase orders.
                       </p>
                     ) : (
                       <>
                         <div>
                           <Label htmlFor="purchase-orders-csv">Purchase orders CSV</Label>
-                          <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                          <p className="mt-1 text-xs font-normal leading-5 text-foreground">
                             Columns: <span className="font-mono text-foreground">po_number, vendor, date, total, remaining, currency</span>
                           </p>
                         </div>
@@ -1084,7 +1081,7 @@ function SettingsContent() {
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="invoice-language">Invoice language</Label>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs font-normal text-foreground">
                           Review-board labels only; OCR language stays separate.
                         </p>
                       </div>

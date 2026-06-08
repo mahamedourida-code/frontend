@@ -3,11 +3,12 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { useSearchParams } from "next/navigation"
-import { Building2, Check, RefreshCw, ShieldCheck } from "lucide-react"
+import { Check, RefreshCw, ShieldCheck } from "lucide-react"
 import { toast } from "sonner"
 
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { Button } from "@/components/ui/button"
+import { InlineAction } from "@/components/ui/inline-action"
 import {
   accountingDestinationApi,
   quickBooksApi,
@@ -38,9 +39,6 @@ const providers: Array<{
 
 const workspacePrimaryButton =
   "border-2 !border-[var(--brand-brown-fg)] !bg-[var(--brand-brown-fg)] !text-white !shadow-none hover:!border-black hover:!bg-white hover:!text-black hover:underline hover:decoration-1 hover:underline-offset-4"
-
-const workspaceSurfaceButton =
-  "border-2 !border-black !bg-white !text-black !shadow-none hover:!bg-black hover:!text-white"
 
 const workspaceWarmPanel = "border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)]"
 
@@ -181,14 +179,14 @@ export function AccountingConnectionsSection({
 
   return (
     <div className="space-y-5">
-      <section className="rounded-xl border border-border bg-card p-4 shadow-none sm:p-5">
+      <section className="rounded-xl border border-border bg-card p-5 shadow-none sm:p-6">
         <div>
           <p className="text-sm font-bold text-foreground">Publishing destination</p>
-          <p className="mt-1 text-sm leading-6 text-muted-foreground">
+          <p className="mt-2 text-sm leading-6 text-foreground">
             Choose where reviewed draft bills are created. You can change this per workspace.
           </p>
         </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
           {providers.map(provider => {
             const selected = destination === provider.id
             return (
@@ -199,18 +197,16 @@ export function AccountingConnectionsSection({
                 disabled={!isOwner || Boolean(action)}
                 aria-pressed={selected}
                 className={cn(
-                  "ax-interactive flex min-h-20 items-center gap-3 rounded-xl border px-4 py-3 text-left transition disabled:cursor-default disabled:opacity-70",
+                  "ax-interactive flex min-h-20 items-center gap-4 rounded-xl border px-5 py-4 text-left transition disabled:cursor-default disabled:opacity-70",
                   selected
                     ? "border-[var(--brand-brown-fg)] bg-[var(--button-warm)]"
                     : "border-border bg-background hover:border-[var(--button-warm-ring)] hover:bg-[var(--button-warm)]",
                 )}
               >
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-border bg-white p-2">
-                  <Image src={provider.logo} alt="" width={88} height={54} className="h-auto w-full object-contain" />
-                </span>
+                <Image src={provider.logo} alt="" width={120} height={120} className="h-12 w-12 shrink-0 object-contain" />
                 <span className="min-w-0">
                   <span className="block text-sm font-bold text-foreground">{provider.name}</span>
-                  <span className="mt-0.5 block text-xs font-medium text-muted-foreground">
+                  <span className="mt-1 block text-xs font-normal text-foreground">
                     {selected ? "Selected for draft bills" : "Choose as destination"}
                   </span>
                 </span>
@@ -222,9 +218,9 @@ export function AccountingConnectionsSection({
       </section>
 
       {!hasConnection ? (
-        <div className="rounded-xl border border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-4 py-3.5">
+        <div className="rounded-xl border border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-5 py-4">
           <p className="text-sm font-bold text-foreground">Connect your accounting software</p>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-2 text-sm font-normal text-foreground">
             Connect the destination you use, then sync suppliers, accounts, and VAT codes before publishing.
           </p>
         </div>
@@ -233,17 +229,14 @@ export function AccountingConnectionsSection({
       <div className="overflow-hidden rounded-xl border border-border bg-card shadow-none">
         {providers.map((provider, index) => {
           const connection = connections[provider.id]
-          const busy = action?.startsWith(`${provider.id}:`)
           return (
             <div
               key={provider.id}
-              className={cn("px-4 py-4 sm:px-5", index > 0 && "border-t border-border")}
+              className={cn("px-5 py-5 sm:px-6 sm:py-6", index > 0 && "border-t border-border")}
             >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <div className="flex min-w-0 flex-1 items-center gap-3">
-                  <span className="flex size-12 shrink-0 items-center justify-center rounded-lg border border-border bg-white p-2">
-                    <Image src={provider.logo} alt="" width={96} height={60} className="h-auto w-full object-contain" />
-                  </span>
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+                <div className="flex min-w-0 flex-1 items-center gap-4">
+                  <Image src={provider.logo} alt="" width={140} height={140} className="h-14 w-14 shrink-0 object-contain" />
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="text-base font-bold text-foreground">{provider.name}</h2>
@@ -251,7 +244,7 @@ export function AccountingConnectionsSection({
                         {loading ? "Checking" : connection.connected ? "Connected" : "Not connected"}
                       </StatusBadge>
                     </div>
-                    <p className="mt-1 truncate text-xs font-medium text-muted-foreground">
+                    <p className="mt-1.5 truncate text-xs font-normal text-foreground">
                       {connection.connected
                         ? `${connection.company_name || "Company connected"} · ${referenceCount(connection)} synced references · ${formatSynced(connection.last_synced_at)}`
                         : "Sync suppliers, accounts, and VAT codes for draft bills."}
@@ -260,19 +253,19 @@ export function AccountingConnectionsSection({
                 </div>
 
                 {isOwner ? (
-                  <div className="flex shrink-0 flex-wrap gap-2">
+                  <div className="flex shrink-0 flex-wrap items-center gap-5">
                     {connection.connected ? (
                       <>
-                        <Button variant="surface" size="sm" className={workspaceSurfaceButton} onClick={() => void sync(provider.id)} disabled={Boolean(action) || loading}>
+                        <InlineAction onClick={() => void sync(provider.id)} disabled={Boolean(action) || loading}>
                           <RefreshCw className={cn("size-4", action === `${provider.id}:sync` && "animate-spin")} />
                           Sync lists
-                        </Button>
-                        <Button variant="surface" size="sm" className={workspaceSurfaceButton} onClick={() => void disconnect(provider.id)} disabled={Boolean(action)}>
+                        </InlineAction>
+                        <InlineAction onClick={() => void disconnect(provider.id)} disabled={Boolean(action)}>
                           Disconnect
-                        </Button>
+                        </InlineAction>
                       </>
                     ) : (
-                      <Button variant="glossy" size="sm" className={workspacePrimaryButton} onClick={() => void connect(provider.id)} disabled={Boolean(action) || loading}>
+                      <Button variant="glossy" size="sm" className={cn("rounded-md", workspacePrimaryButton)} onClick={() => void connect(provider.id)} disabled={Boolean(action) || loading}>
                         {action === `${provider.id}:connect` ? "Connecting..." : `Connect ${provider.id === "xero" ? "Xero" : "QuickBooks"}`}
                       </Button>
                     )}
@@ -284,11 +277,11 @@ export function AccountingConnectionsSection({
         })}
       </div>
 
-      <div className={cn("flex items-start gap-3 rounded-xl border px-4 py-3.5", workspaceWarmPanel)}>
+      <div className={cn("flex items-start gap-3 rounded-xl border px-5 py-4", workspaceWarmPanel)}>
         <ShieldCheck className="mt-0.5 size-5 shrink-0 text-[var(--brand-brown-fg)]" />
         <div>
           <h3 className="text-sm font-semibold text-foreground">Controlled publishing</h3>
-          <p className="mt-1 text-sm leading-6 text-muted-foreground">
+          <p className="mt-1.5 text-sm font-normal leading-6 text-foreground">
             AxLiner creates reviewed, unpaid draft bills in your selected accounting software. It does not approve or pay bills.
           </p>
         </div>
