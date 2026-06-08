@@ -171,7 +171,7 @@ export function DashboardShell({
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive group inline-flex h-10 w-full max-w-xl cursor-pointer items-center gap-2.5 rounded-md border-2 border-black bg-white px-4 text-sm font-semibold text-black transition-colors hover:bg-black hover:text-white"
+                className="ax-interactive group inline-flex h-10 w-full max-w-xl cursor-pointer items-center gap-2.5 rounded-md border border-border bg-background px-4 text-sm font-normal text-black transition-colors hover:border-foreground/40"
               >
                 <Search className="size-4 shrink-0 opacity-70" />
                 <span className="truncate">Search companies, documents, batches...</span>
@@ -187,7 +187,7 @@ export function DashboardShell({
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive inline-flex size-9 cursor-pointer items-center justify-center rounded-md border-2 border-black bg-white text-black hover:bg-black hover:text-white md:hidden"
+                className="ax-interactive inline-flex size-9 cursor-pointer items-center justify-center rounded-md border border-border bg-background text-black hover:border-foreground/40 md:hidden"
               >
                 <Search className="size-4" />
               </button>
