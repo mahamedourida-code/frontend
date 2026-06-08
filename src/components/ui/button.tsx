@@ -36,6 +36,9 @@ const buttonVariants = cva(
           "border-2 border-black bg-white text-black hover:bg-black hover:text-white",
         destructive:
           "border-2 border-destructive bg-destructive text-white hover:bg-white hover:text-destructive focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
+        // Outlined danger — white bg, red border + label, fills red on hover (Danger zone).
+        dangerOutline:
+          "border-2 border-red-300 bg-white text-red-600 hover:border-red-600 hover:bg-red-600 hover:text-white",
         outline:
           "border-2 border-black bg-white text-black hover:bg-black hover:text-white",
         secondary:

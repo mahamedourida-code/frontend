@@ -1515,6 +1515,11 @@ export const companyApi = {
     const response = await apiClient.patch<{ company: CompanySummary }>(`/api/v1/companies/${companyId}`, payload)
     return response.data.company
   },
+
+  delete: async (companyId: string): Promise<{ deleted: boolean }> => {
+    const response = await apiClient.delete<{ deleted: boolean }>(`/api/v1/companies/${companyId}`)
+    return response.data
+  },
 }
 
 export const workspaceApi = {
@@ -1550,6 +1555,26 @@ export const workspaceApi = {
   acceptInvite: async (token: string): Promise<WorkspaceMember> => {
     const response = await apiClient.post<{ member: WorkspaceMember }>(`/api/v1/workspaces/invite/${encodeURIComponent(token)}/accept`)
     return response.data.member
+  },
+
+  // Owner-only: permanently delete the workspace and everything it owns.
+  delete: async (workspaceId: string): Promise<{ deleted: boolean; active_workspace_id?: string | null }> => {
+    const response = await apiClient.delete(`/api/v1/workspaces/${workspaceId}`)
+    return response.data
+  },
+
+  // Remove the current member from a workspace they don't own.
+  leave: async (workspaceId: string): Promise<{ left: boolean; active_workspace_id?: string | null }> => {
+    const response = await apiClient.post(`/api/v1/workspaces/${workspaceId}/leave`)
+    return response.data
+  },
+}
+
+export const accountApi = {
+  // Permanently delete the signed-in user's account and all data they own.
+  delete: async (): Promise<{ deleted: boolean }> => {
+    const response = await apiClient.delete('/api/v1/account')
+    return response.data
   },
 }
 
