@@ -41,7 +41,7 @@ export function CookieNotice() {
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1], delay: 0.5 }}
           role="dialog"
           aria-label="Cookie notice"
-          className="fixed bottom-5 left-5 z-[60] w-[min(94vw,500px)] rounded-[20px] bg-[var(--brand-green)] px-7 py-9 text-black shadow-[0_16px_54px_-16px_rgba(0,0,0,0.55)]"
+          className="fixed bottom-5 left-5 z-[60] w-[min(94vw,500px)] rounded-[20px] bg-[#E8D5B5] px-7 py-9 text-black shadow-[0_16px_54px_-16px_rgba(0,0,0,0.55)]"
         >
           <p className="text-2xl font-extrabold tracking-tight text-black">Notice</p>
           <p className="mt-4 text-[17px] font-medium leading-8 text-black">

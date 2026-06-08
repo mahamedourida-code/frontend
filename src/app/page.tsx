@@ -402,19 +402,19 @@ export default function Home() {
             style={{ backgroundColor: "#ffffff" }}
           />
           <div className="relative z-10">
-        <div id="how-it-works" className="ax-marketing-band-mint bg-[var(--brand-green)] text-neutral-950">
+        <div id="how-it-works" className="ax-marketing-band-mint text-neutral-950" style={{ backgroundColor: "#F6F1EA" }}>
           <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
 
             {/* A — text left · video right */}
             <div className="grid items-center gap-10 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
               <div data-animate="headline">
                 <h3 className="ax-h2 ax-marketing-section-title max-w-lg font-bold text-neutral-950">
-                  Throw us the whole folder.
+                  Throw us the whole <span className="text-[var(--brand-brown-dark)]">folder</span>.
                 </h3>
                 <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
                   Invoices, receipts, statements — drop them all at once. AxLiner sorts and extracts each one on the right schema.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex items-center gap-1 text-sm font-bold text-[var(--brand-link)] underline-offset-4 transition-colors hover:text-[var(--brand-link-hover)] hover:underline">
                   See how it works →
                 </NextLink>
               </div>
@@ -435,7 +435,7 @@ export default function Home() {
                 <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
                   Every document lands in your review board first: source on the left, editable fields on the right. AxLiner prepares it, you approve it.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex items-center gap-1 text-sm font-bold text-[var(--brand-link)] underline-offset-4 transition-colors hover:text-[var(--brand-link-hover)] hover:underline">
                   Explore the review board →
                 </NextLink>
               </div>
@@ -450,7 +450,7 @@ export default function Home() {
                 <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
                   Built for the receipt photographed in bad light, not just clean PDFs. Confidence flags show you exactly which fields to check.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex items-center gap-1 text-sm font-bold text-[var(--brand-link)] underline-offset-4 transition-colors hover:text-[var(--brand-link-hover)] hover:underline">
                   Try with a handwritten document →
                 </NextLink>
               </div>
@@ -471,7 +471,7 @@ export default function Home() {
                 <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
                   Code each bill with vendor, account, and tax, then publish a draft to QuickBooks or Xero with the document attached.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-black bg-white px-8 text-sm font-bold text-black shadow-sm transition-colors hover:bg-black hover:text-white">
+                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-[var(--brand-brown-dark)] bg-[var(--brand-brown-dark)] px-8 text-sm font-bold text-white transition-colors hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4">
                   Start free
                 </NextLink>
               </div>
