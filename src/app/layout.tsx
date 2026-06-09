@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Caveat, Inter } from "next/font/google";
 import "./globals.css";
 import "../styles/mobile-nav.css";
@@ -6,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ProcessingStateProvider } from "@/contexts/ProcessingStateContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CookieNotice } from "@/components/CookieNotice";
+import { DemoModal } from "@/components/demo/DemoModal";
 import { Toaster } from "sonner";
 
 const inter = Inter({
@@ -104,6 +106,9 @@ export default function RootLayout({
                 toastOptions={{ duration: 3500, className: "ax-toast ax-interactive" }}
               />
               <CookieNotice />
+              <Suspense fallback={null}>
+                <DemoModal />
+              </Suspense>
             </ProcessingStateProvider>
           </AuthProvider>
         </ThemeProvider>

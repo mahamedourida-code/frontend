@@ -221,7 +221,11 @@ export function DemoFlow() {
                   .
                 </p>
 
-                <Button type="submit" variant="glossy" disabled={submitting} className="h-12 w-full text-[15px]">
+                <Button
+                  type="submit"
+                  disabled={submitting}
+                  className="h-12 w-full text-[15px] !border-2 !border-[var(--brand-link)] !bg-[var(--brand-link)] !text-white hover:!border-[var(--brand-link-hover)] hover:!bg-[var(--brand-link-hover)] hover:!text-white"
+                >
                   {submitting ? <Loader2 className="size-4 animate-spin" /> : null}
                   {submitting ? "Sending…" : "Request my demo"}
                 </Button>

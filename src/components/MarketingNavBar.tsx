@@ -396,7 +396,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
               <Button variant="ghost" asChild className="h-11 px-5 text-[15px] font-semibold bg-white text-black shadow-none border-2 border-black hover:bg-black hover:text-white">
-                <Link href="/demo">Request a demo</Link>
+                <Link href="?demo=1" scroll={false}>Request a demo</Link>
               </Button>
             </>
           ) : (
@@ -412,7 +412,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
                 <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign up</Link>
               </Button>
               <Button variant="ghost" asChild className="h-11 px-5 text-[15px] font-semibold bg-white text-black shadow-none border-2 border-black hover:bg-black hover:text-white">
-                <Link href="/demo">Request a demo</Link>
+                <Link href="?demo=1" scroll={false}>Request a demo</Link>
               </Button>
             </>
           )}
