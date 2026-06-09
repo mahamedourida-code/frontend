@@ -38,7 +38,7 @@ function TestimonialPanel() {
 
   return (
     <div className="relative flex flex-col justify-between gap-12 bg-[var(--brand-brown-dark)] p-10 text-white lg:p-12">
-      <AppLogo className="h-9 w-auto invert" />
+      <AppLogo className="h-9 w-auto self-start invert" />
 
       <div className="flex-1">
         <h2 className="text-[26px] font-bold leading-tight tracking-tight text-balance sm:text-[30px]">
@@ -258,7 +258,7 @@ export function DemoFlow() {
               transition={{ duration: 0.45, ease: EASE }}
               className="flex min-h-[420px] flex-col items-center justify-center text-center"
             >
-              <span className="flex size-14 items-center justify-center rounded-full bg-[var(--brand-brown-dark)] text-white">
+              <span className="flex size-14 items-center justify-center rounded-full bg-emerald-600 text-white">
                 <Check className="size-7" />
               </span>
               <h1 className="mt-6 text-3xl font-bold tracking-tight text-black">
