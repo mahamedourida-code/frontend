@@ -29,19 +29,19 @@ interface StatusBadgeProps {
 
 const toneClasses: Record<StatusTone, string> = {
   success:
-    "bg-[var(--status-success-bg)] text-[var(--status-success-fg)] border-[color-mix(in_srgb,var(--status-success-fg)_22%,transparent)]",
+    "border-[color-mix(in_srgb,var(--workspace-success)_44%,transparent)] bg-white text-[var(--workspace-success)]",
   warning:
-    "bg-[var(--status-warning-bg)] text-[var(--status-warning-fg)] border-[color-mix(in_srgb,var(--status-warning-fg)_22%,transparent)]",
+    "border-[color-mix(in_srgb,var(--workspace-warning)_44%,transparent)] bg-white text-[var(--workspace-warning)]",
   error:
-    "bg-[var(--status-error-bg)] text-[var(--status-error-fg)] border-[color-mix(in_srgb,var(--status-error-fg)_22%,transparent)]",
+    "border-[color-mix(in_srgb,var(--workspace-danger)_44%,transparent)] bg-white text-[var(--workspace-danger)]",
   info:
-    "bg-[var(--status-info-bg)] text-[var(--status-info-fg)] border-[color-mix(in_srgb,var(--status-info-fg)_22%,transparent)]",
+    "border-[color-mix(in_srgb,var(--workspace-primary)_38%,transparent)] bg-white text-[var(--workspace-primary)]",
   neutral:
-    "bg-[var(--status-neutral-bg)] text-[var(--status-neutral-fg)] border-[color-mix(in_srgb,var(--status-neutral-fg)_18%,transparent)]",
+    "border-[var(--workspace-border)] bg-white text-[var(--workspace-muted)]",
   review:
-    "bg-[var(--status-review-bg)] text-[var(--status-review-fg)] border-[color-mix(in_srgb,var(--status-review-fg)_22%,transparent)]",
+    "border-[color-mix(in_srgb,var(--workspace-purple)_42%,transparent)] bg-white text-[var(--workspace-purple)]",
   processing:
-    "bg-[var(--status-processing-bg)] text-[var(--status-processing-fg)] border-[color-mix(in_srgb,var(--status-processing-fg)_22%,transparent)]",
+    "border-[color-mix(in_srgb,var(--workspace-primary)_38%,transparent)] bg-white text-[var(--workspace-primary)]",
 }
 
 function StatusBadge({ tone, children, icon, className }: StatusBadgeProps) {

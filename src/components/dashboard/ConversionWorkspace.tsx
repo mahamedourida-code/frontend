@@ -129,11 +129,11 @@ type ResultPreview = {
 }
 
 const workspacePrimaryControlClass =
-  "border-2 border-[var(--brand-brown-fg)] bg-[var(--brand-brown-fg)] text-white hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4 focus-visible:ring-black/25"
+  "border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] text-white hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)] focus-visible:ring-[var(--workspace-primary)]/20"
 const workspaceNormalControlClass =
-  "border-2 border-black bg-white text-black hover:bg-black hover:text-white focus-visible:ring-black/20"
+  "border border-[var(--workspace-button-border)] bg-white text-[var(--workspace-ink)] hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] hover:text-[var(--workspace-primary)] focus-visible:ring-[var(--workspace-primary)]/20"
 const workspacePanelSurfaceClass =
-  "border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)]"
+  "border-[var(--workspace-border)] bg-[var(--workspace-soft)]"
 
 type ConversionWorkspaceProps = {
   banner?: WorkspaceBanner | null
@@ -2774,7 +2774,7 @@ export function ResultActions({
                               className={cn(
                                 "group ax-interactive rounded-md p-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                                 receiptDestination === value
-                                  ? "border-2 border-[var(--brand-brown-fg)] bg-[var(--brand-brown-fg)] text-white hover:border-black hover:bg-white hover:text-black focus-visible:ring-black/25"
+                                  ? "border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] text-white hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)] focus-visible:ring-[var(--workspace-primary)]/20"
                                   : workspaceNormalControlClass
                               )}
                             >

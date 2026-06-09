@@ -122,12 +122,25 @@ const moreFilters: Array<{ value: MoreFilter; label: string }> = [
 ]
 
 const workspacePrimaryButton =
-  "border-2 !border-[var(--brand-brown-fg)] !bg-[var(--brand-brown-fg)] !text-white !shadow-none hover:!border-black hover:!bg-white hover:!text-black hover:underline hover:decoration-1 hover:underline-offset-4"
+  "!border-[#1877F2] !bg-[#1877F2] !text-white !shadow-none hover:!border-[#0F5FCB] hover:!bg-[#0F5FCB] hover:!text-white"
 
 const workspaceSurfaceButton =
-  "border-2 !border-black !bg-white !text-black !shadow-none hover:!bg-black hover:!text-white"
+  "!border-slate-300 !bg-white !text-slate-900 !shadow-none hover:!border-slate-400 hover:!bg-slate-50 hover:!text-slate-900"
 
-const workspaceWarmPanel = "border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)]"
+const workspacePanel = "ax-workspace-panel border-slate-200 bg-slate-50/70"
+
+const workspaceTable = "ax-table"
+
+const workspaceTextAction = "ax-text-action text-[#1877F2] hover:text-[#0F5FCB]"
+
+const statusTextColor: Record<"warning" | "review" | "info" | "success" | "error" | "neutral", string> = {
+  warning: "text-amber-700",
+  review: "text-blue-700",
+  info: "text-[#1877F2]",
+  success: "text-emerald-700",
+  error: "text-red-600",
+  neutral: "text-slate-500",
+}
 
 // C9 — bookkeeper-friendly words for the fields vendor memory remembers, so the
 // pre-fill notice reads as a memory ("category, terms, tax") not raw draft keys.
@@ -811,9 +824,9 @@ function AccountsPayableContent() {
 
         {/* P11 — client filter chip */}
         {clientId ? (
-          <div className={cn("flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm", workspaceWarmPanel)}>
+          <div className={cn("flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm", workspacePanel)}>
             <span className="font-medium text-foreground">
-              Filtered to <span className="text-[var(--brand-brown-fg)]">{clientName || "client"}</span>
+              Filtered to <span className={workspaceTextAction}>{clientName || "client"}</span>
               {clientJobIds ? ` · ${visibleItems.length} item${visibleItems.length === 1 ? "" : "s"}` : " · loading…"}
             </span>
             <InlineAction onClick={() => router.push("/dashboard/accounts-payable")}>
@@ -822,9 +835,9 @@ function AccountsPayableContent() {
           </div>
         ) : null}
 
-        <div className={cn("flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2 text-xs", workspaceWarmPanel)}>
+        <div className={cn("flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2 text-xs", workspacePanel)}>
           <p className="font-medium text-foreground">
-            <span className="font-semibold">{destinationName}</span>
+            <span className="font-medium">{destinationName}</span>
             {accountingConnectionLoading
               ? " connection is being checked."
               : accountingConnection?.connected
@@ -861,8 +874,8 @@ function AccountsPayableContent() {
                     className={cn(
                       "ax-interactive inline-flex h-7 items-center gap-1 rounded-full border px-3 text-xs font-medium",
                       filter === tab.value
-                        ? "border-[var(--brand-brown-fg)] bg-[var(--brand-brown-fg)] text-white"
-                        : "border-black bg-white text-black hover:bg-black hover:text-white"
+                        ? "border-[#1877F2] bg-[#1877F2] text-white"
+                        : "border-slate-300 bg-white text-slate-700 hover:border-[#1877F2] hover:text-[#1877F2]"
                     )}
                   >
                     {tab.label}
@@ -875,13 +888,13 @@ function AccountsPayableContent() {
                   className={cn(
                     "ax-interactive flex h-7 cursor-pointer list-none items-center rounded-full border px-3 text-xs font-medium [&::-webkit-details-marker]:hidden",
                     moreFilters.some(option => option.value === filter)
-                      ? "border-[var(--brand-brown-fg)] bg-[var(--brand-brown-fg)] text-white"
-                      : "border-black bg-white text-black hover:bg-black hover:text-white",
+                      ? "border-[#1877F2] bg-[#1877F2] text-white"
+                      : "border-slate-300 bg-white text-slate-700 hover:border-[#1877F2] hover:text-[#1877F2]",
                   )}
                 >
                   More filters
                 </summary>
-                <div className={cn("absolute right-0 z-20 mt-2 grid min-w-[180px] gap-1 rounded-md border p-1.5 shadow-none", workspaceWarmPanel)}>
+                <div className={cn("absolute right-0 z-20 mt-2 grid min-w-[180px] gap-1 rounded-md border p-1.5 shadow-none", workspacePanel)}>
                   {moreFilters.map(option => {
                     const count =
                       option.value === "duplicates" ? duplicateCount :
@@ -895,8 +908,8 @@ function AccountsPayableContent() {
                         className={cn(
                           "ax-interactive flex items-center justify-between rounded-md px-2.5 py-1.5 text-left text-xs font-medium",
                           filter === option.value
-                            ? "bg-[var(--brand-brown-fg)] text-white"
-                            : "bg-white text-black hover:bg-black hover:text-white",
+                            ? "bg-[#1877F2] text-white"
+                            : "bg-white text-slate-700 hover:bg-slate-100 hover:text-[#1877F2]",
                         )}
                       >
                         {option.label}
@@ -909,8 +922,8 @@ function AccountsPayableContent() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[1320px] text-left text-xs">
-                <thead className="border-b border-border bg-muted/30 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <table className={cn("w-full min-w-[1320px] text-left text-xs", workspaceTable)}>
+                <thead className="border-b border-slate-200 bg-slate-100 text-[10px] font-medium uppercase tracking-wider text-slate-500">
                   <tr>
                     <th className="w-10 px-3 py-2" />
                     <th className="min-w-[180px] px-3 py-2">Supplier</th>
@@ -926,7 +939,7 @@ function AccountsPayableContent() {
                     <th className="w-[132px] px-3 py-2">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/60">
+                <tbody className="divide-y divide-slate-200">
                   {loading ? (
                     Array.from({ length: 5 }).map((_, index) => (
                       <tr key={`ap-skeleton-${index}`}>
@@ -945,7 +958,7 @@ function AccountsPayableContent() {
                             className="h-56 w-56 sm:h-72 sm:w-72"
                             alt=""
                           />
-                          <h3 className="mt-8 text-xl font-bold tracking-tight text-foreground">
+                          <h3 className="mt-8 text-xl font-medium tracking-tight text-slate-950">
                             {items.length ? "Nothing waiting in this queue" : "Turn that stack of invoices into draft bills"}
                           </h3>
                           <p className="mt-2 max-w-md text-sm leading-relaxed text-foreground/70">
@@ -958,7 +971,7 @@ function AccountsPayableContent() {
                               <Button asChild variant="glossy" size="sm" className={workspacePrimaryButton}>
                                 <Link href="/dashboard/client?mode=invoice">
                                   Review invoices
-                                  <span className="text-[10px] font-bold uppercase tracking-wider opacity-70">Recommended</span>
+                                  <span className="text-[10px] font-medium uppercase tracking-wider opacity-70">Recommended</span>
                                 </Link>
                               </Button>
                               <Button asChild variant="surface" size="sm" className={workspaceSurfaceButton}>
@@ -996,8 +1009,8 @@ function AccountsPayableContent() {
                               }
                             }}
                             className={cn(
-                              "ax-interactive cursor-pointer bg-card text-muted-foreground hover:bg-accent/30",
-                              isActive && "bg-accent/50",
+                              "ax-interactive cursor-pointer bg-white font-normal text-slate-900 hover:bg-slate-50",
+                              isActive && "bg-blue-50/70",
                             )}
                           >
                             <td className="px-3 py-2.5" onClick={isReady ? event => event.stopPropagation() : undefined}>
@@ -1013,12 +1026,12 @@ function AccountsPayableContent() {
                             </td>
                             <td className="max-w-[240px] px-3 py-2.5">
                               <div className="flex items-center gap-2">
-                                <span className="truncate font-medium text-foreground">{item.draft_data.vendor || "Supplier missing"}</span>
+                                <span className="truncate font-normal text-slate-950">{item.draft_data.vendor || "Supplier missing"}</span>
                                 {hasActiveDuplicate(item) ? <span className="size-1.5 shrink-0 rounded-full bg-amber-500" title="Possible duplicate" /> : null}
                                 {missing?.missing ? <span className="size-1.5 shrink-0 rounded-full bg-rose-500" title="Missing information" /> : null}
                               </div>
                             </td>
-                            <td className="px-3 py-2.5 font-mono tabular-nums">{ledgerValue(item.draft_data.invoice_number)}</td>
+                            <td className="px-3 py-2.5 font-mono tabular-nums text-slate-900">{ledgerValue(item.draft_data.invoice_number)}</td>
                             <td className="px-3 py-2.5 tabular-nums">{shortDate(item.draft_data.invoice_date)}</td>
                             <td className="px-3 py-2.5 tabular-nums">{shortDate(item.draft_data.due_date)}</td>
                             <td className="max-w-[200px] truncate px-3 py-2.5">{ledgerValue(item.draft_data.account_category)}</td>
@@ -1026,8 +1039,12 @@ function AccountsPayableContent() {
                             <td className="px-3 py-2.5 font-mono">{ledgerValue(item.draft_data.currency)}</td>
                             <td className="px-3 py-2.5 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.subtotal)}</td>
                             <td className="px-3 py-2.5 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.tax_amount)}</td>
-                            <td className="px-3 py-2.5 text-right font-mono font-medium tabular-nums text-foreground">{ledgerValue(item.draft_data.total)}</td>
-                            <td className="px-3 py-2.5"><StatusBadge tone={tone}>{statusLabel(item.status)}</StatusBadge></td>
+                            <td className="px-3 py-2.5 text-right font-mono font-normal tabular-nums text-slate-950">{ledgerValue(item.draft_data.total)}</td>
+                            <td className="px-3 py-2.5">
+                              <span className={cn("text-xs font-medium", statusTextColor[tone])}>
+                                {statusLabel(item.status)}
+                              </span>
+                            </td>
                           </motion.tr>
                         )
                       })}
@@ -1051,7 +1068,7 @@ function AccountsPayableContent() {
                 <div className="space-y-5">
                   <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
                     <div className="min-w-0">
-                      <h2 className="text-[19px] font-bold tracking-tight text-foreground">{draft.vendor || "Vendor missing"}</h2>
+                      <h2 className="text-[19px] font-medium tracking-tight text-slate-950">{draft.vendor || "Vendor missing"}</h2>
                       <p className="mt-1 break-all text-[13px] text-foreground">{activeItem.source_filename}</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -1077,9 +1094,9 @@ function AccountsPayableContent() {
                           />
                         ) : null
                       })()}
-                      <StatusBadge tone={statusTone[activeItem.status]}>
+                      <span className={cn("text-xs font-medium", statusTextColor[statusTone[activeItem.status]])}>
                         {statusLabel(activeItem.status)}
-                      </StatusBadge>
+                      </span>
                     </div>
                   </div>
 
@@ -1091,14 +1108,14 @@ function AccountsPayableContent() {
                     >
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-300">
+                          <p className="text-xs font-medium uppercase tracking-wider text-amber-800 dark:text-amber-300">
                             Possible duplicate
                           </p>
-                          <p className="mt-1 text-sm font-semibold text-amber-950 dark:text-amber-100">
+                          <p className="mt-1 text-sm font-normal text-amber-950 dark:text-amber-100">
                             {warning.message}
                           </p>
                           <p className="mt-2 text-xs leading-5 text-amber-900/90 dark:text-amber-100/90">
-                            Matched draft: <span className="font-semibold">{warning.matched_filename || "earlier invoice"}</span>
+                            Matched draft: <span className="font-medium">{warning.matched_filename || "earlier invoice"}</span>
                             {warning.fields && typeof warning.fields === "object" ? (
                               <>
                                 {" — "}
@@ -1110,14 +1127,14 @@ function AccountsPayableContent() {
                               </>
                             ) : null}
                             {warning.matched_status ? (
-                              <> · Status: <span className="font-semibold">{statusLabel(warning.matched_status)}</span></>
+                              <> · Status: <span className="font-medium">{statusLabel(warning.matched_status)}</span></>
                             ) : null}
                           </p>
                           {warning.matched_item_id ? (
                             <button
                               type="button"
                               onClick={() => setActiveId(warning.matched_item_id || null)}
-                              className="ax-interactive mt-2 inline-flex items-center gap-1 text-xs font-semibold text-amber-900 underline underline-offset-2 hover:text-amber-700 dark:text-amber-200"
+                              className="ax-interactive mt-2 inline-flex items-center gap-1 text-xs font-medium text-amber-800 underline underline-offset-2 hover:text-amber-700 dark:text-amber-200"
                             >
                               Open the original →
                             </button>
@@ -1141,7 +1158,7 @@ function AccountsPayableContent() {
                       </div>
                       {dismissDraft?.warningId === warning.id ? (
                         <div className="mt-3 flex flex-col gap-2 rounded-md border border-amber-200 bg-white/80 p-2.5 dark:bg-amber-950/60">
-                          <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-900 dark:text-amber-200">
+                          <p className="text-[11px] font-medium uppercase tracking-wider text-amber-800 dark:text-amber-200">
                             Reason for dismissal (optional)
                           </p>
                           <Input
@@ -1174,12 +1191,12 @@ function AccountsPayableContent() {
                   ))}
 
                   {autoAppliedRule ? (
-                    <div className={cn("flex flex-wrap items-start justify-between gap-3 rounded-md border-2 p-3", workspaceWarmPanel)}>
+                    <div className={cn("flex flex-wrap items-start justify-between gap-3 rounded-md border p-3", workspacePanel)}>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-bold uppercase tracking-wider text-[var(--brand-brown-fg)]">
+                        <p className="text-xs font-medium uppercase tracking-wider text-[#1877F2]">
                           {autoAppliedRule.mode === "auto_ready" ? "Pre-filled & moved to Ready for your approval" : "Pre-filled from memory"}
                         </p>
-                        <p className="mt-1 text-sm font-semibold text-foreground">
+                        <p className="mt-1 text-sm font-normal text-slate-950">
                           {autoAppliedRule.ruleName}
                         </p>
                         {autoAppliedRule.learnedLabels.length ? (
@@ -1191,7 +1208,7 @@ function AccountsPayableContent() {
                               {autoAppliedRule.learnedLabels.map((label) => (
                                 <span
                                   key={label}
-                                  className="rounded-full border border-[var(--button-warm-ring)] bg-white/70 px-2 py-0.5 text-[11px] font-semibold capitalize text-[var(--brand-brown-fg)]"
+                                  className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-medium capitalize text-slate-700"
                                 >
                                   {label}
                                 </span>
@@ -1206,7 +1223,7 @@ function AccountsPayableContent() {
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -4 }}
                               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                              className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-[var(--button-warm-ring)] bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-[var(--brand-brown-fg)]"
+                              className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-emerald-700"
                             >
                               <Sparkles className="size-3" />
                               Saved for this supplier. Future invoices can use the same coding.
@@ -1223,8 +1240,8 @@ function AccountsPayableContent() {
                       </InlineAction>
                     </div>
                   ) : activeItem.vendor_suggestion ? (
-                    <div className={cn("rounded-md border p-3", workspaceWarmPanel)}>
-                      <p className="text-xs font-semibold text-foreground">Remembered suggestions</p>
+                    <div className={cn("rounded-md border p-3", workspacePanel)}>
+                      <p className="text-xs font-medium text-slate-950">Remembered suggestions</p>
                       <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
                         {Object.entries(activeItem.vendor_suggestion.suggested_fields).map(([key, value]) => (
                           <span key={key} className="rounded-md border border-border bg-background px-2 py-1">
@@ -1240,21 +1257,21 @@ function AccountsPayableContent() {
                       <div className="flex items-center gap-3">
                         <Symbol name="code-account-tag" size="inline" className="h-14 w-14" alt="" />
                         <div>
-                          <p className="text-sm font-bold text-foreground">Pick the account</p>
+                          <p className="text-sm font-medium text-slate-950">Pick the account</p>
                           <p className="text-xs text-foreground/70">Where this spend lands in the ledger.</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Symbol name="code-coa-tree" size="inline" className="h-14 w-14" alt="" />
                         <div>
-                          <p className="text-sm font-bold text-foreground">Map to your chart</p>
+                          <p className="text-sm font-medium text-slate-950">Map to your chart</p>
                           <p className="text-xs text-foreground/70">Match it to a GL account number.</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Symbol name="code-vat-chip" size="inline" className="h-14 w-14" alt="" />
                         <div>
-                          <p className="text-sm font-bold text-foreground">Set the VAT code</p>
+                          <p className="text-sm font-medium text-slate-950">Set the VAT code</p>
                           <p className="text-xs text-foreground/70">Apply the right tax rate.</p>
                         </div>
                       </div>
@@ -1296,11 +1313,11 @@ function AccountsPayableContent() {
                           "mt-1.5 rounded-md border px-2.5 py-1.5 text-[11px]",
                           activeItem.po_match_status === "exceeds"
                             ? "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200"
-                            : "border-[var(--button-warm-ring)] bg-[var(--button-warm)] text-[var(--brand-brown-fg)]",
+                            : "border-slate-200 bg-slate-50 text-slate-700",
                         )}>
                           <div className="flex items-center justify-between gap-2">
                             <span className="flex items-center gap-1.5">
-                              <span className="font-semibold">PO {activeItem.matched_po.po_number}</span>
+                              <span className="font-medium">PO {activeItem.matched_po.po_number}</span>
                               {activeItem.po_match_status === "exceeds" ? (() => {
                                 const copy = overPoCopy({
                                   po_number: activeItem.matched_po!.po_number,
@@ -1318,7 +1335,7 @@ function AccountsPayableContent() {
                                 )
                               })() : null}
                             </span>
-                            <button type="button" onClick={() => void matchPo(null)} className="font-semibold underline-offset-2 hover:underline">
+                            <button type="button" onClick={() => void matchPo(null)} className={cn("font-medium underline-offset-2 hover:underline", workspaceTextAction)}>
                               Unlink
                             </button>
                           </div>
@@ -1355,7 +1372,7 @@ function AccountsPayableContent() {
                       {draft.account_ref_id ? (
                         <div className="flex items-center gap-2 pt-1">
                           <Symbol name="code-4000-chip" size="inline" className="h-12 w-12" alt="" />
-                          <span className="text-xs font-semibold text-foreground/70">Mapped to your chart of accounts.</span>
+                          <span className="text-xs font-normal text-slate-600">Mapped to your chart of accounts.</span>
                         </div>
                       ) : null}
                     </div>
@@ -1398,7 +1415,7 @@ function AccountsPayableContent() {
                       {draft.tax_code_ref_id ? (
                         <div className="flex items-center gap-2 pt-1">
                           <Symbol name="code-rate-20-tile" size="inline" className="h-12 w-12" alt="" />
-                          <span className="text-xs font-semibold text-foreground/70">Tax rate applied to this bill.</span>
+                          <span className="text-xs font-normal text-slate-600">Tax rate applied to this bill.</span>
                         </div>
                       ) : null}
                     </div>
@@ -1422,7 +1439,7 @@ function AccountsPayableContent() {
                     ))}
                     <div className="space-y-1.5">
                       <FieldLabel>Invoice total</FieldLabel>
-                      <div className={cn("flex h-9 items-center rounded-lg border px-3 text-sm font-semibold text-foreground", workspaceWarmPanel)}>
+                      <div className={cn("flex h-9 items-center rounded-lg border px-3 text-sm font-normal text-slate-950", workspacePanel)}>
                         {amountLabel(activeItem)}
                       </div>
                     </div>
@@ -1432,7 +1449,7 @@ function AccountsPayableContent() {
                     <div className="flex items-center gap-4 py-1">
                       <Symbol name="code-aging-timeline" size="medium" className="h-24 w-24 sm:h-28 sm:w-28" alt="" />
                       <div>
-                        <p className="text-sm font-bold text-foreground">Payment due {shortDate(draft.due_date)}</p>
+                        <p className="text-sm font-medium text-slate-950">Payment due {shortDate(draft.due_date)}</p>
                         <p className="mt-0.5 max-w-sm text-xs leading-relaxed text-foreground/70">
                           This bill carries through to your aging once it&apos;s published — current today, overdue after the due date.
                         </p>
@@ -1440,8 +1457,8 @@ function AccountsPayableContent() {
                     </div>
                   ) : null}
 
-                  <details className={cn("rounded-md border", workspaceWarmPanel)}>
-                    <summary className="ax-interactive cursor-pointer list-none px-3 py-2.5 text-sm font-semibold text-foreground [&::-webkit-details-marker]:hidden">
+                  <details className={cn("rounded-md border", workspacePanel)}>
+                    <summary className="ax-interactive cursor-pointer list-none px-3 py-2.5 text-sm font-medium text-slate-950 [&::-webkit-details-marker]:hidden">
                       Advanced details
                     </summary>
                     <div className="space-y-3 border-t border-border px-3 py-3">
@@ -1510,7 +1527,7 @@ function AccountsPayableContent() {
 
                   <div>
                     <div className="mb-2 flex items-center justify-between gap-3">
-                      <p className="text-sm font-semibold text-foreground">Line items</p>
+                      <p className="text-sm font-medium text-slate-950">Line items</p>
                       {!activeLocked ? (
                         <InlineAction onClick={addLineItem}>
                           Add line
@@ -1519,27 +1536,27 @@ function AccountsPayableContent() {
                     </div>
                     {lineItems.length ? (
                       <div className="overflow-x-auto rounded-md border border-border">
-                        <table className="min-w-full text-xs">
-                          <thead className="bg-muted/40">
+                        <table className={cn("min-w-full text-xs", workspaceTable)}>
+                          <thead className="bg-slate-100">
                             <tr>
                               {lineColumns.map(column => (
-                                <th key={column} className="whitespace-nowrap border-b border-border px-2 py-2 text-left font-medium text-muted-foreground">
+                                <th key={column} className="whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-wider text-slate-500">
                                   {column.replaceAll("_", " ")}
                                 </th>
                               ))}
-                              {!activeLocked ? <th className="w-14 border-b border-border px-2 py-2" /> : null}
+                              {!activeLocked ? <th className="w-14 border-b border-slate-200 px-2 py-2" /> : null}
                             </tr>
                           </thead>
-                          <tbody>
+                          <tbody className="divide-y divide-slate-200">
                             {lineItems.map((line, rowIndex) => (
-                              <tr key={rowIndex} className="border-b border-border last:border-b-0">
+                              <tr key={rowIndex} className="bg-white last:border-b-0">
                                 {lineColumns.map(column => (
                                   <td key={column} className="p-1.5">
                                     <input
                                       value={String(line[column] ?? "")}
                                       disabled={activeLocked}
                                       onChange={event => updateLineCell(rowIndex, column, event.target.value)}
-                                      className="ax-interactive h-8 min-w-[90px] rounded-sm border border-transparent bg-transparent px-2 text-foreground outline-none focus:border-border focus:bg-background"
+                                      className="ax-interactive h-8 min-w-[90px] rounded-sm border border-transparent bg-transparent px-2 font-normal text-slate-950 outline-none focus:border-slate-300 focus:bg-white"
                                     />
                                   </td>
                                 ))}
@@ -1564,7 +1581,7 @@ function AccountsPayableContent() {
                     <div className="flex items-center gap-4 py-1">
                       <Symbol name="success-bill-ready" size="medium" className="h-28 w-28 sm:h-32 sm:w-32" alt="" />
                       <div>
-                        <p className="text-base font-bold text-foreground">Coded and ready</p>
+                        <p className="text-base font-medium text-slate-950">Coded and ready</p>
                         <p className="mt-0.5 max-w-sm text-sm leading-relaxed text-foreground/70">
                           Every field is filled in. Publish it to {destinationName} as a draft bill, or send it back for another look.
                         </p>
@@ -1618,7 +1635,7 @@ function AccountsPayableContent() {
       >
         <DialogContent className="gap-5 rounded-md sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2.5 text-base font-semibold">
+            <DialogTitle className="flex items-center gap-2.5 text-base font-medium">
               {destinationBadgeSrc ? <Image src={destinationBadgeSrc} alt="" width={20} height={20} className="size-5 rounded-sm object-contain" /> : null}
               {publishResult ? "Publish complete" : `Publish ${selectedReadyIds.length} ${selectedReadyIds.length === 1 ? "bill" : "bills"} to ${destinationName}`}
             </DialogTitle>
@@ -1634,12 +1651,12 @@ function AccountsPayableContent() {
               {publishResult.succeeded > 0 && publishResult.failed.length === 0 ? (
                 <div className="flex flex-col items-center py-2 text-center">
                   <Symbol name="success-approved" size="hero" className="h-48 w-48 sm:h-56 sm:w-56" alt="" />
-                  <p className="mt-4 text-base font-bold text-foreground">
+                  <p className="mt-4 text-base font-medium text-slate-950">
                     {publishResult.succeeded} {publishResult.succeeded === 1 ? "bill" : "bills"} published to {destinationName}
                   </p>
                 </div>
               ) : null}
-              <div className={cn("flex flex-wrap items-center gap-2 rounded-md border px-3 py-2.5 text-sm", workspaceWarmPanel)}>
+              <div className={cn("flex flex-wrap items-center gap-2 rounded-md border px-3 py-2.5 text-sm", workspacePanel)}>
                 <StatusBadge tone="success">{publishResult.succeeded} published</StatusBadge>
                 {publishResult.failed.length > 0 ? (
                   <StatusBadge tone="error">{publishResult.failed.length} failed</StatusBadge>
@@ -1649,7 +1666,7 @@ function AccountsPayableContent() {
               </div>
               {publishResult.failed.length > 0 ? (
                 <div className="rounded-md border border-border">
-                  <p className={cn("border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground", workspaceWarmPanel)}>
+                  <p className={cn("border-b px-3 py-2 text-xs font-medium uppercase tracking-wider text-slate-500", workspacePanel)}>
                     Failed items
                   </p>
                   <ul className="max-h-[200px] divide-y divide-border overflow-y-auto">
@@ -1667,7 +1684,7 @@ function AccountsPayableContent() {
             </div>
           ) : (
             <div className="rounded-md border border-border">
-              <p className={cn("border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground", workspaceWarmPanel)}>
+              <p className={cn("border-b px-3 py-2 text-xs font-medium uppercase tracking-wider text-slate-500", workspacePanel)}>
                 Selected draft bills
               </p>
               <ul className="max-h-[260px] divide-y divide-border overflow-y-auto">
@@ -1728,8 +1745,8 @@ function AccountsPayableContent() {
       <Dialog open={poDialogOpen} onOpenChange={setPoDialogOpen}>
         <DialogContent className="gap-4 rounded-md sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base font-bold">
-              <span className="inline-flex size-6 items-center justify-center rounded-md bg-[var(--button-warm)] text-[var(--brand-brown-fg)]">
+            <DialogTitle className="flex items-center gap-2 text-base font-medium">
+              <span className="inline-flex size-6 items-center justify-center rounded-md bg-blue-50 text-[#1877F2]">
                 <FileText className="size-3.5" />
               </span>
               Match a purchase order
@@ -1740,12 +1757,12 @@ function AccountsPayableContent() {
           </DialogHeader>
 
           {poLoading ? (
-            <div className="flex items-center justify-center py-8 text-sm font-semibold text-muted-foreground">
+            <div className="flex items-center justify-center py-8 text-sm font-medium text-muted-foreground">
               <Loader2 className="mr-2 size-4 animate-spin" /> Loading purchase orders…
             </div>
           ) : poList.length === 0 ? (
-            <div className={cn("rounded-xl border-2 p-5 text-center", workspaceWarmPanel)}>
-              <p className="text-sm font-bold text-foreground">No open purchase orders</p>
+            <div className={cn("rounded-xl border p-5 text-center", workspacePanel)}>
+              <p className="text-sm font-medium text-slate-950">No open purchase orders</p>
               <p className="mt-1 text-xs font-normal text-foreground">No open purchase orders are available for this supplier.</p>
             </div>
           ) : (
@@ -1763,21 +1780,21 @@ function AccountsPayableContent() {
                       "ax-interactive flex w-full items-center justify-between gap-3 rounded-lg border-2 bg-white px-3 py-2.5 text-left text-black transition-colors",
                       exceeds
                         ? "border-amber-300 hover:border-amber-500 hover:bg-amber-50"
-                        : "border-border hover:border-[var(--button-warm-ring)] hover:bg-[var(--button-warm)]",
+                        : "border-slate-200 hover:border-[#1877F2] hover:bg-blue-50/60",
                     )}
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-bold text-black">PO {po.po_number}</p>
-                      <p className="text-xs font-semibold text-neutral-600">
+                      <p className="truncate text-sm font-medium text-slate-950">PO {po.po_number}</p>
+                      <p className="text-xs font-normal text-slate-600">
                         {po.vendor_name || "—"}{po.po_date ? ` · ${po.po_date}` : ""}
                       </p>
                     </div>
                     <div className="shrink-0 text-right">
-                      <p className="font-mono text-sm font-semibold tabular-nums text-black">{po.currency || ""} {Number(po.total).toFixed(2)}</p>
+                      <p className="font-mono text-sm font-normal tabular-nums text-slate-950">{po.currency || ""} {Number(po.total).toFixed(2)}</p>
                       {po.remaining_amount != null ? (
                         <p className="text-[11px] font-medium text-neutral-600">Remaining {Number(po.remaining_amount).toFixed(2)}</p>
                       ) : null}
-                      {exceeds ? <p className="text-[11px] font-bold text-amber-700">Invoice exceeds PO</p> : null}
+                      {exceeds ? <p className="text-[11px] font-medium text-amber-700">Invoice exceeds PO</p> : null}
                     </div>
                   </button>
                 )

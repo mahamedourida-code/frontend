@@ -28,9 +28,6 @@ import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { companyApi, type CompanySummary } from "@/lib/api-client"
 
-const workspacePrimaryButton =
-  "border-2 !border-[var(--brand-brown-fg)] !bg-[var(--brand-brown-fg)] !text-white !shadow-none hover:!border-black hover:!bg-white hover:!text-black hover:underline hover:decoration-1 hover:underline-offset-4"
-
 export default function ClientsPage() {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
@@ -104,14 +101,14 @@ export default function ClientsPage() {
           title="Clients"
           description="Each client is a company workspace — its own inbox, review board, draft bills, and accounting connection."
           actions={
-            <Button variant="glossy" size="sm" onClick={() => setAddOpen(true)} className={workspacePrimaryButton}>
+            <Button variant="glossy" size="sm" onClick={() => setAddOpen(true)}>
               <Plus className="size-4" />
               Add client
             </Button>
           }
         />
 
-        <Card className="!shadow-none">
+        <Card className="ax-workspace-panel rounded-md !shadow-none">
           <CardContent className="p-0">
             {loading ? (
               <div className="py-4">
@@ -186,7 +183,6 @@ export default function ClientsPage() {
               size="sm"
               onClick={() => void createClient()}
               disabled={creating || !newName.trim()}
-              className={workspacePrimaryButton}
             >
               {creating ? "Adding…" : "Add client"}
             </Button>

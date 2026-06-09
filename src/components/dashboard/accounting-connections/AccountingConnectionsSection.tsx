@@ -38,9 +38,9 @@ const providers: Array<{
 ]
 
 const workspacePrimaryButton =
-  "border-2 !border-[var(--brand-brown-fg)] !bg-[var(--brand-brown-fg)] !text-white !shadow-none hover:!border-black hover:!bg-white hover:!text-black hover:underline hover:decoration-1 hover:underline-offset-4"
+  "!border-[var(--workspace-primary)] !bg-[var(--workspace-primary)] !text-white !shadow-none hover:!border-[var(--workspace-primary-hover)] hover:!bg-[var(--workspace-primary-hover)]"
 
-const workspaceWarmPanel = "border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)]"
+const workspaceWarmPanel = "border-[var(--workspace-border)] bg-[var(--workspace-soft)]"
 
 function formatSynced(value?: string | null) {
   if (!value) return "Not synced yet"
@@ -199,8 +199,8 @@ export function AccountingConnectionsSection({
                 className={cn(
                   "ax-interactive flex min-h-20 items-center gap-4 rounded-xl border px-5 py-4 text-left transition disabled:cursor-default disabled:opacity-70",
                   selected
-                    ? "border-[var(--brand-brown-fg)] bg-[var(--button-warm)]"
-                    : "border-border bg-background hover:border-[var(--button-warm-ring)] hover:bg-[var(--button-warm)]",
+                    ? "border-[var(--workspace-primary)] bg-[var(--workspace-blue-soft)]"
+                    : "border-border bg-background hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)]",
                 )}
               >
                 <Image src={provider.logo} alt="" width={120} height={120} className="h-12 w-12 shrink-0 object-contain" />
@@ -210,7 +210,7 @@ export function AccountingConnectionsSection({
                     {selected ? "Selected for draft bills" : "Choose as destination"}
                   </span>
                 </span>
-                {selected ? <Check className="ms-auto size-4 shrink-0 text-[var(--brand-brown-fg)]" /> : null}
+                {selected ? <Check className="ms-auto size-4 shrink-0 text-[var(--workspace-primary)]" /> : null}
               </button>
             )
           })}
@@ -218,7 +218,7 @@ export function AccountingConnectionsSection({
       </section>
 
       {!hasConnection ? (
-        <div className="rounded-xl border border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-5 py-4">
+        <div className="rounded-xl border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-5 py-4">
           <p className="text-sm font-bold text-foreground">Connect your accounting software</p>
           <p className="mt-2 text-sm font-normal text-foreground">
             Connect the destination you use, then sync suppliers, accounts, and VAT codes before publishing.
@@ -278,7 +278,7 @@ export function AccountingConnectionsSection({
       </div>
 
       <div className={cn("flex items-start gap-3 rounded-xl border px-5 py-4", workspaceWarmPanel)}>
-        <ShieldCheck className="mt-0.5 size-5 shrink-0 text-[var(--brand-brown-fg)]" />
+        <ShieldCheck className="mt-0.5 size-5 shrink-0 text-[var(--workspace-primary)]" />
         <div>
           <h3 className="text-sm font-semibold text-foreground">Controlled publishing</h3>
           <p className="mt-1.5 text-sm font-normal leading-6 text-foreground">

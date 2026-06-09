@@ -42,7 +42,7 @@ function formatDate(value: string | null) {
 
 function CountCell({ value, emphasis = false }: { value: number; emphasis?: boolean }) {
   return (
-    <TableCell className={cn("text-right tabular-nums", value ? "text-foreground" : "text-muted-foreground", emphasis && value && "font-bold text-amber-700 dark:text-amber-300")}>
+    <TableCell className={cn("text-right tabular-nums", value ? "text-[var(--workspace-ink)]" : "text-[var(--workspace-muted)]", emphasis && value && "font-medium text-[var(--workspace-warning)]")}>
       {value}
     </TableCell>
   )
@@ -86,9 +86,9 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
   }, [companies, query])
 
   return (
-    <Card className="overflow-hidden rounded-xl py-0">
+    <Card className="ax-workspace-panel overflow-hidden rounded-md py-0">
       <CardContent className="p-0">
-        <div className="flex flex-col gap-3 border-b border-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 border-b border-[var(--workspace-border)] bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative w-full sm:max-w-sm">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -96,7 +96,7 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search companies"
               aria-label="Search companies"
-              className="h-9 rounded-full bg-background pl-9"
+              className="h-9 rounded-md bg-white pl-9"
             />
           </div>
           <div className="flex items-center gap-5">
@@ -109,14 +109,14 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
         </div>
 
         {loadError ? (
-          <div className="border-b border-border bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
+          <div className="border-b border-[var(--workspace-border)] bg-amber-50 px-4 py-3 text-sm font-normal text-amber-900">
             {loadError}
           </div>
         ) : null}
 
         <div className="overflow-x-auto">
-          <Table className="min-w-[1180px]">
-            <TableHeader className="bg-muted/40">
+          <Table className="ax-table min-w-[1180px]">
+            <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="min-w-[230px] px-4">Company</TableHead>
                 <TableHead>Accounting</TableHead>
@@ -147,16 +147,16 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
                 visibleCompanies.map((company) => (
                   <TableRow
                     key={company.id}
-                    className="ax-interactive cursor-pointer hover:bg-blue-50/60 dark:hover:bg-blue-950/20"
+                    className="ax-interactive cursor-pointer bg-white hover:bg-[var(--workspace-row-hover)]"
                     onClick={() => router.push(`/dashboard/companies/${encodeURIComponent(company.id)}`)}
                   >
                     <TableCell className="px-4">
                       <Link
                         href={`/dashboard/companies/${encodeURIComponent(company.id)}`}
-                        className="flex items-center gap-3 font-semibold text-foreground"
+                        className="flex items-center gap-3 font-normal text-[var(--workspace-primary)]"
                         onClick={(event) => event.stopPropagation()}
                       >
-                        <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground">
+                        <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-muted)]">
                           <Building2 className="size-4" />
                         </span>
                         <span className="truncate">{company.name}</span>
@@ -166,7 +166,7 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
                     <TableCell>
                       {company.accountingConnected ? (
                         <div>
-                          <span className="inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-xs font-bold text-blue-900">
+                          <span className="inline-flex rounded-md border border-blue-200 bg-white px-2 py-0.5 text-xs font-medium text-[var(--workspace-primary)]">
                             {company.accountingProvider === "xero" ? "Xero" : "QuickBooks"}
                           </span>
                           {company.accountingCompanyName ? (

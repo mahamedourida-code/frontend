@@ -36,9 +36,13 @@ import {
 import { cn } from "@/lib/utils"
 
 const workspacePrimaryButton =
-  "border-2 !border-[var(--brand-brown-fg)] !bg-[var(--brand-brown-fg)] !text-white !shadow-none hover:!border-black hover:!bg-white hover:!text-black hover:underline hover:decoration-1 hover:underline-offset-4"
+  "!rounded-full !border-[#1877F2] !bg-[#1877F2] !text-white !shadow-none hover:!border-[#0f63d6] hover:!bg-[#0f63d6] hover:!text-white"
 
-const workspaceWarmPanel = "border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)]"
+const workspacePanel = "ax-workspace-panel border-[#d8dde6] bg-white !shadow-none"
+const workspaceTable = "ax-table w-full text-sm text-black"
+const workspaceHeaderCell = "px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-[0.08em] text-[#6b7280]"
+const workspaceMutedCell = "px-4 py-3 font-normal text-[#4b5563]"
+const workspaceTextAction = "ax-text-action text-[#1877F2] hover:text-[#0f63d6]"
 
 function formatReceivedAt(value: string) {
   return new Intl.DateTimeFormat(undefined, {
@@ -74,15 +78,15 @@ const SOURCE_LABEL: Record<"direct_upload" | "email" | "client_link" | "google_d
 
 const SOURCE_TINT: Record<"direct_upload" | "email" | "client_link" | "google_drive" | "dropbox", string> = {
   direct_upload: "border-border bg-muted/50 text-foreground",
-  email: "border-violet-200 bg-violet-50 text-violet-900 dark:border-violet-900/60 dark:bg-violet-950/40 dark:text-violet-200",
-  client_link: "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200",
+  email: "border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8]",
+  client_link: "border-[#bbf7d0] bg-[#f0fdf4] text-[#15803d]",
   google_drive: "border-border bg-muted/50 text-foreground",
   dropbox: "border-border bg-muted/50 text-foreground",
 }
 
 function SourceBadge({ kind }: { kind: keyof typeof SOURCE_LABEL }) {
   return (
-    <span className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-semibold", SOURCE_TINT[kind])}>
+    <span className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium", SOURCE_TINT[kind])}>
       {SOURCE_LABEL[kind]}
     </span>
   )
@@ -337,7 +341,7 @@ export default function EmailInboxPage() {
 
   return (
     <DashboardShell activeItem="inbox" title="Inbox" user={user} showBack={false}>
-      <div className="max-w-6xl space-y-5">
+      <div className="max-w-7xl space-y-5 text-black">
         <PageHeader
           title="Inbox"
           actions={
@@ -353,11 +357,11 @@ export default function EmailInboxPage() {
           <div className="grid gap-4 lg:grid-cols-2">
 
             {/* Client upload links */}
-            <Card className="!shadow-none">
+            <Card className={workspacePanel}>
               <CardContent className="p-5">
                 <div className="flex items-center gap-2">
                   <Image src="/icons/share.png" alt="" width={20} height={20} className="object-contain opacity-85" loading="lazy" />
-                  <p className="text-sm font-semibold text-foreground">Client upload links</p>
+                  <p className="text-sm font-medium text-black">Client upload links</p>
                 </div>
 
                 <div className="mt-4 flex gap-3">
@@ -375,15 +379,15 @@ export default function EmailInboxPage() {
 
                 {newUploadUrl ? (
                   <div className="mt-3 space-y-2">
-                    <div className={cn("flex items-center gap-3 rounded-lg border px-3 py-2", workspaceWarmPanel)}>
-                      <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Upload</span>
+                    <div className="flex items-center gap-3 rounded-md border border-[#d8dde6] bg-[#f8fafc] px-3 py-2">
+                      <span className="shrink-0 text-[10px] font-medium uppercase tracking-[0.08em] text-[#6b7280]">Upload</span>
                       <p className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">{newUploadUrl}</p>
-                      <InlineAction className="shrink-0" onClick={() => void navigator.clipboard.writeText(newUploadUrl)}>Copy</InlineAction>
+                      <InlineAction className={cn("shrink-0", workspaceTextAction)} onClick={() => void navigator.clipboard.writeText(newUploadUrl)}>Copy</InlineAction>
                     </div>
-                    <div className={cn("flex items-center gap-3 rounded-lg border px-3 py-2", workspaceWarmPanel)}>
-                      <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Status</span>
+                    <div className="flex items-center gap-3 rounded-md border border-[#d8dde6] bg-[#f8fafc] px-3 py-2">
+                      <span className="shrink-0 text-[10px] font-medium uppercase tracking-[0.08em] text-[#6b7280]">Status</span>
                       <p className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">{newUploadUrl.replace("/upload/", "/status/")}</p>
-                      <InlineAction className="shrink-0" onClick={() => void navigator.clipboard.writeText(newUploadUrl.replace("/upload/", "/status/"))}>Copy</InlineAction>
+                      <InlineAction className={cn("shrink-0", workspaceTextAction)} onClick={() => void navigator.clipboard.writeText(newUploadUrl.replace("/upload/", "/status/"))}>Copy</InlineAction>
                     </div>
                   </div>
                 ) : null}
@@ -391,29 +395,29 @@ export default function EmailInboxPage() {
                 {links.length > 0 ? (
                   <>
                     {/* Desktop table */}
-                    <div className="mt-3 hidden overflow-hidden rounded-lg border border-border sm:block">
-                      <table className="w-full text-sm">
+                    <div className="mt-3 hidden overflow-hidden rounded-md border border-[#d8dde6] sm:block">
+                      <table className={workspaceTable}>
                         <thead>
-                          <tr className="border-b border-border bg-muted/40">
-                            <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Label</th>
-                            <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Submissions</th>
-                            <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Expires</th>
+                          <tr className="border-b border-[#d8dde6] bg-[#f3f4f6]">
+                            <th className={workspaceHeaderCell}>Label</th>
+                            <th className={workspaceHeaderCell}>Submissions</th>
+                            <th className={workspaceHeaderCell}>Expires</th>
                             <th className="w-16 px-3 py-2" />
                           </tr>
                         </thead>
                         <tbody>
                           {links.slice(0, 5).map(link => (
-                            <tr key={link.id} className="border-b border-border/50 last:border-0 hover:bg-accent/40">
-                              <td className="px-3 py-2.5 font-medium text-foreground">{link.label}</td>
-                              <td className="px-3 py-2.5 text-muted-foreground">{link.submission_count}/{link.max_submissions}</td>
-                              <td className="px-3 py-2.5 text-muted-foreground">{formatExpiry(link.expires_at)}</td>
+                            <tr key={link.id} className="border-b border-[#e5e7eb] last:border-0 hover:bg-[#f8fafc]">
+                              <td className="px-4 py-2.5 font-normal text-black">{link.label}</td>
+                              <td className="px-4 py-2.5 font-normal text-[#4b5563]">{link.submission_count}/{link.max_submissions}</td>
+                              <td className="px-4 py-2.5 font-normal text-[#4b5563]">{formatExpiry(link.expires_at)}</td>
                               <td className="px-3 py-2.5">
                                 {link.enabled ? (
-                                  <InlineAction tone="danger" className="text-xs" onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
+                                  <InlineAction tone="danger" className="ax-text-action text-xs" onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
                                     Revoke
                                   </InlineAction>
                                 ) : (
-                                  <span className="text-xs font-medium text-foreground">Revoked</span>
+                                  <span className="ax-status-text text-xs font-normal text-[#4b5563]">Revoked</span>
                                 )}
                               </td>
                             </tr>
@@ -425,16 +429,16 @@ export default function EmailInboxPage() {
                     {/* Mobile cards */}
                     <div className="mt-3 space-y-2 sm:hidden">
                       {links.slice(0, 5).map(link => (
-                        <div key={link.id} className="flex items-center justify-between gap-3 rounded-xl border border-border px-3 py-3">
+                        <div key={link.id} className="flex items-center justify-between gap-3 rounded-md border border-[#d8dde6] bg-white px-3 py-3">
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-medium text-foreground">{link.label}</p>
+                            <p className="truncate text-sm font-normal text-black">{link.label}</p>
                             <p className="mt-0.5 text-xs text-muted-foreground">
                               {link.submission_count}/{link.max_submissions} submissions · {formatExpiry(link.expires_at)}
                               {!link.enabled ? " · Revoked" : ""}
                             </p>
                           </div>
                           {link.enabled ? (
-                            <InlineAction tone="danger" className="shrink-0 text-xs" onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
+                            <InlineAction tone="danger" className="ax-text-action shrink-0 text-xs" onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
                               Revoke
                             </InlineAction>
                           ) : null}
@@ -447,11 +451,11 @@ export default function EmailInboxPage() {
             </Card>
 
             {/* Reviewers */}
-            <Card className="!shadow-none">
+            <Card className={workspacePanel}>
               <CardContent className="p-5">
                 <div className="flex items-center gap-2">
                   <Image src="/icons/reviewer.png" alt="" width={20} height={20} className="object-contain opacity-85" loading="lazy" />
-                  <p className="text-sm font-semibold text-foreground">Reviewers</p>
+                  <p className="text-sm font-medium text-black">Reviewers</p>
                 </div>
 
                 <div className="mt-4 flex gap-3">
@@ -469,13 +473,13 @@ export default function EmailInboxPage() {
 
                 <div className="mt-3 space-y-2">
                   {members.filter(member => member.role === "reviewer").map(member => (
-                    <div key={member.id} className="flex items-center justify-between rounded-xl border border-border px-3 py-3">
+                    <div key={member.id} className="flex items-center justify-between rounded-md border border-[#d8dde6] bg-white px-3 py-3">
                       <div>
-                        <p className="text-sm font-medium text-foreground">{member.member_email}</p>
-                        <p className="mt-0.5 text-xs capitalize text-muted-foreground">{member.status}</p>
+                        <p className="text-sm font-normal text-black">{member.member_email}</p>
+                        <p className="ax-status-text mt-0.5 text-xs font-normal capitalize text-[#4b5563]">{member.status}</p>
                       </div>
                       {member.status !== "revoked" ? (
-                        <InlineAction tone="danger" className="text-xs" onClick={() => void revokeReviewer(member.id)} disabled={actionBusy === member.id}>
+                        <InlineAction tone="danger" className="ax-text-action text-xs" onClick={() => void revokeReviewer(member.id)} disabled={actionBusy === member.id}>
                           Remove
                         </InlineAction>
                       ) : null}
@@ -489,18 +493,18 @@ export default function EmailInboxPage() {
 
         {/* Email address card */}
         {activeWorkspace?.role === "owner" ? (
-          <Card className="!shadow-none">
+          <Card className={workspacePanel}>
             <CardContent className="p-5">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Forward documents to</p>
-                  <p className="mt-2 break-all font-mono text-sm font-medium text-foreground">
+                  <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#6b7280]">Forward documents to</p>
+                  <p className="mt-2 break-all font-mono text-sm font-normal text-black">
                     {address?.address || "Provisioning address…"}
                   </p>
                 </div>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <InlineAction onClick={() => void copyAddress()} disabled={!address} className="shrink-0">
+                    <InlineAction onClick={() => void copyAddress()} disabled={!address} className={cn("shrink-0", workspaceTextAction)}>
                       {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
                       {copied ? "Copied!" : "Copy address"}
                     </InlineAction>
@@ -517,9 +521,9 @@ export default function EmailInboxPage() {
 
         {/* P6 — Connected sources (Google Drive / Dropbox watch folders) */}
         {activeWorkspace?.role === "owner" ? (
-          <Card className="!shadow-none">
+          <Card className={workspacePanel}>
             <CardContent className="p-5">
-              <p className="text-sm font-semibold text-foreground">Connected sources</p>
+              <p className="text-sm font-medium text-black">Connected sources</p>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {(["google_drive", "dropbox"] as ConnectedSourceProvider[]).map((provider) => {
@@ -527,18 +531,18 @@ export default function EmailInboxPage() {
                   const configured = providersConfigured[provider]
                   const label = provider === "google_drive" ? "Google Drive" : "Dropbox"
                   return (
-                    <div key={provider} className={cn("rounded-xl border p-4", workspaceWarmPanel)}>
+                    <div key={provider} className="rounded-md border border-[#d8dde6] bg-[#f8fafc] p-4">
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2.5">
                           <span className="inline-flex size-9 items-center justify-center rounded-md bg-muted text-muted-foreground">
                             <FolderInput className="size-4.5" />
                           </span>
                           <div>
-                            <p className="text-sm font-semibold text-foreground">{label}</p>
+                            <p className="text-sm font-medium text-black">{label}</p>
                             {source?.account_email ? (
-                              <p className="truncate text-xs font-normal text-foreground">{source.account_email}</p>
+                              <p className="truncate text-xs font-normal text-[#4b5563]">{source.account_email}</p>
                             ) : (
-                              <p className="text-xs font-normal text-foreground">
+                              <p className="text-xs font-normal text-[#4b5563]">
                                 {configured ? "Not connected" : "OAuth not configured"}
                               </p>
                             )}
@@ -554,7 +558,7 @@ export default function EmailInboxPage() {
                       {source && source.status === "connected" ? (
                         <>
                           <div className="mt-3 space-y-1.5">
-                            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Watched folder</p>
+                            <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#6b7280]">Watched folder</p>
                             {folderDraft?.id === source.id ? (
                               <div className="flex items-center gap-3">
                                 <Input
@@ -563,34 +567,34 @@ export default function EmailInboxPage() {
                                   placeholder={provider === "google_drive" ? "AxLiner intake" : "/AxLiner intake"}
                                   className="h-9"
                                 />
-                                <InlineAction onClick={() => void saveWatchedFolder(source.id)} disabled={actionBusy === source.id} className="shrink-0">
+                                <InlineAction onClick={() => void saveWatchedFolder(source.id)} disabled={actionBusy === source.id} className={cn("shrink-0", workspaceTextAction)}>
                                   Save
                                 </InlineAction>
-                                <InlineAction onClick={() => setFolderDraft(null)} className="shrink-0" aria-label="Cancel">
+                                <InlineAction onClick={() => setFolderDraft(null)} className={cn("shrink-0", workspaceTextAction)} aria-label="Cancel">
                                   <X className="size-3.5" />
                                 </InlineAction>
                               </div>
                             ) : (
                               <div className="flex items-center justify-between gap-3">
-                                <p className="min-w-0 truncate text-sm font-medium text-foreground">
-                                  {source.watched_folder || <span className="text-foreground/70">No folder set</span>}
+                                <p className="min-w-0 truncate text-sm font-normal text-black">
+                                  {source.watched_folder || <span className="text-[#4b5563]">No folder set</span>}
                                 </p>
-                                <InlineAction className="text-xs" onClick={() => setFolderDraft({ id: source.id, value: source.watched_folder || "" })}>
+                                <InlineAction className={cn("text-xs", workspaceTextAction)} onClick={() => setFolderDraft({ id: source.id, value: source.watched_folder || "" })}>
                                   Edit
                                 </InlineAction>
                               </div>
                             )}
                           </div>
-                          <div className="mt-3 flex items-center justify-between gap-3 text-xs text-foreground">
+                          <div className="mt-3 flex items-center justify-between gap-3 text-xs font-normal text-[#4b5563]">
                             <span>
                               Last sync: {source.last_synced_at ? formatReceivedAt(source.last_synced_at) : "never"}
                             </span>
                             <div className="flex items-center gap-4">
-                              <InlineAction className="text-xs [&_svg]:size-3" onClick={() => void triggerSync(source.id)} disabled={actionBusy === source.id}>
+                              <InlineAction className={cn("text-xs [&_svg]:size-3", workspaceTextAction)} onClick={() => void triggerSync(source.id)} disabled={actionBusy === source.id}>
                                 <RefreshCw className={cn("size-3", actionBusy === source.id && "animate-spin")} />
                                 Sync now
                               </InlineAction>
-                              <InlineAction tone="danger" className="text-xs" onClick={() => void disconnectSource(source.id)} disabled={actionBusy === source.id}>
+                              <InlineAction tone="danger" className="ax-text-action text-xs" onClick={() => void disconnectSource(source.id)} disabled={actionBusy === source.id}>
                                 Disconnect
                               </InlineAction>
                             </div>
@@ -625,15 +629,15 @@ export default function EmailInboxPage() {
         ) : null}
 
         {/* Client submissions */}
-        <div className="flex items-end justify-between gap-3 border-b border-border/60 pb-2">
+        <div className="flex items-end justify-between gap-3 border-b border-[#d8dde6] pb-2">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-emerald-700">Intake</p>
-            <h2 className="mt-1 text-[19px] font-bold tracking-tight text-foreground">Client submissions</h2>
+            <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#6b7280]">Intake</p>
+            <h2 className="mt-1 text-[19px] font-medium tracking-tight text-black">Client submissions</h2>
           </div>
           <Badge variant="outline">{submissions.reduce((count, submission) => count + submission.file_count, 0)} files</Badge>
         </div>
 
-        <Card className="overflow-hidden !shadow-none">
+        <Card className={cn("overflow-hidden", workspacePanel)}>
           <CardContent className="p-0">
             {loading ? (
               <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading submissions" /></div>
@@ -651,14 +655,14 @@ export default function EmailInboxPage() {
               <>
                 {/* Desktop table */}
                 <div className="hidden sm:block">
-                  <table className="w-full text-sm">
+                  <table className={workspaceTable}>
                     <thead>
-                      <tr className="border-b border-border bg-muted/40">
-                        <th className="px-5 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Filename</th>
-                        <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Source</th>
-                        <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Date</th>
-                        <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Files</th>
-                        <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</th>
+                      <tr className="border-b border-[#d8dde6] bg-[#f3f4f6]">
+                        <th className={cn(workspaceHeaderCell, "px-5")}>Filename</th>
+                        <th className={workspaceHeaderCell}>Source</th>
+                        <th className={workspaceHeaderCell}>Date</th>
+                        <th className={workspaceHeaderCell}>Files</th>
+                        <th className={workspaceHeaderCell}>Status</th>
                         <th className="px-4 py-2.5" />
                       </tr>
                     </thead>
@@ -666,13 +670,13 @@ export default function EmailInboxPage() {
                       {submissions.map(submission => {
                         const filename = submission.documents[0]?.original_filename || `${submission.file_count} submitted files`
                         return (
-                          <tr key={submission.id} className="border-b border-border/50 last:border-0 hover:bg-accent/40">
-                            <td className="max-w-[220px] truncate px-5 py-3 font-medium text-foreground">{filename}</td>
+                          <tr key={submission.id} className="border-b border-[#e5e7eb] last:border-0 hover:bg-[#f8fafc]">
+                            <td className="max-w-[220px] truncate px-5 py-3 font-normal text-black">{filename}</td>
                             <td className="px-4 py-3">
                               <SourceBadge kind="client_link" />
                             </td>
-                            <td className="px-4 py-3 text-muted-foreground">{formatReceivedAt(submission.created_at)}</td>
-                            <td className="px-4 py-3 tabular-nums text-muted-foreground">{submission.file_count}</td>
+                            <td className={workspaceMutedCell}>{formatReceivedAt(submission.created_at)}</td>
+                            <td className={cn(workspaceMutedCell, "tabular-nums")}>{submission.file_count}</td>
                             <td className="px-4 py-3">
                               <StatusBadge tone={submissionTone(submission)}>
                                 {(submission.job_status || submission.status).replace(/_/g, " ")}
@@ -680,7 +684,7 @@ export default function EmailInboxPage() {
                             </td>
                             <td className="px-4 py-3">
                               {submission.job_id ? (
-                                <InlineAction asChild>
+                                <InlineAction asChild className={workspaceTextAction}>
                                   <Link href={`/dashboard/client?job_id=${encodeURIComponent(submission.job_id)}`}>Review</Link>
                                 </InlineAction>
                               ) : null}
@@ -693,22 +697,22 @@ export default function EmailInboxPage() {
                 </div>
 
                 {/* Mobile card stack */}
-                <div className="divide-y divide-border sm:hidden">
+                <div className="divide-y divide-[#e5e7eb] sm:hidden">
                   {submissions.map(submission => {
                     const filename = submission.documents[0]?.original_filename || `${submission.file_count} submitted files`
                     return (
                       <div key={submission.id} className="p-5">
-                        <p className="truncate text-sm font-medium text-foreground">{filename}</p>
-                        <p className="mt-1 text-xs text-muted-foreground">{formatReceivedAt(submission.created_at)}</p>
+                        <p className="truncate text-sm font-normal text-black">{filename}</p>
+                        <p className="mt-1 text-xs font-normal text-[#4b5563]">{formatReceivedAt(submission.created_at)}</p>
                         <div className="mt-2.5 flex items-center justify-between gap-3">
                           <div className="flex items-center gap-2">
                             <StatusBadge tone={submissionTone(submission)}>
                               {(submission.job_status || submission.status).replace(/_/g, " ")}
                             </StatusBadge>
-                            <span className="text-xs text-muted-foreground">{submission.file_count} file{submission.file_count !== 1 ? "s" : ""}</span>
+                            <span className="text-xs font-normal text-[#4b5563]">{submission.file_count} file{submission.file_count !== 1 ? "s" : ""}</span>
                           </div>
                           {submission.job_id ? (
-                            <InlineAction asChild>
+                            <InlineAction asChild className={workspaceTextAction}>
                               <Link href={`/dashboard/client?job_id=${encodeURIComponent(submission.job_id)}`}>Review</Link>
                             </InlineAction>
                           ) : null}
@@ -723,15 +727,15 @@ export default function EmailInboxPage() {
         </Card>
 
         {/* Imported documents (email messages) */}
-        <div className="flex items-end justify-between gap-3 border-b border-border/60 pb-2">
+        <div className="flex items-end justify-between gap-3 border-b border-[#d8dde6] pb-2">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-emerald-700">Email</p>
-            <h2 className="mt-1 text-[19px] font-bold tracking-tight text-foreground">Imported documents</h2>
+            <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#6b7280]">Email</p>
+            <h2 className="mt-1 text-[19px] font-medium tracking-tight text-black">Imported documents</h2>
           </div>
           <Badge variant="outline">{importCount} files</Badge>
         </div>
 
-        <Card className="overflow-hidden !shadow-none">
+        <Card className={cn("overflow-hidden", workspacePanel)}>
           <CardContent className="p-0">
             {loading ? (
               <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading imports" /></div>
@@ -746,36 +750,92 @@ export default function EmailInboxPage() {
                 />
               </div>
             ) : (
-              <div className="divide-y divide-border">
-                {messages.map((message) => {
-                  const state = messageState(message)
-                  const documentNames = message.documents.map(document => document.original_filename).join(", ")
-                  const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Processing" ? "processing" : "neutral"
-                  return (
-                    <div key={message.id} className="grid gap-3 px-5 py-4 lg:grid-cols-[minmax(11rem,1.1fr)_minmax(11rem,1.5fr)_8rem_10rem_7rem_auto] lg:items-center">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-foreground">{message.sender || "Unknown sender"}</p>
-                        <p className="mt-1 truncate text-xs text-muted-foreground">{message.source_email_reference}</p>
+              <>
+                <div className="hidden sm:block">
+                  <table className={workspaceTable}>
+                    <thead>
+                      <tr className="border-b border-[#d8dde6] bg-[#f3f4f6]">
+                        <th className={cn(workspaceHeaderCell, "px-5")}>Sender</th>
+                        <th className={workspaceHeaderCell}>Documents</th>
+                        <th className={workspaceHeaderCell}>Source</th>
+                        <th className={workspaceHeaderCell}>Received</th>
+                        <th className={workspaceHeaderCell}>Status</th>
+                        <th className="px-4 py-2.5" />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {messages.map((message) => {
+                        const state = messageState(message)
+                        const documentNames = message.documents.map(document => document.original_filename).join(", ")
+                        const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Processing" ? "processing" : "neutral"
+                        return (
+                          <tr key={message.id} className="border-b border-[#e5e7eb] last:border-0 hover:bg-[#f8fafc]">
+                            <td className="max-w-[220px] px-5 py-3">
+                              <p className="truncate text-sm font-normal text-black">{message.sender || "Unknown sender"}</p>
+                              <p className="mt-1 truncate text-xs font-normal text-[#4b5563]">{message.source_email_reference}</p>
+                            </td>
+                            <td className="max-w-[260px] truncate px-4 py-3 text-sm font-normal text-black">
+                              {documentNames || `${message.attachment_count} attachment${message.attachment_count === 1 ? "" : "s"}`}
+                            </td>
+                            <td className="px-4 py-3">
+                              <SourceBadge kind="email" />
+                            </td>
+                            <td className={workspaceMutedCell}>{formatReceivedAt(message.received_at)}</td>
+                            <td className="px-4 py-3">
+                              <StatusBadge tone={tone}>{state}</StatusBadge>
+                            </td>
+                            <td className="px-4 py-3">
+                              {message.job_id ? (
+                                <InlineAction asChild className={workspaceTextAction}>
+                                  <Link href={`/dashboard/client?job_id=${encodeURIComponent(message.job_id)}`}>Review</Link>
+                                </InlineAction>
+                              ) : (
+                                <span className="ax-status-text text-xs font-normal text-[#4b5563]">
+                                  {message.rejected_attachments.length ? "Not imported" : "Pending"}
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="divide-y divide-[#e5e7eb] sm:hidden">
+                  {messages.map((message) => {
+                    const state = messageState(message)
+                    const documentNames = message.documents.map(document => document.original_filename).join(", ")
+                    const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Processing" ? "processing" : "neutral"
+                    return (
+                      <div key={message.id} className="grid gap-3 px-5 py-4">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-normal text-black">{message.sender || "Unknown sender"}</p>
+                          <p className="mt-1 truncate text-xs font-normal text-[#4b5563]">{message.source_email_reference}</p>
+                        </div>
+                        <p className="truncate text-sm font-normal text-black">
+                          {documentNames || `${message.attachment_count} attachment${message.attachment_count === 1 ? "" : "s"}`}
+                        </p>
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            <SourceBadge kind="email" />
+                            <StatusBadge tone={tone}>{state}</StatusBadge>
+                          </div>
+                          {message.job_id ? (
+                            <InlineAction asChild className={workspaceTextAction}>
+                              <Link href={`/dashboard/client?job_id=${encodeURIComponent(message.job_id)}`}>Review</Link>
+                            </InlineAction>
+                          ) : (
+                            <span className="ax-status-text text-xs font-normal text-[#4b5563]">
+                              {message.rejected_attachments.length ? "Not imported" : "Pending"}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <p className="truncate text-sm text-foreground">
-                        {documentNames || `${message.attachment_count} attachment${message.attachment_count === 1 ? "" : "s"}`}
-                      </p>
-                      <SourceBadge kind="email" />
-                      <p className="text-sm text-muted-foreground">{formatReceivedAt(message.received_at)}</p>
-                      <StatusBadge tone={tone}>{state}</StatusBadge>
-                      {message.job_id ? (
-                        <InlineAction asChild>
-                          <Link href={`/dashboard/client?job_id=${encodeURIComponent(message.job_id)}`}>Review</Link>
-                        </InlineAction>
-                      ) : (
-                        <span className="text-xs font-medium text-foreground">
-                          {message.rejected_attachments.length ? "Not imported" : "Pending"}
-                        </span>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
+                    )
+                  })}
+                </div>
+              </>
             )}
           </CardContent>
         </Card>

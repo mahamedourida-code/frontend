@@ -169,7 +169,7 @@ export function HelpMenu() {
         <PopoverTrigger asChild>
           <button
             aria-label={hasUnseen ? "Help and what's new — new updates" : "Help and what's new"}
-            className="ax-interactive relative inline-flex size-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:text-foreground data-[state=open]:text-foreground"
+            className="ax-interactive relative inline-flex size-8 items-center justify-center rounded-md border border-white/12 bg-white/6 text-white/78 transition-colors hover:bg-white/12 hover:text-white data-[state=open]:bg-white/12 data-[state=open]:text-white"
           >
             <HelpCircle className="size-4" />
             <AnimatePresence>

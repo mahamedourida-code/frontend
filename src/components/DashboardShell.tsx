@@ -3,7 +3,7 @@
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-import { ChevronLeft, Clock3, Loader2, Search } from "lucide-react"
+import { ChevronLeft, Clock3, Loader2, Search, Upload } from "lucide-react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -145,49 +145,49 @@ export function DashboardShell({
       <WorkspaceSidebar activeItem={activeItem} user={user} />
 
       <div className="ax-dashboard-content relative z-10 min-w-0">
-        <header className="sticky top-0 z-40 h-16 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-          <div className="relative flex h-full items-center gap-3 px-4 sm:gap-4">
+        <header className="sticky top-0 z-40 h-12 border-b border-[#151b2e] bg-[var(--workspace-topbar)] text-white">
+          <div className="relative flex h-full items-center gap-2 px-3 sm:gap-3">
             {showBack && (
               <>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="icon"
                   onClick={() => router.back()}
-                  className="size-8"
+                  className="size-8 text-white hover:bg-white/10 hover:text-white"
                 >
                   <ChevronLeft className="size-4" />
                 </Button>
-                <Separator orientation="vertical" className="h-6" />
+                <Separator orientation="vertical" className="h-5 bg-white/15" />
               </>
             )}
 
             {/* Mobile: page title only */}
             <div className="me-auto min-w-0 md:hidden">
-              <div className="truncate text-[15px] font-semibold">{title}</div>
+              <div className="truncate text-[14px] font-medium">{title}</div>
             </div>
 
             {/* CENTER (the bar's main element): global ⌘K search */}
-            <div className="me-auto hidden min-w-0 flex-1 justify-center px-2 md:flex">
+            <div className="me-auto hidden min-w-0 flex-1 justify-start px-2 md:flex">
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive group inline-flex h-10 w-full max-w-xl cursor-pointer items-center gap-2.5 rounded-md border border-border bg-background px-4 text-sm font-normal text-black transition-colors hover:border-foreground/40"
+                className="ax-interactive group inline-flex h-9 w-full max-w-[340px] cursor-pointer items-center gap-2 rounded-md border border-white/18 bg-white/8 px-3 text-sm font-normal text-white/62 transition-colors hover:border-white/35 hover:bg-white/12 hover:text-white"
               >
-                <Search className="size-4 shrink-0 opacity-70" />
+                <Search className="size-4 shrink-0 text-white/88" />
                 <span className="truncate">Search companies, documents, batches...</span>
-                <kbd className="ms-auto hidden shrink-0 rounded-md border border-border bg-background px-1.5 py-0.5 font-sans text-[10px] font-medium text-muted-foreground sm:inline-flex">
+                <kbd className="ms-auto hidden shrink-0 rounded border border-white/15 bg-white/8 px-1.5 py-0.5 font-sans text-[10px] font-medium text-white/55 sm:inline-flex">
                   ⌘K
                 </kbd>
               </button>
             </div>
 
             {/* RIGHT: calm cluster — job pill, notifications, help, upgrade, account */}
-            <div className="ms-auto flex min-w-0 items-center gap-3">
+            <div className="ms-auto flex min-w-0 items-center gap-2.5">
               {/* Mobile: compact ⌘K search trigger (full bar lives on md+) */}
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive inline-flex size-9 cursor-pointer items-center justify-center rounded-md border border-border bg-background text-black hover:border-foreground/40 md:hidden"
+                className="ax-interactive inline-flex size-8 cursor-pointer items-center justify-center rounded-md border border-white/18 bg-white/8 text-white hover:bg-white/12 md:hidden"
               >
                 <Search className="size-4" />
               </button>
@@ -196,10 +196,10 @@ export function DashboardShell({
                 <Link
                   href={activeJob.href}
                   className={cn(
-                    "ax-interactive hidden h-9 cursor-pointer items-center gap-2 rounded-md border-2 px-3 text-sm font-medium shadow-none sm:inline-flex",
+                    "ax-interactive hidden h-8 cursor-pointer items-center gap-2 rounded-md border px-2.5 text-xs font-medium shadow-none sm:inline-flex",
                     activeJob.tone === "ready"
-                      ? "border-black bg-white text-black hover:bg-black hover:text-white"
-                      : "border-black bg-black text-white hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4"
+                      ? "border-white/20 bg-white/10 text-white hover:bg-white/16"
+                      : "border-white/20 bg-white/10 text-white hover:bg-white/16"
                   )}
                 >
                   {activeJob.tone === "ready" ? (
@@ -211,6 +211,13 @@ export function DashboardShell({
                   <span className="text-xs opacity-75">{activeJob.progress}</span>
                 </Link>
               )}
+
+              <Button asChild variant="glossy" size="sm" className="hidden h-9 px-3 text-sm sm:inline-flex">
+                <Link href="/dashboard/client#upload-files">
+                  <Upload className="size-4" />
+                  Upload
+                </Link>
+              </Button>
 
               <NotificationsBell />
               <HelpMenu />
@@ -227,7 +234,7 @@ export function DashboardShell({
           </div>
         </header>
 
-        <main className={cn("mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6 pb-24", contentClassName)}>
+        <main className={cn("mx-auto w-full max-w-none px-4 py-5 pb-24 sm:px-5 lg:px-6", contentClassName)}>
           {(eyebrow || title) && (
             <div className="sr-only">
               {eyebrow && <span>{eyebrow}</span>}

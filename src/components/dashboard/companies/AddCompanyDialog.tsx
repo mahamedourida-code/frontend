@@ -82,7 +82,12 @@ export function AddCompanyDialog({ workspaceId, onCreated }: AddCompanyDialogPro
             <InlineAction onClick={() => setOpen(false)}>
               Cancel
             </InlineAction>
-            <Button type="submit" variant="reviewed" disabled={saving || !name.trim()}>
+            <Button
+              type="submit"
+              variant="glossy"
+              disabled={saving || !name.trim()}
+              className="!border-[var(--workspace-primary)] !bg-[var(--workspace-primary)] !text-white hover:!border-[var(--workspace-primary-hover)] hover:!bg-[var(--workspace-primary-hover)]"
+            >
               {saving ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
               Add company
             </Button>

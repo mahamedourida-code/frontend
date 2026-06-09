@@ -41,7 +41,7 @@ export function AnimatedPageTitle({
 
   if (prefersReducedMotion) {
     return (
-      <Tag className={cn("text-xl font-bold tracking-tight text-foreground", className)}>
+      <Tag className={cn("text-[24px] font-semibold tracking-normal text-foreground", className)}>
         {title}
       </Tag>
     )
@@ -51,7 +51,7 @@ export function AnimatedPageTitle({
   const replayKey = title
 
   return (
-    <Tag className={cn("text-xl font-bold tracking-tight text-foreground", className)}>
+    <Tag className={cn("text-[24px] font-semibold tracking-normal text-foreground", className)}>
       <motion.span
         key={replayKey}
         className="inline-block"

@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/utils/supabase/client"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
-import { useTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -37,9 +36,6 @@ import {
   User,
   Globe,
   Settings2,
-  Moon,
-  Sun,
-  Laptop,
   Languages,
   Check,
   FileSpreadsheet,
@@ -54,15 +50,17 @@ import { Symbol } from "@/components/dashboard/Symbol"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 
 type SettingsSection = 'account' | 'billing' | 'accounting' | 'vendors' | 'preferences'
-type Theme = 'dark' | 'light' | 'system'
 
-const workspacePrimaryButton =
-  "border-2 !border-[var(--brand-brown-fg)] !bg-[var(--brand-brown-fg)] !text-white !shadow-none hover:!border-black hover:!bg-white hover:!text-black hover:underline hover:decoration-1 hover:underline-offset-4"
+const accountingPanel =
+  "ax-workspace-panel rounded-lg border border-slate-200 bg-white shadow-none dark:border-slate-800 dark:bg-slate-950"
 
-const workspaceSurfaceButton =
-  "border-2 !border-black !bg-white !text-black !shadow-none hover:!bg-black hover:!text-white"
+const accountingSubPanel =
+  "rounded-lg border border-slate-200 bg-slate-50/80 shadow-none dark:border-slate-800 dark:bg-slate-900/40"
 
-const workspaceWarmPanel = "border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)]"
+const accountingPrimaryButton =
+  "!border-[#1877F2] !bg-[#1877F2] !text-white !shadow-none hover:!bg-[#0f6be3] focus-visible:!ring-[#1877F2]/30"
+
+const accountingTextAction = "ax-text-action !font-medium text-[#1877F2] hover:text-[#0f6be3]"
 
 function SettingsFallback() {
   return <DashboardRouteLoader label="Loading settings" />
@@ -82,7 +80,6 @@ function SettingsContent() {
   const { user, loading: authLoading, signOut } = useAuth()
   const { activeWorkspace } = useWorkspaces(user)
   const isOwner = !activeWorkspace || activeWorkspace.role === "owner"
-  const { theme: currentTheme, setTheme } = useTheme()
   const supabase = createClient()
 
   const languageParam = searchParams.get('language') || (typeof window !== 'undefined' ? localStorage.getItem('ocrLanguage') || 'en' : 'en')
@@ -119,7 +116,6 @@ function SettingsContent() {
 
   // Preferences state
   const [language, setLanguage] = useState(languageParam)
-  const [mounted, setMounted] = useState(false)
   const [autoDownload, setAutoDownload] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('autoDownload')
@@ -140,11 +136,6 @@ function SettingsContent() {
   useEffect(() => {
     setInvoiceLanguageState(readInvoiceLanguage())
     setInvoiceAutoDetectState(readInvoiceAutoDetect())
-  }, [])
-
-  // Prevent hydration mismatch for theme
-  useEffect(() => {
-    setMounted(true)
   }, [])
 
   useEffect(() => {
@@ -251,11 +242,6 @@ function SettingsContent() {
       zh: '中文'
     }
     toast.success(`OCR detection language changed to ${languageNames[newLanguage] || newLanguage}`)
-  }
-
-  const handleThemeChange = (newTheme: Theme) => {
-    setTheme(newTheme)
-    toast.success(`Theme changed to ${newTheme}`)
   }
 
   const formatPlan = (plan?: string | null) => {
@@ -512,11 +498,14 @@ function SettingsContent() {
 
           {/* Sidebar Navigation */}
           <nav className="hidden lg:block w-64 shrink-0">
-            <Card className="ax-glass-card !shadow-none">
-              <CardContent className="p-3 lg:p-4">
+            <Card className="rounded-lg border border-slate-200 bg-slate-50 shadow-none dark:border-slate-800 dark:bg-slate-950/70">
+              <CardContent className="p-2.5">
                 <div className="space-y-1">
                   {sidebarSections.map((section) => (
                     <div key={section.title} className="space-y-1">
+                      <p className="px-3 py-2 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
+                        {section.title}
+                      </p>
                       {section.items.map((item) => {
                         const Icon = item.icon
                         return (
@@ -524,14 +513,14 @@ function SettingsContent() {
                             key={item.id}
                             onClick={() => setActiveSection(item.id as SettingsSection)}
                             className={cn(
-                              "ax-interactive relative w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm",
+                              "ax-interactive relative w-full flex items-center gap-3 rounded-md border border-transparent px-3 py-2.5 text-sm font-normal",
                               activeSection === item.id
-                                ? "bg-accent text-accent-foreground font-medium"
-                                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                                ? "border-slate-200 bg-white text-[#1877F2] shadow-sm dark:border-slate-800 dark:bg-slate-900"
+                                : "text-slate-600 hover:bg-white hover:text-[#1877F2] dark:text-slate-400 dark:hover:bg-slate-900"
                             )}
                           >
                             {activeSection === item.id && (
-                              <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-primary" />
+                              <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-[#1877F2]" />
                             )}
                             <Icon className="h-4 w-4 shrink-0" />
                             <span>{item.label}</span>
@@ -551,14 +540,14 @@ function SettingsContent() {
             {activeSection === 'account' && (
               <div className="space-y-4 lg:space-y-6">
                 {/* Profile Information */}
-                <Card className="ax-glass-card !shadow-none">
+                <Card className={accountingPanel}>
                   <CardHeader className="p-5">
                     <div className="flex items-center gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                        <User className="h-5 w-5 text-primary" />
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40">
+                        <User className="h-5 w-5 text-[#1877F2]" />
                       </div>
                       <div>
-                        <CardTitle className="text-base lg:text-lg">Profile Information</CardTitle>
+                        <CardTitle className="text-base font-medium lg:text-lg">Profile Information</CardTitle>
                       </div>
                     </div>
                   </CardHeader>
@@ -582,11 +571,12 @@ function SettingsContent() {
                         disabled
                         className="bg-muted h-9 lg:h-10"
                       />
-                      <p className="text-[13px] font-normal text-foreground">Email cannot be changed</p>
+                      <p className="text-[13px] font-normal text-slate-600 dark:text-slate-400">Email cannot be changed</p>
                     </div>
 
                     <div className="flex items-center justify-end gap-5 pt-3 lg:pt-4 border-t">
                       <InlineAction
+                        className={accountingTextAction}
                         onClick={() => setFullName(user?.user_metadata?.full_name || "")}
                       >
                         Reset
@@ -596,7 +586,7 @@ function SettingsContent() {
                         size="sm"
                         onClick={handleUpdateProfile}
                         disabled={loading}
-                        className={cn("h-9", workspacePrimaryButton)}
+                        className={cn("h-9", accountingPrimaryButton)}
                       >
                         {loading ? "Saving..." : "Save Changes"}
                       </Button>
@@ -676,71 +666,72 @@ function SettingsContent() {
 
             {activeSection === 'billing' && (
               <div className="space-y-5 lg:space-y-6">
-                <Card className="ax-glass-card overflow-hidden rounded-xl !shadow-none">
+                <Card className={cn(accountingPanel, "overflow-hidden")}>
                   <CardContent className="p-0">
                     <div className="grid gap-0 lg:grid-cols-[1.05fr_0.95fr]">
                       <div className="p-5 sm:p-6">
                         <div className="flex items-start justify-between gap-4">
                           <div>
-                            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-emerald-700">Billing</p>
-                            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
+                            <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">Billing</p>
+                            <h2 className="mt-2 text-2xl font-normal tracking-tight text-slate-950 dark:text-slate-50">
                               {billingLoading ? "Loading plan" : `${formatPlan(billingStatus?.plan)} workspace`}
                             </h2>
                           </div>
-                          <BillingSeal className="h-9 w-9 shrink-0 text-primary" />
+                          <BillingSeal className="h-9 w-9 shrink-0 text-[#1877F2]" />
                         </div>
 
                         <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                          <div className={cn("rounded-xl border p-4 backdrop-blur", workspaceWarmPanel)}>
-                            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Status</p>
-                            <p className="mt-2 text-xl font-semibold text-foreground">
+                          <div className={cn("p-4", accountingSubPanel)}>
+                            <p className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">Status</p>
+                            <p className="mt-2 text-xl font-normal text-slate-950 dark:text-slate-50">
                               {checkoutSyncState === "pending"
                                 ? "confirming"
                                 : currentSubscription?.status || (billingStatus?.plan === "free" ? "free" : "active")}
                             </p>
                           </div>
-                          <div className={cn("rounded-xl border p-4 backdrop-blur", workspaceWarmPanel)}>
-                            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Renew date</p>
-                            <p className="mt-2 text-xl font-semibold text-foreground">
+                          <div className={cn("p-4", accountingSubPanel)}>
+                            <p className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">Renew date</p>
+                            <p className="mt-2 text-xl font-normal text-slate-950 dark:text-slate-50">
                               {formatDate(currentSubscription?.renews_at || currentSubscription?.ends_at)}
                             </p>
                           </div>
                         </div>
 
-                        <div className={cn("mt-4 rounded-xl border p-4 backdrop-blur", workspaceWarmPanel)}>
+                        <div className={cn("mt-4 p-4", accountingSubPanel)}>
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
-                              <CreditStack className="h-6 w-6 text-primary" />
+                              <CreditStack className="h-6 w-6 text-[#1877F2]" />
                               <div>
-                                <p className="text-sm font-bold text-foreground">Credits</p>
-                                <p className="text-xs font-normal text-foreground">{creditAvailable} available of {creditTotal}</p>
+                                <p className="text-sm font-medium text-slate-950 dark:text-slate-50">Credits</p>
+                                <p className="text-xs font-normal text-slate-600 dark:text-slate-400">{creditAvailable} available of {creditTotal}</p>
                               </div>
                             </div>
-                            <p className="text-sm font-bold text-primary">{creditUsed} used</p>
+                            <p className="text-sm font-medium text-[#1877F2]">{creditUsed} used</p>
                           </div>
                           <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted">
                             <div
-                              className="h-full rounded-full bg-primary transition-all"
+                              className="h-full rounded-full bg-[#1877F2] transition-all"
                               style={{ width: `${creditPercent}%` }}
                             />
                           </div>
                         </div>
 
                         {noCredits && (
-                          <div className={cn("mt-4 rounded-xl border p-4 backdrop-blur", workspaceWarmPanel)}>
-                            <p className="text-sm font-semibold text-[var(--brand-brown-fg)]">No credits left</p>
+                          <div className={cn("mt-4 p-4", accountingSubPanel)}>
+                            <p className="text-sm font-medium text-red-600 dark:text-red-400">No credits left</p>
                           </div>
                         )}
 
                         <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
                           <Button
-                            variant="lime"
-                            className={cn("h-11 rounded-md", workspacePrimaryButton)}
+                            variant="glossy"
+                            className={cn("h-11", accountingPrimaryButton)}
                             onClick={() => window.location.assign("/pricing")}
                           >
                             {noCredits ? "Buy credits" : "Compare plans"}
                           </Button>
                           <InlineAction
+                            className={accountingTextAction}
                             onClick={openBillingPortal}
                             disabled={!hasBillingPortal || billingAction === "portal"}
                           >
@@ -749,11 +740,11 @@ function SettingsContent() {
                         </div>
                       </div>
 
-                      <div className={cn("border-t p-5 backdrop-blur lg:border-l lg:border-t-0 sm:p-6", workspaceWarmPanel)}>
+                      <div className="border-t border-slate-200 bg-slate-50/80 p-5 lg:border-l lg:border-t-0 sm:p-6 dark:border-slate-800 dark:bg-slate-900/40">
                         <div className="flex items-center gap-3">
-                          <PlanSwitch className="h-7 w-7 shrink-0 text-primary" />
+                          <PlanSwitch className="h-7 w-7 shrink-0 text-[#1877F2]" />
                           <div>
-                            <h3 className="font-semibold text-foreground">Upgrade path</h3>
+                            <h3 className="font-medium text-slate-950 dark:text-slate-50">Upgrade path</h3>
                           </div>
                         </div>
 
@@ -767,24 +758,23 @@ function SettingsContent() {
                               onClick={() => startCheckout(plan.checkout_key as BillingPlanKey)}
                               disabled={billingAction === plan.checkout_key || !plan.checkout_available}
                               className={cn(
-                                "ax-interactive group flex w-full cursor-pointer items-center justify-between gap-3 rounded-md p-4 text-left disabled:cursor-wait disabled:opacity-70",
-                                workspaceSurfaceButton,
+                                "ax-interactive group flex w-full cursor-pointer items-center justify-between gap-3 rounded-md border border-slate-200 bg-white p-4 text-left text-slate-900 shadow-none hover:border-[#1877F2]/40 hover:text-[#1877F2] disabled:cursor-wait disabled:opacity-70 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100",
                               )}
                             >
                               <span>
-                                <span className="block text-sm font-semibold text-black group-hover:text-white">
+                                <span className="block text-sm font-medium">
                                   {plan.name} {plan.interval === "year" ? "annual" : "monthly"} · {plan.price_formatted}
                                 </span>
-                                <span className="mt-1 block text-xs text-black/70 group-hover:text-white/75">{plan.included_volume}</span>
+                                <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">{plan.included_volume}</span>
                               </span>
-                              <span className="h-2.5 w-2.5 rounded-full bg-black group-hover:bg-white" />
+                              <span className="h-2.5 w-2.5 rounded-full bg-[#1877F2]" />
                             </button>
                           ))}
                         </div>
 
-                        <div className={cn("mt-5 rounded-lg border p-4 text-sm font-normal text-foreground", workspaceWarmPanel)}>
+                        <div className={cn("mt-5 p-4 text-sm font-normal text-slate-700 dark:text-slate-300", accountingSubPanel)}>
                           Batch limits:
-                          <span className="ml-1 font-bold text-foreground">
+                          <span className="ml-1 font-medium text-slate-950 dark:text-slate-50">
                             {limits ? `${limits.max_files_per_batch} files, ${limits.max_file_size_mb} MB each` : "loading live limits"}
                           </span>
                         </div>
@@ -797,20 +787,20 @@ function SettingsContent() {
 
             {activeSection === 'vendors' && isOwner && (
               <div className="space-y-5">
-                <Card className="ax-glass-card overflow-hidden rounded-xl !shadow-none">
+                <Card className={cn(accountingPanel, "overflow-hidden")}>
                   <CardHeader className="p-5 sm:p-6">
                     <div className="flex items-start gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                        <FileSpreadsheet className="h-5 w-5 text-primary" />
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40">
+                        <FileSpreadsheet className="h-5 w-5 text-[#1877F2]" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <CardTitle className="text-lg">Vendor memory</CardTitle>
-                          <span className="rounded border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400">
+                          <CardTitle className="text-lg font-medium">Vendor memory</CardTitle>
+                          <span className="rounded border border-yellow-200 bg-yellow-50 px-2 py-0.5 text-xs font-medium text-yellow-700 dark:border-yellow-800 dark:bg-yellow-950 dark:text-yellow-400">
                             Owner only
                           </span>
                         </div>
-                        <CardDescription className="mt-1 max-w-xl font-normal leading-5 text-foreground">
+                        <CardDescription className="mt-1 max-w-xl font-normal leading-5 text-slate-600 dark:text-slate-400">
                           Saved after confirmed invoice or receipt review.
                         </CardDescription>
                       </div>
@@ -832,16 +822,16 @@ function SettingsContent() {
                           alt=""
                         />
                         <div className="max-w-sm space-y-2">
-                          <h3 className="text-lg font-semibold tracking-tight text-foreground">
+                          <h3 className="text-lg font-normal tracking-tight text-slate-950 dark:text-slate-50">
                             No remembered suppliers yet
                           </h3>
-                          <p className="text-sm font-normal leading-relaxed text-foreground">
+                          <p className="text-sm font-normal leading-relaxed text-slate-600 dark:text-slate-400">
                             Confirm an invoice or receipt in Review to save coding defaults.
                           </p>
                         </div>
                       </div>
                     ) : vendorRules.map(rule => (
-                      <section key={rule.id} className="rounded-lg border border-border bg-card/50 p-4 backdrop-blur shadow-none">
+                      <section key={rule.id} className="rounded-lg border border-slate-200 bg-white p-4 shadow-none dark:border-slate-800 dark:bg-slate-950">
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div className="flex items-start gap-3">
                             <Symbol
@@ -852,21 +842,22 @@ function SettingsContent() {
                             />
                             <div>
                             <div className="flex flex-wrap items-center gap-2">
-                              <h3 className="text-sm font-semibold text-foreground">{rule.display_name}</h3>
-                              <span className="rounded-md border border-border bg-background px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                              <h3 className="text-sm font-medium text-slate-950 dark:text-slate-50">{rule.display_name}</h3>
+                              <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
                                 {rule.applies_to === 'both' ? 'Invoice / receipt' : rule.applies_to}
                               </span>
                               <StatusBadge tone={rule.enabled ? "success" : "neutral"}>
                                 {rule.enabled ? 'Enabled' : 'Disabled'}
                               </StatusBadge>
                             </div>
-                            <p className="mt-1 text-xs font-normal text-foreground">
+                            <p className="mt-1 text-xs font-normal text-slate-600 dark:text-slate-400">
                               Approved {formatDate(rule.approved_at)}
                             </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-5">
                             <InlineAction
+                              className={rule.enabled ? "ax-text-action !font-medium text-yellow-600 hover:text-yellow-700" : "ax-text-action !font-medium text-green-600 hover:text-green-700"}
                               disabled={vendorRuleAction === rule.id}
                               onClick={() => void toggleVendorRule(rule)}
                             >
@@ -874,6 +865,7 @@ function SettingsContent() {
                             </InlineAction>
                             <InlineAction
                               tone="danger"
+                              className="ax-text-action text-red-600 hover:text-red-700"
                               disabled={vendorRuleAction === rule.id}
                               onClick={() => void deleteVendorRule(rule)}
                             >
@@ -882,13 +874,13 @@ function SettingsContent() {
                           </div>
                         </div>
 
-                        <div className={cn("mt-4 rounded-md border p-3", workspaceWarmPanel)}>
+                        <div className={cn("mt-4 p-3", accountingSubPanel)}>
                           <div className="flex flex-wrap items-start justify-between gap-3">
                             <div className="min-w-0">
-                              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                              <p className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
                                 Auto-apply mode
                               </p>
-                              <p className="mt-1 text-xs font-normal text-foreground">
+                              <p className="mt-1 text-xs font-normal text-slate-600 dark:text-slate-400">
                                 {(rule.auto_mode || 'suggest') === 'auto_ready'
                                   ? 'Pre-fill and move to Ready for approval.'
                                   : (rule.auto_mode || 'suggest') === 'auto_fill'
@@ -924,7 +916,7 @@ function SettingsContent() {
                             .filter(([field]) => rule.applies_to !== 'receipt' || field !== 'destination_treatment')
                             .map(([field, label, placeholder]) => (
                             <label key={field} className="space-y-1.5">
-                              <span className="block text-xs font-medium text-foreground">{label}</span>
+                              <span className="block text-xs font-medium text-slate-700 dark:text-slate-300">{label}</span>
                               <Input
                                 value={vendorDrafts[rule.id]?.[field] || ''}
                                 onChange={(event) => updateVendorDraft(rule.id, field, event.target.value)}
@@ -936,6 +928,7 @@ function SettingsContent() {
                         </div>
                         <div className="mt-4 flex justify-end">
                           <InlineAction
+                            className={accountingTextAction}
                             disabled={vendorRuleAction === rule.id}
                             onClick={() => void saveVendorRule(rule)}
                           >
@@ -951,23 +944,23 @@ function SettingsContent() {
 
             {activeSection === 'accounting' && (
               <div className="space-y-5">
-                <Card className="ax-glass-card overflow-hidden rounded-xl !shadow-none">
+                <Card className={cn(accountingPanel, "overflow-hidden")}>
                   <CardHeader className="p-5 sm:p-6">
                     <div className="flex items-start gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                        <DownloadCloud className="h-5 w-5 text-primary" />
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40">
+                        <DownloadCloud className="h-5 w-5 text-[#1877F2]" />
                       </div>
                       <div>
-                        <CardTitle className="text-lg">Accounting connections</CardTitle>
+                        <CardTitle className="text-lg font-medium">Accounting connections</CardTitle>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent className="border-t border-border p-5 sm:p-6">
                     <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                      <p className="max-w-md text-sm font-normal leading-relaxed text-foreground">
+                      <p className="max-w-md text-sm font-normal leading-relaxed text-slate-700 dark:text-slate-300">
                         Reviewed draft bills publish to QuickBooks or Xero. AxLiner never pays them.
                       </p>
-                      <InlineAction asChild className="shrink-0">
+                      <InlineAction asChild className={cn("shrink-0", accountingTextAction)}>
                         <Link href="/dashboard/integrations">
                           Open integrations
                           <ExternalLink className="size-4" />
@@ -977,15 +970,15 @@ function SettingsContent() {
                   </CardContent>
                 </Card>
 
-                <Card className="ax-glass-card overflow-hidden rounded-xl !shadow-none">
+                <Card className={cn(accountingPanel, "overflow-hidden")}>
                   <CardHeader className="p-5 sm:p-6">
                     <div className="flex items-start gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                        <FileSpreadsheet className="h-5 w-5 text-primary" />
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40">
+                        <FileSpreadsheet className="h-5 w-5 text-[#1877F2]" />
                       </div>
                       <div>
-                        <CardTitle className="text-lg">Purchase order import</CardTitle>
-                        <CardDescription className="mt-1 max-w-xl font-normal leading-5 text-foreground">
+                        <CardTitle className="text-lg font-medium">Purchase order import</CardTitle>
+                        <CardDescription className="mt-1 max-w-xl font-normal leading-5 text-slate-600 dark:text-slate-400">
                           Import open purchase orders for AP matching.
                         </CardDescription>
                       </div>
@@ -993,15 +986,15 @@ function SettingsContent() {
                   </CardHeader>
                   <CardContent className="space-y-4 border-t border-border p-5 sm:p-6">
                     {!isOwner ? (
-                      <p className={cn("rounded-lg border px-4 py-3 text-sm font-normal text-foreground", workspaceWarmPanel)}>
+                      <p className={cn("px-4 py-3 text-sm font-normal text-slate-700 dark:text-slate-300", accountingSubPanel)}>
                         Ask the workspace owner to import purchase orders.
                       </p>
                     ) : (
                       <>
                         <div>
                           <Label htmlFor="purchase-orders-csv">Purchase orders CSV</Label>
-                          <p className="mt-1 text-xs font-normal leading-5 text-foreground">
-                            Columns: <span className="font-mono text-foreground">po_number, vendor, date, total, remaining, currency</span>
+                          <p className="mt-1 text-xs font-normal leading-5 text-slate-600 dark:text-slate-400">
+                            Columns: <span className="font-mono text-slate-900 dark:text-slate-100">po_number, vendor, date, total, remaining, currency</span>
                           </p>
                         </div>
                         <textarea
@@ -1010,7 +1003,7 @@ function SettingsContent() {
                           onChange={(event) => setPoCsv(event.target.value)}
                           placeholder={"po_number,vendor,date,total,remaining,currency\nPO-1001,Acme Ltd,2026-05-01,1200.00,1200.00,USD"}
                           rows={7}
-                          className="w-full rounded-lg border border-border bg-background p-3 font-mono text-xs outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+                          className="w-full rounded-lg border border-slate-200 bg-white p-3 font-mono text-xs outline-none transition focus:border-[#1877F2]/40 focus:ring-2 focus:ring-[#1877F2]/15 dark:border-slate-800 dark:bg-slate-950"
                         />
                         <div className="flex justify-end border-t border-border pt-4">
                           <Button
@@ -1018,7 +1011,7 @@ function SettingsContent() {
                             size="sm"
                             onClick={() => void importPurchaseOrders()}
                             disabled={poImportBusy || !poCsv.trim()}
-                            className={workspacePrimaryButton}
+                            className={accountingPrimaryButton}
                           >
                             {poImportBusy ? <Loader2 className="size-4 animate-spin" /> : null}
                             {poImportBusy ? "Importing..." : "Import purchase orders"}
@@ -1035,14 +1028,14 @@ function SettingsContent() {
             {activeSection === 'preferences' && (
               <div className="space-y-6">
                 {/* Processing Settings */}
-                <Card className="ax-glass-card !shadow-none">
+                <Card className={accountingPanel}>
                   <CardHeader className="p-5">
                     <div className="flex items-center gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                        <Settings2 className="h-5 w-5 text-primary" />
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40">
+                        <Settings2 className="h-5 w-5 text-[#1877F2]" />
                       </div>
                       <div>
-                        <CardTitle>Processing Settings</CardTitle>
+                        <CardTitle className="font-medium">Processing Settings</CardTitle>
                       </div>
                     </div>
                   </CardHeader>
@@ -1081,7 +1074,7 @@ function SettingsContent() {
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="invoice-language">Invoice language</Label>
-                        <p className="text-xs font-normal text-foreground">
+                        <p className="text-xs font-normal text-slate-600 dark:text-slate-400">
                           Review-board labels only; OCR language stays separate.
                         </p>
                       </div>
@@ -1125,14 +1118,14 @@ function SettingsContent() {
                 </Card>
 
                 {/* OCR Detection Language */}
-                <Card className="ax-glass-card !shadow-none">
+                <Card className={accountingPanel}>
                   <CardHeader className="p-5">
                     <div className="flex items-center gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                        <Languages className="h-5 w-5 text-primary" />
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40">
+                        <Languages className="h-5 w-5 text-[#1877F2]" />
                       </div>
                       <div>
-                        <CardTitle>OCR Detection Language</CardTitle>
+                        <CardTitle className="font-medium">OCR Detection Language</CardTitle>
                       </div>
                     </div>
                   </CardHeader>

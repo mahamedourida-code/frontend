@@ -8,10 +8,7 @@ import {
   CreditCard,
   LifeBuoy,
   LogOut,
-  Monitor,
-  Moon,
   Plus,
-  Sun,
 } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
 
@@ -34,7 +31,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { BillingSeal, CreditStack } from "@/components/BillingGlyphs"
-import { useTheme } from "@/components/theme-provider"
 import { useWorkspaces, type Workspace } from "@/hooks/useWorkspaces"
 import { cn } from "@/lib/utils"
 
@@ -54,12 +50,6 @@ type AccountMenuProps = {
   credits: number | null
   billingLoading?: boolean
 }
-
-const THEMES: Array<{ value: "light" | "dark" | "system"; label: string; icon: typeof Sun }> = [
-  { value: "light", label: "Light", icon: Sun },
-  { value: "dark", label: "Dark", icon: Moon },
-  { value: "system", label: "Auto", icon: Monitor },
-]
 
 function displayName(user: AccountMenuUser | undefined) {
   return (
@@ -92,7 +82,6 @@ function RoleBadge({ role }: { role: Workspace["role"] }) {
 }
 
 export function AccountMenu({ user, planLabel, credits, billingLoading }: AccountMenuProps) {
-  const { theme, setTheme } = useTheme()
   const {
     workspaces,
     activeWorkspace,
@@ -134,9 +123,9 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
           <button
             type="button"
             aria-label="Account menu"
-            className="ax-interactive inline-flex size-9 items-center justify-center rounded-full border border-border bg-card transition-colors hover:bg-accent data-[state=open]:ring-2 data-[state=open]:ring-emerald-500/60"
+            className="ax-interactive inline-flex size-8 items-center justify-center rounded-full border border-white/18 bg-white/10 transition-colors hover:bg-white/16 data-[state=open]:ring-2 data-[state=open]:ring-white/35"
           >
-            <Avatar className="size-7">
+            <Avatar className="size-6">
               {avatarUrl && <AvatarImage src={avatarUrl} alt="" />}
               <AvatarFallback className="bg-primary/15 text-[11px] font-semibold text-primary">
                 {initials(name)}
@@ -236,36 +225,6 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
             </span>
             Create workspace
           </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          {/* Theme */}
-          <p className="px-2 pb-1.5 pt-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            Theme
-          </p>
-          <div className="flex gap-1 px-1.5 pb-1">
-            {THEMES.map((t) => {
-              const Icon = t.icon
-              const active = theme === t.value
-              return (
-                <button
-                  key={t.value}
-                  type="button"
-                  onClick={() => setTheme(t.value)}
-                  aria-pressed={active}
-                  className={cn(
-                    "ax-interactive inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-full border text-[12px] font-medium transition-colors",
-                    active
-                      ? "border-emerald-500 bg-[var(--brand-green)] text-[#064e3b]"
-                      : "border-border bg-card text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  <Icon className="size-3.5" />
-                  {t.label}
-                </button>
-              )
-            })}
-          </div>
 
           <DropdownMenuSeparator />
 

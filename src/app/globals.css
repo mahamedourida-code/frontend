@@ -179,28 +179,129 @@
   .ax-marketing-page ul.text-muted-foreground li {
     font-weight: 600;
   }
+  .ax-dashboard-content {
+    color: var(--workspace-ink);
+    --brand-link: var(--workspace-primary);
+    --brand-link-hover: var(--workspace-primary-hover);
+    --brand-brown-fg: var(--workspace-primary);
+    --brand-brown-dark: var(--workspace-primary);
+    --brand-brown-deep: var(--workspace-primary-hover);
+    --brand-clay: var(--workspace-blue-soft);
+    --brand-clay-hover: #dbeafe;
+    --brand-clay-fg: var(--workspace-primary);
+    --brand-clay-ring: #bfdbfe;
+    --button-warm: var(--workspace-soft);
+    --button-warm-hover: #eef2f8;
+    --button-warm-ring: var(--workspace-border);
+    --workspace-popout-bg: var(--workspace-soft);
+    --workspace-popout-border: var(--workspace-border);
+    --workspace-popout-hover: #ffffff;
+    --workspace-selection-bg: var(--workspace-blue-soft);
+    --workspace-selection-border: #bfdbfe;
+  }
   .ax-dashboard-content p.text-muted-foreground,
   .ax-dashboard-content li.text-muted-foreground,
   .ax-dashboard-content span.text-muted-foreground,
   .ax-dashboard-content div.text-muted-foreground {
-    font-weight: 500;
+    font-weight: 400;
   }
   /* Dashboard headings carry a touch more size & weight than defaults, so the
      app pages read with the same confidence as the marketing typography. */
-  .ax-dashboard-content h1 { font-weight: 700; letter-spacing: -0.02em; }
-  .ax-dashboard-content h2 { font-weight: 700; letter-spacing: -0.015em; }
-  .ax-dashboard-content h3 { font-weight: 600; letter-spacing: -0.01em; }
-  /* Dashboard type scale — bump small/caption + body so subtexts read clearly.
-     Scoped to .ax-dashboard-content ONLY so marketing/blog typography is
-     untouched. Sizes nudge up tastefully: 12→13, 13→14, body ~15. */
-  .ax-dashboard-content .text-xs { font-size: 0.8125rem; line-height: 1.25rem; }      /* 12 → 13 */
-  .ax-dashboard-content .text-\[13px\] { font-size: 0.875rem; line-height: 1.3rem; }  /* 13 → 14 */
-  .ax-dashboard-content .text-sm { font-size: 0.9375rem; line-height: 1.45rem; }      /* 14 → 15 */
-  .ax-dashboard-content .text-\[15px\] { font-size: 0.9375rem; }                       /* hold 15 */
-  /* Muted subtext: keep it legible — slightly heavier than the global 500. */
-  .ax-dashboard-content .text-muted-foreground { font-weight: 500; }
+  .ax-dashboard-content h1 { font-weight: 600; letter-spacing: 0; }
+  .ax-dashboard-content h2 { font-weight: 500; letter-spacing: 0; }
+  .ax-dashboard-content h3 { font-weight: 500; letter-spacing: 0; }
+  /* Dashboard type scale — compact and accounting-app-like.
+     Scoped to .ax-dashboard-content ONLY so marketing/blog typography is untouched. */
+  .ax-dashboard-content .text-xs { font-size: 0.75rem; line-height: 1.2rem; }
+  .ax-dashboard-content .text-\[13px\] { font-size: 0.8125rem; line-height: 1.25rem; }
+  .ax-dashboard-content .text-sm { font-size: 0.875rem; line-height: 1.4rem; }
+  .ax-dashboard-content .text-\[15px\] { font-size: 0.9375rem; }
+  /* Muted subtext: keep hierarchy light inside the workspace. */
+  .ax-dashboard-content .text-muted-foreground { color: var(--workspace-muted); font-weight: 400; }
   .ax-dashboard-content .text-xs.text-muted-foreground,
-  .ax-dashboard-content .text-\[13px\].text-muted-foreground { font-weight: 600; }
+  .ax-dashboard-content .text-\[13px\].text-muted-foreground { font-weight: 500; }
+  .ax-dashboard-content .font-bold { font-weight: 600; }
+  .ax-dashboard-content .font-semibold { font-weight: 500; }
+  .ax-dashboard-content .font-medium { font-weight: 400; }
+
+  .ax-workspace-panel {
+    border: 1px solid var(--workspace-border);
+    background: #ffffff;
+    box-shadow: none;
+  }
+  .ax-workspace-subtle {
+    border: 1px solid var(--workspace-border);
+    background: var(--workspace-soft);
+    box-shadow: none;
+  }
+  .ax-table :is(th) {
+    background: var(--workspace-table-header);
+    color: var(--workspace-table-head);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .ax-table :is(td) {
+    color: var(--workspace-ink);
+    font-weight: 400;
+  }
+  .ax-table {
+    border-collapse: collapse;
+  }
+  .ax-table [data-slot="table-row"] {
+    border-color: var(--workspace-border);
+  }
+  .ax-table [data-slot="table-row"]:hover {
+    background: var(--workspace-row-hover);
+  }
+  .ax-table [data-slot="table-head"] {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  .ax-table [data-slot="table-cell"] {
+    padding: 0.75rem;
+  }
+  .ax-dashboard-content [data-slot="inline-action"] {
+    font-weight: 500;
+  }
+  .ax-text-action {
+    color: var(--workspace-primary);
+    font-weight: 500;
+  }
+  .ax-text-action:hover {
+    color: var(--workspace-primary-hover);
+  }
+  .ax-status-text {
+    font-weight: 400;
+    color: var(--workspace-muted);
+  }
+  .ax-dashboard-content [data-slot="button"] {
+    border-radius: 9999px !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+  }
+  .ax-dashboard-content [data-slot="button"][data-variant="glossy"],
+  .ax-dashboard-content [data-slot="button"][data-variant="critical"],
+  .ax-dashboard-content [data-slot="button"][data-variant="warm"],
+  .ax-dashboard-content [data-slot="button"][data-variant="clay"],
+  .ax-dashboard-content [data-slot="button"][data-variant="lime"],
+  .ax-dashboard-content [data-slot="button"][data-variant="secondary"] {
+    border-color: var(--workspace-primary) !important;
+    background: var(--workspace-primary) !important;
+    color: #ffffff !important;
+  }
+  .ax-dashboard-content [data-slot="button"][data-variant="default"],
+  .ax-dashboard-content [data-slot="button"][data-variant="outline"],
+  .ax-dashboard-content [data-slot="button"][data-variant="surface"] {
+    border-color: var(--workspace-button-border) !important;
+    background: #ffffff !important;
+    color: var(--workspace-ink) !important;
+  }
+  .ax-dashboard-content [data-slot="button"][data-variant="reviewed"] {
+    border-color: var(--workspace-success) !important;
+    background: var(--workspace-success) !important;
+    color: #ffffff !important;
+  }
   /* Section vertical rhythm — 80px mobile / 112px desktop */
   .ax-section {
     padding-top: 5rem;
@@ -389,6 +490,28 @@
   --brand-green-ring: #0e7490;
   --brand-link: #1877F2;
   --brand-link-hover: #0b5fcc;
+  --workspace-topbar: #20263d;
+  --workspace-topbar-hover: #29314e;
+  --workspace-sidebar: #f4f5fb;
+  --workspace-sidebar-active: #3b82f6;
+  --workspace-primary: #1877F2;
+  --workspace-primary-hover: #0b5fcc;
+  --workspace-blue-soft: #eff6ff;
+  --workspace-success: #16a34a;
+  --workspace-success-hover: #15803d;
+  --workspace-danger: #dc2626;
+  --workspace-danger-hover: #b91c1c;
+  --workspace-warning: #d97706;
+  --workspace-warning-hover: #b45309;
+  --workspace-purple: #7c3aed;
+  --workspace-ink: #111827;
+  --workspace-muted: #667085;
+  --workspace-soft: #f7f8fc;
+  --workspace-border: #e4e7ef;
+  --workspace-button-border: #d0d5dd;
+  --workspace-row-hover: #f8fbff;
+  --workspace-table-header: #f6f7fb;
+  --workspace-table-head: #667085;
   --brand-brown: #A98467;
   --brand-brown-fg: #6b4f2e;
   --brand-brown-dark: #6b4f2e;

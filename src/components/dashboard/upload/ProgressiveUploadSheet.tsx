@@ -67,11 +67,11 @@ const modeTabs: Array<{ value: UploadMode; label: string }> = [
 ]
 
 const workspacePrimaryControlClass =
-  "border-2 border-[var(--brand-brown-fg)] bg-[var(--brand-brown-fg)] text-white hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4 focus-visible:ring-black/25"
+  "border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] text-white hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)] focus-visible:ring-[var(--workspace-primary)]/20"
 const workspaceNormalControlClass =
-  "border-2 border-black bg-white text-black hover:bg-black hover:text-white focus-visible:ring-black/20"
+  "border border-[var(--workspace-button-border)] bg-white text-[var(--workspace-ink)] hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] hover:text-[var(--workspace-primary)] focus-visible:ring-[var(--workspace-primary)]/20"
 const workspacePanelSurfaceClass =
-  "border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)]"
+  "border-[var(--workspace-border)] bg-[var(--workspace-soft)]"
 
 function fileSize(bytes: number) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`
@@ -172,7 +172,7 @@ export function ProgressiveUploadSheet({
     }}>
       <SheetContent className="w-full gap-0 bg-[var(--workspace-popout-bg)] sm:max-w-[560px]">
         <SheetHeader className="border-b border-[var(--workspace-popout-border)] px-5 py-5 pr-12">
-          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--brand-brown-fg)]">New batch</p>
+          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--workspace-primary)]">New batch</p>
           <SheetTitle className="text-xl font-bold tracking-tight">Upload documents</SheetTitle>
           <SheetDescription className="leading-5">
             Choose the batch context, add files, then send them to review.
@@ -245,7 +245,7 @@ export function ProgressiveUploadSheet({
               onDrop={onDrop}
               className={cn(
                 "rounded-lg border border-dashed px-4 py-5 text-center transition",
-                isDragging ? "border-[var(--brand-brown-fg)] bg-[var(--brand-clay)]" : "border-[var(--button-warm-ring)] bg-white/80 hover:border-black"
+                isDragging ? "border-[var(--workspace-primary)] bg-[var(--workspace-blue-soft)]" : "border-[var(--workspace-border)] bg-white hover:border-[var(--workspace-primary)]"
               )}
             >
               <FolderUp className="mx-auto size-6 text-muted-foreground" />
@@ -275,8 +275,8 @@ export function ProgressiveUploadSheet({
             </div>
 
             {uploadedFiles.length ? (
-              <div className="overflow-hidden rounded-lg border border-[var(--button-warm-ring)] bg-white">
-                <div className="flex items-center justify-between border-b border-[var(--button-warm-ring)] px-3 py-2">
+              <div className="overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white">
+                <div className="flex items-center justify-between border-b border-[var(--workspace-border)] px-3 py-2">
                   <p className="text-xs font-semibold text-muted-foreground">
                     {uploadedFiles.length} of {maxUploadFiles} files selected
                   </p>
@@ -290,7 +290,7 @@ export function ProgressiveUploadSheet({
                     const pageCount = pdfPageCounts[index]
                     return (
                       <div key={`${file.name}-${file.size}-${index}`} className="flex items-center gap-3 px-3 py-2.5">
-                        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[var(--button-warm)] text-[var(--brand-brown-fg)]">
+                        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
                           {pdf ? <FileText className="size-4" /> : <FileImage className="size-4" />}
                         </span>
                         <span className="min-w-0 flex-1">
@@ -322,8 +322,8 @@ export function ProgressiveUploadSheet({
             <section className="space-y-3">
               <StageLabel number={4}>PDF segmentation</StageLabel>
               <div className={cn("space-y-2 rounded-lg border p-3", workspacePanelSurfaceClass)}>
-                <div className="flex items-start gap-3 rounded-md border border-[var(--brand-brown-fg)] bg-white p-3">
-                  <FileText className="mt-0.5 size-4 shrink-0 text-[var(--brand-brown-fg)]" />
+                <div className="flex items-start gap-3 rounded-md border border-[var(--workspace-primary)] bg-white p-3">
+                  <FileText className="mt-0.5 size-4 shrink-0 text-[var(--workspace-primary)]" />
                   <span>
                     <span className="block text-sm font-semibold text-foreground">Separate pages for review</span>
                     <span className="mt-0.5 block text-xs font-medium text-muted-foreground">
