@@ -165,7 +165,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
       <Link
         href="/dashboard"
         aria-label="AxLiner home"
-        className="ax-interactive flex h-12 items-center gap-2.5 border-b border-[#151b2e] bg-[var(--workspace-topbar)] px-3 text-white outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+        className="ax-interactive flex h-12 items-center gap-2.5 border-b border-[#1a2d3d] bg-[var(--workspace-topbar)] px-3 text-white outline-none focus-visible:ring-2 focus-visible:ring-white/30"
       >
         <AxMark className="h-8 w-auto invert" />
         <span className="text-[18px] font-medium tracking-normal">AxLiner</span>

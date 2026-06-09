@@ -32,22 +32,22 @@ const GROUP_META: Record<
   job_finished: {
     label: "Job finished",
     icon: CheckCircle2,
-    tone: "text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10",
+    tone: "text-[#16a34a] bg-[#f0fdf4]",
   },
   duplicate_detected: {
     label: "Duplicate detected",
     icon: Copy,
-    tone: "text-amber-600 bg-amber-50 dark:bg-amber-500/10",
+    tone: "text-[#d97706] bg-[#fffbeb]",
   },
   quickbooks_token: {
     label: "QuickBooks",
     icon: KeyRound,
-    tone: "text-rose-600 bg-rose-50 dark:bg-rose-500/10",
+    tone: "text-[#dc2626] bg-[#fef2f2]",
   },
   client_uploaded: {
     label: "Client upload",
     icon: Upload,
-    tone: "text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10",
+    tone: "text-[#1877F2] bg-[#eff6ff]",
   },
 }
 
@@ -84,8 +84,8 @@ function NotificationRow({
       href={item.href}
       onClick={() => onJump(item.id)}
       className={cn(
-        "group/row flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-muted/60",
-        !item.read && "bg-emerald-50/60 dark:bg-emerald-500/[0.06]"
+        "group/row flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-[var(--workspace-popout-hover)]",
+        !item.read && "bg-[#eff6ff]"
       )}
     >
       <span
@@ -136,8 +136,8 @@ function GroupedList({
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 px-6 py-12 text-center">
-        <span className="flex size-11 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-500/10">
-          <CheckCheck className="size-5 text-emerald-600" />
+        <span className="flex size-11 items-center justify-center rounded-full bg-[#f0fdf4]">
+          <CheckCheck className="size-5 text-[#16a34a]" />
         </span>
         <p className="text-[13px] font-semibold text-foreground">You&apos;re all caught up</p>
         <p className="max-w-[14rem] text-[12px] text-muted-foreground">{emptyLabel}</p>
@@ -179,7 +179,7 @@ export function NotificationsBell() {
           aria-label={
             unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"
           }
-          className="ax-interactive relative inline-flex size-8 items-center justify-center rounded-md border border-white/12 bg-white/6 text-white/78 transition-colors hover:bg-white/12 hover:text-white data-[state=open]:bg-white/12 data-[state=open]:text-white"
+          className="ax-interactive relative inline-flex size-8 items-center justify-center rounded-md border border-white/12 bg-white/6 text-white/80 transition-colors hover:bg-white/14 hover:text-white data-[state=open]:border-white/24 data-[state=open]:bg-[var(--workspace-topbar-hover)] data-[state=open]:text-white"
         >
           <Bell className="size-4" />
           <AnimatePresence>
@@ -190,7 +190,7 @@ export function NotificationsBell() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 500, damping: 28 }}
-                className="absolute -right-0.5 -top-0.5 flex min-w-[18px] items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold leading-none text-white shadow-sm ring-2 ring-background"
+                className="absolute -right-0.5 -top-0.5 flex min-w-[18px] items-center justify-center rounded-full bg-[#1877F2] px-1 text-[10px] font-bold leading-none text-white shadow-sm ring-2 ring-[var(--workspace-topbar)]"
               >
                 {unreadCount > 9 ? "9+" : unreadCount}
               </motion.span>
@@ -202,22 +202,22 @@ export function NotificationsBell() {
       <PopoverContent
         align="end"
         sideOffset={10}
-        className="w-[22rem] overflow-hidden rounded-2xl p-0"
+        className="w-[22rem] overflow-hidden rounded-xl border-[var(--workspace-border)] bg-white p-0 text-[var(--workspace-ink)] shadow-[0_16px_44px_rgba(15,23,42,0.14)]"
       >
         <Tabs defaultValue="all" className="gap-0">
-          <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2.5">
+          <div className="flex items-center justify-between gap-2 border-b border-[var(--workspace-border)] px-3 py-2.5">
             <div className="flex items-center gap-2">
               <span className="text-[13px] font-bold text-foreground">Notifications</span>
-              <TabsList className="h-7 rounded-full bg-muted/70 p-0.5">
+              <TabsList className="h-7 rounded-full bg-[#f3f6fb] p-0.5">
                 <TabsTrigger
                   value="all"
-                  className="h-6 rounded-full px-2.5 text-[12px] data-[state=active]:bg-background"
+                  className="h-6 rounded-full px-2.5 text-[12px] data-[state=active]:bg-white data-[state=active]:text-[#1877F2]"
                 >
                   All
                 </TabsTrigger>
                 <TabsTrigger
                   value="unread"
-                  className="h-6 rounded-full px-2.5 text-[12px] data-[state=active]:bg-background"
+                  className="h-6 rounded-full px-2.5 text-[12px] data-[state=active]:bg-white data-[state=active]:text-[#1877F2]"
                 >
                   Unread{unreadCount > 0 ? ` · ${unreadCount}` : ""}
                 </TabsTrigger>
@@ -226,7 +226,7 @@ export function NotificationsBell() {
             <button
               onClick={markAllRead}
               disabled={unreadCount === 0}
-              className="ax-interactive inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11.5px] font-medium text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+              className="ax-interactive inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11.5px] font-medium text-[var(--workspace-primary)] transition-colors hover:text-[var(--workspace-primary-hover)] disabled:pointer-events-none disabled:opacity-40"
             >
               <CheckCheck className="size-3.5" />
               Mark all read
@@ -250,11 +250,11 @@ export function NotificationsBell() {
             </TabsContent>
           </div>
 
-          <div className="border-t border-border px-3 py-2">
+          <div className="border-t border-[var(--workspace-border)] px-3 py-2">
             <Link
               href="/history"
               onClick={() => setOpen(false)}
-              className="ax-interactive block rounded-full py-1.5 text-center text-[12px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="ax-interactive block rounded-full py-1.5 text-center text-[12px] font-medium text-[var(--workspace-primary)] transition-colors hover:text-[var(--workspace-primary-hover)]"
             >
               View activity history
             </Link>

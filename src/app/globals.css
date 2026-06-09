@@ -183,6 +183,7 @@
     color: var(--workspace-ink);
     --brand-link: var(--workspace-primary);
     --brand-link-hover: var(--workspace-primary-hover);
+    --brand-brown: var(--workspace-primary);
     --brand-brown-fg: var(--workspace-primary);
     --brand-brown-dark: var(--workspace-primary);
     --brand-brown-deep: var(--workspace-primary-hover);
@@ -490,8 +491,8 @@
   --brand-green-ring: #0e7490;
   --brand-link: #1877F2;
   --brand-link-hover: #0b5fcc;
-  --workspace-topbar: #20263d;
-  --workspace-topbar-hover: #29314e;
+  --workspace-topbar: #23384a;
+  --workspace-topbar-hover: #2c465d;
   --workspace-sidebar: #f4f5fb;
   --workspace-sidebar-active: #3b82f6;
   --workspace-primary: #1877F2;
@@ -516,11 +517,11 @@
   --brand-brown-fg: #6b4f2e;
   --brand-brown-dark: #6b4f2e;
   --brand-brown-deep: #3f2a1d;
-  --workspace-popout-bg: #f7f1ec;
-  --workspace-popout-border: #d8c2b0;
-  --workspace-popout-hover: #fffaf6;
-  --workspace-selection-bg: #efe2d8;
-  --workspace-selection-border: #b99272;
+  --workspace-popout-bg: #ffffff;
+  --workspace-popout-border: #e4e7ef;
+  --workspace-popout-hover: #f8fbff;
+  --workspace-selection-bg: #eff6ff;
+  --workspace-selection-border: #bfdbfe;
   --button-ink: #171717;
   /* Light clay is reserved for special actions such as Upgrade. It stays
      quieter than the primary mint while keeping a clear brown definition. */

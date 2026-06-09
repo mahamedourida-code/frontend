@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils"
 type InlineActionProps = React.ComponentProps<"button"> & {
   /** Render as a child element (e.g. a Link) instead of a <button>. */
   asChild?: boolean
-  /** brand = our cyan; danger = red (Remove / Delete style). */
-  tone?: "brand" | "danger"
+  /** Text-only actions. Brand is blue; semantic tones are used inside the workspace. */
+  tone?: "brand" | "success" | "warning" | "danger" | "neutral"
 }
 
 /**
@@ -29,9 +29,11 @@ export const InlineAction = React.forwardRef<HTMLButtonElement, InlineActionProp
         {...(asChild ? {} : { type: type ?? "button" })}
         className={cn(
           "ax-interactive inline-flex cursor-pointer items-center gap-1 rounded-sm text-sm font-semibold underline-offset-4 outline-none transition-colors hover:underline focus-visible:underline disabled:pointer-events-none disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4",
-          tone === "danger"
-            ? "text-red-600 hover:text-red-700"
-            : "text-[var(--brand-link)] hover:text-[var(--brand-link-hover)]",
+          tone === "brand" && "text-[var(--brand-link)] hover:text-[var(--brand-link-hover)]",
+          tone === "success" && "text-[var(--workspace-success)] hover:text-[var(--workspace-success-hover)]",
+          tone === "warning" && "text-[var(--workspace-warning)] hover:text-[var(--workspace-warning-hover)]",
+          tone === "danger" && "text-red-600 hover:text-red-700",
+          tone === "neutral" && "text-[var(--workspace-muted)] hover:text-[var(--workspace-ink)]",
           className,
         )}
         {...props}

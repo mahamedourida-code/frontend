@@ -169,7 +169,7 @@ export function HelpMenu() {
         <PopoverTrigger asChild>
           <button
             aria-label={hasUnseen ? "Help and what's new — new updates" : "Help and what's new"}
-            className="ax-interactive relative inline-flex size-8 items-center justify-center rounded-md border border-white/12 bg-white/6 text-white/78 transition-colors hover:bg-white/12 hover:text-white data-[state=open]:bg-white/12 data-[state=open]:text-white"
+            className="ax-interactive relative inline-flex size-8 items-center justify-center rounded-md border border-white/12 bg-white/6 text-white/80 transition-colors hover:bg-white/14 hover:text-white data-[state=open]:border-white/24 data-[state=open]:bg-[var(--workspace-topbar-hover)] data-[state=open]:text-white"
           >
             <HelpCircle className="size-4" />
             <AnimatePresence>
@@ -180,7 +180,7 @@ export function HelpMenu() {
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0, opacity: 0 }}
                   transition={{ type: "spring", stiffness: 500, damping: 28 }}
-                  className="absolute right-1 top-1 size-2 rounded-full bg-emerald-500 ring-2 ring-card"
+                  className="absolute right-1 top-1 size-2 rounded-full bg-[#d97706] ring-2 ring-[var(--workspace-topbar)]"
                 />
               )}
             </AnimatePresence>
@@ -190,7 +190,7 @@ export function HelpMenu() {
         <PopoverContent
           align="end"
           sideOffset={10}
-          className="w-64 overflow-hidden rounded-2xl p-1.5"
+          className="w-64 overflow-hidden rounded-xl border-[var(--workspace-border)] bg-white p-1.5 text-[var(--workspace-ink)] shadow-[0_16px_44px_rgba(15,23,42,0.14)]"
         >
           <div className="px-2 pb-1.5 pt-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
             Help
@@ -200,7 +200,12 @@ export function HelpMenu() {
               const Icon = item.icon
               const inner = (
                 <>
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted/70 text-muted-foreground transition-colors group-hover/help:text-foreground">
+                  <span className={cn(
+                    "flex size-7 shrink-0 items-center justify-center rounded-full transition-colors",
+                    item.key === "shortcuts" && "bg-[#eff6ff] text-[#1877F2]",
+                    item.key === "docs" && "bg-[#f0fdf4] text-[#16a34a]",
+                    item.key === "support" && "bg-[#fffbeb] text-[#d97706]",
+                  )}>
                     <Icon className="size-3.5" />
                   </span>
                   <span className="flex-1 truncate text-[13px] font-medium text-foreground">
@@ -216,7 +221,7 @@ export function HelpMenu() {
                 </>
               )
               const rowClass =
-                "group/help flex items-center gap-2.5 rounded-xl px-2 py-1.5 text-left transition-colors hover:bg-muted/60"
+                "group/help flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-[var(--workspace-popout-hover)]"
               return item.href ? (
                 <Link
                   key={item.key}
@@ -242,16 +247,16 @@ export function HelpMenu() {
 
           <button
             onClick={openWhatsNew}
-            className="ax-interactive group/help flex w-full items-center gap-2.5 rounded-xl px-2 py-1.5 text-left transition-colors hover:bg-muted/60"
+            className="ax-interactive group/help flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-[var(--workspace-popout-hover)]"
           >
-            <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10">
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#fff7ed] text-[#f97316]">
               <Sparkles className="size-3.5" />
             </span>
             <span className="flex-1 truncate text-[13px] font-medium text-foreground">
               What&apos;s new
             </span>
             {hasUnseen && (
-              <span className="size-1.5 shrink-0 rounded-full bg-emerald-500" />
+              <span className="size-1.5 shrink-0 rounded-full bg-[#f97316]" />
             )}
           </button>
         </PopoverContent>

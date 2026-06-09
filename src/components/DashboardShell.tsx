@@ -145,7 +145,7 @@ export function DashboardShell({
       <WorkspaceSidebar activeItem={activeItem} user={user} />
 
       <div className="ax-dashboard-content relative z-10 min-w-0">
-        <header className="sticky top-0 z-40 h-12 border-b border-[#151b2e] bg-[var(--workspace-topbar)] text-white">
+        <header className="sticky top-0 z-40 h-12 border-b border-[#1a2d3d] bg-[var(--workspace-topbar)] text-white">
           <div className="relative flex h-full items-center gap-2 px-3 sm:gap-3">
             {showBack && (
               <>
@@ -212,7 +212,12 @@ export function DashboardShell({
                 </Link>
               )}
 
-              <Button asChild variant="glossy" size="sm" className="hidden h-9 px-3 text-sm sm:inline-flex">
+              <Button
+                asChild
+                variant="glossy"
+                size="sm"
+                className="hidden h-9 !border-[#2f80ed] !bg-[#2f80ed] px-3 text-sm !text-white hover:!border-[#1d6fd8] hover:!bg-[#1d6fd8] hover:!text-white sm:inline-flex"
+              >
                 <Link href="/dashboard/client#upload-files">
                   <Upload className="size-4" />
                   Upload

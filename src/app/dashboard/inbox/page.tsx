@@ -1,10 +1,9 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { AlertTriangle, Check, Copy, FolderInput, Inbox, Link2, Plug, PlugZap, RefreshCw, UserPlus, X } from "lucide-react"
+import { AlertTriangle, Check, Copy, FolderInput, Inbox, Link2, Mail, Plug, PlugZap, RefreshCw, Share2, UserPlus, X } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { DashboardShell } from "@/components/DashboardShell"
@@ -43,6 +42,8 @@ const workspaceTable = "ax-table w-full text-sm text-black"
 const workspaceHeaderCell = "px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-[0.08em] text-[#6b7280]"
 const workspaceMutedCell = "px-4 py-3 font-normal text-[#4b5563]"
 const workspaceTextAction = "ax-text-action text-[#1877F2] hover:text-[#0f63d6]"
+const workspaceSuccessAction = "text-[var(--workspace-success)] hover:text-[var(--workspace-success-hover)]"
+const workspaceWarningAction = "text-[var(--workspace-warning)] hover:text-[var(--workspace-warning-hover)]"
 
 function formatReceivedAt(value: string) {
   return new Intl.DateTimeFormat(undefined, {
@@ -360,7 +361,9 @@ export default function EmailInboxPage() {
             <Card className={workspacePanel}>
               <CardContent className="p-5">
                 <div className="flex items-center gap-2">
-                  <Image src="/icons/share.png" alt="" width={20} height={20} className="object-contain opacity-85" loading="lazy" />
+                  <span className="flex size-8 items-center justify-center rounded-md bg-[#eff6ff] text-[#1877F2]">
+                    <Share2 className="size-4" />
+                  </span>
                   <p className="text-sm font-medium text-black">Client upload links</p>
                 </div>
 
@@ -454,7 +457,9 @@ export default function EmailInboxPage() {
             <Card className={workspacePanel}>
               <CardContent className="p-5">
                 <div className="flex items-center gap-2">
-                  <Image src="/icons/reviewer.png" alt="" width={20} height={20} className="object-contain opacity-85" loading="lazy" />
+                  <span className="flex size-8 items-center justify-center rounded-md bg-[#f0fdf4] text-[#16a34a]">
+                    <UserPlus className="size-4" />
+                  </span>
                   <p className="text-sm font-medium text-black">Reviewers</p>
                 </div>
 
@@ -567,7 +572,7 @@ export default function EmailInboxPage() {
                                   placeholder={provider === "google_drive" ? "AxLiner intake" : "/AxLiner intake"}
                                   className="h-9"
                                 />
-                                <InlineAction onClick={() => void saveWatchedFolder(source.id)} disabled={actionBusy === source.id} className={cn("shrink-0", workspaceTextAction)}>
+                                <InlineAction tone="success" onClick={() => void saveWatchedFolder(source.id)} disabled={actionBusy === source.id} className={cn("shrink-0", workspaceSuccessAction)}>
                                   Save
                                 </InlineAction>
                                 <InlineAction onClick={() => setFolderDraft(null)} className={cn("shrink-0", workspaceTextAction)} aria-label="Cancel">
@@ -590,7 +595,7 @@ export default function EmailInboxPage() {
                               Last sync: {source.last_synced_at ? formatReceivedAt(source.last_synced_at) : "never"}
                             </span>
                             <div className="flex items-center gap-4">
-                              <InlineAction className={cn("text-xs [&_svg]:size-3", workspaceTextAction)} onClick={() => void triggerSync(source.id)} disabled={actionBusy === source.id}>
+                              <InlineAction tone="warning" className={cn("text-xs [&_svg]:size-3", workspaceWarningAction)} onClick={() => void triggerSync(source.id)} disabled={actionBusy === source.id}>
                                 <RefreshCw className={cn("size-3", actionBusy === source.id && "animate-spin")} />
                                 Sync now
                               </InlineAction>
@@ -644,11 +649,10 @@ export default function EmailInboxPage() {
             ) : submissions.length === 0 ? (
               <div className="py-6">
                 <EmptyState
-                  icon={<Inbox />}
-                  illustration="/symbols/firstsight-inbox-empty.png"
-                  illustrationSize={260}
-                  eyebrow="Intake"
+                  icon={<Inbox className="text-[#1877F2]" />}
                   title="No submissions yet"
+                  description="Client upload activity will appear here as rows."
+                  className="[&>div:first-child]:rounded-md [&>div:first-child]:bg-[#eff6ff] [&>div:first-child]:p-3"
                 />
               </div>
             ) : (
@@ -742,11 +746,10 @@ export default function EmailInboxPage() {
             ) : messages.length === 0 ? (
               <div className="py-6">
                 <EmptyState
-                  icon={<Inbox />}
-                  illustration="/symbols/success-inbox-zero.png"
-                  illustrationSize={260}
-                  eyebrow="Email"
+                  icon={<Mail className="text-[#16a34a]" />}
                   title="Inbox zero"
+                  description="Forwarded documents will appear here after import."
+                  className="[&>div:first-child]:rounded-md [&>div:first-child]:bg-[#f0fdf4] [&>div:first-child]:p-3"
                 />
               </div>
             ) : (

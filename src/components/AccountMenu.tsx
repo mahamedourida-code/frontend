@@ -134,7 +134,11 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
           </button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end" sideOffset={8} className="w-72 rounded-2xl border-border p-2 shadow-lg">
+        <DropdownMenuContent
+          align="end"
+          sideOffset={8}
+          className="w-72 rounded-xl border-[var(--workspace-border)] bg-white p-2 text-[var(--workspace-ink)] shadow-[0_16px_44px_rgba(15,23,42,0.14)]"
+        >
           {/* Account header */}
           <div className="flex items-center gap-2.5 px-1.5 py-1.5">
             <Avatar className="size-9">
@@ -164,7 +168,7 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
 
           <DropdownMenuItem asChild className="h-9 gap-2 rounded-lg px-2 text-[13px] font-medium">
             <Link href="/dashboard/settings?section=billing" onClick={() => setOpen(false)}>
-              <CreditCard className="size-4" />
+              <CreditCard className="size-4 text-[var(--workspace-primary)]" />
               Manage billing
             </Link>
           </DropdownMenuItem>
@@ -198,12 +202,12 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
                         onSelect={() => void selectWorkspace(workspace)}
                         className={cn(
                           "flex h-9 items-center gap-2 rounded-lg px-2 text-[13px] font-medium",
-                          isActive && "bg-sidebar-accent/60",
+                          isActive && "bg-[var(--workspace-blue-soft)]",
                         )}
                       >
                         <span className="min-w-0 flex-1 truncate text-foreground">{workspace.name}</span>
                         <RoleBadge role={workspace.role} />
-                        <CheckCircle2 className={cn("size-4 shrink-0 text-primary", isActive ? "opacity-100" : "opacity-0")} />
+                        <CheckCircle2 className={cn("size-4 shrink-0 text-[var(--workspace-success)]", isActive ? "opacity-100" : "opacity-0")} />
                       </DropdownMenuItem>
                     )
                   })
@@ -231,13 +235,13 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
           {/* Help */}
           <DropdownMenuItem asChild className="h-9 gap-2 rounded-lg px-2 text-[13px] font-medium">
             <Link href="/dashboard/guide" onClick={() => setOpen(false)}>
-              <BookOpen className="size-4" />
+              <BookOpen className="size-4 text-[var(--workspace-success)]" />
               Docs &amp; guides
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild className="h-9 gap-2 rounded-lg px-2 text-[13px] font-medium">
             <Link href="/contact" onClick={() => setOpen(false)}>
-              <LifeBuoy className="size-4" />
+              <LifeBuoy className="size-4 text-[var(--workspace-warning)]" />
               Contact support
             </Link>
           </DropdownMenuItem>
@@ -260,7 +264,7 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
       </DropdownMenu>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="gap-5 rounded-md sm:max-w-sm">
+        <DialogContent className="gap-5 rounded-md border-[var(--workspace-border)] bg-white sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>New workspace</DialogTitle>
             <DialogDescription>Create a separate workspace for another team or workflow.</DialogDescription>
@@ -283,7 +287,11 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-            <Button onClick={() => void handleCreateWorkspace()} disabled={creating || workspaceName.trim().length < 2}>
+            <Button
+              onClick={() => void handleCreateWorkspace()}
+              disabled={creating || workspaceName.trim().length < 2}
+              className="!border-[var(--workspace-primary)] !bg-[var(--workspace-primary)] !text-white hover:!border-[var(--workspace-primary-hover)] hover:!bg-[var(--workspace-primary-hover)] hover:!text-white"
+            >
               {creating ? "Adding…" : "Add workspace"}
             </Button>
           </DialogFooter>
