@@ -8,6 +8,7 @@ import { toast } from "sonner"
 
 import { CreditStack } from "@/components/BillingGlyphs"
 import { MarketingNavBar } from "@/components/MarketingNavBar"
+import { IntegrationsLogos } from "@/components/landing/IntegrationsLogos"
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -683,6 +684,8 @@ function PricingContent() {
           </div>
         </div>
       </section>
+
+      <IntegrationsLogos showNames={false} />
 
       {paidPlans.length > 0 && (
         <section className="mx-auto mt-28 max-w-[1248px] px-4 sm:px-6 lg:px-0">
