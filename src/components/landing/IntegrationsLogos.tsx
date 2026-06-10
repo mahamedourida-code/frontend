@@ -2,8 +2,8 @@
 
 import { motion, useReducedMotion } from "framer-motion"
 
-// Deep-brown "logo tint" — clear and defined, premium-SaaS monochrome.
-const TINT = "#6b4f2e"
+// Near-black "logo tint" — the crisp monochrome logo-wall look.
+const TINT = "#171717"
 const H = 50 // uniform logo height in px
 const MAX_W = 184
 
