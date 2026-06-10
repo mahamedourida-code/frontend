@@ -35,6 +35,15 @@ type ComparisonGroup = {
 
 const paidPlanKeys: BillingPlanKey[] = ["pro_monthly", "pro_yearly", "max_monthly", "max_yearly", "mega_monthly", "mega_yearly"]
 
+const displayPriceCentsByKey: Record<BillingPlanKey, number> = {
+  pro_monthly: 1900,
+  pro_yearly: 19000,
+  max_monthly: 3900,
+  max_yearly: 39000,
+  mega_monthly: 7900,
+  mega_yearly: 79000,
+}
+
 const fallbackPlans: BillingPlan[] = [
   {
     key: "free",
@@ -234,9 +243,15 @@ function planRunPolicy(plan: BillingPlan) {
   return "No daily run cap"
 }
 
+function displayPlanPriceCents(plan: BillingPlan) {
+  if (plan.key === "free") return plan.price_cents || 0
+  return displayPriceCentsByKey[plan.key] ?? plan.price_cents ?? 0
+}
+
 function displayMonthlyCents(plan: BillingPlan) {
-  if (plan.interval === "year") return Math.floor((plan.price_cents || 0) / 12)
-  return plan.price_cents || 0
+  const displayCents = displayPlanPriceCents(plan)
+  if (plan.interval === "year") return Math.floor(displayCents / 12)
+  return displayCents
 }
 
 function priceNumber(plan: BillingPlan) {
@@ -249,7 +264,7 @@ function comparePriceLabel(plan: BillingPlan) {
 
 function compareBillingLabel(plan: BillingPlan) {
   return plan.interval === "year"
-    ? `${formatCents(plan.price_cents)} billed annually`
+    ? `${formatCents(displayPlanPriceCents(plan))} billed annually`
     : "Billed monthly"
 }
 
@@ -570,7 +585,7 @@ function PricingContent() {
             <span className={cn("relative text-sm font-semibold transition-colors", billingMode === "year" ? "text-neutral-950" : "text-neutral-400")}>
               Annual
               {yearlyDiscountPercent > 0 && (
-                <span className="ml-3 rounded-full border border-[#b6fcdf] bg-[#e9fef6] px-2 py-0.5 text-xs font-semibold text-[#28b57b]">
+                <span className="ml-3 rounded-full border border-[#b6fcdf] bg-[#e9fef6] px-3.5 py-1.5 text-[15px] font-bold leading-none text-[#28b57b]">
                   {yearlyDiscountPercent}% off
                 </span>
               )}
@@ -760,7 +775,11 @@ function PricingContent() {
         <h2 className="text-[42px] font-semibold leading-tight tracking-normal text-neutral-950 sm:text-[56px]">
           Clear the next client folder faster.
         </h2>
-        <Button asChild variant="glossy" className="mt-9 h-12 min-w-[300px] rounded-full">
+        <Button
+          asChild
+          variant="glossy"
+          className="mt-9 h-12 min-w-[300px] rounded-full !border-[var(--brand-brown)] !bg-[var(--brand-brown)] !text-black hover:!border-[var(--brand-brown-deep)] hover:!bg-[var(--button-warm)] hover:!text-[var(--brand-brown-deep)]"
+        >
           <Link href="/dashboard/client">Start now</Link>
         </Button>
         <p className="mt-4 text-sm font-semibold text-neutral-500">Checkout handled by {providerLabel}.</p>

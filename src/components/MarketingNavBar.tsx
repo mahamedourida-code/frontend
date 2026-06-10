@@ -40,28 +40,29 @@ const primaryAudienceSolutions = primaryAudienceSlugs.map(getAudienceSolutionByS
 
 /* ── shared card-grid mega-menu primitives ──────────────────────────────── */
 
-/* Reap-style menu colors measured from the live nav: #090909 panel,
-   #1d1d1d tiles, #e9d5ff hover fill, #363636 hover text. */
-type Accent = "cyan" | "brown";
+type Accent = "lavender" | "mint" | "periwinkle" | "teal" | "cream";
 
 const accentFill: Record<Accent, string> = {
-  cyan: "hover:!bg-[#e9d5ff] focus-visible:!bg-[#e9d5ff] data-[active]:!bg-[#e9d5ff]",
-  brown: "hover:!bg-[#e9d5ff] focus-visible:!bg-[#e9d5ff] data-[active]:!bg-[#e9d5ff]",
+  lavender: "hover:!bg-[#e9d5ff] focus-visible:!bg-[#e9d5ff] data-[active]:!bg-[#e9d5ff]",
+  mint: "hover:!bg-[#58f29b] focus-visible:!bg-[#58f29b] data-[active]:!bg-[#58f29b]",
+  periwinkle: "hover:!bg-[#91a6ff] focus-visible:!bg-[#91a6ff] data-[active]:!bg-[#91a6ff]",
+  teal: "hover:!bg-[#2fc9c1] focus-visible:!bg-[#2fc9c1] data-[active]:!bg-[#2fc9c1]",
+  cream: "hover:!bg-[#f2dfbf] focus-visible:!bg-[#f2dfbf] data-[active]:!bg-[#f2dfbf]",
 };
 
 const cardBase =
-  "ax-interactive group relative flex flex-col !rounded-[10px] !bg-[#1d1d1d] text-white outline-none transition-[background-color,color,transform] duration-150 focus-visible:ring-2 focus-visible:ring-[#e9d5ff]/60";
+  "ax-interactive group relative isolate flex flex-col overflow-hidden !rounded-[12px] !bg-[#f1f1f1] text-neutral-950 outline-none transition-[background-color,color,transform] duration-150 focus-visible:ring-2 focus-visible:ring-black/15";
 
 const menuIconClass =
-  "text-white transition-colors duration-150 group-hover:text-[#363636] group-focus-visible:text-[#363636] group-data-[active]:text-[#363636]";
+  "relative z-10 text-neutral-950 transition-colors duration-150";
 const menuTitleClass =
-  "block text-[15px] font-bold leading-5 text-white transition-colors duration-150 group-hover:text-[#363636] group-focus-visible:text-[#363636] group-data-[active]:text-[#363636]";
+  "relative z-10 block text-[15px] font-bold leading-5 text-neutral-950 transition-colors duration-150";
 const featuredTitleClass =
-  "block text-[20px] font-bold leading-6 text-white transition-colors duration-150 group-hover:text-[#363636] group-focus-visible:text-[#363636] group-data-[active]:text-[#363636]";
+  "relative z-10 block text-[20px] font-bold leading-6 text-neutral-950 transition-colors duration-150";
 const menuDescriptionClass =
-  "mt-1 block text-[13px] font-medium leading-snug text-[#808080] transition-colors duration-150 group-hover:text-[#363636] group-focus-visible:text-[#363636] group-data-[active]:text-[#363636]";
+  "relative z-10 mt-1 block text-[13px] font-semibold leading-snug text-neutral-600 transition-colors duration-150 group-hover:text-neutral-950 group-focus-visible:text-neutral-950 group-data-[active]:text-neutral-950";
 const featuredDescriptionClass =
-  "mt-1.5 block text-[13px] font-medium leading-snug text-[#808080] transition-colors duration-150 group-hover:text-[#363636] group-focus-visible:text-[#363636] group-data-[active]:text-[#363636]";
+  "relative z-10 mt-1.5 block text-[13px] font-semibold leading-snug text-neutral-600 transition-colors duration-150 group-hover:text-neutral-950 group-focus-visible:text-neutral-950 group-data-[active]:text-neutral-950";
 
 type FeaturedCardProps = {
   icon: LucideIcon;
@@ -148,7 +149,7 @@ function StackedColumn({ items }: { items: SubItem[] }) {
 /* Shared panel shell: centered, generous width, one horizontal row of cards. */
 function MenuPanel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="w-[1140px] overflow-hidden rounded-[10px] border border-[#141c1c] bg-[#090909] p-[10px] text-white shadow-none">
+    <div className="w-[1140px] overflow-hidden rounded-[16px] border border-neutral-200 bg-white p-3 text-neutral-950 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.32)]">
       <div className="flex items-stretch gap-[10px]">{children}</div>
     </div>
   );
@@ -164,17 +165,17 @@ function FeaturesMegaMenu() {
         title="Batch review board"
         description="Fix every exception before export."
         href="/for-accountants-and-bookkeepers/batch-review-board"
-        accent="brown"
+        accent="lavender"
       />
       <StackedColumn
         items={[
-          { title: "Inbox", description: "Email, upload, or photo intake.", href: "/dashboard/inbox", accent: "cyan" },
-          { title: "Processing queue", description: "Every batch grouped by status.", href: "/dashboard/client", accent: "cyan" },
+          { title: "Inbox", description: "Email, upload, or photo intake.", href: "/dashboard/inbox", accent: "lavender" },
+          { title: "Processing queue", description: "Every batch grouped by status.", href: "/dashboard/client", accent: "cream" },
           {
             title: "Vendor memory",
             description: "Learns each supplier as you go.",
             href: "/for-accountants-and-bookkeepers/batch-review-board",
-            accent: "cyan",
+            accent: "lavender",
           },
         ]}
       />
@@ -183,21 +184,21 @@ function FeaturesMegaMenu() {
         title="Duplicate detection"
         description="Catches repeats and anomalies."
         href="/dashboard/client"
-        accent="cyan"
+        accent="mint"
       />
       <StandaloneCard
         icon={RefreshCcw}
         title="Publish to QuickBooks & Xero"
         description="Reviewed drafts, one click out."
         href="/dashboard/integrations"
-        accent="brown"
+        accent="periwinkle"
       />
       <StandaloneCard
         icon={ScanLine}
         title="OCR engine"
         description="Reads handwriting and photos."
         href="/ocr"
-        accent="cyan"
+        accent="teal"
       />
     </MenuPanel>
   );
@@ -226,7 +227,7 @@ function AudienceMegaMenu() {
       title: s.menuLabel,
       description: s.eyebrow,
       href: audienceSolutionHref(slug),
-      accent: i === 1 ? "brown" : "cyan",
+      accent: i === 1 ? "cream" : "lavender",
     };
   });
 
@@ -239,7 +240,7 @@ function AudienceMegaMenu() {
         title={featured.menuLabel}
         description="A calm path from folder to reviewed books."
         href={audienceSolutionHref(featured.slug)}
-        accent="brown"
+        accent="lavender"
       />
       <StackedColumn items={stackedSlugs} />
       <StandaloneCard
@@ -247,7 +248,7 @@ function AudienceMegaMenu() {
         title={second.menuLabel}
         description="Intake to reviewer sign-off, visible."
         href={audienceSolutionHref(second.slug)}
-        accent="cyan"
+        accent="mint"
       />
       {finishCards.map((s, i) => (
         <StandaloneCard
@@ -256,7 +257,7 @@ function AudienceMegaMenu() {
           title={s.menuLabel}
           description={s.eyebrow}
           href={audienceSolutionHref(s.slug)}
-          accent={i === 0 ? "cyan" : "brown"}
+          accent={i === 0 ? "periwinkle" : "teal"}
         />
       ))}
     </MenuPanel>
@@ -273,13 +274,13 @@ function ResourcesMenu() {
         title="Blog"
         description="Playbooks and guides for the close."
         href="/blogs"
-        accent="brown"
+        accent="lavender"
       />
       <StackedColumn
         items={[
-          { title: "Learn AxLiner", description: "Short product walkthroughs.", href: "/blogs", accent: "cyan" },
-          { title: "Changelog", description: "What shipped, recently.", href: "#", accent: "cyan" },
-          { title: "Tools", description: "Free utilities for bookkeepers.", href: "#", accent: "brown" },
+          { title: "Learn AxLiner", description: "Short product walkthroughs.", href: "/blogs", accent: "lavender" },
+          { title: "Changelog", description: "What shipped, recently.", href: "#", accent: "cream" },
+          { title: "Tools", description: "Free utilities for bookkeepers.", href: "#", accent: "lavender" },
         ]}
       />
       <StandaloneCard
@@ -287,14 +288,14 @@ function ResourcesMenu() {
         title="Affiliate program"
         description="Earn by referring practices."
         href="#"
-        accent="cyan"
+        accent="mint"
       />
       <StandaloneCard
         icon={LifeBuoy}
         title="Help and support"
         description="Reach the team directly."
         href="/contact"
-        accent="cyan"
+        accent="periwinkle"
       />
     </MenuPanel>
   );

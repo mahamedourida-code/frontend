@@ -332,9 +332,9 @@ export default function Home() {
           <div className="ax-marketing-container relative z-10">
             {/* Centered hero copy */}
             <div className="mx-auto max-w-[1120px] text-center">
-              <h1 className="ax-h1 ax-marketing-display font-bold text-black">
+              <h1 className="ax-h1 ax-marketing-display text-balance !font-semibold !leading-[1.08] !tracking-normal text-black">
                 Invoice, receipt, and bank statement processing for accountants and{" "}
-                <span className="font-bold text-[var(--brand-brown)]">bookkeepers</span>.
+                <span className="!font-semibold text-[var(--brand-brown)]">bookkeepers</span>.
               </h1>
               <p className="ax-body ax-marketing-lead mx-auto mt-6 max-w-[860px] font-semibold text-neutral-950">
                 Upload the whole client folder, review the exceptions, then export or publish to your accounting software.
