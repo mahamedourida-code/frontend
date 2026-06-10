@@ -21,7 +21,7 @@ export function IntegrationsLogos({ showNames = true }: { showNames?: boolean })
   return (
     <section className="relative z-10 bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-[1100px] px-4 sm:px-6 lg:px-8">
-        <h2 className="text-center text-2xl font-bold tracking-tight text-black text-balance sm:text-3xl">
+        <h2 className="text-center text-xl font-bold tracking-tight text-black text-balance sm:text-2xl">
           Works with the tools you already use
         </h2>
 
@@ -41,12 +41,12 @@ export function IntegrationsLogos({ showNames = true }: { showNames?: boolean })
               }}
               className="flex flex-col"
             >
-              <div className="flex h-32 items-center justify-center rounded-2xl bg-[#f1f1f1] px-8 py-5 sm:h-36">
+              <div className="flex h-24 items-center justify-center rounded-2xl bg-[#f1f1f1] px-8 py-5 sm:h-28">
                 <img
                   src={logo.src}
                   alt={logo.alt}
                   loading="lazy"
-                  className="max-h-16 w-auto max-w-full object-contain sm:max-h-20"
+                  className="max-h-10 w-auto max-w-full object-contain sm:max-h-12"
                 />
               </div>
               {showNames ? (
