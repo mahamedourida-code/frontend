@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -45,6 +45,7 @@ interface SessionDetails {
 
 export default function SharePage() {
   const params = useParams()
+  const router = useRouter()
   const sessionId = params?.sessionId as string
   
   const [session, setSession] = useState<SessionDetails | null>(null)
@@ -190,7 +191,7 @@ export default function SharePage() {
                 <p className="text-sm text-muted-foreground mb-4">
                   If you believe this is an error, please contact the sender for a new link.
                 </p>
-                <Button variant="outline" onClick={() => window.location.href = '/'}>
+                <Button variant="outline" onClick={() => router.push('/')}>
                   Go to Homepage
                 </Button>
               </div>

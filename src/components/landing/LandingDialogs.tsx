@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -68,6 +69,8 @@ export default function LandingDialogs({
   handleMessengerShare,
   handleCopyLink,
 }: LandingDialogsProps) {
+  const router = useRouter();
+
   return (
     <>
       <Dialog open={shareDialogOpen} onOpenChange={(open) => {
@@ -169,7 +172,7 @@ export default function LandingDialogs({
           <div className="mt-6 flex gap-3">
             <Button variant="outline" onClick={() => {
               setShowLimitDialog(false);
-              window.location.href = "/pricing?from=trial-limit";
+              router.push("/pricing?from=trial-limit");
             }} className="flex-1 border-2 border-primary/35">
               See Plans
             </Button>

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import {
   BookOpen,
   CheckCircle2,
@@ -82,6 +83,7 @@ function RoleBadge({ role }: { role: Workspace["role"] }) {
 }
 
 export function AccountMenu({ user, planLabel, credits, billingLoading }: AccountMenuProps) {
+  const router = useRouter()
   const {
     workspaces,
     activeWorkspace,
@@ -102,7 +104,7 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
 
   const handleSignOut = async () => {
     const { signOut } = await import("@/lib/auth-helpers")
-    try { await signOut() } finally { window.location.replace("/") }
+    try { await signOut() } finally { router.replace("/") }
   }
 
   const handleCreateWorkspace = async () => {

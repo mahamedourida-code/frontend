@@ -411,7 +411,7 @@ function SettingsContent() {
       toast.error(error?.detail || error?.message || "Could not delete your account.")
       throw error
     } finally {
-      window.location.assign("/")
+      router.replace("/")
     }
   }
 
@@ -421,7 +421,7 @@ function SettingsContent() {
     try {
       await workspaceApi.leave(workspaceId)
       toast.success("You left the workspace.")
-      window.location.assign("/dashboard")
+      router.replace("/dashboard")
     } catch (error: any) {
       toast.error(error?.detail || error?.message || "Could not leave the workspace.")
       setLeavingWorkspace(false)
@@ -433,7 +433,7 @@ function SettingsContent() {
     try {
       await workspaceApi.delete(workspaceId)
       toast.success("Workspace deleted.")
-      window.location.assign("/dashboard")
+      router.replace("/dashboard")
     } catch (error: any) {
       toast.error(error?.detail || error?.message || "Could not delete the workspace.")
       throw error
@@ -726,7 +726,7 @@ function SettingsContent() {
                           <Button
                             variant="glossy"
                             className={cn("h-11", accountingPrimaryButton)}
-                            onClick={() => window.location.assign("/pricing")}
+                            onClick={() => router.push("/pricing")}
                           >
                             {noCredits ? "Buy credits" : "Compare plans"}
                           </Button>

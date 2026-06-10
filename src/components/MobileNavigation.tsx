@@ -1,6 +1,8 @@
 "use client"
 
 import React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -24,11 +26,12 @@ interface MobileNavigationProps {
 }
 
 export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
+  const router = useRouter();
   const [solutionsOpen, setSolutionsOpen] = React.useState(false);
   
   const scrollToSection = (sectionId: string) => {
     if (sectionId === "converter") {
-      window.location.href = "/dashboard/client";
+      router.push("/dashboard/client");
       return;
     }
 
@@ -36,7 +39,7 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
       onSectionClick(sectionId);
     } else {
       // Default behavior if we're not on the home page
-      window.location.href = `/#${sectionId}`;
+      router.push(`/#${sectionId}`);
     }
   };
 
@@ -77,7 +80,7 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
                 <CollapsibleContent className="space-y-1 mt-1">
                   <div className="ml-4 space-y-1">
                     <SheetClose asChild>
-                      <a
+                      <Link
                         href="/solutions/handwritten-tables"
                         className="flex items-start gap-3 p-3 rounded-lg hover:bg-accent transition-colors group"
                       >
@@ -88,10 +91,10 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
                             AI-powered handwriting recognition
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </SheetClose>
                     <SheetClose asChild>
-                      <a
+                      <Link
                         href="/solutions/paper-forms"
                         className="flex items-start gap-3 p-3 rounded-lg hover:bg-accent transition-colors group"
                       >
@@ -102,10 +105,10 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
                             Invoices, receipts, and forms
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </SheetClose>
                     <SheetClose asChild>
-                      <a
+                      <Link
                         href="/solutions/data-entry"
                         className="flex items-start gap-3 p-3 rounded-lg hover:bg-accent transition-colors group"
                       >
@@ -116,7 +119,7 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
                             Repetitive data entry workflows
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </SheetClose>
                   </div>
                 </CollapsibleContent>
@@ -134,13 +137,13 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
               </SheetClose>
 
               <SheetClose asChild>
-                <a
+                <Link
                   href="/pricing"
                   className="flex items-center gap-3 h-12 px-3 rounded-lg hover:bg-accent transition-colors font-medium text-base"
                 >
                   <BillingSeal className="w-5 h-5 text-primary" />
                   Pricing
-                </a>
+                </Link>
               </SheetClose>
               
               <SheetClose asChild>
@@ -160,7 +163,7 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
                 <Button
                   variant="outline"
                   className="w-full h-11 text-base font-medium"
-                  onClick={() => window.location.href = '/sign-in'}
+                  onClick={() => router.push('/sign-in')}
                 >
                   Log In
                 </Button>
@@ -168,7 +171,7 @@ export function MobileNavigation({ onSectionClick }: MobileNavigationProps) {
               <SheetClose asChild>
                 <Button
                   className="w-full h-11 text-base font-medium bg-primary hover:bg-primary/90 text-primary-foreground"
-                  onClick={() => window.location.href = '/sign-up'}
+                  onClick={() => router.push('/sign-up')}
                 >
                   Get Started
                   <ArrowRight className="w-4 h-4 ml-2" />

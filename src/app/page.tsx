@@ -15,6 +15,7 @@ import { VerifiableShowcase } from "@/components/landing/VerifiableShowcase";
 import { OutcomeStats } from "@/components/landing/OutcomeStats";
 import { TypewriterWord } from "@/components/landing/TypewriterWord";
 import { ScrollGrowSection } from "@/components/landing/ScrollGrowSection";
+import { useRouter } from "next/navigation";
 
 import NextLink from "next/link";
 import { GoogleOneTap } from "@/components/GoogleOneTap";
@@ -208,6 +209,7 @@ const footerSocialLinks = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const heroRef = useRef<HTMLElement>(null);
   const topBackgroundSectionRef = useRef<HTMLDivElement>(null);
   const topBackgroundRef = useRef<HTMLDivElement>(null);
@@ -297,7 +299,7 @@ export default function Home() {
   // Smooth scroll function
   const scrollToSection = (sectionId: string) => {
     if (sectionId === "converter") {
-      window.location.assign("/dashboard/client");
+      router.push("/dashboard/client");
       return;
     }
 
@@ -333,11 +335,12 @@ export default function Home() {
             {/* Centered hero copy */}
             <div className="mx-auto max-w-[1120px] text-center">
               <h1 className="ax-h1 ax-marketing-display text-balance !font-semibold !leading-[1.08] !tracking-normal text-black">
-                Invoice, receipt, and bank statement processing for accountants and{" "}
-                <span className="!font-semibold text-[var(--brand-brown)]">bookkeepers</span>.
+                All your client documents
+                <br />
+                reviewed in one place
               </h1>
               <p className="ax-body ax-marketing-lead mx-auto mt-6 max-w-[860px] font-semibold text-neutral-950">
-                Upload the whole client folder, review the exceptions, then export or publish to your accounting software.
+                Upload invoices, receipts, bank statements, and handwritten files. AxLiner turns them into clean data you can review, export, or publish.
               </p>
 
               <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">

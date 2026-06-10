@@ -83,7 +83,6 @@ export function GoogleOneTap({ enabled = true, redirectPath = "/dashboard/client
           }
 
           router.push(redirectPath)
-          router.refresh()
         },
       })
 

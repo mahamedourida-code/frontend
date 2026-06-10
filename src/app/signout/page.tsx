@@ -1,9 +1,12 @@
 "use client"
 
 import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { signOut } from "@/lib/auth-helpers"
 
 export default function SignOutPage() {
+  const router = useRouter()
+
   useEffect(() => {
     let active = true
 
@@ -12,7 +15,7 @@ export default function SignOutPage() {
         await signOut()
       } finally {
         if (active) {
-          window.location.replace("/")
+          router.replace("/")
         }
       }
     }
@@ -22,7 +25,7 @@ export default function SignOutPage() {
     return () => {
       active = false
     }
-  }, [])
+  }, [router])
 
   return null
 }

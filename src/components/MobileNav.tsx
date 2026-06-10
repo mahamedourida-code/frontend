@@ -108,7 +108,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
     try {
       await signOut()
     } finally {
-      window.location.replace("/")
+      router.replace("/")
     }
   }
 

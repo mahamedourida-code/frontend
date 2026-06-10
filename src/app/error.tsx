@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 
 export default function Error({
@@ -10,6 +11,8 @@ export default function Error({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const router = useRouter()
+
   useEffect(() => {
     // Log the error to console for debugging
   }, [error])
@@ -30,7 +33,7 @@ export default function Error({
         )}
         <div className="flex gap-3 justify-center">
           <Button
-            onClick={() => window.location.href = '/'}
+            onClick={() => router.push('/')}
             variant="outline"
           >
             Go Home

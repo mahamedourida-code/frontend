@@ -125,7 +125,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Redirect to landing page
       router.replace('/')
-      router.refresh()
     } catch (error) {
       // Clear local state even on error
       setUser(null)
@@ -133,7 +132,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setProfile(null)
       // Still redirect on error
       router.replace('/')
-      router.refresh()
     } finally {
       setLoading(false)
     }
