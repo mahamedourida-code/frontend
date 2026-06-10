@@ -55,16 +55,20 @@ function HoverCard({ card, index, surface }: { card: SolutionCard; index: number
           "transition-transform duration-[460ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]",
           "origin-top group-hover:translate-y-[150px] group-hover:scale-[0.92]",
         )}>
-          <div className="flex h-full w-full items-center justify-center p-8">
-            <img
-              src={card.asset}
-              alt=""
-              className="h-full w-full object-contain"
-            />
-          </div>
+          <img
+            src={card.asset}
+            alt=""
+            className="h-full w-full object-cover"
+          />
         </div>
 
-        {/* ── Title + description overlay — dark text, no gradient ── */}
+        {/* ── Top scrim — keeps the dark title legible over the photo ── */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 z-[5] h-[240px] rounded-t-2xl bg-gradient-to-b from-white/90 via-white/55 to-transparent"
+        />
+
+        {/* ── Title + description overlay — dark text over scrim ── */}
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 px-6 pt-7">
           <h3 className="text-[26px] font-bold leading-tight tracking-tight text-neutral-950">
             {card.title}

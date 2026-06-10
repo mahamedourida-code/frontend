@@ -54,42 +54,42 @@ const solutionCards = [
   {
     title: "Accounting firms",
     href: "/solutions/accounting",
-    asset: "/solution/accounting.svg",
+    asset: "/solution/accounting%20firms.jpg",
     description:
       "Clear the monthly close faster. Drop a client's whole folder of invoices, receipts, and bank statements, let AxLiner classify and extract each one, then review the flagged fields and publish straight to QuickBooks or Xero.",
   },
   {
     title: "Construction",
     href: "/solutions/construction",
-    asset: "/solution/Construction.svg",
+    asset: "/solution/construction.jpg",
     description:
       "Keep job costs current without retyping. Turn supplier invoices, delivery dockets, and material receipts into reviewed entries — coded by vendor and ready to post to the books, with uncertain fields flagged for you.",
   },
   {
     title: "Property & real estate",
     href: "/solutions/real-estate",
-    asset: "/solution/Real%20Estate.svg",
+    asset: "/solution/real%20estate.jpg",
     description:
       "Stay on top of the books across every unit. Process vendor invoices, utility bills, and bank statements into reviewed entries, then publish to QuickBooks or Xero — no copy-pasting from PDFs and photos.",
   },
   {
     title: "Retail & e-commerce",
     href: "/solutions/cpg-brands",
-    asset: "/solution/CPG%20Brands.svg",
+    asset: "/solution/ecommerce.jpg",
     description:
       "Reconcile the stack of supplier invoices and receipts behind every sale. AxLiner reads them in one batch, catches duplicates before they hit your books, and hands you reviewed entries to approve.",
   },
   {
     title: "Restaurants & hospitality",
     href: "/solutions/backoffice-automation",
-    asset: "/solution/Backoffice%20Automation.svg",
+    asset: "/solution/restaurants%20and%20hospitality.jpg",
     description:
       "Tame the daily pile of supplier invoices and till receipts. Batch them in, review the flagged lines, and post coded bills to QuickBooks or Xero — so the books stay current without late nights of data entry.",
   },
   {
     title: "Professional services",
     href: "/solutions/fintech",
-    asset: "/solution/FinTech.svg",
+    asset: "/solution/professional%20services.jpg",
     description:
       "Keep client and overhead spend in order. Convert invoices, expense receipts, and statements into reviewed entries, pre-coded by vendor memory and ready to publish — you just approve.",
   },
@@ -502,7 +502,10 @@ export default function Home() {
         <ScrollAnimatedSection id="features" className="relative z-20 bg-white pt-20 pb-24 text-neutral-950 lg:pt-24 lg:pb-28">
           <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
             <div className="mb-14" data-animate="headline">
-              <h2 className="ax-h2 ax-marketing-section-title font-bold text-neutral-950">
+              <h2
+                className="ax-h2 ax-marketing-section-title font-bold text-neutral-950"
+                style={{ fontSize: "clamp(2.5rem, 5.4vw, 4.25rem)", lineHeight: 1.05 }}
+              >
                 <span className="block">
                   Turn every{" "}
                   <TypewriterWord
