@@ -1,21 +1,9 @@
 "use client"
 
-import { Fragment, Suspense, type ComponentType, useEffect, useMemo, useState } from "react"
+import { Fragment, Suspense, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import {
-  ArrowRight,
-  BookCheck,
-  Check,
-  CircleDollarSign,
-  FileSpreadsheet,
-  FolderOpen,
-  ReceiptText,
-  ShieldCheck,
-  Sparkles,
-  UploadCloud,
-  X,
-} from "lucide-react"
+import { ArrowRight, Check, X } from "lucide-react"
 import { toast } from "sonner"
 
 import { CreditStack } from "@/components/BillingGlyphs"
@@ -36,7 +24,6 @@ import { cn } from "@/lib/utils"
 
 type BillingMode = "month" | "year"
 type ComparisonCell = string | boolean
-type PricingIcon = ComponentType<{ className?: string }>
 type ComparisonGroup = {
   title: string
   rows: Array<{
@@ -179,76 +166,56 @@ const fallbackPlans: BillingPlan[] = [
 
 const planCopyByPlan: Record<string, {
   name: string
-  eyebrow: string
   description: string
-  bestFor: string
-  features: string[]
+  included: string[]
 }> = {
-  free: {
-    name: "Free",
-    eyebrow: "Try the workflow",
-    description: "For a small test batch before moving client work into AxLiner.",
-    bestFor: "A first folder, a sample client, or light cleanup.",
-    features: ["30 starter credits", "5 files per run", "Saved batches after sign-up", "Review and export outputs"],
-  },
   pro: {
     name: "Standard",
-    eyebrow: "Regular client folders",
-    description: "For solo bookkeepers processing recurring invoice and receipt batches.",
-    bestFor: "Weekly client paperwork and month-end catch-up.",
-    features: ["1,000 credits each month", "30 files per run", "Mixed document auto-detect", "Review board and clean exports"],
+    description: "Everything a solo bookkeeper needs to turn regular client paperwork into clean exports.",
+    included: ["Mixed document batches", "Batch Review Board", "Excel and CSV exports"],
   },
   max: {
     name: "Pro",
-    eyebrow: "Most practices",
-    description: "For accounting teams that need bigger batches and a smoother review flow.",
-    bestFor: "Multiple clients, supplier invoices, statements, and AP handoff.",
-    features: ["2,500 credits each month", "50 files per run", "Vendor memory and exception review", "Draft publishing handoff"],
+    description: "More room for practices processing supplier invoices, receipts, and statements every week.",
+    included: ["Everything in Standard", "Vendor memory", "AP draft handoff"],
   },
   mega: {
     name: "Max",
-    eyebrow: "Higher volume",
-    description: "For practices clearing larger backlogs and high-volume client folders.",
-    bestFor: "Bulk cleanup, monthly close pressure, and dense client folders.",
-    features: ["7,000 credits each month", "100 files per run", "Lowest unit cost", "High-volume review workflow"],
+    description: "Higher-volume capacity for cleanup projects, monthly close pressure, and dense client folders.",
+    included: ["Everything in Pro", "High-volume batches", "Lowest unit cost"],
   },
 }
 
-const workflowCards = [
-  {
-    icon: FolderOpen,
-    title: "One folder, mixed documents",
-    text: "Invoices, receipts, statements, notes, scans, photos, and PDFs can start in the same batch.",
-  },
-  {
-    icon: BookCheck,
-    title: "Review exceptions first",
-    text: "AxLiner flags uncertain fields and keeps the source beside the extracted row before export.",
-  },
-  {
-    icon: FileSpreadsheet,
-    title: "Clean handoff",
-    text: "Export corrected Excel or CSV files, or publish reviewed entries to your accounting software.",
-  },
-]
+const integrationNames = ["QuickBooks", "Excel", "CSV", "Gmail", "Google Drive", "Dropbox"]
 
-const includedAll = [
-  "Auto-detect for mixed client folders",
-  "Invoice, receipt, bank statement, table, and notes modes",
-  "Batch Review Board with editable fields",
-  "Excel, CSV, and text exports",
-  "Accounting software handoff for approved entries",
-]
-
-const creditGuideCards: Array<{ icon: PricingIcon; label: string; value: string; text: string }> = [
-  { icon: ReceiptText, label: "Standard", value: "1,000", text: "steady receipt and invoice cleanup" },
-  { icon: ShieldCheck, label: "Pro", value: "2,500", text: "larger client batches and AP review" },
-  { icon: CreditStack, label: "Max", value: "7,000", text: "high-volume folders and backlog work" },
+const faqs = [
+  {
+    question: "What counts as a credit?",
+    answer: "One processed page or image uses one credit. A batch can contain mixed files; AxLiner classifies them before review.",
+  },
+  {
+    question: "Can I review before exporting?",
+    answer: "Yes. Every batch lands in the Batch Review Board so uncertain fields can be corrected before export or publish.",
+  },
+  {
+    question: "Do plans limit teammates?",
+    answer: "Pricing is centered on processing volume and batch size. Team access can grow with the workspace workflow.",
+  },
+  {
+    question: "Can AxLiner publish directly to accounting software?",
+    answer: "Reviewed entries can be handed off to supported accounting flows. AxLiner never pays, reconciles, or auto-approves bills.",
+  },
+  {
+    question: "Can I start without paying?",
+    answer: "Yes. Create a free account to test a small batch before moving recurring client work into a paid plan.",
+  },
 ]
 
 function formatCents(cents: number) {
   const amount = (cents || 0) / 100
-  return amount % 1 === 0 ? `$${amount.toLocaleString()}` : `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+  return amount % 1 === 0
+    ? `$${amount.toLocaleString()}`
+    : `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
 function creditsLabel(plan: BillingPlan) {
@@ -267,15 +234,13 @@ function priceSubtext(plan: BillingPlan) {
   return "per month"
 }
 
-function creditUnitPrice(plan: BillingPlan) {
-  if (!plan.checkout_key || !plan.credits) return "Starter credits included"
-  const cents = plan.price_cents / plan.credits
-  return `${cents.toFixed(cents >= 1 ? 1 : 2)} cents per credit`
-}
-
 function planRunPolicy(plan: BillingPlan) {
   if (plan.daily_run_limit) return `${plan.daily_run_limit} runs/day`
   return "No daily run cap"
+}
+
+function priceNumber(plan: BillingPlan) {
+  return formatCents(plan.price_cents).replace("$", "")
 }
 
 function CompareTick() {
@@ -337,13 +302,12 @@ function PricingContent() {
   const catalogPlans = plans.length > 0 ? plans : fallbackPlans
   const backendByKey = useMemo(() => new Map(catalogPlans.map((plan) => [plan.key, plan])), [catalogPlans])
 
-  const visiblePlans = useMemo(() => {
-    const free = backendByKey.get("free")
+  const paidPlans = useMemo(() => {
     const standard = catalogPlans.find((plan) => plan.plan === "pro" && plan.interval === billingMode)
     const pro = catalogPlans.find((plan) => plan.plan === "max" && plan.interval === billingMode)
     const max = catalogPlans.find((plan) => plan.plan === "mega" && plan.interval === billingMode)
-    return [free, standard, pro, max].filter(Boolean) as BillingPlan[]
-  }, [backendByKey, billingMode, catalogPlans])
+    return [standard, pro, max].filter(Boolean) as BillingPlan[]
+  }, [billingMode, catalogPlans])
 
   const findCheckoutPlan = (planKey: BillingPlanKey) => {
     return catalogPlans.find((plan) => plan.checkout_key === planKey)
@@ -367,7 +331,7 @@ function PricingContent() {
     }
 
     if (!plan.checkout_available) {
-      toast.error("Polar checkout is not configured yet.")
+      toast.error("Checkout is not configured yet.")
       return
     }
 
@@ -458,12 +422,10 @@ function PricingContent() {
     return null
   })()
 
+  const freePlan = backendByKey.get("free") || fallbackPlans[0]
   const isFreeAccount = Boolean(user && billingStatus?.plan === "free")
   const accountCredits = billingStatus?.credits?.available_credits ?? 0
-  const freePlan = backendByKey.get("free")
-  const freeCreditsLabel = freePlan?.included_volume || "30 free credits"
-  const comparisonPlans = visiblePlans
-  const providerLabel = planCatalog?.provider === "polar" || !planCatalog ? "Polar" : "billing"
+  const providerLabel = planCatalog?.provider === "polar" ? "Polar" : "secure checkout"
 
   const comparisonGroups: ComparisonGroup[] = [
     {
@@ -471,21 +433,21 @@ function PricingContent() {
       rows: [
         {
           label: "Included credits",
-          values: comparisonPlans.map((plan) => creditsLabel(plan)),
+          values: paidPlans.map((plan) => creditsLabel(plan)),
           emphasis: true,
         },
         {
           label: "Files per run",
-          values: comparisonPlans.map((plan) => `Up to ${plan.max_files_per_batch}`),
+          values: paidPlans.map((plan) => `Up to ${plan.max_files_per_batch}`),
           emphasis: true,
         },
         {
           label: "Run policy",
-          values: comparisonPlans.map((plan) => planRunPolicy(plan)),
+          values: paidPlans.map((plan) => planRunPolicy(plan)),
         },
         {
           label: "Max file size",
-          values: comparisonPlans.map((plan) => `${plan.max_file_size_mb}MB`),
+          values: paidPlans.map((plan) => `${plan.max_file_size_mb}MB`),
         },
       ],
     },
@@ -494,19 +456,19 @@ function PricingContent() {
       rows: [
         {
           label: "Mixed-folder auto-detect",
-          values: comparisonPlans.map(() => true),
+          values: paidPlans.map(() => true),
         },
         {
           label: "Invoices and receipts",
-          values: comparisonPlans.map(() => true),
+          values: paidPlans.map(() => true),
         },
         {
           label: "Bank statements",
-          values: comparisonPlans.map(() => true),
+          values: paidPlans.map(() => true),
         },
         {
           label: "Tables and handwritten notes",
-          values: comparisonPlans.map(() => true),
+          values: paidPlans.map(() => true),
         },
       ],
     },
@@ -515,19 +477,19 @@ function PricingContent() {
       rows: [
         {
           label: "Batch Review Board",
-          values: comparisonPlans.map((plan) => plan.checkout_key ? true : "Limited"),
+          values: paidPlans.map(() => true),
         },
         {
           label: "Field and row exception flags",
-          values: comparisonPlans.map(() => true),
+          values: paidPlans.map(() => true),
         },
         {
           label: "Editable extracted rows",
-          values: comparisonPlans.map(() => true),
+          values: paidPlans.map(() => true),
         },
         {
           label: "Vendor memory",
-          values: comparisonPlans.map((plan) => plan.checkout_key ? true : "Account only"),
+          values: paidPlans.map((plan) => plan.plan === "pro" ? "Included" : true),
         },
       ],
     },
@@ -536,19 +498,19 @@ function PricingContent() {
       rows: [
         {
           label: "Excel and CSV export",
-          values: comparisonPlans.map(() => true),
+          values: paidPlans.map(() => true),
         },
         {
           label: "Corrected batch download",
-          values: comparisonPlans.map((plan) => plan.checkout_key ? true : "Limited"),
+          values: paidPlans.map(() => true),
         },
         {
           label: "AP queue for reviewed bills",
-          values: comparisonPlans.map((plan) => plan.checkout_key ? true : "Limited"),
+          values: paidPlans.map((plan) => plan.plan === "pro" ? "Limited" : true),
         },
         {
           label: "Publish approved entries",
-          values: comparisonPlans.map((plan) => plan.checkout_key ? true : "Limited"),
+          values: paidPlans.map((plan) => plan.plan === "pro" ? "Limited" : true),
         },
       ],
     },
@@ -558,279 +520,158 @@ function PricingContent() {
     <main className="ax-marketing-page min-h-screen bg-white text-black">
       <MarketingNavBar />
 
-      <section className="ax-marketing-container max-w-[1500px] pb-16 pt-32 lg:pt-36">
-        <div className="grid gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:items-end">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-700">Pricing</p>
-            <h1 className="ax-marketing-section-title mt-4 max-w-[980px] text-black">
-              Simple pricing for messy accounting work.
+      <section className="pt-[152px]">
+        <div className="mx-auto max-w-[1296px] px-4 sm:px-6 lg:px-0">
+          <div className="text-center">
+            <h1 className="text-[44px] font-semibold leading-[1.1] tracking-normal text-neutral-950 sm:text-[56px]">
+              Pricing
             </h1>
-            <p className="ax-marketing-lead mt-6 max-w-[820px] text-black">
-              Pay for processing volume, not client seats. Upload full folders, review exceptions, export clean files, or publish approved entries to your accounting software.
+            <p className="mx-auto mt-4 max-w-[980px] text-[16px] font-semibold leading-7 text-neutral-700">
+              Processing capacity for full client folders, reviewed exports, and approved accounting handoff. Start free with {freePlan.credits.toLocaleString()} credits.
             </p>
           </div>
 
-          <div className="rounded-[8px] border border-neutral-900/12 bg-[#f7fff9] p-5 shadow-[0_18px_44px_-34px_rgba(0,0,0,0.45)]">
-            <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-[0_0_0_1px_var(--brand-green-ring)]">
-                <CircleDollarSign aria-hidden="true" className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-base font-bold text-neutral-950">Credits stay simple.</p>
-                <p className="mt-1 text-sm font-semibold leading-6 text-neutral-800">
-                  One processed page or image uses one credit. You can upload mixed batches; AxLiner handles the sorting and review flow.
-                </p>
-              </div>
-            </div>
-            <div className="mt-5 grid grid-cols-2 gap-3 text-sm font-semibold text-neutral-950">
-              <div className="rounded-[8px] border border-neutral-900/10 bg-white p-3">No client minimums</div>
-              <div className="rounded-[8px] border border-neutral-900/10 bg-white p-3">Secure checkout by {providerLabel}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-10 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="inline-flex w-fit rounded-full border border-neutral-900/15 bg-white p-1 shadow-sm">
-            {(["month", "year"] as BillingMode[]).map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => setBillingMode(mode)}
-                className={cn(
-                  "rounded-full px-5 py-2 text-sm font-bold transition",
-                  billingMode === mode
-                    ? "bg-neutral-950 text-white shadow-sm"
-                    : "text-neutral-800 hover:bg-[var(--brand-green)]"
-                )}
-              >
-                {mode === "month" ? "Monthly" : "Annual"}
-              </button>
-            ))}
-          </div>
-
-          <p className="max-w-xl text-sm font-semibold leading-6 text-neutral-700">
-            Annual plans include 12 months of credits and come in below paying month to month.
-          </p>
-        </div>
-
-        {!user && !loading && (
-          <div className="mt-7 flex w-fit flex-wrap items-center gap-3 rounded-full border border-neutral-900/10 bg-[var(--brand-green)] px-4 py-2 text-sm font-semibold text-neutral-950 shadow-sm">
-            <span>
-              Create a free account for <span className="font-bold text-[var(--brand-green-fg)]">{freeCreditsLabel}</span>.
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <span className={cn("text-sm font-bold", billingMode === "month" ? "text-neutral-950" : "text-neutral-500")}>
+              Monthly
             </span>
-            <Link href="/sign-up?next=%2Fdashboard%2Fclient" className="font-bold underline underline-offset-4">
-              Start free
-            </Link>
-          </div>
-        )}
-
-        {isFreeAccount && (
-          <div className="mt-7 flex w-fit items-center gap-4 rounded-full border border-neutral-900/15 bg-white px-5 py-3 shadow-sm">
-            <CreditStack className="h-6 w-6 text-neutral-950" />
-            <span className="text-sm font-bold text-neutral-950">
-              <span className="text-emerald-700">{accountCredits.toLocaleString()}</span> credits left
-            </span>
-            <Button
-              size="sm"
-              variant="glossy"
-              onClick={() => document.getElementById("plans")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            <button
+              type="button"
+              aria-label="Toggle annual billing"
+              onClick={() => setBillingMode((mode) => mode === "month" ? "year" : "month")}
+              className="relative inline-flex h-7 w-12 shrink-0 rounded-full bg-neutral-950 p-1 transition-colors"
             >
-              Upgrade
-            </Button>
+              <span
+                className={cn(
+                  "h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200",
+                  billingMode === "year" && "translate-x-5"
+                )}
+              />
+            </button>
+            <span className={cn("text-sm font-bold", billingMode === "year" ? "text-neutral-950" : "text-neutral-500")}>
+              Yearly
+            </span>
+            <span className="rounded-full bg-[var(--brand-green)] px-3 py-1 text-xs font-bold text-[var(--brand-green-fg)] shadow-[0_0_0_1px_var(--brand-green-ring)]">
+              Save yearly
+            </span>
           </div>
-        )}
 
-        {statusPanel && (
-          <div className={cn("mt-8 max-w-4xl rounded-[8px] border p-5 shadow-sm", statusPanel.tone)}>
-            <p className="text-base font-bold text-neutral-950">{statusPanel.title}</p>
-            <p className="mt-2 text-sm font-semibold leading-6 text-neutral-800">{statusPanel.text}</p>
-          </div>
-        )}
+          {isFreeAccount && (
+            <div className="mx-auto mt-5 flex w-fit items-center gap-4 rounded-full border border-neutral-900/15 bg-white px-5 py-3 shadow-sm">
+              <CreditStack className="h-6 w-6 text-neutral-950" />
+              <span className="text-sm font-bold text-neutral-950">
+                <span className="text-[var(--brand-green-fg)]">{accountCredits.toLocaleString()}</span> credits left
+              </span>
+            </div>
+          )}
 
-        <div id="plans" className="mt-12 grid max-w-[1500px] auto-rows-fr gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {billingLoading && plans.length === 0
-            ? fallbackPlans.slice(0, 4).map((plan) => (
-                <article key={plan.key} className="min-h-[560px] rounded-[8px] border border-neutral-900/10 bg-white p-6 shadow-sm">
+          {statusPanel && (
+            <div className={cn("mx-auto mt-8 max-w-3xl rounded-[24px] border p-5 text-left shadow-sm", statusPanel.tone)}>
+              <p className="text-base font-bold text-neutral-950">{statusPanel.title}</p>
+              <p className="mt-2 text-sm font-semibold leading-6 text-neutral-800">{statusPanel.text}</p>
+            </div>
+          )}
+
+          <div id="plans" className="mt-8 grid gap-5 lg:grid-cols-3">
+            {billingLoading && plans.length === 0 ? (
+              fallbackPlans.slice(1, 4).map((plan) => (
+                <article key={plan.key} className="min-h-[560px] rounded-[42px] border border-neutral-200 bg-gradient-to-b from-white to-neutral-50 p-8">
                   <div className="h-full animate-pulse">
-                    <div className="h-4 w-28 rounded-full bg-neutral-200" />
-                    <div className="mt-8 h-12 w-36 rounded-[8px] bg-neutral-200" />
-                    <div className="mt-8 h-24 rounded-[8px] bg-neutral-200" />
-                    <div className="mt-8 h-12 rounded-full bg-neutral-200" />
+                    <div className="h-8 w-28 rounded-full bg-neutral-200" />
+                    <div className="mt-10 h-16 w-40 rounded-[16px] bg-neutral-200" />
+                    <div className="mt-8 h-24 rounded-[20px] bg-neutral-200" />
+                    <div className="mt-auto h-12 rounded-full bg-neutral-200" />
                   </div>
                 </article>
               ))
-            : visiblePlans.map((plan) => {
-                const copy = planCopyByPlan[plan.plan] || planCopyByPlan.free
-                const isPaid = Boolean(plan.checkout_key)
-                const isLoading = Boolean(plan.checkout_key && checkoutLoading === plan.checkout_key)
+            ) : (
+              paidPlans.map((plan) => {
+                const copy = planCopyByPlan[plan.plan] || planCopyByPlan.pro
                 const isPopular = plan.plan === "max"
-                const actionLabel = isLoading ? "Opening checkout..." : isPaid ? `Choose ${copy.name}` : "Start free"
+                const isLoading = Boolean(plan.checkout_key && checkoutLoading === plan.checkout_key)
 
                 return (
                   <article
                     key={`${plan.plan}-${plan.interval}`}
                     className={cn(
-                      "relative flex min-h-[570px] flex-col rounded-[8px] border bg-white p-6 shadow-[0_18px_55px_-42px_rgba(0,0,0,0.5)]",
-                      isPopular ? "border-emerald-500 ring-1 ring-emerald-500/40" : "border-neutral-900/12"
+                      "flex min-h-[561px] flex-col gap-8 rounded-[42px] border p-8",
+                      isPopular
+                        ? "border-[var(--brand-green-ring)] bg-gradient-to-b from-white to-[var(--brand-green)]"
+                        : "border-neutral-200 bg-gradient-to-b from-white to-neutral-50"
                     )}
                   >
-                    {isPopular && (
-                      <span className="absolute right-5 top-5 rounded-full bg-[var(--brand-green)] px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[var(--brand-green-fg)] shadow-[0_0_0_1px_var(--brand-green-ring)]">
-                        Best fit
-                      </span>
-                    )}
-
-                    <div className="pr-20">
-                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">{copy.eyebrow}</p>
-                      <h2 className="mt-3 text-2xl font-bold text-neutral-950">{copy.name}</h2>
-                      <p className="mt-3 min-h-[72px] text-[15px] font-semibold leading-6 text-neutral-800">{copy.description}</p>
-                    </div>
-
-                    <div className="mt-8">
-                      <div className="flex items-end gap-2 text-neutral-950">
-                        <span className="text-5xl font-bold tracking-normal">{formatCents(plan.price_cents)}</span>
+                    <div>
+                      <div className="flex items-start justify-between gap-4">
+                        <h2 className="text-3xl font-semibold tracking-normal text-neutral-950">{copy.name}</h2>
+                        {isPopular && (
+                          <span className="rounded-full bg-neutral-950 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-white">
+                            Popular
+                          </span>
+                        )}
                       </div>
-                      <p className="mt-2 text-sm font-bold uppercase tracking-[0.14em] text-emerald-700">{priceSubtext(plan)}</p>
+                      <div className="mt-8 flex items-end gap-2 text-neutral-950">
+                        <span className="pb-2 text-2xl font-semibold">$</span>
+                        <span className="text-[64px] font-semibold leading-none tracking-normal">{priceNumber(plan)}</span>
+                      </div>
+                      <p className="mt-2 text-sm font-semibold text-neutral-600">{priceSubtext(plan)}</p>
+                      <p className="mt-5 text-base font-bold text-neutral-950">{creditsLabel(plan)}</p>
                     </div>
 
-                    <div className="mt-6 rounded-[8px] border border-neutral-900/10 bg-[#f7fff9] p-4">
-                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-800">Included volume</p>
-                      <p className="mt-2 text-lg font-bold text-neutral-950">{creditsLabel(plan)}</p>
-                      <p className="mt-1 text-sm font-semibold text-neutral-700">{creditUnitPrice(plan)}</p>
-                    </div>
+                    <p className="text-base font-semibold leading-6 text-neutral-800">{copy.description}</p>
 
-                    <Button
-                      className="mt-6 h-11 w-full"
-                      variant={isPopular ? "glossy" : isPaid ? "ink" : "surface"}
-                      disabled={isLoading}
-                      onClick={() => startCheckout(plan)}
-                    >
-                      {actionLabel}
-                      {!isLoading && <ArrowRight aria-hidden="true" className="ml-2 h-4 w-4" />}
-                    </Button>
-
-                    <div className="mt-6 border-t border-neutral-900/10 pt-5">
-                      <p className="text-sm font-bold text-neutral-950">Best for</p>
-                      <p className="mt-2 text-sm font-semibold leading-6 text-neutral-800">{copy.bestFor}</p>
-                    </div>
-
-                    <ul className="mt-5 flex-1 space-y-3">
-                      {copy.features.map((feature) => (
-                        <li key={feature} className="flex items-start gap-3 text-sm font-semibold leading-6 text-neutral-900">
-                          <Check aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-emerald-700" />
+                    <ul className="flex-1 space-y-3">
+                      {copy.included.map((feature) => (
+                        <li key={feature} className="flex items-start gap-3 text-[15px] font-semibold leading-6 text-neutral-900">
+                          <Check aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-[var(--brand-green-fg)]" />
                           <span>{feature}</span>
                         </li>
                       ))}
                     </ul>
-                  </article>
-                )
-              })}
-        </div>
 
-        <section className="mt-16 grid gap-4 lg:grid-cols-3">
-          {workflowCards.map((card) => {
-            const Icon = card.icon
-            return (
-              <div key={card.title} className="rounded-[8px] border border-neutral-900/10 bg-white p-6 shadow-sm">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-neutral-950 text-white">
-                  <Icon aria-hidden="true" className="h-5 w-5" />
-                </div>
-                <h2 className="mt-5 text-xl font-bold text-neutral-950">{card.title}</h2>
-                <p className="mt-3 text-[15px] font-semibold leading-6 text-neutral-800">{card.text}</p>
-              </div>
-            )
-          })}
-        </section>
-
-        <section className="mt-16 rounded-[8px] border border-neutral-900/10 bg-neutral-950 p-6 text-white shadow-[0_24px_80px_-56px_rgba(0,0,0,0.65)] lg:p-8">
-          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--brand-green)]">Every paid plan</p>
-              <h2 className="mt-4 text-3xl font-bold tracking-normal sm:text-4xl">The same workflow, more capacity as you grow.</h2>
-              <p className="mt-4 text-base font-semibold leading-7 text-white/78">
-                We keep pricing easy to understand: the plan changes your monthly credits and batch size. The review workflow stays familiar.
-              </p>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {includedAll.map((item) => (
-                <div key={item} className="flex items-start gap-3 rounded-[8px] border border-white/12 bg-white/6 p-4">
-                  <Sparkles aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-[var(--brand-green)]" />
-                  <span className="text-sm font-semibold leading-6 text-white">{item}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {comparisonPlans.length > 0 && (
-          <section className="mt-20 max-w-[1500px]">
-            <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-700">Side by side</p>
-                <h2 className="ax-marketing-section-title mt-3 text-black">Compare plans</h2>
-              </div>
-              <p className="max-w-xl text-sm font-semibold leading-6 text-neutral-700">
-                Prices stay visible while you scroll the table, so it is easy to compare capacity against workflow features.
-              </p>
-            </div>
-
-            <div className="sticky top-[72px] z-30 hidden grid-cols-[24%_repeat(4,minmax(0,1fr))] overflow-hidden rounded-t-[8px] border border-neutral-900/10 bg-white/95 shadow-[0_1px_0_rgba(0,0,0,0.12),0_18px_45px_-38px_rgba(0,0,0,0.55)] backdrop-blur lg:grid">
-              <div className="flex items-end border-r border-neutral-900/10 px-6 pb-5 pt-4 text-xs font-bold uppercase tracking-[0.16em] text-neutral-900">
-                Feature
-              </div>
-              {comparisonPlans.map((plan) => {
-                const copy = planCopyByPlan[plan.plan] || planCopyByPlan.free
-                const isLoading = Boolean(plan.checkout_key && checkoutLoading === plan.checkout_key)
-                return (
-                  <div key={`sticky-${plan.plan}-${plan.interval}`} className="flex min-h-[168px] flex-col border-r border-neutral-900/10 px-5 pb-5 pt-4 last:border-r-0">
-                    <p className="text-lg font-bold text-neutral-950">{copy.name}</p>
-                    <p className="mt-2 text-sm font-semibold leading-5 text-neutral-700">{creditsLabel(plan)}</p>
-                    <p className="mt-4 text-3xl font-bold tracking-normal text-neutral-950">{formatCents(plan.price_cents)}</p>
-                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-emerald-700">{priceSubtext(plan)}</p>
                     <Button
-                      className="mt-auto h-10 w-full"
-                      variant={plan.plan === "max" ? "glossy" : plan.checkout_key ? "ink" : "surface"}
+                      className="h-12 w-full rounded-full"
+                      variant={isPopular ? "glossy" : "surface"}
                       disabled={isLoading}
                       onClick={() => startCheckout(plan)}
                     >
-                      {isLoading ? "Opening..." : plan.checkout_key ? "Choose plan" : "Start free"}
+                      {isLoading ? "Opening checkout..." : "Buy now"}
+                      {!isLoading && <ArrowRight aria-hidden="true" className="h-4 w-4" />}
                     </Button>
-                  </div>
+                  </article>
                 )
-              })}
-            </div>
+              })
+            )}
+          </div>
 
-            <Table
-              className="min-w-[1040px] border-separate border-spacing-0"
-              containerClassName="rounded-[8px] border border-neutral-900/10 bg-white shadow-sm lg:overflow-visible"
-            >
-              <TableHeader className="bg-white/95 shadow-[0_1px_0_rgba(0,0,0,0.12)] lg:hidden">
-                <TableRow className="border-neutral-900/10 hover:bg-transparent">
-                  <TableHead className="sticky left-0 z-40 w-[24%] border-b border-neutral-900/10 bg-white/95 px-4 pb-5 pt-4 text-xs font-bold uppercase tracking-[0.16em] text-neutral-900 lg:px-6">
+          <div className="relative mt-24 overflow-hidden border-y border-neutral-900/10 py-5">
+            <div className="flex min-w-max animate-[scroll-left_28s_linear_infinite] items-center gap-10 text-lg font-bold text-neutral-400">
+              {[...integrationNames, ...integrationNames, ...integrationNames].map((name, index) => (
+                <span key={`${name}-${index}`} className="whitespace-nowrap">{name}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {paidPlans.length > 0 && (
+        <section className="mx-auto mt-28 max-w-[1248px] px-4 sm:px-6 lg:px-0">
+          <h2 className="text-center text-[40px] font-semibold leading-tight tracking-normal text-neutral-950 sm:text-[46px]">
+            Compare plans
+          </h2>
+
+          <div className="mt-14 overflow-hidden rounded-[32px] border border-neutral-200 bg-white">
+            <Table className="min-w-[920px] border-separate border-spacing-0" containerClassName="overflow-x-auto">
+              <TableHeader>
+                <TableRow className="border-neutral-200 hover:bg-transparent">
+                  <TableHead className="w-[30%] border-b border-neutral-200 bg-neutral-50 px-6 py-6 text-sm font-bold uppercase tracking-[0.16em] text-neutral-500">
                     Feature
                   </TableHead>
-                  {comparisonPlans.map((plan) => {
-                    const copy = planCopyByPlan[plan.plan] || planCopyByPlan.free
-                    const isLoading = Boolean(plan.checkout_key && checkoutLoading === plan.checkout_key)
+                  {paidPlans.map((plan) => {
+                    const copy = planCopyByPlan[plan.plan] || planCopyByPlan.pro
                     return (
-                      <TableHead
-                        key={`${plan.plan}-${plan.interval}`}
-                        className="min-w-[190px] border-b border-neutral-900/10 px-4 pb-5 pt-4 align-top lg:px-5"
-                      >
-                        <div className="flex min-h-[168px] flex-col items-start whitespace-normal">
-                          <p className="text-lg font-bold text-neutral-950">{copy.name}</p>
-                          <p className="mt-2 text-sm font-semibold leading-5 text-neutral-700">{creditsLabel(plan)}</p>
-                          <p className="mt-4 text-3xl font-bold tracking-normal text-neutral-950">{formatCents(plan.price_cents)}</p>
-                          <p className="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-emerald-700">{priceSubtext(plan)}</p>
-                          <Button
-                            className="mt-auto h-10 w-full"
-                            variant={plan.plan === "max" ? "glossy" : plan.checkout_key ? "ink" : "surface"}
-                            disabled={isLoading}
-                            onClick={() => startCheckout(plan)}
-                          >
-                            {isLoading ? "Opening..." : plan.checkout_key ? "Choose plan" : "Start free"}
-                          </Button>
-                        </div>
+                      <TableHead key={`${plan.plan}-${plan.interval}`} className="border-b border-l border-neutral-200 px-6 py-6 align-top">
+                        <p className="text-xl font-semibold text-neutral-950">{copy.name}</p>
+                        <p className="mt-2 text-sm font-semibold text-neutral-600">{formatCents(plan.price_cents)} - {priceSubtext(plan)}</p>
                       </TableHead>
                     )
                   })}
@@ -839,32 +680,21 @@ function PricingContent() {
               <TableBody>
                 {comparisonGroups.map((group) => (
                   <Fragment key={group.title}>
-                    <TableRow className="border-neutral-900/10 bg-[#f7fff9] hover:bg-[#f7fff9]">
+                    <TableRow className="border-neutral-200 bg-[#f7fff9] hover:bg-[#f7fff9]">
                       <TableCell
-                        colSpan={comparisonPlans.length + 1}
-                        className="border-b border-neutral-900/10 px-4 py-3 text-xs font-bold uppercase tracking-[0.2em] text-emerald-800 lg:px-6"
+                        colSpan={paidPlans.length + 1}
+                        className="border-b border-neutral-200 px-6 py-4 text-xs font-bold uppercase tracking-[0.2em] text-[var(--brand-green-fg)]"
                       >
                         {group.title}
                       </TableCell>
                     </TableRow>
                     {group.rows.map((row) => (
-                      <TableRow key={row.label} className="border-neutral-900/10 hover:bg-[var(--brand-green)]/35">
-                        <TableCell
-                          className={cn(
-                            "sticky left-0 z-10 border-b border-neutral-900/10 bg-white px-4 py-5 text-sm font-bold whitespace-normal text-neutral-950 lg:px-6",
-                            row.emphasis && "text-base"
-                          )}
-                        >
+                      <TableRow key={row.label} className="border-neutral-200 hover:bg-neutral-50">
+                        <TableCell className={cn("border-b border-neutral-200 px-6 py-5 text-sm font-semibold text-neutral-950", row.emphasis && "text-base")}>
                           {row.label}
                         </TableCell>
                         {row.values.map((value, index) => (
-                          <TableCell
-                            key={`${row.label}-${index}`}
-                            className={cn(
-                              "border-b border-neutral-900/10 px-4 py-5 text-sm font-semibold whitespace-normal text-neutral-900 lg:px-5",
-                              row.emphasis && "text-base"
-                            )}
-                          >
+                          <TableCell key={`${row.label}-${index}`} className="border-b border-l border-neutral-200 px-6 py-5 text-sm font-semibold text-neutral-900">
                             <CompareCellValue value={value} />
                           </TableCell>
                         ))}
@@ -874,33 +704,33 @@ function PricingContent() {
                 ))}
               </TableBody>
             </Table>
-          </section>
-        )}
-
-        <section className="mt-16 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
-          <div className="rounded-[8px] border border-neutral-900/10 bg-white p-6 shadow-sm">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-[0_0_0_1px_var(--brand-green-ring)]">
-              <UploadCloud aria-hidden="true" className="h-5 w-5" />
-            </div>
-            <h2 className="mt-5 text-2xl font-bold text-neutral-950">Not sure how many credits you need?</h2>
-            <p className="mt-3 text-[15px] font-semibold leading-6 text-neutral-800">
-              Start with the plan that matches your usual monthly folder volume. If the close gets heavier, upgrade before the next batch.
-            </p>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {creditGuideCards.map((item) => {
-              const Icon = item.icon
-              return (
-                <div key={item.label} className="rounded-[8px] border border-neutral-900/10 bg-white p-5 shadow-sm">
-                  <Icon className="h-6 w-6 text-neutral-950" />
-                  <p className="mt-5 text-sm font-bold uppercase tracking-[0.16em] text-emerald-700">{item.label}</p>
-                  <p className="mt-2 text-3xl font-bold text-neutral-950">{item.value}</p>
-                  <p className="mt-2 text-sm font-semibold leading-6 text-neutral-800">{item.text}</p>
-                </div>
-              )
-            })}
           </div>
         </section>
+      )}
+
+      <section className="mx-auto mt-32 grid max-w-[1248px] gap-12 px-4 pb-28 sm:px-6 lg:grid-cols-[280px_1fr] lg:px-0">
+        <h2 className="text-[56px] font-semibold leading-none tracking-normal text-neutral-950">FAQ</h2>
+        <div className="divide-y divide-neutral-200 border-y border-neutral-200">
+          {faqs.map((item) => (
+            <details key={item.question} className="group py-5">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-semibold text-neutral-950">
+                {item.question}
+                <span className="text-2xl font-semibold text-neutral-400 transition-transform group-open:rotate-45">+</span>
+              </summary>
+              <p className="max-w-3xl pb-2 pt-4 text-base font-semibold leading-7 text-neutral-700">{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section className="pb-24 text-center">
+        <h2 className="text-[42px] font-semibold leading-tight tracking-normal text-neutral-950 sm:text-[56px]">
+          Clear the next client folder faster.
+        </h2>
+        <Button asChild variant="glossy" className="mt-9 h-12 min-w-[300px] rounded-full">
+          <Link href="/dashboard/client">Start now</Link>
+        </Button>
+        <p className="mt-4 text-sm font-semibold text-neutral-500">Checkout handled by {providerLabel}.</p>
       </section>
     </main>
   )
