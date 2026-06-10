@@ -40,18 +40,28 @@ const primaryAudienceSolutions = primaryAudienceSlugs.map(getAudienceSolutionByS
 
 /* ── shared card-grid mega-menu primitives ──────────────────────────────── */
 
-/* Two accent rhythms for the hover-fill. Default is a near-invisible surface
-   on white; on hover / keyboard focus the whole card fills with the brand
-   color while the text stays black. Most cards fill cyan; a couple fill brown. */
+/* Reap-style menu colors measured from the live nav: #090909 panel,
+   #1d1d1d tiles, #e9d5ff hover fill, #363636 hover text. */
 type Accent = "cyan" | "brown";
 
 const accentFill: Record<Accent, string> = {
-  cyan: "hover:bg-[var(--brand-green)] focus-visible:bg-[var(--brand-green)] data-[active]:bg-[var(--brand-green)]",
-  brown: "hover:bg-[var(--brand-brown)] focus-visible:bg-[var(--brand-brown)] data-[active]:bg-[var(--brand-brown)]",
+  cyan: "hover:!bg-[#e9d5ff] focus-visible:!bg-[#e9d5ff] data-[active]:!bg-[#e9d5ff]",
+  brown: "hover:!bg-[#e9d5ff] focus-visible:!bg-[#e9d5ff] data-[active]:!bg-[#e9d5ff]",
 };
 
 const cardBase =
-  "ax-interactive group relative flex flex-col rounded-xl bg-black/[0.03] text-black outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-black/20";
+  "ax-interactive group relative flex flex-col !rounded-[10px] !bg-[#1d1d1d] text-white outline-none transition-[background-color,color,transform] duration-150 focus-visible:ring-2 focus-visible:ring-[#e9d5ff]/60";
+
+const menuIconClass =
+  "text-white transition-colors duration-150 group-hover:text-[#363636] group-focus-visible:text-[#363636] group-data-[active]:text-[#363636]";
+const menuTitleClass =
+  "block text-[15px] font-bold leading-5 text-white transition-colors duration-150 group-hover:text-[#363636] group-focus-visible:text-[#363636] group-data-[active]:text-[#363636]";
+const featuredTitleClass =
+  "block text-[20px] font-bold leading-6 text-white transition-colors duration-150 group-hover:text-[#363636] group-focus-visible:text-[#363636] group-data-[active]:text-[#363636]";
+const menuDescriptionClass =
+  "mt-1 block text-[13px] font-medium leading-snug text-[#808080] transition-colors duration-150 group-hover:text-[#363636] group-focus-visible:text-[#363636] group-data-[active]:text-[#363636]";
+const featuredDescriptionClass =
+  "mt-1.5 block text-[13px] font-medium leading-snug text-[#808080] transition-colors duration-150 group-hover:text-[#363636] group-focus-visible:text-[#363636] group-data-[active]:text-[#363636]";
 
 type FeaturedCardProps = {
   icon: LucideIcon;
@@ -67,10 +77,10 @@ function FeaturedCard({ icon: Icon, title, description, href, accent }: Featured
   return (
     <NavigationMenuLink asChild>
       <Link href={href} className={cn(cardBase, "h-full basis-0 grow-[1.6] justify-between p-6", accentFill[accent])}>
-        <Icon className="size-7 text-black" strokeWidth={2} />
+        <Icon className={cn("size-7", menuIconClass)} strokeWidth={2} />
         <span className="mt-12 block">
-          <span className="block text-[20px] font-bold leading-6 text-black">{title}</span>
-          <span className="mt-1.5 block text-[13px] font-medium leading-snug text-black/70">{description}</span>
+          <span className={featuredTitleClass}>{title}</span>
+          <span className={featuredDescriptionClass}>{description}</span>
         </span>
       </Link>
     </NavigationMenuLink>
@@ -90,10 +100,10 @@ function StandaloneCard({ icon: Icon, title, description, href, accent }: Standa
   return (
     <NavigationMenuLink asChild>
       <Link href={href} className={cn(cardBase, "h-full basis-0 grow justify-between p-5", accentFill[accent])}>
-        <Icon className="size-[22px] text-black" strokeWidth={2} />
+        <Icon className={cn("size-[22px]", menuIconClass)} strokeWidth={2} />
         <span className="mt-8 block">
-          <span className="block text-[15px] font-bold leading-5 text-black">{title}</span>
-          <span className="mt-1 block text-[13px] font-medium leading-snug text-black/70">{description}</span>
+          <span className={menuTitleClass}>{title}</span>
+          <span className={menuDescriptionClass}>{description}</span>
         </span>
       </Link>
     </NavigationMenuLink>
@@ -113,8 +123,8 @@ function CompactCard({ title, description, href, accent }: CompactCardProps) {
   return (
     <NavigationMenuLink asChild>
       <Link href={href} className={cn(cardBase, "h-full justify-center p-5", accentFill[accent])}>
-        <span className="block text-[15px] font-bold leading-5 text-black">{title}</span>
-        <span className="mt-1 block text-[13px] font-medium leading-snug text-black/70">{description}</span>
+        <span className={menuTitleClass}>{title}</span>
+        <span className={menuDescriptionClass}>{description}</span>
       </Link>
     </NavigationMenuLink>
   );
@@ -138,8 +148,8 @@ function StackedColumn({ items }: { items: SubItem[] }) {
 /* Shared panel shell: centered, generous width, one horizontal row of cards. */
 function MenuPanel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="w-[1140px] overflow-hidden rounded-[24px] border border-black/10 bg-white p-3 text-black shadow-[0_24px_60px_-28px_rgba(0,0,0,0.3)]">
-      <div className="flex items-stretch gap-3">{children}</div>
+    <div className="w-[1140px] overflow-hidden rounded-[10px] border border-[#141c1c] bg-[#090909] p-[10px] text-white shadow-none">
+      <div className="flex items-stretch gap-[10px]">{children}</div>
     </div>
   );
 }

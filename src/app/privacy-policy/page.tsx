@@ -25,7 +25,7 @@ const sections = [
       "Convert documents into structured spreadsheets or text output.",
       "Recover active jobs, keep history available, and protect downloads from unauthorized access.",
       "Manage free quotas, paid plans, billing status, credits, and abuse prevention.",
-      "Apply verified Lemon Squeezy billing and subscription state to AxLiner limits.",
+      "Apply verified Polar billing and subscription state to AxLiner limits.",
       "Improve reliability, queue performance, OCR quality, and support investigations.",
     ],
   },
@@ -37,7 +37,7 @@ const sections = [
     items: [
       "Supabase is used for authentication, database records, durable file metadata, and storage.",
       "Fly.io and Vercel host backend and frontend infrastructure.",
-      "Lemon Squeezy acts as Merchant of Record for paid checkout, receipts, invoices, tax handling, and billing portal access.",
+      "Polar acts as Merchant of Record for paid checkout, receipts, invoices, tax handling, and billing portal access.",
       "OCR processing may use external model infrastructure when needed to perform the conversion.",
     ],
   },

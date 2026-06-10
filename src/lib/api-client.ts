@@ -816,7 +816,7 @@ export interface BillingPlan {
 }
 
 export interface BillingPlansResponse {
-  provider: 'lemonsqueezy'
+  provider: 'polar' | 'lemonsqueezy'
   currency: string
   plans: BillingPlan[]
 }
@@ -863,7 +863,7 @@ export const billingApi = {
   },
 
   createCheckout: async (planKey: BillingPlanKey): Promise<BillingCheckoutResponse> => {
-    const response = await apiClient.post<BillingCheckoutResponse>('/api/v1/billing/lemon/checkout', {
+    const response = await apiClient.post<BillingCheckoutResponse>('/api/v1/billing/checkout', {
       plan_key: planKey,
     })
     return response.data

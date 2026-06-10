@@ -76,9 +76,9 @@ export default function TermsOfServicePage() {
               <div>
                 <h3 className="text-xl font-medium mb-2">4.2 Paid Plans and Billing</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Paid plans are processed through Lemon Squeezy as Merchant of Record. Lemon Squeezy handles
+                  Paid plans are processed through Polar as Merchant of Record. Polar handles
                   checkout, payment collection, applicable taxes, invoices, receipts, and payment method updates.
-                  AxLiner uses the verified billing status from Lemon Squeezy to grant plan access, monthly or
+                  AxLiner uses the verified billing status from Polar to grant plan access, monthly or
                   yearly credits, and plan limits.
                 </p>
               </div>
