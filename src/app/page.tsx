@@ -331,15 +331,13 @@ export default function Home() {
         <section ref={heroRef} className="relative overflow-hidden pt-16 pb-10 sm:pt-20 sm:pb-12 lg:pt-20 lg:pb-14">
           <div className="ax-marketing-container relative z-10">
             {/* Centered hero copy */}
-            <div className="mx-auto max-w-3xl text-center">
+            <div className="mx-auto max-w-[1120px] text-center">
               <h1 className="ax-h1 ax-marketing-display font-bold text-black">
-                The review layer between{" "}
-                <br className="hidden sm:block" />
-                messy invoices and your{" "}
-                <span className="font-bold text-[var(--brand-brown)]">books</span>.
+                Invoice, receipt, and bank statement processing for accountants and{" "}
+                <span className="font-bold text-[var(--brand-brown)]">bookkeepers</span>.
               </h1>
-              <p className="ax-body ax-marketing-lead mx-auto mt-6 font-semibold text-neutral-950">
-                AxLiner reads the documents other tools refuse: handwriting, phone photos, and wrinkled receipts. It checks them and gets every entry one keystroke from QuickBooks or Xero. You stay in control.
+              <p className="ax-body ax-marketing-lead mx-auto mt-6 max-w-[860px] font-semibold text-neutral-950">
+                Upload the whole client folder, review the exceptions, then export or publish to your accounting software.
               </p>
 
               <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
