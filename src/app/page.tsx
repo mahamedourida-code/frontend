@@ -97,29 +97,44 @@ const solutionCards = [
 
 const faqItems = [
   {
-    question: "Can I convert PDFs and images in the same batch?",
+    question: "Can I process a whole folder of mixed invoices, receipts, and bank statements in one batch?",
     answer:
-      "Yes. PDFs are prepared page by page for processing, while images are handled directly. The final result keeps the batch together so you can download the generated outputs from one job.",
+      "Yes — batch processing is the heart of AxLiner. Drop everything in at once and it classifies each document, routes it to the right schema, and extracts the fields, so you review one organized batch instead of opening files one at a time.",
   },
   {
-    question: "When are credits used?",
+    question: "How does the review board work before anything is posted?",
     answer:
-      "Credits are reserved when a job starts and settled against successful outputs. Failed, skipped, or cancelled images should not be charged as completed work.",
+      "Every document lands in your review board first: the source on the left, the editable extracted fields on the right. Uncertain fields are flagged for you to confirm, and nothing reaches your books until you approve it.",
   },
   {
-    question: "How long are result files available?",
+    question: "Can AxLiner publish straight to QuickBooks and Xero?",
     answer:
-      "Generated files are kept for a limited retention window so users can download or share results after processing. For long-term storage, keep the downloaded Excel or text file in your own workspace.",
+      "Yes. Once a batch is reviewed, you can publish coded entries as draft bills to QuickBooks Online or Xero. AxLiner prepares the draft — it never pays, reconciles, or approves anything on its own.",
   },
   {
-    question: "Is anonymous conversion limited?",
+    question: "Does it remember how I code each vendor?",
     answer:
-      "Yes. Anonymous use is intentionally limited. Creating an account gives the app a real owner for jobs, downloads, billing, history, and recovery after reloads.",
+      "It does. AxLiner learns the vendor, account, and tax treatment you apply, then pre-codes future documents from the same supplier — so most fields are already filled in before you open the review board.",
   },
   {
-    question: "What happens if a large batch is interrupted?",
+    question: "Will it catch duplicate invoices before they hit my books?",
     answer:
-      "Active jobs are tracked by the backend. If the browser reloads or the connection drops, the app can recover recent job state from durable metadata instead of relying only on the open tab.",
+      "Yes. AxLiner flags likely duplicates across a batch — same vendor, amount, and invoice number — so you can clear them in review before they ever post and create a double payment.",
+  },
+  {
+    question: "What about handwritten notes or photos taken in bad light?",
+    answer:
+      "AxLiner is built for the messy stuff, not just clean PDFs — phone photos, crumpled receipts, handwritten tables. Fields it isn't sure about are marked with confidence flags so you know exactly what to check.",
+  },
+  {
+    question: "How are credits counted?",
+    answer:
+      "Credits are reserved when a job starts and settled against successful outputs. Failed, skipped, or cancelled documents are not charged as completed work.",
+  },
+  {
+    question: "What happens to my documents after I export?",
+    answer:
+      "Documents are processed and deleted after export, within your retention window. AxLiner never trains on your data, keeps no persistent storage beyond that window, and never shares it with third parties.",
   },
 ];
 
@@ -132,14 +147,6 @@ function FooterLinkedInIcon({ className }: FooterIconProps) {
   return (
     <svg aria-hidden="true" className={className} viewBox="0 0 24 24" fill="currentColor">
       <path d="M6.8 8.1H3.2V20h3.6V8.1Zm.2-3.7A2.1 2.1 0 1 1 2.8 4.4a2.1 2.1 0 0 1 4.2 0ZM20.8 13.2V20h-3.6v-6.3c0-1.6-.6-2.7-2-2.7-1.1 0-1.7.7-2 1.5-.1.3-.1.8-.1 1.2V20H9.5s.1-10.1 0-11.9h3.6v1.7c.5-.8 1.4-2 3.4-2 2.5 0 4.3 1.6 4.3 5.4Z" />
-    </svg>
-  );
-}
-
-function FooterYouTubeIcon({ className }: FooterIconProps) {
-  return (
-    <svg aria-hidden="true" className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M21.4 7.1a2.8 2.8 0 0 0-2-2C17.7 4.6 12 4.6 12 4.6s-5.7 0-7.4.5a2.8 2.8 0 0 0-2 2A29.4 29.4 0 0 0 2.1 12c0 1.7.2 3.4.5 4.9a2.8 2.8 0 0 0 2 2c1.7.5 7.4.5 7.4.5s5.7 0 7.4-.5a2.8 2.8 0 0 0 2-2c.3-1.5.5-3.2.5-4.9 0-1.7-.2-3.4-.5-4.9Zm-11.6 8V8.9l5.5 3.1-5.5 3.1Z" />
     </svg>
   );
 }
@@ -198,13 +205,8 @@ const footerColumns = [
 const footerSocialLinks = [
   {
     label: "LinkedIn",
-    href: "https://www.linkedin.com",
+    href: "https://www.linkedin.com/company/axliner/?viewAsMember=true",
     Icon: FooterLinkedInIcon,
-  },
-  {
-    label: "YouTube",
-    href: "https://www.youtube.com",
-    Icon: FooterYouTubeIcon,
   },
 ];
 
@@ -650,11 +652,31 @@ export default function Home() {
       {/* ── Footer — Descript dark-footer recipe, recolored to black ── */}
       <footer className="relative z-10 bg-black text-white">
         <div className="mx-auto max-w-[1200px] px-4 pt-16 pb-10 sm:px-6 lg:px-8 lg:pt-20">
-          {/* Logo + social row */}
-          <div className="flex flex-col gap-6 pb-10 sm:flex-row sm:items-center sm:justify-between">
-            <NextLink href="/" aria-label="AxLiner home" className="inline-flex items-center">
-              <AppLogo className="h-11 w-auto invert" />
-            </NextLink>
+          {/* Logo + contact + social row */}
+          <div className="flex flex-col gap-8 pb-10 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-5">
+              <NextLink href="/" aria-label="AxLiner home" className="inline-flex items-center">
+                <AppLogo className="h-11 w-auto invert" />
+              </NextLink>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--brand-green)]">Headquarters</p>
+                  <address className="mt-2 text-[15px] font-semibold not-italic leading-relaxed text-white">
+                    Rue du Lac de Constance<br />
+                    Tunis, Tunisia, 13310, TN
+                  </address>
+                </div>
+                <div>
+                  <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--brand-green)]">Email</p>
+                  <a
+                    href="mailto:contact@axliner.com"
+                    className="mt-2 inline-block text-[15px] font-semibold text-white transition-opacity hover:opacity-70"
+                  >
+                    contact@axliner.com
+                  </a>
+                </div>
+              </div>
+            </div>
             <div className="flex items-center gap-3">
               {footerSocialLinks.map(({ label, href, Icon }) => (
                 <a

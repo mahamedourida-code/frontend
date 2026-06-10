@@ -112,7 +112,7 @@ export function OutcomeStats() {
   return (
     <section
       aria-labelledby="outcome-stats-heading"
-      className="relative overflow-hidden bg-[#F6F1EA] py-20 lg:py-28"
+      className="relative overflow-hidden bg-white py-20 lg:py-28"
     >
       <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
         {/* ── Header ── */}
@@ -130,7 +130,7 @@ export function OutcomeStats() {
         </motion.div>
 
         {/* ── The four outcome counters ── */}
-        <dl className="mt-14 grid grid-cols-1 gap-y-12 rounded-3xl bg-[var(--brand-brown)] px-8 py-12 ring-1 ring-black/10 sm:grid-cols-2 sm:gap-x-8 lg:mt-16 lg:grid-cols-4 lg:gap-x-6 lg:px-12 lg:py-14">
+        <dl className="mt-14 grid grid-cols-1 gap-y-12 rounded-3xl bg-[#F6F1EA] px-8 py-12 ring-1 ring-black/10 sm:grid-cols-2 sm:gap-x-8 lg:mt-16 lg:grid-cols-4 lg:gap-x-6 lg:px-12 lg:py-14">
           {STATS.map((stat, index) => (
             <OutcomeStat key={stat.label} stat={stat} index={index} animate={animate} />
           ))}
