@@ -2,8 +2,8 @@
 
 import { motion, useReducedMotion } from "framer-motion"
 
-// Soft brown "logo tint" — the calm, premium-SaaS monochrome treatment.
-const TINT = "#B0A79B"
+// Deep-brown "logo tint" — clear and defined, premium-SaaS monochrome.
+const TINT = "#6b4f2e"
 const H = 50 // uniform logo height in px
 const MAX_W = 184
 
