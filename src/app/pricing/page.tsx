@@ -186,8 +186,6 @@ const planCopyByPlan: Record<string, {
   },
 }
 
-const integrationNames = ["QuickBooks", "Excel", "CSV", "Gmail", "Google Drive", "Dropbox"]
-
 const faqs = [
   {
     question: "What counts as a credit?",
@@ -227,10 +225,7 @@ function creditsLabel(plan: BillingPlan) {
 
 function priceSubtext(plan: BillingPlan) {
   if (plan.interval === "forever") return "No card required"
-  if (plan.interval === "year") {
-    const monthlyEquivalent = Math.round((plan.price_cents || 0) / 12 / 100)
-    return `${formatCents(monthlyEquivalent * 100)}/mo, billed yearly`
-  }
+  if (plan.interval === "year") return "per month, billed annually"
   return "per month"
 }
 
@@ -239,8 +234,23 @@ function planRunPolicy(plan: BillingPlan) {
   return "No daily run cap"
 }
 
+function displayMonthlyCents(plan: BillingPlan) {
+  if (plan.interval === "year") return Math.floor((plan.price_cents || 0) / 12)
+  return plan.price_cents || 0
+}
+
 function priceNumber(plan: BillingPlan) {
-  return formatCents(plan.price_cents).replace("$", "")
+  return Math.floor(displayMonthlyCents(plan) / 100).toLocaleString()
+}
+
+function comparePriceLabel(plan: BillingPlan) {
+  return `$${priceNumber(plan)}/mo`
+}
+
+function compareBillingLabel(plan: BillingPlan) {
+  return plan.interval === "year"
+    ? `${formatCents(plan.price_cents)} billed annually`
+    : "Billed monthly"
 }
 
 function CompareTick() {
@@ -308,6 +318,15 @@ function PricingContent() {
     const max = catalogPlans.find((plan) => plan.plan === "mega" && plan.interval === billingMode)
     return [standard, pro, max].filter(Boolean) as BillingPlan[]
   }, [billingMode, catalogPlans])
+
+  const yearlyDiscountPercent = useMemo(() => {
+    const discounts = catalogPlans
+      .filter((plan) => plan.interval === "year")
+      .map((plan) => plan.annual_discount_percent || 0)
+      .filter((discount) => discount > 0)
+
+    return discounts.length > 0 ? Math.max(...discounts) : 0
+  }, [catalogPlans])
 
   const findCheckoutPlan = (planKey: BillingPlanKey) => {
     return catalogPlans.find((plan) => plan.checkout_key === planKey)
@@ -548,11 +567,13 @@ function PricingContent() {
                 )}
               />
             </button>
-            <span className={cn("text-sm font-bold", billingMode === "year" ? "text-neutral-950" : "text-neutral-500")}>
-              Yearly
-            </span>
-            <span className="rounded-full bg-[var(--brand-green)] px-3 py-1 text-xs font-bold text-[var(--brand-green-fg)] shadow-[0_0_0_1px_var(--brand-green-ring)]">
-              Save yearly
+            <span className={cn("relative text-sm font-semibold transition-colors", billingMode === "year" ? "text-neutral-950" : "text-neutral-400")}>
+              Annual
+              {yearlyDiscountPercent > 0 && (
+                <span className="ml-3 rounded-full border border-[#b6fcdf] bg-[#e9fef6] px-2 py-0.5 text-xs font-semibold text-[#28b57b]">
+                  {yearlyDiscountPercent}% off
+                </span>
+              )}
             </span>
           </div>
 
@@ -602,7 +623,7 @@ function PricingContent() {
                   >
                     <div>
                       <div className="flex items-start justify-between gap-4">
-                        <h2 className="text-3xl font-semibold tracking-normal text-neutral-950">{copy.name}</h2>
+                        <h2 className="text-[34px] font-semibold leading-tight tracking-normal text-neutral-950">{copy.name}</h2>
                         {isPopular && (
                           <span className="rounded-full bg-neutral-950 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-white">
                             Popular
@@ -611,17 +632,17 @@ function PricingContent() {
                       </div>
                       <div className="mt-8 flex items-end gap-2 text-neutral-950">
                         <span className="pb-2 text-2xl font-semibold">$</span>
-                        <span className="text-[64px] font-semibold leading-none tracking-normal">{priceNumber(plan)}</span>
+                        <span className="text-[72px] font-semibold leading-none tracking-normal">{priceNumber(plan)}</span>
                       </div>
-                      <p className="mt-2 text-sm font-semibold text-neutral-600">{priceSubtext(plan)}</p>
-                      <p className="mt-5 text-base font-bold text-neutral-950">{creditsLabel(plan)}</p>
+                      <p className="mt-2 text-base font-semibold text-neutral-600">{priceSubtext(plan)}</p>
+                      <p className="mt-5 text-lg font-bold text-neutral-950">{creditsLabel(plan)}</p>
                     </div>
 
-                    <p className="text-base font-semibold leading-6 text-neutral-800">{copy.description}</p>
+                    <p className="text-[17px] font-semibold leading-7 text-neutral-800">{copy.description}</p>
 
                     <ul className="flex-1 space-y-3">
                       {copy.included.map((feature) => (
-                        <li key={feature} className="flex items-start gap-3 text-[15px] font-semibold leading-6 text-neutral-900">
+                        <li key={feature} className="flex items-start gap-3 text-base font-semibold leading-7 text-neutral-900">
                           <Check aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-[var(--brand-green-fg)]" />
                           <span>{feature}</span>
                         </li>
@@ -629,8 +650,11 @@ function PricingContent() {
                     </ul>
 
                     <Button
-                      className="h-12 w-full rounded-full"
-                      variant={isPopular ? "glossy" : "surface"}
+                      className={cn(
+                        "h-12 w-full rounded-full text-base font-bold",
+                        isPopular && "!border-neutral-950/25 !bg-transparent !text-neutral-950 shadow-none hover:!border-neutral-950 hover:!bg-neutral-950 hover:!text-white"
+                      )}
+                      variant="surface"
                       disabled={isLoading}
                       onClick={() => startCheckout(plan)}
                     >
@@ -642,36 +666,45 @@ function PricingContent() {
               })
             )}
           </div>
-
-          <div className="relative mt-24 overflow-hidden border-y border-neutral-900/10 py-5">
-            <div className="flex min-w-max animate-[scroll-left_28s_linear_infinite] items-center gap-10 text-lg font-bold text-neutral-400">
-              {[...integrationNames, ...integrationNames, ...integrationNames].map((name, index) => (
-                <span key={`${name}-${index}`} className="whitespace-nowrap">{name}</span>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 
       {paidPlans.length > 0 && (
         <section className="mx-auto mt-28 max-w-[1248px] px-4 sm:px-6 lg:px-0">
-          <h2 className="text-center text-[40px] font-semibold leading-tight tracking-normal text-neutral-950 sm:text-[46px]">
+          <h2 className="text-center text-[44px] font-semibold leading-tight tracking-normal text-neutral-950 sm:text-[54px]">
             Compare plans
           </h2>
 
-          <div className="mt-14 overflow-hidden rounded-[32px] border border-neutral-200 bg-white">
-            <Table className="min-w-[920px] border-separate border-spacing-0" containerClassName="overflow-x-auto">
-              <TableHeader>
+          <div className="sticky top-[84px] z-40 mt-14 hidden grid-cols-[30%_repeat(3,minmax(0,1fr))] overflow-hidden rounded-t-[32px] border border-neutral-200 bg-white shadow-[0_14px_36px_-30px_rgba(0,0,0,0.55)] lg:grid">
+            <div className="bg-neutral-50 px-6 py-7 text-base font-bold uppercase tracking-[0.16em] text-neutral-500">
+              Feature
+            </div>
+            {paidPlans.map((plan) => {
+              const copy = planCopyByPlan[plan.plan] || planCopyByPlan.pro
+              return (
+                <div key={`sticky-${plan.plan}-${plan.interval}`} className="border-l border-neutral-200 bg-white px-6 py-7">
+                  <p className="text-[26px] font-semibold leading-tight text-neutral-950">{copy.name}</p>
+                  <p className="mt-4 text-[34px] font-semibold leading-none text-neutral-950">{comparePriceLabel(plan)}</p>
+                  <p className="mt-2 text-base font-semibold text-neutral-700">{compareBillingLabel(plan)}</p>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="rounded-[32px] border border-neutral-200 bg-white lg:rounded-t-none lg:border-t-0">
+            <Table className="min-w-[980px] border-separate border-spacing-0 text-base" containerClassName="overflow-x-auto rounded-[32px] lg:rounded-t-none">
+              <TableHeader className="lg:hidden">
                 <TableRow className="border-neutral-200 hover:bg-transparent">
-                  <TableHead className="w-[30%] border-b border-neutral-200 bg-neutral-50 px-6 py-6 text-sm font-bold uppercase tracking-[0.16em] text-neutral-500">
+                  <TableHead className="w-[30%] border-b border-neutral-200 bg-neutral-50 px-6 py-7 text-base font-bold uppercase tracking-[0.16em] text-neutral-500">
                     Feature
                   </TableHead>
                   {paidPlans.map((plan) => {
                     const copy = planCopyByPlan[plan.plan] || planCopyByPlan.pro
                     return (
-                      <TableHead key={`${plan.plan}-${plan.interval}`} className="border-b border-l border-neutral-200 px-6 py-6 align-top">
-                        <p className="text-xl font-semibold text-neutral-950">{copy.name}</p>
-                        <p className="mt-2 text-sm font-semibold text-neutral-600">{formatCents(plan.price_cents)} - {priceSubtext(plan)}</p>
+                      <TableHead key={`${plan.plan}-${plan.interval}`} className="border-b border-l border-neutral-200 bg-white px-6 py-7 align-top">
+                        <p className="text-[26px] font-semibold leading-tight text-neutral-950">{copy.name}</p>
+                        <p className="mt-4 text-[34px] font-semibold leading-none text-neutral-950">{comparePriceLabel(plan)}</p>
+                        <p className="mt-2 text-base font-semibold text-neutral-700">{compareBillingLabel(plan)}</p>
                       </TableHead>
                     )
                   })}
@@ -680,21 +713,21 @@ function PricingContent() {
               <TableBody>
                 {comparisonGroups.map((group) => (
                   <Fragment key={group.title}>
-                    <TableRow className="border-neutral-200 bg-[#f7fff9] hover:bg-[#f7fff9]">
+                    <TableRow className="border-neutral-200 bg-neutral-50 hover:bg-neutral-50">
                       <TableCell
                         colSpan={paidPlans.length + 1}
-                        className="border-b border-neutral-200 px-6 py-4 text-xs font-bold uppercase tracking-[0.2em] text-[var(--brand-green-fg)]"
+                        className="border-b border-neutral-200 px-6 py-4 text-sm font-bold uppercase tracking-[0.2em] text-neutral-500"
                       >
                         {group.title}
                       </TableCell>
                     </TableRow>
                     {group.rows.map((row) => (
                       <TableRow key={row.label} className="border-neutral-200 hover:bg-neutral-50">
-                        <TableCell className={cn("border-b border-neutral-200 px-6 py-5 text-sm font-semibold text-neutral-950", row.emphasis && "text-base")}>
+                        <TableCell className={cn("border-b border-neutral-200 px-6 py-6 text-base font-semibold text-neutral-950", row.emphasis && "text-lg")}>
                           {row.label}
                         </TableCell>
                         {row.values.map((value, index) => (
-                          <TableCell key={`${row.label}-${index}`} className="border-b border-l border-neutral-200 px-6 py-5 text-sm font-semibold text-neutral-900">
+                          <TableCell key={`${row.label}-${index}`} className="border-b border-l border-neutral-200 px-6 py-6 text-base font-semibold text-neutral-900">
                             <CompareCellValue value={value} />
                           </TableCell>
                         ))}
