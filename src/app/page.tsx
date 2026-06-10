@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { IntegrationsLogos } from "@/components/landing/IntegrationsLogos";
 import ScrollAnimatedSection from "@/components/ScrollAnimatedSection";
 import { AppLogo } from "@/components/AppIcon";
 import { BrandVisualFrame } from "@/components/BrandVisual";
@@ -480,57 +480,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── 3 · Trusted-by marquee (white) ── */}
-        <div className="relative z-20 isolate bg-white py-16 sm:py-20 lg:py-24">
-        <div
-          ref={contrastSectionRef}
-          className="relative mx-auto max-w-[1280px] text-foreground"
-        >
-          <div className="relative z-10">
-        <ScrollAnimatedSection id="trusted" className="w-full overflow-hidden py-5">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-
-            <div className="relative z-10 overflow-hidden" data-animate="stagger">
-              <div
-                className="flex gap-8 items-center"
-                style={{
-                  animation: 'scroll-left 60s linear infinite',
-                  width: 'max-content',
-                  willChange: 'transform'
-                }}
-              >
-                {Array.from({ length: 10 }, (_, setIndex) =>
-                  [1, 2, 3, 4, 5, 6, 7, 8, 9].map((imgNum) => (
-                    <Card
-                      key={`${setIndex}-${imgNum}`}
-                      className="flex-shrink-0 border border-gray-200 bg-white transition-all duration-300 hover:border-[var(--brand-green)]/40 hover:shadow-md dark:border-gray-200 dark:bg-white w-[108px] h-[70px]"
-                    >
-                      <CardContent className="p-2 flex items-center justify-center w-full h-full">
-                        <Image
-                          src={`/${imgNum}.jpeg`}
-                          alt={`Company ${imgNum}`}
-                          width={100}
-                          height={60}
-                          className="w-[100px] h-[60px] object-contain opacity-60 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            const parent = target.parentElement;
-                            if (parent) {
-                              parent.innerHTML = `<span class="text-xs font-bold text-black">Company ${imgNum}</span>`;
-                            }
-                          }}
-                        />
-                      </CardContent>
-                    </Card>
-                  ))
-                ).flat()}
-              </div>
-            </div>
-          </div>
-        </ScrollAnimatedSection>
-          </div>
-        </div>
+        {/* ── Integrations — brown-tinted logo wall (white) ── */}
+        <div ref={contrastSectionRef}>
+          <IntegrationsLogos />
         </div>
 
         {/* ── Scroll-grow cinematic section (white), before the features band ── */}
@@ -577,66 +529,7 @@ export default function Home() {
         {/* ── 8 · Outcome stat band — animated count-up social proof (white) ── */}
         <OutcomeStats />
 
-        {/* ── 9 · Integrations band — large raw logos (white) ── */}
-        <section className="relative z-10 overflow-hidden bg-white py-20 lg:py-28">
-          <div className="mx-auto max-w-[1280px] px-4 text-center sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.55, ease: "easeOut" }}
-            >
-              <h2 className="ax-h2 ax-marketing-section-title mx-auto max-w-3xl font-bold text-neutral-950">
-                Works with the tools you{" "}
-                <span className="font-bold">already use</span>.
-              </h2>
-              <p className="ax-body ax-marketing-body mx-auto mt-5 max-w-2xl font-semibold text-neutral-950">
-                Pull documents in from email and Drive, publish reviewed entries straight to your accounting system. No new place to learn.
-              </p>
-            </motion.div>
-
-            <motion.ul
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.3 }}
-              variants={{
-                hidden: {},
-                show: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
-              }}
-              className="mt-16 flex flex-wrap items-center justify-center gap-x-16 gap-y-12 sm:gap-x-24 lg:gap-x-28"
-            >
-              {[
-                { src: "/integrations/quickbooks-qb.png", alt: "QuickBooks", label: "QuickBooks", h: 76 },
-                { src: "/integrations/xero.png", alt: "Xero", label: "Xero", h: 88 },
-                { src: "/integrations/gmail.webp", alt: "Gmail", label: "Gmail", h: 72 },
-                { src: "/drive.png", alt: "Google Drive", label: "Google Drive", h: 92 },
-              ].map((logo) => (
-                <motion.li
-                  key={logo.label}
-                  variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-                  }}
-                  className="flex flex-col items-center gap-4"
-                >
-                  <Image
-                    src={logo.src}
-                    alt={logo.alt}
-                    width={200}
-                    height={logo.h}
-                    style={{ height: logo.h, width: "auto" }}
-                    className="object-contain"
-                  />
-                  <span className="text-sm font-bold uppercase tracking-[0.16em] text-black">
-                    {logo.label}
-                  </span>
-                </motion.li>
-              ))}
-            </motion.ul>
-          </div>
-        </section>
-
-        {/* ── 10 · Security + FAQ — redesigned to match the system (white) ── */}
+        {/* ── Security + FAQ — redesigned to match the system (white) ── */}
         <div className="relative isolate overflow-hidden bg-white">
           <div className="relative z-10">
         <ScrollAnimatedSection id="security" className="relative z-10 overflow-hidden bg-white py-20 lg:py-28">
