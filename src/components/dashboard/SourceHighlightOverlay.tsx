@@ -1,10 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { Quote } from "lucide-react"
 
 import { findSourceMatch } from "@/lib/source-highlight"
+import { useMotionTokens } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 /**
@@ -37,7 +38,7 @@ export function SourceHighlightOverlay({
   sourceText,
   className,
 }: SourceHighlightOverlayProps) {
-  const prefersReducedMotion = useReducedMotion()
+  const { reduced, dur, ease } = useMotionTokens()
 
   const match = React.useMemo(
     () => (value && sourceText ? findSourceMatch(value, sourceText) : null),
@@ -50,10 +51,10 @@ export function SourceHighlightOverlay({
         <motion.div
           key="source-highlight"
           aria-hidden="true"
-          initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
+          initial={reduced ? { opacity: 0 } : { opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
-          transition={{ duration: 0.18, ease: "easeOut" }}
+          exit={reduced ? { opacity: 0 } : { opacity: 0, y: 6 }}
+          transition={{ duration: dur.fast, ease }}
           className={cn(
             "pointer-events-none absolute inset-x-3 bottom-3 z-[2]",
             className,
@@ -66,9 +67,33 @@ export function SourceHighlightOverlay({
             </p>
             <p className="mt-1 text-xs leading-5 text-[var(--brand-brown-deep)]">
               {match.line.slice(0, match.matchStart)}
-              <mark className="rounded-[3px] bg-[var(--workspace-selection-bg)] px-0.5 font-semibold text-[var(--brand-brown-deep)]">
+              <motion.mark
+                // One-shot attention pulse so the eye lands on the proven value
+                // the moment the source match appears — the "show me where it
+                // says that" beat the demo videos hang on.
+                key={`${match.matchStart}-${match.matchEnd}-${match.line}`}
+                initial={false}
+                animate={
+                  reduced
+                    ? {}
+                    : {
+                        backgroundColor: [
+                          "var(--workspace-selection-bg)",
+                          "var(--button-warm)",
+                          "var(--workspace-selection-bg)",
+                        ],
+                        boxShadow: [
+                          "0 0 0 0 rgba(6,78,59,0)",
+                          "0 0 0 3px rgba(6,78,59,0.18)",
+                          "0 0 0 0 rgba(6,78,59,0)",
+                        ],
+                      }
+                }
+                transition={{ duration: dur.slow, ease, times: [0, 0.4, 1] }}
+                className="rounded-[3px] bg-[var(--workspace-selection-bg)] px-0.5 font-semibold text-[var(--brand-brown-deep)]"
+              >
                 {match.line.slice(match.matchStart, match.matchEnd)}
-              </mark>
+              </motion.mark>
               {match.line.slice(match.matchEnd)}
             </p>
           </div>

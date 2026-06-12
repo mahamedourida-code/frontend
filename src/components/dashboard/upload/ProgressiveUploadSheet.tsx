@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ChangeEvent, type DragEvent } from "react"
 import Link from "next/link"
+import { AnimatePresence, motion } from "framer-motion"
 import {
   ArrowRight,
   FileImage,
@@ -22,6 +23,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
+import { useMotionTokens } from "@/lib/motion"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
 import { companyApi, type CompanySummary, type DocumentMode } from "@/lib/api-client"
 
@@ -118,6 +120,7 @@ export function ProgressiveUploadSheet({
   onProcess,
   onCancel,
 }: ProgressiveUploadSheetProps) {
+  const m = useMotionTokens()
   const [companies, setCompanies] = useState<CompanySummary[]>([])
   const [companiesLoading, setCompaniesLoading] = useState(false)
   const [companiesError, setCompaniesError] = useState("")
@@ -254,12 +257,19 @@ export function ProgressiveUploadSheet({
 
           <section className="space-y-3">
             <StageLabel number={3}>Documents</StageLabel>
-            <div
+            <motion.div
               onDragOver={onDragOver}
               onDragLeave={onDragLeave}
               onDrop={onDrop}
+              animate={{
+                scale: isDragging ? 1.01 : 1,
+                boxShadow: isDragging
+                  ? "0 0 0 4px var(--workspace-blue-soft), 0 8px 24px -12px var(--workspace-primary)"
+                  : "0 0 0 0 rgba(0,0,0,0)",
+              }}
+              transition={m.spring}
               className={cn(
-                "rounded-lg border border-dashed px-4 py-5 text-center transition",
+                "rounded-lg border border-dashed px-4 py-5 text-center transition-colors",
                 isDragging ? "border-[var(--workspace-primary)] bg-[var(--workspace-blue-soft)]" : "border-[var(--workspace-border)] bg-white hover:border-[var(--workspace-primary)]"
               )}
             >
@@ -287,7 +297,7 @@ export function ProgressiveUploadSheet({
                 disabled={busy}
                 className="hidden"
               />
-            </div>
+            </motion.div>
 
             {uploadedFiles.length ? (
               <div className="overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white">
@@ -299,36 +309,49 @@ export function ProgressiveUploadSheet({
                     Clear
                   </Button>
                 </div>
-                <div className="max-h-48 divide-y divide-border overflow-y-auto">
-                  {uploadedFiles.map((file, index) => {
-                    const pdf = isPdfFile(file)
-                    const pageCount = pdfPageCounts[index]
-                    return (
-                      <div key={`${file.name}-${file.size}-${index}`} className="flex items-center gap-3 px-3 py-2.5">
-                        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
-                          {pdf ? <FileText className="size-4" /> : <FileImage className="size-4" />}
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm font-semibold text-foreground">{file.name}</span>
-                          <span className="block truncate text-xs font-medium text-muted-foreground">
-                            {pdf ? `${pageCount || 1} page${pageCount === 1 ? "" : "s"}` : "Image"} - {fileSize(file.size)}
-                          </span>
-                        </span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onRemoveFile(index)}
-                          disabled={busy}
-                          className="size-8 text-muted-foreground hover:text-foreground"
-                          aria-label={`Remove ${file.name}`}
+                <motion.div
+                  variants={m.staggerParent()}
+                  initial="hidden"
+                  animate="show"
+                  className="max-h-48 divide-y divide-border overflow-y-auto"
+                >
+                  <AnimatePresence initial={false}>
+                    {uploadedFiles.map((file, index) => {
+                      const pdf = isPdfFile(file)
+                      const pageCount = pdfPageCounts[index]
+                      return (
+                        <motion.div
+                          key={`${file.name}-${file.size}-${index}`}
+                          layout
+                          variants={m.fadeUp}
+                          exit="exit"
+                          className="flex items-center gap-3 px-3 py-2.5"
                         >
-                          <Trash2 className="size-3.5" />
-                        </Button>
-                      </div>
-                    )
-                  })}
-                </div>
+                          <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
+                            {pdf ? <FileText className="size-4" /> : <FileImage className="size-4" />}
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-semibold text-foreground">{file.name}</span>
+                            <span className="block truncate text-xs font-medium text-muted-foreground">
+                              {pdf ? `${pageCount || 1} page${pageCount === 1 ? "" : "s"}` : "Image"} - {fileSize(file.size)}
+                            </span>
+                          </span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => onRemoveFile(index)}
+                            disabled={busy}
+                            className="size-8 text-muted-foreground hover:text-foreground"
+                            aria-label={`Remove ${file.name}`}
+                          >
+                            <Trash2 className="size-3.5" />
+                          </Button>
+                        </motion.div>
+                      )
+                    })}
+                  </AnimatePresence>
+                </motion.div>
               </div>
             ) : null}
           </section>
@@ -389,7 +412,17 @@ export function ProgressiveUploadSheet({
             className={cn("w-full", workspacePrimaryControlClass)}
           >
             {busy ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
-            {busy ? "Processing documents" : processLabel}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={busy ? "busy" : "idle"}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={m.tFast}
+              >
+                {busy ? "Processing documents" : processLabel}
+              </motion.span>
+            </AnimatePresence>
           </Button>
           {busy ? (
             <Button type="button" variant="surface" onClick={onCancel} className="w-full">

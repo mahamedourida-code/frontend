@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { AnimatePresence, motion } from "framer-motion"
 import { AlertTriangle, Check, Copy, FolderInput, Inbox, Link2, Mail, Plug, PlugZap, RefreshCw, Share2, UserPlus, X } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
@@ -19,6 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
+import { useMotionTokens } from "@/lib/motion"
 import {
   clientIntakeApi,
   connectedSourcesApi,
@@ -102,7 +104,31 @@ function messageState(message: EmailIntakeMessage) {
   return "Failed"
 }
 
+/**
+ * Crossfades a status badge's text label whenever it changes (e.g.
+ * "Processing" → "Ready") instead of an instant swap. Keyed on the value so
+ * AnimatePresence runs the exit/enter on every transition. m.tFast.
+ */
+function BadgeValue({ value }: { value: string }) {
+  const m = useMotionTokens()
+  return (
+    <AnimatePresence mode="popLayout" initial={false}>
+      <motion.span
+        key={value}
+        initial={{ opacity: 0, scale: 0.94 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.94 }}
+        transition={m.tFast}
+        className="inline-block"
+      >
+        {value}
+      </motion.span>
+    </AnimatePresence>
+  )
+}
+
 export default function EmailInboxPage() {
+  const m = useMotionTokens()
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
   const { activeWorkspace, isLoading: workspaceLoading } = useWorkspaces(user)
@@ -125,6 +151,7 @@ export default function EmailInboxPage() {
   const [actionBusy, setActionBusy] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
+  const [copiedLink, setCopiedLink] = useState<"upload" | "status" | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -385,12 +412,52 @@ export default function EmailInboxPage() {
                     <div className="flex items-center gap-3 rounded-md border border-[#d8dde6] bg-[#f8fafc] px-3 py-2">
                       <span className="shrink-0 text-[10px] font-medium uppercase tracking-[0.08em] text-[#6b7280]">Upload</span>
                       <p className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">{newUploadUrl}</p>
-                      <InlineAction className={cn("shrink-0", workspaceTextAction)} onClick={() => void navigator.clipboard.writeText(newUploadUrl)}>Copy</InlineAction>
+                      <InlineAction
+                        className={cn("shrink-0", workspaceTextAction)}
+                        onClick={() => {
+                          void navigator.clipboard.writeText(newUploadUrl)
+                          setCopiedLink("upload")
+                          window.setTimeout(() => setCopiedLink(current => (current === "upload" ? null : current)), 1600)
+                        }}
+                      >
+                        <AnimatePresence mode="popLayout" initial={false}>
+                          <motion.span
+                            key={copiedLink === "upload" ? "copied" : "copy"}
+                            initial={{ opacity: 0, scale: 0.94 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.94 }}
+                            transition={m.tFast}
+                            className="inline-block"
+                          >
+                            {copiedLink === "upload" ? "Copied!" : "Copy"}
+                          </motion.span>
+                        </AnimatePresence>
+                      </InlineAction>
                     </div>
                     <div className="flex items-center gap-3 rounded-md border border-[#d8dde6] bg-[#f8fafc] px-3 py-2">
                       <span className="shrink-0 text-[10px] font-medium uppercase tracking-[0.08em] text-[#6b7280]">Status</span>
                       <p className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">{newUploadUrl.replace("/upload/", "/status/")}</p>
-                      <InlineAction className={cn("shrink-0", workspaceTextAction)} onClick={() => void navigator.clipboard.writeText(newUploadUrl.replace("/upload/", "/status/"))}>Copy</InlineAction>
+                      <InlineAction
+                        className={cn("shrink-0", workspaceTextAction)}
+                        onClick={() => {
+                          void navigator.clipboard.writeText(newUploadUrl.replace("/upload/", "/status/"))
+                          setCopiedLink("status")
+                          window.setTimeout(() => setCopiedLink(current => (current === "status" ? null : current)), 1600)
+                        }}
+                      >
+                        <AnimatePresence mode="popLayout" initial={false}>
+                          <motion.span
+                            key={copiedLink === "status" ? "copied" : "copy"}
+                            initial={{ opacity: 0, scale: 0.94 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.94 }}
+                            transition={m.tFast}
+                            className="inline-block"
+                          >
+                            {copiedLink === "status" ? "Copied!" : "Copy"}
+                          </motion.span>
+                        </AnimatePresence>
+                      </InlineAction>
                     </div>
                   </div>
                 ) : null}
@@ -408,9 +475,10 @@ export default function EmailInboxPage() {
                             <th className="w-16 px-3 py-2" />
                           </tr>
                         </thead>
-                        <tbody>
+                        <motion.tbody variants={m.staggerParent()} initial="hidden" animate="show">
+                          <AnimatePresence initial={false}>
                           {links.slice(0, 5).map(link => (
-                            <tr key={link.id} className="border-b border-[#e5e7eb] last:border-0 hover:bg-[#f8fafc]">
+                            <motion.tr key={link.id} layout variants={m.fadeUp} exit="exit" className="border-b border-[#e5e7eb] last:border-0 hover:bg-[#f8fafc]">
                               <td className="px-4 py-2.5 font-normal text-black">{link.label}</td>
                               <td className="px-4 py-2.5 font-normal text-[#4b5563]">{link.submission_count}/{link.max_submissions}</td>
                               <td className="px-4 py-2.5 font-normal text-[#4b5563]">{formatExpiry(link.expires_at)}</td>
@@ -423,16 +491,18 @@ export default function EmailInboxPage() {
                                   <span className="ax-status-text text-xs font-normal text-[#4b5563]">Revoked</span>
                                 )}
                               </td>
-                            </tr>
+                            </motion.tr>
                           ))}
-                        </tbody>
+                          </AnimatePresence>
+                        </motion.tbody>
                       </table>
                     </div>
 
                     {/* Mobile cards */}
-                    <div className="mt-3 space-y-2 sm:hidden">
+                    <motion.div className="mt-3 space-y-2 sm:hidden" variants={m.staggerParent()} initial="hidden" animate="show">
+                      <AnimatePresence initial={false}>
                       {links.slice(0, 5).map(link => (
-                        <div key={link.id} className="flex items-center justify-between gap-3 rounded-md border border-[#d8dde6] bg-white px-3 py-3">
+                        <motion.div key={link.id} layout variants={m.fadeUp} exit="exit" className="flex items-center justify-between gap-3 rounded-md border border-[#d8dde6] bg-white px-3 py-3">
                           <div className="min-w-0">
                             <p className="truncate text-sm font-normal text-black">{link.label}</p>
                             <p className="mt-0.5 text-xs text-muted-foreground">
@@ -445,9 +515,10 @@ export default function EmailInboxPage() {
                               Revoke
                             </InlineAction>
                           ) : null}
-                        </div>
+                        </motion.div>
                       ))}
-                    </div>
+                      </AnimatePresence>
+                    </motion.div>
                   </>
                 ) : null}
               </CardContent>
@@ -481,9 +552,10 @@ export default function EmailInboxPage() {
                   </Tooltip>
                 </div>
 
-                <div className="mt-3 space-y-2">
+                <motion.div className="mt-3 space-y-2" variants={m.staggerParent()} initial="hidden" animate="show">
+                  <AnimatePresence initial={false}>
                   {members.filter(member => member.role === "reviewer").map(member => (
-                    <div key={member.id} className="flex items-center justify-between rounded-md border border-[#d8dde6] bg-white px-3 py-3">
+                    <motion.div key={member.id} layout variants={m.fadeUp} exit="exit" className="flex items-center justify-between rounded-md border border-[#d8dde6] bg-white px-3 py-3">
                       <div>
                         <p className="text-sm font-normal text-black">{member.member_email}</p>
                         <p className="ax-status-text mt-0.5 text-xs font-normal capitalize text-[#4b5563]">{member.status}</p>
@@ -493,9 +565,10 @@ export default function EmailInboxPage() {
                           Remove
                         </InlineAction>
                       ) : null}
-                    </div>
+                    </motion.div>
                   ))}
-                </div>
+                  </AnimatePresence>
+                </motion.div>
               </CardContent>
             </Card>
           </div>
@@ -515,8 +588,19 @@ export default function EmailInboxPage() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <InlineAction onClick={() => void copyAddress()} disabled={!address} className={cn("shrink-0", workspaceTextAction)}>
-                      {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-                      {copied ? "Copied!" : "Copy address"}
+                      <AnimatePresence mode="popLayout" initial={false}>
+                        <motion.span
+                          key={copied ? "copied" : "copy"}
+                          initial={{ opacity: 0, scale: 0.94 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.94 }}
+                          transition={m.tFast}
+                          className="inline-flex items-center gap-1.5"
+                        >
+                          {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+                          {copied ? "Copied!" : "Copy address"}
+                        </motion.span>
+                      </AnimatePresence>
                     </InlineAction>
                   </TooltipTrigger>
                   <TooltipContent side="top">Copy the forwarding address.</TooltipContent>
@@ -560,7 +644,7 @@ export default function EmailInboxPage() {
                         </div>
                         {source ? (
                           <StatusBadge tone={source.status === "connected" ? "success" : source.status === "error" ? "error" : "neutral"}>
-                            {source.status}
+                            <BadgeValue value={source.status} />
                           </StatusBadge>
                         ) : null}
                       </div>
@@ -675,11 +759,12 @@ export default function EmailInboxPage() {
                         <th className="px-4 py-2.5" />
                       </tr>
                     </thead>
-                    <tbody>
+                    <motion.tbody variants={m.staggerParent()} initial="hidden" animate="show">
+                      <AnimatePresence initial={false}>
                       {submissions.map(submission => {
                         const filename = submission.documents[0]?.original_filename || `${submission.file_count} submitted files`
                         return (
-                          <tr key={submission.id} className="border-b border-[#e5e7eb] last:border-0 hover:bg-[#f8fafc]">
+                          <motion.tr key={submission.id} layout variants={m.fadeUp} exit="exit" className="border-b border-[#e5e7eb] last:border-0 hover:bg-[#f8fafc]">
                             <td className="max-w-[220px] truncate px-5 py-3 font-normal text-black">{filename}</td>
                             <td className="px-4 py-3">
                               <SourceBadge kind="client_link" />
@@ -688,7 +773,7 @@ export default function EmailInboxPage() {
                             <td className={cn(workspaceMutedCell, "tabular-nums")}>{submission.file_count}</td>
                             <td className="px-4 py-3">
                               <StatusBadge tone={submissionTone(submission)}>
-                                {(submission.job_status || submission.status).replace(/_/g, " ")}
+                                <BadgeValue value={(submission.job_status || submission.status).replace(/_/g, " ")} />
                               </StatusBadge>
                             </td>
                             <td className="px-4 py-3">
@@ -698,25 +783,27 @@ export default function EmailInboxPage() {
                                 </InlineAction>
                               ) : null}
                             </td>
-                          </tr>
+                          </motion.tr>
                         )
                       })}
-                    </tbody>
+                      </AnimatePresence>
+                    </motion.tbody>
                   </table>
                 </div>
 
                 {/* Mobile card stack */}
-                <div className="divide-y divide-[#e5e7eb] sm:hidden">
+                <motion.div className="divide-y divide-[#e5e7eb] sm:hidden" variants={m.staggerParent()} initial="hidden" animate="show">
+                  <AnimatePresence initial={false}>
                   {submissions.map(submission => {
                     const filename = submission.documents[0]?.original_filename || `${submission.file_count} submitted files`
                     return (
-                      <div key={submission.id} className="p-5">
+                      <motion.div key={submission.id} layout variants={m.fadeUp} exit="exit" className="p-5">
                         <p className="truncate text-sm font-normal text-black">{filename}</p>
                         <p className="mt-1 text-xs font-normal text-[#4b5563]">{formatReceivedAt(submission.created_at)}</p>
                         <div className="mt-2.5 flex items-center justify-between gap-3">
                           <div className="flex items-center gap-2">
                             <StatusBadge tone={submissionTone(submission)}>
-                              {(submission.job_status || submission.status).replace(/_/g, " ")}
+                              <BadgeValue value={(submission.job_status || submission.status).replace(/_/g, " ")} />
                             </StatusBadge>
                             <span className="text-xs font-normal text-[#4b5563]">{submission.file_count} file{submission.file_count !== 1 ? "s" : ""}</span>
                           </div>
@@ -726,10 +813,11 @@ export default function EmailInboxPage() {
                             </InlineAction>
                           ) : null}
                         </div>
-                      </div>
+                      </motion.div>
                     )
                   })}
-                </div>
+                  </AnimatePresence>
+                </motion.div>
               </>
             )}
           </CardContent>
@@ -771,13 +859,14 @@ export default function EmailInboxPage() {
                         <th className="px-4 py-2.5" />
                       </tr>
                     </thead>
-                    <tbody>
+                    <motion.tbody variants={m.staggerParent()} initial="hidden" animate="show">
+                      <AnimatePresence initial={false}>
                       {messages.map((message) => {
                         const state = messageState(message)
                         const documentNames = message.documents.map(document => document.original_filename).join(", ")
                         const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Processing" ? "processing" : "neutral"
                         return (
-                          <tr key={message.id} className="border-b border-[#e5e7eb] last:border-0 hover:bg-[#f8fafc]">
+                          <motion.tr key={message.id} layout variants={m.fadeUp} exit="exit" className="border-b border-[#e5e7eb] last:border-0 hover:bg-[#f8fafc]">
                             <td className="max-w-[220px] px-5 py-3">
                               <p className="truncate text-sm font-normal text-black">{message.sender || "Unknown sender"}</p>
                               <p className="mt-1 truncate text-xs font-normal text-[#4b5563]">{message.source_email_reference}</p>
@@ -790,7 +879,7 @@ export default function EmailInboxPage() {
                             </td>
                             <td className={workspaceMutedCell}>{formatReceivedAt(message.received_at)}</td>
                             <td className="px-4 py-3">
-                              <StatusBadge tone={tone}>{state}</StatusBadge>
+                              <StatusBadge tone={tone}><BadgeValue value={state} /></StatusBadge>
                             </td>
                             <td className="px-4 py-3">
                               {message.job_id ? (
@@ -803,20 +892,22 @@ export default function EmailInboxPage() {
                                 </span>
                               )}
                             </td>
-                          </tr>
+                          </motion.tr>
                         )
                       })}
-                    </tbody>
+                      </AnimatePresence>
+                    </motion.tbody>
                   </table>
                 </div>
 
-                <div className="divide-y divide-[#e5e7eb] sm:hidden">
+                <motion.div className="divide-y divide-[#e5e7eb] sm:hidden" variants={m.staggerParent()} initial="hidden" animate="show">
+                  <AnimatePresence initial={false}>
                   {messages.map((message) => {
                     const state = messageState(message)
                     const documentNames = message.documents.map(document => document.original_filename).join(", ")
                     const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Processing" ? "processing" : "neutral"
                     return (
-                      <div key={message.id} className="grid gap-3 px-5 py-4">
+                      <motion.div key={message.id} layout variants={m.fadeUp} exit="exit" className="grid gap-3 px-5 py-4">
                         <div className="min-w-0">
                           <p className="truncate text-sm font-normal text-black">{message.sender || "Unknown sender"}</p>
                           <p className="mt-1 truncate text-xs font-normal text-[#4b5563]">{message.source_email_reference}</p>
@@ -827,7 +918,7 @@ export default function EmailInboxPage() {
                         <div className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-2">
                             <SourceBadge kind="email" />
-                            <StatusBadge tone={tone}>{state}</StatusBadge>
+                            <StatusBadge tone={tone}><BadgeValue value={state} /></StatusBadge>
                           </div>
                           {message.job_id ? (
                             <InlineAction asChild className={workspaceTextAction}>
@@ -839,10 +930,11 @@ export default function EmailInboxPage() {
                             </span>
                           )}
                         </div>
-                      </div>
+                      </motion.div>
                     )
                   })}
-                </div>
+                  </AnimatePresence>
+                </motion.div>
               </>
             )}
           </CardContent>

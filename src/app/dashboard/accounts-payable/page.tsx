@@ -56,6 +56,7 @@ import {
   type XeroBillPublication,
 } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
+import { useMotionTokens } from "@/lib/motion"
 
 type QueueFilter =
   | "needs_attention"
@@ -257,6 +258,7 @@ function AccountsPayableContent() {
   const searchParams = useSearchParams()
   const { user, loading: authLoading } = useAuth()
   const { activeWorkspace } = useWorkspaces(user)
+  const m = useMotionTokens()
   const clientId = searchParams.get("client")
   const clientName = searchParams.get("clientName")
   const companyId = searchParams.get("company_id")
@@ -902,24 +904,35 @@ function AccountsPayableContent() {
                   { value: "needs_attention" as const, label: "Needs attention", count: counts.needs_coding + counts.needs_review },
                   { value: "ready_to_publish" as const, label: "Ready to publish", count: counts.ready_to_publish },
                   { value: "published" as const, label: "Published", count: counts.published },
-                ].map(tab => (
-                  <button
-                    key={tab.value}
-                    type="button"
-                    role="tab"
-                    aria-selected={filter === tab.value}
-                    onClick={() => setFilter(tab.value)}
-                    className={cn(
-                      "ax-interactive inline-flex h-7 items-center gap-1 rounded-full border px-3 text-xs font-medium",
-                      filter === tab.value
-                        ? "border-[#1877F2] bg-[#1877F2] text-white"
-                        : "border-slate-300 bg-white text-slate-700 hover:border-[#1877F2] hover:text-[#1877F2]"
-                    )}
-                  >
-                    {tab.label}
-                    <span className="tabular-nums opacity-70">{tab.count}</span>
-                  </button>
-                ))}
+                ].map(tab => {
+                  const isActiveTab = filter === tab.value
+                  return (
+                    <button
+                      key={tab.value}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActiveTab}
+                      onClick={() => setFilter(tab.value)}
+                      className={cn(
+                        "ax-interactive relative inline-flex h-7 items-center gap-1 rounded-full border px-3 text-xs font-medium",
+                        isActiveTab
+                          ? "border-[#1877F2] text-white"
+                          : "border-slate-300 bg-white text-slate-700 hover:border-[#1877F2] hover:text-[#1877F2]"
+                      )}
+                    >
+                      {isActiveTab ? (
+                        <motion.span
+                          layoutId="ap-tab-indicator"
+                          aria-hidden="true"
+                          className="absolute inset-0 -z-[1] rounded-full bg-[#1877F2]"
+                          transition={m.reduced ? { duration: 0 } : m.spring}
+                        />
+                      ) : null}
+                      <span className="relative">{tab.label}</span>
+                      <span className="relative tabular-nums opacity-70">{tab.count}</span>
+                    </button>
+                  )
+                })}
               </div>
               <details className="relative">
                 <summary
@@ -1033,12 +1046,12 @@ function AccountsPayableContent() {
                         const missing = missingInfo.get(item.id)
                         return (
                           <motion.tr
-                            key={item.id}
+                            key={`${filter}-${item.id}`}
                             layout
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.16, ease: "easeOut" }}
+                            transition={m.tFast}
                             tabIndex={0}
                             onClick={() => setActiveId(item.id)}
                             onKeyDown={event => {
@@ -1061,7 +1074,16 @@ function AccountsPayableContent() {
                                   aria-label={`Select ${item.source_filename}`}
                                 />
                               ) : (
-                                <span className={cn("block size-2 rounded-full", dotColor[tone])} />
+                                <AnimatePresence mode="popLayout" initial={false}>
+                                  <motion.span
+                                    key={tone}
+                                    initial={m.reduced ? { opacity: 0 } : { opacity: 0, scale: 0.5 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={m.reduced ? { opacity: 0 } : { opacity: 0, scale: 0.5 }}
+                                    transition={m.tFast}
+                                    className={cn("block size-2 rounded-full", dotColor[tone])}
+                                  />
+                                </AnimatePresence>
                               )}
                             </td>
                             <td className="max-w-[240px] px-3 py-2.5">
@@ -1081,9 +1103,18 @@ function AccountsPayableContent() {
                             <td className="px-3 py-2.5 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.tax_amount)}</td>
                             <td className="px-3 py-2.5 text-right font-mono font-normal tabular-nums text-slate-950">{ledgerValue(item.draft_data.total)}</td>
                             <td className="px-3 py-2.5">
-                              <span className={cn("text-xs font-medium", statusTextColor[tone])}>
-                                {statusLabel(item.status)}
-                              </span>
+                              <AnimatePresence mode="popLayout" initial={false}>
+                                <motion.span
+                                  key={item.status}
+                                  initial={m.reduced ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  exit={m.reduced ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
+                                  transition={m.tFast}
+                                  className={cn("inline-block text-xs font-medium", statusTextColor[tone])}
+                                >
+                                  {statusLabel(item.status)}
+                                </motion.span>
+                              </AnimatePresence>
                             </td>
                           </motion.tr>
                         )

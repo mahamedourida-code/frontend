@@ -49,6 +49,7 @@ import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOver
 import { SourceHighlightOverlay } from "@/components/dashboard/SourceHighlightOverlay"
 import { ProgressiveUploadSheet } from "@/components/dashboard/upload/ProgressiveUploadSheet"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
+import { useMotionTokens } from "@/lib/motion"
 import { duplicateCopy } from "@/lib/anomaly-reasons"
 import { buildCardSummary } from "@/lib/card-summary"
 import { fieldAttention } from "@/lib/field-attention"
@@ -478,17 +479,29 @@ export function UploadDropzone({
   | "onClearFiles"
 >) {
   const [selectedPreview, setSelectedPreview] = useState<{ url: string; name: string } | null>(null)
+  const m = useMotionTokens()
 
   return (
     <>
-    <div
+    <motion.div
       id="upload-files"
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
+      animate={
+        m.reduced
+          ? {}
+          : {
+              scale: isDragging ? 1.008 : 1,
+              boxShadow: isDragging
+                ? "0 0 0 4px rgba(6,78,59,0.16), 0 18px 40px -24px rgba(6,78,59,0.45)"
+                : "0 0 0 0 rgba(6,78,59,0)",
+            }
+      }
+      transition={m.spring}
       className={cn(
-        "relative overflow-hidden rounded-md border border-dashed transition-all duration-200",
-        isDragging ? "scale-[0.997] border-[var(--brand-brown-fg)] bg-[var(--brand-clay)]" : "border-[var(--button-warm-ring)] bg-[var(--button-warm)] hover:border-black"
+        "relative overflow-hidden rounded-md border border-dashed transition-colors duration-200",
+        isDragging ? "border-[var(--brand-brown-fg)] bg-[var(--brand-clay)]" : "border-[var(--button-warm-ring)] bg-[var(--button-warm)] hover:border-black"
       )}
     >
       <div className={cn("px-4 py-5 text-center sm:px-6", uploadedFiles.length ? "min-h-[240px]" : "flex min-h-[420px] flex-col items-center justify-center")}>
@@ -557,15 +570,24 @@ export function UploadDropzone({
         />
 
         {uploadedFiles.length ? (
-          <div className="mx-auto mt-5 max-w-3xl divide-y divide-[var(--button-warm-ring)] overflow-hidden rounded-md border border-[var(--button-warm-ring)] bg-white text-left">
+          <motion.div
+            variants={m.staggerParent()}
+            initial="hidden"
+            animate="show"
+            className="mx-auto mt-5 max-w-3xl divide-y divide-[var(--button-warm-ring)] overflow-hidden rounded-md border border-[var(--button-warm-ring)] bg-white text-left"
+          >
+            <AnimatePresence initial={false}>
             {uploadedFiles.map((file, index) => {
               const pdf = isPdfFile(file)
               const pageCount = pdfPageCounts[index]
               const previewUrl = filePreviewUrls[index]
               return (
-                <div
+                <motion.div
                   key={`${file.name}-${file.size}-${index}`}
-                  className="ax-row-enter flex items-center gap-3 px-3 py-2.5"
+                  layout
+                  variants={m.fadeUp}
+                  exit="exit"
+                  className="flex items-center gap-3 px-3 py-2.5"
                 >
                   <button
                     type="button"
@@ -599,21 +621,34 @@ export function UploadDropzone({
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
-                </div>
+                </motion.div>
               )
             })}
-          </div>
+            </AnimatePresence>
+          </motion.div>
         ) : null}
       </div>
-    </div>
+    </motion.div>
+      <AnimatePresence>
       {selectedPreview ? (
-        <div
+        <motion.div
+          key="file-preview"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={m.tFast}
           className="fixed inset-0 z-[90] flex items-center justify-center bg-[#111827]/50 p-4 backdrop-blur-xl"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) setSelectedPreview(null)
           }}
         >
-          <div className={cn("w-full max-w-4xl overflow-hidden rounded-md border p-4", workspacePanelSurfaceClass)}>
+          <motion.div
+            variants={m.fadeScale}
+            initial="hidden"
+            animate="show"
+            exit="exit"
+            className={cn("w-full max-w-4xl overflow-hidden rounded-md border p-4", workspacePanelSurfaceClass)}
+          >
             <div className="mb-3 flex items-center justify-between gap-3">
               <p className="truncate text-sm font-semibold text-foreground">{selectedPreview.name}</p>
               <Button
@@ -630,9 +665,10 @@ export function UploadDropzone({
             <div className="flex max-h-[78vh] items-center justify-center overflow-hidden rounded-lg bg-white">
               <img src={selectedPreview.url} alt={selectedPreview.name} className="max-h-[78vh] w-full object-contain" />
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       ) : null}
+      </AnimatePresence>
     </>
   )
 }
