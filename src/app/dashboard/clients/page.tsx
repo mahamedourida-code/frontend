@@ -197,7 +197,7 @@ export default function ClientsPage() {
         title="Delete client"
         description={
           <>
-            This permanently removes <span className="font-bold">{deleteTarget?.name}</span> and its documents. This
+            This removes <span className="font-bold">{deleteTarget?.name}</span> as a client label. Existing documents and bills are kept but detached. This
             cannot be undone.
           </>
         }

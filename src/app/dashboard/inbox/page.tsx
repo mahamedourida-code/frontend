@@ -467,7 +467,12 @@ export default function EmailInboxPage() {
                   <Input type="email" value={reviewerEmail} onChange={event => setReviewerEmail(event.target.value)} placeholder="reviewer@firm.com" />
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="glossy" onClick={() => void inviteReviewer()} disabled={actionBusy === "reviewer"} className={workspacePrimaryButton}>
+                      <Button
+                        variant="glossy"
+                        onClick={() => void inviteReviewer()}
+                        disabled={actionBusy === "reviewer" || !reviewerEmail.trim()}
+                        className={workspacePrimaryButton}
+                      >
                         <UserPlus className="size-4" />
                         Add
                       </Button>

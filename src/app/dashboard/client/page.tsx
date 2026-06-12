@@ -515,10 +515,10 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
             // Create a Set of downloaded file IDs to prevent duplicates
             const downloadedIds = new Set<string>()
 
-            for (const file of resultFiles) {
+            for (const [index, file] of resultFiles.entries()) {
               if (file.file_id && !downloadedIds.has(file.file_id)) {
                 try {
-                  await downloadFile(file.file_id)
+                  await downloadFile(file.file_id, smartOutputFilename(file, index, uploadedFiles, outputMode))
                   downloadedIds.add(file.file_id)
                   await new Promise(resolve => setTimeout(resolve, 500))
                 } catch (error) {
@@ -967,6 +967,7 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
               ? 'csv'
               : 'xlsx',
         documentMode: activeDocumentMode,
+        ocrLanguage: typeof window !== "undefined" ? window.localStorage.getItem("ocrLanguage") || "en" : "en",
         workspaceId: activeWorkspace?.id,
         companyId: selectedCompanyId || undefined,
       })

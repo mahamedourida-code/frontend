@@ -259,6 +259,7 @@ function AccountsPayableContent() {
   const { activeWorkspace } = useWorkspaces(user)
   const clientId = searchParams.get("client")
   const clientName = searchParams.get("clientName")
+  const companyId = searchParams.get("company_id")
   const [clientJobIds, setClientJobIds] = useState<Set<string> | null>(null)
   const [items, setItems] = useState<AccountsPayableItem[]>([])
   const [filter, setFilter] = useState<QueueFilter>("needs_attention")
@@ -311,7 +312,7 @@ function AccountsPayableContent() {
   const loadQueue = async () => {
     setLoading(true)
     try {
-      const response = await accountsPayableApi.list()
+      const response = await accountsPayableApi.list(undefined, companyId ? { companyId } : undefined)
       setItems(response.items)
       setActiveId(current => current && response.items.some(item => item.id === current)
         ? current
@@ -325,7 +326,7 @@ function AccountsPayableContent() {
 
   useEffect(() => {
     if (user) void loadQueue()
-  }, [user?.id])
+  }, [user?.id, companyId])
 
   const loadAccountingDestination = async (sync = false) => {
     setAccountingConnectionLoading(true)
@@ -394,6 +395,7 @@ function AccountsPayableContent() {
   }
 
   const activeItem = items.find(item => item.id === activeId) || null
+  const activeHasDuplicate = activeItem ? hasActiveDuplicate(activeItem) : false
   const activeXeroPublication = xeroPublication(activeItem)
 
   useEffect(() => {
@@ -419,6 +421,14 @@ function AccountsPayableContent() {
   const duplicateCount = useMemo(
     () => items.filter(item => hasActiveDuplicate(item)).length,
     [items],
+  )
+  const selectedReadyItems = useMemo(
+    () => items.filter(item => selectedReadyIds.includes(item.id)),
+    [items, selectedReadyIds],
+  )
+  const selectedDuplicateCount = useMemo(
+    () => selectedReadyItems.filter(item => hasActiveDuplicate(item)).length,
+    [selectedReadyItems],
   )
 
   // C10 — "Missing information" derived per item (no due date, no VAT where
@@ -608,6 +618,10 @@ function AccountsPayableContent() {
 
   const persistDraft = async (status?: AccountsPayableStatus) => {
     if (!activeItem) return
+    if (status === "ready_to_publish" && hasActiveDuplicate(activeItem)) {
+      toast.error("Resolve or dismiss the duplicate warning before marking this draft ready.")
+      return
+    }
     setSaving(true)
     try {
       const response = await accountsPayableApi.update(activeItem.id, {
@@ -703,6 +717,11 @@ function AccountsPayableContent() {
   }
 
   const toggleSelection = (itemId: string, checked: boolean) => {
+    const item = items.find(candidate => candidate.id === itemId)
+    if (checked && item && hasActiveDuplicate(item)) {
+      toast.error("Resolve duplicate warnings before selecting this bill for publishing.")
+      return
+    }
     setSelectedReadyIds(current => checked
       ? Array.from(new Set([...current, itemId]))
       : current.filter(id => id !== itemId))
@@ -710,6 +729,10 @@ function AccountsPayableContent() {
 
   const openPublishDialog = () => {
     if (!selectedReadyIds.length) return
+    if (selectedDuplicateCount > 0) {
+      toast.error("Resolve duplicate warnings before publishing selected bills.")
+      return
+    }
     setPublishResult(null)
     setPublishDialogOpen(true)
   }
@@ -722,6 +745,10 @@ function AccountsPayableContent() {
 
   const confirmPublishSelected = async () => {
     if (!selectedReadyIds.length) return
+    if (selectedDuplicateCount > 0) {
+      toast.error("Resolve duplicate warnings before publishing selected bills.")
+      return
+    }
     setPublishing(true)
     setPublishResult(null)
     try {
@@ -768,6 +795,10 @@ function AccountsPayableContent() {
       if (!window.confirm(`This invoice exceeds PO ${activeItem.matched_po.po_number}${over}. Publish anyway?`)) return
     }
     const retryAttachment = activeItem.status === "published" && activeAccountingPublication?.attachment_status === "failed"
+    if (!retryAttachment && hasActiveDuplicate(activeItem)) {
+      toast.error("Resolve or dismiss the duplicate warning before publishing this draft bill.")
+      return
+    }
     if (retryAttachment) {
       if (!window.confirm(`Retry attaching the source document to the existing ${destinationName} draft bill?`)) return
     } else if (!window.confirm(`Publish one reviewed draft bill to ${destinationName}?`)) {
@@ -815,7 +846,14 @@ function AccountsPayableContent() {
           title="Draft bills"
           description={`Review invoice drafts, code exceptions, and publish approved bills to ${destinationName}.`}
           actions={selectedReadyIds.length ? (
-            <MotionButton ref={publishTriggerRef} variant="glossy" onClick={openPublishDialog} disabled={saving || !accountingConnection?.connected} className={cn("h-9 px-4", workspacePrimaryButton)}>
+            <MotionButton
+              ref={publishTriggerRef}
+              variant="glossy"
+              onClick={openPublishDialog}
+              disabled={saving || !accountingConnection?.connected || selectedDuplicateCount > 0}
+              title={selectedDuplicateCount > 0 ? "Resolve duplicate warnings before publishing" : undefined}
+              className={cn("h-9 px-4", workspacePrimaryButton)}
+            >
               {destinationBadgeSrc ? <Image src={destinationBadgeSrc} alt="" width={16} height={16} className="mr-1 size-4 rounded-sm object-contain" /> : null}
               Publish {selectedReadyIds.length} {selectedReadyIds.length === 1 ? "bill" : "bills"}
             </MotionButton>
@@ -991,6 +1029,7 @@ function AccountsPayableContent() {
                         const tone = statusTone[item.status]
                         const isActive = activeId === item.id
                         const isReady = item.status === "ready_to_publish"
+                        const hasDuplicate = hasActiveDuplicate(item)
                         const missing = missingInfo.get(item.id)
                         return (
                           <motion.tr
@@ -1018,6 +1057,7 @@ function AccountsPayableContent() {
                                 <Checkbox
                                   checked={selectedReadyIds.includes(item.id)}
                                   onCheckedChange={checked => toggleSelection(item.id, checked === true)}
+                                  disabled={hasDuplicate}
                                   aria-label={`Select ${item.source_filename}`}
                                 />
                               ) : (
@@ -1027,7 +1067,7 @@ function AccountsPayableContent() {
                             <td className="max-w-[240px] px-3 py-2.5">
                               <div className="flex items-center gap-2">
                                 <span className="truncate font-normal text-slate-950">{item.draft_data.vendor || "Supplier missing"}</span>
-                                {hasActiveDuplicate(item) ? <span className="size-1.5 shrink-0 rounded-full bg-amber-500" title="Possible duplicate" /> : null}
+                                {hasDuplicate ? <span className="size-1.5 shrink-0 rounded-full bg-amber-500" title="Possible duplicate" /> : null}
                                 {missing?.missing ? <span className="size-1.5 shrink-0 rounded-full bg-rose-500" title="Missing information" /> : null}
                               </div>
                             </td>
@@ -1600,12 +1640,25 @@ function AccountsPayableContent() {
                             <InlineAction onClick={() => void persistDraft("needs_coding")} disabled={saving} className="px-2">
                               Return to coding
                             </InlineAction>
-                            <MotionButton ref={activePublishRef} variant="glossy" onClick={() => void publishActive()} disabled={saving || !accountingConnection?.connected} className={cn("h-9", workspacePrimaryButton)}>
+                            <MotionButton
+                              ref={activePublishRef}
+                              variant="glossy"
+                              onClick={() => void publishActive()}
+                              disabled={saving || !accountingConnection?.connected || activeHasDuplicate}
+                              title={activeHasDuplicate ? "Resolve duplicate warnings before publishing" : undefined}
+                              className={cn("h-9", workspacePrimaryButton)}
+                            >
                               Publish to {destinationName}
                             </MotionButton>
                           </>
                         ) : (
-                          <Button variant="reviewed" onClick={() => void persistDraft("ready_to_publish")} disabled={saving} className="h-9">
+                          <Button
+                            variant="reviewed"
+                            onClick={() => void persistDraft("ready_to_publish")}
+                            disabled={saving || activeHasDuplicate}
+                            title={activeHasDuplicate ? "Resolve duplicate warnings before marking ready" : undefined}
+                            className="h-9"
+                          >
                             Mark ready to publish
                           </Button>
                         )}
@@ -1720,7 +1773,8 @@ function AccountsPayableContent() {
                   ref={confirmPublishRef}
                   variant="glossy"
                   onClick={() => void confirmPublishSelected()}
-                  disabled={publishing || !accountingConnection?.connected || !selectedReadyIds.length}
+                  disabled={publishing || !accountingConnection?.connected || !selectedReadyIds.length || selectedDuplicateCount > 0}
+                  title={selectedDuplicateCount > 0 ? "Resolve duplicate warnings before publishing" : undefined}
                   className={cn("h-9 px-4", workspacePrimaryButton)}
                 >
                   {publishing ? (

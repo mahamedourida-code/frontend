@@ -57,7 +57,7 @@ const NAVIGATE_ITEMS: CommandItem[] = [
 const ACT_ITEMS: CommandItem[] = [
   { id: "act-upload",      group: "act", label: "Upload documents",         hint: "New batch",              keywords: "new add files import scan",     icon: Upload,          href: "/dashboard/client#upload-files" },
   { id: "act-refresh-accounting", group: "act", label: "Refresh accounting lists", hint: "Accounting connection", keywords: "sync vendors accounts tax qbo xero", icon: RefreshCw, href: "/dashboard/integrations" },
-  { id: "act-import-pos",  group: "act", label: "Import purchase orders",   hint: "Settings",               keywords: "po pos bills coding",           icon: FileSpreadsheet, href: "/dashboard/settings?section=preferences" },
+  { id: "act-import-pos",  group: "act", label: "Import purchase orders",   hint: "Settings",               keywords: "po pos bills coding",           icon: FileSpreadsheet, href: "/dashboard/settings?section=accounting" },
 ]
 
 function fuzzyScore(haystack: string, query: string): number {

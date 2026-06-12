@@ -121,6 +121,7 @@ export function ProgressiveUploadSheet({
   const [companies, setCompanies] = useState<CompanySummary[]>([])
   const [companiesLoading, setCompaniesLoading] = useState(false)
   const [companiesError, setCompaniesError] = useState("")
+  const [companiesReloadKey, setCompaniesReloadKey] = useState(0)
   const hasPdfs = uploadedFiles.some(isPdfFile)
   const pdfPages = uploadedFiles.reduce((total, file, index) => (
     total + (isPdfFile(file) ? (pdfPageCounts[index] || 1) : 0)
@@ -164,7 +165,7 @@ export function ProgressiveUploadSheet({
     return () => {
       mounted = false
     }
-  }, [onSelectedCompanyIdChange, open, selectedCompanyId, workspaceId])
+  }, [companiesReloadKey, onSelectedCompanyIdChange, open, selectedCompanyId, workspaceId])
 
   return (
     <Sheet open={open} onOpenChange={(nextOpen) => {
@@ -196,7 +197,21 @@ export function ProgressiveUploadSheet({
                 ))}
               </select>
             </label>
-            {companiesError ? <p className="text-xs font-semibold text-destructive">{companiesError}</p> : null}
+            {companiesError ? (
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-xs font-semibold text-destructive">{companiesError}</p>
+                <Button
+                  type="button"
+                  variant="surface"
+                  size="sm"
+                  onClick={() => setCompaniesReloadKey(key => key + 1)}
+                  disabled={busy || companiesLoading}
+                  className="h-7 px-2 text-xs"
+                >
+                  Retry
+                </Button>
+              </div>
+            ) : null}
           </section>
 
           <section className="space-y-3">
@@ -208,7 +223,7 @@ export function ProgressiveUploadSheet({
                   type="button"
                   role="tab"
                   aria-selected={selectedTab === mode.value}
-                  onClick={() => onDocumentModeChange(mode.value === "table" && documentMode === "notes" ? "notes" : mode.value)}
+                  onClick={() => onDocumentModeChange(mode.value)}
                   disabled={busy}
                   className={cn(
                     "ax-interactive inline-flex h-8 cursor-pointer items-center rounded-md px-3 text-xs font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",

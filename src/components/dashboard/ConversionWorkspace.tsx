@@ -672,21 +672,28 @@ export function SelectedFilesTray({
           const pdf = isPdfFile(file)
           const pageCount = pdfPageCounts[index]
           const previewUrl = filePreviewUrls[index]
+          const canPreview = Boolean(previewUrl)
           return (
             <div
               key={`${file.name}-${file.size}-${index}`}
-              role="button"
-              tabIndex={0}
+              role={canPreview ? "button" : undefined}
+              tabIndex={canPreview ? 0 : undefined}
               onClick={() => {
                 if (previewUrl) setSelectedPreview({ url: previewUrl, name: file.name })
               }}
               onKeyDown={(event) => {
+                if (!previewUrl) return
                 if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault()
-                  if (previewUrl) setSelectedPreview({ url: previewUrl, name: file.name })
+                  setSelectedPreview({ url: previewUrl, name: file.name })
                 }
               }}
-              className="group cursor-pointer rounded-lg border border-[var(--button-warm-ring)] bg-white p-2 outline-none transition-colors hover:border-black hover:bg-[var(--button-warm)] focus-visible:ring-2 focus-visible:ring-black/20"
+              className={cn(
+                "group rounded-lg border border-[var(--button-warm-ring)] bg-white p-2 outline-none transition-colors",
+                canPreview
+                  ? "cursor-pointer hover:border-black hover:bg-[var(--button-warm)] focus-visible:ring-2 focus-visible:ring-black/20"
+                  : "cursor-default"
+              )}
             >
               <div className="relative mb-2 aspect-[4/3] overflow-hidden rounded-lg border border-border bg-white">
                 {previewUrl ? (
@@ -2263,6 +2270,20 @@ export function ResultActions({
                   label={reviewLevel.summaryLabel}
                   className="shrink-0"
                 />
+                {duplicateWarning ? (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="surface"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      void onOverrideDuplicateWarning?.(file, duplicateWarning.id)
+                    }}
+                    className="h-7 shrink-0 px-2.5 text-[11px]"
+                  >
+                    Keep separate
+                  </Button>
+                ) : null}
                 <span className="ml-auto inline-flex shrink-0 items-center text-muted-foreground">
                   <span className="sr-only">Open review</span>
                   <ChevronRight className="h-4 w-4 transition group-hover:translate-x-0.5" />

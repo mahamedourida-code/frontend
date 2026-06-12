@@ -407,11 +407,10 @@ function SettingsContent() {
       await accountApi.delete()
       toast.success("Account deleted.")
       await signOut()
+      router.replace("/")
     } catch (error: any) {
       toast.error(error?.detail || error?.message || "Could not delete your account.")
       throw error
-    } finally {
-      router.replace("/")
     }
   }
 

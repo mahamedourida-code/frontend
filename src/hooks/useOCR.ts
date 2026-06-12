@@ -10,6 +10,7 @@ type UploadOutputFormat = 'xlsx' | 'txt' | 'csv'
 interface UploadBatchOptions {
   outputFormat?: UploadOutputFormat
   documentMode?: DocumentMode
+  ocrLanguage?: string
   workspaceId?: string
   companyId?: string
 }
@@ -124,6 +125,7 @@ export function useOCR(): UseOCRReturn {
         output_format: nextOutputFormat,
         consolidation_strategy: 'separate',
         document_mode: options?.documentMode || 'table',
+        ocr_language: options?.ocrLanguage,
         workspace_id: options?.workspaceId,
         company_id: options?.companyId,
         signal: uploadController.signal,
