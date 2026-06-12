@@ -1798,8 +1798,6 @@ export function ResultActions({
     setConfirmedFields({})
   }, [comparisonIndex])
 
-  if (!safeResultFiles.length) return null
-
   const goToAdjacentResult = (direction: -1 | 1) => {
     if (comparisonIndex === null || !navigableResultEntries.length) return
     const position = navigableResultEntries.findIndex(entry => entry.index === comparisonIndex)
@@ -2017,6 +2015,13 @@ export function ResultActions({
     receiptAccountRefId,
     receiptPublishing,
   ])
+
+  // All hooks above must run on every render (Rules of Hooks). Only after the
+  // last hook do we bail out to the empty state — during the processing /
+  // detecting phase `safeResultFiles` is empty, and returning before the
+  // keyboard-shortcut effect above would change the hook count between renders
+  // (React #310: "Rendered more hooks than during the previous render").
+  if (!safeResultFiles.length) return null
 
   return (
     <>
