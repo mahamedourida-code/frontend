@@ -55,6 +55,13 @@ function getFileTypeInfo(filename: string | null | undefined) {
   return { Icon: FileSpreadsheet, bg: "bg-primary/10", fg: "text-primary" }
 }
 
+// Resolve the job identifier the delete endpoint expects. Saved-history rows
+// carry it on original_job_id; fall back to job_id / id so failed and cancelled
+// rows (which may not have original_job_id populated) can still be removed.
+function resolveJobId(job: HistoryJob): string | null {
+  return job.original_job_id || job.job_id || job.id || null
+}
+
 function historyStatusTone(status: string | null | undefined): "success" | "error" | "processing" | "info" | "neutral" {
   if (status === "completed" || status === "partially_completed") return "success"
   if (status === "failed") return "error"
@@ -301,34 +308,35 @@ function HistoryContent() {
       id: "actions",
       cell: ({ row }) => {
         const job = row.original
+        const isDownloadable = job.status === "completed" && job.result_url
+        const isDismissable = job.status === "failed" || job.status === "cancelled"
+        const onDelete = () => {
+          const jobId = resolveJobId(job)
+          if (jobId) handleDelete(jobId)
+          else toast.error("No job ID available")
+        }
         return (
           <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
-            {job.status === "completed" && job.result_url ? (
-              <>
-                <Button
-                  variant="surface"
-                  size="sm"
-                  onClick={() => handleDownload(job)}
-                  className="h-8 px-3"
-                >
-                  <Download className="h-3 w-3 mr-1" />
-                  Download
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => {
-                    const jobId = job.original_job_id
-                    if (jobId) handleDelete(jobId)
-                    else toast.error("No job ID available")
-                  }}
-                  className="h-8 px-3"
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
-              </>
-            ) : job.status === "failed" ? (
-              <span className="text-xs text-destructive">Failed</span>
+            {isDownloadable && (
+              <Button
+                variant="surface"
+                size="sm"
+                onClick={() => handleDownload(job)}
+                className="h-8 px-3"
+              >
+                <Download className="h-3 w-3 mr-1" />
+                Download
+              </Button>
+            )}
+            {isDownloadable || isDismissable ? (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={onDelete}
+                className="h-8 px-3"
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
             ) : (
               <span className="text-xs text-muted-foreground">Processing…</span>
             )}
@@ -362,7 +370,7 @@ function HistoryContent() {
       const row = table.getRowModel().rows.find(r => r.id === focusedRowId)
       if (!row) return
       const job = row.original
-      const jobId = job.original_job_id
+      const jobId = resolveJobId(job)
       if (!jobId) return
       if (window.confirm(`Delete "${job.filename || "this file"}"? This cannot be undone.`)) {
         void handleDelete(jobId)
@@ -450,7 +458,7 @@ function HistoryContent() {
     for (const job of selectedJobs) {
       try {
         // Use original_job_id which is the actual job ID from processing
-        const jobId = job.original_job_id
+        const jobId = resolveJobId(job)
         if (!jobId) {
           errorCount++
           continue
