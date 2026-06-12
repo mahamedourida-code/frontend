@@ -924,12 +924,12 @@ function AccountsPayableContent() {
                         <motion.span
                           layoutId="ap-tab-indicator"
                           aria-hidden="true"
-                          className="absolute inset-0 -z-[1] rounded-full bg-[#1877F2]"
+                          className="absolute inset-0 rounded-full bg-[#1877F2]"
                           transition={m.reduced ? { duration: 0 } : m.spring}
                         />
                       ) : null}
-                      <span className="relative">{tab.label}</span>
-                      <span className="relative tabular-nums opacity-70">{tab.count}</span>
+                      <span className="relative z-10">{tab.label}</span>
+                      <span className="relative z-10 tabular-nums opacity-70">{tab.count}</span>
                     </button>
                   )
                 })}
