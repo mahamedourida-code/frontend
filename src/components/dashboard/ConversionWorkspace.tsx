@@ -3558,8 +3558,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                   step="2"
                   symbol="processing-gears"
                   tone="active"
-                  title="Reading your batch"
-                  hint="Extracting fields from every page — clears when results are ready to verify."
+                  title="Reading your documents"
                 >
                   <div className="flex items-center gap-3 text-sm font-medium text-muted-foreground">
                     <Loader2 className="size-4 animate-spin text-[var(--brand-brown-fg)]" />
