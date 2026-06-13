@@ -37,7 +37,7 @@ export function useHistory(): UseHistoryReturn {
     setError(null)
 
     try {
-      const response = await ocrApi.getSavedHistory(50, 0)
+      const response = await ocrApi.getHistory(50, 0)
       const historyJobs = Array.isArray(response)
         ? response
         : response.jobs || response.history || response.items || response.data || []

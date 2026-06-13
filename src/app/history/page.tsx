@@ -427,18 +427,17 @@ function HistoryContent() {
   }
 
   const handleDelete = async (jobId: string, job?: any) => {
+    if (!confirm('Permanently delete this batch and its files? This cannot be undone.')) return
     try {
-      const response = await ocrApi.deleteFromHistory(jobId)
-      if (response.success) {
-        toast.success('File deleted successfully')
-        // Hide it from any other list (e.g. dashboard "Recent files") right away,
-        // matching whichever id field that list keyed the row on.
-        markHistoryItemsDeleted([jobId, job?.id, job?.job_id, job?.original_job_id])
-        refresh() // Refresh the list after deletion
-        if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('axliner:history-changed'))
-      }
+      await ocrApi.deleteStoredBatch(jobId)
+      toast.success('Batch deleted')
+      // Hide it from any other list (e.g. dashboard "Recent files") right away,
+      // matching whichever id field that list keyed the row on.
+      markHistoryItemsDeleted([jobId, job?.id, job?.job_id, job?.original_job_id])
+      refresh() // Refresh the list after deletion
+      if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('axliner:history-changed'))
     } catch (err: any) {
-      toast.error(err.detail || 'Failed to delete file')
+      toast.error(err.detail || err.message || 'Failed to delete')
     }
   }
 
@@ -469,13 +468,9 @@ function HistoryContent() {
           errorCount++
           continue
         }
-        const response = await ocrApi.deleteFromHistory(jobId)
-        if (response.success) {
-          successCount++
-          deletedIds.push(jobId, job.id, job.job_id, job.original_job_id)
-        } else {
-          errorCount++
-        }
+        await ocrApi.deleteStoredBatch(jobId)
+        successCount++
+        deletedIds.push(jobId, job.id, job.job_id, job.original_job_id)
       } catch (err) {
         errorCount++
       }
@@ -499,29 +494,39 @@ function HistoryContent() {
   }
 
   const handleDeleteAll = async () => {
-    if (!confirm('Are you sure you want to delete all saved files? This action cannot be undone.')) {
+    const targets = filteredJobs
+    if (targets.length === 0) return
+    if (!confirm(`Permanently delete all ${targets.length} batch(es) and their files? This cannot be undone.`)) {
       return
     }
 
-    try {
-      const response = await ocrApi.deleteAllFromHistory()
-      if (response.success) {
-        toast.success(`Deleted ${response.deleted_count} file(s)`)
-        refresh() // Refresh the list after deletion
+    let deleted = 0
+    const deletedIds: Array<string | undefined | null> = []
+    for (const job of targets) {
+      const jobId = resolveJobId(job)
+      if (!jobId) continue
+      try {
+        await ocrApi.deleteStoredBatch(jobId)
+        deleted++
+        deletedIds.push(jobId, job.id, job.job_id, job.original_job_id)
+      } catch {
+        // Skip ones that can't be deleted (e.g. still processing); keep going.
       }
-    } catch (err: any) {
-      toast.error(err.detail || 'Failed to delete files')
     }
+    if (deletedIds.length) markHistoryItemsDeleted(deletedIds)
+    toast.success(`Deleted ${deleted} batch(es)`)
+    refresh()
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('axliner:history-changed'))
   }
 
   return (
     <DashboardShell
       activeItem="history"
-      title="Saved Files"
+      title="Documents"
       user={user}
     >
         <PageHeader
-          title="Saved Files"
+          title="Documents"
           actions={
             <InlineAction onClick={refresh} disabled={isLoading}>
               <RefreshCw className={cn("size-4", isLoading && "animate-spin")} />
@@ -747,7 +752,10 @@ function HistoryContent() {
                       "h-12 cursor-pointer transition-colors",
                       focusedRowId === row.id && "bg-accent/40"
                     )}
-                    onClick={() => setFocusedRowId(prev => prev === row.id ? null : row.id)}
+                    onClick={() => {
+                      const id = resolveJobId(row.original)
+                      if (id) router.push(`/dashboard/client?job_id=${id}`)
+                    }}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id} className="py-2">
@@ -766,9 +774,9 @@ function HistoryContent() {
                       icon={<FileSpreadsheet />}
                       illustration="/symbols/filing-cabinet.png"
                       illustrationSize={260}
-                      eyebrow="Archive"
-                      title="No saved files yet"
-                      description="Reviewed batches you export land in this cabinet — every spreadsheet and journal, ready to reopen."
+                      eyebrow="History"
+                      title="No documents yet"
+                      description="Every batch you process appears here — open any one to review, export, or delete it."
                     />
                   </TableCell>
                 </TableRow>

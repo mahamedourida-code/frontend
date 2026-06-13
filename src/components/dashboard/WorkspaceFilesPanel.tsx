@@ -141,7 +141,7 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
           {recentFiles.map((file) => (
             <Link
               key={file.id}
-              href="/history"
+              href={`/dashboard/client?job_id=${file.id}`}
               className="ax-interactive flex items-center gap-3 px-3 py-3 hover:bg-accent/50"
             >
               <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
