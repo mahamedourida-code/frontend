@@ -1,10 +1,11 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useReducer, useState } from "react"
 import Link from "next/link"
 import { format } from "date-fns"
 import { ArrowRight, FileText } from "lucide-react"
 import { ocrApi } from "@/lib/api-client"
+import { isHistoryItemDeleted, subscribeHistoryDeletions } from "@/lib/recent-files-store"
 import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
 
 type WorkspaceFile = {
@@ -69,6 +70,7 @@ function SkeletonRows() {
 export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
   const [files, setFiles] = useState<WorkspaceFile[]>([])
   const [loading, setLoading] = useState(true)
+  const [, forceRender] = useReducer((tick: number) => tick + 1, 0)
 
   const loadHistory = useCallback(async () => {
     setLoading(true)
@@ -90,20 +92,30 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
     const handleRefresh = () => {
       void loadHistory()
     }
+    const handleVisible = () => {
+      if (document.visibilityState === "visible") void loadHistory()
+    }
 
     window.addEventListener("axliner:history-changed", handleRefresh)
     window.addEventListener("focus", handleRefresh)
+    document.addEventListener("visibilitychange", handleVisible)
+    // Re-render immediately when an item is deleted in Activity so the row drops
+    // out via the filter below, even before the refetch resolves.
+    const unsubscribe = subscribeHistoryDeletions(forceRender)
     return () => {
       window.removeEventListener("axliner:history-changed", handleRefresh)
       window.removeEventListener("focus", handleRefresh)
+      document.removeEventListener("visibilitychange", handleVisible)
+      unsubscribe()
     }
   }, [loadHistory])
 
-  const recentFiles = useMemo(() => (
-    [...files]
-      .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime())
-      .slice(0, 5)
-  ), [files])
+  // Computed on every render (small list) so just-deleted items are filtered out
+  // even when this panel is served from the router cache without a refetch.
+  const recentFiles = [...files]
+    .filter((file) => !isHistoryItemDeleted(file.id))
+    .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime())
+    .slice(0, 5)
 
   return (
     <section className="mt-8 border-t border-border px-1 pb-5 pt-5">

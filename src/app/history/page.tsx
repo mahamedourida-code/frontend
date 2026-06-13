@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { markHistoryItemsDeleted } from "@/lib/recent-files-store"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -312,7 +313,7 @@ function HistoryContent() {
         const isDismissable = job.status === "failed" || job.status === "cancelled"
         const onDelete = () => {
           const jobId = resolveJobId(job)
-          if (jobId) handleDelete(jobId)
+          if (jobId) handleDelete(jobId, job)
           else toast.error("No job ID available")
         }
         return (
@@ -425,11 +426,14 @@ function HistoryContent() {
     }
   }
 
-  const handleDelete = async (jobId: string) => {
+  const handleDelete = async (jobId: string, job?: any) => {
     try {
       const response = await ocrApi.deleteFromHistory(jobId)
       if (response.success) {
         toast.success('File deleted successfully')
+        // Hide it from any other list (e.g. dashboard "Recent files") right away,
+        // matching whichever id field that list keyed the row on.
+        markHistoryItemsDeleted([jobId, job?.id, job?.job_id, job?.original_job_id])
         refresh() // Refresh the list after deletion
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('axliner:history-changed'))
       }
@@ -456,6 +460,7 @@ function HistoryContent() {
     toast.info(`Deleting ${selectedJobs.length} file(s)...`)
 
     // Delete files sequentially
+    const deletedIds: Array<string | undefined | null> = []
     for (const job of selectedJobs) {
       try {
         // Use original_job_id which is the actual job ID from processing
@@ -467,6 +472,7 @@ function HistoryContent() {
         const response = await ocrApi.deleteFromHistory(jobId)
         if (response.success) {
           successCount++
+          deletedIds.push(jobId, job.id, job.job_id, job.original_job_id)
         } else {
           errorCount++
         }
@@ -474,6 +480,7 @@ function HistoryContent() {
         errorCount++
       }
     }
+    if (deletedIds.length) markHistoryItemsDeleted(deletedIds)
 
     // Clear selection after deletion
     table.resetRowSelection()
