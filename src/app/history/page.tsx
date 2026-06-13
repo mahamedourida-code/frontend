@@ -431,6 +431,7 @@ function HistoryContent() {
       if (response.success) {
         toast.success('File deleted successfully')
         refresh() // Refresh the list after deletion
+        if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('axliner:history-changed'))
       }
     } catch (err: any) {
       toast.error(err.detail || 'Failed to delete file')
@@ -480,6 +481,7 @@ function HistoryContent() {
     // Show results
     if (successCount > 0) {
       toast.success(`Deleted ${successCount} file(s)${errorCount > 0 ? ` (${errorCount} failed)` : ''}`)
+      if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('axliner:history-changed'))
     }
     if (errorCount > 0 && successCount === 0) {
       toast.error(`Failed to delete ${errorCount} file(s)`)

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { format } from "date-fns"
 import { ArrowRight, FileText } from "lucide-react"
@@ -70,26 +70,34 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
   const [files, setFiles] = useState<WorkspaceFile[]>([])
   const [loading, setLoading] = useState(true)
 
+  const loadHistory = useCallback(async () => {
+    setLoading(true)
+    try {
+      const response = await ocrApi.getHistory(50, 0)
+      setFiles(normalizeFiles(response))
+    } catch {
+      setFiles([])
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
-    let mounted = true
+    void loadHistory()
+  }, [loadHistory, refreshKey])
 
-    const loadFiles = async () => {
-      setLoading(true)
-      try {
-        const response = await ocrApi.getHistory(50, 0)
-        if (mounted) setFiles(normalizeFiles(response))
-      } catch {
-        if (mounted) setFiles([])
-      } finally {
-        if (mounted) setLoading(false)
-      }
+  useEffect(() => {
+    const handleRefresh = () => {
+      void loadHistory()
     }
 
-    void loadFiles()
+    window.addEventListener("axliner:history-changed", handleRefresh)
+    window.addEventListener("focus", handleRefresh)
     return () => {
-      mounted = false
+      window.removeEventListener("axliner:history-changed", handleRefresh)
+      window.removeEventListener("focus", handleRefresh)
     }
-  }, [refreshKey])
+  }, [loadHistory])
 
   const recentFiles = useMemo(() => (
     [...files]
