@@ -210,39 +210,6 @@ function formatBytes(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`
 }
 
-function ReviewWorkflowStrip({ className }: { className?: string }) {
-  // The three coding steps, each fronted by a minimal accounting-code symbol so
-  // the workflow reads as "verify → code → publish" at a glance.
-  const steps = [
-    { n: "1", label: "Verify extraction", hint: "Check fields against the source", symbol: "code-confidence-tick" },
-    { n: "2", label: "Code draft bills", hint: "Supplier · account · VAT", symbol: "code-map-to-account" },
-    { n: "3", label: "Publish", hint: "Post to QuickBooks / Xero", symbol: "code-post-entry" },
-  ] as const
-
-  return (
-    <div className={cn("grid gap-2 sm:grid-cols-3", className)} aria-label="Review workflow">
-      {steps.map((step, index) => (
-        <div
-          key={step.n}
-          className={cn(
-            "flex items-center gap-3 rounded-xl border bg-[var(--button-warm)] px-3 py-2.5 transition-colors",
-            index === 0 ? "border-[var(--brand-brown-fg)]" : "border-[var(--button-warm-ring)]",
-          )}
-        >
-          <Symbol name={step.symbol} size="medium" className="h-28 w-28 shrink-0 sm:h-32 sm:w-32" alt="" />
-          <div className="min-w-0">
-            <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
-              <span className="font-mono text-xs text-[var(--brand-brown-fg)]">{step.n}</span>
-              {step.label}
-            </p>
-            <p className="truncate text-xs font-normal text-foreground">{step.hint}</p>
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
 function InvoiceDraftBillAction({
   file,
   onSendToAccountsPayable,
@@ -347,7 +314,6 @@ function AutoDetectionPanel({
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
           <h3 className="text-base font-semibold text-foreground">Detected document types</h3>
-          <p className="mt-0.5 text-xs text-muted-foreground">Confirm uncertain files before exporting them.</p>
         </div>
       </div>
       <div className="divide-y divide-border rounded-lg border border-border">
@@ -2117,9 +2083,6 @@ export function ResultActions({
               <span className="font-mono text-sm font-semibold tabular-nums text-[var(--brand-brown-fg)]">3</span>
               Verify extraction <span className="text-base font-medium text-muted-foreground">{safeResultFiles.length}</span>
             </p>
-            <p className="mt-1 text-sm font-medium text-muted-foreground">
-              Check extracted fields against each source. Mark ready confirms extraction only.
-            </p>
           </div>
         </div>
         {/* C18 — a glanceable inbox strip: processing · needs you · ready ·
@@ -2132,7 +2095,6 @@ export function ResultActions({
           published={inboxCounts.published}
           onSelect={(pile) => setResultFilter(pile === "needs_you" ? "needs_review" : pile)}
         />
-        <ReviewWorkflowStrip className="mb-4" />
 
         <div className="mb-4 flex flex-wrap items-center gap-3">
           {([
@@ -2734,9 +2696,6 @@ export function ResultActions({
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div>
                         <p className="text-[13px] font-semibold text-foreground">Vendor memory</p>
-                        <p className="mt-0.5 text-xs text-muted-foreground">
-                          Saved suggestions stay separate until you choose values during review.
-                        </p>
                       </div>
                       {comparisonFile.vendor_suggestion ? (
                           <span className="rounded-md border border-[var(--button-warm-ring)] bg-white px-2 py-1 text-[10px] font-semibold text-foreground">
@@ -3500,8 +3459,6 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                 hint="Invoices, receipts, bank statements and tables — PDF or image, scanned or photographed."
                 contentClassName="space-y-4"
               >
-                <ReviewWorkflowStrip />
-
                 <div className="flex flex-wrap items-center gap-3">
                   <Button
                     type="button"
