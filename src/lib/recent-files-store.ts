@@ -17,8 +17,21 @@ export function markHistoryItemsDeleted(ids: Array<string | undefined | null>) {
   if (changed) listeners.forEach((listener) => listener())
 }
 
+export function unmarkHistoryItemsDeleted(ids: Array<string | undefined | null>) {
+  let changed = false
+  for (const id of ids) {
+    if (id && deletedIds.delete(id)) changed = true
+  }
+  if (changed) listeners.forEach((listener) => listener())
+}
+
 export function isHistoryItemDeleted(id: string) {
   return deletedIds.has(id)
+}
+
+/** True when ANY of the row's id variants has been optimistically deleted. */
+export function isAnyHistoryItemDeleted(ids: Array<string | undefined | null>) {
+  return ids.some((id) => Boolean(id) && deletedIds.has(id as string))
 }
 
 export function subscribeHistoryDeletions(listener: () => void) {

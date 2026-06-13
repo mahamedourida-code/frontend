@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { markHistoryItemsDeleted } from "@/lib/recent-files-store"
+import { markHistoryItemsDeleted, unmarkHistoryItemsDeleted, isAnyHistoryItemDeleted, subscribeHistoryDeletions } from "@/lib/recent-files-store"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -83,6 +83,9 @@ function HistoryContent() {
   const [date, setDate] = React.useState<Date | undefined>(undefined)
   const [dateFilter, setDateFilter] = React.useState<"today" | "week" | "month" | "custom" | null>(null)
   const [focusedRowId, setFocusedRowId] = React.useState<string | null>(null)
+  // Re-render when a row is optimistically deleted so it drops out of the list instantly.
+  const [deletedTick, bumpDeleted] = React.useReducer((tick: number) => tick + 1, 0)
+  React.useEffect(() => subscribeHistoryDeletions(bumpDeleted), [])
 
   // P11 — client filter from the dashboard Clients tab
   const clientId = searchParams.get("client")
@@ -103,9 +106,10 @@ function HistoryContent() {
 
   // Filter jobs by date (and by client when a client filter is active)
   const filteredJobs = React.useMemo(() => {
-    const base = clientJobIds
+    const base = (clientJobIds
       ? jobs.filter(job => clientJobIds.has(String(job.original_job_id || "")) || clientJobIds.has(String(job.id || "")))
       : jobs
+    ).filter(job => !isAnyHistoryItemDeleted([job.id, job.job_id, job.original_job_id]))
     if (!dateFilter && !date) return base
 
     return base.filter(job => {
@@ -127,7 +131,7 @@ function HistoryContent() {
       
       return true
     })
-  }, [jobs, dateFilter, date, clientJobIds])
+  }, [jobs, dateFilter, date, clientJobIds, deletedTick])
 
   const handleDownload = async (job: HistoryJob) => {
     try {
@@ -428,16 +432,17 @@ function HistoryContent() {
 
   const handleDelete = async (jobId: string, job?: any) => {
     if (!confirm('Permanently delete this batch and its files? This cannot be undone.')) return
+    const ids = [jobId, job?.id, job?.job_id, job?.original_job_id]
+    // Optimistic: hide the row instantly across every view, then delete in the
+    // background. Restore it only if the background delete actually fails.
+    markHistoryItemsDeleted(ids)
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('axliner:history-changed'))
     try {
       await ocrApi.deleteStoredBatch(jobId)
       toast.success('Batch deleted')
-      // Hide it from any other list (e.g. dashboard "Recent files") right away,
-      // matching whichever id field that list keyed the row on.
-      markHistoryItemsDeleted([jobId, job?.id, job?.job_id, job?.original_job_id])
-      refresh() // Refresh the list after deletion
-      if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('axliner:history-changed'))
     } catch (err: any) {
-      toast.error(err.detail || err.message || 'Failed to delete')
+      unmarkHistoryItemsDeleted(ids)
+      toast.error(err.detail || err.message || 'Could not delete the batch')
     }
   }
 
@@ -448,75 +453,61 @@ function HistoryContent() {
       return
     }
 
-    if (!confirm(`Are you sure you want to delete ${selectedRows.length} selected file(s)? This action cannot be undone.`)) {
+    if (!confirm(`Permanently delete ${selectedRows.length} batch(es) and their files? This cannot be undone.`)) {
       return
     }
 
-    const selectedJobs = selectedRows.map((row) => row.original)
+    const groups = selectedRows
+      .map((row) => row.original)
+      .map((job) => ({ job, jobId: resolveJobId(job) }))
+      .filter((g) => g.jobId)
+
+    // Optimistic: hide them all instantly, clear the selection, then delete in
+    // the background (in parallel). Restore any that fail.
+    groups.forEach((g) => markHistoryItemsDeleted([g.jobId, g.job.id, g.job.job_id, g.job.original_job_id]))
+    table.resetRowSelection()
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('axliner:history-changed'))
+
+    const results = await Promise.allSettled(groups.map((g) => ocrApi.deleteStoredBatch(g.jobId as string)))
     let successCount = 0
     let errorCount = 0
-
-    toast.info(`Deleting ${selectedJobs.length} file(s)...`)
-
-    // Delete files sequentially
-    const deletedIds: Array<string | undefined | null> = []
-    for (const job of selectedJobs) {
-      try {
-        // Use original_job_id which is the actual job ID from processing
-        const jobId = resolveJobId(job)
-        if (!jobId) {
-          errorCount++
-          continue
-        }
-        await ocrApi.deleteStoredBatch(jobId)
+    results.forEach((res, index) => {
+      if (res.status === 'fulfilled') {
         successCount++
-        deletedIds.push(jobId, job.id, job.job_id, job.original_job_id)
-      } catch (err) {
+      } else {
         errorCount++
+        const g = groups[index]
+        unmarkHistoryItemsDeleted([g.jobId, g.job.id, g.job.job_id, g.job.original_job_id])
       }
-    }
-    if (deletedIds.length) markHistoryItemsDeleted(deletedIds)
-
-    // Clear selection after deletion
-    table.resetRowSelection()
-
-    // Show results
-    if (successCount > 0) {
-      toast.success(`Deleted ${successCount} file(s)${errorCount > 0 ? ` (${errorCount} failed)` : ''}`)
-      if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('axliner:history-changed'))
-    }
-    if (errorCount > 0 && successCount === 0) {
-      toast.error(`Failed to delete ${errorCount} file(s)`)
-    }
-
-    // Refresh the list
-    refresh()
+    })
+    if (successCount > 0) toast.success(`Deleted ${successCount} batch(es)${errorCount > 0 ? ` (${errorCount} failed)` : ''}`)
+    if (errorCount > 0 && successCount === 0) toast.error(`Failed to delete ${errorCount} batch(es)`)
   }
 
   const handleDeleteAll = async () => {
-    const targets = filteredJobs
-    if (targets.length === 0) return
-    if (!confirm(`Permanently delete all ${targets.length} batch(es) and their files? This cannot be undone.`)) {
+    const groups = filteredJobs
+      .map((job) => ({ job, jobId: resolveJobId(job) }))
+      .filter((g) => g.jobId)
+    if (groups.length === 0) return
+    if (!confirm(`Permanently delete all ${groups.length} batch(es) and their files? This cannot be undone.`)) {
       return
     }
 
-    let deleted = 0
-    const deletedIds: Array<string | undefined | null> = []
-    for (const job of targets) {
-      const jobId = resolveJobId(job)
-      if (!jobId) continue
-      try {
-        await ocrApi.deleteStoredBatch(jobId)
-        deleted++
-        deletedIds.push(jobId, job.id, job.job_id, job.original_job_id)
-      } catch {
-        // Skip ones that can't be deleted (e.g. still processing); keep going.
-      }
-    }
-    if (deletedIds.length) markHistoryItemsDeleted(deletedIds)
-    toast.success(`Deleted ${deleted} batch(es)`)
-    refresh()
+    // Optimistic: clear them from the list instantly, then delete in the background.
+    groups.forEach((g) => markHistoryItemsDeleted([g.jobId, g.job.id, g.job.job_id, g.job.original_job_id]))
     if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('axliner:history-changed'))
+
+    const results = await Promise.allSettled(groups.map((g) => ocrApi.deleteStoredBatch(g.jobId as string)))
+    let errorCount = 0
+    results.forEach((res, index) => {
+      if (res.status === 'rejected') {
+        errorCount++
+        const g = groups[index]
+        unmarkHistoryItemsDeleted([g.jobId, g.job.id, g.job.job_id, g.job.original_job_id])
+      }
+    })
+    const deleted = results.length - errorCount
+    toast.success(`Deleted ${deleted} batch(es)${errorCount > 0 ? ` (${errorCount} failed)` : ''}`)
   }
 
   return (
