@@ -4,18 +4,27 @@ import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { Building2, Loader2, Plus } from "lucide-react"
+import { ArrowRight, Building2, Loader2, Plus, Trash2 } from "lucide-react"
 
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
-import { SettingRow } from "@/components/dashboard/SettingRow"
+import { StatusBadge } from "@/components/dashboard/StatusBadge"
+import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
   Dialog,
   DialogContent,
@@ -96,10 +105,10 @@ export default function ClientsPage() {
 
   return (
     <DashboardShell activeItem="companies" title="Clients" user={user} showBack={false}>
-      <div className="max-w-4xl space-y-5">
+      <div className="max-w-4xl space-y-6">
         <PageHeader
           title="Clients"
-          description="Each client is a company workspace — its own inbox, review board, draft bills, and accounting connection."
+          description="Each client is its own workspace, inbox, and accounting connection."
           actions={
             <Button variant="glossy" size="sm" onClick={() => setAddOpen(true)}>
               <Plus className="size-4" />
@@ -108,51 +117,105 @@ export default function ClientsPage() {
           }
         />
 
-        <Card className="ax-workspace-panel rounded-md !shadow-none">
-          <CardContent className="p-0">
-            {loading ? (
-              <div className="py-4">
-                <EmptyState compact icon={<Loader2 className="h-5 w-5 animate-spin" />} title="Loading clients" />
-              </div>
-            ) : clients.length === 0 ? (
-              <div className="py-6">
-                <EmptyState
-                  icon={<Building2 />}
-                  eyebrow="Clients"
-                  title="No clients yet"
-                  description="Add your first client to start collecting and reviewing their documents."
-                  action={
-                    <Button variant="surface" size="sm" onClick={() => setAddOpen(true)}>
-                      <Plus className="size-4" />
-                      Add client
-                    </Button>
-                  }
-                />
-              </div>
-            ) : (
-              <div className="divide-y divide-border px-5">
+        <WorkspaceSection
+          icon={<Building2 />}
+          title="Clients"
+          actions={
+            <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-[var(--workspace-soft)] px-2 text-[13px] font-semibold tabular-nums text-foreground">
+              {clients.length}
+            </span>
+          }
+          contentClassName="p-0"
+        >
+          {loading ? (
+            <EmptyState compact icon={<Loader2 className="h-5 w-5 animate-spin" />} title="Loading clients" />
+          ) : clients.length === 0 ? (
+            <EmptyState
+              icon={<Building2 />}
+              eyebrow="Clients"
+              title="No clients yet"
+              description="Add your first client to start collecting their documents."
+              action={
+                <Button variant="surface" size="sm" onClick={() => setAddOpen(true)}>
+                  <Plus className="size-4" />
+                  Add client
+                </Button>
+              }
+            />
+          ) : (
+            <Table className="ax-table">
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="px-4">Client</TableHead>
+                  <TableHead className="px-4">Accounting</TableHead>
+                  <TableHead className="w-px px-4 text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {clients.map(client => (
-                  <SettingRow
+                  <TableRow
                     key={client.id}
-                    label={client.name}
-                    value={
-                      client.accounting_connected
-                        ? `Connected${client.accounting_company_name ? ` to ${client.accounting_company_name}` : ""}`
-                        : "No accounting connection"
-                    }
+                    className="ax-interactive cursor-pointer bg-card hover:bg-[var(--workspace-row-hover)]"
+                    onClick={() => router.push(`/dashboard/companies/${client.id}`)}
                   >
-                    <InlineAction asChild>
-                      <Link href={`/dashboard/companies/${client.id}`}>Open</Link>
-                    </InlineAction>
-                    <InlineAction tone="danger" onClick={() => setDeleteTarget(client)}>
-                      Delete
-                    </InlineAction>
-                  </SettingRow>
+                    <TableCell className="px-4 py-3">
+                      <Link
+                        href={`/dashboard/companies/${client.id}`}
+                        className="flex items-center gap-3 font-medium text-[var(--workspace-primary)]"
+                        onClick={event => event.stopPropagation()}
+                      >
+                        <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-muted)]">
+                          <Building2 className="size-4" />
+                        </span>
+                        <span className="truncate">{client.name}</span>
+                      </Link>
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      <StatusBadge tone={client.accounting_connected ? "success" : "neutral"}>
+                        {client.accounting_connected
+                          ? client.accounting_company_name || "Connected"
+                          : "Not connected"}
+                      </StatusBadge>
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Link
+                              href={`/dashboard/companies/${client.id}`}
+                              onClick={event => event.stopPropagation()}
+                              aria-label={`Open ${client.name}`}
+                              className="ax-interactive inline-flex size-8 items-center justify-center rounded-md text-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)]"
+                            >
+                              <ArrowRight className="size-4" />
+                            </Link>
+                          </TooltipTrigger>
+                          <TooltipContent>Open</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              onClick={event => {
+                                event.stopPropagation()
+                                setDeleteTarget(client)
+                              }}
+                              aria-label={`Delete ${client.name}`}
+                              className="ax-interactive inline-flex size-8 items-center justify-center rounded-md text-[var(--workspace-danger)] hover:bg-red-50"
+                            >
+                              <Trash2 className="size-4" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Delete</TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </TableBody>
+            </Table>
+          )}
+        </WorkspaceSection>
       </div>
 
       {/* Add client */}
@@ -161,7 +224,7 @@ export default function ClientsPage() {
           <DialogHeader>
             <DialogTitle className="text-foreground">Add a client</DialogTitle>
             <DialogDescription className="text-foreground">
-              Give this client a name. You can connect their accounting software and collect documents next.
+              Name this client. You can connect their accounting software next.
             </DialogDescription>
           </DialogHeader>
           <Input

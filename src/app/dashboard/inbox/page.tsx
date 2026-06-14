@@ -4,20 +4,27 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
-import { AlertTriangle, Check, Copy, FolderInput, Inbox, Link2, Mail, Plug, PlugZap, RefreshCw, Share2, UserPlus, X } from "lucide-react"
+import { AtSign, Check, Clock, Cloud, Copy, FolderInput, FolderSync, Inbox, Link2, Mail, Mailbox, Plug, PlugZap, RefreshCw, Users, X } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { EmptyState } from "@/components/dashboard/EmptyState"
+import { Field } from "@/components/dashboard/Field"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
-import { Badge } from "@/components/ui/badge"
+import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
-import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { useMotionTokens } from "@/lib/motion"
@@ -39,13 +46,11 @@ import { cn } from "@/lib/utils"
 const workspacePrimaryButton =
   "!rounded-full !border-[#1877F2] !bg-[#1877F2] !text-white !shadow-none hover:!border-[#0f63d6] hover:!bg-[#0f63d6] hover:!text-white"
 
-const workspacePanel = "ax-workspace-panel border-[#d8dde6] bg-white !shadow-none"
-const workspaceTable = "ax-table w-full text-sm text-black"
-const workspaceHeaderCell = "px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-[0.08em] text-[#6b7280]"
-const workspaceMutedCell = "px-4 py-3 font-normal text-[#4b5563]"
-const workspaceTextAction = "ax-text-action text-[#1877F2] hover:text-[#0f63d6]"
-const workspaceSuccessAction = "text-[var(--workspace-success)] hover:text-[var(--workspace-success-hover)]"
-const workspaceWarningAction = "text-[var(--workspace-warning)] hover:text-[var(--workspace-warning-hover)]"
+// The shared ui Table cells/rows, wrapped so the existing stagger /
+// AnimatePresence / layout animations still play on every row.
+const MotionTableRow = motion.create(TableRow)
+const MotionTableCell = motion.create(TableCell)
+const cell = "px-4 py-3"
 
 function formatReceivedAt(value: string) {
   return new Intl.DateTimeFormat(undefined, {
@@ -124,6 +129,35 @@ function BadgeValue({ value }: { value: string }) {
         {value}
       </motion.span>
     </AnimatePresence>
+  )
+}
+
+/**
+ * One mobile row treatment shared by all three lists (client links, client
+ * submissions, email imports) so the small-screen layout reads as one product.
+ * Title + optional meta line on the left; status/action slot on the right.
+ */
+function MobileRow({
+  title,
+  meta,
+  trailing,
+  children,
+}: {
+  title: React.ReactNode
+  meta?: React.ReactNode
+  trailing?: React.ReactNode
+  children?: React.ReactNode
+}) {
+  const m = useMotionTokens()
+  return (
+    <motion.div layout variants={m.fadeUp} exit="exit" className="flex items-center justify-between gap-3 px-4 py-3">
+      <div className="min-w-0 space-y-1">
+        <p className="truncate text-sm font-medium text-black">{title}</p>
+        {meta ? <div className="flex flex-wrap items-center gap-2 text-xs text-black">{meta}</div> : null}
+        {children}
+      </div>
+      {trailing ? <div className="flex shrink-0 items-center gap-3">{trailing}</div> : null}
+    </motion.div>
   )
 }
 
@@ -367,9 +401,11 @@ export default function EmailInboxPage() {
     return <DashboardRouteLoader label="Loading inbox" />
   }
 
+  const submissionFileCount = submissions.reduce((count, submission) => count + submission.file_count, 0)
+
   return (
     <DashboardShell activeItem="inbox" title="Inbox" user={user} showBack={false}>
-      <div className="max-w-7xl space-y-5 text-black">
+      <div className="max-w-7xl space-y-6 text-black">
         <PageHeader
           title="Inbox"
           actions={
@@ -382,38 +418,25 @@ export default function EmailInboxPage() {
 
         {/* Management cards — stack on mobile, side-by-side on lg */}
         {activeWorkspace?.role === "owner" ? (
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-6 lg:grid-cols-2">
 
             {/* Client upload links */}
-            <Card className={workspacePanel}>
-              <CardContent className="p-5">
-                <div className="flex items-center gap-2">
-                  <span className="flex size-8 items-center justify-center rounded-md bg-[#eff6ff] text-[#1877F2]">
-                    <Share2 className="size-4" />
-                  </span>
-                  <p className="text-sm font-medium text-black">Client upload links</p>
-                </div>
+            <WorkspaceSection icon={<Link2 />} title="Client upload links">
+              <div className="flex gap-3">
+                <Input value={linkLabel} onChange={event => setLinkLabel(event.target.value)} placeholder="Client documents" />
+                <Button variant="glossy" onClick={() => void createClientLink()} disabled={actionBusy === "link"} className={workspacePrimaryButton}>
+                  <Link2 className="size-4" />
+                  Create
+                </Button>
+              </div>
 
-                <div className="mt-4 flex gap-3">
-                  <Input value={linkLabel} onChange={event => setLinkLabel(event.target.value)} placeholder="Client documents" />
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="glossy" onClick={() => void createClientLink()} disabled={actionBusy === "link"} className={workspacePrimaryButton}>
-                        <Link2 className="size-4" />
-                        Create
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top">Creates a 7-day client upload link.</TooltipContent>
-                  </Tooltip>
-                </div>
-
-                {newUploadUrl ? (
-                  <div className="mt-3 space-y-2">
+              {newUploadUrl ? (
+                <div className="mt-4 space-y-3">
+                  <Field label="Upload link" icon={<Link2 />}>
                     <div className="flex items-center gap-3 rounded-md border border-[#d8dde6] bg-[#f8fafc] px-3 py-2">
-                      <span className="shrink-0 text-[10px] font-medium uppercase tracking-[0.08em] text-[#6b7280]">Upload</span>
-                      <p className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">{newUploadUrl}</p>
+                      <p className="min-w-0 flex-1 truncate font-mono text-xs text-black">{newUploadUrl}</p>
                       <InlineAction
-                        className={cn("shrink-0", workspaceTextAction)}
+                        className="shrink-0"
                         onClick={() => {
                           void navigator.clipboard.writeText(newUploadUrl)
                           setCopiedLink("upload")
@@ -434,11 +457,12 @@ export default function EmailInboxPage() {
                         </AnimatePresence>
                       </InlineAction>
                     </div>
+                  </Field>
+                  <Field label="Status link" icon={<Clock />}>
                     <div className="flex items-center gap-3 rounded-md border border-[#d8dde6] bg-[#f8fafc] px-3 py-2">
-                      <span className="shrink-0 text-[10px] font-medium uppercase tracking-[0.08em] text-[#6b7280]">Status</span>
-                      <p className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">{newUploadUrl.replace("/upload/", "/status/")}</p>
+                      <p className="min-w-0 flex-1 truncate font-mono text-xs text-black">{newUploadUrl.replace("/upload/", "/status/")}</p>
                       <InlineAction
-                        className={cn("shrink-0", workspaceTextAction)}
+                        className="shrink-0"
                         onClick={() => {
                           void navigator.clipboard.writeText(newUploadUrl.replace("/upload/", "/status/"))
                           setCopiedLink("status")
@@ -459,200 +483,186 @@ export default function EmailInboxPage() {
                         </AnimatePresence>
                       </InlineAction>
                     </div>
+                  </Field>
+                </div>
+              ) : null}
+
+              {links.length > 0 ? (
+                <>
+                  {/* Desktop table */}
+                  <div className="mt-4 hidden overflow-hidden rounded-md border border-border sm:block">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-[#f3f4f6] hover:bg-[#f3f4f6]">
+                          <TableHead className={cell}>Label</TableHead>
+                          <TableHead className={cell}>Submissions</TableHead>
+                          <TableHead className={cell}>Expires</TableHead>
+                          <TableHead className="w-16 px-4 py-3" />
+                        </TableRow>
+                      </TableHeader>
+                      <motion.tbody variants={m.staggerParent()} initial="hidden" animate="show" className="[&_tr:last-child]:border-0">
+                        <AnimatePresence initial={false}>
+                        {links.slice(0, 5).map(link => (
+                          <MotionTableRow key={link.id} layout variants={m.fadeUp} exit="exit">
+                            <MotionTableCell className={cn(cell, "font-medium text-black")}>{link.label}</MotionTableCell>
+                            <MotionTableCell className={cn(cell, "tabular-nums text-black")}>{link.submission_count}/{link.max_submissions}</MotionTableCell>
+                            <MotionTableCell className={cn(cell, "text-black")}>{formatExpiry(link.expires_at)}</MotionTableCell>
+                            <MotionTableCell className="px-4 py-3">
+                              {link.enabled ? (
+                                <InlineAction tone="danger" className="text-xs" onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
+                                  Revoke
+                                </InlineAction>
+                              ) : (
+                                <StatusBadge tone="neutral">Revoked</StatusBadge>
+                              )}
+                            </MotionTableCell>
+                          </MotionTableRow>
+                        ))}
+                        </AnimatePresence>
+                      </motion.tbody>
+                    </Table>
                   </div>
-                ) : null}
 
-                {links.length > 0 ? (
-                  <>
-                    {/* Desktop table */}
-                    <div className="mt-3 hidden overflow-hidden rounded-md border border-[#d8dde6] sm:block">
-                      <table className={workspaceTable}>
-                        <thead>
-                          <tr className="border-b border-[#d8dde6] bg-[#f3f4f6]">
-                            <th className={workspaceHeaderCell}>Label</th>
-                            <th className={workspaceHeaderCell}>Submissions</th>
-                            <th className={workspaceHeaderCell}>Expires</th>
-                            <th className="w-16 px-3 py-2" />
-                          </tr>
-                        </thead>
-                        <motion.tbody variants={m.staggerParent()} initial="hidden" animate="show">
-                          <AnimatePresence initial={false}>
-                          {links.slice(0, 5).map(link => (
-                            <motion.tr key={link.id} layout variants={m.fadeUp} exit="exit" className="border-b border-[#e5e7eb] last:border-0 hover:bg-[#f8fafc]">
-                              <td className="px-4 py-2.5 font-normal text-black">{link.label}</td>
-                              <td className="px-4 py-2.5 font-normal text-[#4b5563]">{link.submission_count}/{link.max_submissions}</td>
-                              <td className="px-4 py-2.5 font-normal text-[#4b5563]">{formatExpiry(link.expires_at)}</td>
-                              <td className="px-3 py-2.5">
-                                {link.enabled ? (
-                                  <InlineAction tone="danger" className="ax-text-action text-xs" onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
-                                    Revoke
-                                  </InlineAction>
-                                ) : (
-                                  <span className="ax-status-text text-xs font-normal text-[#4b5563]">Revoked</span>
-                                )}
-                              </td>
-                            </motion.tr>
-                          ))}
-                          </AnimatePresence>
-                        </motion.tbody>
-                      </table>
-                    </div>
-
-                    {/* Mobile cards */}
-                    <motion.div className="mt-3 space-y-2 sm:hidden" variants={m.staggerParent()} initial="hidden" animate="show">
-                      <AnimatePresence initial={false}>
-                      {links.slice(0, 5).map(link => (
-                        <motion.div key={link.id} layout variants={m.fadeUp} exit="exit" className="flex items-center justify-between gap-3 rounded-md border border-[#d8dde6] bg-white px-3 py-3">
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-normal text-black">{link.label}</p>
-                            <p className="mt-0.5 text-xs text-muted-foreground">
-                              {link.submission_count}/{link.max_submissions} submissions · {formatExpiry(link.expires_at)}
-                              {!link.enabled ? " · Revoked" : ""}
-                            </p>
-                          </div>
-                          {link.enabled ? (
-                            <InlineAction tone="danger" className="ax-text-action shrink-0 text-xs" onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
-                              Revoke
-                            </InlineAction>
-                          ) : null}
-                        </motion.div>
-                      ))}
-                      </AnimatePresence>
-                    </motion.div>
-                  </>
-                ) : null}
-              </CardContent>
-            </Card>
+                  {/* Mobile cards */}
+                  <motion.div className="mt-4 space-y-3 sm:hidden" variants={m.staggerParent()} initial="hidden" animate="show">
+                    <AnimatePresence initial={false}>
+                    {links.slice(0, 5).map(link => (
+                      <div key={link.id} className="rounded-md border border-border bg-white">
+                        <MobileRow
+                          title={link.label}
+                          meta={
+                            <>
+                              <span className="tabular-nums">{link.submission_count}/{link.max_submissions}</span>
+                              <span>{formatExpiry(link.expires_at)}</span>
+                              {!link.enabled ? <StatusBadge tone="neutral">Revoked</StatusBadge> : null}
+                            </>
+                          }
+                          trailing={
+                            link.enabled ? (
+                              <InlineAction tone="danger" className="text-xs" onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
+                                Revoke
+                              </InlineAction>
+                            ) : null
+                          }
+                        />
+                      </div>
+                    ))}
+                    </AnimatePresence>
+                  </motion.div>
+                </>
+              ) : null}
+            </WorkspaceSection>
 
             {/* Reviewers */}
-            <Card className={workspacePanel}>
-              <CardContent className="p-5">
-                <div className="flex items-center gap-2">
-                  <span className="flex size-8 items-center justify-center rounded-md bg-[#f0fdf4] text-[#16a34a]">
-                    <UserPlus className="size-4" />
-                  </span>
-                  <p className="text-sm font-medium text-black">Reviewers</p>
-                </div>
+            <WorkspaceSection icon={<Users />} title="Reviewers">
+              <div className="flex gap-3">
+                <Input type="email" value={reviewerEmail} onChange={event => setReviewerEmail(event.target.value)} placeholder="reviewer@firm.com" />
+                <Button
+                  variant="glossy"
+                  onClick={() => void inviteReviewer()}
+                  disabled={actionBusy === "reviewer" || !reviewerEmail.trim()}
+                  className={workspacePrimaryButton}
+                >
+                  <Users className="size-4" />
+                  Add
+                </Button>
+              </div>
 
-                <div className="mt-4 flex gap-3">
-                  <Input type="email" value={reviewerEmail} onChange={event => setReviewerEmail(event.target.value)} placeholder="reviewer@firm.com" />
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="glossy"
-                        onClick={() => void inviteReviewer()}
-                        disabled={actionBusy === "reviewer" || !reviewerEmail.trim()}
-                        className={workspacePrimaryButton}
-                      >
-                        <UserPlus className="size-4" />
-                        Add
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top">Adds reviewer edit and export access.</TooltipContent>
-                  </Tooltip>
-                </div>
-
-                <motion.div className="mt-3 space-y-2" variants={m.staggerParent()} initial="hidden" animate="show">
-                  <AnimatePresence initial={false}>
-                  {members.filter(member => member.role === "reviewer").map(member => (
-                    <motion.div key={member.id} layout variants={m.fadeUp} exit="exit" className="flex items-center justify-between rounded-md border border-[#d8dde6] bg-white px-3 py-3">
-                      <div>
-                        <p className="text-sm font-normal text-black">{member.member_email}</p>
-                        <p className="ax-status-text mt-0.5 text-xs font-normal capitalize text-[#4b5563]">{member.status}</p>
-                      </div>
-                      {member.status !== "revoked" ? (
-                        <InlineAction tone="danger" className="ax-text-action text-xs" onClick={() => void revokeReviewer(member.id)} disabled={actionBusy === member.id}>
-                          Remove
-                        </InlineAction>
-                      ) : null}
-                    </motion.div>
-                  ))}
-                  </AnimatePresence>
-                </motion.div>
-              </CardContent>
-            </Card>
+              <motion.div className="mt-4 space-y-3" variants={m.staggerParent()} initial="hidden" animate="show">
+                <AnimatePresence initial={false}>
+                {members.filter(member => member.role === "reviewer").map(member => (
+                  <div key={member.id} className="rounded-md border border-border bg-white">
+                    <MobileRow
+                      title={member.member_email}
+                      meta={
+                        <StatusBadge tone={member.status === "revoked" ? "neutral" : member.status === "active" ? "success" : "info"}>
+                          <span className="capitalize">{member.status}</span>
+                        </StatusBadge>
+                      }
+                      trailing={
+                        member.status !== "revoked" ? (
+                          <InlineAction tone="danger" className="text-xs" onClick={() => void revokeReviewer(member.id)} disabled={actionBusy === member.id}>
+                            Remove
+                          </InlineAction>
+                        ) : null
+                      }
+                    />
+                  </div>
+                ))}
+                </AnimatePresence>
+              </motion.div>
+            </WorkspaceSection>
           </div>
         ) : null}
 
-        {/* Email address card */}
+        {/* Email-in address */}
         {activeWorkspace?.role === "owner" ? (
-          <Card className={workspacePanel}>
-            <CardContent className="p-5">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#6b7280]">Forward documents to</p>
-                  <p className="mt-2 break-all font-mono text-sm font-normal text-black">
-                    {address?.address || "Provisioning address…"}
-                  </p>
-                </div>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <InlineAction onClick={() => void copyAddress()} disabled={!address} className={cn("shrink-0", workspaceTextAction)}>
-                      <AnimatePresence mode="popLayout" initial={false}>
-                        <motion.span
-                          key={copied ? "copied" : "copy"}
-                          initial={{ opacity: 0, scale: 0.94 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.94 }}
-                          transition={m.tFast}
-                          className="inline-flex items-center gap-1.5"
-                        >
-                          {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-                          {copied ? "Copied!" : "Copy address"}
-                        </motion.span>
-                      </AnimatePresence>
-                    </InlineAction>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">Copy the forwarding address.</TooltipContent>
-                </Tooltip>
+          <WorkspaceSection icon={<AtSign />} title="Email-in address">
+            <Field label="Forward documents to" icon={<Mail />}>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="min-w-0 break-all font-mono text-sm text-black">
+                  {address?.address || "Provisioning address…"}
+                </p>
+                <InlineAction onClick={() => void copyAddress()} disabled={!address} className="shrink-0">
+                  <AnimatePresence mode="popLayout" initial={false}>
+                    <motion.span
+                      key={copied ? "copied" : "copy"}
+                      initial={{ opacity: 0, scale: 0.94 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.94 }}
+                      transition={m.tFast}
+                      className="inline-flex items-center gap-1.5"
+                    >
+                      {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+                      {copied ? "Copied!" : "Copy address"}
+                    </motion.span>
+                  </AnimatePresence>
+                </InlineAction>
               </div>
-              {loadError ? (
-                <p className="mt-3 text-sm text-destructive">{loadError}</p>
-              ) : null}
-            </CardContent>
-          </Card>
+            </Field>
+            {loadError ? (
+              <p className="mt-3 text-sm text-destructive">{loadError}</p>
+            ) : null}
+          </WorkspaceSection>
         ) : null}
 
         {/* P6 — Connected sources (Google Drive / Dropbox watch folders) */}
         {activeWorkspace?.role === "owner" ? (
-          <Card className={workspacePanel}>
-            <CardContent className="p-5">
-              <p className="text-sm font-medium text-black">Connected sources</p>
-
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {(["google_drive", "dropbox"] as ConnectedSourceProvider[]).map((provider) => {
-                  const source = connectedSources.find(item => item.provider === provider && item.status !== "disconnected")
-                  const configured = providersConfigured[provider]
-                  const label = provider === "google_drive" ? "Google Drive" : "Dropbox"
-                  return (
-                    <div key={provider} className="rounded-md border border-[#d8dde6] bg-[#f8fafc] p-4">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2.5">
-                          <span className="inline-flex size-9 items-center justify-center rounded-md bg-muted text-muted-foreground">
-                            <FolderInput className="size-4.5" />
-                          </span>
-                          <div>
-                            <p className="text-sm font-medium text-black">{label}</p>
-                            {source?.account_email ? (
-                              <p className="truncate text-xs font-normal text-[#4b5563]">{source.account_email}</p>
-                            ) : (
-                              <p className="text-xs font-normal text-[#4b5563]">
-                                {configured ? "Not connected" : "OAuth not configured"}
-                              </p>
-                            )}
-                          </div>
+          <WorkspaceSection icon={<FolderSync />} title="Connected sources">
+            <div className="grid gap-3 sm:grid-cols-2">
+              {(["google_drive", "dropbox"] as ConnectedSourceProvider[]).map((provider) => {
+                const source = connectedSources.find(item => item.provider === provider && item.status !== "disconnected")
+                const configured = providersConfigured[provider]
+                const label = provider === "google_drive" ? "Google Drive" : "Dropbox"
+                return (
+                  <div key={provider} className="rounded-md border border-border bg-[#f8fafc] p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2.5">
+                        <span className="inline-flex size-9 items-center justify-center rounded-md bg-[#eff6ff] text-[#1877F2]">
+                          {provider === "google_drive" ? <FolderInput className="size-4.5" /> : <Cloud className="size-4.5" />}
+                        </span>
+                        <div>
+                          <p className="text-sm font-medium text-black">{label}</p>
+                          {source?.account_email ? (
+                            <p className="truncate text-xs text-black">{source.account_email}</p>
+                          ) : null}
                         </div>
-                        {source ? (
-                          <StatusBadge tone={source.status === "connected" ? "success" : source.status === "error" ? "error" : "neutral"}>
-                            <BadgeValue value={source.status} />
-                          </StatusBadge>
-                        ) : null}
                       </div>
+                      {source ? (
+                        <StatusBadge tone={source.status === "connected" ? "success" : source.status === "error" ? "error" : "neutral"}>
+                          <BadgeValue value={source.status} />
+                        </StatusBadge>
+                      ) : (
+                        <StatusBadge tone={configured ? "info" : "neutral"}>
+                          {configured ? "Not connected" : "Not connected"}
+                        </StatusBadge>
+                      )}
+                    </div>
 
-                      {source && source.status === "connected" ? (
-                        <>
-                          <div className="mt-3 space-y-1.5">
-                            <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#6b7280]">Watched folder</p>
+                    {source && source.status === "connected" ? (
+                      <>
+                        <div className="mt-4">
+                          <Field label="Watched folder" icon={<FolderSync />}>
                             {folderDraft?.id === source.id ? (
                               <div className="flex items-center gap-3">
                                 <Input
@@ -661,284 +671,267 @@ export default function EmailInboxPage() {
                                   placeholder={provider === "google_drive" ? "AxLiner intake" : "/AxLiner intake"}
                                   className="h-9"
                                 />
-                                <InlineAction tone="success" onClick={() => void saveWatchedFolder(source.id)} disabled={actionBusy === source.id} className={cn("shrink-0", workspaceSuccessAction)}>
+                                <InlineAction tone="success" onClick={() => void saveWatchedFolder(source.id)} disabled={actionBusy === source.id} className="shrink-0">
                                   Save
                                 </InlineAction>
-                                <InlineAction onClick={() => setFolderDraft(null)} className={cn("shrink-0", workspaceTextAction)} aria-label="Cancel">
+                                <InlineAction onClick={() => setFolderDraft(null)} className="shrink-0" aria-label="Cancel">
                                   <X className="size-3.5" />
                                 </InlineAction>
                               </div>
                             ) : (
                               <div className="flex items-center justify-between gap-3">
-                                <p className="min-w-0 truncate text-sm font-normal text-black">
-                                  {source.watched_folder || <span className="text-[#4b5563]">No folder set</span>}
-                                </p>
-                                <InlineAction className={cn("text-xs", workspaceTextAction)} onClick={() => setFolderDraft({ id: source.id, value: source.watched_folder || "" })}>
+                                <Input
+                                  readOnly
+                                  value={source.watched_folder || ""}
+                                  placeholder={provider === "google_drive" ? "AxLiner intake" : "/AxLiner intake"}
+                                  className="h-9"
+                                  onClick={() => setFolderDraft({ id: source.id, value: source.watched_folder || "" })}
+                                />
+                                <InlineAction className="shrink-0 text-xs" onClick={() => setFolderDraft({ id: source.id, value: source.watched_folder || "" })}>
                                   Edit
                                 </InlineAction>
                               </div>
                             )}
-                          </div>
-                          <div className="mt-3 flex items-center justify-between gap-3 text-xs font-normal text-[#4b5563]">
-                            <span>
-                              Last sync: {source.last_synced_at ? formatReceivedAt(source.last_synced_at) : "never"}
-                            </span>
-                            <div className="flex items-center gap-4">
-                              <InlineAction tone="warning" className={cn("text-xs [&_svg]:size-3", workspaceWarningAction)} onClick={() => void triggerSync(source.id)} disabled={actionBusy === source.id}>
-                                <RefreshCw className={cn("size-3", actionBusy === source.id && "animate-spin")} />
-                                Sync now
-                              </InlineAction>
-                              <InlineAction tone="danger" className="ax-text-action text-xs" onClick={() => void disconnectSource(source.id)} disabled={actionBusy === source.id}>
-                                Disconnect
-                              </InlineAction>
-                            </div>
-                          </div>
-                          {source.last_sync_status === "pending_implementation" ? (
-                            <p className="mt-3 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-2 text-[11px] leading-4 text-amber-900">
-                              <AlertTriangle className="mt-0.5 size-3 shrink-0" />
-                              Folder polling is queued.
-                            </p>
-                          ) : null}
-                        </>
-                      ) : (
-                        <div className="mt-3">
-                          <Button
-                            variant="surface"
-                            size="sm"
-                            className="w-full"
-                            onClick={() => void startConnectProvider(provider)}
-                            disabled={!configured || connectingProvider === provider}
-                          >
-                            {connectingProvider === provider ? <RefreshCw className="size-3.5 animate-spin" /> : configured ? <PlugZap className="size-3.5" /> : <Plug className="size-3.5" />}
-                            {configured ? `Connect ${label}` : "Setup pending"}
-                          </Button>
+                          </Field>
                         </div>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            </CardContent>
-          </Card>
+                        <div className="mt-3 flex items-center justify-between gap-3">
+                          <span className="inline-flex items-center gap-1.5 text-xs text-black">
+                            <Clock className="size-3.5 text-[#1877F2]" />
+                            {source.last_synced_at ? formatReceivedAt(source.last_synced_at) : "Never synced"}
+                          </span>
+                          <div className="flex items-center gap-4">
+                            <InlineAction tone="warning" className="text-xs [&_svg]:size-3" onClick={() => void triggerSync(source.id)} disabled={actionBusy === source.id}>
+                              <RefreshCw className={cn("size-3", actionBusy === source.id && "animate-spin")} />
+                              Sync now
+                            </InlineAction>
+                            <InlineAction tone="danger" className="text-xs" onClick={() => void disconnectSource(source.id)} disabled={actionBusy === source.id}>
+                              Disconnect
+                            </InlineAction>
+                          </div>
+                        </div>
+                        {source.last_sync_status === "pending_implementation" ? (
+                          <StatusBadge tone="warning" className="mt-3">Folder polling is queued</StatusBadge>
+                        ) : null}
+                      </>
+                    ) : (
+                      <div className="mt-3">
+                        <Button
+                          variant="surface"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => void startConnectProvider(provider)}
+                          disabled={!configured || connectingProvider === provider}
+                        >
+                          {connectingProvider === provider ? <RefreshCw className="size-3.5 animate-spin" /> : configured ? <PlugZap className="size-3.5" /> : <Plug className="size-3.5" />}
+                          {configured ? `Connect ${label}` : "Setup pending"}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </WorkspaceSection>
         ) : null}
 
         {/* Client submissions */}
-        <div className="flex items-end justify-between gap-3 border-b border-[#d8dde6] pb-2">
-          <div>
-            <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#6b7280]">Intake</p>
-            <h2 className="mt-1 text-[19px] font-medium tracking-tight text-black">Client submissions</h2>
-          </div>
-          <Badge variant="outline">{submissions.reduce((count, submission) => count + submission.file_count, 0)} files</Badge>
-        </div>
-
-        <Card className={cn("overflow-hidden", workspacePanel)}>
-          <CardContent className="p-0">
-            {loading ? (
-              <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading submissions" /></div>
-            ) : submissions.length === 0 ? (
-              <div className="py-6">
-                <EmptyState
-                  icon={<Inbox className="text-[#1877F2]" />}
-                  title="No submissions yet"
-                  description="Client upload activity will appear here as rows."
-                  className="[&>div:first-child]:rounded-md [&>div:first-child]:bg-[#eff6ff] [&>div:first-child]:p-3"
-                />
-              </div>
-            ) : (
-              <>
-                {/* Desktop table */}
-                <div className="hidden sm:block">
-                  <table className={workspaceTable}>
-                    <thead>
-                      <tr className="border-b border-[#d8dde6] bg-[#f3f4f6]">
-                        <th className={cn(workspaceHeaderCell, "px-5")}>Filename</th>
-                        <th className={workspaceHeaderCell}>Source</th>
-                        <th className={workspaceHeaderCell}>Date</th>
-                        <th className={workspaceHeaderCell}>Files</th>
-                        <th className={workspaceHeaderCell}>Status</th>
-                        <th className="px-4 py-2.5" />
-                      </tr>
-                    </thead>
-                    <motion.tbody variants={m.staggerParent()} initial="hidden" animate="show">
-                      <AnimatePresence initial={false}>
-                      {submissions.map(submission => {
-                        const filename = submission.documents[0]?.original_filename || `${submission.file_count} submitted files`
-                        return (
-                          <motion.tr key={submission.id} layout variants={m.fadeUp} exit="exit" className="border-b border-[#e5e7eb] last:border-0 hover:bg-[#f8fafc]">
-                            <td className="max-w-[220px] truncate px-5 py-3 font-normal text-black">{filename}</td>
-                            <td className="px-4 py-3">
-                              <SourceBadge kind="client_link" />
-                            </td>
-                            <td className={workspaceMutedCell}>{formatReceivedAt(submission.created_at)}</td>
-                            <td className={cn(workspaceMutedCell, "tabular-nums")}>{submission.file_count}</td>
-                            <td className="px-4 py-3">
-                              <StatusBadge tone={submissionTone(submission)}>
-                                <BadgeValue value={(submission.job_status || submission.status).replace(/_/g, " ")} />
-                              </StatusBadge>
-                            </td>
-                            <td className="px-4 py-3">
-                              {submission.job_id ? (
-                                <InlineAction asChild className={workspaceTextAction}>
-                                  <Link href={`/dashboard/client?job_id=${encodeURIComponent(submission.job_id)}`}>Review</Link>
-                                </InlineAction>
-                              ) : null}
-                            </td>
-                          </motion.tr>
-                        )
-                      })}
-                      </AnimatePresence>
-                    </motion.tbody>
-                  </table>
-                </div>
-
-                {/* Mobile card stack */}
-                <motion.div className="divide-y divide-[#e5e7eb] sm:hidden" variants={m.staggerParent()} initial="hidden" animate="show">
-                  <AnimatePresence initial={false}>
-                  {submissions.map(submission => {
-                    const filename = submission.documents[0]?.original_filename || `${submission.file_count} submitted files`
-                    return (
-                      <motion.div key={submission.id} layout variants={m.fadeUp} exit="exit" className="p-5">
-                        <p className="truncate text-sm font-normal text-black">{filename}</p>
-                        <p className="mt-1 text-xs font-normal text-[#4b5563]">{formatReceivedAt(submission.created_at)}</p>
-                        <div className="mt-2.5 flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-2">
+        <WorkspaceSection
+          icon={<Inbox />}
+          title="Client submissions"
+          actions={<span className="text-[13px] font-semibold tabular-nums text-foreground">{submissionFileCount} files</span>}
+          contentClassName="p-0"
+        >
+          {loading ? (
+            <EmptyState compact icon={<RefreshCw className="animate-spin" />} title="Loading submissions" />
+          ) : submissions.length === 0 ? (
+            <EmptyState icon={<Inbox />} title="No submissions yet" />
+          ) : (
+            <>
+              {/* Desktop table */}
+              <div className="hidden sm:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-[#f3f4f6] hover:bg-[#f3f4f6]">
+                      <TableHead className={cn(cell, "pl-6")}>Filename</TableHead>
+                      <TableHead className={cell}>Source</TableHead>
+                      <TableHead className={cell}>Date</TableHead>
+                      <TableHead className={cell}>Files</TableHead>
+                      <TableHead className={cell}>Status</TableHead>
+                      <TableHead className={cell} />
+                    </TableRow>
+                  </TableHeader>
+                  <motion.tbody variants={m.staggerParent()} initial="hidden" animate="show" className="[&_tr:last-child]:border-0">
+                    <AnimatePresence initial={false}>
+                    {submissions.map(submission => {
+                      const filename = submission.documents[0]?.original_filename || `${submission.file_count} submitted files`
+                      return (
+                        <MotionTableRow key={submission.id} layout variants={m.fadeUp} exit="exit">
+                          <MotionTableCell className={cn(cell, "max-w-[220px] truncate pl-6 font-medium text-black")}>{filename}</MotionTableCell>
+                          <MotionTableCell className={cell}>
+                            <SourceBadge kind="client_link" />
+                          </MotionTableCell>
+                          <MotionTableCell className={cn(cell, "text-black")}>{formatReceivedAt(submission.created_at)}</MotionTableCell>
+                          <MotionTableCell className={cn(cell, "tabular-nums text-black")}>{submission.file_count}</MotionTableCell>
+                          <MotionTableCell className={cell}>
                             <StatusBadge tone={submissionTone(submission)}>
                               <BadgeValue value={(submission.job_status || submission.status).replace(/_/g, " ")} />
                             </StatusBadge>
-                            <span className="text-xs font-normal text-[#4b5563]">{submission.file_count} file{submission.file_count !== 1 ? "s" : ""}</span>
-                          </div>
-                          {submission.job_id ? (
-                            <InlineAction asChild className={workspaceTextAction}>
-                              <Link href={`/dashboard/client?job_id=${encodeURIComponent(submission.job_id)}`}>Review</Link>
-                            </InlineAction>
-                          ) : null}
-                        </div>
-                      </motion.div>
-                    )
-                  })}
-                  </AnimatePresence>
-                </motion.div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+                          </MotionTableCell>
+                          <MotionTableCell className={cell}>
+                            {submission.job_id ? (
+                              <InlineAction asChild>
+                                <Link href={`/dashboard/client?job_id=${encodeURIComponent(submission.job_id)}`}>Review</Link>
+                              </InlineAction>
+                            ) : null}
+                          </MotionTableCell>
+                        </MotionTableRow>
+                      )
+                    })}
+                    </AnimatePresence>
+                  </motion.tbody>
+                </Table>
+              </div>
+
+              {/* Mobile card stack */}
+              <motion.div className="divide-y divide-border sm:hidden" variants={m.staggerParent()} initial="hidden" animate="show">
+                <AnimatePresence initial={false}>
+                {submissions.map(submission => {
+                  const filename = submission.documents[0]?.original_filename || `${submission.file_count} submitted files`
+                  return (
+                    <MobileRow
+                      key={submission.id}
+                      title={filename}
+                      meta={
+                        <>
+                          <StatusBadge tone={submissionTone(submission)}>
+                            <BadgeValue value={(submission.job_status || submission.status).replace(/_/g, " ")} />
+                          </StatusBadge>
+                          <span>{submission.file_count} file{submission.file_count !== 1 ? "s" : ""}</span>
+                          <span>{formatReceivedAt(submission.created_at)}</span>
+                        </>
+                      }
+                      trailing={
+                        submission.job_id ? (
+                          <InlineAction asChild>
+                            <Link href={`/dashboard/client?job_id=${encodeURIComponent(submission.job_id)}`}>Review</Link>
+                          </InlineAction>
+                        ) : null
+                      }
+                    />
+                  )
+                })}
+                </AnimatePresence>
+              </motion.div>
+            </>
+          )}
+        </WorkspaceSection>
 
         {/* Imported documents (email messages) */}
-        <div className="flex items-end justify-between gap-3 border-b border-[#d8dde6] pb-2">
-          <div>
-            <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#6b7280]">Email</p>
-            <h2 className="mt-1 text-[19px] font-medium tracking-tight text-black">Imported documents</h2>
-          </div>
-          <Badge variant="outline">{importCount} files</Badge>
-        </div>
-
-        <Card className={cn("overflow-hidden", workspacePanel)}>
-          <CardContent className="p-0">
-            {loading ? (
-              <div className="py-4"><EmptyState compact icon={<RefreshCw className="animate-spin h-5 w-5" />} title="Loading imports" /></div>
-            ) : messages.length === 0 ? (
-              <div className="py-6">
-                <EmptyState
-                  icon={<Mail className="text-[#16a34a]" />}
-                  title="Inbox zero"
-                  description="Forwarded documents will appear here after import."
-                  className="[&>div:first-child]:rounded-md [&>div:first-child]:bg-[#f0fdf4] [&>div:first-child]:p-3"
-                />
-              </div>
-            ) : (
-              <>
-                <div className="hidden sm:block">
-                  <table className={workspaceTable}>
-                    <thead>
-                      <tr className="border-b border-[#d8dde6] bg-[#f3f4f6]">
-                        <th className={cn(workspaceHeaderCell, "px-5")}>Sender</th>
-                        <th className={workspaceHeaderCell}>Documents</th>
-                        <th className={workspaceHeaderCell}>Source</th>
-                        <th className={workspaceHeaderCell}>Received</th>
-                        <th className={workspaceHeaderCell}>Status</th>
-                        <th className="px-4 py-2.5" />
-                      </tr>
-                    </thead>
-                    <motion.tbody variants={m.staggerParent()} initial="hidden" animate="show">
-                      <AnimatePresence initial={false}>
-                      {messages.map((message) => {
-                        const state = messageState(message)
-                        const documentNames = message.documents.map(document => document.original_filename).join(", ")
-                        const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Processing" ? "processing" : "neutral"
-                        return (
-                          <motion.tr key={message.id} layout variants={m.fadeUp} exit="exit" className="border-b border-[#e5e7eb] last:border-0 hover:bg-[#f8fafc]">
-                            <td className="max-w-[220px] px-5 py-3">
-                              <p className="truncate text-sm font-normal text-black">{message.sender || "Unknown sender"}</p>
-                              <p className="mt-1 truncate text-xs font-normal text-[#4b5563]">{message.source_email_reference}</p>
-                            </td>
-                            <td className="max-w-[260px] truncate px-4 py-3 text-sm font-normal text-black">
-                              {documentNames || `${message.attachment_count} attachment${message.attachment_count === 1 ? "" : "s"}`}
-                            </td>
-                            <td className="px-4 py-3">
-                              <SourceBadge kind="email" />
-                            </td>
-                            <td className={workspaceMutedCell}>{formatReceivedAt(message.received_at)}</td>
-                            <td className="px-4 py-3">
-                              <StatusBadge tone={tone}><BadgeValue value={state} /></StatusBadge>
-                            </td>
-                            <td className="px-4 py-3">
-                              {message.job_id ? (
-                                <InlineAction asChild className={workspaceTextAction}>
-                                  <Link href={`/dashboard/client?job_id=${encodeURIComponent(message.job_id)}`}>Review</Link>
-                                </InlineAction>
-                              ) : (
-                                <span className="ax-status-text text-xs font-normal text-[#4b5563]">
-                                  {message.rejected_attachments.length ? "Not imported" : "Pending"}
-                                </span>
-                              )}
-                            </td>
-                          </motion.tr>
-                        )
-                      })}
-                      </AnimatePresence>
-                    </motion.tbody>
-                  </table>
-                </div>
-
-                <motion.div className="divide-y divide-[#e5e7eb] sm:hidden" variants={m.staggerParent()} initial="hidden" animate="show">
-                  <AnimatePresence initial={false}>
-                  {messages.map((message) => {
-                    const state = messageState(message)
-                    const documentNames = message.documents.map(document => document.original_filename).join(", ")
-                    const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Processing" ? "processing" : "neutral"
-                    return (
-                      <motion.div key={message.id} layout variants={m.fadeUp} exit="exit" className="grid gap-3 px-5 py-4">
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-normal text-black">{message.sender || "Unknown sender"}</p>
-                          <p className="mt-1 truncate text-xs font-normal text-[#4b5563]">{message.source_email_reference}</p>
-                        </div>
-                        <p className="truncate text-sm font-normal text-black">
-                          {documentNames || `${message.attachment_count} attachment${message.attachment_count === 1 ? "" : "s"}`}
-                        </p>
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-2">
+        <WorkspaceSection
+          icon={<Mailbox />}
+          title="Imported from email"
+          actions={<span className="text-[13px] font-semibold tabular-nums text-foreground">{importCount} files</span>}
+          contentClassName="p-0"
+        >
+          {loading ? (
+            <EmptyState compact icon={<RefreshCw className="animate-spin" />} title="Loading imports" />
+          ) : messages.length === 0 ? (
+            <EmptyState icon={<Mail />} title="Inbox zero" />
+          ) : (
+            <>
+              <div className="hidden sm:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-[#f3f4f6] hover:bg-[#f3f4f6]">
+                      <TableHead className={cn(cell, "pl-6")}>Sender</TableHead>
+                      <TableHead className={cell}>Documents</TableHead>
+                      <TableHead className={cell}>Source</TableHead>
+                      <TableHead className={cell}>Received</TableHead>
+                      <TableHead className={cell}>Status</TableHead>
+                      <TableHead className={cell} />
+                    </TableRow>
+                  </TableHeader>
+                  <motion.tbody variants={m.staggerParent()} initial="hidden" animate="show" className="[&_tr:last-child]:border-0">
+                    <AnimatePresence initial={false}>
+                    {messages.map((message) => {
+                      const state = messageState(message)
+                      const documentNames = message.documents.map(document => document.original_filename).join(", ")
+                      const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Processing" ? "processing" : "neutral"
+                      return (
+                        <MotionTableRow key={message.id} layout variants={m.fadeUp} exit="exit">
+                          <MotionTableCell className={cn(cell, "max-w-[220px] pl-6")}>
+                            <p className="truncate text-sm font-medium text-black">{message.sender || "Unknown sender"}</p>
+                            <p className="mt-1 truncate text-xs text-black">{message.source_email_reference}</p>
+                          </MotionTableCell>
+                          <MotionTableCell className={cn(cell, "max-w-[260px] truncate text-sm text-black")}>
+                            {documentNames || `${message.attachment_count} attachment${message.attachment_count === 1 ? "" : "s"}`}
+                          </MotionTableCell>
+                          <MotionTableCell className={cell}>
                             <SourceBadge kind="email" />
+                          </MotionTableCell>
+                          <MotionTableCell className={cn(cell, "text-black")}>{formatReceivedAt(message.received_at)}</MotionTableCell>
+                          <MotionTableCell className={cell}>
                             <StatusBadge tone={tone}><BadgeValue value={state} /></StatusBadge>
-                          </div>
-                          {message.job_id ? (
-                            <InlineAction asChild className={workspaceTextAction}>
-                              <Link href={`/dashboard/client?job_id=${encodeURIComponent(message.job_id)}`}>Review</Link>
-                            </InlineAction>
-                          ) : (
-                            <span className="ax-status-text text-xs font-normal text-[#4b5563]">
-                              {message.rejected_attachments.length ? "Not imported" : "Pending"}
-                            </span>
-                          )}
-                        </div>
-                      </motion.div>
-                    )
-                  })}
-                  </AnimatePresence>
-                </motion.div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+                          </MotionTableCell>
+                          <MotionTableCell className={cell}>
+                            {message.job_id ? (
+                              <InlineAction asChild>
+                                <Link href={`/dashboard/client?job_id=${encodeURIComponent(message.job_id)}`}>Review</Link>
+                              </InlineAction>
+                            ) : (
+                              <StatusBadge tone="neutral">
+                                {message.rejected_attachments.length ? "Not imported" : "Pending"}
+                              </StatusBadge>
+                            )}
+                          </MotionTableCell>
+                        </MotionTableRow>
+                      )
+                    })}
+                    </AnimatePresence>
+                  </motion.tbody>
+                </Table>
+              </div>
+
+              <motion.div className="divide-y divide-border sm:hidden" variants={m.staggerParent()} initial="hidden" animate="show">
+                <AnimatePresence initial={false}>
+                {messages.map((message) => {
+                  const state = messageState(message)
+                  const documentNames = message.documents.map(document => document.original_filename).join(", ")
+                  const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Processing" ? "processing" : "neutral"
+                  return (
+                    <MobileRow
+                      key={message.id}
+                      title={message.sender || "Unknown sender"}
+                      meta={
+                        <>
+                          <SourceBadge kind="email" />
+                          <StatusBadge tone={tone}><BadgeValue value={state} /></StatusBadge>
+                        </>
+                      }
+                      trailing={
+                        message.job_id ? (
+                          <InlineAction asChild>
+                            <Link href={`/dashboard/client?job_id=${encodeURIComponent(message.job_id)}`}>Review</Link>
+                          </InlineAction>
+                        ) : (
+                          <StatusBadge tone="neutral">
+                            {message.rejected_attachments.length ? "Not imported" : "Pending"}
+                          </StatusBadge>
+                        )
+                      }
+                    >
+                      <p className="truncate text-xs text-black">{message.source_email_reference}</p>
+                      <p className="truncate text-sm text-black">
+                        {documentNames || `${message.attachment_count} attachment${message.attachment_count === 1 ? "" : "s"}`}
+                      </p>
+                    </MobileRow>
+                  )
+                })}
+                </AnimatePresence>
+              </motion.div>
+            </>
+          )}
+        </WorkspaceSection>
       </div>
     </DashboardShell>
   )

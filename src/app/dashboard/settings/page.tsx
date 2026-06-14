@@ -7,12 +7,12 @@ import { createClient } from "@/utils/supabase/client"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { DashboardShell } from "@/components/DashboardShell"
@@ -22,6 +22,8 @@ import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { accountApi, accountsPayableApi, billingApi, vendorMemoryApi, workspaceApi, type BillingPlanKey, type VendorRule, type VendorRuleAutoMode, type VendorRuleFields } from "@/lib/api-client"
 import { InlineAction } from "@/components/ui/inline-action"
 import { SettingRow } from "@/components/dashboard/SettingRow"
+import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
+import { Field } from "@/components/dashboard/Field"
 import { DangerZone } from "@/components/dashboard/DangerZone"
 import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog"
 import {
@@ -35,21 +37,33 @@ import {
 import {
   User,
   Globe,
-  Settings2,
   Languages,
-  Check,
   FileSpreadsheet,
   DownloadCloud,
   ExternalLink,
-  Save,
   Loader2,
+  CreditCard,
+  Store,
+  Plug,
+  SlidersHorizontal,
+  Settings2,
+  Lock,
+  Info,
 } from "lucide-react"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { Symbol } from "@/components/dashboard/Symbol"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 type SettingsSection = 'account' | 'billing' | 'accounting' | 'vendors' | 'preferences'
+
+// Soft inset surface for nested stat tiles (credits / limits). Uses workspace
+// tokens so it never theme-flips.
+const softPanel =
+  "rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-soft)] shadow-none"
+
+const accountingTextAction = "ax-text-action"
 
 const accountingPanel =
   "ax-workspace-panel rounded-lg border border-slate-200 bg-white shadow-none dark:border-slate-800 dark:bg-slate-950"
@@ -59,8 +73,6 @@ const accountingSubPanel =
 
 const accountingPrimaryButton =
   "!border-[#1877F2] !bg-[#1877F2] !text-white !shadow-none hover:!bg-[#0f6be3] focus-visible:!ring-[#1877F2]/30"
-
-const accountingTextAction = "ax-text-action !font-medium text-[#1877F2] hover:text-[#0f6be3]"
 
 function SettingsFallback() {
   return <DashboardRouteLoader label="Loading settings" />
@@ -455,7 +467,7 @@ function SettingsContent() {
         { id: 'billing', label: 'Billing', icon: BillingSeal },
         { id: 'accounting', label: 'Accounting connections', icon: DownloadCloud },
         ...(isOwner ? [{ id: 'vendors', label: 'Vendor memory', icon: FileSpreadsheet }] : []),
-        { id: 'preferences', label: 'Preferences', icon: Settings2 },
+        { id: 'preferences', label: 'Preferences', icon: SlidersHorizontal },
       ] as Array<{ id: SettingsSection; label: string; icon: React.ComponentType<{ className?: string }> }>
     }
   ]
@@ -497,106 +509,92 @@ function SettingsContent() {
 
           {/* Sidebar Navigation */}
           <nav className="hidden lg:block w-64 shrink-0">
-            <Card className="rounded-lg border border-slate-200 bg-slate-50 shadow-none dark:border-slate-800 dark:bg-slate-950/70">
-              <CardContent className="p-2.5">
-                <div className="space-y-1">
-                  {sidebarSections.map((section) => (
-                    <div key={section.title} className="space-y-1">
-                      <p className="px-3 py-2 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
-                        {section.title}
-                      </p>
-                      {section.items.map((item) => {
-                        const Icon = item.icon
-                        return (
-                          <button
-                            key={item.id}
-                            onClick={() => setActiveSection(item.id as SettingsSection)}
-                            className={cn(
-                              "ax-interactive relative w-full flex items-center gap-3 rounded-md border border-transparent px-3 py-2.5 text-sm font-normal",
-                              activeSection === item.id
-                                ? "border-slate-200 bg-white text-[#1877F2] shadow-sm dark:border-slate-800 dark:bg-slate-900"
-                                : "text-slate-600 hover:bg-white hover:text-[#1877F2] dark:text-slate-400 dark:hover:bg-slate-900"
-                            )}
-                          >
-                            {activeSection === item.id && (
-                              <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-[#1877F2]" />
-                            )}
-                            <Icon className="h-4 w-4 shrink-0" />
-                            <span>{item.label}</span>
-                          </button>
-                        )
-                      })}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <div className="rounded-xl border border-border bg-card p-2.5 shadow-none">
+              <div className="space-y-1">
+                {sidebarSections.map((section) => (
+                  <div key={section.title} className="space-y-1">
+                    <p className="px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground">
+                      {section.title}
+                    </p>
+                    {section.items.map((item) => {
+                      const Icon = item.icon
+                      const isActive = activeSection === item.id
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => setActiveSection(item.id as SettingsSection)}
+                          className={cn(
+                            "ax-interactive relative w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground",
+                            isActive
+                              ? "bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]"
+                              : "hover:bg-[var(--workspace-soft)]"
+                          )}
+                        >
+                          {isActive && (
+                            <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-[#1877F2]" />
+                          )}
+                          <Icon className={cn("h-4 w-4 shrink-0", isActive && "text-[var(--workspace-primary)]")} />
+                          <span>{item.label}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                ))}
+              </div>
+            </div>
           </nav>
 
           {/* Main Content */}
           <div className="flex-1 max-w-3xl">
             {/* Account Settings */}
             {activeSection === 'account' && (
-              <div className="space-y-4 lg:space-y-6">
+              <div className="space-y-6">
                 {/* Profile Information */}
-                <Card className={accountingPanel}>
-                  <CardHeader className="p-5">
-                    <div className="flex items-center gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40">
-                        <User className="h-5 w-5 text-[#1877F2]" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-base font-medium lg:text-lg">Profile Information</CardTitle>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4 p-5">
-                    <div className="space-y-1.5 lg:space-y-2">
-                      <Label htmlFor="fullname" className="text-xs lg:text-sm">Full Name</Label>
-                      <Input
-                        id="fullname"
-                        placeholder="Enter your full name"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        className="h-9 lg:h-10"
-                      />
-                    </div>
-                    <div className="space-y-1.5 lg:space-y-2">
-                      <Label htmlFor="email" className="text-xs lg:text-sm">Email Address</Label>
+                <WorkspaceSection title="Account" icon={<User />} contentClassName="space-y-4">
+                  <Field label="Full name" htmlFor="fullname">
+                    <Input
+                      id="fullname"
+                      placeholder="Enter your full name"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="h-10"
+                    />
+                  </Field>
+                  <Field label="Email address" htmlFor="email">
+                    <div className="relative">
                       <Input
                         id="email"
                         type="email"
                         value={email}
                         disabled
-                        className="bg-muted h-9 lg:h-10"
+                        className="bg-muted h-10 pr-9"
                       />
-                      <p className="text-[13px] font-normal text-slate-600 dark:text-slate-400">Email cannot be changed</p>
+                      <Lock className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-foreground" />
                     </div>
+                  </Field>
 
-                    <div className="flex items-center justify-end gap-5 pt-3 lg:pt-4 border-t">
-                      <InlineAction
-                        className={accountingTextAction}
-                        onClick={() => setFullName(user?.user_metadata?.full_name || "")}
-                      >
-                        Reset
-                      </InlineAction>
-                      <Button
-                        variant="glossy"
-                        size="sm"
-                        onClick={handleUpdateProfile}
-                        disabled={loading}
-                        className={cn("h-9", accountingPrimaryButton)}
-                      >
-                        {loading ? "Saving..." : "Save Changes"}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                  <div className="flex items-center justify-end gap-5 border-t border-border pt-4">
+                    <InlineAction
+                      className={accountingTextAction}
+                      onClick={() => setFullName(user?.user_metadata?.full_name || "")}
+                    >
+                      Reset
+                    </InlineAction>
+                    <Button
+                      variant="glossy"
+                      size="sm"
+                      onClick={handleUpdateProfile}
+                      disabled={loading}
+                    >
+                      {loading ? "Saving..." : "Save changes"}
+                    </Button>
+                  </div>
+                </WorkspaceSection>
 
                 {/* Danger zone — account */}
                 <DangerZone
                   title="Delete account"
-                  description="Permanently delete your account and everything you own. This cannot be undone."
+                  description="Permanent and cannot be undone."
                 >
                   <Button
                     variant="dangerOutline"
@@ -613,8 +611,8 @@ function SettingsContent() {
                     title="Workspace"
                     description={
                       isOwner
-                        ? `Deleting "${workspaceName}" removes its documents, members, and connections for everyone.`
-                        : `Leave "${workspaceName}". You can be re-invited later.`
+                        ? `Delete "${workspaceName}" for everyone.`
+                        : `Leave "${workspaceName}".`
                     }
                   >
                     {!isOwner && (
@@ -664,280 +662,251 @@ function SettingsContent() {
             )}
 
             {activeSection === 'billing' && (
-              <div className="space-y-5 lg:space-y-6">
-                <Card className={cn(accountingPanel, "overflow-hidden")}>
-                  <CardContent className="p-0">
-                    <div className="grid gap-0 lg:grid-cols-[1.05fr_0.95fr]">
-                      <div className="p-5 sm:p-6">
-                        <div className="flex items-start justify-between gap-4">
-                          <div>
-                            <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">Billing</p>
-                            <h2 className="mt-2 text-2xl font-normal tracking-tight text-slate-950 dark:text-slate-50">
-                              {billingLoading ? "Loading plan" : `${formatPlan(billingStatus?.plan)} workspace`}
-                            </h2>
-                          </div>
-                          <BillingSeal className="h-9 w-9 shrink-0 text-[#1877F2]" />
-                        </div>
+              <div className="space-y-6">
+                <WorkspaceSection
+                  title={billingLoading ? "Loading plan" : `${formatPlan(billingStatus?.plan)} workspace`}
+                  icon={<CreditCard />}
+                  actions={<BillingSeal className="h-7 w-7 shrink-0 text-[#1877F2]" />}
+                  contentClassName="space-y-4"
+                >
+                  <div className="divide-y divide-border">
+                    <SettingRow label="Status">
+                      <StatusBadge
+                        tone={
+                          checkoutSyncState === "pending"
+                            ? "processing"
+                            : (currentSubscription?.status || (billingStatus?.plan === "free" ? "free" : "active")) === "active"
+                              ? "success"
+                              : billingStatus?.plan === "free"
+                                ? "info"
+                                : "neutral"
+                        }
+                      >
+                        {checkoutSyncState === "pending"
+                          ? "Confirming"
+                          : currentSubscription?.status || (billingStatus?.plan === "free" ? "Free" : "Active")}
+                      </StatusBadge>
+                    </SettingRow>
+                    <SettingRow label="Renew date" value={formatDate(currentSubscription?.renews_at || currentSubscription?.ends_at)} />
+                  </div>
 
-                        <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                          <div className={cn("p-4", accountingSubPanel)}>
-                            <p className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">Status</p>
-                            <p className="mt-2 text-xl font-normal text-slate-950 dark:text-slate-50">
-                              {checkoutSyncState === "pending"
-                                ? "confirming"
-                                : currentSubscription?.status || (billingStatus?.plan === "free" ? "free" : "active")}
-                            </p>
-                          </div>
-                          <div className={cn("p-4", accountingSubPanel)}>
-                            <p className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">Renew date</p>
-                            <p className="mt-2 text-xl font-normal text-slate-950 dark:text-slate-50">
-                              {formatDate(currentSubscription?.renews_at || currentSubscription?.ends_at)}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className={cn("mt-4 p-4", accountingSubPanel)}>
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-3">
-                              <CreditStack className="h-6 w-6 text-[#1877F2]" />
-                              <div>
-                                <p className="text-sm font-medium text-slate-950 dark:text-slate-50">Credits</p>
-                                <p className="text-xs font-normal text-slate-600 dark:text-slate-400">{creditAvailable} available of {creditTotal}</p>
-                              </div>
-                            </div>
-                            <p className="text-sm font-medium text-[#1877F2]">{creditUsed} used</p>
-                          </div>
-                          <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted">
-                            <div
-                              className="h-full rounded-full bg-[#1877F2] transition-all"
-                              style={{ width: `${creditPercent}%` }}
-                            />
-                          </div>
-                        </div>
-
-                        {noCredits && (
-                          <div className={cn("mt-4 p-4", accountingSubPanel)}>
-                            <p className="text-sm font-medium text-red-600 dark:text-red-400">No credits left</p>
-                          </div>
-                        )}
-
-                        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
-                          <Button
-                            variant="glossy"
-                            className={cn("h-11", accountingPrimaryButton)}
-                            onClick={() => router.push("/pricing")}
-                          >
-                            {noCredits ? "Buy credits" : "Compare plans"}
-                          </Button>
-                          <InlineAction
-                            className={accountingTextAction}
-                            onClick={openBillingPortal}
-                            disabled={!hasBillingPortal || billingAction === "portal"}
-                          >
-                            {billingAction === "portal" ? "Opening..." : "Manage billing"}
-                          </InlineAction>
+                  <div className={cn("p-4", softPanel)}>
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <CreditStack className="h-6 w-6 shrink-0 text-[#1877F2]" />
+                        <div>
+                          <p className="text-sm font-semibold text-foreground">Credits</p>
+                          <p className="text-xs font-medium text-foreground">{creditAvailable} available of {creditTotal}</p>
                         </div>
                       </div>
-
-                      <div className="border-t border-slate-200 bg-slate-50/80 p-5 lg:border-l lg:border-t-0 sm:p-6 dark:border-slate-800 dark:bg-slate-900/40">
-                        <div className="flex items-center gap-3">
-                          <PlanSwitch className="h-7 w-7 shrink-0 text-[#1877F2]" />
-                          <div>
-                            <h3 className="font-medium text-slate-950 dark:text-slate-50">Upgrade path</h3>
-                          </div>
-                        </div>
-
-                        <div className="mt-5 space-y-3">
-                          {billingPlans
-                            .filter((plan) => plan.checkout_key)
-                            .map((plan) => (
-                            <button
-                              key={plan.key}
-                              type="button"
-                              onClick={() => startCheckout(plan.checkout_key as BillingPlanKey)}
-                              disabled={billingAction === plan.checkout_key || !plan.checkout_available}
-                              className={cn(
-                                "ax-interactive group flex w-full cursor-pointer items-center justify-between gap-3 rounded-md border border-slate-200 bg-white p-4 text-left text-slate-900 shadow-none hover:border-[#1877F2]/40 hover:text-[#1877F2] disabled:cursor-wait disabled:opacity-70 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100",
-                              )}
-                            >
-                              <span>
-                                <span className="block text-sm font-medium">
-                                  {plan.name} {plan.interval === "year" ? "annual" : "monthly"} · {plan.price_formatted}
-                                </span>
-                                <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">{plan.included_volume}</span>
-                              </span>
-                              <span className="h-2.5 w-2.5 rounded-full bg-[#1877F2]" />
-                            </button>
-                          ))}
-                        </div>
-
-                        <div className={cn("mt-5 p-4 text-sm font-normal text-slate-700 dark:text-slate-300", accountingSubPanel)}>
-                          Batch limits:
-                          <span className="ml-1 font-medium text-slate-950 dark:text-slate-50">
-                            {limits ? `${limits.max_files_per_batch} files, ${limits.max_file_size_mb} MB each` : "loading live limits"}
-                          </span>
-                        </div>
-                      </div>
+                      {noCredits ? (
+                        <StatusBadge tone="error">No credits left</StatusBadge>
+                      ) : (
+                        <p className="text-sm font-semibold text-[#1877F2]">{creditUsed} used</p>
+                      )}
                     </div>
-                  </CardContent>
-                </Card>
+                    <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full bg-[#1877F2] transition-all"
+                        style={{ width: `${creditPercent}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center">
+                    <Button
+                      variant="glossy"
+                      onClick={() => router.push("/pricing")}
+                    >
+                      {noCredits ? "Buy credits" : "Compare plans"}
+                    </Button>
+                    <InlineAction
+                      className={accountingTextAction}
+                      onClick={openBillingPortal}
+                      disabled={!hasBillingPortal || billingAction === "portal"}
+                    >
+                      {billingAction === "portal" ? "Opening..." : "Manage billing"}
+                    </InlineAction>
+                  </div>
+                </WorkspaceSection>
+
+                <WorkspaceSection title="Upgrade path" icon={<PlanSwitch />} contentClassName="space-y-3">
+                  {billingPlans
+                    .filter((plan) => plan.checkout_key)
+                    .map((plan) => (
+                    <button
+                      key={plan.key}
+                      type="button"
+                      onClick={() => startCheckout(plan.checkout_key as BillingPlanKey)}
+                      disabled={billingAction === plan.checkout_key || !plan.checkout_available}
+                      className="ax-interactive group flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card p-4 text-left text-foreground shadow-none hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] disabled:cursor-wait disabled:opacity-70"
+                    >
+                      <span>
+                        <span className="block text-sm font-semibold">
+                          {plan.name} {plan.interval === "year" ? "annual" : "monthly"} · {plan.price_formatted}
+                        </span>
+                        <span className="mt-1 block text-xs font-medium text-foreground">{plan.included_volume}</span>
+                      </span>
+                      <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#1877F2]" />
+                    </button>
+                  ))}
+
+                  <div className={cn("p-4 text-sm font-medium text-foreground", softPanel)}>
+                    Batch limits:
+                    <span className="ml-1 font-semibold text-foreground">
+                      {limits ? `${limits.max_files_per_batch} files, ${limits.max_file_size_mb} MB each` : "loading live limits"}
+                    </span>
+                  </div>
+                </WorkspaceSection>
               </div>
             )}
 
             {activeSection === 'vendors' && isOwner && (
-              <div className="space-y-5">
-                <Card className={cn(accountingPanel, "overflow-hidden")}>
-                  <CardHeader className="p-5 sm:p-6">
-                    <div className="flex items-start gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40">
-                        <FileSpreadsheet className="h-5 w-5 text-[#1877F2]" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <CardTitle className="text-lg font-medium">Vendor memory</CardTitle>
-                          <span className="rounded border border-yellow-200 bg-yellow-50 px-2 py-0.5 text-xs font-medium text-yellow-700 dark:border-yellow-800 dark:bg-yellow-950 dark:text-yellow-400">
-                            Owner only
-                          </span>
-                        </div>
-                        <CardDescription className="mt-1 max-w-xl font-normal leading-5 text-slate-600 dark:text-slate-400">
-                          Saved after confirmed invoice or receipt review.
-                        </CardDescription>
+              <div className="space-y-6">
+                <WorkspaceSection
+                  title="Vendor memory"
+                  icon={<Store />}
+                  actions={<StatusBadge tone="warning">Owner only</StatusBadge>}
+                  hint="Saved after confirmed invoice or receipt review."
+                  contentClassName={vendorRules.length === 0 ? "p-0 sm:p-0" : "space-y-4"}
+                >
+                  {vendorRulesLoading ? (
+                    <EmptyState
+                      compact
+                      icon={<Loader2 className="animate-spin h-5 w-5" />}
+                      title="Loading vendors"
+                    />
+                  ) : vendorRules.length === 0 ? (
+                    <div className="flex flex-col items-center gap-5 px-6 py-10 text-center">
+                      <Symbol
+                        name="firstsight-vendors-empty"
+                        size="hero"
+                        className="h-56 w-56 sm:h-64 sm:w-64"
+                        alt=""
+                      />
+                      <div className="max-w-sm space-y-2">
+                        <h3 className="text-lg font-semibold tracking-tight text-foreground">
+                          No remembered suppliers yet
+                        </h3>
+                        <p className="text-sm leading-relaxed text-foreground">
+                          Confirm an invoice or receipt in Review to save coding defaults.
+                        </p>
                       </div>
                     </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3 p-5 pt-0 sm:p-6 sm:pt-0">
-                    {vendorRulesLoading ? (
-                      <EmptyState
-                        compact
-                        icon={<Loader2 className="animate-spin h-5 w-5" />}
-                        title="Loading vendors"
-                      />
-                    ) : vendorRules.length === 0 ? (
-                      <div className="flex flex-col items-center gap-5 px-6 py-10 text-center">
-                        <Symbol
-                          name="firstsight-vendors-empty"
-                          size="hero"
-                          className="h-56 w-56 sm:h-64 sm:w-64"
-                          alt=""
-                        />
-                        <div className="max-w-sm space-y-2">
-                          <h3 className="text-lg font-normal tracking-tight text-slate-950 dark:text-slate-50">
-                            No remembered suppliers yet
-                          </h3>
-                          <p className="text-sm font-normal leading-relaxed text-slate-600 dark:text-slate-400">
-                            Confirm an invoice or receipt in Review to save coding defaults.
+                  ) : vendorRules.map(rule => (
+                    <section key={rule.id} className={cn("p-4", softPanel)}>
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="flex items-start gap-3">
+                          <Symbol
+                            name="success-vendor-remembered"
+                            size="badge"
+                            className="mt-0.5 h-12 w-12"
+                            alt=""
+                          />
+                          <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="text-sm font-semibold text-foreground">{rule.display_name}</h3>
+                            <StatusBadge tone="info">
+                              {rule.applies_to === 'both' ? 'Invoice / receipt' : rule.applies_to}
+                            </StatusBadge>
+                            <StatusBadge tone={rule.enabled ? "success" : "neutral"}>
+                              {rule.enabled ? 'Enabled' : 'Disabled'}
+                            </StatusBadge>
+                          </div>
+                          <p className="mt-1 text-xs text-foreground">
+                            Approved {formatDate(rule.approved_at)}
                           </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-5">
+                          <InlineAction
+                            tone={rule.enabled ? "warning" : "success"}
+                            disabled={vendorRuleAction === rule.id}
+                            onClick={() => void toggleVendorRule(rule)}
+                          >
+                            {rule.enabled ? 'Disable' : 'Enable'}
+                          </InlineAction>
+                          <InlineAction
+                            tone="danger"
+                            disabled={vendorRuleAction === rule.id}
+                            onClick={() => void deleteVendorRule(rule)}
+                          >
+                            Delete
+                          </InlineAction>
                         </div>
                       </div>
-                    ) : vendorRules.map(rule => (
-                      <section key={rule.id} className="rounded-lg border border-slate-200 bg-white p-4 shadow-none dark:border-slate-800 dark:bg-slate-950">
-                        <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div className="flex items-start gap-3">
-                            <Symbol
-                              name="success-vendor-remembered"
-                              size="badge"
-                              className="mt-0.5 h-12 w-12"
-                              alt=""
-                            />
-                            <div>
-                            <div className="flex flex-wrap items-center gap-2">
-                              <h3 className="text-sm font-medium text-slate-950 dark:text-slate-50">{rule.display_name}</h3>
-                              <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
-                                {rule.applies_to === 'both' ? 'Invoice / receipt' : rule.applies_to}
-                              </span>
-                              <StatusBadge tone={rule.enabled ? "success" : "neutral"}>
-                                {rule.enabled ? 'Enabled' : 'Disabled'}
-                              </StatusBadge>
-                            </div>
-                            <p className="mt-1 text-xs font-normal text-slate-600 dark:text-slate-400">
-                              Approved {formatDate(rule.approved_at)}
-                            </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-5">
-                            <InlineAction
-                              className={rule.enabled ? "ax-text-action !font-medium text-yellow-600 hover:text-yellow-700" : "ax-text-action !font-medium text-green-600 hover:text-green-700"}
-                              disabled={vendorRuleAction === rule.id}
-                              onClick={() => void toggleVendorRule(rule)}
-                            >
-                              {rule.enabled ? 'Disable' : 'Enable'}
-                            </InlineAction>
-                            <InlineAction
-                              tone="danger"
-                              className="ax-text-action text-red-600 hover:text-red-700"
-                              disabled={vendorRuleAction === rule.id}
-                              onClick={() => void deleteVendorRule(rule)}
-                            >
-                              Delete
-                            </InlineAction>
-                          </div>
-                        </div>
 
-                        <div className={cn("mt-4 p-3", accountingSubPanel)}>
-                          <div className="flex flex-wrap items-start justify-between gap-3">
-                            <div className="min-w-0">
-                              <p className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
-                                Auto-apply mode
-                              </p>
-                              <p className="mt-1 text-xs font-normal text-slate-600 dark:text-slate-400">
+                      <div className="mt-4">
+                        <Field
+                          label="Auto-apply mode"
+                          icon={<SlidersHorizontal />}
+                          trailing={
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="inline-flex cursor-help text-foreground">
+                                  <Info className="size-3.5" />
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent>
                                 {(rule.auto_mode || 'suggest') === 'auto_ready'
                                   ? 'Pre-fill and move to Ready for approval.'
                                   : (rule.auto_mode || 'suggest') === 'auto_fill'
                                     ? 'Pre-fill, then confirm before publishing.'
                                     : 'Show as a suggestion only.'}
-                              </p>
-                            </div>
-                            <Select
-                              value={rule.auto_mode || 'suggest'}
-                              onValueChange={(value) => void updateVendorRuleAutoMode(rule, value as VendorRuleAutoMode)}
-                              disabled={vendorRuleAction === rule.id || !rule.enabled}
-                            >
-                              <SelectTrigger className="h-9 w-full max-w-[260px] sm:w-[260px]">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="suggest">Suggest only</SelectItem>
-                                <SelectItem value="auto_fill">Auto-fill + confirm required</SelectItem>
-                                <SelectItem value="auto_ready">Auto-fill + move to Ready for your approval</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-
-                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                          {([
-                            ['category_account', 'Category / account', 'Office supplies'],
-                            ['tax_code', 'Tax code', 'VAT 20%'],
-                            ['currency', 'Currency', 'USD'],
-                            ['payment_terms', 'Payment terms', 'Net 30'],
-                            ['destination_treatment', 'Destination treatment', 'Draft bill'],
-                          ] as Array<[keyof VendorRuleFields, string, string]>)
-                            .filter(([field]) => rule.applies_to !== 'receipt' || field !== 'destination_treatment')
-                            .map(([field, label, placeholder]) => (
-                            <label key={field} className="space-y-1.5">
-                              <span className="block text-xs font-medium text-slate-700 dark:text-slate-300">{label}</span>
-                              <Input
-                                value={vendorDrafts[rule.id]?.[field] || ''}
-                                onChange={(event) => updateVendorDraft(rule.id, field, event.target.value)}
-                                placeholder={placeholder}
-                                className="h-9"
-                              />
-                            </label>
-                          ))}
-                        </div>
-                        <div className="mt-4 flex justify-end">
-                          <InlineAction
-                            className={accountingTextAction}
-                            disabled={vendorRuleAction === rule.id}
-                            onClick={() => void saveVendorRule(rule)}
+                              </TooltipContent>
+                            </Tooltip>
+                          }
+                        >
+                          <Select
+                            value={rule.auto_mode || 'suggest'}
+                            onValueChange={(value) => void updateVendorRuleAutoMode(rule, value as VendorRuleAutoMode)}
+                            disabled={vendorRuleAction === rule.id || !rule.enabled}
                           >
-                            {vendorRuleAction === rule.id ? 'Saving…' : 'Save changes'}
-                          </InlineAction>
-                        </div>
-                      </section>
-                    ))}
-                  </CardContent>
-                </Card>
+                            <SelectTrigger className="h-9 w-full">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="suggest">Suggest only</SelectItem>
+                              <SelectItem value="auto_fill">Auto-fill + confirm required</SelectItem>
+                              <SelectItem value="auto_ready">Auto-fill + move to Ready for your approval</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </Field>
+                      </div>
+
+                      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                        {([
+                          ['category_account', 'Category / account', 'Office supplies'],
+                          ['tax_code', 'Tax code', 'VAT 20%'],
+                          ['currency', 'Currency', 'USD'],
+                          ['payment_terms', 'Payment terms', 'Net 30'],
+                          ['destination_treatment', 'Destination treatment', 'Draft bill'],
+                        ] as Array<[keyof VendorRuleFields, string, string]>)
+                          .filter(([field]) => rule.applies_to !== 'receipt' || field !== 'destination_treatment')
+                          .map(([field, label, placeholder]) => (
+                          <Field key={field} label={label} htmlFor={`${rule.id}-${field}`}>
+                            <Input
+                              id={`${rule.id}-${field}`}
+                              value={vendorDrafts[rule.id]?.[field] || ''}
+                              onChange={(event) => updateVendorDraft(rule.id, field, event.target.value)}
+                              placeholder={placeholder}
+                              className="h-9"
+                            />
+                          </Field>
+                        ))}
+                      </div>
+                      <div className="mt-4 flex justify-end border-t border-border pt-4">
+                        <InlineAction
+                          className={accountingTextAction}
+                          disabled={vendorRuleAction === rule.id}
+                          onClick={() => void saveVendorRule(rule)}
+                        >
+                          {vendorRuleAction === rule.id ? 'Saving…' : 'Save changes'}
+                        </InlineAction>
+                      </div>
+                    </section>
+                  ))}
+                </WorkspaceSection>
               </div>
             )}
 

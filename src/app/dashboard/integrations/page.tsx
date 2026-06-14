@@ -44,17 +44,11 @@ function IntegrationsContent() {
 
   return (
     <DashboardShell activeItem="integrations" title="Integrations" user={user}>
-      <PageHeader title="Integrations" />
-      <div className="max-w-3xl space-y-8">
-        <div className="space-y-2">
-          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-            Connect a source
-          </h2>
-          <p className="text-sm font-normal leading-relaxed text-foreground">
-            Connect QuickBooks or Xero to publish reviewed draft bills.
-          </p>
-        </div>
-
+      <PageHeader
+        title="Integrations"
+        description="Connect QuickBooks or Xero to publish reviewed draft bills."
+      />
+      <div className="max-w-3xl space-y-6">
         <AccountingConnectionsSection isOwner={isOwner} workspaceId={activeWorkspace?.id} />
       </div>
     </DashboardShell>

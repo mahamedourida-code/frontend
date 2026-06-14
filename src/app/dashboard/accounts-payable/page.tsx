@@ -5,11 +5,36 @@ import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { AnimatePresence, motion } from "framer-motion"
-import { FileText, Loader2, Sparkles } from "lucide-react"
+import {
+  AlertTriangle,
+  Building2,
+  Calendar,
+  CheckCheck,
+  CircleCheck,
+  Clock,
+  FileText,
+  FolderTree,
+  Hash,
+  Landmark,
+  Link2,
+  ListChecks,
+  Loader2,
+  Percent,
+  Plus,
+  ReceiptText,
+  Sparkles,
+  SlidersHorizontal,
+  Table as TableIcon,
+  Tag,
+  Trash2,
+  Wallet,
+} from "lucide-react"
 import Image from "next/image"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
+import { SegmentedTabs } from "@/components/dashboard/SegmentedTabs"
+import { Field } from "@/components/dashboard/Field"
 import { Symbol } from "@/components/dashboard/Symbol"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
@@ -37,6 +62,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import {
@@ -115,6 +141,23 @@ const advancedFields: Array<[keyof AccountsPayableDraftData, string, string]> = 
   ["currency", "Currency", "USD"],
 ]
 
+// Icon-led labels (Tables-style) for the coding form — the icon replaces the
+// old descriptive subtext under each field.
+const fieldIcons: Partial<Record<keyof AccountsPayableDraftData, React.ReactNode>> = {
+  invoice_number: <Hash />,
+  invoice_date: <Calendar />,
+  due_date: <Clock />,
+  reference: <FileText />,
+  currency: <Wallet />,
+}
+
+// Icon-led labels for the three coding selects — the icon carries the meaning
+// the old descriptive subtexts used to ("pick the account", "map to chart",
+// "set the VAT code"), so the words can go.
+const supplierIcon = <Building2 />
+const accountIcon = <FolderTree />
+const taxIcon = <Percent />
+
 const moreFilters: Array<{ value: MoreFilter; label: string }> = [
   { value: "duplicates", label: "Duplicates" },
   { value: "missing_info", label: "Missing info" },
@@ -161,8 +204,10 @@ const LEARNED_HINT_STORAGE_KEY = "axliner.ap.vendor-memory-learned-seen"
 const inlineFieldClass =
   "h-9 rounded-lg transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-0"
 
+// Label content for a coding Field: ink text + an amber dirty dot for unsaved
+// changes. Passed as the `label` of the shared <Field>, so the icon/structure
+// comes from Field and the dot rides alongside the word.
 function FieldLabel({
-  htmlFor,
   dirty,
   children,
 }: {
@@ -171,13 +216,8 @@ function FieldLabel({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex items-center gap-1.5">
-      <label
-        htmlFor={htmlFor}
-        className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground"
-      >
-        {children}
-      </label>
+    <span className="inline-flex items-center gap-1.5 text-foreground">
+      {children}
       {dirty ? (
         <span
           aria-label="Unsaved change"
@@ -185,7 +225,7 @@ function FieldLabel({
           className="size-1.5 shrink-0 rounded-full bg-amber-400"
         />
       ) : null}
-    </div>
+    </span>
   )
 }
 
@@ -843,10 +883,9 @@ function AccountsPayableContent() {
 
   return (
     <DashboardShell activeItem="accounts_payable" title="Draft bills" user={user} contentClassName="max-w-none px-3 py-4 sm:px-5 lg:px-6">
-      <div className="space-y-4">
+      <div className="space-y-6">
         <PageHeader
           title="Draft bills"
-          description={`Review invoice drafts, code exceptions, and publish approved bills to ${destinationName}.`}
           actions={selectedReadyIds.length ? (
             <MotionButton
               ref={publishTriggerRef}
@@ -862,29 +901,32 @@ function AccountsPayableContent() {
           ) : undefined}
         />
 
-        {/* P11 — client filter chip */}
-        {clientId ? (
-          <div className={cn("flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm", workspacePanel)}>
-            <span className="font-medium text-foreground">
-              Filtered to <span className={workspaceTextAction}>{clientName || "client"}</span>
-              {clientJobIds ? ` · ${visibleItems.length} item${visibleItems.length === 1 ? "" : "s"}` : " · loading…"}
-            </span>
-            <InlineAction onClick={() => router.push("/dashboard/accounts-payable")}>
-              Clear filter
-            </InlineAction>
+        {/* Status row — accounting connection + optional client filter, as
+            colored badges. No prose; the badge color carries the state. */}
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            {accountingConnectionLoading ? (
+              <StatusBadge tone="processing">{destinationName} · checking</StatusBadge>
+            ) : accountingConnection?.connected ? (
+              <StatusBadge tone="success">
+                {accountingConnection.company_name || destinationName}
+              </StatusBadge>
+            ) : (
+              <StatusBadge tone="warning">{destinationName} · setup required</StatusBadge>
+            )}
+            {clientId ? (
+              <StatusBadge tone="info">
+                {clientName || "Client"}
+                {clientJobIds ? ` · ${visibleItems.length}` : ""}
+              </StatusBadge>
+            ) : null}
           </div>
-        ) : null}
-
-        <div className={cn("flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2 text-xs", workspacePanel)}>
-          <p className="font-medium text-foreground">
-            <span className="font-medium">{destinationName}</span>
-            {accountingConnectionLoading
-              ? " connection is being checked."
-              : accountingConnection?.connected
-                ? ` connected${accountingConnection.company_name ? ` to ${accountingConnection.company_name}` : ""}.`
-                : " setup required before publishing draft bills."}
-          </p>
           <div className="flex items-center gap-4">
+            {clientId ? (
+              <InlineAction onClick={() => router.push("/dashboard/accounts-payable")}>
+                Clear filter
+              </InlineAction>
+            ) : null}
             {accountingConnection?.connected ? (
               <InlineAction onClick={() => void loadAccountingDestination(true)} disabled={syncingReferences}>
                 {syncingReferences ? "Refreshing..." : "Refresh lists"}
@@ -897,55 +939,23 @@ function AccountsPayableContent() {
         </div>
 
         <div className="space-y-6">
-          <section className="relative overflow-hidden rounded-md border border-border bg-card shadow-none">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-card px-3 py-2.5">
-              <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Draft bills queue">
-                {[
-                  { value: "needs_attention" as const, label: "Needs attention", count: counts.needs_coding + counts.needs_review },
-                  { value: "ready_to_publish" as const, label: "Ready to publish", count: counts.ready_to_publish },
-                  { value: "published" as const, label: "Published", count: counts.published },
-                ].map(tab => {
-                  const isActiveTab = filter === tab.value
-                  return (
-                    <button
-                      key={tab.value}
-                      type="button"
-                      role="tab"
-                      aria-selected={isActiveTab}
-                      onClick={() => setFilter(tab.value)}
-                      className={cn(
-                        "ax-interactive relative inline-flex h-7 items-center gap-1 rounded-full border px-3 text-xs font-medium",
-                        isActiveTab
-                          ? "border-[#1877F2] text-white"
-                          : "border-slate-300 bg-white text-slate-700 hover:border-[#1877F2] hover:text-[#1877F2]"
-                      )}
-                    >
-                      {isActiveTab ? (
-                        <motion.span
-                          layoutId="ap-tab-indicator"
-                          aria-hidden="true"
-                          className="absolute inset-0 rounded-full bg-[#1877F2]"
-                          transition={m.reduced ? { duration: 0 } : m.spring}
-                        />
-                      ) : null}
-                      <span className="relative z-10">{tab.label}</span>
-                      <span className="relative z-10 tabular-nums opacity-70">{tab.count}</span>
-                    </button>
-                  )
-                })}
-              </div>
+          <WorkspaceSection
+            icon={<TableIcon />}
+            title="Queue"
+            contentClassName="p-0"
+            actions={
               <details className="relative">
                 <summary
                   className={cn(
-                    "ax-interactive flex h-7 cursor-pointer list-none items-center rounded-full border px-3 text-xs font-medium [&::-webkit-details-marker]:hidden",
+                    "ax-interactive flex h-8 cursor-pointer list-none items-center rounded-full border px-3.5 text-[13px] font-medium [&::-webkit-details-marker]:hidden",
                     moreFilters.some(option => option.value === filter)
                       ? "border-[#1877F2] bg-[#1877F2] text-white"
-                      : "border-slate-300 bg-white text-slate-700 hover:border-[#1877F2] hover:text-[#1877F2]",
+                      : "border-slate-300 bg-white text-foreground hover:border-[#1877F2] hover:text-[#1877F2]",
                   )}
                 >
                   More filters
                 </summary>
-                <div className={cn("absolute right-0 z-20 mt-2 grid min-w-[180px] gap-1 rounded-md border p-1.5 shadow-none", workspacePanel)}>
+                <div className={cn("absolute right-0 z-20 mt-2 grid min-w-[180px] gap-1 rounded-lg border p-1.5 shadow-none", workspacePanel)}>
                   {moreFilters.map(option => {
                     const count =
                       option.value === "duplicates" ? duplicateCount :
@@ -957,37 +967,51 @@ function AccountsPayableContent() {
                         type="button"
                         onClick={() => setFilter(option.value)}
                         className={cn(
-                          "ax-interactive flex items-center justify-between rounded-md px-2.5 py-1.5 text-left text-xs font-medium",
+                          "ax-interactive flex items-center justify-between rounded-md px-2.5 py-1.5 text-left text-[13px] font-medium",
                           filter === option.value
                             ? "bg-[#1877F2] text-white"
-                            : "bg-white text-slate-700 hover:bg-slate-100 hover:text-[#1877F2]",
+                            : "bg-white text-foreground hover:bg-slate-100 hover:text-[#1877F2]",
                         )}
                       >
                         {option.label}
-                        <span className="ml-3 tabular-nums opacity-70">{count}</span>
+                        <span className="ml-3 tabular-nums text-foreground">{count}</span>
                       </button>
                     )
                   })}
                 </div>
               </details>
+            }
+          >
+            <div className="px-5 py-4 sm:px-6">
+              <SegmentedTabs
+                aria-label="Draft bills queue"
+                value={filter}
+                onValueChange={(value) => setFilter(value as QueueFilter)}
+                size="sm"
+                tabs={[
+                  { value: "needs_attention", label: "Needs attention", count: counts.needs_coding + counts.needs_review },
+                  { value: "ready_to_publish", label: "Ready to publish", count: counts.ready_to_publish },
+                  { value: "published", label: "Published", count: counts.published },
+                ]}
+              />
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto border-t border-border">
               <table className={cn("w-full min-w-[1320px] text-left text-xs", workspaceTable)}>
-                <thead className="border-b border-slate-200 bg-slate-100 text-[10px] font-medium uppercase tracking-wider text-slate-500">
+                <thead className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold uppercase tracking-wider text-foreground">
                   <tr>
-                    <th className="w-10 px-3 py-2" />
-                    <th className="min-w-[180px] px-3 py-2">Supplier</th>
-                    <th className="w-[124px] px-3 py-2">Bill number</th>
-                    <th className="w-[104px] px-3 py-2">Invoice date</th>
-                    <th className="w-[104px] px-3 py-2">Due date</th>
-                    <th className="min-w-[150px] px-3 py-2">Account</th>
-                    <th className="w-[112px] px-3 py-2">VAT code</th>
-                    <th className="w-[56px] px-3 py-2">Cur</th>
-                    <th className="w-[92px] px-3 py-2 text-right">Net</th>
-                    <th className="w-[92px] px-3 py-2 text-right">VAT</th>
-                    <th className="w-[100px] px-3 py-2 text-right">Total</th>
-                    <th className="w-[132px] px-3 py-2">Status</th>
+                    <th className="w-10 px-4 py-3" />
+                    <th className="min-w-[180px] px-4 py-3">Supplier</th>
+                    <th className="w-[124px] px-4 py-3">Bill number</th>
+                    <th className="w-[104px] px-4 py-3">Invoice date</th>
+                    <th className="w-[104px] px-4 py-3">Due date</th>
+                    <th className="min-w-[150px] px-4 py-3">Account</th>
+                    <th className="w-[112px] px-4 py-3">VAT code</th>
+                    <th className="w-[56px] px-4 py-3">Cur</th>
+                    <th className="w-[92px] px-4 py-3 text-right">Net</th>
+                    <th className="w-[92px] px-4 py-3 text-right">VAT</th>
+                    <th className="w-[100px] px-4 py-3 text-right">Total</th>
+                    <th className="w-[132px] px-4 py-3">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
@@ -1010,13 +1034,8 @@ function AccountsPayableContent() {
                             alt=""
                           />
                           <h3 className="mt-8 text-xl font-medium tracking-tight text-slate-950">
-                            {items.length ? "Nothing waiting in this queue" : "Turn that stack of invoices into draft bills"}
+                            {items.length ? "Nothing in this view" : "Turn invoices into draft bills"}
                           </h3>
-                          <p className="mt-2 max-w-md text-sm leading-relaxed text-foreground/70">
-                            {items.length
-                              ? "No draft bills match this view. Try another filter."
-                              : "Review your extracted invoices, then code each one here and publish the approved bills straight to your accounting software."}
-                          </p>
                           {!items.length ? (
                             <div className="mt-7 flex flex-col items-center gap-3">
                               <Button asChild variant="glossy" size="sm" className={workspacePrimaryButton}>
@@ -1065,7 +1084,7 @@ function AccountsPayableContent() {
                               isActive && "bg-blue-50/70",
                             )}
                           >
-                            <td className="px-3 py-2.5" onClick={isReady ? event => event.stopPropagation() : undefined}>
+                            <td className="px-4 py-3" onClick={isReady ? event => event.stopPropagation() : undefined}>
                               {isReady ? (
                                 <Checkbox
                                   checked={selectedReadyIds.includes(item.id)}
@@ -1086,23 +1105,23 @@ function AccountsPayableContent() {
                                 </AnimatePresence>
                               )}
                             </td>
-                            <td className="max-w-[240px] px-3 py-2.5">
+                            <td className="max-w-[240px] px-4 py-3">
                               <div className="flex items-center gap-2">
                                 <span className="truncate font-normal text-slate-950">{item.draft_data.vendor || "Supplier missing"}</span>
                                 {hasDuplicate ? <span className="size-1.5 shrink-0 rounded-full bg-amber-500" title="Possible duplicate" /> : null}
                                 {missing?.missing ? <span className="size-1.5 shrink-0 rounded-full bg-rose-500" title="Missing information" /> : null}
                               </div>
                             </td>
-                            <td className="px-3 py-2.5 font-mono tabular-nums text-slate-900">{ledgerValue(item.draft_data.invoice_number)}</td>
-                            <td className="px-3 py-2.5 tabular-nums">{shortDate(item.draft_data.invoice_date)}</td>
-                            <td className="px-3 py-2.5 tabular-nums">{shortDate(item.draft_data.due_date)}</td>
-                            <td className="max-w-[200px] truncate px-3 py-2.5">{ledgerValue(item.draft_data.account_category)}</td>
-                            <td className="max-w-[132px] truncate px-3 py-2.5">{ledgerValue(item.draft_data.tax_code)}</td>
-                            <td className="px-3 py-2.5 font-mono">{ledgerValue(item.draft_data.currency)}</td>
-                            <td className="px-3 py-2.5 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.subtotal)}</td>
-                            <td className="px-3 py-2.5 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.tax_amount)}</td>
-                            <td className="px-3 py-2.5 text-right font-mono font-normal tabular-nums text-slate-950">{ledgerValue(item.draft_data.total)}</td>
-                            <td className="px-3 py-2.5">
+                            <td className="px-4 py-3 font-mono tabular-nums text-slate-900">{ledgerValue(item.draft_data.invoice_number)}</td>
+                            <td className="px-4 py-3 tabular-nums">{shortDate(item.draft_data.invoice_date)}</td>
+                            <td className="px-4 py-3 tabular-nums">{shortDate(item.draft_data.due_date)}</td>
+                            <td className="max-w-[200px] truncate px-4 py-3">{ledgerValue(item.draft_data.account_category)}</td>
+                            <td className="max-w-[132px] truncate px-4 py-3">{ledgerValue(item.draft_data.tax_code)}</td>
+                            <td className="px-4 py-3 font-mono">{ledgerValue(item.draft_data.currency)}</td>
+                            <td className="px-4 py-3 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.subtotal)}</td>
+                            <td className="px-4 py-3 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.tax_amount)}</td>
+                            <td className="px-4 py-3 text-right font-mono font-normal tabular-nums text-slate-950">{ledgerValue(item.draft_data.total)}</td>
+                            <td className="px-4 py-3">
                               <AnimatePresence mode="popLayout" initial={false}>
                                 <motion.span
                                   key={item.status}
@@ -1124,7 +1143,7 @@ function AccountsPayableContent() {
                 </tbody>
               </table>
             </div>
-          </section>
+          </WorkspaceSection>
 
           {activeItem ? (
           <SpotlightCard className="rounded-md">

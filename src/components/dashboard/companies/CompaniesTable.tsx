@@ -9,6 +9,8 @@ import { AddCompanyDialog } from "@/components/dashboard/companies/AddCompanyDia
 import { companiesFromResponse, type CompanySummary } from "@/components/dashboard/companies/company-types"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { SkeletonTableRow } from "@/components/dashboard/SkeletonCard"
+import { StatusBadge } from "@/components/dashboard/StatusBadge"
+import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { Card, CardContent } from "@/components/ui/card"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Input } from "@/components/ui/input"
@@ -42,7 +44,7 @@ function formatDate(value: string | null) {
 
 function CountCell({ value, emphasis = false }: { value: number; emphasis?: boolean }) {
   return (
-    <TableCell className={cn("text-right tabular-nums", value ? "text-[var(--workspace-ink)]" : "text-[var(--workspace-muted)]", emphasis && value && "font-medium text-[var(--workspace-warning)]")}>
+    <TableCell className={cn("px-4 py-3 text-right tabular-nums", value ? "text-foreground" : "text-muted-foreground", emphasis && value && "font-semibold text-[var(--workspace-warning)]")}>
       {value}
     </TableCell>
   )

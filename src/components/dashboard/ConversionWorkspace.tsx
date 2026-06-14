@@ -5,30 +5,45 @@ import {
   AlertCircle,
   ArrowRight,
   BookOpen,
+  Building2,
   Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  CreditCard,
+  DollarSign,
   Download,
   Eye,
   FileImage,
   FileSpreadsheet,
   FileText,
   FolderUp,
+  Hash,
   Inbox,
   Keyboard,
+  Landmark,
   Languages,
+  Layers,
   ListChecks,
   Loader2,
+  Percent,
+  ReceiptText,
   RotateCcw,
   Save,
+  ScanLine,
   Share2,
+  Sparkles,
+  Table2,
+  Tag,
   Trash2,
+  User,
+  Wallet,
   X,
 } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
   Dialog,
   DialogContent,
@@ -40,6 +55,9 @@ import { BankReconciliationPanel } from "@/components/dashboard/BankReconciliati
 import { ConfidenceDot, ConfidenceLegend } from "@/components/dashboard/ConfidenceDot"
 import { AnomalyChip, type AnomalyTone } from "@/components/dashboard/AnomalyChip"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
+import { SegmentedTabs } from "@/components/dashboard/SegmentedTabs"
+import { Field } from "@/components/dashboard/Field"
+import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { InboxSummaryStrip } from "@/components/dashboard/InboxSummaryStrip"
 import { FIELD_LABEL, workspaceStage } from "@/lib/review-vocab"
 import { vatCheck } from "@/lib/bookkeeper-copy"
@@ -309,13 +327,8 @@ function AutoDetectionPanel({
   const selectableModes = Object.keys(labels) as ResolvedDocumentMode[]
 
   return (
-    <section className={cn("rounded-xl border p-4", workspacePanelSurfaceClass)}>
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div>
-          <h3 className="text-base font-semibold text-foreground">Detected document types</h3>
-        </div>
-      </div>
-      <div className="divide-y divide-border rounded-lg border border-border">
+    <WorkspaceSection title="Detected document types" icon={<ScanLine />}>
+      <div className="divide-y divide-border overflow-hidden rounded-lg border border-border">
         {autoDocuments.map(document => {
           const detected = document.detected_mode
           const needsSelection = !document.resolved_mode
@@ -324,34 +337,23 @@ function AutoDetectionPanel({
             || document.resolved_mode
             || (detected && detected !== "needs_manual_selection" ? detected : "table")
           const busy = overridingDocumentId === document.id
-          const percentage = typeof document.detection_confidence === "number"
-            ? `${Math.round(document.detection_confidence * 100)}%`
-            : null
 
           return (
-            <div key={document.id} className="flex flex-col gap-3 p-3 md:flex-row md:items-center">
+            <div key={document.id} className="flex flex-col gap-4 p-4 md:flex-row md:items-center">
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-foreground">{document.original_filename}</p>
-                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
-                  <span className={cn(
-                    "rounded-md border px-2 py-0.5 font-medium",
-                    needsSelection
-                      ? "border-amber-200 bg-amber-50 text-amber-800"
-                      : "border-[var(--button-warm-ring)] bg-white text-foreground"
-                  )}>
-                    {needsSelection
-                      ? "Needs review"
-                      : manuallySelected
-                        ? `${labels[document.resolved_mode as ResolvedDocumentMode]} selected`
-                        : labels[document.resolved_mode as ResolvedDocumentMode]}
-                  </span>
-                  {percentage ? <span className="text-muted-foreground">{percentage} detection confidence</span> : null}
+                <div className="mt-2">
+                  {needsSelection ? (
+                    <StatusBadge tone="review">Needs review</StatusBadge>
+                  ) : (
+                    <StatusBadge tone="success">
+                      {labels[document.resolved_mode as ResolvedDocumentMode]}
+                      {manuallySelected ? " selected" : ""}
+                    </StatusBadge>
+                  )}
                 </div>
-                {document.detection_review_reason ? (
-                  <p className="mt-1.5 text-xs text-muted-foreground">{document.detection_review_reason}</p>
-                ) : null}
               </div>
-              <div className="flex shrink-0 items-center gap-2">
+              <div className="flex shrink-0 items-center gap-3">
                 <select
                   value={selectedMode}
                   onChange={event => setChoices(prev => ({
@@ -380,7 +382,7 @@ function AutoDetectionPanel({
           )
         })}
       </div>
-    </section>
+    </WorkspaceSection>
   )
 }
 
@@ -815,23 +817,21 @@ export function ResultPreviewPanel({
 
   if (!isComplete || !resultFiles?.length) {
     return (
-      <div className={cn("flex min-h-[300px] flex-col justify-between rounded-md border p-4 backdrop-blur-xl", workspacePanelSurfaceClass)}>
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Result</p>
-          <p className="mt-2 text-lg font-semibold text-foreground">Review board</p>
+      <WorkspaceSection title="Review board" icon={<Eye />}>
+        <div className="flex min-h-[200px] flex-col justify-between gap-6">
+          <div className="grid gap-2">
+            <div className="h-9 rounded-md bg-[var(--workspace-soft)]" />
+            <div className="h-9 w-4/5 rounded-md bg-[var(--workspace-soft)]" />
+            <div className="h-9 w-3/5 rounded-md bg-[var(--workspace-soft)]" />
+          </div>
         </div>
-        <div className="grid gap-2">
-          <div className="h-9 rounded-md bg-white/75" />
-          <div className="h-9 w-4/5 rounded-md bg-white/65" />
-          <div className="h-9 w-3/5 rounded-md bg-white/55" />
-        </div>
-      </div>
+      </WorkspaceSection>
     )
   }
 
   return (
     <>
-    <div className={cn("rounded-md border p-3 backdrop-blur-xl", workspacePanelSurfaceClass)}>
+    <WorkspaceSection title="Review board" icon={<Eye />} contentClassName="p-3 sm:p-3">
       <div
         ref={containerRef}
         className="flex min-h-[290px] gap-0 xl:gap-0"
@@ -847,7 +847,7 @@ export function ResultPreviewPanel({
                 flexShrink: 0,
               }}
             >
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Before</p>
+              <p className="mb-2 text-[13px] font-semibold text-foreground">Before</p>
               <div
                 role="button"
                 tabIndex={0}
@@ -885,7 +885,7 @@ export function ResultPreviewPanel({
 
             {/* After pane */}
             <div className="hidden min-w-0 flex-1 xl:block">
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">After</p>
+              <p className="mb-2 text-[13px] font-semibold text-foreground">After</p>
               <div className="max-h-[420px] min-h-[260px] overflow-auto rounded-lg border border-border bg-white">
                 {isTextOutput || textPreview ? (
                   <pre className="min-h-[260px] whitespace-pre-wrap p-4 text-sm font-medium leading-6 text-gray-950">
@@ -916,7 +916,7 @@ export function ResultPreviewPanel({
         ) : (
           /* No image — full-width after pane */
           <div className="flex-1">
-            <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">After</p>
+            <p className="mb-2 text-[13px] font-semibold text-foreground">After</p>
             <div className="max-h-[420px] min-h-[260px] overflow-auto rounded-lg border border-border bg-white">
               {isTextOutput || textPreview ? (
                 <pre className="min-h-[260px] whitespace-pre-wrap p-4 text-sm font-medium leading-6 text-gray-950">
@@ -949,7 +949,7 @@ export function ResultPreviewPanel({
       {/* After pane stacked below Before on small screens */}
       {firstImageUrl && (
         <div className="mt-3 xl:hidden">
-          <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">After</p>
+          <p className="mb-2 text-[13px] font-semibold text-foreground">After</p>
           <div className="max-h-[420px] min-h-[260px] overflow-auto rounded-lg border border-border bg-white">
             {isTextOutput || textPreview ? (
               <pre className="min-h-[260px] whitespace-pre-wrap p-4 text-sm font-medium leading-6 text-gray-950">
@@ -977,7 +977,7 @@ export function ResultPreviewPanel({
           </div>
         </div>
       )}
-    </div>
+    </WorkspaceSection>
       {imagePreviewOpen && firstImageUrl ? (
         <div
           className="fixed inset-0 z-[90] flex items-center justify-center bg-[#111827]/50 p-4 backdrop-blur-xl"
@@ -1119,12 +1119,12 @@ function deriveReviewLevel(file: ResultFile, badge: ReturnType<typeof getOutputB
   return { clean: false, tone: "good", summaryLabel: badge.label, highValue: false }
 }
 
-const vendorRuleInputs: Array<{ key: keyof VendorRuleFields; label: string; placeholder: string }> = [
-  { key: "category_account", label: "Category / account", placeholder: "Office supplies" },
-  { key: "tax_code", label: "Tax code", placeholder: "VAT 20%" },
-  { key: "currency", label: "Currency", placeholder: "USD" },
-  { key: "payment_terms", label: "Payment terms", placeholder: "Net 30" },
-  { key: "destination_treatment", label: "Destination", placeholder: "Draft bill" },
+const vendorRuleInputs: Array<{ key: keyof VendorRuleFields; label: string; placeholder: string; icon: React.ReactNode }> = [
+  { key: "category_account", label: "Category / account", placeholder: "Office supplies", icon: <DollarSign /> },
+  { key: "tax_code", label: "Tax code", placeholder: "VAT 20%", icon: <Percent /> },
+  { key: "currency", label: "Currency", placeholder: "USD", icon: <Tag /> },
+  { key: "payment_terms", label: "Payment terms", placeholder: "Net 30", icon: <CreditCard /> },
+  { key: "destination_treatment", label: "Destination", placeholder: "Draft bill", icon: <Building2 /> },
 ]
 
 function initialVendorRuleDraft(file?: ResultFile | null): VendorRuleFields {
@@ -1256,7 +1256,7 @@ function BookkeeperBreakdown({ figures, layout = "row" }: { figures: BookkeeperF
       <Symbol name={verdictSymbol} size="inline" className="h-14 w-14 shrink-0" alt="" />
       {cells.map(([label, value]) => (
         <span key={label} className="inline-flex items-baseline gap-1.5">
-          <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{label}</span>
+          <span className="text-[11px] font-bold uppercase tracking-wide text-foreground">{label}</span>
           <span className="text-[13px] font-semibold tabular-nums text-foreground">{value}</span>
         </span>
       ))}
@@ -1385,7 +1385,7 @@ function ResultThumb({ file, preview, isTextOutput, compact = false }: { file: R
     const rows = structured.rows.slice(0, compact ? 3 : 5)
     return (
       <div className={cn("overflow-hidden rounded-md border border-[var(--button-warm-ring)] bg-white", height)}>
-        <div className="grid grid-cols-2 border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-3 py-2 text-[11px] font-medium text-muted-foreground">
+        <div className="grid grid-cols-2 border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-3 py-2 text-[11px] font-semibold text-foreground">
           <span className="truncate">{summary.identityLabel}</span>
           <span className="text-right">{summary.amountLabel}</span>
           <span className="truncate text-sm font-semibold text-foreground">{summary.identity}</span>
@@ -1517,7 +1517,6 @@ export function ResultActions({
   const prefersReducedMotion = useReducedMotion()
   const [editedTables, setEditedTables] = useState<Record<string, any[][]>>({})
   const [resultFilter, setResultFilter] = useState<ResultFilter>("needs_review")
-  const moreFiltersRef = useRef<HTMLDetailsElement>(null)
   // C4 — clean/high-confidence cards collapse to a one-line summary; this set
   // holds the keys of clean cards the reviewer has chosen to expand in place.
   const [expandedClean, setExpandedClean] = useState<Record<string, true>>({})
@@ -2096,65 +2095,36 @@ export function ResultActions({
         />
 
         <div className="mb-4 flex flex-wrap items-center gap-3">
-          {([
-            ["needs_review", "Needs review"],
-            ["ready", "Ready"],
-          ] as Array<[ResultFilter, string]>).map(([value, label]) => (
+          <SegmentedTabs
+            aria-label="Filter review board"
+            value={resultFilter === "edited" ? "all" : resultFilter}
+            onValueChange={(value) => setResultFilter(value as ResultFilter)}
+            tabs={[
+              { value: "needs_review", label: "Needs review", icon: <Eye />, count: filterCounts.needs_review },
+              { value: "ready", label: "Ready", icon: <Check />, count: filterCounts.ready },
+              { value: "published", label: "Published", icon: <ArrowRight />, count: filterCounts.published },
+              { value: "failed", label: "Failed", icon: <AlertCircle />, count: filterCounts.failed },
+              { value: "all", label: "All", icon: <Layers />, count: filterCounts.all },
+            ]}
+          />
+          {filterCounts.edited > 0 ? (
             <button
-              key={value}
               type="button"
-              onClick={() => setResultFilter(value)}
+              onClick={() => setResultFilter(resultFilter === "edited" ? "all" : "edited")}
               className={cn(
-                "ax-interactive inline-flex h-8 cursor-pointer items-center gap-2 rounded-md px-3 text-xs font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                resultFilter === value
-                  ? workspacePrimaryControlClass
-                  : workspaceNormalControlClass
+                "ax-interactive inline-flex h-9 cursor-pointer items-center gap-2 rounded-full px-4 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                resultFilter === "edited" ? workspacePrimaryControlClass : workspaceNormalControlClass,
               )}
             >
-              {label}
-              <span className={cn("rounded-sm px-1.5 py-0.5 text-[10px]", resultFilter === value ? "bg-white text-black" : "bg-[var(--button-warm)] text-foreground")}>
-                {filterCounts[value]}
+              Edited
+              <span className={cn(
+                "inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1.5 text-[11px] font-semibold tabular-nums",
+                resultFilter === "edited" ? "bg-white/20 text-white" : "bg-[var(--button-warm)] text-foreground",
+              )}>
+                {filterCounts.edited}
               </span>
             </button>
-          ))}
-          <details ref={moreFiltersRef} className="group relative">
-            <summary className={cn(
-              buttonVariants({ variant: "surface", size: "sm" }),
-              "h-8 cursor-pointer list-none gap-1.5 px-3 text-xs [&::-webkit-details-marker]:hidden",
-              ["all", "edited", "published", "failed"].includes(resultFilter) && workspacePrimaryControlClass
-            )}>
-              {["all", "edited", "published", "failed"].includes(resultFilter)
-                ? `More filters: ${resultFilter === "all" ? "All" : resultFilter[0].toUpperCase() + resultFilter.slice(1)}`
-                : "More filters"}
-              <ChevronDown className="size-3.5 transition-transform group-open:rotate-180" />
-            </summary>
-             <div className={cn("absolute left-0 top-10 z-30 w-44 space-y-1 rounded-md border p-1.5", workspacePanelSurfaceClass)}>
-              {([
-                ["all", "All"],
-                ["edited", "Edited"],
-                ["published", "Published"],
-                ["failed", "Failed"],
-              ] as Array<[ResultFilter, string]>).map(([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => {
-                    setResultFilter(value)
-                    moreFiltersRef.current?.removeAttribute("open")
-                  }}
-                  className={cn(
-                    "group ax-interactive flex h-8 w-full cursor-pointer items-center justify-between rounded-md px-2 text-xs font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                    resultFilter === value
-                      ? workspacePrimaryControlClass
-                      : workspaceNormalControlClass
-                  )}
-                >
-                  {label}
-                  <span className={cn("text-[10px]", resultFilter === value ? "text-white/80 group-hover:text-black/70" : "text-muted-foreground")}>{filterCounts[value]}</span>
-                </button>
-              ))}
-            </div>
-          </details>
+          ) : null}
         </div>
 
         {/* C5 — sweep the clean pile + a hint to the keyboard sheet. */}
@@ -2232,13 +2202,17 @@ export function ResultActions({
                 ) : null}
                 <span className="min-w-[180px] flex-1">
                   <span className="block truncate font-semibold text-foreground">{file.filename || summary.identity}</span>
-                  <span className="mt-0.5 block truncate text-xs font-medium text-muted-foreground">
-                    {formatDocumentType(file.document_type)}
-                    {file.source_page ? ` - page ${file.source_page}${file.source_page_count ? ` of ${file.source_page_count}` : ""}` : ""}
+                  <span className="mt-1 flex flex-wrap items-center gap-1.5">
+                    <span className="text-xs font-medium text-foreground">{formatDocumentType(file.document_type)}</span>
+                    {file.source_page ? (
+                      <span className="inline-flex h-[18px] items-center rounded-full border border-[var(--button-warm-ring)] bg-white px-1.5 text-[11px] font-semibold tabular-nums text-foreground">
+                        p.{file.source_page}{file.source_page_count ? `/${file.source_page_count}` : ""}
+                      </span>
+                    ) : null}
                   </span>
                 </span>
                 {isHandwrittenDocument(file) ? <HandwrittenBadge /> : null}
-                <span className="hidden min-w-[120px] shrink-0 truncate text-xs font-medium text-muted-foreground lg:inline">
+                <span className="hidden min-w-[120px] shrink-0 truncate text-xs font-semibold text-foreground lg:inline">
                   {summary.identity}
                 </span>
                 <span className="min-w-[84px] shrink-0 text-right font-semibold tabular-nums text-foreground">
@@ -2691,42 +2665,43 @@ export function ResultActions({
                 {/* C17 — the duplicate banner lives on the expanded card; not
                     re-rendered here to avoid two identical warnings per document. */}
                 {comparisonFile && comparisonVendorEligible ? (
-                  <div className="border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-4 py-3">
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                      <div>
-                        <p className="text-[13px] font-semibold text-foreground">Vendor memory</p>
-                      </div>
-                      {comparisonFile.vendor_suggestion ? (
-                          <span className="rounded-md border border-[var(--button-warm-ring)] bg-white px-2 py-1 text-[10px] font-semibold text-foreground">
-                          Remembered vendor
+                  <div className="border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-4 py-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <span className="flex items-center gap-2.5">
+                        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-[var(--workspace-primary)] [&_svg]:size-[18px]">
+                          <ReceiptText />
                         </span>
+                        <span className="text-[15px] font-semibold tracking-tight text-foreground">Vendor memory</span>
+                      </span>
+                      {comparisonFile.vendor_suggestion ? (
+                        <StatusBadge tone="info" icon={<Sparkles />}>Remembered</StatusBadge>
                       ) : null}
                     </div>
                     {comparisonFile.vendor_suggestion ? (
-                      <div className="mt-3 flex flex-wrap gap-1.5">
+                      <div className="mt-4 flex flex-wrap gap-2">
                         {visibleVendorRuleInputs.map(field => {
                           const value = comparisonFile.vendor_suggestion?.suggested_fields[field.key]
                           return value ? (
-                            <span key={field.key} className="rounded-md border border-[var(--button-warm-ring)] bg-white px-2 py-1 text-[11px] text-foreground">
-                              <span className="text-muted-foreground">{field.label}: </span>{value}
+                            <span key={field.key} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--button-warm-ring)] bg-white px-2.5 py-1 text-[12px] font-medium text-foreground">
+                              <span className="inline-flex shrink-0 text-[var(--workspace-primary)] [&_svg]:size-[14px]">{field.icon}</span>
+                              {value}
                             </span>
                           ) : null
                         })}
                       </div>
                     ) : null}
                     {comparisonCanRememberVendor ? (
-                      <div className="mt-3">
-                        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                      <div className="mt-4">
+                        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                           {visibleVendorRuleInputs.map(field => (
-                            <label key={field.key} className="text-[11px] font-medium text-muted-foreground">
-                              {field.label}
+                            <Field key={field.key} label={field.label} icon={field.icon}>
                               <input
                                 value={comparisonVendorDraft[field.key] || ""}
                                 onChange={(event) => updateVendorDraft(field.key, event.target.value)}
                                 placeholder={field.placeholder}
-                                className="ax-interactive mt-1 h-8 w-full rounded-md border border-[var(--button-warm-ring)] bg-white px-2 text-xs text-foreground outline-none focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-black/15"
+                                className="ax-interactive h-9 w-full rounded-md border border-[var(--button-warm-ring)] bg-white px-2.5 text-sm font-medium text-foreground outline-none focus:border-[var(--workspace-primary)] focus:ring-2 focus:ring-[var(--workspace-primary)]/20"
                               />
-                            </label>
+                            </Field>
                           ))}
                         </div>
                         <Button
@@ -2735,7 +2710,7 @@ export function ResultActions({
                           variant="surface"
                           onClick={() => void saveVendorRule()}
                           disabled={vendorRuleSavingId === comparisonFile.document_id}
-                          className="mt-3 h-8 px-3 text-xs"
+                          className="mt-4 h-9 px-4 text-xs"
                         >
                           {vendorRuleSavingId === comparisonFile.document_id
                             ? "Saving..."
@@ -2745,9 +2720,9 @@ export function ResultActions({
                         </Button>
                       </div>
                     ) : (
-                      <p className="mt-3 text-[11px] text-muted-foreground">
-                        Confirm this document as Ready to save recurring vendor suggestions.
-                      </p>
+                      <div className="mt-4">
+                        <StatusBadge tone="neutral" icon={<Check />}>Mark ready to save</StatusBadge>
+                      </div>
                     )}
                   </div>
                 ) : null}
