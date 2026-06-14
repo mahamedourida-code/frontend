@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState, type ChangeEvent, type DragEvent, type MouseEvent as ReactMouseEvent } from "react"
+import { useCallback, useEffect, useReducer, useRef, useState, type ChangeEvent, type DragEvent, type MouseEvent as ReactMouseEvent } from "react"
 import {
   AlertCircle,
   ArrowRight,
@@ -33,6 +33,7 @@ import {
   Table2,
   Tag,
   Trash2,
+  Upload,
   User,
   Wallet,
   X,
@@ -69,6 +70,10 @@ import {
   type InvoiceLanguage,
 } from "@/lib/invoice-schema"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
+import { format } from "date-fns"
+import { ocrApi } from "@/lib/api-client"
+import { isHistoryItemDeleted, subscribeHistoryDeletions } from "@/lib/recent-files-store"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
 import type {
   DocumentDuplicateWarning,
@@ -3025,6 +3030,343 @@ export function ResultActions({
   )
 }
 
+type RecentBatchFile = {
+  id: string
+  filename: string
+  status: string
+  createdAt: string
+}
+
+function normalizeRecentFiles(response: any): RecentBatchFile[] {
+  const rows = Array.isArray(response)
+    ? response
+    : response?.jobs || response?.history || response?.items || response?.data || []
+
+  return rows.flatMap((item: any) => {
+    const id = item.id || item.job_id || item.original_job_id
+    const createdAt = item.updated_at || item.saved_at || item.completed_at || item.created_at
+    if (!id || !createdAt) return []
+    return [{
+      id,
+      filename: item.filename || item.original_filename || item.output_filename || "Converted batch",
+      status: item.status || "completed",
+      createdAt,
+    }]
+  })
+}
+
+function recentStatusChip(status: string): { label: string; chip: string; dot: string } {
+  if (["processing", "pending", "queued"].includes(status))
+    return { label: "Processing", chip: "border-[#bfdbfe] bg-[#eff6ff] text-[#0f5fcb]", dot: "bg-[#1877F2]" }
+  if (["failed", "error"].includes(status))
+    return { label: "Failed", chip: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]", dot: "bg-[#ef4444]" }
+  if (status === "requires_review")
+    return { label: "Needs review", chip: "border-[#fed7aa] bg-[#fff7ed] text-[#92400e]", dot: "bg-[#f59e0b]" }
+  return { label: "Ready", chip: "border-[#bbf7d0] bg-[#ecfdf3] text-[#166534]", dot: "bg-[#16a34a]" }
+}
+
+/**
+ * The single table surface that carries the idle, staged, and processing
+ * states. It mirrors the result table's chrome (action bar → tabs → "review
+ * results" band → table) so every phase of a batch reads as the same board:
+ * - idle:        the workspace's recent batches, fetched from history.
+ * - staged:      the files just added, ready to send to review.
+ * - processing:  those same files, shimmering while the batch runs.
+ * When the batch completes, ConversionWorkspace swaps this out for the full
+ * ResultActions review board (same chrome, richer columns).
+ */
+function BatchStagingBoard({
+  uploadedFiles,
+  pdfPageCounts,
+  isProcessing,
+  isUploading,
+  noCredits,
+  onOpenUpload,
+  onRemoveFile,
+  onClearFiles,
+  onConvert,
+}: {
+  uploadedFiles: File[]
+  pdfPageCounts: Record<number, number>
+  isProcessing: boolean
+  isUploading: boolean
+  noCredits: boolean
+  onOpenUpload: () => void
+  onRemoveFile: (index: number) => void
+  onClearFiles: () => void
+  onConvert: () => void
+}) {
+  const m = useMotionTokens()
+  const busy = isProcessing || isUploading
+  const mode: "idle" | "staged" | "processing" = busy ? "processing" : uploadedFiles.length ? "staged" : "idle"
+
+  const [recentFiles, setRecentFiles] = useState<RecentBatchFile[]>([])
+  const [recentLoading, setRecentLoading] = useState(true)
+  const [, forceRender] = useReducer((tick: number) => tick + 1, 0)
+
+  const loadRecent = useCallback(async () => {
+    setRecentLoading(true)
+    try {
+      const response = await ocrApi.getHistory(50, 0)
+      setRecentFiles(normalizeRecentFiles(response))
+    } catch {
+      setRecentFiles([])
+    } finally {
+      setRecentLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (mode === "idle") void loadRecent()
+  }, [mode, loadRecent])
+
+  useEffect(() => {
+    const handleRefresh = () => { if (mode === "idle") void loadRecent() }
+    window.addEventListener("axliner:history-changed", handleRefresh)
+    const unsubscribe = subscribeHistoryDeletions(forceRender)
+    return () => {
+      window.removeEventListener("axliner:history-changed", handleRefresh)
+      unsubscribe()
+    }
+  }, [loadRecent, mode])
+
+  const recent = [...recentFiles]
+    .filter((file) => !isHistoryItemDeleted(file.id))
+    .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime())
+    .slice(0, 6)
+
+  const stagedCount = uploadedFiles.length
+  const rowCount = mode === "idle" ? recent.length : stagedCount
+  const tabLabel = mode === "idle" ? "Recent" : mode === "staged" ? "Staged" : "Processing"
+  const bandLabel = mode === "idle" ? "Recent files" : mode === "staged" ? "Ready to process" : "Working through this batch"
+  const detailHeader = mode === "idle" ? "Saved" : "Size"
+  const countLabel = mode === "idle" ? `${rowCount} shown` : `${rowCount} file${rowCount === 1 ? "" : "s"}`
+
+  return (
+    <div className="space-y-2.5">
+      <div className="flex flex-wrap items-center gap-2 rounded-[4px] border border-[#c8ced6] bg-white px-3 py-2 shadow-none">
+        {mode === "processing" ? (
+          <span className="inline-flex h-9 items-center gap-2 rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-3 text-xs font-semibold text-[#0f5fcb]">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Processing {stagedCount} file{stagedCount === 1 ? "" : "s"}
+          </span>
+        ) : mode === "staged" ? (
+          <>
+            <Button
+              variant="surface"
+              onClick={onClearFiles}
+              className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}
+            >
+              <RotateCcw className="h-4 w-4" />
+              New batch
+            </Button>
+            <Button
+              variant="glossy"
+              onClick={onConvert}
+              disabled={noCredits}
+              className={cn("h-9 gap-2 px-4", workspacePrimaryControlClass)}
+            >
+              <ArrowRight className="h-4 w-4" />
+              Process {stagedCount} file{stagedCount === 1 ? "" : "s"}
+            </Button>
+            <span className="inline-flex h-9 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#475467]">
+              {stagedCount} staged
+            </span>
+            <Button
+              variant="surface"
+              onClick={onOpenUpload}
+              className={cn("ml-auto h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}
+            >
+              <FolderUp className="h-4 w-4" />
+              Add more
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              variant="glossy"
+              onClick={onOpenUpload}
+              className={cn("h-9 gap-2 px-5", workspacePrimaryControlClass)}
+            >
+              <Upload className="h-4 w-4" />
+              Upload
+            </Button>
+            <Button asChild variant="surface" className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}>
+              <a href="/dashboard/inbox">
+                <Inbox className="h-4 w-4" />
+                Open inbox
+              </a>
+            </Button>
+            <Button asChild variant="ghost" className="ml-auto h-9 gap-2 px-3 text-xs text-[#475467] hover:text-[#111827]">
+              <a href="/dashboard/guide">
+                <BookOpen className="h-4 w-4" />
+                Guide
+              </a>
+            </Button>
+          </>
+        )}
+      </div>
+
+      <div className="pt-2">
+        <div className="overflow-hidden rounded-[4px] border border-[#c8ced6] bg-white shadow-none">
+          <div className="flex min-h-12 flex-col gap-2 border-b border-[#cfd4da] bg-white px-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-h-12 flex-wrap items-stretch gap-4">
+              <span className="relative inline-flex h-12 items-center gap-1.5 border-b-2 border-[#1877F2] px-0 text-[13px] font-semibold text-[#0f5fcb]">
+                <span>{tabLabel}</span>
+                {rowCount > 0 ? <span className="tabular-nums text-[#667085]">{rowCount}</span> : null}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex min-h-10 items-center justify-between gap-3 border-b border-[#d9dde3] bg-[#f6f7fb] px-4 py-2 text-[12px] text-[#475467]">
+            <span className="font-semibold text-[#344054]">{bandLabel}</span>
+            <span className="tabular-nums">{countLabel}</span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] border-separate border-spacing-0 text-left text-[13px] text-[#111827]">
+              <thead className="bg-[#f8f9fa] text-[11px] font-semibold uppercase text-[#475467]">
+                <tr>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Document</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Type</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Status</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">{detailHeader}</th>
+                  <th className="w-28 border-b border-[#cfd4d9] px-3 py-2.5 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {mode === "idle" ? (
+                  recentLoading ? (
+                    Array.from({ length: 3 }).map((_, index) => (
+                      <tr key={`skeleton-${index}`} className="h-12 bg-white">
+                        <td className="border-b border-l-[3px] border-b-[#e4e7ef] border-l-transparent px-3 py-3"><span className="block h-3 w-1/2 rounded-md ax-skeleton" /></td>
+                        <td className="border-b border-[#e4e7ef] px-3 py-3"><span className="block h-3 w-12 rounded-md ax-skeleton" /></td>
+                        <td className="border-b border-[#e4e7ef] px-3 py-3"><span className="block h-3 w-16 rounded-md ax-skeleton" /></td>
+                        <td className="border-b border-[#e4e7ef] px-3 py-3"><span className="block h-3 w-20 rounded-md ax-skeleton" /></td>
+                        <td className="border-b border-[#e4e7ef] px-3 py-3"><span className="ml-auto block h-3 w-10 rounded-md ax-skeleton" /></td>
+                      </tr>
+                    ))
+                  ) : recent.length ? (
+                    recent.map((file) => {
+                      const st = recentStatusChip(file.status)
+                      return (
+                        <tr key={file.id} className="group h-12 bg-white transition-colors hover:bg-[#f8fbff]">
+                          <td className="max-w-[280px] border-b border-l-[3px] border-b-[#e4e7ef] border-l-transparent px-3 py-2 align-middle">
+                            <Link
+                              href={`/dashboard/client?job_id=${file.id}`}
+                              className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[#0f5fcb]"
+                            >
+                              {file.filename}
+                            </Link>
+                          </td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#475467]">Batch</td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                            <span className={cn("inline-flex h-5 items-center gap-1.5 rounded-full border px-2 text-[11px] font-semibold", st.chip)}>
+                              <span className={cn("size-1.5 rounded-full", st.dot)} />
+                              {st.label}
+                            </span>
+                          </td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle text-[#475467] tabular-nums">
+                            {format(new Date(file.createdAt), "MMM d, yyyy")}
+                          </td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                            <div className="flex justify-end">
+                              <Link
+                                href={`/dashboard/client?job_id=${file.id}`}
+                                className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[#0f5fcb] shadow-none transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] focus-visible:ring-2 focus-visible:ring-[#1877F2]/20"
+                              >
+                                Open
+                              </Link>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="border-b border-[#e4e7ef] px-4 py-10 text-center text-[13px] font-medium text-[#475467]">
+                        <span>No documents yet — your processed batches will land here.</span>
+                        <button
+                          type="button"
+                          onClick={onOpenUpload}
+                          className="ml-3 inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-[11px] font-semibold text-[#0f5fcb] shadow-none hover:border-[#1877F2] hover:bg-[#eff6ff]"
+                        >
+                          Upload your first batch
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                ) : (
+                  <AnimatePresence initial={false}>
+                    {uploadedFiles.map((file, index) => {
+                      const pdf = isPdfFile(file)
+                      const pageCount = pdfPageCounts[index]
+                      const processing = mode === "processing"
+                      return (
+                        <motion.tr
+                          key={`${file.name}-${file.size}-${index}`}
+                          layout
+                          initial={{ opacity: 0, y: 4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0 }}
+                          transition={m.tFast}
+                          className="group h-12 bg-white transition-colors hover:bg-[#f8fbff]"
+                        >
+                          <td className={cn("max-w-[280px] border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", processing ? "border-l-[#1877F2]" : "border-l-transparent")}>
+                            <div className="flex min-w-0 items-center gap-2.5">
+                              <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-[#eef1f6] text-[#475467]">
+                                {pdf ? <FileText className="h-3.5 w-3.5" /> : <FileImage className="h-3.5 w-3.5" />}
+                              </span>
+                              <span className="block max-w-full truncate text-[14px] font-semibold text-[#111827]">{file.name}</span>
+                            </div>
+                          </td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#475467]">Auto-detect</td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                            {processing ? (
+                              <span className="inline-flex h-5 items-center gap-1.5 rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-2 text-[11px] font-semibold text-[#0f5fcb]">
+                                <span className="size-1.5 animate-pulse rounded-full bg-[#1877F2]" />
+                                Processing
+                              </span>
+                            ) : (
+                              <span className="inline-flex h-5 items-center gap-1.5 rounded-full border border-[#cfd4d9] bg-white px-2 text-[11px] font-semibold text-[#475467]">
+                                <span className="size-1.5 rounded-full bg-[#94a3b8]" />
+                                Staged
+                              </span>
+                            )}
+                          </td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle text-[#475467] tabular-nums">
+                            {pdf ? `${pageCount ? `${pageCount} page${pageCount === 1 ? "" : "s"}` : "PDF"} · ` : ""}{formatBytes(file.size)}
+                          </td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                            <div className="flex justify-end">
+                              {processing ? (
+                                <Loader2 className="h-4 w-4 animate-spin text-[#1877F2]" />
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => onRemoveFile(index)}
+                                  className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#475467] shadow-none transition-colors hover:border-[#ef4444] hover:bg-[#fff1f2] hover:text-[#b42318] focus-visible:ring-2 focus-visible:ring-[#ef4444]/20"
+                                  aria-label={`Remove ${file.name}`}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </motion.tr>
+                      )
+                    })}
+                  </AnimatePresence>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function ConversionWorkspace(props: ConversionWorkspaceProps) {
   const {
     banner,
@@ -3096,19 +3438,31 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
   ))
   const [uploadSheetOpen, setUploadSheetOpen] = useState(false)
 
+  // The upload sheet is the single entry point for a new batch. Opening it from
+  // a finished batch starts fresh; from idle/staged it just adds to the staged
+  // set. Both the #upload-files hash (cross-page nav) and the
+  // `axliner:open-upload` event (top-nav Upload, same page) funnel through here
+  // so "Upload" always pops the sheet directly instead of changing the view.
+  const openFreshUpload = useCallback(() => {
+    if (hasResults) onReset()
+    setUploadSheetOpen(true)
+  }, [hasResults, onReset])
+
   useEffect(() => {
-    const syncSheetWithHash = () => {
-      if (hasResults) {
-        setUploadSheetOpen(false)
-        return
-      }
-      if (window.location.hash === "#upload-files") setUploadSheetOpen(true)
+    const consumeHash = () => {
+      if (window.location.hash !== "#upload-files") return
+      openFreshUpload()
+      history.replaceState(null, "", window.location.pathname + window.location.search)
     }
 
-    syncSheetWithHash()
-    window.addEventListener("hashchange", syncSheetWithHash)
-    return () => window.removeEventListener("hashchange", syncSheetWithHash)
-  }, [hasResults])
+    consumeHash()
+    window.addEventListener("hashchange", consumeHash)
+    window.addEventListener("axliner:open-upload", openFreshUpload)
+    return () => {
+      window.removeEventListener("hashchange", consumeHash)
+      window.removeEventListener("axliner:open-upload", openFreshUpload)
+    }
+  }, [openFreshUpload])
 
   return (
     <div className="space-y-4">
@@ -3149,67 +3503,17 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
       <div className="space-y-3">
         <div className="grid gap-4">
           {!hasResults ? (
-            <div className="space-y-4">
-              {/* P1 — step 1: the upload box. */}
-              <WorkspaceSection
-                id="upload-files"
-                step="1"
-                symbol="upload-tray"
-                tone={isProcessing ? "muted" : "active"}
-                title="Auto-detect documents"
-                hint="Invoices, receipts, bank statements and tables — PDF or image, scanned or photographed."
-                contentClassName="space-y-4"
-              >
-                <div className="flex flex-wrap items-center gap-3">
-                  <Button
-                    type="button"
-                    variant="glossy"
-                    onClick={() => setUploadSheetOpen(true)}
-                    disabled={isUploading || isProcessing}
-                    className="gap-2 px-5"
-                  >
-                    <FolderUp className="size-4" />
-                    Auto-detect documents
-                  </Button>
-                  <Button asChild variant="surface">
-                    <a href="/dashboard/inbox">
-                      <Inbox className="size-4" />
-                      Open inbox
-                    </a>
-                  </Button>
-                  <Button asChild variant="ghost">
-                    <a href="/dashboard/guide">
-                      <BookOpen className="size-4" />
-                      Guide
-                    </a>
-                  </Button>
-                </div>
-
-                {uploadedFiles.length ? (
-                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-card px-3 py-2.5 text-sm">
-                    <p className="font-medium text-foreground">
-                      {uploadedFiles.length} file{uploadedFiles.length === 1 ? "" : "s"} staged. Review usage before processing.
-                    </p>
-                    <Button type="button" size="sm" variant="surface" onClick={() => setUploadSheetOpen(true)} className="h-8 px-3 text-xs">
-                      Review upload
-                      <ArrowRight className="size-3.5" />
-                    </Button>
-                  </div>
-                ) : null}
-
-                {uploadedFiles.length ? (
-                  <SelectedFilesTray
-                    uploadedFiles={uploadedFiles}
-                    filePreviewUrls={filePreviewUrls}
-                    pdfPageCounts={pdfPageCounts}
-                    isProcessing={isProcessing}
-                    onRemoveFile={onRemoveFile}
-                    onClearFiles={onClearFiles}
-                  />
-                ) : null}
-              </WorkspaceSection>
-
-            </div>
+            <BatchStagingBoard
+              uploadedFiles={uploadedFiles}
+              pdfPageCounts={pdfPageCounts}
+              isProcessing={isProcessing}
+              isUploading={isUploading}
+              noCredits={noCredits}
+              onOpenUpload={() => setUploadSheetOpen(true)}
+              onRemoveFile={onRemoveFile}
+              onClearFiles={onClearFiles}
+              onConvert={onConvert}
+            />
           ) : null}
 
           {/* P3 — step 3: the verify-extraction board. ResultActions carries its

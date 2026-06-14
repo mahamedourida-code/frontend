@@ -24,7 +24,6 @@ import type {
 import { getApiErrorUi, showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
-import { WorkspaceFilesPanel } from "@/components/dashboard/WorkspaceFilesPanel"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import {
@@ -1852,7 +1851,7 @@ Best regards`
     }
   }) || null
   const uploadedSizeMb = uploadedFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024)
-  const processLabel = "Auto-detect documents"
+  const processLabel = "Upload"
   const creditEstimate = uploadedFiles.reduce((total, file, index) => {
     return total + (isPdfFile(file) ? (pdfPageCounts[index] || 1) : 1)
   }, 0)
@@ -2014,7 +2013,6 @@ Best regards`
         state={publishConfirmation}
         onClose={() => setPublishConfirmation(null)}
       />
-      {!isComplete ? <WorkspaceFilesPanel refreshKey={jobId && status === "completed" ? `${jobId}:${isSaved}` : undefined} /> : null}
 
       <Dialog open={shareDialogOpen} onOpenChange={(open) => {
         if (!open) {

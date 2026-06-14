@@ -213,15 +213,22 @@ export function DashboardShell({
               )}
 
               <Button
-                asChild
                 variant="glossy"
                 size="sm"
+                onClick={() => {
+                  // On the review page, pop the upload sheet directly instead of
+                  // doing a no-op navigation; elsewhere, route in with the hash
+                  // so the page opens the sheet on arrival.
+                  if (pathname === "/dashboard/client") {
+                    window.dispatchEvent(new CustomEvent("axliner:open-upload"))
+                  } else {
+                    router.push("/dashboard/client#upload-files")
+                  }
+                }}
                 className="hidden h-9 !border-[#2f80ed] !bg-[#2f80ed] px-3 text-sm !text-white hover:!border-[#1d6fd8] hover:!bg-[#1d6fd8] hover:!text-white sm:inline-flex"
               >
-                <Link href="/dashboard/client#upload-files">
-                  <Upload className="size-4" />
-                  Upload
-                </Link>
+                <Upload className="size-4" />
+                Upload
               </Button>
 
               <NotificationsBell />
