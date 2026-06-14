@@ -1,5 +1,4 @@
 import * as React from "react"
-import Image from "next/image"
 
 import { cn } from "@/lib/utils"
 
@@ -10,8 +9,6 @@ interface EmptyStateProps {
   action?: React.ReactNode
   compact?: boolean
   className?: string
-  illustration?: string
-  illustrationSize?: number
   /**
    * Optional small kicker shown above the title (e.g. "Get started"). Renders
    * as a quiet emerald-tinted label so onboarding states feel guided, not bare.
@@ -32,13 +29,9 @@ function EmptyState({
   action,
   compact = false,
   className,
-  illustration,
-  illustrationSize,
   eyebrow,
   steps,
 }: EmptyStateProps) {
-  const resolvedIllustrationSize = illustrationSize ?? (compact ? 72 : 96)
-
   return (
     <div
       className={cn(
@@ -47,26 +40,14 @@ function EmptyState({
         className,
       )}
     >
-      {illustration ? (
-        <Image
-          src={illustration}
-          alt=""
-          role="presentation"
-          width={resolvedIllustrationSize}
-          height={resolvedIllustrationSize}
-          className="object-contain opacity-90"
-          loading="lazy"
-        />
-      ) : (
-        <div
-          className={cn(
-            "text-slate-300 dark:text-slate-600",
-            compact ? "[&_svg]:size-7" : "[&_svg]:size-9",
-          )}
-        >
-          {icon}
-        </div>
-      )}
+      <div
+        className={cn(
+          "text-slate-300 dark:text-slate-600",
+          compact ? "[&_svg]:size-7" : "[&_svg]:size-9",
+        )}
+      >
+        {icon}
+      </div>
       {eyebrow ? (
         <span className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[var(--brand-green-fg)]/70">
           {eyebrow}

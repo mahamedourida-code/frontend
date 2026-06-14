@@ -1156,7 +1156,7 @@ function formatDocumentType(type?: string) {
   return labels[type || ""] || "Document"
 }
 
-// Maps a detected document type to its raw caricature symbol in /public/symbols.
+// Maps a detected document type to the shared contextual vector symbol.
 const DOCUMENT_TYPE_SYMBOL: Record<string, string> = {
   invoice: "invoice",
   receipt: "receipt",

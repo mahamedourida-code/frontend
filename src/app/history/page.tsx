@@ -763,8 +763,6 @@ function HistoryContent() {
                   <TableCell colSpan={columns.length} className="py-10">
                     <EmptyState
                       icon={<FileSpreadsheet />}
-                      illustration="/symbols/filing-cabinet.png"
-                      illustrationSize={260}
                       eyebrow="History"
                       title="No documents yet"
                       description="Every batch you process appears here — open any one to review, export, or delete it."

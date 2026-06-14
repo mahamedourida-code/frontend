@@ -1,5 +1,5 @@
 import * as React from "react"
-import Image from "next/image"
+import { CheckCircle2, CircleAlert, CircleX, Eye, LoaderCircle, type LucideIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -12,12 +12,12 @@ type StatusTone =
   | "review"
   | "processing"
 
-const toneIcons: Partial<Record<StatusTone, string>> = {
-  success: "/icons/status/success-check.png",
-  warning: "/icons/status/warning-triangle.png",
-  error: "/icons/status/error-x.png",
-  review: "/icons/status/needs-review-eye.png",
-  processing: "/icons/status/processing-ring.png",
+const toneIcons: Partial<Record<StatusTone, LucideIcon>> = {
+  success: CheckCircle2,
+  warning: CircleAlert,
+  error: CircleX,
+  review: Eye,
+  processing: LoaderCircle,
 }
 
 interface StatusBadgeProps {
@@ -45,7 +45,7 @@ const toneClasses: Record<StatusTone, string> = {
 }
 
 function StatusBadge({ tone, children, icon, className }: StatusBadgeProps) {
-  const autoIconSrc = toneIcons[tone]
+  const AutoIcon = toneIcons[tone]
   return (
     <span
       className={cn(
@@ -56,14 +56,11 @@ function StatusBadge({ tone, children, icon, className }: StatusBadgeProps) {
     >
       {icon ? (
         <span className="inline-flex shrink-0 [&_svg]:size-3.5">{icon}</span>
-      ) : autoIconSrc ? (
-        <Image
-          src={autoIconSrc}
-          alt=""
-          width={14}
-          height={14}
-          className={cn("shrink-0 object-contain", tone === "processing" && "animate-spin")}
-          loading="eager"
+      ) : AutoIcon ? (
+        <AutoIcon
+          aria-hidden="true"
+          className={cn("size-3.5 shrink-0", tone === "processing" && "animate-spin")}
+          strokeWidth={2.25}
         />
       ) : null}
       {children}

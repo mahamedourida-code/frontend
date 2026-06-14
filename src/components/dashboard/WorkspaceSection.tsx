@@ -25,7 +25,7 @@ interface WorkspaceSectionProps {
   step?: React.ReactNode
   /** One calm line under the title. Use sparingly — most sections need none. */
   hint?: React.ReactNode
-  /** Optional raw caricature symbol (file stem under /public/symbols). */
+  /** Optional shared contextual vector symbol. */
   symbol?: string
   /** Right-aligned controls in the header. */
   actions?: React.ReactNode

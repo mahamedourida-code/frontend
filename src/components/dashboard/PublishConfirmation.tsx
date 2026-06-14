@@ -1,9 +1,8 @@
 "use client"
 
 import * as React from "react"
-import Image from "next/image"
 import { motion, useReducedMotion } from "framer-motion"
-import { Check } from "lucide-react"
+import { Check, Landmark } from "lucide-react"
 import { MotionButton } from "@/components/ui/motion-button"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { PublishSuccessBurst } from "@/components/dashboard/PublishSuccessBurst"
@@ -68,8 +67,8 @@ export function PublishConfirmation({ state, onClose }: PublishConfirmationProps
               transition={{ type: "spring", stiffness: 320, damping: 18, delay: 0.05 }}
             >
               <Check className="size-7" strokeWidth={2.75} />
-              <span className="absolute -bottom-1 -right-1 inline-flex size-6 items-center justify-center rounded-full border border-border bg-card shadow-none">
-                <Image src="/icons/qb-badge.png" alt="QuickBooks" width={16} height={16} className="object-contain" />
+              <span className="absolute -bottom-1 -right-1 inline-flex size-6 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 shadow-none">
+                <Landmark className="size-3.5" strokeWidth={2.4} aria-hidden="true" />
               </span>
             </motion.div>
 

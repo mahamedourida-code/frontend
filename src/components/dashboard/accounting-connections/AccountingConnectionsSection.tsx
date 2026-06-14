@@ -1,9 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import Image from "next/image"
 import { useSearchParams } from "next/navigation"
-import { Check, Plug2, RefreshCw, ShieldCheck, Target } from "lucide-react"
+import { Check, Cloud, Landmark, Plug2, RefreshCw, ShieldCheck, Target, type LucideIcon } from "lucide-react"
 import { toast } from "sonner"
 
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
@@ -31,11 +30,24 @@ const emptyConnection: AccountingConnectionStatus = {
 const providers: Array<{
   id: Provider
   name: string
-  logo: string
+  Icon: LucideIcon
+  iconClassName: string
   api: typeof quickBooksApi
 }> = [
-  { id: "quickbooks", name: "QuickBooks Online", logo: "/integrations/quickbooks.png", api: quickBooksApi },
-  { id: "xero", name: "Xero", logo: "/integrations/xero.png", api: xeroApi },
+  {
+    id: "quickbooks",
+    name: "QuickBooks Online",
+    Icon: Landmark,
+    iconClassName: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    api: quickBooksApi,
+  },
+  {
+    id: "xero",
+    name: "Xero",
+    Icon: Cloud,
+    iconClassName: "border-sky-200 bg-sky-50 text-sky-700",
+    api: xeroApi,
+  },
 ]
 
 const workspacePrimaryButton =
@@ -188,6 +200,7 @@ export function AccountingConnectionsSection({
         <div className="grid gap-4 sm:grid-cols-2">
           {providers.map(provider => {
             const selected = destination === provider.id
+            const ProviderIcon = provider.Icon
             return (
               <button
                 key={provider.id}
@@ -202,7 +215,9 @@ export function AccountingConnectionsSection({
                     : "border-border bg-background hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)]",
                 )}
               >
-                <Image src={provider.logo} alt="" width={120} height={120} className="h-12 w-12 shrink-0 object-contain" />
+                <span className={cn("inline-flex size-12 shrink-0 items-center justify-center rounded-xl border", provider.iconClassName)}>
+                  <ProviderIcon className="size-6" strokeWidth={2.2} aria-hidden="true" />
+                </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-bold text-foreground">{provider.name}</span>
                   <span className="mt-1 block text-xs font-normal text-foreground">
@@ -228,6 +243,7 @@ export function AccountingConnectionsSection({
       <WorkspaceSection icon={<Plug2 />} title="Accounting software" contentClassName="p-0">
         {providers.map((provider, index) => {
           const connection = connections[provider.id]
+          const ProviderIcon = provider.Icon
           return (
             <div
               key={provider.id}
@@ -235,7 +251,9 @@ export function AccountingConnectionsSection({
             >
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
                 <div className="flex min-w-0 flex-1 items-center gap-4">
-                  <Image src={provider.logo} alt="" width={140} height={140} className="h-14 w-14 shrink-0 object-contain" />
+                  <span className={cn("inline-flex size-14 shrink-0 items-center justify-center rounded-xl border", provider.iconClassName)}>
+                    <ProviderIcon className="size-7" strokeWidth={2.1} aria-hidden="true" />
+                  </span>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="text-base font-bold text-foreground">{provider.name}</h2>

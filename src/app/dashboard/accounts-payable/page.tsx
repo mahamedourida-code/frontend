@@ -12,6 +12,7 @@ import {
   CheckCheck,
   CircleCheck,
   Clock,
+  Cloud,
   FileText,
   FolderTree,
   Hash,
@@ -29,7 +30,6 @@ import {
   Trash2,
   Wallet,
 } from "lucide-react"
-import Image from "next/image"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
@@ -176,6 +176,34 @@ const workspacePanel = "ax-workspace-panel border-slate-200 bg-slate-50/70"
 const workspaceTable = "ax-table"
 
 const workspaceTextAction = "ax-text-action text-[#1877F2] hover:text-[#0F5FCB]"
+
+function AccountingDestinationGlyph({
+  destination,
+  className,
+  iconClassName,
+}: {
+  destination: AccountingDestination | null
+  className?: string
+  iconClassName?: string
+}) {
+  if (destination === "xero") {
+    return (
+      <span className={cn("inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-sky-200 bg-sky-50 text-sky-700", className)}>
+        <Cloud className={cn("size-3.5", iconClassName)} strokeWidth={2.3} aria-hidden="true" />
+      </span>
+    )
+  }
+
+  if (destination === "quickbooks") {
+    return (
+      <span className={cn("inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700", className)}>
+        <Landmark className={cn("size-3.5", iconClassName)} strokeWidth={2.3} aria-hidden="true" />
+      </span>
+    )
+  }
+
+  return null
+}
 
 const statusTextColor: Record<"warning" | "review" | "info" | "success" | "error" | "neutral", string> = {
   warning: "text-amber-700",
@@ -556,12 +584,6 @@ function AccountsPayableContent() {
   const canRetryAttachment =
     activeItem?.status === "published" &&
     activeAccountingPublication?.attachment_status === "failed"
-  const destinationBadgeSrc = accountingDestination === "xero"
-    ? "/integrations/xero-mark.jpg"
-    : accountingDestination === "quickbooks"
-      ? "/icons/qb-badge.png"
-      : null
-
   // Keep coding labels aligned with the selected accounting destination.
   const labels = {
     supplier: "Supplier",
@@ -895,7 +917,7 @@ function AccountsPayableContent() {
               title={selectedDuplicateCount > 0 ? "Resolve duplicate warnings before publishing" : undefined}
               className={cn("h-9 px-4", workspacePrimaryButton)}
             >
-              {destinationBadgeSrc ? <Image src={destinationBadgeSrc} alt="" width={16} height={16} className="mr-1 size-4 rounded-sm object-contain" /> : null}
+              <AccountingDestinationGlyph destination={accountingDestination} className="mr-1" />
               Publish {selectedReadyIds.length} {selectedReadyIds.length === 1 ? "bill" : "bills"}
             </MotionButton>
           ) : undefined}
@@ -1739,7 +1761,7 @@ function AccountsPayableContent() {
         <DialogContent className="gap-5 rounded-md sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2.5 text-base font-medium">
-              {destinationBadgeSrc ? <Image src={destinationBadgeSrc} alt="" width={20} height={20} className="size-5 rounded-sm object-contain" /> : null}
+              <AccountingDestinationGlyph destination={accountingDestination} className="size-6" iconClassName="size-4" />
               {publishResult ? "Publish complete" : `Publish ${selectedReadyIds.length} ${selectedReadyIds.length === 1 ? "bill" : "bills"} to ${destinationName}`}
             </DialogTitle>
             <DialogDescription className="text-sm font-normal leading-6 text-foreground">
@@ -1834,7 +1856,7 @@ function AccountsPayableContent() {
                     </>
                   ) : (
                     <>
-                      {destinationBadgeSrc ? <Image src={destinationBadgeSrc} alt="" width={16} height={16} className="size-4 rounded-sm object-contain" /> : null}
+                      <AccountingDestinationGlyph destination={accountingDestination} />
                       Confirm publish
                     </>
                   )}
