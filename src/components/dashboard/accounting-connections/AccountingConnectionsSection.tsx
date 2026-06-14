@@ -3,10 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { useSearchParams } from "next/navigation"
-import { Check, RefreshCw, ShieldCheck } from "lucide-react"
+import { Check, Plug2, RefreshCw, ShieldCheck, Target } from "lucide-react"
 import { toast } from "sonner"
 
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
+import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
 import {
@@ -179,14 +180,12 @@ export function AccountingConnectionsSection({
 
   return (
     <div className="space-y-5">
-      <section className="rounded-xl border border-border bg-card p-5 shadow-none sm:p-6">
-        <div>
-          <p className="text-sm font-bold text-foreground">Publishing destination</p>
-          <p className="mt-2 text-sm leading-6 text-foreground">
-            Choose where reviewed draft bills are created. You can change this per workspace.
-          </p>
-        </div>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+      <WorkspaceSection
+        icon={<Target />}
+        title="Publishing destination"
+        hint="Where reviewed draft bills are created — change it per workspace."
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
           {providers.map(provider => {
             const selected = destination === provider.id
             return (
@@ -215,7 +214,7 @@ export function AccountingConnectionsSection({
             )
           })}
         </div>
-      </section>
+      </WorkspaceSection>
 
       {!hasConnection ? (
         <div className="rounded-xl border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-5 py-4">
@@ -226,7 +225,7 @@ export function AccountingConnectionsSection({
         </div>
       ) : null}
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-none">
+      <WorkspaceSection icon={<Plug2 />} title="Accounting software" contentClassName="p-0">
         {providers.map((provider, index) => {
           const connection = connections[provider.id]
           return (
@@ -275,7 +274,7 @@ export function AccountingConnectionsSection({
             </div>
           )
         })}
-      </div>
+      </WorkspaceSection>
 
       <div className={cn("flex items-start gap-3 rounded-xl border px-5 py-4", workspaceWarmPanel)}>
         <ShieldCheck className="mt-0.5 size-5 shrink-0 text-[var(--workspace-primary)]" />
