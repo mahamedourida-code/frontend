@@ -152,7 +152,6 @@ type ConversionWorkspaceProps = {
   outputMode: OutputMode
   onOutputModeChange: (mode: OutputMode) => void
   documentMode?: DocumentMode
-  onDocumentModeChange?: (mode: DocumentMode) => void
   isUploading: boolean
   isProcessing: boolean
   isComplete: boolean
@@ -3334,7 +3333,6 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     outputMode,
     onOutputModeChange,
     documentMode = "auto",
-    onDocumentModeChange,
     isUploading,
     isProcessing,
     isComplete,
@@ -3388,10 +3386,6 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     (resultFiles?.length || 0) > 0 || (classifiedDocuments?.length || 0) > 0
   ))
   const [uploadSheetOpen, setUploadSheetOpen] = useState(false)
-  const handleModeChange = (mode: Exclude<DocumentMode, "invoice_receipt">) => {
-    onDocumentModeChange?.(mode)
-    onOutputModeChange(mode === "notes" ? "text" : "table")
-  }
 
   useEffect(() => {
     const syncSheetWithHash = () => {
@@ -3426,14 +3420,12 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
         isDragging={isDragging}
         isUploading={isUploading}
         isProcessing={isProcessing}
-        documentMode={documentMode}
         outputMode={outputMode}
         creditAvailable={creditAvailable}
         creditEstimate={creditEstimate}
         maxUploadFiles={maxUploadFiles}
         noCredits={noCredits}
         processLabel={processLabel}
-        onDocumentModeChange={handleModeChange}
         onOutputModeChange={onOutputModeChange}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
@@ -3455,7 +3447,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                 step="1"
                 symbol="upload-tray"
                 tone={isProcessing ? "muted" : "active"}
-                title="Upload documents"
+                title="Auto-detect documents"
                 hint="Invoices, receipts, bank statements and tables — PDF or image, scanned or photographed."
                 contentClassName="space-y-4"
               >
@@ -3468,7 +3460,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                     className="gap-2 px-5"
                   >
                     <FolderUp className="size-4" />
-                    Upload documents
+                    Auto-detect documents
                   </Button>
                   <Button asChild variant="surface">
                     <a href="/dashboard/inbox">
@@ -3487,7 +3479,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                 {uploadedFiles.length ? (
                   <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-card px-3 py-2.5 text-sm">
                     <p className="font-medium text-foreground">
-                      {uploadedFiles.length} file{uploadedFiles.length === 1 ? "" : "s"} staged. Review mode and usage before processing.
+                      {uploadedFiles.length} file{uploadedFiles.length === 1 ? "" : "s"} staged. Review usage before processing.
                     </p>
                     <Button type="button" size="sm" variant="surface" onClick={() => setUploadSheetOpen(true)} className="h-8 px-3 text-xs">
                       Review upload

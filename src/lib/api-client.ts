@@ -914,7 +914,7 @@ export const ocrApi = {
     // Append options
     formData.append('output_format', options?.output_format || 'xlsx')
     formData.append('consolidation_strategy', options?.consolidation_strategy || 'consolidated')
-    formData.append('document_mode', options?.document_mode || 'table')
+    formData.append('document_mode', options?.document_mode || 'auto')
     if (options?.ocr_language) formData.append('ocr_language', options.ocr_language)
     if (options?.workspace_id) formData.append('workspace_id', options.workspace_id)
     if (options?.company_id) formData.append('company_id', options.company_id)
@@ -946,7 +946,7 @@ export const ocrApi = {
    * This is the old endpoint for the backend - use uploadBatchMultipart instead
    * @deprecated Use uploadBatchMultipart for better performance
    */
-  uploadBatch: async (images: ImageData[], documentMode: DocumentMode = 'table'): Promise<BatchConvertResponse> => {
+  uploadBatch: async (images: ImageData[], documentMode: DocumentMode = 'auto'): Promise<BatchConvertResponse> => {
     const request: BatchConvertRequest = {
       images,
       output_format: 'xlsx',

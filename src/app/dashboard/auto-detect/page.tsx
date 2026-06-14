@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
 
 export default function AutoDetectModePage() {
-  redirect("/dashboard/client?mode=auto")
+  redirect("/dashboard/client#upload-files")
 }

@@ -124,7 +124,7 @@ export function useOCR(): UseOCRReturn {
       const response = await ocrApi.uploadBatchMultipart(filesToUpload, {
         output_format: nextOutputFormat,
         consolidation_strategy: 'separate',
-        document_mode: options?.documentMode || 'table',
+        document_mode: options?.documentMode || 'auto',
         ocr_language: options?.ocrLanguage,
         workspace_id: options?.workspaceId,
         company_id: options?.companyId,

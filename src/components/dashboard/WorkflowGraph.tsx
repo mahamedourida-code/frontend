@@ -28,13 +28,9 @@ const PRIMARY: GraphNode[] = [
   { label: "Inbox", href: "/dashboard/inbox", symbol: "nav-node-inbox", hint: "Incoming docs" },
 ]
 
-// Tier 3 — quick mode launchers (the page reads ?mode=…).
+// Tier 3 - quick auto-detect launcher.
 const MODES: GraphNode[] = [
-  { label: "Invoices", href: "/dashboard/client?mode=invoice", symbol: "nav-node-invoices" },
-  { label: "Receipts", href: "/dashboard/client?mode=receipt", symbol: "nav-node-receipts" },
-  { label: "Bank statements", href: "/dashboard/client?mode=bank_statement", symbol: "nav-node-bank-statements" },
-  { label: "Tables", href: "/dashboard/client?mode=table", symbol: "nav-node-tables" },
-  { label: "Notes", href: "/dashboard/client?mode=notes", symbol: "nav-node-notes" },
+  { label: "Auto-detect documents", href: "/dashboard/client#upload-files", symbol: "nav-node-invoices" },
 ]
 
 // How a batch travels — a light 1·2·3 strip above the tree.
@@ -152,9 +148,9 @@ export function WorkflowGraph({ className }: { className?: string }) {
         <Stub className="h-6" />
 
         {/* Tier 3 rail + mode leaves */}
-        <div className="relative w-full max-w-4xl">
-          <span aria-hidden className="absolute left-[10%] right-[10%] top-0 h-px" style={{ background: RAIL }} />
-          <div className="grid grid-cols-5 gap-3">
+        <div className="relative w-full max-w-xs">
+          <span aria-hidden className="absolute left-[50%] right-[50%] top-0 h-px" style={{ background: RAIL }} />
+          <div className="grid grid-cols-1 gap-3">
             {MODES.map((node) => (
               <div key={node.href} className="flex flex-col items-center">
                 <Stub className="h-6" />
@@ -168,7 +164,7 @@ export function WorkflowGraph({ className }: { className?: string }) {
       {/* Stacked (mobile) */}
       <div className="space-y-6 sm:hidden">
         <Node node={ROOT} size="root" className="mx-auto" />
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 gap-3">
           {PRIMARY.map((node) => (
             <Node key={node.href} node={node} size="primary" />
           ))}

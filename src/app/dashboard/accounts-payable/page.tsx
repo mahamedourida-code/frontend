@@ -1020,8 +1020,8 @@ function AccountsPayableContent() {
                           {!items.length ? (
                             <div className="mt-7 flex flex-col items-center gap-3">
                               <Button asChild variant="glossy" size="sm" className={workspacePrimaryButton}>
-                                <Link href="/dashboard/client?mode=invoice">
-                                  Review invoices
+                                <Link href="/dashboard/client#upload-files">
+                                  Auto-detect documents
                                   <span className="text-[10px] font-medium uppercase tracking-wider opacity-70">Recommended</span>
                                 </Link>
                               </Button>

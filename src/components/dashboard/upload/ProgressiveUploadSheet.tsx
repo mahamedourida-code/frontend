@@ -25,9 +25,8 @@ import {
 import { cn } from "@/lib/utils"
 import { useMotionTokens } from "@/lib/motion"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
-import { companyApi, type CompanySummary, type DocumentMode } from "@/lib/api-client"
+import { companyApi, type CompanySummary } from "@/lib/api-client"
 
-type UploadMode = Exclude<DocumentMode, "invoice_receipt">
 type OutputMode = "table" | "text" | "csv"
 
 type ProgressiveUploadSheetProps = {
@@ -41,14 +40,12 @@ type ProgressiveUploadSheetProps = {
   isDragging: boolean
   isUploading: boolean
   isProcessing: boolean
-  documentMode: DocumentMode
   outputMode: OutputMode
   creditAvailable: number
   creditEstimate: number
   maxUploadFiles: number
   noCredits: boolean
   processLabel: string
-  onDocumentModeChange: (mode: UploadMode) => void
   onOutputModeChange: (mode: OutputMode) => void
   onDragOver: (event: DragEvent<HTMLDivElement>) => void
   onDragLeave: (event: DragEvent<HTMLDivElement>) => void
@@ -60,18 +57,8 @@ type ProgressiveUploadSheetProps = {
   onCancel: () => void
 }
 
-const modeTabs: Array<{ value: UploadMode; label: string }> = [
-  { value: "auto", label: "Auto detect" },
-  { value: "invoice", label: "Purchases" },
-  { value: "receipt", label: "Receipts" },
-  { value: "bank_statement", label: "Bank statements" },
-  { value: "table", label: "Other" },
-]
-
 const workspacePrimaryControlClass =
   "border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] text-white hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)] focus-visible:ring-[var(--workspace-primary)]/20"
-const workspaceNormalControlClass =
-  "border border-[var(--workspace-button-border)] bg-white text-[var(--workspace-ink)] hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] hover:text-[var(--workspace-primary)] focus-visible:ring-[var(--workspace-primary)]/20"
 const workspacePanelSurfaceClass =
   "border-[var(--workspace-border)] bg-[var(--workspace-soft)]"
 
@@ -102,14 +89,12 @@ export function ProgressiveUploadSheet({
   isDragging,
   isUploading,
   isProcessing,
-  documentMode,
   outputMode,
   creditAvailable,
   creditEstimate,
   maxUploadFiles,
   noCredits,
   processLabel,
-  onDocumentModeChange,
   onOutputModeChange,
   onDragOver,
   onDragLeave,
@@ -129,11 +114,6 @@ export function ProgressiveUploadSheet({
   const pdfPages = uploadedFiles.reduce((total, file, index) => (
     total + (isPdfFile(file) ? (pdfPageCounts[index] || 1) : 0)
   ), 0)
-  const selectedTab = documentMode === "invoice_receipt"
-    ? "invoice"
-    : documentMode === "notes"
-      ? "table"
-      : documentMode
   const busy = isUploading || isProcessing
   const canProcess = Boolean(workspaceId && selectedCompanyId)
 
@@ -177,9 +157,9 @@ export function ProgressiveUploadSheet({
       <SheetContent className="w-full gap-0 bg-[var(--workspace-popout-bg)] sm:max-w-[560px]">
         <SheetHeader className="border-b border-[var(--workspace-popout-border)] px-5 py-5 pr-12">
           <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--workspace-primary)]">New batch</p>
-          <SheetTitle className="text-xl font-bold tracking-tight">Upload documents</SheetTitle>
+          <SheetTitle className="text-xl font-bold tracking-tight">Auto-detect documents</SheetTitle>
           <SheetDescription className="leading-5">
-            Choose the batch context, add files, then send them to review.
+            Assign a company, add files, then send the batch to review.
           </SheetDescription>
         </SheetHeader>
 
@@ -218,41 +198,13 @@ export function ProgressiveUploadSheet({
           </section>
 
           <section className="space-y-3">
-            <StageLabel number={2}>Document mode</StageLabel>
-            <div className="flex flex-wrap gap-3" role="tablist" aria-label="Document mode">
-              {modeTabs.map(mode => (
-                <button
-                  key={mode.value}
-                  type="button"
-                  role="tab"
-                  aria-selected={selectedTab === mode.value}
-                  onClick={() => onDocumentModeChange(mode.value)}
-                  disabled={busy}
-                  className={cn(
-                    "ax-interactive inline-flex h-8 cursor-pointer items-center rounded-md px-3 text-xs font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                    selectedTab === mode.value
-                      ? workspacePrimaryControlClass
-                      : workspaceNormalControlClass
-                  )}
-                >
-                  {mode.label}
-                </button>
-              ))}
+            <StageLabel number={2}>Auto-detect documents</StageLabel>
+            <div className={cn("rounded-lg border p-3", workspacePanelSurfaceClass)}>
+              <p className="text-sm font-semibold text-foreground">Every file is detected automatically.</p>
+              <p className="mt-1 text-xs font-medium text-muted-foreground">
+                Receipts, invoices, statements, tables, and notes go to review after classification.
+              </p>
             </div>
-            {selectedTab === "table" ? (
-              <label className="block">
-                <span className="mb-1.5 block text-xs font-semibold text-muted-foreground">Other document type</span>
-                <select
-                  value={documentMode === "notes" ? "notes" : "table"}
-                  onChange={(event) => onDocumentModeChange(event.target.value as UploadMode)}
-                  disabled={busy}
-                  className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-ring/40"
-                >
-                  <option value="table">Tables and forms</option>
-                  <option value="notes">Notes and handwriting</option>
-                </select>
-              </label>
-            ) : null}
           </section>
 
           <section className="space-y-3">
@@ -383,7 +335,6 @@ export function ProgressiveUploadSheet({
                 disabled={busy}
                 className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-ring/40"
               >
-                {documentMode === "notes" ? <option value="text">Readable text</option> : null}
                 <option value="table">Excel XLSX</option>
                 <option value="csv">CSV</option>
               </select>

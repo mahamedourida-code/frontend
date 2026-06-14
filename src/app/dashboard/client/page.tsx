@@ -12,7 +12,6 @@ import { toast } from "sonner"
 import { accountsPayableApi, ocrApi, quickBooksApi } from "@/lib/api-client"
 import type {
   AppLimits,
-  DocumentMode,
   JobDocumentRecord,
   ProcessedFile,
   QuickBooksConnectionStatus,
@@ -140,40 +139,15 @@ type DurableWorkspaceResultFile = Partial<ProcessedFile> & {
   document_id: string
 }
 
-type ConversionDocumentMode = DocumentMode
-
-function requestedDocumentMode(value: string | null): ConversionDocumentMode | null {
-  if (!value) return null
-
-  const normalized = value.trim().toLowerCase().replace(/-/g, "_")
-  const aliases: Record<string, ConversionDocumentMode> = {
-    auto: "auto",
-    auto_detect: "auto",
-    invoice: "invoice",
-    invoices: "invoice",
-    receipt: "receipt",
-    receipts: "receipt",
-    bank_statement: "bank_statement",
-    bank_statements: "bank_statement",
-    table: "table",
-    tables: "table",
-    notes: "notes",
-    invoice_receipt: "invoice_receipt",
-    invoice_receipts: "invoice_receipt",
-  }
-
-  return aliases[normalized] || null
-}
-
 export default function ProcessImagesPage() {
   return (
     <Suspense fallback={<ProcessImagesFallback />}>
-      <ProcessImagesContent documentMode="auto" />
+      <ProcessImagesContent />
     </Suspense>
   )
 }
 
-export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?: ConversionDocumentMode }) {
+export function ProcessImagesContent() {
   const { user, loading: authLoading } = useAuth()
   const { activeWorkspace } = useWorkspaces(user)
   const router = useRouter()
@@ -224,14 +198,11 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
   const [firstImageUrl, setFirstImageUrl] = useState<string>('')
   const [activePreviewFileId, setActivePreviewFileId] = useState<string>('')
   const [selectedCompanyId, setSelectedCompanyId] = useState(() => searchParams.get("company_id") || "")
-  const [outputMode, setOutputMode] = useState<WorkspaceOutputMode>(documentMode === "notes" ? "text" : "table")
-  const [activeDocumentMode, setActiveDocumentMode] = useState<ConversionDocumentMode>(documentMode)
+  const [outputMode, setOutputMode] = useState<WorkspaceOutputMode>("table")
   const reviewedExportFormat: "xlsx" | "csv" | "txt" =
-    activeDocumentMode === "notes" && outputMode === "text"
-      ? "txt"
-      : outputMode === "csv"
-        ? "csv"
-        : "xlsx"
+    outputMode === "csv"
+      ? "csv"
+      : "xlsx"
   const {
     limits: entitlementLimits,
     credits: entitlementCredits,
@@ -290,25 +261,6 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
   const [latestRecoverableJob, setLatestRecoverableJob] = useState<RecoverableJobSummary | null>(null)
   const [recoveryLoading, setRecoveryLoading] = useState(false)
   const openedJobIdRef = useRef<string | null>(null)
-  const appliedModeParamRef = useRef<string | null>(null)
-
-  useEffect(() => {
-    setActiveDocumentMode(documentMode)
-    setOutputMode(documentMode === 'notes' ? 'text' : 'table')
-  }, [documentMode])
-
-  useEffect(() => {
-    const requestedMode = searchParams.get("mode")
-    if (!requestedMode || appliedModeParamRef.current === requestedMode) return
-
-    const nextMode = requestedDocumentMode(requestedMode)
-    if (!nextMode) return
-
-    appliedModeParamRef.current = requestedMode
-    setActiveDocumentMode(nextMode)
-    setOutputMode(nextMode === "notes" ? "text" : "table")
-  }, [searchParams])
-
   useEffect(() => {
     const requestedCompanyId = searchParams.get("company_id")
     if (requestedCompanyId) setSelectedCompanyId(requestedCompanyId)
@@ -381,7 +333,6 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
     const requestedJobId = searchParams.get("job_id")
     if (authLoading || !user || !requestedJobId || openedJobIdRef.current === requestedJobId) return
     openedJobIdRef.current = requestedJobId
-    setActiveDocumentMode("auto")
     setOutputMode("table")
     setRecoveryLoading(true)
     setUploadedFiles([])
@@ -963,12 +914,10 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
 
       const response = await uploadBatch(uploadedFiles, {
         outputFormat:
-          activeDocumentMode === 'notes' && outputMode === 'text'
-            ? 'txt'
-            : outputMode === 'csv'
-              ? 'csv'
-              : 'xlsx',
-        documentMode: activeDocumentMode,
+          outputMode === 'csv'
+            ? 'csv'
+            : 'xlsx',
+        documentMode: "auto",
         ocrLanguage: typeof window !== "undefined" ? window.localStorage.getItem("ocrLanguage") || "en" : "en",
         workspaceId: activeWorkspace?.id,
         companyId: selectedCompanyId || undefined,
@@ -1004,7 +953,7 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
       })
       showApiErrorToast(error, errorContext)
     }
-  }, [uploadedFiles, uploadBatch, connectWebSocket, maxUploadFiles, router, outputMode, activeDocumentMode, activeWorkspace?.id, selectedCompanyId, createFilePreviewUrl, noCredits])
+  }, [uploadedFiles, uploadBatch, connectWebSocket, maxUploadFiles, router, outputMode, activeWorkspace?.id, selectedCompanyId, createFilePreviewUrl, noCredits])
 
   const handleCancelProcessing = useCallback(async () => {
     await cancelProcessing()
@@ -1854,11 +1803,9 @@ Best regards`
   const isSuccessfulTerminal = status === 'completed' || status === 'partially_completed'
   const isComplete = isSuccessfulTerminal && Boolean(
     (visibleResultFiles && visibleResultFiles.length > 0)
-    || (activeDocumentMode === "auto" && jobDocuments.length > 0)
+    || jobDocuments.length > 0
   )
-  const isBankStatementMode = activeDocumentMode === 'bank_statement'
-  const isAccountingDocumentMode = activeDocumentMode === 'invoice' || activeDocumentMode === 'receipt' || activeDocumentMode === 'invoice_receipt'
-  const isTextOutput = activeDocumentMode === 'notes' && outputMode === 'text'
+  const isTextOutput = false
   const effectiveOutputMode = outputMode
   const displayResultFiles = visibleResultFiles?.map((file, index) => {
     const trace = file.file_id ? resultSourceTrace[file.file_id] : undefined
@@ -1895,7 +1842,7 @@ Best regards`
         durableDocument?.resolved_mode ||
         durableDocument?.detected_mode ||
         durableDocument?.selected_mode ||
-        activeDocumentMode,
+        "auto",
       review_flags: durableExtraction?.validation_flags || tracedFile.review_flags,
       requires_review: durableDocument?.review_status === "needs_review" || tracedFile.requires_review,
       duplicate_warnings: durableDocument?.duplicate_warnings || [],
@@ -1906,20 +1853,7 @@ Best regards`
     }
   }) || null
   const uploadedSizeMb = uploadedFiles.reduce((total, file) => total + file.size, 0) / (1024 * 1024)
-  const processLabel =
-    activeDocumentMode === 'auto'
-      ? 'Detect and convert'
-      : isBankStatementMode
-        ? 'Extract statement'
-        : activeDocumentMode === 'invoice'
-          ? 'Extract invoice'
-          : activeDocumentMode === 'receipt'
-            ? 'Extract receipt'
-            : activeDocumentMode === 'notes'
-              ? 'Extract notes'
-              : isTextOutput
-                ? 'Extract text'
-                : 'Convert files'
+  const processLabel = "Auto-detect documents"
   const creditEstimate = uploadedFiles.reduce((total, file, index) => {
     return total + (isPdfFile(file) ? (pdfPageCounts[index] || 1) : 1)
   }, 0)
@@ -1946,22 +1880,8 @@ Best regards`
   return (
     <DashboardShell
       activeItem="process"
-      title={
-        activeDocumentMode === "auto"
-          ? "Auto Detect"
-          : isBankStatementMode
-            ? "Bank Statement Mode"
-            : activeDocumentMode === "invoice"
-              ? "Invoice Mode"
-              : activeDocumentMode === "receipt"
-                ? "Receipt Mode"
-                : activeDocumentMode === "notes"
-                  ? "Notes Mode"
-                  : isAccountingDocumentMode
-                    ? "Invoice and Receipt Mode"
-                    : "Review Documents"
-      }
-      eyebrow={isBankStatementMode ? "Statements" : isAccountingDocumentMode ? "Accounting" : activeDocumentMode === "notes" ? "Notes" : "Batch"}
+      title="Auto-detect documents"
+      eyebrow="Batch"
       user={user}
       contentClassName="max-w-none px-3 py-3 sm:px-5 lg:px-6"
     >
@@ -2057,11 +1977,7 @@ Best regards`
         isDragging={isDragging}
         outputMode={effectiveOutputMode}
         onOutputModeChange={setOutputMode}
-        documentMode={activeDocumentMode}
-        onDocumentModeChange={(mode) => {
-          setActiveDocumentMode(mode)
-          setOutputMode(mode === 'notes' ? 'text' : 'table')
-        }}
+        documentMode="auto"
         isUploading={isUploading}
         isProcessing={isProcessing}
         isComplete={Boolean(isComplete)}
@@ -2108,7 +2024,7 @@ Best regards`
         quickBooksReferences={quickBooksReferences}
         onRefreshQuickBooksReferences={() => loadQuickBooksReferences(true)}
         onPublishReceipt={handlePublishReceipt}
-        classifiedDocuments={activeDocumentMode === "auto" ? jobDocuments : []}
+        classifiedDocuments={jobDocuments}
         overridingDocumentId={overridingDocumentId}
         onOverrideDocumentMode={handleDocumentModeOverride}
       />

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
 
 export default function InvoiceModePage() {
-  redirect("/dashboard/client?mode=invoice")
+  redirect("/dashboard/client#upload-files")
 }
