@@ -3139,8 +3139,8 @@ function BatchStagingBoard({
   const rowCount = mode === "idle" ? recent.length : stagedCount
   const tabLabel = mode === "idle" ? "Recent" : mode === "staged" ? "Staged" : "Processing"
   const bandLabel = mode === "idle" ? "Recent files" : mode === "staged" ? "Ready to process" : "Working through this batch"
-  const detailHeader = mode === "idle" ? "Saved" : "Size"
   const countLabel = mode === "idle" ? `${rowCount} shown` : `${rowCount} file${rowCount === 1 ? "" : "s"}`
+  const dash = <span className="text-[#98a2b3]">–</span>
 
   return (
     <div className="space-y-2.5">
@@ -3148,7 +3148,7 @@ function BatchStagingBoard({
         {mode === "processing" ? (
           <span className="inline-flex h-9 items-center gap-2 rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-3 text-xs font-semibold text-[#0f5fcb]">
             <Loader2 className="h-4 w-4 animate-spin" />
-            Processing {stagedCount} file{stagedCount === 1 ? "" : "s"}
+            Reading {stagedCount} document{stagedCount === 1 ? "" : "s"} — extracting fields…
           </span>
         ) : mode === "staged" ? (
           <>
@@ -3224,13 +3224,19 @@ function BatchStagingBoard({
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] border-separate border-spacing-0 text-left text-[13px] text-[#111827]">
+            <table className="w-full min-w-[1120px] border-separate border-spacing-0 text-left text-[13px] text-[#111827]">
               <thead className="bg-[#f8f9fa] text-[11px] font-semibold uppercase text-[#475467]">
                 <tr>
+                  <th className="w-14 border-b border-[#cfd4d9] px-3 py-2.5">View</th>
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5">Document</th>
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5">Type</th>
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5">Status</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">{detailHeader}</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">From</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Reference</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Date</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Due date</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5 text-right">Total</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Issue</th>
                   <th className="w-28 border-b border-[#cfd4d9] px-3 py-2.5 text-right">Action</th>
                 </tr>
               </thead>
@@ -3239,11 +3245,7 @@ function BatchStagingBoard({
                   recentLoading ? (
                     Array.from({ length: 3 }).map((_, index) => (
                       <tr key={`skeleton-${index}`} className="h-12 bg-white">
-                        <td className="border-b border-l-[3px] border-b-[#e4e7ef] border-l-transparent px-3 py-3"><span className="block h-3 w-1/2 rounded-md ax-skeleton" /></td>
-                        <td className="border-b border-[#e4e7ef] px-3 py-3"><span className="block h-3 w-12 rounded-md ax-skeleton" /></td>
-                        <td className="border-b border-[#e4e7ef] px-3 py-3"><span className="block h-3 w-16 rounded-md ax-skeleton" /></td>
-                        <td className="border-b border-[#e4e7ef] px-3 py-3"><span className="block h-3 w-20 rounded-md ax-skeleton" /></td>
-                        <td className="border-b border-[#e4e7ef] px-3 py-3"><span className="ml-auto block h-3 w-10 rounded-md ax-skeleton" /></td>
+                        <td colSpan={11} className="border-b border-[#e4e7ef] px-3 py-3"><span className="block h-3 w-2/3 rounded-md ax-skeleton" /></td>
                       </tr>
                     ))
                   ) : recent.length ? (
@@ -3251,7 +3253,16 @@ function BatchStagingBoard({
                       const st = recentStatusChip(file.status)
                       return (
                         <tr key={file.id} className="group h-12 bg-white transition-colors hover:bg-[#f8fbff]">
-                          <td className="max-w-[280px] border-b border-l-[3px] border-b-[#e4e7ef] border-l-transparent px-3 py-2 align-middle">
+                          <td className="border-b border-l-[3px] border-b-[#e4e7ef] border-l-transparent px-3 py-2 align-middle">
+                            <Link
+                              href={`/dashboard/client?job_id=${file.id}`}
+                              className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#1877F2] shadow-none transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] focus-visible:ring-2 focus-visible:ring-[#1877F2]/20"
+                              aria-label={`Open ${file.filename}`}
+                            >
+                              <Eye className="size-3.5" />
+                            </Link>
+                          </td>
+                          <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             <Link
                               href={`/dashboard/client?job_id=${file.id}`}
                               className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[#0f5fcb]"
@@ -3259,16 +3270,21 @@ function BatchStagingBoard({
                               {file.filename}
                             </Link>
                           </td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#475467]">Batch</td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#0f766e]">Batch</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             <span className={cn("inline-flex h-5 items-center gap-1.5 rounded-full border px-2 text-[11px] font-semibold", st.chip)}>
                               <span className={cn("size-1.5 rounded-full", st.dot)} />
                               {st.label}
                             </span>
                           </td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle text-[#475467] tabular-nums">
                             {format(new Date(file.createdAt), "MMM d, yyyy")}
                           </td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 text-right align-middle">{dash}</td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             <div className="flex justify-end">
                               <Link
@@ -3284,7 +3300,7 @@ function BatchStagingBoard({
                     })
                   ) : (
                     <tr>
-                      <td colSpan={5} className="border-b border-[#e4e7ef] px-4 py-10 text-center text-[13px] font-medium text-[#475467]">
+                      <td colSpan={11} className="border-b border-[#e4e7ef] px-4 py-12 text-center text-[13px] font-medium text-[#475467]">
                         <span>No documents yet — your processed batches will land here.</span>
                         <button
                           type="button"
@@ -3312,15 +3328,18 @@ function BatchStagingBoard({
                           transition={m.tFast}
                           className="group h-12 bg-white transition-colors hover:bg-[#f8fbff]"
                         >
-                          <td className={cn("max-w-[280px] border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", processing ? "border-l-[#1877F2]" : "border-l-transparent")}>
-                            <div className="flex min-w-0 items-center gap-2.5">
-                              <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-[#eef1f6] text-[#475467]">
-                                {pdf ? <FileText className="h-3.5 w-3.5" /> : <FileImage className="h-3.5 w-3.5" />}
-                              </span>
-                              <span className="block max-w-full truncate text-[14px] font-semibold text-[#111827]">{file.name}</span>
-                            </div>
+                          <td className={cn("border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", processing ? "border-l-[#1877F2]" : "border-l-transparent")}>
+                            <span className="inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#94a3b8]">
+                              {processing ? <Loader2 className="size-3.5 animate-spin text-[#1877F2]" /> : pdf ? <FileText className="size-3.5" /> : <FileImage className="size-3.5" />}
+                            </span>
                           </td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#475467]">Auto-detect</td>
+                          <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                            <span className="block max-w-full truncate text-[14px] font-semibold text-[#111827]">{file.name}</span>
+                            <span className="mt-0.5 block truncate text-[11px] font-medium text-[#475467]">
+                              {pdf ? `${pageCount ? `${pageCount} page${pageCount === 1 ? "" : "s"}` : "PDF"} · ` : ""}{formatBytes(file.size)}
+                            </span>
+                          </td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#0f5fcb]">Auto-detect</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             {processing ? (
                               <span className="inline-flex h-5 items-center gap-1.5 rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-2 text-[11px] font-semibold text-[#0f5fcb]">
@@ -3334,8 +3353,17 @@ function BatchStagingBoard({
                               </span>
                             )}
                           </td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle text-[#475467] tabular-nums">
-                            {pdf ? `${pageCount ? `${pageCount} page${pageCount === 1 ? "" : "s"}` : "PDF"} · ` : ""}{formatBytes(file.size)}
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 text-right align-middle">{dash}</td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                            {processing ? (
+                              <span className="text-[12px] font-semibold text-[#0f5fcb]">Reading…</span>
+                            ) : (
+                              dash
+                            )}
                           </td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             <div className="flex justify-end">
@@ -3516,9 +3544,10 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
             />
           ) : null}
 
-          {/* P3 — step 3: the verify-extraction board. ResultActions carries its
-              own compact review results table, so this wrapper stays header-light. */}
-          <div className="space-y-4">
+          {/* P3 — the verify-extraction board. It only mounts once the batch has
+              review content, so idle / staged / processing show the single
+              BatchStagingBoard table above and never a second table beneath it. */}
+          <div className={cn("space-y-4", hasResults ? "" : "hidden")}>
             <AutoDetectionPanel
               documents={classifiedDocuments}
               overridingDocumentId={overridingDocumentId}
