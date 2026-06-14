@@ -152,9 +152,20 @@ function DocumentReviewContent() {
       return
     }
     try {
-      const response = await ocrApi.getDocumentReview(jobId, documentId)
-      setDoc(response.document)
-      setError("")
+      // Use the batch documents endpoint (same source as the review board): it
+      // returns SIGNED source/preview URLs and the full extraction payload
+      // (reviewed_data, line_items, review_grid). The single /review endpoint
+      // returns an unsigned, leaner document — which left the preview and line
+      // items empty.
+      const response = await ocrApi.getJobDocuments(jobId)
+      const found = response.documents.find((item) => item.id === documentId) || null
+      if (!found) {
+        setError("This document is no longer part of the batch.")
+        setDoc(null)
+      } else {
+        setDoc(found)
+        setError("")
+      }
     } catch (err: any) {
       setError(err?.detail || err?.message || "This document could not be opened.")
     } finally {
@@ -422,20 +433,6 @@ function DocumentReviewContent() {
 
         {/* Extracted form — modelled on Xero "Edit Bill" / "New invoice" */}
         <div className="overflow-hidden rounded-2xl border border-[#e4e7ef] bg-white shadow-sm">
-          {/* Status row: plain status word left (Xero "Draft"), light action right */}
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#eef1f6] px-7 py-4">
-            <span className="text-[13px] font-bold text-[#475467]">{STATUS_LABEL[status] || status}</span>
-            <button
-              type="button"
-              onClick={() => void download()}
-              disabled={downloading}
-              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-[#cfd4d9] bg-white px-3 text-[12px] font-semibold text-[#0f5fcb] transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] disabled:opacity-60"
-            >
-              {downloading ? <Loader2 className="size-3.5 animate-spin" /> : <Download className="size-3.5" />}
-              Export XLSX
-            </button>
-          </div>
-
           {/* Header fields row: boxed, labelled fields + LARGE total on the right */}
           <div className="border-b border-[#eef1f6] px-7 py-7">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
