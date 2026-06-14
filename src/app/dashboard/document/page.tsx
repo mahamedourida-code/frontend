@@ -211,7 +211,13 @@ function DocumentReviewContent() {
   const processingUnitId = extraction?.processing_unit_id || ""
   const accent = TYPE_ACCENT[docType] || TYPE_ACCENT.auto
 
-  const money = (value: any) => (value === undefined || value === null || value === "" ? "—" : [data.currency, value].filter(Boolean).join(" "))
+  // Only treat `currency` as a real currency token (code/symbol). Bad extractions
+  // sometimes dump a list of amounts into this field — never prefix that onto values.
+  const currencyLabel =
+    typeof data.currency === "string" && data.currency.trim().length > 0 && data.currency.trim().length <= 4
+      ? data.currency.trim()
+      : ""
+  const money = (value: any) => (value === undefined || value === null || value === "" ? "—" : [currencyLabel, value].filter(Boolean).join(" "))
 
   const persist = async (fieldPath: Array<string | number>, value: string) => {
     if (!processingUnitId) {
@@ -435,8 +441,8 @@ function DocumentReviewContent() {
         <div className="overflow-hidden rounded-2xl border border-[#e4e7ef] bg-white shadow-sm">
           {/* Header fields row: boxed, labelled fields + LARGE total on the right */}
           <div className="border-b border-[#eef1f6] px-7 py-7">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-              <div className="grid flex-1 gap-x-6 gap-y-5 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+              <div className="grid min-w-0 flex-1 grid-cols-2 gap-x-5 gap-y-5 lg:grid-cols-3">
                 {headerFields.length ? (
                   headerFields.map((field) => (
                     <FormField
@@ -448,7 +454,7 @@ function DocumentReviewContent() {
                     />
                   ))
                 ) : (
-                  <div className="sm:col-span-2 xl:col-span-3">
+                  <div className="col-span-2 lg:col-span-3">
                     <span className="mb-2 block text-[12px] font-bold tracking-tight text-[#475467]">Document</span>
                     <p className="truncate text-[15px] font-bold tracking-tight text-[#111827]">
                       {data.vendor_name || data.merchant || data.account_holder || data.bank_name || doc.original_filename}
@@ -456,10 +462,13 @@ function DocumentReviewContent() {
                   </div>
                 )}
               </div>
-              {/* Big total on the far right (Xero "Total … 0.00") */}
-              <div className="shrink-0 lg:pl-6 lg:text-right">
-                <p className="text-[12px] font-bold tracking-tight text-[#475467]">{totalLabel}</p>
-                <p className="mt-1 text-[32px] font-extrabold leading-none tabular-nums text-[#111827]">{totalDisplay}</p>
+              {/* Total — fixed-width boxed value so a long/garbled figure can never
+                  squeeze the fields (Xero keeps Total in a box, not a raw number). */}
+              <div className="w-full shrink-0 lg:w-52">
+                <p className="text-[12px] font-bold tracking-tight text-[#475467] lg:text-right">{totalLabel}</p>
+                <div className="mt-2 flex h-12 items-center justify-end rounded-md border border-[#d7dce3] bg-[#f8f9fb] px-3">
+                  <span className="truncate text-[20px] font-extrabold tabular-nums text-[#111827]" title={totalDisplay}>{totalDisplay}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -560,17 +569,17 @@ function DocumentReviewContent() {
           {showInvoiceTotals ? (
             <div className="px-7 py-7">
               <div className="ml-auto w-full max-w-[360px]">
-                <div className="flex items-center justify-between py-2 text-[14px]">
-                  <span className="font-semibold text-[#475467]">Subtotal</span>
-                  <span className="font-semibold tabular-nums text-[#111827]">{money(data.subtotal)}</span>
+                <div className="flex items-center justify-between gap-4 py-2 text-[14px]">
+                  <span className="shrink-0 font-semibold text-[#475467]">Subtotal</span>
+                  <span className="min-w-0 truncate text-right font-semibold tabular-nums text-[#111827]" title={money(data.subtotal)}>{money(data.subtotal)}</span>
                 </div>
-                <div className="flex items-center justify-between border-t border-[#e4e7ef] py-2 text-[14px]">
-                  <span className="font-semibold text-[#475467]">VAT</span>
-                  <span className="font-semibold tabular-nums text-[#111827]">{money(data.tax_vat_amount)}</span>
+                <div className="flex items-center justify-between gap-4 border-t border-[#e4e7ef] py-2 text-[14px]">
+                  <span className="shrink-0 font-semibold text-[#475467]">VAT</span>
+                  <span className="min-w-0 truncate text-right font-semibold tabular-nums text-[#111827]" title={money(data.tax_vat_amount)}>{money(data.tax_vat_amount)}</span>
                 </div>
-                <div className="flex items-center justify-between border-t-2 border-[#111827] pt-3">
-                  <span className="text-[18px] font-extrabold tracking-tight text-[#111827]">TOTAL</span>
-                  <span className="text-[22px] font-extrabold tabular-nums text-[#111827]">{money(data.total)}</span>
+                <div className="flex items-center justify-between gap-4 border-t-2 border-[#111827] pt-3">
+                  <span className="shrink-0 text-[18px] font-extrabold tracking-tight text-[#111827]">TOTAL</span>
+                  <span className="min-w-0 truncate text-right text-[22px] font-extrabold tabular-nums text-[#111827]" title={money(data.total)}>{money(data.total)}</span>
                 </div>
               </div>
             </div>
