@@ -2662,24 +2662,39 @@ export function ResultActions({
                 ) : null}
                 {comparisonFields.length || comparisonRows ? (
                   <div className="text-gray-950">
-                    <div className="sticky top-0 z-[1] flex items-center justify-between gap-4 border-b border-border bg-white px-4 py-3">
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <p className="truncate text-sm font-semibold">{comparisonSummary?.identity || comparisonFile.filename || "Document"}</p>
-                          {isHandwrittenDocument(comparisonFile) ? <HandwrittenBadge variant="label" /> : null}
+                    {/* Xero-style document-form header: status + type on the left,
+                        the document total set large on the right. */}
+                    <div className="sticky top-0 z-[1] border-b border-[#e4e7ef] bg-white px-5 py-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className={cn("inline-flex h-5 items-center rounded-full border px-2 text-[11px] font-semibold", getOutputBadge(comparisonFile).className)}>
+                              {getOutputBadge(comparisonFile).label}
+                            </span>
+                            <span className={cn("text-[11px] font-bold uppercase tracking-[0.08em]", documentTypeToneClass(comparisonFile.document_type))}>
+                              {formatDocumentType(comparisonFile.document_type)}
+                            </span>
+                            {isHandwrittenDocument(comparisonFile) ? <HandwrittenBadge variant="label" /> : null}
+                            {invoiceLanguage !== "en" ? (
+                              <span className="inline-flex items-center gap-1 rounded-full border border-[#ddd6fe] bg-[#f5f3ff] px-2 py-0.5 text-[10px] font-bold text-[#5b21b6]">
+                                <Languages className="size-2.5" />
+                                {invoiceLanguageName(invoiceLanguage)} schema
+                              </span>
+                            ) : null}
+                          </div>
+                          <p className="mt-1.5 truncate text-[15px] font-bold tracking-tight text-[#111827]">
+                            {comparisonSummary?.identity || comparisonFile.filename || "Document"}
+                          </p>
+                          {comparisonSummary?.identityLabel ? (
+                            <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#475467]">{comparisonSummary.identityLabel}</p>
+                          ) : null}
                         </div>
-                        <p className="mt-0.5 text-xs text-foreground">{formatDocumentType(comparisonFile.document_type)}</p>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-2">
-                        {invoiceLanguage !== "en" ? (
-                          <span className="inline-flex items-center gap-1 rounded-md border border-black bg-white px-2 py-1 text-[10px] font-bold text-black">
-                            <Languages className="size-2.5 text-[var(--brand-brown-fg)]" />
-                            {invoiceLanguageName(invoiceLanguage)} schema
-                          </span>
+                        {comparisonSummary?.amount && comparisonSummary.amount !== "-" ? (
+                          <div className="shrink-0 text-right">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#475467]">{comparisonSummary.amountLabel || "Total"}</p>
+                            <p className="mt-0.5 text-2xl font-bold tabular-nums text-[#111827]">{comparisonSummary.amount}</p>
+                          </div>
                         ) : null}
-                        <span className={cn("rounded-md border px-2 py-1 text-[10px] font-semibold", getOutputBadge(comparisonFile).className)}>
-                          {getOutputBadge(comparisonFile).label}
-                        </span>
                       </div>
                     </div>
                     {/* P10 — language auto-detection suggestion */}
@@ -2857,24 +2872,25 @@ export function ResultActions({
                     {comparisonRows?.rows.length ? (
                       <>
                         {comparisonHandwritten ? (
-                          <ConfidenceLegend className="border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-3 py-2" />
+                          <ConfidenceLegend className="border-b border-[#e4e7ef] bg-[#f8f9fa] px-4 py-2" />
                         ) : null}
-                        <table className="w-full min-w-[640px] border-collapse text-xs">
-                          <thead className="sticky top-[61px] bg-[var(--button-warm)] text-foreground">
+                        <div className="border-y border-[#e4e7ef] bg-white px-5 py-2 text-[11px] font-bold uppercase tracking-[0.08em] text-[#475467]">Line items</div>
+                        <table className="w-full min-w-[640px] border-collapse text-[13px]">
+                          <thead className="sticky top-[72px] z-[1] bg-[#f8f9fa] text-[11px] font-semibold uppercase tracking-[0.04em] text-[#475467]">
                             <tr>
                               {comparisonHandwritten ? (
-                                <th className="w-7 border-b border-border px-2 py-2" aria-label="Confidence" />
+                                <th className="w-7 border-b border-[#e4e7ef] px-2 py-2.5" aria-label="Confidence" />
                               ) : null}
-                              {comparisonRows.columns.map(column => (
-                                <th key={column} className="border-b border-border px-3 py-2 text-left font-medium">{column}</th>
+                              {comparisonRows.columns.map((column, columnIndex) => (
+                                <th key={column} className={cn("border-b border-[#e4e7ef] px-3 py-2.5 font-semibold", columnIndex === 0 ? "text-left" : "text-left")}>{column}</th>
                               ))}
                             </tr>
                           </thead>
                           <tbody>
                             {comparisonRows.rows.map((row, rowIndex) => (
-                              <tr key={rowIndex} className="odd:bg-white even:bg-[var(--button-warm)]">
+                              <tr key={rowIndex} className="bg-white transition-colors hover:bg-[#f8fbff]">
                                 {comparisonHandwritten ? (
-                                  <td className="border-b border-border px-2 py-1.5 text-center align-middle">
+                                  <td className="border-b border-[#eef1f6] px-2 py-1.5 text-center align-middle">
                                     <ConfidenceDot tier={getRowConfidenceTier(comparisonFile, rowIndex + 1)} size={8} withRing />
                                   </td>
                                 ) : null}
@@ -2887,7 +2903,7 @@ export function ResultActions({
                                   return (
                                   <td
                                     key={cellIndex}
-                                    className="border-b border-border px-2 py-1.5"
+                                    className="border-b border-[#eef1f6] px-2 py-1.5"
                                     onMouseEnter={showCellSource}
                                     onMouseLeave={() => setActiveSource(null)}
                                     onFocus={showCellSource}
@@ -2903,7 +2919,7 @@ export function ResultActions({
                                           )
                                         }
                                       }}
-                                      className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-xs text-gray-950 outline-none focus:border-[var(--brand-brown-fg)] focus:bg-white focus:ring-2 focus:ring-black/15"
+                                      className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-[13px] text-[#111827] outline-none focus:border-[#1877F2] focus:bg-white focus:ring-2 focus:ring-[#1877F2]/20"
                                     />
                                   </td>
                                   )
@@ -2927,6 +2943,29 @@ export function ResultActions({
                         </p>
                       </div>
                     )}
+                    {/* Xero-style totals: Subtotal / VAT / Total stacked bottom-right. */}
+                    {comparisonSummary?.bookkeeper ? (() => {
+                      const bk = comparisonSummary.bookkeeper
+                      const money = (value: any) => (value === undefined || value === null || value === "" ? "–" : [bk.currency, value].filter(Boolean).join(" "))
+                      return (
+                        <div className="border-t border-[#e4e7ef] bg-[#fbfbfd] px-5 py-4">
+                          <div className="ml-auto w-full max-w-[280px] space-y-2 text-[13px]">
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium text-[#475467]">Subtotal</span>
+                              <span className="font-semibold tabular-nums text-[#111827]">{money(bk.subtotal)}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium text-[#475467]">VAT</span>
+                              <span className="font-semibold tabular-nums text-[#0f766e]">{money(bk.vat)}</span>
+                            </div>
+                            <div className="mt-1 flex items-center justify-between border-t-2 border-[#111827] pt-2">
+                              <span className="text-[15px] font-bold text-[#111827]">Total</span>
+                              <span className="text-[15px] font-bold tabular-nums text-[#111827]">{money(bk.total)}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })() : null}
                     {comparisonFile.document_type === "bank_statement" ? (
                       <BankReconciliationPanel data={reviewData(comparisonFile)} />
                     ) : null}
@@ -2937,26 +2976,47 @@ export function ResultActions({
                   </pre>
                 ) : comparisonTable.length ? (
                   <>
+                  {/* Xero-style document-form header for extracted tables. */}
+                  <div className="sticky top-0 z-[1] border-b border-[#e4e7ef] bg-white px-5 py-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className={cn("inline-flex h-5 items-center rounded-full border px-2 text-[11px] font-semibold", getOutputBadge(comparisonFile).className)}>
+                            {getOutputBadge(comparisonFile).label}
+                          </span>
+                          <span className={cn("text-[11px] font-bold uppercase tracking-[0.08em]", documentTypeToneClass(comparisonFile.document_type))}>
+                            {formatDocumentType(comparisonFile.document_type)}
+                          </span>
+                          {isHandwrittenDocument(comparisonFile) ? <HandwrittenBadge variant="label" /> : null}
+                        </div>
+                        <p className="mt-1.5 truncate text-[15px] font-bold tracking-tight text-[#111827]">{comparisonFile.filename || "Extracted table"}</p>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#475467]">Rows</p>
+                        <p className="mt-0.5 text-2xl font-bold tabular-nums text-[#111827]">{Math.max(comparisonTable.length - 1, 0)}</p>
+                      </div>
+                    </div>
+                  </div>
                   {comparisonHandwritten ? (
-                    <ConfidenceLegend className="border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-3 py-2" />
+                    <ConfidenceLegend className="border-b border-[#e4e7ef] bg-[#f8f9fa] px-4 py-2" />
                   ) : null}
-                  <table className="w-full min-w-[680px] border-collapse text-sm text-gray-950">
+                  <table className="w-full min-w-[680px] border-collapse text-[13px] text-[#111827]">
                     <tbody>
                       {comparisonTable.map((row, rowIndex) => {
                         const isHandwrittenRow = isHandwrittenDocument(comparisonFile) && rowIndex > 0
                         const rowTier = isHandwrittenRow ? getRowConfidenceTier(comparisonFile, rowIndex) : null
                         return (
-                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-[var(--button-warm)] text-foreground" : rowIndex % 2 === 0 ? "bg-[var(--button-warm)]" : "bg-white"}>
+                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-[#f8f9fa] font-semibold" : "bg-white transition-colors hover:bg-[#f8fbff]"}>
                           {isHandwrittenDocument(comparisonFile) ? (
                             <td
                               className={cn(
-                                "w-7 border border-gray-200 px-1.5 text-center align-middle",
-                                rowIndex === 0 ? "border-slate-200" : "",
+                                "w-7 border border-[#eef1f6] px-1.5 text-center align-middle",
+                                rowIndex === 0 ? "border-[#e4e7ef]" : "",
                               )}
                               aria-hidden={rowIndex === 0}
                             >
                               {rowIndex === 0 ? (
-                                <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-slate-400">·</span>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.06em] text-[#94a3b8]">·</span>
                               ) : (
                                 <ConfidenceDot tier={rowTier} size={8} withRing />
                               )}
@@ -2979,8 +3039,8 @@ export function ResultActions({
                                   }
                                 }}
                                 className={cn(
-                                  "min-w-[120px] border border-gray-200 px-3 py-2 text-left font-medium",
-                                  rowIndex === 0 ? "border-[var(--button-warm-ring)]" : "hover:bg-[var(--button-warm)]"
+                                  "min-w-[120px] border border-[#eef1f6] px-3 py-2 text-left",
+                                  rowIndex === 0 ? "border-[#e4e7ef] text-[11px] font-bold uppercase tracking-[0.04em] text-[#475467]" : "font-medium",
                                 )}
                               >
                                 {isEditing ? (
@@ -2996,10 +3056,10 @@ export function ResultActions({
                                         event.currentTarget.blur()
                                       }
                                     }}
-                                    className="ax-interactive w-full rounded-md border border-[var(--brand-brown-fg)] bg-white px-2 py-1 text-sm text-gray-950 outline-none ring-2 ring-black/15"
+                                    className="ax-interactive w-full rounded-md border border-[#1877F2] bg-white px-2 py-1 text-[13px] text-[#111827] outline-none ring-2 ring-[#1877F2]/20"
                                   />
                                 ) : (
-                                  <span className={cn(!value && "text-gray-950/30")}>
+                                  <span className={cn(!value && "text-[#98a2b3]")}>
                                     {value || " "}
                                   </span>
                                 )}
