@@ -1,4 +1,8 @@
+"use client"
+
 import * as React from "react"
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
+import { ChevronDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Symbol } from "@/components/dashboard/Symbol"
@@ -15,15 +19,21 @@ const toneAccent: Record<SectionTone, string> = {
 interface WorkspaceSectionProps {
   /** Section heading, e.g. "Verify extraction". */
   title: React.ReactNode
+  /** Optional leading lucide icon, rendered in a soft tinted tile (Tables-style). */
+  icon?: React.ReactNode
   /** Optional step chip rendered before the title, e.g. "2". */
   step?: React.ReactNode
-  /** One calm line under the title. */
+  /** One calm line under the title. Use sparingly — most sections need none. */
   hint?: React.ReactNode
   /** Optional raw caricature symbol (file stem under /public/symbols). */
   symbol?: string
   /** Right-aligned controls in the header. */
   actions?: React.ReactNode
   tone?: SectionTone
+  /** When true the section collapses to its header; click the header to toggle. */
+  collapsible?: boolean
+  /** Initial open state for a collapsible section. Defaults to open. */
+  defaultOpen?: boolean
   children: React.ReactNode
   className?: string
   headerClassName?: string
@@ -33,57 +43,109 @@ interface WorkspaceSectionProps {
 
 /**
  * The shared "box" used across the workspace and the AP queue. A calm,
- * bordered card with a labelled header (optional step number + hint) and a
- * content well. Built only on existing brand tokens (card / border / muted /
- * brand-green) so it never theme-flips and never reads as generic AI-gradient
- * filler. One primitive, used on both review surfaces, so they feel like one
- * product.
+ * bordered card with a labelled header (optional leading icon, step number, or
+ * hint) and a roomy content well. Built only on existing brand tokens (card /
+ * border / muted / brand-green / workspace-primary) so it never theme-flips and
+ * never reads as generic AI-gradient filler. One primitive, used on every
+ * review surface, so they feel like one product.
+ *
+ * Premium structure cues, inspired by Tables: a soft `rounded-xl` shell,
+ * generous `px-6` padding, an optional icon tile leading the title, and an
+ * optional collapse so secondary density can be tucked away instead of
+ * crowding the page.
  */
 export function WorkspaceSection({
   title,
+  icon,
   step,
   hint,
   symbol,
   actions,
   tone = "default",
+  collapsible = false,
+  defaultOpen = true,
   children,
   className,
   headerClassName,
   contentClassName,
   id,
 }: WorkspaceSectionProps) {
+  const prefersReducedMotion = useReducedMotion()
+  const [open, setOpen] = React.useState(defaultOpen)
+  const isOpen = collapsible ? open : true
+
+  const heading = (
+    <div className="flex min-w-0 items-center gap-3">
+      {icon ? (
+        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-[var(--workspace-primary)] [&_svg]:size-[18px]">
+          {icon}
+        </span>
+      ) : null}
+      {symbol ? <Symbol name={symbol} size="badge" className="-my-1" /> : null}
+      {step !== undefined && step !== null ? (
+        <span className="shrink-0 font-mono text-[13px] font-semibold tabular-nums text-[var(--workspace-primary)]">
+          {step}
+        </span>
+      ) : null}
+      <div className="min-w-0">
+        <h2 className="truncate text-[15px] font-semibold tracking-tight text-foreground">{title}</h2>
+        {hint ? <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{hint}</p> : null}
+      </div>
+      {collapsible ? (
+        <ChevronDown
+          className={cn(
+            "ml-1 size-4 shrink-0 text-muted-foreground transition-transform duration-200",
+            isOpen ? "rotate-180" : "rotate-0",
+          )}
+        />
+      ) : null}
+    </div>
+  )
+
   return (
     <section
       id={id}
       className={cn(
-        "relative overflow-hidden rounded-md border border-border bg-card shadow-none",
+        "relative overflow-hidden rounded-xl border border-border bg-card shadow-none",
         toneAccent[tone],
         className,
       )}
     >
       <header
         className={cn(
-          "flex flex-wrap items-start justify-between gap-3 border-b border-border px-4 py-3 sm:px-5",
+          "flex flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-6",
+          isOpen && "border-b border-border",
           headerClassName,
         )}
       >
-        <div className="flex min-w-0 items-start gap-2.5">
-          {symbol ? <Symbol name={symbol} size="badge" className="-my-1" /> : null}
-          {step !== undefined && step !== null ? (
-            <span className="mt-px shrink-0 font-mono text-[13px] font-semibold tabular-nums text-emerald-600">
-              {step}
-            </span>
-          ) : null}
-          <div className="min-w-0">
-            <h2 className="text-sm font-semibold tracking-tight text-foreground">{title}</h2>
-            {hint ? (
-              <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{hint}</p>
-            ) : null}
-          </div>
-        </div>
+        {collapsible ? (
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={isOpen}
+            className="ax-interactive -m-1 flex min-w-0 flex-1 items-center rounded-lg p-1 text-left hover:bg-[var(--workspace-soft)]"
+          >
+            {heading}
+          </button>
+        ) : (
+          heading
+        )}
         {actions ? <div className="flex shrink-0 items-center gap-3">{actions}</div> : null}
       </header>
-      <div className={cn("px-4 py-4 sm:px-5", contentClassName)}>{children}</div>
+      <AnimatePresence initial={false}>
+        {isOpen ? (
+          <motion.div
+            key="content"
+            initial={prefersReducedMotion ? false : { height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={prefersReducedMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden"
+          >
+            <div className={cn("px-5 py-5 sm:px-6", contentClassName)}>{children}</div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </section>
   )
 }
