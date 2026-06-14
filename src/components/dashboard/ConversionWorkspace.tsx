@@ -152,6 +152,7 @@ type ConversionWorkspaceProps = {
   onContinueLatestJob?: () => void
   uploadedFiles: File[]
   workspaceId?: string
+  jobId?: string
   selectedCompanyId: string
   onSelectedCompanyIdChange: (companyId: string) => void
   filePreviewUrls: Record<number, string>
@@ -1517,6 +1518,7 @@ function ResultThumb({ file, preview, isTextOutput, compact = false }: { file: R
 }
 
 export function ResultActions({
+  jobId,
   resultFiles,
   isComplete,
   outputMode,
@@ -1552,6 +1554,7 @@ export function ResultActions({
   onPublishReceipt,
 }: Pick<
   ConversionWorkspaceProps,
+  | "jobId"
   | "resultFiles"
   | "isComplete"
   | "outputMode"
@@ -2211,6 +2214,13 @@ export function ResultActions({
                     file.document_id &&
                     !["ready", "published", "failed", "deleted"].includes(file.review_status || "")
                   )
+                  // Clicking a document opens the full-page review in a new tab
+                  // (an accountant-friendly Xero-style editor) rather than the
+                  // cramped in-place modal. Falls back to the modal only when the
+                  // durable document id / job id isn't available.
+                  const docHref = jobId && file.document_id
+                    ? `/dashboard/document?job=${jobId}&doc=${file.document_id}`
+                    : null
 
                   return (
                     <tr
@@ -2218,23 +2228,46 @@ export function ResultActions({
                       className="group h-12 bg-white transition-colors hover:bg-[#f8fbff]"
                     >
                       <td className={cn("border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", rowAccentClass(displayState, duplicateWarning))}>
-                        <button
-                          type="button"
-                          onClick={() => openComparison(index)}
-                          className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#1877F2] shadow-none transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] focus-visible:ring-2 focus-visible:ring-[#1877F2]/20"
-                          aria-label={`Open ${file.filename || summary.identity}`}
-                        >
-                          <Eye className="size-3.5" />
-                        </button>
+                        {docHref ? (
+                          <a
+                            href={docHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#1877F2] shadow-none transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] focus-visible:ring-2 focus-visible:ring-[#1877F2]/20"
+                            aria-label={`Open ${file.filename || summary.identity}`}
+                          >
+                            <Eye className="size-3.5" />
+                          </a>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => openComparison(index)}
+                            className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#1877F2] shadow-none transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] focus-visible:ring-2 focus-visible:ring-[#1877F2]/20"
+                            aria-label={`Open ${file.filename || summary.identity}`}
+                          >
+                            <Eye className="size-3.5" />
+                          </button>
+                        )}
                       </td>
                       <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
-                        <button
-                          type="button"
-                          onClick={() => openComparison(index)}
-                          className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[#0f5fcb]"
-                        >
-                          {file.filename || `Result ${index + 1}`}
-                        </button>
+                        {docHref ? (
+                          <a
+                            href={docHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[#0f5fcb]"
+                          >
+                            {file.filename || `Result ${index + 1}`}
+                          </a>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => openComparison(index)}
+                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[#0f5fcb]"
+                          >
+                            {file.filename || `Result ${index + 1}`}
+                          </button>
+                        )}
                         {isHandwrittenDocument(file) ? (
                           <span className="mt-1 inline-flex text-[11px] font-medium text-[#5b21b6]">Handwritten</span>
                         ) : null}
@@ -2284,6 +2317,15 @@ export function ResultActions({
                             >
                               Ready
                             </button>
+                          ) : docHref ? (
+                            <a
+                              href={docHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[#0f5fcb] shadow-none transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] focus-visible:ring-2 focus-visible:ring-[#1877F2]/20"
+                            >
+                              Open
+                            </a>
                           ) : (
                             <button
                               type="button"
@@ -3464,6 +3506,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     onContinueLatestJob,
     uploadedFiles,
     workspaceId,
+    jobId,
     selectedCompanyId,
     onSelectedCompanyIdChange,
     filePreviewUrls,
@@ -3608,12 +3651,8 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
               review content, so idle / staged / processing show the single
               BatchStagingBoard table above and never a second table beneath it. */}
           <div className={cn("space-y-4", hasResults ? "" : "hidden")}>
-            <AutoDetectionPanel
-              documents={classifiedDocuments}
-              overridingDocumentId={overridingDocumentId}
-              onOverrideDocumentMode={onOverrideDocumentMode}
-            />
             <ResultActions
+              jobId={jobId}
               resultFiles={resultFiles}
               isComplete={isComplete}
               outputMode={outputMode}
