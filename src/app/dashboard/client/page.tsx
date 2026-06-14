@@ -25,7 +25,6 @@ import { getApiErrorUi, showApiErrorToast, showBatchLimitToast } from "@/lib/api
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { WorkspaceFilesPanel } from "@/components/dashboard/WorkspaceFilesPanel"
-import { ProcessingStages } from "@/components/dashboard/ProcessingStages"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import {
@@ -1907,46 +1906,29 @@ Best regards`
                 totalFiles,
               )
               const progressValue = Math.min(100, Math.max(0, processingState.progress ?? 0))
-              const stageMessage = progress?.stage_message
-              const remainingFiles = Math.max(0, totalFiles - doneFiles)
-              const estimatedSeconds = remainingFiles * 5
-              const etaLabel = (() => {
-                if (progressValue >= 100 || remainingFiles === 0) return "Wrapping up…"
-                if (estimatedSeconds < 60) return `~${Math.max(5, estimatedSeconds)}s remaining`
-                const minutes = Math.ceil(estimatedSeconds / 60)
-                return `~${minutes} min remaining`
-              })()
               return (
                 <>
-                  <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-                    <p className="text-sm text-muted-foreground">
-                      {totalFiles > 0
-                        ? <>{stageMessage || "Processing"} <span className="font-semibold text-foreground tabular-nums">{doneFiles}</span> of <span className="font-semibold text-foreground tabular-nums">{totalFiles}</span> {totalFiles === 1 ? "file" : "files"}</>
-                        : "Processing your batch…"}
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-xs font-medium text-muted-foreground">
+                      <span className="text-foreground">Processing batch</span>
+                      {totalFiles > 0 ? (
+                        <span className="ml-2 tabular-nums">{doneFiles}/{totalFiles}</span>
+                      ) : null}
                     </p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground tabular-nums" aria-hidden="true">
-                        {etaLabel}
-                      </span>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => void handleCancelProcessing()}
-                        className="h-8 gap-1.5 px-3"
-                      >
-                        <X className="size-3.5" />
-                        Cancel
-                      </Button>
-                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => void handleCancelProcessing()}
+                      className="size-7 rounded-full text-muted-foreground hover:bg-red-50 hover:text-red-600"
+                      aria-label="Cancel processing"
+                      title="Cancel processing"
+                    >
+                      <X className="size-3.5" />
+                    </Button>
                   </div>
-                  <ProcessingStages
-                    progress={progressValue}
-                    isComplete={progressValue >= 100 || remainingFiles === 0}
-                    className="mt-3"
-                  />
-                  <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-muted">
+                  <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted">
                     <motion.div
-                      className="h-full rounded-full bg-gradient-to-r from-primary to-primary/60"
+                      className="h-full rounded-full bg-[var(--workspace-primary)]"
                       initial={false}
                       animate={{ width: `${progressValue}%` }}
                       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -1985,7 +1967,7 @@ Best regards`
         creditAvailable={creditAvailable}
         creditEstimate={creditEstimate}
         maxUploadFiles={maxUploadFiles}
-        processLabel={isProcessing && progress?.stage_message ? progress.stage_message : processLabel}
+        processLabel={processLabel}
         noCredits={noCredits || batchExceedsCredits}
         resultFiles={displayResultFiles}
         tablePreviewData={tablePreviewData}

@@ -10,21 +10,17 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ChevronUp,
   CreditCard,
   DollarSign,
   Download,
   Eye,
   FileImage,
-  FileSpreadsheet,
   FileText,
   FolderUp,
   Hash,
   Inbox,
-  Keyboard,
   Landmark,
   Languages,
-  Layers,
   ListChecks,
   Loader2,
   Percent,
@@ -44,22 +40,13 @@ import {
 import { Button, buttonVariants } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import { BankReconciliationPanel } from "@/components/dashboard/BankReconciliationPanel"
 import { ConfidenceDot, ConfidenceLegend } from "@/components/dashboard/ConfidenceDot"
 import { AnomalyChip, type AnomalyTone } from "@/components/dashboard/AnomalyChip"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
-import { SegmentedTabs } from "@/components/dashboard/SegmentedTabs"
 import { Field } from "@/components/dashboard/Field"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
-import { InboxSummaryStrip } from "@/components/dashboard/InboxSummaryStrip"
-import { FIELD_LABEL, workspaceStage } from "@/lib/review-vocab"
+import { FIELD_LABEL } from "@/lib/review-vocab"
 import { vatCheck } from "@/lib/bookkeeper-copy"
 import { Symbol } from "@/components/dashboard/Symbol"
 import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
@@ -68,8 +55,6 @@ import { SourceHighlightOverlay } from "@/components/dashboard/SourceHighlightOv
 import { ProgressiveUploadSheet } from "@/components/dashboard/upload/ProgressiveUploadSheet"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { useMotionTokens } from "@/lib/motion"
-import { duplicateCopy } from "@/lib/anomaly-reasons"
-import { buildCardSummary } from "@/lib/card-summary"
 import { fieldAttention } from "@/lib/field-attention"
 import { reconciliationTotalCopy } from "@/lib/source-highlight"
 import { getRowConfidenceTier, isHandwrittenDocument } from "@/lib/handwritten"
@@ -148,9 +133,9 @@ type ResultPreview = {
 }
 
 const workspacePrimaryControlClass =
-  "border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] text-white hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)] focus-visible:ring-[var(--workspace-primary)]/20"
+  "rounded-full border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] text-white shadow-none hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)] focus-visible:ring-[var(--workspace-primary)]/20"
 const workspaceNormalControlClass =
-  "border border-[var(--workspace-button-border)] bg-white text-[var(--workspace-ink)] hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] hover:text-[var(--workspace-primary)] focus-visible:ring-[var(--workspace-primary)]/20"
+  "rounded-full border border-[var(--workspace-button-border)] bg-white text-[var(--workspace-ink)] shadow-none hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] hover:text-[var(--workspace-primary)] focus-visible:ring-[var(--workspace-primary)]/20"
 const workspacePanelSurfaceClass =
   "border-[var(--workspace-border)] bg-[var(--workspace-soft)]"
 
@@ -1156,18 +1141,6 @@ function formatDocumentType(type?: string) {
   return labels[type || ""] || "Document"
 }
 
-// Maps a detected document type to the shared contextual vector symbol.
-const DOCUMENT_TYPE_SYMBOL: Record<string, string> = {
-  invoice: "invoice",
-  receipt: "receipt",
-  bank_statement: "bank-statement",
-  notes: "handwritten-note",
-  table: "spreadsheet",
-}
-function documentTypeSymbol(type?: string): string | undefined {
-  return DOCUMENT_TYPE_SYMBOL[type || ""]
-}
-
 function reviewData(file: ResultFile) {
   return file.reviewed_data && typeof file.reviewed_data === "object" ? file.reviewed_data : {}
 }
@@ -1228,6 +1201,113 @@ function resultSummary(file: ResultFile) {
     due: undefined,
     bookkeeper: undefined,
   }
+}
+
+function formatCellValue(value: unknown, fallback = "-") {
+  if (value === undefined || value === null || value === "") return fallback
+  return String(value)
+}
+
+function firstPresentValue(values: unknown[]) {
+  const found = values.find(value => value !== undefined && value !== null && value !== "")
+  return found === undefined ? "-" : String(found)
+}
+
+function resultReference(file: ResultFile) {
+  const data = reviewData(file)
+  return firstPresentValue([
+    data.invoice_number,
+    data.reference,
+    data.receipt_number,
+    data.payment_reference,
+    data.statement_number,
+    data.account_number,
+    data.document_id,
+    file.source_page ? `Page ${file.source_page}${file.source_page_count ? `/${file.source_page_count}` : ""}` : "",
+  ])
+}
+
+function resultDate(file: ResultFile) {
+  const data = reviewData(file)
+  return firstPresentValue([
+    data.invoice_date,
+    data.date,
+    data.receipt_date,
+    data.statement_date,
+    data.period_start,
+    data.start_date,
+  ])
+}
+
+function resultDueDate(file: ResultFile, summary: ReturnType<typeof resultSummary>) {
+  const data = reviewData(file)
+  return firstPresentValue([
+    summary.due,
+    data.due_date,
+    data.payment_due_date,
+    data.period_end,
+    data.end_date,
+  ])
+}
+
+function documentTypeToneClass(type?: string) {
+  const classes: Record<string, string> = {
+    invoice: "text-[#166534]",
+    receipt: "text-[#b45309]",
+    bank_statement: "text-[#0f5fcb]",
+    notes: "text-[#5b21b6]",
+    table: "text-[#0f766e]",
+  }
+  return classes[type || ""] || "text-[#475467]"
+}
+
+function statusChipClass(state: ReturnType<typeof getOutputBadge>["state"]) {
+  const classes: Record<ReturnType<typeof getOutputBadge>["state"], string> = {
+    failed: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]",
+    needs_review: "border-[#fed7aa] bg-[#fff7ed] text-[#92400e]",
+    ready: "border-[#bbf7d0] bg-[#ecfdf3] text-[#166534]",
+    published: "border-[#bfdbfe] bg-[#eff6ff] text-[#0f5fcb]",
+    edited: "border-[#ddd6fe] bg-[#f5f3ff] text-[#5b21b6]",
+  }
+  return classes[state]
+}
+
+function statusDotClass(state: ReturnType<typeof getOutputBadge>["state"]) {
+  const classes: Record<ReturnType<typeof getOutputBadge>["state"], string> = {
+    failed: "bg-[#ef4444]",
+    needs_review: "bg-[#f59e0b]",
+    ready: "bg-[#16a34a]",
+    published: "bg-[#1877F2]",
+    edited: "bg-[#7c3aed]",
+  }
+  return classes[state]
+}
+
+function rowAccentClass(state: ReturnType<typeof getOutputBadge>["state"], duplicateWarning?: DocumentDuplicateWarning) {
+  if (duplicateWarning) return "border-l-[#f59e0b]"
+  const classes: Record<ReturnType<typeof getOutputBadge>["state"], string> = {
+    failed: "border-l-[#ef4444]",
+    needs_review: "border-l-[#f59e0b]",
+    ready: "border-l-[#16a34a]",
+    published: "border-l-[#1877F2]",
+    edited: "border-l-[#7c3aed]",
+  }
+  return classes[state]
+}
+
+function resultIssue(
+  file: ResultFile,
+  badge: ReturnType<typeof getOutputBadge>,
+  reviewLevel: ReturnType<typeof deriveReviewLevel>,
+  duplicateWarning?: DocumentDuplicateWarning,
+) {
+  if (duplicateWarning) return { label: "Duplicate", className: "text-[#92400e]" }
+  if (badge.state === "failed") return { label: "Failed", className: "text-[#b42318]" }
+  if (reviewLevel.highValue) return { label: "High value", className: "text-[#92400e]" }
+  if (badge.state === "needs_review") return { label: "Needs review", className: "text-[#92400e]" }
+  if (badge.state === "published") return { label: "Published", className: "text-[#0f5fcb]" }
+  if (badge.state === "edited" || file.review_status === "edited") return { label: "Edited", className: "text-[#5b21b6]" }
+  return { label: "Clean", className: "text-[#166534]" }
 }
 
 type BookkeeperFigures = { currency?: any; subtotal?: any; vat?: any; total?: any }
@@ -1517,12 +1597,6 @@ export function ResultActions({
   const prefersReducedMotion = useReducedMotion()
   const [editedTables, setEditedTables] = useState<Record<string, any[][]>>({})
   const [resultFilter, setResultFilter] = useState<ResultFilter>("needs_review")
-  // C4 — clean/high-confidence cards collapse to a one-line summary; this set
-  // holds the keys of clean cards the reviewer has chosen to expand in place.
-  const [expandedClean, setExpandedClean] = useState<Record<string, true>>({})
-  // C5 — keyboard-first triage: the "?" shortcuts sheet + the "mark all ready"
-  // sweep over the collapsed clean pile.
-  const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const [bulkReadyBusy, setBulkReadyBusy] = useState(false)
   const [reviewedDownloadBusy, setReviewedDownloadBusy] = useState(false)
   const [vendorDrafts, setVendorDrafts] = useState<Record<string, VendorRuleFields>>({})
@@ -1688,29 +1762,25 @@ export function ResultActions({
     },
     { all: 0, needs_review: 0, ready: 0, edited: 0, failed: 0, published: 0 } as Record<ResultFilter, number>
   )
-  // C18 — the inbox strip's piles, bucketed by the shared bookkeeper lifecycle
-  // so the workspace counts read the same as the AP queue. Processing counts any
-  // file still in flight; everything else falls into needs you / ready / published.
-  const inboxCounts = resultEntries.reduce(
-    (counts, entry) => {
-      const raw = entry.file.review_status || entry.file.status
-      if (raw === "processing" || raw === "pending" || raw === "queued") {
-        counts.processing += 1
-        return counts
-      }
-      const stage = workspaceStage(entry.file.review_status)
-      if (stage === "ready") counts.ready += 1
-      else if (stage === "published") counts.published += 1
-      else if (stage === "needs_you" || stage === "failed") counts.needsYou += 1
-      return counts
-    },
-    { processing: 0, needsYou: 0, ready: 0, published: 0 },
-  )
+  const resultFilterTabs = ([
+    { value: "all", label: "All", count: filterCounts.all },
+    { value: "needs_review", label: "Needs review", count: filterCounts.needs_review },
+    { value: "ready", label: "Ready", count: filterCounts.ready },
+    { value: "edited", label: "Edited", count: filterCounts.edited },
+    { value: "published", label: "Published", count: filterCounts.published },
+    { value: "failed", label: "Failed", count: filterCounts.failed },
+  ] as Array<{ value: ResultFilter; label: string; count: number }>).filter((tab) => (
+    tab.value === "all" || tab.count > 0 || tab.value === resultFilter
+  ))
   const filteredResultEntries = resultEntries.filter((entry) => {
     if (resultFilter === "all") return true
     if (resultFilter === "edited") return entry.edited
     return entry.badge.state === resultFilter
   })
+  useEffect(() => {
+    if (!safeResultFiles.length || resultFilter === "all" || filteredResultEntries.length > 0) return
+    setResultFilter("all")
+  }, [filteredResultEntries.length, resultFilter, safeResultFiles.length])
   const navigableResultEntries = resultFilter === "all" ? resultEntries : filteredResultEntries
   const comparisonInCurrentFilter = comparisonIndex === null || navigableResultEntries.some(entry => entry.index === comparisonIndex)
   const canNavigateResults = navigableResultEntries.length > 1 || (!comparisonInCurrentFilter && navigableResultEntries.length > 0)
@@ -1919,15 +1989,6 @@ export function ResultActions({
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      // "?" opens the shortcuts sheet from anywhere in the review board.
-      if (event.key === "?" && !event.metaKey && !event.ctrlKey && !event.altKey) {
-        const tag = (event.target as HTMLElement | null)?.tagName
-        if (tag === "INPUT" || tag === "TEXTAREA" || (event.target as HTMLElement | null)?.isContentEditable) return
-        event.preventDefault()
-        setShortcutsOpen((prev) => !prev)
-        return
-      }
-
       // ⌘/Ctrl+Enter — confirm: mark the open document ready.
       if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
         if (comparisonCanMarkReady) {
@@ -1991,16 +2052,16 @@ export function ResultActions({
     <>
     <div className="space-y-2.5">
       {isComplete ? (
-        <div className={cn("sticky top-[4.5rem] z-20 flex flex-wrap items-center gap-3 rounded-md border p-2 backdrop-blur-xl", workspacePanelSurfaceClass)}>
+        <div className="flex flex-wrap items-center gap-2 rounded-[4px] border border-[#c8ced6] bg-white px-3 py-2 shadow-none">
           <Button
-            variant="ghost"
+            variant="surface"
             onClick={() => {
               setEditedTables({})
               setComparisonIndex(null)
               setEditingCell(null)
               onReset()
             }}
-            className="h-9 gap-2 px-3 text-foreground"
+            className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}
           >
             <RotateCcw className="h-4 w-4" />
             New batch
@@ -2015,22 +2076,22 @@ export function ResultActions({
             {unresolvedDuplicateCount > 0 ? "Resolve duplicates to export" : "Download reviewed batch"}
           </Button>
           {editedCount > 0 && !isTextOutput ? (
-            <span className="inline-flex h-9 items-center rounded-md border border-[var(--button-warm-ring)] bg-white px-3 text-xs font-semibold text-foreground">
+            <span className="inline-flex h-9 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#475467] shadow-none">
               {editedCount} edited
             </span>
           ) : null}
           <details className="group relative ml-auto">
-            <summary className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-9 cursor-pointer list-none gap-2 px-3 [&::-webkit-details-marker]:hidden")}>
+            <summary className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-9 cursor-pointer list-none gap-2 px-3 text-xs [&::-webkit-details-marker]:hidden", workspaceNormalControlClass)}>
               More actions
               <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
             </summary>
-             <div className={cn("absolute right-0 top-11 z-30 w-56 space-y-2 rounded-md border p-2", workspacePanelSurfaceClass)}>
+             <div className="absolute right-0 top-11 z-30 w-56 space-y-2 rounded-[4px] border border-[#c8ced6] bg-white p-2 shadow-none">
               {!isSaved ? (
                 <Button
                   onClick={onSaveToHistory}
                   disabled={isSaving}
                   variant="surface"
-                  className="h-9 w-full justify-start gap-2 px-3"
+                  className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspaceNormalControlClass)}
                 >
                   {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                   Save to history
@@ -2039,7 +2100,7 @@ export function ResultActions({
               <Button
                 variant="surface"
                 onClick={safeResultFiles.length > 1 ? onShareAll : () => firstResultFile && onShareFile(firstResultFile)}
-                className="h-9 w-full justify-start gap-2 px-3"
+                className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspaceNormalControlClass)}
               >
                 <Share2 className="h-4 w-4" />
                 Share
@@ -2049,7 +2110,7 @@ export function ResultActions({
                 <select
                   value={outputMode}
                   onChange={(event) => onOutputModeChange(event.target.value as OutputMode)}
-                  className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2 text-xs font-semibold text-foreground"
+                  className="mt-1 h-9 w-full rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#111827] shadow-none outline-none focus:border-[#1877F2] focus:ring-2 focus:ring-[#1877F2]/20"
                 >
                   {reviewedExportOptions.map(format => (
                     <option key={format.value} value={format.value}>{format.label}</option>
@@ -2060,7 +2121,7 @@ export function ResultActions({
                 <Button
                   variant="destructive"
                   onClick={() => void onDeleteBatch()}
-                  className="h-9 w-full justify-start gap-2 px-3"
+                  className="h-9 w-full justify-start gap-2 rounded-full border border-red-300 bg-white px-3 text-xs text-red-600 shadow-none hover:border-red-600 hover:bg-red-600 hover:text-white"
                 >
                   <Trash2 className="h-4 w-4" />
                   Delete batch
@@ -2072,471 +2133,182 @@ export function ResultActions({
       ) : null}
 
       <div className="pt-2">
-        <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="flex items-center gap-2 text-2xl font-bold tracking-tight text-foreground">
-              {/* P3 — raw symbol + brown step numeral matches the upload/processing
-                  boxes so the three phases read as one numbered flow. */}
-              <Symbol name="review-magnify" size="badge" className="-my-1" alt="" />
-              <span className="font-mono text-sm font-semibold tabular-nums text-[var(--brand-brown-fg)]">3</span>
-              Verify extraction <span className="text-base font-medium text-muted-foreground">{safeResultFiles.length}</span>
-            </p>
-          </div>
-        </div>
-        {/* C18 — a glanceable inbox strip: processing · needs you · ready ·
-            published. Clicking a pile jumps the board filter to match. */}
-        <InboxSummaryStrip
-          className="mb-4"
-          processing={inboxCounts.processing}
-          needsYou={inboxCounts.needsYou}
-          ready={inboxCounts.ready}
-          published={inboxCounts.published}
-          onSelect={(pile) => setResultFilter(pile === "needs_you" ? "needs_review" : pile)}
-        />
-
-        <div className="mb-4 flex flex-wrap items-center gap-3">
-          <SegmentedTabs
-            aria-label="Filter review board"
-            value={resultFilter === "edited" ? "all" : resultFilter}
-            onValueChange={(value) => setResultFilter(value as ResultFilter)}
-            tabs={[
-              { value: "needs_review", label: "Needs review", icon: <Eye />, count: filterCounts.needs_review },
-              { value: "ready", label: "Ready", icon: <Check />, count: filterCounts.ready },
-              { value: "published", label: "Published", icon: <ArrowRight />, count: filterCounts.published },
-              { value: "failed", label: "Failed", icon: <AlertCircle />, count: filterCounts.failed },
-              { value: "all", label: "All", icon: <Layers />, count: filterCounts.all },
-            ]}
-          />
-          {filterCounts.edited > 0 ? (
-            <button
-              type="button"
-              onClick={() => setResultFilter(resultFilter === "edited" ? "all" : "edited")}
-              className={cn(
-                "ax-interactive inline-flex h-9 cursor-pointer items-center gap-2 rounded-full px-4 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                resultFilter === "edited" ? workspacePrimaryControlClass : workspaceNormalControlClass,
-              )}
-            >
-              Edited
-              <span className={cn(
-                "inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1.5 text-[11px] font-semibold tabular-nums",
-                resultFilter === "edited" ? "bg-white/20 text-white" : "bg-[var(--button-warm)] text-foreground",
-              )}>
-                {filterCounts.edited}
-              </span>
-            </button>
-          ) : null}
-        </div>
-
-        {/* C5 — sweep the clean pile + a hint to the keyboard sheet. */}
-        <div className="mb-4 flex flex-wrap items-center gap-3">
-          {cleanReadyEntries.length ? (
-            <Button
-              type="button"
-              size="sm"
-              variant="surface"
-              onClick={() => void markAllCleanReady()}
-              disabled={bulkReadyBusy}
-              className="h-8 gap-2 rounded-md px-3.5 text-xs"
-            >
-              {bulkReadyBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ListChecks className="h-3.5 w-3.5" />}
-              Mark {cleanReadyEntries.length} clean ready
-            </Button>
-          ) : null}
-          <button
-            type="button"
-            onClick={() => setShortcutsOpen(true)}
-            className={cn("inline-flex h-8 cursor-pointer items-center gap-2 rounded-md px-3 text-xs font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background", workspaceNormalControlClass)}
-          >
-            <Keyboard className="h-3.5 w-3.5" />
-            Shortcuts
-            <kbd className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-md border border-black/15 bg-white px-1 font-sans text-[10px] font-semibold text-foreground">?</kbd>
-          </button>
-        </div>
-
-        <div className="grid gap-2">
-        {filteredResultEntries.length ? filteredResultEntries.map(({ file, index, fileKey, badge, edited, duplicateWarning }) => {
-          const preview = file.file_id ? resultPreviews?.[file.file_id] : undefined
-          const visiblePreview = edited ? { table: editedTables[fileKey] || [], text: preview?.text || "", loading: false } : preview
-          const compact = safeResultFiles.length > 1
-          const summary = resultSummary(file)
-          // C4 — clean, high-confidence documents collapse to a quiet one-line
-          // summary so attention lands on the risky pile. Click (or keyboard)
-          // expands the card in place; risky cards never collapse.
-          const reviewLevel = deriveReviewLevel(file, badge)
-          const collapsed = true
-          // C11 — shared at-a-glance line (identity · amount · due), used by both
-          // the collapsed clean summary below and the expanded card above so the
-          // two never drift. Verdict stays on the chip here for its "why" tooltip.
-          const cardLine = buildCardSummary({
-            identity: summary.identity,
-            amount: summary.amount,
-            dueDate: summary.due,
-          })
-          const cardDue = cardLine.parts.find((part) => part.key === "due")
-
-          if (collapsed) {
-            return (
-              <motion.div
-                key={file.file_id || index}
-                layout={prefersReducedMotion ? false : "position"}
-                role="button"
-                tabIndex={0}
-                onClick={() => openComparison(index)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault()
-                    openComparison(index)
-                  }
-                }}
-                className={cn(
-                  "group flex cursor-pointer flex-wrap items-center gap-x-3 gap-y-2 rounded-md border border-[var(--button-warm-ring)] bg-white px-3 py-3 text-sm outline-none transition-colors duration-200 hover:border-black hover:bg-[var(--button-warm)] focus-visible:ring-2 focus-visible:ring-black/20 sm:flex-nowrap",
-                  (badge.state === "needs_review" || badge.state === "failed") && "border-l-2 border-l-[var(--brand-brown-fg)]"
-                )}
-                aria-label={`${summary.identity} — ${reviewLevel.summaryLabel}, open review`}
-              >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-foreground text-[11px] font-bold text-background">
-                  {index + 1}
-                </span>
-                {documentTypeSymbol(file.document_type) ? (
-                  <Symbol name={documentTypeSymbol(file.document_type)!} size="inline" className="h-20 w-20 shrink-0 sm:h-24 sm:w-24" alt="" />
-                ) : null}
-                <span className="min-w-[180px] flex-1">
-                  <span className="block truncate font-semibold text-foreground">{file.filename || summary.identity}</span>
-                  <span className="mt-1 flex flex-wrap items-center gap-1.5">
-                    <span className="text-xs font-medium text-foreground">{formatDocumentType(file.document_type)}</span>
-                    {file.source_page ? (
-                      <span className="inline-flex h-[18px] items-center rounded-full border border-[var(--button-warm-ring)] bg-white px-1.5 text-[11px] font-semibold tabular-nums text-foreground">
-                        p.{file.source_page}{file.source_page_count ? `/${file.source_page_count}` : ""}
-                      </span>
-                    ) : null}
-                  </span>
-                </span>
-                {isHandwrittenDocument(file) ? <HandwrittenBadge /> : null}
-                <span className="hidden min-w-[120px] shrink-0 truncate text-xs font-semibold text-foreground lg:inline">
-                  {summary.identity}
-                </span>
-                <span className="min-w-[84px] shrink-0 text-right font-semibold tabular-nums text-foreground">
-                  {summary.amount}
-                </span>
-                {/* C16 — a compact Net+VAT=Total reconciliation chip on the collapsed
-                    row so a clean/mismatch verdict reads without expanding. */}
-                {(() => {
-                  const figures = summary.bookkeeper
-                  if (!figures) return null
-                  const check = vatCheck(figures.subtotal, figures.vat, figures.total)
-                  return (
-                    <AnomalyChip
-                      tone={check.tone === "good" ? "good" : "caution"}
-                      title={check.label}
-                      reason={check.detail}
-                      label={check.state === "ok" ? "✓ Adds up" : check.label}
-                      className="hidden h-5 shrink-0 md:inline-flex"
-                    />
-                  )
-                })()}
-                {cardDue ? (
-                  <span className="hidden min-w-[92px] shrink-0 text-xs text-muted-foreground xl:inline">
-                    {cardDue.text}
-                  </span>
-                ) : null}
-                <AnomalyChip
-                  tone={reviewLevel.tone}
-                  title={reviewLevel.summaryLabel}
-                  reason={duplicateWarning?.message || "Open the document to review the extracted fields beside the source."}
-                  label={reviewLevel.summaryLabel}
-                  className="shrink-0"
-                />
-                {duplicateWarning ? (
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="surface"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      void onOverrideDuplicateWarning?.(file, duplicateWarning.id)
-                    }}
-                    className="h-7 shrink-0 px-2.5 text-[11px]"
-                  >
-                    Keep separate
-                  </Button>
-                ) : null}
-                <span className="ml-auto inline-flex shrink-0 items-center text-muted-foreground">
-                  <span className="sr-only">Open review</span>
-                  <ChevronRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-                </span>
-              </motion.div>
-            )
-          }
-
-          return (
-            <motion.div
-              key={file.file_id || index}
-              layout={prefersReducedMotion ? false : "position"}
-              role="button"
-              tabIndex={0}
-              onClick={() => openComparison(index)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault()
-                  openComparison(index)
-                }
-              }}
-              className={cn(
-                "group cursor-pointer rounded-md border border-[var(--button-warm-ring)] bg-white p-3 outline-none transition-colors duration-200 hover:border-black hover:bg-[var(--button-warm)] focus-visible:ring-2 focus-visible:ring-black/20",
-                compact ? "min-h-[300px]" : "min-h-[375px]",
-                // Review-emphasis: a thin brown left rule makes the
-                // "needs you" pile lead the board at a glance.
-                (badge.state === "needs_review" || badge.state === "failed") &&
-                  "border-l-2 border-l-[var(--brand-brown-fg)]"
-              )}
-            >
-              {/* C11 — at-a-glance summary line: vendor · total · due · verdict,
-                  derived from already-extracted fields. The verdict reuses C4's
-                  review level (tone + label) so the line and badges agree; any
-                  missing piece is omitted by buildCardSummary, never blank. */}
-              {(() => {
-                const line = buildCardSummary({
-                  identity: summary.identity,
-                  amount: summary.amount,
-                  dueDate: summary.due,
-                  verdict: { tone: reviewLevel.tone, label: reviewLevel.summaryLabel },
-                })
+        <div className="overflow-hidden rounded-[4px] border border-[#c8ced6] bg-white shadow-none">
+          <div className="flex min-h-12 flex-col gap-2 border-b border-[#cfd4da] bg-white px-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-h-12 flex-wrap items-stretch gap-4">
+              {resultFilterTabs.map((tab) => {
+                const active = resultFilter === tab.value
                 return (
-                  <p className="mb-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] text-muted-foreground">
-                    {line.parts.map((part, partIndex) => (
-                      <span key={part.key} className="inline-flex items-center gap-1.5">
-                        {partIndex > 0 ? <span aria-hidden className="text-muted-foreground/40">·</span> : null}
-                        <span className={cn(part.key === "identity" && "font-semibold text-foreground")}>
-                          {part.text}
-                        </span>
-                      </span>
-                    ))}
-                    {line.verdict ? (
-                      <span className="inline-flex items-center gap-1.5">
-                        <span aria-hidden className="text-muted-foreground/40">·</span>
-                        <span
-                          className={cn(
-                            "font-semibold",
-                            line.verdict.tone === "good" && "text-[var(--status-success-fg)]",
-                            line.verdict.tone === "caution" && "text-amber-700",
-                            line.verdict.tone === "risk" && "text-rose-700",
-                          )}
-                        >
-                          {line.verdict.label}
-                        </span>
-                      </span>
-                    ) : null}
-                    {/* C14 — a soft "high value" cue on otherwise-clean invoices
-                        whose total clears the threshold. Caution (amber) tone,
-                        never rose: nothing is wrong, it just earns a second look. */}
-                    {reviewLevel.highValue ? (
-                      <AnomalyChip
-                        tone="caution"
-                        title="High value"
-                        reason="This total is high enough to be worth a second look — we've kept the full source evidence open."
-                        label="High value — worth a double-check"
-                        className="h-5 shrink-0"
-                      />
-                    ) : null}
-                  </p>
-                )
-              })()}
-              <div className="grid gap-3 lg:grid-cols-[minmax(180px,0.95fr)_minmax(0,1.05fr)]">
-                <div className="overflow-hidden rounded-md border border-border bg-white">
-                  {file.input_preview_url ? (
-                    <img
-                      src={file.input_preview_url}
-                      alt={`Input file ${index + 1}`}
-                      className={cn("h-full w-full object-contain", compact ? "min-h-[196px]" : "min-h-[255px]")}
-                    />
-                  ) : (
-                    <div className={cn("flex h-full items-center justify-center bg-[var(--button-warm)]", compact ? "min-h-[196px]" : "min-h-[255px]")}>
-                      <FileImage className="h-7 w-7 text-[var(--brand-brown-fg)]" />
-                    </div>
-                  )}
-                </div>
-                <ResultThumb file={file} preview={visiblePreview} isTextOutput={isTextOutput} compact={compact} />
-              </div>
-
-              <div className="mt-3 flex min-w-0 items-center justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-2">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-foreground text-[11px] font-bold text-background">
-                    {index + 1}
-                  </span>
-                  {isTextOutput ? <FileText className="h-5 w-5 shrink-0 text-[var(--brand-brown-fg)]" /> : <FileSpreadsheet className="h-5 w-5 shrink-0 text-[var(--brand-brown-fg)]" />}
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">{file.filename || `Result ${index + 1}`}</p>
-                    <p className="text-[13px] font-medium text-muted-foreground">
-                      {formatDocumentType(file.document_type)}
-                      {file.source_page ? ` - page ${file.source_page}${file.source_page_count ? ` of ${file.source_page_count}` : ""}` : ""}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex shrink-0 items-center gap-1.5">
-                  {isHandwrittenDocument(file) ? <HandwrittenBadge /> : null}
-                  <span className={cn("rounded-md border px-2 py-1 text-[10px] font-semibold", badge.className)}>
-                    {badge.label}
-                  </span>
-                  {edited && badge.state !== "edited" ? (
-                    <span className="rounded-md border border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-2 py-1 text-[10px] font-semibold text-[var(--brand-brown-fg)]">
-                      Edited
-                    </span>
-                  ) : null}
-                  {reviewLevel.clean ? (
-                    <button
-                      type="button"
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        setExpandedClean(prev => {
-                          const next = { ...prev }
-                          delete next[fileKey]
-                          return next
-                        })
-                      }}
-                      className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-black bg-white text-black transition-colors hover:bg-black hover:text-white"
-                      aria-label="Collapse clean summary"
-                    >
-                      <ChevronUp className="h-3.5 w-3.5" />
-                    </button>
-                  ) : null}
-                </div>
-              </div>
-              <div className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-[13px]">
-                <div className="min-w-0">
-                  <p className="text-[13px] font-medium text-muted-foreground">{summary.identityLabel}</p>
-                  <p className="mt-1 truncate text-[15px] font-semibold text-foreground">{summary.identity}</p>
-                </div>
-                <div className="min-w-0 text-right">
-                  <p className="text-[13px] font-medium text-muted-foreground">{summary.amountLabel}</p>
-                  <p className="mt-1 truncate text-[15px] font-semibold text-foreground">{summary.amount}</p>
-                </div>
-              </div>
-              {/* C16 — Net / VAT / Total + reconciliation verdict for invoices and
-                  receipts, so the card speaks bookkeeper before you even open it. */}
-              {summary.bookkeeper ? (
-                <div className="mt-3 border-t border-border pt-3">
-                  <BookkeeperBreakdown figures={summary.bookkeeper} layout="grid" />
-                </div>
-              ) : null}
-
-              {duplicateWarning ? (
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                  <span className="flex min-w-0 items-center gap-2">
-                    <Symbol name="duplicate" size="inline" className="h-12 w-12 shrink-0 sm:h-14 sm:w-14" alt="" />
-                    <span className="truncate font-medium">{duplicateWarning.message}</span>
-                    {(() => {
-                      const copy = duplicateCopy(duplicateWarning)
-                      return (
-                        <AnomalyChip
-                          tone={copy.tone}
-                          title={copy.title}
-                          reason={copy.reason}
-                          label="Why"
-                          className="h-5 shrink-0 bg-white/70"
-                        />
-                      )
-                    })()}
-                  </span>
-                  <Button
+                  <button
+                    key={tab.value}
                     type="button"
-                    size="sm"
-                    variant="surface"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      void onOverrideDuplicateWarning?.(file, duplicateWarning.id)
-                    }}
-                    className="h-7 px-2.5 text-[11px]"
+                    onClick={() => setResultFilter(tab.value)}
+                    className={cn(
+                      "ax-interactive relative inline-flex h-12 items-center gap-1.5 border-b-2 px-0 text-[13px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#1877F2]/20",
+                      active
+                        ? "border-[#1877F2] text-[#0f5fcb]"
+                        : "border-transparent text-[#475467] hover:text-[#111827]",
+                    )}
                   >
-                    Keep separate
-                  </Button>
-                </div>
-              ) : null}
-
-              <div className="mt-3 flex justify-end gap-3">
-                {file.document_id && onDeleteDocument ? (
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      void onDeleteDocument(file)
-                    }}
-                    className="h-8 px-2.5 text-xs"
-                    aria-label="Delete stored document"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                ) : null}
-                <InvoiceDraftBillAction
-                  file={file}
-                  onSendToAccountsPayable={onSendToAccountsPayable}
-                  stopPropagation
-                  className="h-8 px-3 text-xs"
-                />
-                {file.document_id && !["ready", "published", "failed", "deleted"].includes(file.review_status || "") ? (
-                  <Button
-                    size="sm"
-                    variant="surface"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      void onMarkDocumentReady?.(file)
-                    }}
-                    className="h-8 px-3 text-xs"
-                    title="Confirms extracted fields only"
-                  >
-                    Mark ready
-                  </Button>
-                ) : null}
-                {file.file_id ? (
-                  <InlineAction
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      onShareFile(file)
-                    }}
-                    className="h-8 px-1 text-xs"
-                  >
-                    <Share2 className="h-3.5 w-3.5" />
-                    Share
-                  </InlineAction>
-                ) : null}
-                {file.file_id || file.document_id ? (
-                  <InlineAction
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      onDownloadFile(file, index)
-                    }}
-                    className="h-8 px-1 text-xs"
-                  >
-                    <Download className="h-3.5 w-3.5" />
-                    Download
-                  </InlineAction>
-                ) : null}
-              </div>
-            </motion.div>
-          )
-        }) : (
-          <div className="flex min-h-[360px] flex-col items-center justify-center px-6 py-12 text-center">
-            <Symbol
-              name="firstsight-review-empty"
-              size="hero"
-              className="mx-auto mb-6 h-56 w-56 sm:h-72 sm:w-72"
-              alt=""
-            />
-            <p className="text-lg font-semibold text-foreground">Nothing to review in this view</p>
-            <p className="mt-1.5 max-w-sm text-sm font-semibold text-foreground">
-              This filter is clear — your full batch is still right here.
-            </p>
-            <Button
-              type="button"
-              size="sm"
-              variant="surface"
-              onClick={() => setResultFilter("all")}
-              className="mt-5 h-9 rounded-md px-4 text-xs"
-            >
-              Show all files
-            </Button>
+                    <span>{tab.label}</span>
+                    {tab.count > 0 ? <span className="tabular-nums text-[#667085]">{tab.count}</span> : null}
+                  </button>
+                )
+              })}
+            </div>
+            {cleanReadyEntries.length ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="surface"
+                onClick={() => void markAllCleanReady()}
+                disabled={bulkReadyBusy}
+                className={cn("h-8 gap-1.5 px-3 text-xs", workspaceNormalControlClass)}
+              >
+                {bulkReadyBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ListChecks className="h-3.5 w-3.5" />}
+                Mark clean ready
+              </Button>
+            ) : null}
           </div>
-        )}
+
+          <div className="flex min-h-10 items-center justify-between gap-3 border-b border-[#d9dde3] bg-[#f6f7fb] px-4 py-2 text-[12px] text-[#475467]">
+            <span className="font-semibold text-[#344054]">Review results</span>
+            <span className="tabular-nums">
+              {filteredResultEntries.length}/{filterCounts.all} shown
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[1120px] border-separate border-spacing-0 text-left text-[13px] text-[#111827]">
+              <thead className="bg-[#f8f9fa] text-[11px] font-semibold uppercase text-[#475467]">
+                <tr>
+                  <th className="w-14 border-b border-[#cfd4d9] px-3 py-2.5">View</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Document</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Type</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Status</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">From</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Reference</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Date</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Due date</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5 text-right">Total</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Issue</th>
+                  <th className="w-28 border-b border-[#cfd4d9] px-3 py-2.5 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredResultEntries.length ? filteredResultEntries.map(({ file, index, fileKey, badge, edited, duplicateWarning }) => {
+                  const summary = resultSummary(file)
+                  const displayState = edited && !["failed", "published"].includes(badge.state) ? "edited" as const : badge.state
+                  const statusLabel = displayState === "edited" ? "Edited" : badge.label
+                  const reviewLevel = deriveReviewLevel(file, badge)
+                  const issue = resultIssue(file, badge, reviewLevel, duplicateWarning)
+                  const canMarkReady = Boolean(
+                    file.document_id &&
+                    !["ready", "published", "failed", "deleted"].includes(file.review_status || "")
+                  )
+
+                  return (
+                    <tr
+                      key={fileKey}
+                      className="group h-12 bg-white transition-colors hover:bg-[#f8fbff]"
+                    >
+                      <td className={cn("border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", rowAccentClass(displayState, duplicateWarning))}>
+                        <button
+                          type="button"
+                          onClick={() => openComparison(index)}
+                          className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#1877F2] shadow-none transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] focus-visible:ring-2 focus-visible:ring-[#1877F2]/20"
+                          aria-label={`Open ${file.filename || summary.identity}`}
+                        >
+                          <Eye className="size-3.5" />
+                        </button>
+                      </td>
+                      <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                        <button
+                          type="button"
+                          onClick={() => openComparison(index)}
+                          className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[#0f5fcb]"
+                        >
+                          {file.filename || `Result ${index + 1}`}
+                        </button>
+                        {isHandwrittenDocument(file) ? (
+                          <span className="mt-1 inline-flex text-[11px] font-medium text-[#5b21b6]">Handwritten</span>
+                        ) : null}
+                      </td>
+                      <td className={cn("border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold", documentTypeToneClass(file.document_type))}>
+                        {formatDocumentType(file.document_type)}
+                      </td>
+                      <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                        <span className={cn("inline-flex h-5 items-center gap-1.5 rounded-full border px-2 text-[11px] font-semibold", statusChipClass(displayState))}>
+                          <span className={cn("size-1.5 rounded-full", statusDotClass(displayState))} />
+                          {statusLabel}
+                        </span>
+                      </td>
+                      <td className="max-w-[180px] border-b border-[#e4e7ef] px-3 py-2 align-middle font-medium text-[#111827]">
+                        <span className="block truncate">{formatCellValue(summary.identity)}</span>
+                      </td>
+                      <td className="max-w-[150px] border-b border-[#e4e7ef] px-3 py-2 align-middle text-[#475467]">
+                        <span className="block truncate">{resultReference(file)}</span>
+                      </td>
+                      <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle text-[#475467] tabular-nums">
+                        {resultDate(file)}
+                      </td>
+                      <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle text-[#475467] tabular-nums">
+                        {resultDueDate(file, summary)}
+                      </td>
+                      <td className="border-b border-[#e4e7ef] px-3 py-2 text-right align-middle font-semibold tabular-nums text-[#111827]">
+                        {formatCellValue(summary.amount)}
+                      </td>
+                      <td className={cn("border-b border-[#e4e7ef] px-3 py-2 align-middle text-[12px] font-semibold", issue.className)}>
+                        {issue.label}
+                      </td>
+                      <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                        <div className="flex justify-end gap-1.5">
+                          {duplicateWarning ? (
+                            <button
+                              type="button"
+                              onClick={() => void onOverrideDuplicateWarning?.(file, duplicateWarning.id)}
+                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#fed7aa] bg-[#fff7ed] px-2.5 text-[11px] font-semibold text-[#92400e] shadow-none transition-colors hover:border-[#f59e0b] hover:bg-[#ffedd5] focus-visible:ring-2 focus-visible:ring-[#f59e0b]/20"
+                            >
+                              Separate
+                            </button>
+                          ) : canMarkReady ? (
+                            <button
+                              type="button"
+                              onClick={() => void onMarkDocumentReady?.(file)}
+                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#bbf7d0] bg-[#ecfdf3] px-2.5 text-[11px] font-semibold text-[#166534] shadow-none transition-colors hover:border-[#16a34a] hover:bg-[#dcfce7] focus-visible:ring-2 focus-visible:ring-[#16a34a]/20"
+                            >
+                              Ready
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => openComparison(index)}
+                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[#0f5fcb] shadow-none transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] focus-visible:ring-2 focus-visible:ring-[#1877F2]/20"
+                            >
+                              Open
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                }) : (
+                  <tr>
+                    <td colSpan={11} className="border-b border-[#e4e7ef] px-4 py-8 text-center text-[13px] font-medium text-[#475467]">
+                      <span>No documents in this view.</span>
+                      <button
+                        type="button"
+                        onClick={() => setResultFilter("all")}
+                        className="ml-3 inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-[11px] font-semibold text-[#0f5fcb] shadow-none hover:border-[#1877F2] hover:bg-[#eff6ff]"
+                      >
+                        Show all
+                      </button>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -3247,46 +3019,8 @@ export function ResultActions({
         </div>
       ) : null}
 
-      {/* C5 — keyboard shortcuts sheet ("?"). Lists the review-board triage keys
-          wired above; reuses the shadcn Dialog + kbd pattern from HelpMenu. */}
-      <Dialog open={shortcutsOpen} onOpenChange={setShortcutsOpen}>
-        <DialogContent className="rounded-2xl sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Keyboard className="size-4 text-muted-foreground" />
-              Review shortcuts
-            </DialogTitle>
-            <DialogDescription>
-              Triage the review board without leaving the keyboard.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-1.5">
-            {([
-              [["J"], "Next document"],
-              [["K"], "Previous document"],
-              [["A"], "Confirm extraction / mark ready"],
-              [["E"], "Edit first flagged field"],
-              [["P"], "Publish receipt"],
-              [["⌘", "↵"], "Confirm extraction / mark ready"],
-              [["?"], "Open this sheet"],
-            ] as Array<[string[], string]>).map(([keys, label]) => (
-              <div key={label} className="flex items-center justify-between gap-3">
-                <span className="text-[13px] text-foreground">{label}</span>
-                <span className="flex shrink-0 items-center gap-1">
-                  {keys.map((k, i) => (
-                    <kbd
-                      key={i}
-                      className="inline-flex h-6 min-w-[1.5rem] items-center justify-center rounded-md border border-[var(--button-warm-ring)] bg-white px-1.5 font-sans text-[11px] font-semibold text-foreground"
-                    >
-                      {k}
-                    </kbd>
-                  ))}
-                </span>
-              </div>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
+
+
     </>
   )
 }
@@ -3475,26 +3209,11 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
                 ) : null}
               </WorkspaceSection>
 
-              {/* P2 — step 2: a calm "we're reading the batch" box, only while a
-                  batch is in flight, so processing reads as its own step. */}
-              {isProcessing ? (
-                <WorkspaceSection
-                  step="2"
-                  symbol="processing-gears"
-                  tone="active"
-                  title="Reading your documents"
-                >
-                  <div className="flex items-center gap-3 text-sm font-medium text-muted-foreground">
-                    <Loader2 className="size-4 animate-spin text-[var(--brand-brown-fg)]" />
-                    {processLabel || "Processing documents..."}
-                  </div>
-                </WorkspaceSection>
-              ) : null}
             </div>
           ) : null}
 
           {/* P3 — step 3: the verify-extraction board. ResultActions carries its
-              own "Verify extraction" header, so this wrapper stays header-light. */}
+              own compact review results table, so this wrapper stays header-light. */}
           <div className="space-y-4">
             <AutoDetectionPanel
               documents={classifiedDocuments}
