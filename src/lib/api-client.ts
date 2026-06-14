@@ -246,6 +246,8 @@ export interface JobProgress {
   processed_images: number
   current_image?: string
   percentage: number
+  stage?: string
+  stage_message?: string
 }
 
 export interface ProcessedFile {

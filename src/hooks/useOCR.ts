@@ -22,7 +22,7 @@ interface UseOCRReturn {
   uploadProgress: number
   jobId: string | null
   status: string | null
-  progress: { total_images: number; processed_images: number; percentage: number } | null
+  progress: { total_images: number; processed_images: number; percentage: number; stage?: string; stage_message?: string } | null
   files: any[] | null
   error: string | null
   isSaved: boolean
@@ -342,7 +342,9 @@ export function useOCR(): UseOCRReturn {
             setProgress({
               total_images: data.total_images,
               processed_images: data.processed_images,
-              percentage: data.progress || Math.round((data.processed_images / data.total_images) * 100)
+              percentage: data.progress || Math.round((data.processed_images / data.total_images) * 100),
+              stage: data.stage,
+              stage_message: data.stage_message,
             })
           }
         }

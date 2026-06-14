@@ -424,17 +424,19 @@ export function ProcessImagesContent({ documentMode = "auto" }: { documentMode?:
 
   // Save state to context when it changes
   useEffect(() => {
-    if (resultFiles && (resultFiles.length > 0 || isProcessing)) {
-      updateState({
-        processedFiles: resultFiles,
-        status: status === 'completed' ? 'completed' : isProcessing ? 'processing' : 'idle',
-        jobId,
-        progress: typeof progress?.percentage === "number" ? progress.percentage : isUploading ? uploadProgress : status === 'completed' ? 100 : 0,
-        processingComplete: status === 'completed',
-        uploadedFiles: [] // Don't save File objects
-      })
-    }
-  }, [resultFiles, isProcessing, status, jobId, progress?.percentage, isUploading, uploadProgress, updateState])
+    const hasFiles = Boolean(resultFiles && resultFiles.length > 0)
+    const completed = status === 'completed' || status === 'partially_completed'
+    if (!hasFiles && !isProcessing && !isUploading && !completed) return
+
+    updateState({
+      processedFiles: resultFiles || [],
+      status: completed ? 'completed' : isProcessing || isUploading ? 'processing' : 'idle',
+      jobId,
+      progress: typeof progress?.percentage === "number" ? progress.percentage : isUploading ? uploadProgress : completed ? 100 : 0,
+      processingComplete: completed,
+      uploadedFiles: []
+    })
+  }, [resultFiles, isProcessing, status, jobId, progress?.percentage, progress?.stage, progress?.stage_message, isUploading, uploadProgress, updateState])
 
   // Persist auto-download setting to localStorage
   useEffect(() => {
@@ -1849,7 +1851,8 @@ Best regards`
     }))
   })
   const visibleResultFiles = durableResultFiles.length ? durableResultFiles : resultFiles
-  const isComplete = status === 'completed' && Boolean(
+  const isSuccessfulTerminal = status === 'completed' || status === 'partially_completed'
+  const isComplete = isSuccessfulTerminal && Boolean(
     (visibleResultFiles && visibleResultFiles.length > 0)
     || (activeDocumentMode === "auto" && jobDocuments.length > 0)
   )
@@ -1983,11 +1986,12 @@ Best regards`
                 processingState.processedFiles?.length ?? 0,
                 totalFiles,
               )
-              const progress = Math.min(100, Math.max(0, processingState.progress ?? 0))
+              const progressValue = Math.min(100, Math.max(0, processingState.progress ?? 0))
+              const stageMessage = progress?.stage_message
               const remainingFiles = Math.max(0, totalFiles - doneFiles)
               const estimatedSeconds = remainingFiles * 5
               const etaLabel = (() => {
-                if (progress >= 100 || remainingFiles === 0) return "Wrapping up…"
+                if (progressValue >= 100 || remainingFiles === 0) return "Wrapping up…"
                 if (estimatedSeconds < 60) return `~${Math.max(5, estimatedSeconds)}s remaining`
                 const minutes = Math.ceil(estimatedSeconds / 60)
                 return `~${minutes} min remaining`
@@ -1997,7 +2001,7 @@ Best regards`
                   <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
                     <p className="text-sm text-muted-foreground">
                       {totalFiles > 0
-                        ? <>Processing <span className="font-semibold text-foreground tabular-nums">{doneFiles}</span> of <span className="font-semibold text-foreground tabular-nums">{totalFiles}</span> {totalFiles === 1 ? "file" : "files"}</>
+                        ? <>{stageMessage || "Processing"} <span className="font-semibold text-foreground tabular-nums">{doneFiles}</span> of <span className="font-semibold text-foreground tabular-nums">{totalFiles}</span> {totalFiles === 1 ? "file" : "files"}</>
                         : "Processing your batch…"}
                     </p>
                     <div className="flex items-center gap-2">
@@ -2016,17 +2020,17 @@ Best regards`
                     </div>
                   </div>
                   <ProcessingStages
-                    progress={progress}
-                    isComplete={progress >= 100 || remainingFiles === 0}
+                    progress={progressValue}
+                    isComplete={progressValue >= 100 || remainingFiles === 0}
                     className="mt-3"
                   />
                   <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-muted">
                     <motion.div
                       className="h-full rounded-full bg-gradient-to-r from-primary to-primary/60"
                       initial={false}
-                      animate={{ width: `${progress}%` }}
+                      animate={{ width: `${progressValue}%` }}
                       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                      aria-valuenow={progress}
+                      aria-valuenow={progressValue}
                       aria-valuemin={0}
                       aria-valuemax={100}
                       role="progressbar"
@@ -2065,7 +2069,7 @@ Best regards`
         creditAvailable={creditAvailable}
         creditEstimate={creditEstimate}
         maxUploadFiles={maxUploadFiles}
-        processLabel={processLabel}
+        processLabel={isProcessing && progress?.stage_message ? progress.stage_message : processLabel}
         noCredits={noCredits || batchExceedsCredits}
         resultFiles={displayResultFiles}
         tablePreviewData={tablePreviewData}
