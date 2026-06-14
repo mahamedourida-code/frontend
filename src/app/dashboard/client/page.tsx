@@ -1951,7 +1951,7 @@ Best regards`
         onContinueLatestJob={continueLatestJob}
         uploadedFiles={uploadedFiles}
         workspaceId={activeWorkspace?.id}
-        jobId={jobId}
+        jobId={jobId ?? undefined}
         selectedCompanyId={selectedCompanyId}
         onSelectedCompanyIdChange={setSelectedCompanyId}
         filePreviewUrls={filePreviewUrls}
