@@ -52,6 +52,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { PublishSuccessBurst } from "@/components/dashboard/PublishSuccessBurst"
 import { PublishConfirmation, type PublishConfirmationState } from "@/components/dashboard/PublishConfirmation"
 import { SpotlightCard } from "@/components/dashboard/SpotlightCard"
+import { PriorityBoard, type PrioritySegmentKey } from "@/components/dashboard/accounts-payable/PriorityBoard"
 import {
   Dialog,
   DialogContent,
@@ -501,6 +502,14 @@ function AccountsPayableContent() {
     [selectedReadyItems],
   )
 
+  // Topic 8 — which priority segment the queue is currently focused on. The
+  // three lead segments map 1:1 to the primary queue filters; "more" filters
+  // (duplicates / missing info / failed / discarded) leave no segment lit.
+  const activeSegment: PrioritySegmentKey | null =
+    filter === "needs_attention" || filter === "ready_to_publish" || filter === "published"
+      ? filter
+      : null
+
   // C10 — "Missing information" derived per item (no due date, no VAT where
   // expected, no total, unreadable field). Pure derivation over draft_data;
   // drives the filter chip count and the per-row "Missing info" chip.
@@ -923,41 +932,58 @@ function AccountsPayableContent() {
           ) : undefined}
         />
 
-        {/* Status row — accounting connection + optional client filter, as
-            colored badges. No prose; the badge color carries the state. */}
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
-          <div className="flex flex-wrap items-center gap-2">
-            {accountingConnectionLoading ? (
-              <StatusBadge tone="processing">{destinationName} · checking</StatusBadge>
-            ) : accountingConnection?.connected ? (
-              <StatusBadge tone="success">
-                {accountingConnection.company_name || destinationName}
-              </StatusBadge>
-            ) : (
-              <StatusBadge tone="warning">{destinationName} · setup required</StatusBadge>
-            )}
-            {clientId ? (
-              <StatusBadge tone="info">
-                {clientName || "Client"}
-                {clientJobIds ? ` · ${visibleItems.length}` : ""}
-              </StatusBadge>
-            ) : null}
-          </div>
-          <div className="flex items-center gap-4">
-            {clientId ? (
-              <InlineAction onClick={() => router.push("/dashboard/accounts-payable")}>
-                Clear filter
-              </InlineAction>
-            ) : null}
-            {accountingConnection?.connected ? (
-              <InlineAction onClick={() => void loadAccountingDestination(true)} disabled={syncingReferences}>
-                {syncingReferences ? "Refreshing..." : "Refresh lists"}
-              </InlineAction>
-            ) : null}
-            <InlineAction onClick={() => router.push("/dashboard/integrations")}>
-              Manage integration
+        {/* Topic 8 — lead with a calm priority summary so a busy accountant
+            instantly sees "what do I do next". Three plain-English segments
+            (Needs attention first, then Ready to publish, then Published) over
+            the counts the page already computes; the compact connected chip for
+            QuickBooks OR Xero rides in the header instead of a heavy panel. The
+            queue + power editor below stay exactly as they were. */}
+        <PriorityBoard
+          needsAttention={counts.needs_coding + counts.needs_review}
+          ready={counts.ready_to_publish}
+          published={counts.published}
+          duplicates={duplicateCount}
+          missingInfo={missingInfoCount}
+          activeSegment={activeSegment}
+          onSelectSegment={(key) => setFilter(key)}
+          selectedCount={selectedReadyIds.length}
+          destinationChip={
+            <>
+              {accountingConnectionLoading ? (
+                <StatusBadge tone="processing">{destinationName} · checking</StatusBadge>
+              ) : accountingConnection?.connected ? (
+                <StatusBadge tone="success">
+                  {accountingConnection.company_name || destinationName}
+                </StatusBadge>
+              ) : (
+                <StatusBadge tone="warning">{destinationName} · setup required</StatusBadge>
+              )}
+              {clientId ? (
+                <StatusBadge tone="info">
+                  {clientName || "Client"}
+                  {clientJobIds ? ` · ${visibleItems.length}` : ""}
+                </StatusBadge>
+              ) : null}
+            </>
+          }
+        />
+
+        {/* Quieter secondary actions — destination plumbing is reachable but no
+            longer competes with the queue. */}
+        <div className="flex flex-wrap items-center justify-end gap-4">
+          {clientId ? (
+            <InlineAction onClick={() => router.push("/dashboard/accounts-payable")}>
+              Clear filter
             </InlineAction>
-          </div>
+          ) : null}
+          {accountingConnection?.connected ? (
+            <InlineAction onClick={() => void loadAccountingDestination(true)} disabled={syncingReferences}>
+              {syncingReferences ? "Refreshing..." : "Refresh lists"}
+            </InlineAction>
+          ) : null}
+          <InlineAction onClick={() => router.push("/dashboard/integrations")}>
+            Manage integration
+          </InlineAction>
         </div>
 
         <div className="space-y-6">
