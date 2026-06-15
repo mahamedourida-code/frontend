@@ -232,18 +232,20 @@ const folderPanelMediaClass =
 
 function FolderDropVideo() {
   return (
-    <video
-      className="block w-full rounded-2xl"
-      aria-label="AxLiner folder upload walkthrough"
-      autoPlay
-      loop
-      muted
-      playsInline
-      preload="metadata"
-    >
-      <source src="/landing/folder-drop.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
+    <div className="overflow-hidden rounded-2xl">
+      <video
+        className="block w-full origin-center scale-y-[1.04]"
+        aria-label="AxLiner folder upload walkthrough"
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="metadata"
+      >
+        <source src="/landing/folder-drop.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
   );
 }
 
