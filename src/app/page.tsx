@@ -232,42 +232,18 @@ const folderPanelMediaClass =
 
 function FolderDropVideo() {
   return (
-    <div className="relative">
-      <div
-        aria-hidden="true"
-        className="absolute -inset-5 rounded-[3rem] bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,0.95),transparent_35%),linear-gradient(135deg,rgba(169,132,103,0.20),rgba(209,250,229,0.22))] blur-2xl"
-      />
-      <div className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-white p-2 shadow-[0_34px_100px_-45px_rgba(0,0,0,0.5)] sm:p-3 lg:rounded-[2.5rem] lg:p-4">
-        <div className="overflow-hidden rounded-[1.5rem] bg-[#fbf7f1] ring-1 ring-black/10 lg:rounded-[2rem]">
-          <div className="flex h-11 items-center justify-between border-b border-black/10 bg-white/80 px-4">
-            <div className="flex items-center gap-1.5">
-              <span className="size-2.5 rounded-full bg-[#ff5f57]" />
-              <span className="size-2.5 rounded-full bg-[#febc2e]" />
-              <span className="size-2.5 rounded-full bg-[#28c840]" />
-            </div>
-            <p className="text-xs font-bold uppercase tracking-normal text-neutral-500">
-              Batch intake
-            </p>
-            <span className="h-2.5 w-12 rounded-full bg-neutral-200" />
-          </div>
-          <div className="relative aspect-video overflow-hidden bg-[#f8f3ec]">
-            <video
-              className="h-full w-full object-contain"
-              aria-label="AxLiner folder upload walkthrough"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="metadata"
-            >
-              <source src="/landing/folder-drop.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-            <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-black/5" />
-          </div>
-        </div>
-      </div>
-    </div>
+    <video
+      className="block w-full rounded-2xl"
+      aria-label="AxLiner folder upload walkthrough"
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="metadata"
+    >
+      <source src="/landing/folder-drop.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
   );
 }
 
