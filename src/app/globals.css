@@ -494,10 +494,10 @@
   --workspace-topbar: #23384a;
   --workspace-topbar-hover: #2c465d;
   --workspace-sidebar: #f4f5fb;
-  --workspace-sidebar-active: #3b82f6;
-  --workspace-primary: #1877F2;
-  --workspace-primary-hover: #0b5fcc;
-  --workspace-blue-soft: #eff6ff;
+  --workspace-sidebar-active: #A98467;
+  --workspace-primary: #A98467;
+  --workspace-primary-hover: #8a6a52;
+  --workspace-blue-soft: #f3ece2;
   --workspace-success: #16a34a;
   --workspace-success-hover: #15803d;
   --workspace-danger: #dc2626;
@@ -510,7 +510,7 @@
   --workspace-soft: #f7f8fc;
   --workspace-border: #e4e7ef;
   --workspace-button-border: #d0d5dd;
-  --workspace-row-hover: #f8fbff;
+  --workspace-row-hover: #faf6f0;
   --workspace-table-header: #f6f7fb;
   --workspace-table-head: #475467;
   --brand-brown: #A98467;

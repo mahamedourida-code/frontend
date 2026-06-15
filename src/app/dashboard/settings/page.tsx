@@ -72,7 +72,7 @@ const accountingSubPanel =
   "rounded-lg border border-slate-200 bg-slate-50/80 shadow-none dark:border-slate-800 dark:bg-slate-900/40"
 
 const accountingPrimaryButton =
-  "!border-[#1877F2] !bg-[#1877F2] !text-white !shadow-none hover:!bg-[#0f6be3] focus-visible:!ring-[#1877F2]/30"
+  "!border-[#A98467] !bg-[#A98467] !text-white !shadow-none hover:!bg-[#8a6a52] focus-visible:!ring-[#A98467]/30"
 
 function SettingsFallback() {
   return <DashboardRouteLoader label="Loading settings" />
@@ -531,7 +531,7 @@ function SettingsContent() {
                           )}
                         >
                           {isActive && (
-                            <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-[#1877F2]" />
+                            <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-[#A98467]" />
                           )}
                           <Icon className={cn("h-4 w-4 shrink-0", isActive && "text-[var(--workspace-primary)]")} />
                           <span>{item.label}</span>
@@ -666,7 +666,7 @@ function SettingsContent() {
                 <WorkspaceSection
                   title={billingLoading ? "Loading plan" : `${formatPlan(billingStatus?.plan)} workspace`}
                   icon={<CreditCard />}
-                  actions={<BillingSeal className="h-7 w-7 shrink-0 text-[#1877F2]" />}
+                  actions={<BillingSeal className="h-7 w-7 shrink-0 text-[#A98467]" />}
                   contentClassName="space-y-4"
                 >
                   <div className="divide-y divide-border">
@@ -693,7 +693,7 @@ function SettingsContent() {
                   <div className={cn("p-4", softPanel)}>
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <CreditStack className="h-6 w-6 shrink-0 text-[#1877F2]" />
+                        <CreditStack className="h-6 w-6 shrink-0 text-[#A98467]" />
                         <div>
                           <p className="text-sm font-semibold text-foreground">Credits</p>
                           <p className="text-xs font-medium text-foreground">{creditAvailable} available of {creditTotal}</p>
@@ -702,12 +702,12 @@ function SettingsContent() {
                       {noCredits ? (
                         <StatusBadge tone="error">No credits left</StatusBadge>
                       ) : (
-                        <p className="text-sm font-semibold text-[#1877F2]">{creditUsed} used</p>
+                        <p className="text-sm font-semibold text-[#A98467]">{creditUsed} used</p>
                       )}
                     </div>
                     <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted">
                       <div
-                        className="h-full rounded-full bg-[#1877F2] transition-all"
+                        className="h-full rounded-full bg-[#A98467] transition-all"
                         style={{ width: `${creditPercent}%` }}
                       />
                     </div>
@@ -747,7 +747,7 @@ function SettingsContent() {
                         </span>
                         <span className="mt-1 block text-xs font-medium text-foreground">{plan.included_volume}</span>
                       </span>
-                      <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#1877F2]" />
+                      <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#A98467]" />
                     </button>
                   ))}
 
@@ -915,8 +915,8 @@ function SettingsContent() {
                 <Card className={cn(accountingPanel, "overflow-hidden")}>
                   <CardHeader className="p-5 sm:p-6">
                     <div className="flex items-start gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40">
-                        <DownloadCloud className="h-5 w-5 text-[#1877F2]" />
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#f3ece2] dark:bg-blue-950/40">
+                        <DownloadCloud className="h-5 w-5 text-[#A98467]" />
                       </div>
                       <div>
                         <CardTitle className="text-lg font-medium">Accounting connections</CardTitle>
@@ -941,8 +941,8 @@ function SettingsContent() {
                 <Card className={cn(accountingPanel, "overflow-hidden")}>
                   <CardHeader className="p-5 sm:p-6">
                     <div className="flex items-start gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40">
-                        <FileSpreadsheet className="h-5 w-5 text-[#1877F2]" />
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#f3ece2] dark:bg-blue-950/40">
+                        <FileSpreadsheet className="h-5 w-5 text-[#A98467]" />
                       </div>
                       <div>
                         <CardTitle className="text-lg font-medium">Purchase order import</CardTitle>
@@ -971,7 +971,7 @@ function SettingsContent() {
                           onChange={(event) => setPoCsv(event.target.value)}
                           placeholder={"po_number,vendor,date,total,remaining,currency\nPO-1001,Acme Ltd,2026-05-01,1200.00,1200.00,USD"}
                           rows={7}
-                          className="w-full rounded-lg border border-slate-200 bg-white p-3 font-mono text-xs outline-none transition focus:border-[#1877F2]/40 focus:ring-2 focus:ring-[#1877F2]/15 dark:border-slate-800 dark:bg-slate-950"
+                          className="w-full rounded-lg border border-slate-200 bg-white p-3 font-mono text-xs outline-none transition focus:border-[#A98467]/40 focus:ring-2 focus:ring-[#A98467]/15 dark:border-slate-800 dark:bg-slate-950"
                         />
                         <div className="flex justify-end border-t border-border pt-4">
                           <Button
@@ -999,8 +999,8 @@ function SettingsContent() {
                 <Card className={accountingPanel}>
                   <CardHeader className="p-5">
                     <div className="flex items-center gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40">
-                        <Settings2 className="h-5 w-5 text-[#1877F2]" />
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#f3ece2] dark:bg-blue-950/40">
+                        <Settings2 className="h-5 w-5 text-[#A98467]" />
                       </div>
                       <div>
                         <CardTitle className="font-medium">Processing Settings</CardTitle>
@@ -1089,8 +1089,8 @@ function SettingsContent() {
                 <Card className={accountingPanel}>
                   <CardHeader className="p-5">
                     <div className="flex items-center gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40">
-                        <Languages className="h-5 w-5 text-[#1877F2]" />
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#f3ece2] dark:bg-blue-950/40">
+                        <Languages className="h-5 w-5 text-[#A98467]" />
                       </div>
                       <div>
                         <CardTitle className="font-medium">OCR Detection Language</CardTitle>

@@ -44,7 +44,7 @@ import {
 import { cn } from "@/lib/utils"
 
 const workspacePrimaryButton =
-  "!rounded-full !border-[#1877F2] !bg-[#1877F2] !text-white !shadow-none hover:!border-[#0f63d6] hover:!bg-[#0f63d6] hover:!text-white"
+  "!rounded-full !border-[#A98467] !bg-[#A98467] !text-white !shadow-none hover:!border-[#8a6a52] hover:!bg-[#8a6a52] hover:!text-white"
 
 // The shared ui Table cells/rows, wrapped so the existing stagger /
 // AnimatePresence / layout animations still play on every row.
@@ -638,7 +638,7 @@ export default function EmailInboxPage() {
                   <div key={provider} className="rounded-md border border-border bg-[#f8fafc] p-4">
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5">
-                        <span className="inline-flex size-9 items-center justify-center rounded-md bg-[#eff6ff] text-[#1877F2]">
+                        <span className="inline-flex size-9 items-center justify-center rounded-md bg-[#eff6ff] text-[#A98467]">
                           {provider === "google_drive" ? <FolderInput className="size-4.5" /> : <Cloud className="size-4.5" />}
                         </span>
                         <div>
@@ -696,7 +696,7 @@ export default function EmailInboxPage() {
                         </div>
                         <div className="mt-3 flex items-center justify-between gap-3">
                           <span className="inline-flex items-center gap-1.5 text-xs text-black">
-                            <Clock className="size-3.5 text-[#1877F2]" />
+                            <Clock className="size-3.5 text-[#A98467]" />
                             {source.last_synced_at ? formatReceivedAt(source.last_synced_at) : "Never synced"}
                           </span>
                           <div className="flex items-center gap-4">

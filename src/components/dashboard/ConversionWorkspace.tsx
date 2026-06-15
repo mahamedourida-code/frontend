@@ -1260,7 +1260,7 @@ function documentTypeToneClass(type?: string) {
   const classes: Record<string, string> = {
     invoice: "text-[#166534]",
     receipt: "text-[#b45309]",
-    bank_statement: "text-[#0f5fcb]",
+    bank_statement: "text-[#8a6a52]",
     notes: "text-[#5b21b6]",
     table: "text-[#0f766e]",
   }
@@ -1272,7 +1272,7 @@ function statusChipClass(state: ReturnType<typeof getOutputBadge>["state"]) {
     failed: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]",
     needs_review: "border-[#fed7aa] bg-[#fff7ed] text-[#92400e]",
     ready: "border-[#bbf7d0] bg-[#ecfdf3] text-[#166534]",
-    published: "border-[#bfdbfe] bg-[#eff6ff] text-[#0f5fcb]",
+    published: "border-[#e3d4c2] bg-[#f3ece2] text-[#8a6a52]",
     edited: "border-[#ddd6fe] bg-[#f5f3ff] text-[#5b21b6]",
   }
   return classes[state]
@@ -1283,7 +1283,7 @@ function statusDotClass(state: ReturnType<typeof getOutputBadge>["state"]) {
     failed: "bg-[#ef4444]",
     needs_review: "bg-[#f59e0b]",
     ready: "bg-[#16a34a]",
-    published: "bg-[#1877F2]",
+    published: "bg-[#A98467]",
     edited: "bg-[#7c3aed]",
   }
   return classes[state]
@@ -1295,7 +1295,7 @@ function rowAccentClass(state: ReturnType<typeof getOutputBadge>["state"], dupli
     failed: "border-l-[#ef4444]",
     needs_review: "border-l-[#f59e0b]",
     ready: "border-l-[#16a34a]",
-    published: "border-l-[#1877F2]",
+    published: "border-l-[#A98467]",
     edited: "border-l-[#7c3aed]",
   }
   return classes[state]
@@ -1311,7 +1311,7 @@ function resultIssue(
   if (badge.state === "failed") return { label: "Failed", className: "text-[#b42318]" }
   if (reviewLevel.highValue) return { label: "High value", className: "text-[#92400e]" }
   if (badge.state === "needs_review") return { label: "Needs review", className: "text-[#92400e]" }
-  if (badge.state === "published") return { label: "Published", className: "text-[#0f5fcb]" }
+  if (badge.state === "published") return { label: "Published", className: "text-[#8a6a52]" }
   if (badge.state === "edited" || file.review_status === "edited") return { label: "Edited", className: "text-[#5b21b6]" }
   return { label: "Clean", className: "text-[#166534]" }
 }
@@ -2118,7 +2118,7 @@ export function ResultActions({
                 <select
                   value={outputMode}
                   onChange={(event) => onOutputModeChange(event.target.value as OutputMode)}
-                  className="mt-1 h-9 w-full rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#111827] shadow-none outline-none focus:border-[#1877F2] focus:ring-2 focus:ring-[#1877F2]/20"
+                  className="mt-1 h-9 w-full rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#111827] shadow-none outline-none focus:border-[#A98467] focus:ring-2 focus:ring-[#A98467]/20"
                 >
                   {reviewedExportOptions.map(format => (
                     <option key={format.value} value={format.value}>{format.label}</option>
@@ -2152,9 +2152,9 @@ export function ResultActions({
                     type="button"
                     onClick={() => setResultFilter(tab.value)}
                     className={cn(
-                      "ax-interactive relative inline-flex h-12 items-center gap-1.5 border-b-2 px-0 text-[13px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#1877F2]/20",
+                      "ax-interactive relative inline-flex h-12 items-center gap-1.5 border-b-2 px-0 text-[13px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#A98467]/20",
                       active
-                        ? "border-[#1877F2] text-[#0f5fcb]"
+                        ? "border-[#A98467] text-[#8a6a52]"
                         : "border-transparent text-[#475467] hover:text-[#111827]",
                     )}
                   >
@@ -2225,7 +2225,7 @@ export function ResultActions({
                   return (
                     <tr
                       key={fileKey}
-                      className="group h-12 bg-white transition-colors hover:bg-[#f8fbff]"
+                      className="group h-12 bg-white transition-colors hover:bg-[#faf6f0]"
                     >
                       <td className={cn("border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", rowAccentClass(displayState, duplicateWarning))}>
                         {docHref ? (
@@ -2233,7 +2233,7 @@ export function ResultActions({
                             href={docHref}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#1877F2] shadow-none transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] focus-visible:ring-2 focus-visible:ring-[#1877F2]/20"
+                            className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#A98467] shadow-none transition-colors hover:border-[#A98467] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[#A98467]/20"
                             aria-label={`Open ${file.filename || summary.identity}`}
                           >
                             <Eye className="size-3.5" />
@@ -2242,7 +2242,7 @@ export function ResultActions({
                           <button
                             type="button"
                             onClick={() => openComparison(index)}
-                            className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#1877F2] shadow-none transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] focus-visible:ring-2 focus-visible:ring-[#1877F2]/20"
+                            className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#A98467] shadow-none transition-colors hover:border-[#A98467] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[#A98467]/20"
                             aria-label={`Open ${file.filename || summary.identity}`}
                           >
                             <Eye className="size-3.5" />
@@ -2255,7 +2255,7 @@ export function ResultActions({
                             href={docHref}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[#0f5fcb]"
+                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[#8a6a52]"
                           >
                             {file.filename || `Result ${index + 1}`}
                           </a>
@@ -2263,7 +2263,7 @@ export function ResultActions({
                           <button
                             type="button"
                             onClick={() => openComparison(index)}
-                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[#0f5fcb]"
+                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[#8a6a52]"
                           >
                             {file.filename || `Result ${index + 1}`}
                           </button>
@@ -2322,7 +2322,7 @@ export function ResultActions({
                               href={docHref}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[#0f5fcb] shadow-none transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] focus-visible:ring-2 focus-visible:ring-[#1877F2]/20"
+                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[#8a6a52] shadow-none transition-colors hover:border-[#A98467] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[#A98467]/20"
                             >
                               Open
                             </a>
@@ -2330,7 +2330,7 @@ export function ResultActions({
                             <button
                               type="button"
                               onClick={() => openComparison(index)}
-                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[#0f5fcb] shadow-none transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] focus-visible:ring-2 focus-visible:ring-[#1877F2]/20"
+                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[#8a6a52] shadow-none transition-colors hover:border-[#A98467] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[#A98467]/20"
                             >
                               Open
                             </button>
@@ -2346,7 +2346,7 @@ export function ResultActions({
                       <button
                         type="button"
                         onClick={() => setResultFilter("all")}
-                        className="ml-3 inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-[11px] font-semibold text-[#0f5fcb] shadow-none hover:border-[#1877F2] hover:bg-[#eff6ff]"
+                        className="ml-3 inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-[11px] font-semibold text-[#8a6a52] shadow-none hover:border-[#A98467] hover:bg-[#f3ece2]"
                       >
                         Show all
                       </button>
@@ -2930,7 +2930,7 @@ export function ResultActions({
                           </thead>
                           <tbody>
                             {comparisonRows.rows.map((row, rowIndex) => (
-                              <tr key={rowIndex} className="bg-white transition-colors hover:bg-[#f8fbff]">
+                              <tr key={rowIndex} className="bg-white transition-colors hover:bg-[#faf6f0]">
                                 {comparisonHandwritten ? (
                                   <td className="border-b border-[#eef1f6] px-2 py-1.5 text-center align-middle">
                                     <ConfidenceDot tier={getRowConfidenceTier(comparisonFile, rowIndex + 1)} size={8} withRing />
@@ -2961,7 +2961,7 @@ export function ResultActions({
                                           )
                                         }
                                       }}
-                                      className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-[13px] text-[#111827] outline-none focus:border-[#1877F2] focus:bg-white focus:ring-2 focus:ring-[#1877F2]/20"
+                                      className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-[13px] text-[#111827] outline-none focus:border-[#A98467] focus:bg-white focus:ring-2 focus:ring-[#A98467]/20"
                                     />
                                   </td>
                                   )
@@ -3048,7 +3048,7 @@ export function ResultActions({
                         const isHandwrittenRow = isHandwrittenDocument(comparisonFile) && rowIndex > 0
                         const rowTier = isHandwrittenRow ? getRowConfidenceTier(comparisonFile, rowIndex) : null
                         return (
-                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-[#f8f9fa] font-semibold" : "bg-white transition-colors hover:bg-[#f8fbff]"}>
+                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-[#f8f9fa] font-semibold" : "bg-white transition-colors hover:bg-[#faf6f0]"}>
                           {isHandwrittenDocument(comparisonFile) ? (
                             <td
                               className={cn(
@@ -3098,7 +3098,7 @@ export function ResultActions({
                                         event.currentTarget.blur()
                                       }
                                     }}
-                                    className="ax-interactive w-full rounded-md border border-[#1877F2] bg-white px-2 py-1 text-[13px] text-[#111827] outline-none ring-2 ring-[#1877F2]/20"
+                                    className="ax-interactive w-full rounded-md border border-[#A98467] bg-white px-2 py-1 text-[13px] text-[#111827] outline-none ring-2 ring-[#A98467]/20"
                                   />
                                 ) : (
                                   <span className={cn(!value && "text-[#98a2b3]")}>
@@ -3159,7 +3159,7 @@ function normalizeRecentFiles(response: any): RecentBatchFile[] {
 
 function recentStatusChip(status: string): { label: string; chip: string; dot: string } {
   if (["processing", "pending", "queued"].includes(status))
-    return { label: "Processing", chip: "border-[#bfdbfe] bg-[#eff6ff] text-[#0f5fcb]", dot: "bg-[#1877F2]" }
+    return { label: "Processing", chip: "border-[#e3d4c2] bg-[#f3ece2] text-[#8a6a52]", dot: "bg-[#A98467]" }
   if (["failed", "error"].includes(status))
     return { label: "Failed", chip: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]", dot: "bg-[#ef4444]" }
   if (status === "requires_review")
@@ -3248,7 +3248,7 @@ function BatchStagingBoard({
     <div className="space-y-2.5">
       <div className="flex flex-wrap items-center gap-2 rounded-[4px] border border-[#c8ced6] bg-white px-3 py-2 shadow-none">
         {mode === "processing" ? (
-          <span className="inline-flex h-9 items-center gap-2 rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-3 text-xs font-semibold text-[#0f5fcb]">
+          <span className="inline-flex h-9 items-center gap-2 rounded-full border border-[#e3d4c2] bg-[#f3ece2] px-3 text-xs font-semibold text-[#8a6a52]">
             <Loader2 className="h-4 w-4 animate-spin" />
             Reading {stagedCount} document{stagedCount === 1 ? "" : "s"} — extracting fields…
           </span>
@@ -3313,7 +3313,7 @@ function BatchStagingBoard({
         <div className="overflow-hidden rounded-[4px] border border-[#c8ced6] bg-white shadow-none">
           <div className="flex min-h-12 flex-col gap-2 border-b border-[#cfd4da] bg-white px-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-h-12 flex-wrap items-stretch gap-4">
-              <span className="relative inline-flex h-12 items-center gap-1.5 border-b-2 border-[#1877F2] px-0 text-[13px] font-semibold text-[#0f5fcb]">
+              <span className="relative inline-flex h-12 items-center gap-1.5 border-b-2 border-[#A98467] px-0 text-[13px] font-semibold text-[#8a6a52]">
                 <span>{tabLabel}</span>
                 {rowCount > 0 ? <span className="tabular-nums text-[#667085]">{rowCount}</span> : null}
               </span>
@@ -3354,11 +3354,11 @@ function BatchStagingBoard({
                     recent.map((file) => {
                       const st = recentStatusChip(file.status)
                       return (
-                        <tr key={file.id} className="group h-12 bg-white transition-colors hover:bg-[#f8fbff]">
+                        <tr key={file.id} className="group h-12 bg-white transition-colors hover:bg-[#faf6f0]">
                           <td className="border-b border-l-[3px] border-b-[#e4e7ef] border-l-transparent px-3 py-2 align-middle">
                             <Link
                               href={`/dashboard/client?job_id=${file.id}`}
-                              className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#1877F2] shadow-none transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] focus-visible:ring-2 focus-visible:ring-[#1877F2]/20"
+                              className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#A98467] shadow-none transition-colors hover:border-[#A98467] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[#A98467]/20"
                               aria-label={`Open ${file.filename}`}
                             >
                               <Eye className="size-3.5" />
@@ -3367,7 +3367,7 @@ function BatchStagingBoard({
                           <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             <Link
                               href={`/dashboard/client?job_id=${file.id}`}
-                              className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[#0f5fcb]"
+                              className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[#8a6a52]"
                             >
                               {file.filename}
                             </Link>
@@ -3391,7 +3391,7 @@ function BatchStagingBoard({
                             <div className="flex justify-end">
                               <Link
                                 href={`/dashboard/client?job_id=${file.id}`}
-                                className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[#0f5fcb] shadow-none transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] focus-visible:ring-2 focus-visible:ring-[#1877F2]/20"
+                                className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[#8a6a52] shadow-none transition-colors hover:border-[#A98467] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[#A98467]/20"
                               >
                                 Open
                               </Link>
@@ -3407,7 +3407,7 @@ function BatchStagingBoard({
                         <button
                           type="button"
                           onClick={onOpenUpload}
-                          className="ml-3 inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-[11px] font-semibold text-[#0f5fcb] shadow-none hover:border-[#1877F2] hover:bg-[#eff6ff]"
+                          className="ml-3 inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-[11px] font-semibold text-[#8a6a52] shadow-none hover:border-[#A98467] hover:bg-[#f3ece2]"
                         >
                           Upload your first batch
                         </button>
@@ -3428,11 +3428,11 @@ function BatchStagingBoard({
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0 }}
                           transition={m.tFast}
-                          className="group h-12 bg-white transition-colors hover:bg-[#f8fbff]"
+                          className="group h-12 bg-white transition-colors hover:bg-[#faf6f0]"
                         >
-                          <td className={cn("border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", processing ? "border-l-[#1877F2]" : "border-l-transparent")}>
+                          <td className={cn("border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", processing ? "border-l-[#A98467]" : "border-l-transparent")}>
                             <span className="inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#94a3b8]">
-                              {processing ? <Loader2 className="size-3.5 animate-spin text-[#1877F2]" /> : pdf ? <FileText className="size-3.5" /> : <FileImage className="size-3.5" />}
+                              {processing ? <Loader2 className="size-3.5 animate-spin text-[#A98467]" /> : pdf ? <FileText className="size-3.5" /> : <FileImage className="size-3.5" />}
                             </span>
                           </td>
                           <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
@@ -3441,11 +3441,11 @@ function BatchStagingBoard({
                               {pdf ? `${pageCount ? `${pageCount} page${pageCount === 1 ? "" : "s"}` : "PDF"} · ` : ""}{formatBytes(file.size)}
                             </span>
                           </td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#0f5fcb]">Auto-detect</td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#8a6a52]">Auto-detect</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             {processing ? (
-                              <span className="inline-flex h-5 items-center gap-1.5 rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-2 text-[11px] font-semibold text-[#0f5fcb]">
-                                <span className="size-1.5 animate-pulse rounded-full bg-[#1877F2]" />
+                              <span className="inline-flex h-5 items-center gap-1.5 rounded-full border border-[#e3d4c2] bg-[#f3ece2] px-2 text-[11px] font-semibold text-[#8a6a52]">
+                                <span className="size-1.5 animate-pulse rounded-full bg-[#A98467]" />
                                 Processing
                               </span>
                             ) : (
@@ -3462,7 +3462,7 @@ function BatchStagingBoard({
                           <td className="border-b border-[#e4e7ef] px-3 py-2 text-right align-middle">{dash}</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             {processing ? (
-                              <span className="text-[12px] font-semibold text-[#0f5fcb]">Reading…</span>
+                              <span className="text-[12px] font-semibold text-[#8a6a52]">Reading…</span>
                             ) : (
                               dash
                             )}
@@ -3470,7 +3470,7 @@ function BatchStagingBoard({
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             <div className="flex justify-end">
                               {processing ? (
-                                <Loader2 className="h-4 w-4 animate-spin text-[#1877F2]" />
+                                <Loader2 className="h-4 w-4 animate-spin text-[#A98467]" />
                               ) : (
                                 <button
                                   type="button"
