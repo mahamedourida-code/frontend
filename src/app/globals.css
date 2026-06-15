@@ -509,6 +509,15 @@
   --workspace-warning-hover: #b45309;
   --workspace-purple: #7c3aed;
   --workspace-purple-hover: #6d28d9;
+  /* Semantic data tokens — extracted values are colour-coded by meaning, like
+     syntax highlighting on a white page. One hue per category, reused everywhere
+     that category of value appears across the workspace (table, comparison panel,
+     AP queue, history). Each is dark enough to clear AA contrast on white. */
+  --data-entity: #3730a3;     /* indigo — names: vendor / merchant / account / customer */
+  --data-reference: #7c3aed;  /* violet — reference & document numbers (invoice no., ref) */
+  --data-date: #0e7490;       /* cyan — dates (issue / statement / period) */
+  --data-due: #b45309;        /* amber — due dates & deadlines (time-sensitive) */
+  --data-money: #047857;      /* emerald — amounts, totals, balances (money) */
   /* Default text-button / link blue — the utility colour (Refresh, Sync, View…). */
   --workspace-blue: #1877F2;
   --workspace-blue-hover: #0b5fcc;

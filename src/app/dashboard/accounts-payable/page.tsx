@@ -1153,20 +1153,20 @@ function AccountsPayableContent() {
                             </td>
                             <td className="max-w-[240px] px-4 py-3">
                               <div className="flex items-center gap-2">
-                                <span className="truncate font-normal text-slate-950">{item.draft_data.vendor || "Supplier missing"}</span>
+                                <span className="truncate font-semibold text-[var(--data-entity)]">{item.draft_data.vendor || "Supplier missing"}</span>
                                 {hasDuplicate ? <span className="size-1.5 shrink-0 rounded-full bg-amber-500" title="Possible duplicate" /> : null}
                                 {missing?.missing ? <span className="size-1.5 shrink-0 rounded-full bg-rose-500" title="Missing information" /> : null}
                               </div>
                             </td>
-                            <td className="px-4 py-3 font-mono tabular-nums text-slate-900">{ledgerValue(item.draft_data.invoice_number)}</td>
-                            <td className="px-4 py-3 tabular-nums">{shortDate(item.draft_data.invoice_date)}</td>
-                            <td className="px-4 py-3 tabular-nums">{shortDate(item.draft_data.due_date)}</td>
+                            <td className="px-4 py-3 font-mono font-medium tabular-nums text-[var(--data-reference)]">{ledgerValue(item.draft_data.invoice_number)}</td>
+                            <td className="px-4 py-3 font-medium tabular-nums text-[var(--data-date)]">{shortDate(item.draft_data.invoice_date)}</td>
+                            <td className="px-4 py-3 font-medium tabular-nums text-[var(--data-due)]">{shortDate(item.draft_data.due_date)}</td>
                             <td className="max-w-[200px] truncate px-4 py-3">{ledgerValue(item.draft_data.account_category)}</td>
                             <td className="max-w-[132px] truncate px-4 py-3">{ledgerValue(item.draft_data.tax_code)}</td>
                             <td className="px-4 py-3 font-mono">{ledgerValue(item.draft_data.currency)}</td>
                             <td className="px-4 py-3 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.subtotal)}</td>
                             <td className="px-4 py-3 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.tax_amount)}</td>
-                            <td className="px-4 py-3 text-right font-mono font-normal tabular-nums text-slate-950">{ledgerValue(item.draft_data.total)}</td>
+                            <td className="px-4 py-3 text-right font-mono font-bold tabular-nums text-[var(--data-money)]">{ledgerValue(item.draft_data.total)}</td>
                             <td className="px-4 py-3">
                               <AnimatePresence mode="popLayout" initial={false}>
                                 <motion.span
@@ -1204,7 +1204,7 @@ function AccountsPayableContent() {
                 <div className="space-y-5">
                   <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
                     <div className="min-w-0">
-                      <h2 className="text-[19px] font-medium tracking-tight text-slate-950">{draft.vendor || "Vendor missing"}</h2>
+                      <h2 className="text-[19px] font-semibold tracking-tight text-[var(--data-entity)]">{draft.vendor || "Vendor missing"}</h2>
                       <p className="mt-1 break-all text-[13px] text-foreground">{activeItem.source_filename}</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">

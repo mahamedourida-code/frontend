@@ -282,8 +282,8 @@ export function ResultThumb({ file, preview, isTextOutput, compact = false }: { 
         <div className="grid grid-cols-2 border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-3 py-2 text-[11px] font-semibold text-foreground">
           <span className="truncate">{summary.identityLabel}</span>
           <span className="text-right">{summary.amountLabel}</span>
-          <span className="truncate text-sm font-semibold text-foreground">{summary.identity}</span>
-          <span className="text-right text-sm font-semibold text-foreground">{summary.amount}</span>
+          <span className="truncate text-sm font-semibold text-[var(--data-entity)]">{summary.identity}</span>
+          <span className="text-right text-sm font-bold text-[var(--data-money)]">{summary.amount}</span>
         </div>
         <div className="grid grid-cols-3 bg-foreground px-2 py-1.5 text-[10px] font-medium text-background">
           {structured.columns.slice(0, 3).map(column => <span key={column} className="truncate px-1">{column}</span>)}

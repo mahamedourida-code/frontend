@@ -1541,19 +1541,19 @@ export function ResultActions({
                           {statusLabel}
                         </span>
                       </td>
-                      <td className="max-w-[180px] border-b border-[#e4e7ef] px-3 py-2 align-middle font-medium text-[#111827]">
+                      <td className="max-w-[180px] border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[var(--data-entity)]">
                         <span className="block truncate">{formatCellValue(summary.identity)}</span>
                       </td>
-                      <td className="max-w-[150px] border-b border-[#e4e7ef] px-3 py-2 align-middle text-[#475467]">
+                      <td className="max-w-[150px] border-b border-[#e4e7ef] px-3 py-2 align-middle font-medium text-[var(--data-reference)]">
                         <span className="block truncate">{resultReference(file)}</span>
                       </td>
-                      <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle text-[#475467] tabular-nums">
+                      <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-medium text-[var(--data-date)] tabular-nums">
                         {resultDate(file)}
                       </td>
-                      <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle text-[#475467] tabular-nums">
+                      <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-medium text-[var(--data-due)] tabular-nums">
                         {resultDueDate(file, summary)}
                       </td>
-                      <td className="border-b border-[#e4e7ef] px-3 py-2 text-right align-middle font-semibold tabular-nums text-[#111827]">
+                      <td className="border-b border-[#e4e7ef] px-3 py-2 text-right align-middle font-bold tabular-nums text-[var(--data-money)]">
                         {formatCellValue(summary.amount)}
                       </td>
                       <td className={cn("border-b border-[#e4e7ef] px-3 py-2 align-middle text-[12px] font-semibold", issue.className)}>
@@ -1982,7 +1982,7 @@ export function ResultActions({
                               </span>
                             ) : null}
                           </div>
-                          <p className="mt-1.5 truncate text-[15px] font-bold tracking-tight text-[#111827]">
+                          <p className="mt-1.5 truncate text-[15px] font-bold tracking-tight text-[var(--data-entity)]">
                             {comparisonSummary?.identity || comparisonFile.filename || "Document"}
                           </p>
                           {comparisonSummary?.identityLabel ? (
@@ -1992,7 +1992,7 @@ export function ResultActions({
                         {comparisonSummary?.amount && comparisonSummary.amount !== "-" ? (
                           <div className="shrink-0 text-right">
                             <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#475467]">{comparisonSummary.amountLabel || "Total"}</p>
-                            <p className="mt-0.5 text-2xl font-bold tabular-nums text-[#111827]">{comparisonSummary.amount}</p>
+                            <p className="mt-0.5 text-2xl font-bold tabular-nums text-[var(--data-money)]">{comparisonSummary.amount}</p>
                           </div>
                         ) : null}
                       </div>
@@ -2290,7 +2290,7 @@ export function ResultActions({
                           </span>
                           {isHandwrittenDocument(comparisonFile) ? <HandwrittenBadge variant="label" /> : null}
                         </div>
-                        <p className="mt-1.5 truncate text-[15px] font-bold tracking-tight text-[#111827]">{comparisonFile.filename || "Extracted table"}</p>
+                        <p className="mt-1.5 truncate text-[15px] font-bold tracking-tight text-[var(--data-entity)]">{comparisonFile.filename || "Extracted table"}</p>
                       </div>
                       <div className="shrink-0 text-right">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#475467]">Rows</p>
