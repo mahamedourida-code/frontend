@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Activity, BookCheck, BookOpenText, ChevronDown, ChevronRight, Home, Inbox, PlugZap, ReceiptText, Settings, type LucideIcon } from "lucide-react"
+import { Activity, BookCheck, BookOpenText, ChevronDown, ChevronRight, Home, Inbox, Layers, ListChecks, PlugZap, ReceiptText, Settings, type LucideIcon } from "lucide-react"
 import { AxMark } from "@/components/AppIcon"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { cn } from "@/lib/utils"
@@ -13,8 +13,10 @@ export type WorkspaceSidebarItemKey =
   | "companies"
   | "activity"
   | "inbox"
+  | "batches"
   | "review"
   | "accounts_payable"
+  | "setup"
   | "settings"
   | "process"
   | "history"
@@ -32,7 +34,7 @@ interface WorkspaceSidebarProps {
 type SidebarItem = {
   key: Extract<
     WorkspaceSidebarItemKey,
-    "companies" | "activity" | "inbox" | "review" | "accounts_payable" | "integrations" | "guide" | "settings"
+    "companies" | "setup" | "activity" | "inbox" | "batches" | "review" | "accounts_payable" | "integrations" | "guide" | "settings"
   >
   label: string
   href: string
@@ -43,10 +45,12 @@ const SIDEBAR_W = 220
 
 const PRIMARY_ITEMS: SidebarItem[] = [
   { key: "companies", label: "Clients", href: "/dashboard", icon: Home },
+  { key: "setup", label: "Setup", href: "/dashboard/setup", icon: ListChecks },
 ]
 
 const DOCUMENT_ITEMS: SidebarItem[] = [
   { key: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
+  { key: "batches", label: "Batches", href: "/dashboard/batches", icon: Layers },
   { key: "review", label: "Review", href: "/dashboard/client", icon: BookCheck },
 ]
 
@@ -78,7 +82,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
   const reviewCount = useReviewCount()
   const normalizedActiveItem = normalizeActiveItem(activeItem)
   const [documentsOpen, setDocumentsOpen] = useState(() =>
-    normalizedActiveItem === "inbox" || normalizedActiveItem === "review",
+    normalizedActiveItem === "inbox" || normalizedActiveItem === "batches" || normalizedActiveItem === "review",
   )
   const [accountingOpen, setAccountingOpen] = useState(() =>
     normalizedActiveItem === "accounts_payable" || normalizedActiveItem === "integrations",
@@ -92,7 +96,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
   }, [])
 
   useEffect(() => {
-    if (normalizedActiveItem === "inbox" || normalizedActiveItem === "review") setDocumentsOpen(true)
+    if (normalizedActiveItem === "inbox" || normalizedActiveItem === "batches" || normalizedActiveItem === "review") setDocumentsOpen(true)
     if (normalizedActiveItem === "accounts_payable" || normalizedActiveItem === "integrations") setAccountingOpen(true)
   }, [normalizedActiveItem])
 

@@ -40,7 +40,7 @@ function BatchesContent() {
   }
 
   return (
-    <DashboardShell activeItem="review" title="Batches" user={user}>
+    <DashboardShell activeItem="batches" title="Batches" user={user}>
       <PageHeader
         title="Batches"
         description="Today's queue at a glance. Scan what's processing or needs review, then open one to drill into the full review board."

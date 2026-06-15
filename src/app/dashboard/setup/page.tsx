@@ -42,7 +42,7 @@ function SetupContent() {
   }
 
   return (
-    <DashboardShell activeItem="settings" title="Setup" user={user}>
+    <DashboardShell activeItem="setup" title="Setup" user={user}>
       <PageHeader
         title="Setup"
         description="Everything to configure in one place. Each item links to where it lives."
