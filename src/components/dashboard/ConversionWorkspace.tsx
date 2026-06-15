@@ -138,7 +138,7 @@ type ResultPreview = {
 }
 
 const workspacePrimaryControlClass =
-  "rounded-full border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] text-white shadow-none hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)] focus-visible:ring-[var(--workspace-primary)]/20"
+  "rounded-full border border-[#A98467] bg-[#A98467] text-white shadow-none hover:border-[#8a6a52] hover:bg-[#8a6a52] focus-visible:ring-[#A98467]/30"
 const workspaceNormalControlClass =
   "rounded-full border border-[var(--workspace-button-border)] bg-white text-[var(--workspace-ink)] shadow-none hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] hover:text-[var(--workspace-primary)] focus-visible:ring-[var(--workspace-primary)]/20"
 const workspacePanelSurfaceClass =

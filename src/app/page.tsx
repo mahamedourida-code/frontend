@@ -346,7 +346,7 @@ export default function Home() {
               </p>
 
               <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                <Button variant="glossy" asChild className="h-[52px] rounded-md border-[var(--workspace-primary)] bg-[var(--workspace-primary)] px-10 text-base font-bold text-white hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)] hover:text-white hover:no-underline">
+                <Button variant="glossy" asChild className="h-[52px] rounded-md border-[#A98467] bg-[#A98467] px-10 text-base font-bold text-white hover:border-[#8a6a52] hover:bg-[#8a6a52] hover:text-white hover:no-underline">
                   <NextLink href="/dashboard/client">Start free</NextLink>
                 </Button>
               </div>

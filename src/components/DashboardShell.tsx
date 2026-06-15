@@ -225,7 +225,7 @@ export function DashboardShell({
                     router.push("/dashboard/client#upload-files")
                   }
                 }}
-                className="hidden h-9 !border-[#2f80ed] !bg-[#2f80ed] px-3 text-sm !text-white hover:!border-[#1d6fd8] hover:!bg-[#1d6fd8] hover:!text-white sm:inline-flex"
+                className="hidden h-9 !border-[#A98467] !bg-[#A98467] px-3 text-sm !text-white hover:!border-[#8a6a52] hover:!bg-[#8a6a52] hover:!text-white sm:inline-flex"
               >
                 <Upload className="size-4" />
                 Upload
