@@ -1539,7 +1539,7 @@ export function ResultActions({
                         {formatDocumentType(file.document_type)}
                       </td>
                       <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
-                        <span className={cn("inline-flex h-5 items-center gap-1.5 rounded-full border px-2 text-[11px] font-semibold", statusChipClass(displayState))}>
+                        <span className={cn("inline-flex h-5 items-center gap-1.5 whitespace-nowrap rounded-full border px-2 text-[11px] font-semibold leading-none", statusChipClass(displayState))}>
                           <span className={cn("size-1.5 rounded-full", statusDotClass(displayState))} />
                           {statusLabel}
                         </span>
@@ -2603,7 +2603,7 @@ function BatchStagingBoard({
                           </td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#0f766e]">Batch</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
-                            <span className={cn("inline-flex h-5 items-center gap-1.5 rounded-full border px-2 text-[11px] font-semibold", st.chip)}>
+                            <span className={cn("inline-flex h-5 items-center gap-1.5 whitespace-nowrap rounded-full border px-2 text-[11px] font-semibold leading-none", st.chip)}>
                               <span className={cn("size-1.5 rounded-full", st.dot)} />
                               {st.label}
                             </span>
