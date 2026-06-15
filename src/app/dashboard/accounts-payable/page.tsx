@@ -176,8 +176,6 @@ const workspacePanel = "ax-workspace-panel border-slate-200 bg-slate-50/70"
 
 const workspaceTable = "ax-table"
 
-const workspaceTextAction = "ax-text-action text-[#A98467] hover:text-[#8a6a52]"
-
 function AccountingDestinationGlyph({
   destination,
   className,
@@ -1280,6 +1278,7 @@ function AccountsPayableContent() {
                         </div>
                         <div className="flex shrink-0 items-center gap-4">
                           <InlineAction
+                            tone="warning"
                             onClick={() => setDismissDraft({ warningId: warning.id, reason: "" })}
                             disabled={dismissing || discarding || activeLocked}
                           >
@@ -1370,6 +1369,7 @@ function AccountsPayableContent() {
                         </AnimatePresence>
                       </div>
                       <InlineAction
+                        tone="warning"
                         disabled={saving || activeLocked}
                         onClick={() => void overrideAutoFill()}
                         className="shrink-0"
@@ -1473,7 +1473,7 @@ function AccountsPayableContent() {
                                 )
                               })() : null}
                             </span>
-                            <button type="button" onClick={() => void matchPo(null)} className={cn("font-medium underline-offset-2 hover:underline", workspaceTextAction)}>
+                            <button type="button" onClick={() => void matchPo(null)} className="ax-text-action font-medium text-[var(--workspace-danger)] underline-offset-2 hover:text-[var(--workspace-danger-hover)] hover:underline">
                               Unlink
                             </button>
                           </div>
@@ -1898,7 +1898,7 @@ function AccountsPayableContent() {
         <DialogContent className="gap-4 rounded-md sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base font-medium">
-              <span className="inline-flex size-6 items-center justify-center rounded-md bg-[#f3ece2] text-[#A98467]">
+              <span className="inline-flex size-6 items-center justify-center rounded-md bg-[#f3ece2] text-[var(--workspace-blue)]">
                 <FileText className="size-3.5" />
               </span>
               Match a purchase order
