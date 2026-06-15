@@ -210,6 +210,67 @@ const footerSocialLinks = [
   },
 ];
 
+const folderPanelTitleStyle = {
+  fontSize: "clamp(2.6rem, 5.2vw, 5.65rem)",
+  lineHeight: 0.98,
+  letterSpacing: "0",
+} as const;
+
+const folderPanelBodyStyle = {
+  fontSize: "clamp(1.18rem, 1.45vw, 1.55rem)",
+  lineHeight: 1.55,
+  letterSpacing: "0",
+} as const;
+
+const folderPanelTextClass = "max-w-[690px]";
+const folderPanelTitleClass = "ax-h2 ax-marketing-section-title max-w-[720px] font-bold text-neutral-950";
+const folderPanelBodyClass = "ax-body ax-marketing-body mt-6 max-w-[660px] font-semibold text-neutral-950";
+const folderPanelCtaClass =
+  "mt-9 inline-flex h-12 items-center rounded-full border-2 border-neutral-950 bg-transparent px-8 text-[15px] font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white";
+const folderPanelMediaClass =
+  "overflow-hidden rounded-[2rem] bg-white p-3 shadow-[0_30px_90px_-42px_rgba(0,0,0,0.42)] ring-1 ring-black/10 sm:p-4 lg:rounded-[2.5rem] lg:p-5";
+
+function FolderDropVideo() {
+  return (
+    <div className="relative">
+      <div
+        aria-hidden="true"
+        className="absolute -inset-5 rounded-[3rem] bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,0.95),transparent_35%),linear-gradient(135deg,rgba(169,132,103,0.20),rgba(209,250,229,0.22))] blur-2xl"
+      />
+      <div className="relative overflow-hidden rounded-[2rem] border border-black/10 bg-white p-2 shadow-[0_34px_100px_-45px_rgba(0,0,0,0.5)] sm:p-3 lg:rounded-[2.5rem] lg:p-4">
+        <div className="overflow-hidden rounded-[1.5rem] bg-[#fbf7f1] ring-1 ring-black/10 lg:rounded-[2rem]">
+          <div className="flex h-11 items-center justify-between border-b border-black/10 bg-white/80 px-4">
+            <div className="flex items-center gap-1.5">
+              <span className="size-2.5 rounded-full bg-[#ff5f57]" />
+              <span className="size-2.5 rounded-full bg-[#febc2e]" />
+              <span className="size-2.5 rounded-full bg-[#28c840]" />
+            </div>
+            <p className="text-xs font-bold uppercase tracking-normal text-neutral-500">
+              Batch intake
+            </p>
+            <span className="h-2.5 w-12 rounded-full bg-neutral-200" />
+          </div>
+          <div className="relative aspect-video overflow-hidden bg-[#f8f3ec]">
+            <video
+              className="h-full w-full object-contain"
+              aria-label="AxLiner folder upload walkthrough"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+            >
+              <source src="/landing/folder-drop.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-black/5" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const router = useRouter();
   const heroRef = useRef<HTMLElement>(null);
@@ -406,75 +467,75 @@ export default function Home() {
           />
           <div className="relative z-10">
         <div id="how-it-works" className="ax-marketing-band-mint text-neutral-950" style={{ backgroundColor: "#F6F1EA" }}>
-          <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-9">
 
             {/* A — text left · video right */}
-            <div className="grid items-center gap-10 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
-              <div data-animate="headline">
-                <h3 className="ax-h2 ax-marketing-section-title max-w-lg font-bold text-neutral-950">
+            <div className="grid min-h-[100svh] items-center gap-12 py-24 sm:py-28 lg:grid-cols-[0.82fr_1.18fr] lg:gap-24 lg:py-32">
+              <div className={folderPanelTextClass} data-animate="headline">
+                <h3 className={folderPanelTitleClass} style={folderPanelTitleStyle}>
                   Throw us the whole <span className="text-[var(--brand-brown-dark)]">folder</span>.
                 </h3>
-                <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
+                <p className={folderPanelBodyClass} style={folderPanelBodyStyle}>
                   Invoices, receipts, statements — drop them all at once. AxLiner sorts and extracts each one on the right schema.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
+                <NextLink href="/dashboard/client" className={folderPanelCtaClass}>
                   See how it works →
                 </NextLink>
               </div>
-              <div className="overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/10 sm:p-8" data-animate="stagger">
-                <VideoPlaceholder caption="Auto-detect: a folder of mixed files, sorted onto the right schema" />
+              <div data-animate="stagger">
+                <FolderDropVideo />
               </div>
             </div>
 
             {/* B — video left · text right */}
-            <div className="grid items-center gap-10 border-t border-black/15 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
-              <div className="order-last overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/10 sm:p-8 lg:order-first" data-animate="stagger">
+            <div className="grid min-h-[100svh] items-center gap-12 border-t border-black/15 py-24 sm:py-28 lg:grid-cols-[1.12fr_0.88fr] lg:gap-24 lg:py-32">
+              <div className={`${folderPanelMediaClass} order-last lg:order-first`} data-animate="stagger">
                 <VideoPlaceholder caption="Review board: source document side-by-side with extracted data" />
               </div>
-              <div data-animate="headline">
-                <h3 className="ax-h2 ax-marketing-section-title max-w-lg font-bold text-neutral-950">
+              <div className={folderPanelTextClass} data-animate="headline">
+                <h3 className={folderPanelTitleClass} style={folderPanelTitleStyle}>
                   See everything before it touches QuickBooks or Xero.
                 </h3>
-                <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
+                <p className={folderPanelBodyClass} style={folderPanelBodyStyle}>
                   Every document lands in your review board first: source on the left, editable fields on the right. AxLiner prepares it, you approve it.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
+                <NextLink href="/dashboard/client" className={folderPanelCtaClass}>
                   Explore the review board →
                 </NextLink>
               </div>
             </div>
 
             {/* C — text left · video right */}
-            <div className="grid items-center gap-10 border-t border-black/15 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
-              <div data-animate="headline">
-                <h3 className="ax-h2 ax-marketing-section-title max-w-lg font-bold text-neutral-950">
+            <div className="grid min-h-[100svh] items-center gap-12 border-t border-black/15 py-24 sm:py-28 lg:grid-cols-[0.88fr_1.12fr] lg:gap-24 lg:py-32">
+              <div className={folderPanelTextClass} data-animate="headline">
+                <h3 className={folderPanelTitleClass} style={folderPanelTitleStyle}>
                   The messy stuff. WhatsApp photos. Handwritten receipts.
                 </h3>
-                <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
+                <p className={folderPanelBodyClass} style={folderPanelBodyStyle}>
                   Built for the receipt photographed in bad light, not just clean PDFs. Confidence flags show you exactly which fields to check.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
+                <NextLink href="/dashboard/client" className={folderPanelCtaClass}>
                   Try with a handwritten document →
                 </NextLink>
               </div>
-              <div className="overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/10 sm:p-8" data-animate="stagger">
+              <div className={folderPanelMediaClass} data-animate="stagger">
                 <VideoPlaceholder caption="Handwritten receipt → structured spreadsheet with confidence flags" />
               </div>
             </div>
 
             {/* D — video left · text right */}
-            <div className="grid items-center gap-10 border-t border-black/15 py-20 pb-28 lg:grid-cols-2 lg:gap-20 lg:py-28 lg:pb-36">
-              <div className="order-last overflow-hidden rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/10 sm:p-8 lg:order-first" data-animate="stagger">
+            <div className="grid min-h-[100svh] items-center gap-12 border-t border-black/15 py-24 pb-28 sm:py-28 lg:grid-cols-[1.12fr_0.88fr] lg:gap-24 lg:py-32 lg:pb-36">
+              <div className={`${folderPanelMediaClass} order-last lg:order-first`} data-animate="stagger">
                 <VideoPlaceholder caption="AP queue: code, review, and publish bills to QuickBooks or Xero in one screen" />
               </div>
-              <div data-animate="headline">
-                <h3 className="ax-h2 ax-marketing-section-title max-w-lg font-bold text-neutral-950">
+              <div className={folderPanelTextClass} data-animate="headline">
+                <h3 className={folderPanelTitleClass} style={folderPanelTitleStyle}>
                   Reviewed, coded, posted. No copy-pasting.
                 </h3>
-                <p className="ax-body ax-marketing-body mt-5 font-semibold text-neutral-950">
+                <p className={folderPanelBodyClass} style={folderPanelBodyStyle}>
                   Code each bill with vendor, account, and tax, then publish a draft to QuickBooks or Xero with the document attached.
                 </p>
-                <NextLink href="/dashboard/client" className="mt-8 inline-flex h-11 items-center rounded-md border-2 border-neutral-950 bg-transparent px-8 text-sm font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white">
+                <NextLink href="/dashboard/client" className={folderPanelCtaClass}>
                   Start free
                 </NextLink>
               </div>
