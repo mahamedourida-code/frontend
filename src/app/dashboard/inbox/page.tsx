@@ -638,7 +638,7 @@ export default function EmailInboxPage() {
                   <div key={provider} className="rounded-md border border-border bg-[#f8fafc] p-4">
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5">
-                        <span className="inline-flex size-9 items-center justify-center rounded-md bg-[#eff6ff] text-[#A98467]">
+                        <span className="inline-flex size-9 items-center justify-center rounded-md bg-[#eff6ff] text-[var(--workspace-blue)]">
                           {provider === "google_drive" ? <FolderInput className="size-4.5" /> : <Cloud className="size-4.5" />}
                         </span>
                         <div>
@@ -696,11 +696,11 @@ export default function EmailInboxPage() {
                         </div>
                         <div className="mt-3 flex items-center justify-between gap-3">
                           <span className="inline-flex items-center gap-1.5 text-xs text-black">
-                            <Clock className="size-3.5 text-[#A98467]" />
+                            <Clock className="size-3.5 text-[var(--workspace-blue)]" />
                             {source.last_synced_at ? formatReceivedAt(source.last_synced_at) : "Never synced"}
                           </span>
                           <div className="flex items-center gap-4">
-                            <InlineAction tone="warning" className="text-xs [&_svg]:size-3" onClick={() => void triggerSync(source.id)} disabled={actionBusy === source.id}>
+                            <InlineAction className="text-xs [&_svg]:size-3" onClick={() => void triggerSync(source.id)} disabled={actionBusy === source.id}>
                               <RefreshCw className={cn("size-3", actionBusy === source.id && "animate-spin")} />
                               Sync now
                             </InlineAction>

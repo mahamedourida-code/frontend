@@ -362,7 +362,7 @@ function ChecklistRow({ item }: { item: ChecklistItem }) {
             "inline-flex size-9 shrink-0 items-center justify-center rounded-full [&_svg]:size-[18px]",
             isDone
               ? "bg-[color-mix(in_srgb,var(--workspace-success)_14%,transparent)] text-[var(--workspace-success)]"
-              : "bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-[#A98467]",
+              : "bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-[var(--workspace-blue)]",
           )}
         >
           {isDone ? (
