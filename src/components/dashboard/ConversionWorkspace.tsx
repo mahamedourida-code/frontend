@@ -2470,13 +2470,9 @@ function BatchStagingBoard({
 
   return (
     <div className="space-y-2.5">
+      {mode !== "processing" ? (
       <div className="flex flex-wrap items-center gap-2 rounded-[4px] border border-[#c8ced6] bg-white px-3 py-2 shadow-none">
-        {mode === "processing" ? (
-          <span className="inline-flex h-9 items-center gap-2 rounded-full border border-[#e3d4c2] bg-[#f3ece2] px-3 text-xs font-semibold text-[#8a6a52]">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Reading {stagedCount} document{stagedCount === 1 ? "" : "s"} — extracting fields…
-          </span>
-        ) : mode === "staged" ? (
+        {mode === "staged" ? (
           <>
             <Button
               variant="surface"
@@ -2532,6 +2528,7 @@ function BatchStagingBoard({
           </>
         )}
       </div>
+      ) : null}
 
       <div className="pt-2">
         <div className="overflow-hidden rounded-[4px] border border-[#c8ced6] bg-white shadow-none">

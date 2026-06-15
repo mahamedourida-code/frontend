@@ -2,8 +2,6 @@
 
 import { Suspense, useState, useCallback, useEffect, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { AnimatePresence, motion } from "framer-motion"
-import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useOCR } from "@/hooks/useOCR"
 import { useAuth } from "@/hooks/useAuth"
@@ -1844,66 +1842,6 @@ Best regards`
       user={user}
       contentClassName="max-w-none px-3 py-3 sm:px-5 lg:px-6"
     >
-      <AnimatePresence initial={false}>
-        {processingState.status === "processing" ? (
-          <motion.div
-            key="processing-progress"
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-3 rounded-md border border-border bg-card px-4 py-3 shadow-none"
-            role="status"
-            aria-live="polite"
-          >
-            {(() => {
-              const totalFiles = Math.max(
-                processingState.uploadedFiles?.length ?? 0,
-                uploadedFiles.length,
-              )
-              const doneFiles = Math.min(
-                processingState.processedFiles?.length ?? 0,
-                totalFiles,
-              )
-              const progressValue = Math.min(100, Math.max(0, processingState.progress ?? 0))
-              return (
-                <>
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="text-xs font-medium text-muted-foreground">
-                      <span className="text-foreground">Processing batch</span>
-                      {totalFiles > 0 ? (
-                        <span className="ml-2 tabular-nums">{doneFiles}/{totalFiles}</span>
-                      ) : null}
-                    </p>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => void handleCancelProcessing()}
-                      className="size-7 rounded-full text-muted-foreground hover:bg-red-50 hover:text-red-600"
-                      aria-label="Cancel processing"
-                      title="Cancel processing"
-                    >
-                      <X className="size-3.5" />
-                    </Button>
-                  </div>
-                  <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted">
-                    <motion.div
-                      className="h-full rounded-full bg-[var(--workspace-primary)]"
-                      initial={false}
-                      animate={{ width: `${progressValue}%` }}
-                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                      aria-valuenow={progressValue}
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      role="progressbar"
-                    />
-                  </div>
-                </>
-              )
-            })()}
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
       <ConversionWorkspace
         banner={workspaceBanner ?? creditBanner}
         onDismissBanner={workspaceBanner ? () => setWorkspaceBanner(null) : undefined}
