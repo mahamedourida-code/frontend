@@ -15,6 +15,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { DashboardShell } from "@/components/DashboardShell"
 import { useAuth } from "@/hooks/useAuth"
 import { accountsPayableApi, ocrApi, type JobDocumentRecord } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
@@ -385,10 +386,17 @@ function DocumentReviewContent() {
   const canSendToBills = docType === "invoice" && ["ready", "published"].includes(status)
 
   return (
-    <div className="min-h-screen bg-background text-[#111827]">
-      {/* Top bar */}
-      <header className="sticky top-0 z-30 border-b border-[#e8e1d8] bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-[1560px] flex-wrap items-center gap-3 px-5 py-3 sm:px-7">
+    <DashboardShell
+      activeItem="process"
+      title={doc.original_filename || "Review document"}
+      eyebrow="Review"
+      user={user}
+      contentClassName="max-w-none px-3 py-3 sm:px-5 lg:px-6"
+      showBack={false}
+    >
+      <div className="min-h-[calc(100svh-5rem)] bg-background text-[#111827]">
+        <header className="mb-6 rounded-lg border border-[#e8e1d8] bg-white/95 shadow-sm backdrop-blur">
+          <div className="mx-auto flex max-w-[1560px] flex-wrap items-center gap-3 px-5 py-3 sm:px-7">
           <Button asChild variant="surface" size="sm" className="h-9 px-3 text-xs">
             <Link href={`/dashboard/client?job_id=${jobId}`}>
               <ArrowLeft className="size-4" />
@@ -448,14 +456,14 @@ function DocumentReviewContent() {
               </Button>
             ) : null}
           </div>
-        </div>
-      </header>
+          </div>
+        </header>
 
       <motion.main
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-        className="mx-auto grid max-w-[1560px] gap-6 px-5 py-6 sm:px-7 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]"
+        className="mx-auto grid max-w-[1560px] gap-6 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]"
       >
         {/* Source preview — sticky on desktop */}
         <div className="lg:sticky lg:top-[84px] lg:self-start">
@@ -621,6 +629,7 @@ function DocumentReviewContent() {
           ) : null}
         </div>
       </motion.main>
-    </div>
+      </div>
+    </DashboardShell>
   )
 }

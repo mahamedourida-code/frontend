@@ -227,9 +227,9 @@ const folderPanelMediaClass =
 
 function FolderDropVideo() {
   return (
-    <div className="overflow-hidden rounded-2xl">
+    <div className="overflow-hidden rounded-[2.25rem] bg-[#F6F1EA] sm:rounded-[2.75rem]">
       <video
-        className="block w-full origin-center scale-y-[1.04]"
+        className="block w-full origin-center scale-x-[1.025] scale-y-[1.055]"
         aria-label="AxLiner folder upload walkthrough"
         autoPlay
         loop

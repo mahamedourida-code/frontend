@@ -1477,10 +1477,8 @@ export function ResultActions({
                     file.document_id &&
                     !["ready", "published", "failed", "deleted"].includes(file.review_status || "")
                   )
-                  // Clicking a document opens the full-page review in a new tab
-                  // (an accountant-friendly Xero-style editor) rather than the
-                  // cramped in-place modal. Falls back to the modal only when the
-                  // durable document id / job id isn't available.
+                  // Clicking a document opens the full-page review route. Falls
+                  // back to the modal only when durable ids are unavailable.
                   const docHref = jobId && file.document_id
                     ? `/dashboard/document?job=${jobId}&doc=${file.document_id}`
                     : null
@@ -1493,14 +1491,12 @@ export function ResultActions({
                       <td className={cn("border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", rowAccentClass(displayState, duplicateWarning))}>
                         {docHref ? (
                           <Button asChild variant="surface" size="icon" className={cn("!size-7", workspaceNormalControlClass)}>
-                            <a
+                            <Link
                               href={docHref}
-                              target="_blank"
-                              rel="noopener noreferrer"
                               aria-label={`Open ${file.filename || summary.identity}`}
                             >
                               <Eye className="size-3.5" />
-                            </a>
+                            </Link>
                           </Button>
                         ) : (
                           <Button
@@ -1517,14 +1513,12 @@ export function ResultActions({
                       </td>
                       <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
                         {docHref ? (
-                          <a
+                          <Link
                             href={docHref}
-                            target="_blank"
-                            rel="noopener noreferrer"
                             className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[var(--workspace-primary)]"
                           >
                             {file.filename || `Result ${index + 1}`}
-                          </a>
+                          </Link>
                         ) : (
                           <button
                             type="button"
@@ -1584,14 +1578,12 @@ export function ResultActions({
                               Ready
                             </button>
                           ) : docHref ? (
-                            <a
+                            <Link
                               href={docHref}
-                              target="_blank"
-                              rel="noopener noreferrer"
                               className={cn("ax-interactive inline-flex h-7 items-center px-2.5 text-[11px] font-semibold transition-colors", workspaceNormalControlClass)}
                             >
                               Open
-                            </a>
+                            </Link>
                           ) : (
                             <button
                               type="button"
