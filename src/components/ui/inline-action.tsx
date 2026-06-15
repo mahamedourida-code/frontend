@@ -9,7 +9,7 @@ type InlineActionProps = React.ComponentProps<"button"> & {
   /** Render as a child element (e.g. a Link) instead of a <button>. */
   asChild?: boolean
   /** Text-only actions. Brand is blue; semantic tones are used inside the workspace. */
-  tone?: "brand" | "success" | "warning" | "danger" | "neutral"
+  tone?: "brand" | "success" | "warning" | "danger" | "purple" | "neutral"
 }
 
 /**
@@ -32,7 +32,8 @@ export const InlineAction = React.forwardRef<HTMLButtonElement, InlineActionProp
           tone === "brand" && "text-[var(--brand-link)] hover:text-[var(--brand-link-hover)]",
           tone === "success" && "text-[var(--workspace-success)] hover:text-[var(--workspace-success-hover)]",
           tone === "warning" && "text-[var(--workspace-warning)] hover:text-[var(--workspace-warning-hover)]",
-          tone === "danger" && "text-red-600 hover:text-red-700",
+          tone === "danger" && "text-[var(--workspace-danger)] hover:text-[var(--workspace-danger-hover)]",
+          tone === "purple" && "text-[var(--workspace-purple)] hover:text-[var(--workspace-purple-hover)]",
           tone === "neutral" && "text-[var(--workspace-muted)] hover:text-[var(--workspace-ink)]",
           className,
         )}
