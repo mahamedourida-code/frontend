@@ -234,6 +234,7 @@ function FolderDropVideo() {
         autoPlay
         loop
         muted
+        poster="/landing/folder-drop-poster.png"
         playsInline
         preload="metadata"
       >
