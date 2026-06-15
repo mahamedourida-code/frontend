@@ -7,7 +7,7 @@ import IntegrationsClient from "./IntegrationsClient";
 export const metadata: Metadata = {
   title: "Integrations — AxLiner",
   description:
-    "Connect AxLiner to the accounting and cloud tools you already use. QuickBooks Online, Google Drive, Gmail, Xero (coming soon), and direct Excel/CSV export — all wired into one batch review workflow.",
+    "Connect AxLiner to the accounting and cloud tools you already use. QuickBooks Online, Xero, Google Drive, Gmail, and direct Excel/CSV export — all wired into one batch review workflow.",
 };
 
 const footerColumns = [
@@ -92,7 +92,7 @@ export default function IntegrationsPage() {
             Connect your stack in minutes.
           </h2>
           <p className="max-w-[820px] text-[18px] font-medium leading-[1.45] text-white/85">
-            Upload from anywhere, review every line, post directly to QuickBooks. No manual re-entry, no data leaving your control.
+            Upload from anywhere, review every line, post directly to QuickBooks or Xero. No manual re-entry, no data leaving your control.
           </p>
           <div className="mt-4 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <NextLink
