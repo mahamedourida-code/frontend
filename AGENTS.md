@@ -2,7 +2,7 @@
 
 **AxLiner** (capital A, capital L) — formerly "OlmOCR" — is a full-stack product that turns
 handwritten / photographed / scanned invoices, receipts, bank statements, tables, and notes into
-reviewable Excel/CSV, then publishes reviewed drafts to **QuickBooks Online**. Live at
+reviewable Excel/CSV, then publishes reviewed drafts to **QuickBooks Online and Xero**. Live at
 **https://www.axliner.com**.
 
 > The differentiator is **batch processing + the Batch Review Board** (correct exceptions before
@@ -20,9 +20,9 @@ them exactly.
 | When you're working on… | Read |
 | --- | --- |
 | Full system design — the two deployable units, stack, data flow, realtime, module maps | **[docs/architecture.md](docs/architecture.md)** |
-| The document pipeline — modes, intake, classification, review board, export, QuickBooks, AP queue | **[docs/workflow.md](docs/workflow.md)** |
+| The document pipeline — modes, intake, classification, review board, export, QuickBooks & Xero, AP queue | **[docs/workflow.md](docs/workflow.md)** |
 | Database — Supabase schema, RLS, storage buckets, auth model, generated types | **[docs/database.md](docs/database.md)** |
-| Billing — Lemon Squeezy plans, credit model, rate limits, QuickBooks scope | **[docs/billing.md](docs/billing.md)** |
+| Billing — Lemon Squeezy plans, credit model, rate limits, QuickBooks & Xero scope | **[docs/billing.md](docs/billing.md)** |
 | Coding conventions, component patterns, and the brand / design system | **[docs/style-guide.md](docs/style-guide.md)** |
 | Shipping — frontend → Vercel, backend → Fly, env vars, secrets, smoke tests | **[docs/deployment.md](docs/deployment.md)** |
 | Which MCP server / tool to reach for, and when | **[docs/tooling.md](docs/tooling.md)** |
@@ -120,12 +120,12 @@ Frontend/                         ← working dir (Next.js frontend → Vercel)
 │   └── types/database.generated.ts ← ⭐ current Supabase types (not database.ts)
 ├── backend/                      ← FastAPI + Celery → Fly.io (own git remote: olmocr-backend)
 │   ├── app/api/v1/jobs.py        ← ⭐ core endpoints
-│   ├── app/services/             ← olmocr, supabase_service, quickbooks_service, excel
+│   ├── app/services/             ← olmocr, supabase_service, quickbooks_service, xero_service, excel
 │   ├── app/models/requests.py    ← ⭐ DocumentMode + ReviewStatus literals
 │   └── fly.toml                  ← runtime + env + plan/limit numbers (source of truth)
 ├── plan.md, plan_prompt.md       ← accounting workflow spec
 ├── feature_enhancement.md        ← competitor research + planned features
-└── manual_setup_requirements.md  ← manual provider steps (QuickBooks, Fly secrets)
+└── manual_setup_requirements.md  ← manual provider steps (QuickBooks, Xero, Fly secrets)
 ```
 
 ## 🔑 Key files cheat sheet
@@ -143,7 +143,10 @@ Frontend/                         ← working dir (Next.js frontend → Vercel)
 
 - The repo's old name was "OlmOCR"; the **product is AxLiner**. Internal plan keys `max` / `mega`
   display as "Pro Plan" / "Max Plan" **on purpose** — don't "fix" the mismatch ([billing](docs/billing.md)).
-- **QuickBooks Online only** (Xero is roadmap, not shipped — don't add Xero code unless asked). AP =
-  reviewed **draft bills only**; AxLiner never pays, reconciles, auto-approves, or deletes.
+- **QuickBooks Online AND Xero are both shipped, production destinations** — present them equally
+  everywhere a publishing/accounting destination is mentioned (it's "QuickBooks or Xero", never
+  QuickBooks alone). The backend ships `quickbooks_service.py` and `xero_service.py`; the UI already
+  exposes both. AP = reviewed **draft bills only**; AxLiner never pays, reconciles, auto-approves, or
+  deletes.
 - Avoid **"accuracy %"** marketing — use field / row-level confidence flags instead.
 - Anonymous trials can't save vendor memory or connect accounting systems.

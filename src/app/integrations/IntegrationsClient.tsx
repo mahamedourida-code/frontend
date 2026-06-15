@@ -59,8 +59,8 @@ const integrations = [
     logo: "/integrations/xero.png",
     logoWidth: 52,
     logoHeight: 52,
-    description: "Sync approved invoices and bills to Xero — structured and ready for reconciliation.",
-    status: "roadmap" as const,
+    description: "Post reviewed draft bills straight to Xero — structured and ready for reconciliation.",
+    status: "available" as const,
   },
 ];
 
@@ -79,7 +79,7 @@ const steps = [
   {
     number: "03",
     title: "Post or export — your call",
-    body: "Push approved bills straight to QuickBooks, download as Excel/CSV, or both. Nothing leaves the review board until you say so.",
+    body: "Push approved bills straight to QuickBooks or Xero, download as Excel/CSV, or both. Nothing leaves the review board until you say so.",
   },
 ];
 
@@ -131,7 +131,7 @@ export default function IntegrationsClient() {
               variants={fadeIn}
               className="ax-marketing-body mx-auto max-w-[640px] text-[18px] font-medium leading-relaxed text-neutral-600"
             >
-              AxLiner plugs into your existing stack. Capture documents from Drive, Gmail, or your desktop, review every extracted line, then publish reviewed drafts directly to QuickBooks.
+              AxLiner plugs into your existing stack. Capture documents from Drive, Gmail, or your desktop, review every extracted line, then publish reviewed drafts directly to QuickBooks or Xero.
             </motion.p>
 
             <motion.div variants={fadeIn} className="flex flex-col items-center gap-3 sm:flex-row">
@@ -168,13 +168,6 @@ export default function IntegrationsClient() {
                 variants={fadeIn}
                 className="group relative flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm transition-all duration-200 hover:border-emerald-300 hover:shadow-[0_4px_24px_-6px_rgba(16,185,129,0.18)]"
               >
-                {/* roadmap badge */}
-                {integration.status === "roadmap" && (
-                  <span className="absolute right-4 top-4 rounded-full bg-neutral-100 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-                    Coming soon
-                  </span>
-                )}
-
                 {/* logo */}
                 <div className="flex h-14 w-14 items-center justify-center">
                   {integration.logo ? (
@@ -324,10 +317,10 @@ export default function IntegrationsClient() {
                 Review board
               </span>
               <h2 className="ax-marketing-section-title text-[34px] font-bold leading-tight tracking-tight text-neutral-950 md:text-[42px]">
-                See everything before it touches QuickBooks.
+                See everything before it touches QuickBooks or Xero.
               </h2>
               <p className="ax-marketing-body text-[16px] leading-relaxed text-neutral-600">
-                Every extracted document lands on the review board before export. Source image on the left, editable cells on the right. Correct, tab, approve — then post the whole reviewed batch to QuickBooks in one click.
+                Every extracted document lands on the review board before export. Source image on the left, editable cells on the right. Correct, tab, approve — then post the whole reviewed batch to QuickBooks or Xero in one click.
               </p>
               <NextLink
                 href="/dashboard/client"

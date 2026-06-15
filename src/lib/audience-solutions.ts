@@ -283,12 +283,12 @@ export const audienceSolutions: AudienceSolution[] = [
   },
   {
     slug: "quickbooks-draft-bills",
-    title: "QuickBooks draft bills",
-    menuLabel: "QuickBooks draft bills",
+    title: "QuickBooks & Xero draft bills",
+    menuLabel: "QuickBooks & Xero draft bills",
     eyebrow: "Finish the books",
-    headline: "Publish reviewed invoice drafts to QuickBooks Online with the source still attached.",
+    headline: "Publish reviewed invoice drafts to QuickBooks Online or Xero with the source still attached.",
     summary:
-      "AxLiner helps bookkeepers move corrected invoice data into QuickBooks Online as draft bills after review, with the original document available for the accounting record.",
+      "AxLiner helps bookkeepers move corrected invoice data into QuickBooks Online or Xero as draft bills after review, with the original document available for the accounting record.",
     proof:
       "The workflow prepares drafts. It does not auto-approve, reconcile, pay, or delete transactions.",
     benefits: [
@@ -315,7 +315,7 @@ export const audienceSolutions: AudienceSolution[] = [
         description: "Move reviewed invoice records into the controlled publishing queue.",
       },
       {
-        title: "Publish to QuickBooks Online",
+        title: "Publish to QuickBooks or Xero",
         description: "Create draft bills with their original documents attached for the next accounting step.",
       },
     ],
