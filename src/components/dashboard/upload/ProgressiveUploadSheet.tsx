@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState, type ChangeEvent, type DragEvent, type FormEvent } from "react"
+import { useSearchParams } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
 import {
   ArrowRight,
@@ -27,6 +28,18 @@ import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
 import { companyApi, type CompanySummary } from "@/lib/api-client"
 
 type OutputMode = "table" | "text" | "csv"
+
+// Accountant-facing context line for the legacy mode routes (?type=…). AxLiner
+// auto-detects each document's type per document — these banners only restate
+// the intent the user came in with; they never preselect or force a mode.
+const UPLOAD_TYPE_BANNER: Record<string, string> = {
+  invoice: "Uploading invoices",
+  receipt: "Uploading receipts",
+  bank_statement: "Uploading bank statements",
+  invoice_receipt: "Uploading invoices & receipts",
+  notes: "Uploading handwritten notes",
+  auto: "Auto-detect",
+}
 
 type ProgressiveUploadSheetProps = {
   open: boolean
@@ -92,6 +105,9 @@ export function ProgressiveUploadSheet({
   onCancel,
 }: ProgressiveUploadSheetProps) {
   const m = useMotionTokens()
+  const searchParams = useSearchParams()
+  const requestedType = searchParams.get("type") || ""
+  const uploadTypeLabel = UPLOAD_TYPE_BANNER[requestedType] || ""
   const [companies, setCompanies] = useState<CompanySummary[]>([])
   const [companiesLoading, setCompaniesLoading] = useState(false)
   const [companiesError, setCompaniesError] = useState("")
@@ -177,6 +193,19 @@ export function ProgressiveUploadSheet({
         </SheetHeader>
 
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-5">
+          {uploadTypeLabel ? (
+            <motion.div
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={m.tFast}
+              className="rounded-lg border border-[var(--workspace-popout-border)] bg-[var(--workspace-blue-soft)] px-3.5 py-3"
+            >
+              <p className="text-sm font-bold text-foreground">{uploadTypeLabel}</p>
+              <p className="mt-1 text-xs font-medium text-foreground/70">
+                AxLiner classifies each document automatically — review and correct the type before you export or publish.
+              </p>
+            </motion.div>
+          ) : null}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="block">
               <span className="mb-1.5 block text-xs font-semibold text-foreground">Client</span>

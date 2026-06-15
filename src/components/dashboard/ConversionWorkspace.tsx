@@ -1,17 +1,13 @@
 "use client"
 
-import { useCallback, useEffect, useReducer, useRef, useState, type ChangeEvent, type DragEvent, type MouseEvent as ReactMouseEvent } from "react"
+import { useCallback, useEffect, useReducer, useRef, useState, type ChangeEvent, type DragEvent } from "react"
 import {
-  AlertCircle,
   ArrowRight,
   BookOpen,
-  Building2,
   Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  CreditCard,
-  DollarSign,
   Download,
   Eye,
   FileImage,
@@ -23,15 +19,12 @@ import {
   Languages,
   ListChecks,
   Loader2,
-  Percent,
   ReceiptText,
   RotateCcw,
   Save,
-  ScanLine,
   Share2,
   Sparkles,
   Table2,
-  Tag,
   Trash2,
   Upload,
   User,
@@ -43,12 +36,10 @@ import { InlineAction } from "@/components/ui/inline-action"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { BankReconciliationPanel } from "@/components/dashboard/BankReconciliationPanel"
 import { ConfidenceDot, ConfidenceLegend } from "@/components/dashboard/ConfidenceDot"
-import { AnomalyChip, type AnomalyTone } from "@/components/dashboard/AnomalyChip"
+import { AnomalyChip } from "@/components/dashboard/AnomalyChip"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { Field } from "@/components/dashboard/Field"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
-import { FIELD_LABEL } from "@/lib/review-vocab"
-import { vatCheck } from "@/lib/bookkeeper-copy"
 import { Symbol } from "@/components/dashboard/Symbol"
 import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
 import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
@@ -60,9 +51,7 @@ import { fieldAttention } from "@/lib/field-attention"
 import { reconciliationTotalCopy } from "@/lib/source-highlight"
 import { getRowConfidenceTier, isHandwrittenDocument } from "@/lib/handwritten"
 import {
-  columnLabel,
   detectInvoiceLanguage,
-  fieldLabel,
   invoiceLanguageName,
   readInvoiceAutoDetect,
   readInvoiceLanguage,
@@ -76,73 +65,63 @@ import { ocrApi } from "@/lib/api-client"
 import { isHistoryItemDeleted, subscribeHistoryDeletions } from "@/lib/recent-files-store"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
 import type {
-  DocumentDuplicateWarning,
   DocumentMode,
   JobDocumentRecord,
   QuickBooksConnectionStatus,
-  QuickBooksReceiptPublication,
   QuickBooksReferenceItem,
   ReceiptPublishingDestination,
   ReceiptQuickBooksPublishRequest,
   ResolvedDocumentMode,
-  VendorRule,
   VendorRuleFields,
 } from "@/lib/api-client"
+import {
+  workspaceNormalControlClass,
+  workspacePanelSurfaceClass,
+  workspacePrimaryControlClass,
+} from "@/components/dashboard/conversion/constants"
+import type {
+  OutputMode,
+  RecentBatchFile,
+  RecoverableJob,
+  ResultFile,
+  ResultFilter,
+  ResultPreview,
+  WorkspaceBanner,
+} from "@/components/dashboard/conversion/types"
+import {
+  activeDuplicateWarnings,
+  correctedFilename,
+  deriveReviewLevel,
+  documentTypeToneClass,
+  formatBytes,
+  formatCellValue,
+  formatDocumentType,
+  getOutputBadge,
+  getResultKey,
+  initialVendorRuleDraft,
+  normalizeRecentFiles,
+  recentStatusChip,
+  resultDate,
+  resultDueDate,
+  resultIssue,
+  resultReference,
+  resultSummary,
+  reviewData,
+  rowAccentClass,
+  statusChipClass,
+  statusDotClass,
+  structuredFields,
+  structuredRowPaths,
+  structuredRows,
+  vendorRuleInputs,
+} from "@/components/dashboard/conversion/helpers"
+import {
+  InvoiceDraftBillAction,
+  ResumeBatchBanner,
+  WorkspaceErrorBanner,
+} from "@/components/dashboard/conversion/presentational"
 
-export type WorkspaceBanner = {
-  title: string
-  description?: string
-  actionLabel?: string
-  onAction?: () => void
-  tone?: "info" | "warning" | "error"
-}
-
-type OutputMode = "table" | "text" | "csv"
-type ResultFilter = "all" | "needs_review" | "ready" | "edited" | "failed" | "published"
-type ResultFile = {
-  file_id?: string
-  filename?: string
-  size_bytes?: number
-  input_preview_url?: string
-  document_id?: string
-  draft_bill_item_id?: string
-  processing_unit_id?: string
-  source_page?: number | null
-  source_page_count?: number | null
-  confidence_score?: number
-  confidence?: number
-  quality_score?: number
-  requires_review?: boolean
-  review_flags?: Array<Record<string, any>>
-  status?: string
-  review_status?: string
-  review_grid?: any[][]
-  document_type?: string
-  reviewed_data?: Record<string, any>
-  duplicate_warnings?: DocumentDuplicateWarning[]
-  vendor_suggestion?: VendorRule | null
-  quickbooks_receipt_publication?: QuickBooksReceiptPublication | null
-  original_image?: string
-  metadata?: Record<string, any>
-}
-
-type RecoverableJob = {
-  processed_images?: number
-  total_images?: number
-}
-
-type ResultPreview = {
-  table: any[][]
-  text: string
-  loading?: boolean
-}
-
-const workspacePrimaryControlClass =
-  "rounded-full border border-[#A98467] bg-[#A98467] text-white shadow-none hover:border-[#8a6a52] hover:bg-[#8a6a52] focus-visible:ring-[#A98467]/30"
-const workspaceNormalControlClass =
-  "rounded-full border border-[var(--workspace-button-border)] bg-white text-[var(--workspace-ink)] shadow-none hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] hover:text-[var(--workspace-primary)] focus-visible:ring-[var(--workspace-primary)]/20"
-const workspacePanelSurfaceClass =
-  "border-[var(--workspace-border)] bg-[var(--workspace-soft)]"
+export type { WorkspaceBanner }
 
 type ConversionWorkspaceProps = {
   banner?: WorkspaceBanner | null
@@ -210,204 +189,6 @@ type ConversionWorkspaceProps = {
   classifiedDocuments?: JobDocumentRecord[]
   overridingDocumentId?: string | null
   onOverrideDocumentMode?: (documentId: string, mode: ResolvedDocumentMode) => void | Promise<void>
-}
-
-function formatBytes(bytes: number) {
-  if (!bytes) return "0 MB"
-  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`
-  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
-}
-
-function InvoiceDraftBillAction({
-  file,
-  onSendToAccountsPayable,
-  stopPropagation = false,
-  className,
-}: {
-  file: ResultFile
-  onSendToAccountsPayable?: (file: ResultFile) => void | Promise<void>
-  stopPropagation?: boolean
-  className?: string
-}) {
-  if (file.document_type !== "invoice" || !["ready", "published"].includes(file.review_status || "")) return null
-
-  const stopCardClick = (event: ReactMouseEvent<HTMLElement>) => {
-    if (stopPropagation) event.stopPropagation()
-  }
-
-  if (file.draft_bill_item_id) {
-    return (
-      <InlineAction asChild className={className}>
-        <a href="/dashboard/accounts-payable" onClick={stopCardClick}>
-          Open draft bills
-        </a>
-      </InlineAction>
-    )
-  }
-
-  if (!onSendToAccountsPayable) return null
-
-  return (
-    <InlineAction
-      onClick={(event) => {
-        stopCardClick(event)
-        void onSendToAccountsPayable(file)
-      }}
-      className={className}
-    >
-      Send to draft bills
-    </InlineAction>
-  )
-}
-
-function WorkspaceErrorBanner({ banner, onDismiss }: { banner?: WorkspaceBanner | null; onDismiss?: () => void }) {
-  if (!banner) return null
-
-  return (
-    <div
-      className={cn(
-        "mb-4 flex flex-col gap-3 rounded-md border p-4 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between",
-        banner.tone === "error" && "border-rose-200 bg-rose-50/88 text-rose-950",
-        banner.tone === "warning" && "border-amber-200 bg-amber-50/88 text-amber-950",
-        (!banner.tone || banner.tone === "info") && "border-[var(--button-warm-ring)] bg-[var(--button-warm)] text-foreground"
-      )}
-    >
-      <div className="flex min-w-0 items-start gap-3">
-        <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
-        <div>
-          <p className="text-sm font-semibold">{banner.title}</p>
-          {banner.description ? <p className="mt-1 text-sm opacity-75">{banner.description}</p> : null}
-        </div>
-      </div>
-      <div className="flex items-center gap-2">
-        {banner.actionLabel && banner.onAction ? (
-          <Button variant="surface" onClick={banner.onAction} className="h-9 px-4">
-            {banner.actionLabel}
-          </Button>
-        ) : null}
-        {onDismiss ? (
-          <Button variant="ghost" size="icon" onClick={onDismiss} className="h-10 w-10">
-            <X className="h-4 w-4" />
-          </Button>
-        ) : null}
-      </div>
-    </div>
-  )
-}
-
-function AutoDetectionPanel({
-  documents,
-  overridingDocumentId,
-  onOverrideDocumentMode,
-}: {
-  documents?: JobDocumentRecord[]
-  overridingDocumentId?: string | null
-  onOverrideDocumentMode?: (documentId: string, mode: ResolvedDocumentMode) => void | Promise<void>
-}) {
-  const [choices, setChoices] = useState<Record<string, ResolvedDocumentMode>>({})
-  const autoDocuments = documents?.filter(document => document.selected_mode === "auto") || []
-  if (!autoDocuments.length) return null
-
-  const labels: Record<ResolvedDocumentMode, string> = {
-    table: "Table",
-    invoice: "Invoice",
-    receipt: "Receipt",
-    bank_statement: "Bank statement",
-    notes: "Notes",
-  }
-  const selectableModes = Object.keys(labels) as ResolvedDocumentMode[]
-
-  return (
-    <WorkspaceSection title="Detected document types" icon={<ScanLine />}>
-      <div className="divide-y divide-border overflow-hidden rounded-lg border border-border">
-        {autoDocuments.map(document => {
-          const detected = document.detected_mode
-          const needsSelection = !document.resolved_mode
-          const manuallySelected = detected === "needs_manual_selection" && Boolean(document.resolved_mode)
-          const selectedMode = choices[document.id]
-            || document.resolved_mode
-            || (detected && detected !== "needs_manual_selection" ? detected : "table")
-          const busy = overridingDocumentId === document.id
-
-          return (
-            <div key={document.id} className="flex flex-col gap-4 p-4 md:flex-row md:items-center">
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-foreground">{document.original_filename}</p>
-                <div className="mt-2">
-                  {needsSelection ? (
-                    <StatusBadge tone="review">Needs review</StatusBadge>
-                  ) : (
-                    <StatusBadge tone="success">
-                      {labels[document.resolved_mode as ResolvedDocumentMode]}
-                      {manuallySelected ? " selected" : ""}
-                    </StatusBadge>
-                  )}
-                </div>
-              </div>
-              <div className="flex shrink-0 items-center gap-3">
-                <select
-                  value={selectedMode}
-                  onChange={event => setChoices(prev => ({
-                    ...prev,
-                    [document.id]: event.target.value as ResolvedDocumentMode,
-                  }))}
-                  disabled={busy}
-                  className="h-9 rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-ring/40"
-                  aria-label={`Extraction mode for ${document.original_filename}`}
-                >
-                  {selectableModes.map(mode => <option key={mode} value={mode}>{labels[mode]}</option>)}
-                </select>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="surface"
-                  disabled={busy || (!needsSelection && selectedMode === document.resolved_mode)}
-                  onClick={() => onOverrideDocumentMode?.(document.id, selectedMode)}
-                  className="h-9 px-3"
-                >
-                  {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                  {needsSelection ? "Process" : "Apply"}
-                </Button>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </WorkspaceSection>
-  )
-}
-
-function ResumeBatchBanner({
-  latestRecoverableJob,
-  recoveryLoading,
-  onContinueLatestJob,
-}: {
-  latestRecoverableJob?: RecoverableJob | null
-  recoveryLoading?: boolean
-  onContinueLatestJob?: () => void
-}) {
-  if (!latestRecoverableJob) return null
-
-  return (
-    <div className={cn("mb-3 flex flex-col gap-3 rounded-md border p-3 text-foreground sm:flex-row sm:items-center sm:justify-between", workspacePanelSurfaceClass)}>
-      <div className="flex items-center gap-3">
-        <Loader2 className="h-4 w-4 text-muted-foreground" />
-        <div>
-          <p className="text-sm font-semibold">Return to unfinished batch</p>
-          <p className="text-xs text-muted-foreground">
-            {latestRecoverableJob.processed_images || 0} of {latestRecoverableJob.total_images || 0} files processed
-          </p>
-        </div>
-      </div>
-      <InlineAction
-        onClick={onContinueLatestJob}
-        disabled={recoveryLoading}
-        className="shrink-0"
-      >
-        {recoveryLoading ? "Resuming..." : "Open batch"}
-      </InlineAction>
-    </div>
-  )
 }
 
 export function UploadDropzone({
@@ -996,524 +777,6 @@ export function ResultPreviewPanel({
         </div>
       ) : null}
     </>
-  )
-}
-
-function getResultKey(file: ResultFile, index: number) {
-  return file.file_id || `result-${index}`
-}
-
-function getOutputBadge(file: ResultFile) {
-  const rawConfidence =
-    file.confidence_score ??
-    file.confidence ??
-    file.quality_score ??
-    file.metadata?.confidence_score ??
-    file.metadata?.confidence ??
-    null
-  const confidence = typeof rawConfidence === "number"
-    ? rawConfidence <= 1 ? rawConfidence * 100 : rawConfidence
-    : null
-  const needsReview =
-    file.review_status === "needs_review" ||
-    file.status === "failed" ||
-    file.requires_review ||
-    Boolean(file.review_flags?.length || file.metadata?.review_flags?.length) ||
-    (confidence !== null && confidence < 82)
-
-  if (file.status === "failed" || file.review_status === "failed") {
-    return { state: "failed" as const, label: "Failed", className: "bg-[var(--status-error-bg)] text-[var(--status-error-fg)] border-[color-mix(in_srgb,var(--status-error-fg)_22%,transparent)]" }
-  }
-
-  if (activeDuplicateWarnings(file).length) {
-    return { state: "needs_review" as const, label: "Possible duplicate", className: "bg-[var(--status-warning-bg)] text-[var(--status-warning-fg)] border-[color-mix(in_srgb,var(--status-warning-fg)_22%,transparent)]" }
-  }
-
-  if (file.review_status === "published") {
-    return { state: "published" as const, label: "Published", className: "bg-[var(--status-info-bg)] text-[var(--status-info-fg)] border-[color-mix(in_srgb,var(--status-info-fg)_22%,transparent)]" }
-  }
-
-  if (file.review_status === "edited") {
-    return { state: "edited" as const, label: "Edited", className: "border-[var(--button-warm-ring)] bg-[var(--button-warm)] text-[var(--brand-brown-fg)]" }
-  }
-
-  if (file.review_status === "ready") {
-    return { state: "ready" as const, label: "Ready", className: "bg-[var(--status-success-bg)] text-[var(--status-success-fg)] border-[color-mix(in_srgb,var(--status-success-fg)_22%,transparent)]" }
-  }
-
-  return needsReview
-    ? { state: "needs_review" as const, label: "Needs review", className: "bg-[var(--status-warning-bg)] text-[var(--status-warning-fg)] border-[color-mix(in_srgb,var(--status-warning-fg)_22%,transparent)]" }
-    : { state: "ready" as const, label: "Ready", className: "bg-[var(--status-success-bg)] text-[var(--status-success-fg)] border-[color-mix(in_srgb,var(--status-success-fg)_22%,transparent)]" }
-}
-
-function activeDuplicateWarnings(file: ResultFile) {
-  return (file.duplicate_warnings || []).filter(warning => !warning.overridden)
-}
-
-/**
- * C14 — scale review depth by stakes. Invoices whose total lands at/above this
- * amount auto-expand with full source evidence and a soft "high value" cue,
- * even when they're otherwise clean; smaller clean ones still collapse to a
- * one-line confirm (C4). Pure presentation over the already-extracted total —
- * no new model, no backend call. Edit this single constant to retune the bar.
- * (Radiology: more depth when the stakes are higher.)
- */
-const HIGH_VALUE_THRESHOLD = 5000
-
-/** Parse a numeric magnitude out of a display amount like "USD 1,240.50". */
-function parseAmountValue(amount: unknown): number | null {
-  if (amount === undefined || amount === null) return null
-  const parsed = Number(String(amount).replace(/[^\d.-]/g, ""))
-  return Number.isNaN(parsed) ? null : Math.abs(parsed)
-}
-
-/** True when the document's total reads at/above the high-value threshold. */
-function isHighValue(file: ResultFile): boolean {
-  const value = parseAmountValue(resultSummary(file).amount)
-  return value !== null && value >= HIGH_VALUE_THRESHOLD
-}
-
-/**
- * C4 — collapse the review board by risk. Reuses the C1 review-score idea
- * (High / Review / Flagged → success / amber / rose) but reads the signals we
- * already derive for the conversion queue via `getOutputBadge`. A card is
- * "clean" only when nothing asks for your attention: not needs-review, not
- * failed, no live duplicate warning. Clean cards collapse to a quiet one-line
- * summary; risky ones stay expanded with the full evidence. Aggregation only —
- * no new model, no backend call.
- *
- * C14 layers stakes on top: a clean card whose total is high-value (`highValue`)
- * still auto-expands so the reviewer sees the full source evidence — it stays
- * clean in tone (nothing is wrong) but carries a soft amber
- * "high value — worth a double-check" cue rendered alongside.
- */
-function deriveReviewLevel(file: ResultFile, badge: ReturnType<typeof getOutputBadge>): {
-  clean: boolean
-  tone: AnomalyTone
-  summaryLabel: string
-  highValue: boolean
-} {
-  if (badge.state === "failed") {
-    return { clean: false, tone: "risk", summaryLabel: "Needs your attention", highValue: false }
-  }
-  if (badge.state === "needs_review" || activeDuplicateWarnings(file).length) {
-    return { clean: false, tone: "caution", summaryLabel: "Needs review", highValue: false }
-  }
-  // Only the genuinely clean, confident pile collapses. Published / edited
-  // cards stay expanded — they carry their own state the reviewer just acted on.
-  if (badge.state === "ready") {
-    // C14 — a high-value clean invoice stays expanded for a closer look, but
-    // remains "clean" in tone; only `clean` (the collapse trigger) flips off.
-    const highValue = isHighValue(file)
-    return { clean: !highValue, tone: "good", summaryLabel: "Looks clean", highValue }
-  }
-  return { clean: false, tone: "good", summaryLabel: badge.label, highValue: false }
-}
-
-const vendorRuleInputs: Array<{ key: keyof VendorRuleFields; label: string; placeholder: string; icon: React.ReactNode }> = [
-  { key: "category_account", label: "Category / account", placeholder: "Office supplies", icon: <DollarSign /> },
-  { key: "tax_code", label: "Tax code", placeholder: "VAT 20%", icon: <Percent /> },
-  { key: "currency", label: "Currency", placeholder: "USD", icon: <Tag /> },
-  { key: "payment_terms", label: "Payment terms", placeholder: "Net 30", icon: <CreditCard /> },
-  { key: "destination_treatment", label: "Destination", placeholder: "Draft bill", icon: <Building2 /> },
-]
-
-function initialVendorRuleDraft(file?: ResultFile | null): VendorRuleFields {
-  const remembered = file?.vendor_suggestion?.suggested_fields || {}
-  const extracted = file ? reviewData(file) : {}
-  return {
-    category_account: remembered.category_account || "",
-    tax_code: remembered.tax_code || "",
-    currency: remembered.currency || String(extracted.currency || ""),
-    payment_terms: remembered.payment_terms || "",
-    destination_treatment: remembered.destination_treatment || "",
-  }
-}
-
-function correctedFilename(filename?: string) {
-  return `${(filename || "result").replace("_processed", "").replace(/\.[^/.]+$/, "")}_corrected.xlsx`
-}
-
-function formatDocumentType(type?: string) {
-  const labels: Record<string, string> = {
-    auto: "Auto-detect",
-    table: "Table",
-    invoice: "Invoice",
-    receipt: "Receipt",
-    bank_statement: "Bank statement",
-    notes: "Notes",
-    needs_manual_selection: "Select type",
-  }
-  return labels[type || ""] || "Document"
-}
-
-function reviewData(file: ResultFile) {
-  return file.reviewed_data && typeof file.reviewed_data === "object" ? file.reviewed_data : {}
-}
-
-function resultSummary(file: ResultFile) {
-  const data = reviewData(file)
-  const type = file.document_type
-  // C11 — a date the at-a-glance summary line can show. Undefined when the
-  // document type carries no due/payment date, so the line omits it cleanly.
-  // C16 — invoices/receipts carry a Net / VAT / Total breakdown plus a
-  // reconciliation verdict so the first review surface speaks bookkeeper.
-  if (type === "invoice") {
-    return {
-      identityLabel: "Vendor",
-      identity: String(data.vendor_name || "Vendor not found"),
-      amountLabel: "Total",
-      amount: [data.currency, data.total].filter(Boolean).join(" ") || "-",
-      due: data.due_date,
-      bookkeeper: { currency: data.currency, subtotal: data.subtotal, vat: data.tax_vat_amount, total: data.total },
-    }
-  }
-  if (type === "receipt") {
-    return {
-      identityLabel: "Merchant",
-      identity: String(data.merchant || "Merchant not found"),
-      amountLabel: "Total",
-      amount: [data.currency, data.total].filter(Boolean).join(" ") || "-",
-      due: data.date,
-      bookkeeper: { currency: data.currency, subtotal: data.subtotal, vat: data.tax_vat_amount, total: data.total },
-    }
-  }
-  if (type === "bank_statement") {
-    return {
-      identityLabel: "Account",
-      identity: String(data.account_holder || data.bank_name || "Account not found"),
-      amountLabel: "Closing balance",
-      amount: [data.currency, data.closing_balance].filter(Boolean).join(" ") || "-",
-      due: undefined,
-      bookkeeper: undefined,
-    }
-  }
-  if (type === "notes") {
-    const text = String(data.readable_text || "").trim()
-    return {
-      identityLabel: "Notes",
-      identity: text ? `${text.slice(0, 48)}${text.length > 48 ? "..." : ""}` : "Handwritten notes",
-      amountLabel: "Tables",
-      amount: String(Array.isArray(data.tables) ? data.tables.length : 0),
-      due: undefined,
-      bookkeeper: undefined,
-    }
-  }
-  return {
-    identityLabel: "Output",
-    identity: file.filename || "Extracted table",
-    amountLabel: "Rows",
-    amount: String(Array.isArray(file.review_grid) ? Math.max(file.review_grid.length - 1, 0) : "-"),
-    due: undefined,
-    bookkeeper: undefined,
-  }
-}
-
-function formatCellValue(value: unknown, fallback = "-") {
-  if (value === undefined || value === null || value === "") return fallback
-  return String(value)
-}
-
-function firstPresentValue(values: unknown[]) {
-  const found = values.find(value => value !== undefined && value !== null && value !== "")
-  return found === undefined ? "-" : String(found)
-}
-
-function resultReference(file: ResultFile) {
-  const data = reviewData(file)
-  return firstPresentValue([
-    data.invoice_number,
-    data.reference,
-    data.receipt_number,
-    data.payment_reference,
-    data.statement_number,
-    data.account_number,
-    data.document_id,
-    file.source_page ? `Page ${file.source_page}${file.source_page_count ? `/${file.source_page_count}` : ""}` : "",
-  ])
-}
-
-function resultDate(file: ResultFile) {
-  const data = reviewData(file)
-  return firstPresentValue([
-    data.invoice_date,
-    data.date,
-    data.receipt_date,
-    data.statement_date,
-    data.period_start,
-    data.start_date,
-  ])
-}
-
-function resultDueDate(file: ResultFile, summary: ReturnType<typeof resultSummary>) {
-  const data = reviewData(file)
-  return firstPresentValue([
-    summary.due,
-    data.due_date,
-    data.payment_due_date,
-    data.period_end,
-    data.end_date,
-  ])
-}
-
-function documentTypeToneClass(type?: string) {
-  const classes: Record<string, string> = {
-    invoice: "text-[#166534]",
-    receipt: "text-[#b45309]",
-    bank_statement: "text-[#8a6a52]",
-    notes: "text-[#5b21b6]",
-    table: "text-[#0f766e]",
-  }
-  return classes[type || ""] || "text-[#475467]"
-}
-
-function statusChipClass(state: ReturnType<typeof getOutputBadge>["state"]) {
-  const classes: Record<ReturnType<typeof getOutputBadge>["state"], string> = {
-    failed: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]",
-    needs_review: "border-[#fed7aa] bg-[#fff7ed] text-[#92400e]",
-    ready: "border-[#bbf7d0] bg-[#ecfdf3] text-[#166534]",
-    published: "border-[#e3d4c2] bg-[#f3ece2] text-[#8a6a52]",
-    edited: "border-[#ddd6fe] bg-[#f5f3ff] text-[#5b21b6]",
-  }
-  return classes[state]
-}
-
-function statusDotClass(state: ReturnType<typeof getOutputBadge>["state"]) {
-  const classes: Record<ReturnType<typeof getOutputBadge>["state"], string> = {
-    failed: "bg-[#ef4444]",
-    needs_review: "bg-[#f59e0b]",
-    ready: "bg-[#16a34a]",
-    published: "bg-[#A98467]",
-    edited: "bg-[#7c3aed]",
-  }
-  return classes[state]
-}
-
-function rowAccentClass(state: ReturnType<typeof getOutputBadge>["state"], duplicateWarning?: DocumentDuplicateWarning) {
-  if (duplicateWarning) return "border-l-[#f59e0b]"
-  const classes: Record<ReturnType<typeof getOutputBadge>["state"], string> = {
-    failed: "border-l-[#ef4444]",
-    needs_review: "border-l-[#f59e0b]",
-    ready: "border-l-[#16a34a]",
-    published: "border-l-[#A98467]",
-    edited: "border-l-[#7c3aed]",
-  }
-  return classes[state]
-}
-
-function resultIssue(
-  file: ResultFile,
-  badge: ReturnType<typeof getOutputBadge>,
-  reviewLevel: ReturnType<typeof deriveReviewLevel>,
-  duplicateWarning?: DocumentDuplicateWarning,
-) {
-  if (duplicateWarning) return { label: "Duplicate", className: "text-[#92400e]" }
-  if (badge.state === "failed") return { label: "Failed", className: "text-[#b42318]" }
-  if (reviewLevel.highValue) return { label: "High value", className: "text-[#92400e]" }
-  if (badge.state === "needs_review") return { label: "Needs review", className: "text-[#92400e]" }
-  if (badge.state === "published") return { label: "Published", className: "text-[#8a6a52]" }
-  if (badge.state === "edited" || file.review_status === "edited") return { label: "Edited", className: "text-[#5b21b6]" }
-  return { label: "Clean", className: "text-[#166534]" }
-}
-
-type BookkeeperFigures = { currency?: any; subtotal?: any; vat?: any; total?: any }
-
-// C16 — the bookkeeper breakdown: Net / VAT / Total surfaced from the extracted
-// fields plus a one-glance reconciliation chip (vatCheck). Reuses AnomalyChip so
-// it matches the rest of the board; only renders for invoice/receipt docs.
-function BookkeeperBreakdown({ figures, layout = "row" }: { figures: BookkeeperFigures; layout?: "row" | "grid" }) {
-  const currency = figures.currency ? String(figures.currency) : ""
-  const fmt = (value: any) => (value === undefined || value === null || value === "" ? "-" : [currency, value].filter(Boolean).join(" "))
-  const check = vatCheck(figures.subtotal, figures.vat, figures.total)
-  // vatCheck's "neutral" maps onto AnomalyChip's caution (no plain neutral tone).
-  const chipTone: AnomalyTone = check.tone === "good" ? "good" : "caution"
-  const cells: Array<[string, string]> = [
-    [FIELD_LABEL.net, fmt(figures.subtotal)],
-    [FIELD_LABEL.vat, fmt(figures.vat)],
-    [FIELD_LABEL.gross, fmt(figures.total)],
-  ]
-  // The leading symbol speaks the reconciliation verdict at a glance: a
-  // balanced "=" when Net+VAT ties to Total, a variance mark when it doesn't,
-  // and the plain VAT chip when we can't check (missing figures).
-  const verdictSymbol =
-    check.state === "ok" ? "code-balanced-equals" : check.state === "mismatch" ? "code-variance" : "code-vat-chip"
-  return (
-    <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-1.5", layout === "grid" && "w-full")}>
-      <Symbol name={verdictSymbol} size="inline" className="h-14 w-14 shrink-0" alt="" />
-      {cells.map(([label, value]) => (
-        <span key={label} className="inline-flex items-baseline gap-1.5">
-          <span className="text-[11px] font-bold uppercase tracking-wide text-foreground">{label}</span>
-          <span className="text-[13px] font-semibold tabular-nums text-foreground">{value}</span>
-        </span>
-      ))}
-      <AnomalyChip
-        tone={chipTone}
-        title={check.label}
-        reason={check.detail}
-        label={check.state === "ok" ? `✓ ${check.label}` : check.label}
-        className="h-5 shrink-0"
-      />
-    </div>
-  )
-}
-
-function structuredRows(file: ResultFile, language: InvoiceLanguage = "en"): { columns: string[]; rows: any[][]; pathRoot?: string } | null {
-  const data = reviewData(file)
-  if (file.document_type === "invoice" || file.document_type === "receipt") {
-    return {
-      columns: [
-        columnLabel("description", language, "Description"),
-        columnLabel("quantity", language, "Quantity"),
-        columnLabel("unit_price", language, "Unit price"),
-        columnLabel("tax_rate", language, "Tax"),
-        columnLabel("line_total", language, "Line total"),
-      ],
-      rows: Array.isArray(data.line_items)
-        ? data.line_items.map((row: Record<string, any>) => [
-            row.description || "",
-            row.quantity || "",
-            row.unit_price || "",
-            row.tax_rate || "",
-            row.line_total || "",
-          ])
-        : [],
-      pathRoot: "line_items",
-    }
-  }
-  if (file.document_type === "bank_statement") {
-    return {
-      columns: [
-        columnLabel("date", language, "Date"),
-        columnLabel("description", language, "Description"),
-        columnLabel("reference", language, "Reference"),
-        columnLabel("debit", language, "Debit"),
-        columnLabel("credit", language, "Credit"),
-        columnLabel("balance", language, "Balance"),
-      ],
-      rows: Array.isArray(data.transactions)
-        ? data.transactions.map((row: Record<string, any>) => [
-            row.date || "",
-            row.description || "",
-            row.reference || "",
-            row.debit || "",
-            row.credit || "",
-            row.balance || "",
-          ])
-        : [],
-      pathRoot: "transactions",
-    }
-  }
-  return null
-}
-
-function structuredRowPaths(file: ResultFile) {
-  if (file.document_type === "invoice" || file.document_type === "receipt") {
-    return ["description", "quantity", "unit_price", "tax_rate", "line_total"]
-  }
-  if (file.document_type === "bank_statement") {
-    return ["date", "description", "reference", "debit", "credit", "balance"]
-  }
-  return []
-}
-
-function structuredFields(file: ResultFile, language: InvoiceLanguage = "en"): Array<{ label: string; path: string; value: string }> {
-  const data = reviewData(file)
-  const byMode: Record<string, Array<[string, string]>> = {
-    invoice: [
-      ["Vendor", "vendor_name"], ["Invoice no.", "invoice_number"], ["Invoice date", "invoice_date"],
-      ["Due date", "due_date"], ["Subtotal", "subtotal"], ["Tax / VAT", "tax_vat_amount"],
-      ["Total", "total"], ["Currency", "currency"],
-    ],
-    receipt: [
-      ["Merchant", "merchant"], ["Date", "date"], ["Payment method", "payment_method"],
-      ["Subtotal", "subtotal"], ["Tax / VAT", "tax_vat_amount"], ["Total", "total"], ["Currency", "currency"],
-    ],
-    bank_statement: [
-      ["Account holder", "account_holder"], ["Bank", "bank_name"], ["Period", "period"],
-      ["Opening balance", "opening_balance"], ["Closing balance", "closing_balance"], ["Currency", "currency"],
-    ],
-  }
-  return (byMode[file.document_type || ""] || []).map(([label, path]) => ({
-    label: fieldLabel(path, language, label),
-    path,
-    value: String(data[path] || ""),
-  }))
-}
-
-function ResultThumb({ file, preview, isTextOutput, compact = false }: { file: ResultFile; preview?: ResultPreview; isTextOutput: boolean; compact?: boolean }) {
-  const summary = resultSummary(file)
-  const structured = structuredRows(file)
-  const height = compact ? "min-h-[196px]" : "min-h-[255px]"
-  if (preview?.loading) {
-    return (
-      <div className={cn("flex h-full items-center justify-center rounded-md border border-[var(--button-warm-ring)] bg-white", height)}>
-        <Loader2 className="h-4 w-4 animate-spin text-[var(--brand-brown-fg)]" />
-      </div>
-    )
-  }
-
-  if (isTextOutput || preview?.text) {
-    const lines = (preview?.text || "").split(/\r?\n/).filter(Boolean).slice(0, 5)
-    return (
-      <div className={cn("flex h-full flex-col gap-2 overflow-hidden rounded-md border border-[var(--button-warm-ring)] bg-white p-4", height)}>
-        {lines.length ? lines.map((line, index) => (
-          <span key={index} className="truncate text-xs font-semibold text-gray-700">
-            {line}
-          </span>
-        )) : (
-          <span className="text-[10px] font-semibold text-foreground">Text output</span>
-        )}
-      </div>
-    )
-  }
-
-  if (structured) {
-    const rows = structured.rows.slice(0, compact ? 3 : 5)
-    return (
-      <div className={cn("overflow-hidden rounded-md border border-[var(--button-warm-ring)] bg-white", height)}>
-        <div className="grid grid-cols-2 border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-3 py-2 text-[11px] font-semibold text-foreground">
-          <span className="truncate">{summary.identityLabel}</span>
-          <span className="text-right">{summary.amountLabel}</span>
-          <span className="truncate text-sm font-semibold text-foreground">{summary.identity}</span>
-          <span className="text-right text-sm font-semibold text-foreground">{summary.amount}</span>
-        </div>
-        <div className="grid grid-cols-3 bg-foreground px-2 py-1.5 text-[10px] font-medium text-background">
-          {structured.columns.slice(0, 3).map(column => <span key={column} className="truncate px-1">{column}</span>)}
-        </div>
-        {rows.map((row, rowIndex) => (
-          <div key={rowIndex} className="grid grid-cols-3 border-b border-border px-2 py-1.5 text-xs text-foreground last:border-b-0">
-            {row.slice(0, 3).map((value, cellIndex) => <span key={cellIndex} className="truncate px-1">{value || "-"}</span>)}
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  const rows = preview?.table?.length ? preview.table.slice(0, 5) : []
-
-  return (
-    <div className={cn("h-full overflow-hidden rounded-md border border-[var(--button-warm-ring)] bg-white", height)}>
-      <div className="grid grid-cols-4 bg-[var(--brand-brown-fg)]">
-        {Array.from({ length: 4 }).map((_, index) => (
-          <span key={index} className="h-5 border-r border-white/20 last:border-r-0" />
-        ))}
-      </div>
-      {rows.length ? rows.map((row, rowIndex) => (
-        <div key={rowIndex} className="grid grid-cols-4 border-b border-[var(--button-warm-ring)] last:border-b-0">
-          {Array.from({ length: 4 }).map((_, cellIndex) => (
-            <span key={cellIndex} className="truncate border-r border-[var(--button-warm-ring)] px-3 py-2 text-xs font-medium text-gray-800 last:border-r-0">
-              {row?.[cellIndex] || " "}
-            </span>
-          ))}
-        </div>
-      )) : (
-        <div className="grid gap-1.5 p-3">
-          <div className="h-2 rounded bg-[var(--button-warm)]" />
-          <div className="h-2 w-4/5 rounded bg-[var(--button-warm)]" />
-          <div className="h-2 w-3/5 rounded bg-[var(--button-warm)]" />
-        </div>
-      )}
-    </div>
   )
 }
 
@@ -3130,41 +2393,6 @@ export function ResultActions({
 
     </>
   )
-}
-
-type RecentBatchFile = {
-  id: string
-  filename: string
-  status: string
-  createdAt: string
-}
-
-function normalizeRecentFiles(response: any): RecentBatchFile[] {
-  const rows = Array.isArray(response)
-    ? response
-    : response?.jobs || response?.history || response?.items || response?.data || []
-
-  return rows.flatMap((item: any) => {
-    const id = item.id || item.job_id || item.original_job_id
-    const createdAt = item.updated_at || item.saved_at || item.completed_at || item.created_at
-    if (!id || !createdAt) return []
-    return [{
-      id,
-      filename: item.filename || item.original_filename || item.output_filename || "Converted batch",
-      status: item.status || "completed",
-      createdAt,
-    }]
-  })
-}
-
-function recentStatusChip(status: string): { label: string; chip: string; dot: string } {
-  if (["processing", "pending", "queued"].includes(status))
-    return { label: "Processing", chip: "border-[#e3d4c2] bg-[#f3ece2] text-[#8a6a52]", dot: "bg-[#A98467]" }
-  if (["failed", "error"].includes(status))
-    return { label: "Failed", chip: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]", dot: "bg-[#ef4444]" }
-  if (status === "requires_review")
-    return { label: "Needs review", chip: "border-[#fed7aa] bg-[#fff7ed] text-[#92400e]", dot: "bg-[#f59e0b]" }
-  return { label: "Ready", chip: "border-[#bbf7d0] bg-[#ecfdf3] text-[#166534]", dot: "bg-[#16a34a]" }
 }
 
 /**
