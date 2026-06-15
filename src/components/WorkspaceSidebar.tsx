@@ -108,15 +108,16 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         href={item.href}
         aria-current={isActive ? "page" : undefined}
         className={cn(
-          "ax-interactive relative flex h-[41px] items-center gap-2.5 rounded-md px-3 text-[14px] font-normal outline-none focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/25",
+          "ax-interactive relative flex h-[41px] items-center gap-2.5 rounded-md px-3 text-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#8a6a52]/25",
           inset && "ms-6 h-9",
           isActive
-            ? "bg-[var(--workspace-sidebar-active)] text-white"
-            : "text-[var(--workspace-ink)] hover:bg-white hover:text-[var(--workspace-primary)]",
+            ? "bg-[#efe7db] font-medium text-[#5b4636]"
+            : "font-normal text-[var(--workspace-ink)] hover:bg-white hover:text-[#6b4f2e]",
         )}
       >
+        {isActive ? <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-[#8a6a52]" aria-hidden="true" /> : null}
         <span className="relative flex shrink-0 items-center justify-center">
-          <Icon className={cn("size-[17px]", isActive ? "text-white" : "text-slate-700")} />
+          <Icon className={cn("size-[17px]", isActive ? "text-[#6b4f2e]" : "text-slate-700")} />
           {showDot && (
             <span className="absolute -right-1 -top-1 size-1.5 rounded-full bg-amber-400 ring-2 ring-[var(--workspace-sidebar)]" aria-hidden="true" />
           )}
@@ -126,7 +127,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
           <span
             className={cn(
               "ms-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-medium leading-none",
-              isActive ? "bg-white/20 text-white" : "bg-[var(--workspace-primary)] text-white",
+              isActive ? "bg-[#6b4f2e] text-white" : "bg-[#8a6a52] text-white",
             )}
           >
             {count > 99 ? "99+" : count}
@@ -147,7 +148,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="ax-interactive flex h-10 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] font-normal text-[var(--workspace-ink)] outline-none hover:bg-white hover:text-[var(--workspace-primary)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/25"
+        className="ax-interactive flex h-10 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] font-normal text-[var(--workspace-ink)] outline-none hover:bg-white hover:text-[#6b4f2e] focus-visible:ring-2 focus-visible:ring-[#8a6a52]/25"
       >
         <Icon className="size-[17px] text-slate-700" />
         <span className="flex-1 truncate">{label}</span>
