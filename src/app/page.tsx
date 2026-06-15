@@ -211,22 +211,22 @@ const footerSocialLinks = [
 ];
 
 const folderPanelTitleStyle = {
-  fontSize: "clamp(2.6rem, 5.2vw, 5.65rem)",
-  lineHeight: 0.98,
+  fontSize: "clamp(2.35rem, 4.25vw, 4.45rem)",
+  lineHeight: 1.02,
   letterSpacing: "0",
 } as const;
 
 const folderPanelBodyStyle = {
-  fontSize: "clamp(1.18rem, 1.45vw, 1.55rem)",
-  lineHeight: 1.55,
+  fontSize: "clamp(1.12rem, 1.25vw, 1.35rem)",
+  lineHeight: 1.6,
   letterSpacing: "0",
 } as const;
 
-const folderPanelTextClass = "max-w-[690px]";
-const folderPanelTitleClass = "ax-h2 ax-marketing-section-title max-w-[720px] font-bold text-neutral-950";
-const folderPanelBodyClass = "ax-body ax-marketing-body mt-6 max-w-[660px] font-semibold text-neutral-950";
+const folderPanelTextClass = "max-w-[640px]";
+const folderPanelTitleClass = "ax-h2 ax-marketing-section-title max-w-[660px] font-bold text-neutral-950";
+const folderPanelBodyClass = "ax-body ax-marketing-body mt-5 max-w-[610px] font-semibold text-neutral-950";
 const folderPanelCtaClass =
-  "mt-9 inline-flex h-12 items-center rounded-full border-2 border-neutral-950 bg-transparent px-8 text-[15px] font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white";
+  "mt-8 inline-flex h-12 items-center rounded-full border-2 border-neutral-950 bg-transparent px-8 text-[15px] font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white";
 const folderPanelMediaClass =
   "overflow-hidden rounded-[2rem] bg-white p-3 shadow-[0_30px_90px_-42px_rgba(0,0,0,0.42)] ring-1 ring-black/10 sm:p-4 lg:rounded-[2.5rem] lg:p-5";
 
@@ -443,10 +443,10 @@ export default function Home() {
           />
           <div className="relative z-10">
         <div id="how-it-works" className="ax-marketing-band-mint text-neutral-950" style={{ backgroundColor: "#F6F1EA" }}>
-          <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-9">
+          <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
 
             {/* A — text left · video right */}
-            <div className="grid min-h-[100svh] items-center gap-12 py-24 sm:py-28 lg:grid-cols-[0.82fr_1.18fr] lg:gap-24 lg:py-32">
+            <div className="grid min-h-[86svh] items-center gap-10 py-20 sm:py-24 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 lg:py-28">
               <div className={folderPanelTextClass} data-animate="headline">
                 <h3 className={folderPanelTitleClass} style={folderPanelTitleStyle}>
                   Throw us the whole <span className="text-[var(--brand-brown-dark)]">folder</span>.
@@ -464,7 +464,7 @@ export default function Home() {
             </div>
 
             {/* B — video left · text right */}
-            <div className="grid min-h-[100svh] items-center gap-12 border-t border-black/15 py-24 sm:py-28 lg:grid-cols-[1.12fr_0.88fr] lg:gap-24 lg:py-32">
+            <div className="grid min-h-[86svh] items-center gap-10 border-t border-black/15 py-20 sm:py-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20 lg:py-28">
               <div className={`${folderPanelMediaClass} order-last lg:order-first`} data-animate="stagger">
                 <VideoPlaceholder caption="Review board: source document side-by-side with extracted data" />
               </div>
@@ -482,7 +482,7 @@ export default function Home() {
             </div>
 
             {/* C — text left · video right */}
-            <div className="grid min-h-[100svh] items-center gap-12 border-t border-black/15 py-24 sm:py-28 lg:grid-cols-[0.88fr_1.12fr] lg:gap-24 lg:py-32">
+            <div className="grid min-h-[86svh] items-center gap-10 border-t border-black/15 py-20 sm:py-24 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20 lg:py-28">
               <div className={folderPanelTextClass} data-animate="headline">
                 <h3 className={folderPanelTitleClass} style={folderPanelTitleStyle}>
                   The messy stuff. WhatsApp photos. Handwritten receipts.
@@ -500,7 +500,7 @@ export default function Home() {
             </div>
 
             {/* D — video left · text right */}
-            <div className="grid min-h-[100svh] items-center gap-12 border-t border-black/15 py-24 pb-28 sm:py-28 lg:grid-cols-[1.12fr_0.88fr] lg:gap-24 lg:py-32 lg:pb-36">
+            <div className="grid min-h-[86svh] items-center gap-10 border-t border-black/15 py-20 pb-24 sm:py-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20 lg:py-28 lg:pb-32">
               <div className={`${folderPanelMediaClass} order-last lg:order-first`} data-animate="stagger">
                 <VideoPlaceholder caption="AP queue: code, review, and publish bills to QuickBooks or Xero in one screen" />
               </div>
