@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, type ChangeEvent, type DragEvent } from "react"
+import { useEffect, useState, type ChangeEvent, type DragEvent, type FormEvent } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import {
   ArrowRight,
@@ -8,6 +8,7 @@ import {
   FileText,
   FolderUp,
   Loader2,
+  Plus,
   Trash2,
 } from "lucide-react"
 
@@ -94,6 +95,9 @@ export function ProgressiveUploadSheet({
   const [companies, setCompanies] = useState<CompanySummary[]>([])
   const [companiesLoading, setCompaniesLoading] = useState(false)
   const [companiesError, setCompaniesError] = useState("")
+  const [newClientName, setNewClientName] = useState("")
+  const [creatingClient, setCreatingClient] = useState(false)
+  const [createClientError, setCreateClientError] = useState("")
   const [companiesReloadKey, setCompaniesReloadKey] = useState(0)
   const hasPdfs = uploadedFiles.some(isPdfFile)
   const pdfPages = uploadedFiles.reduce((total, file, index) => (
@@ -101,6 +105,11 @@ export function ProgressiveUploadSheet({
   ), 0)
   const busy = isUploading || isProcessing
   const canProcess = Boolean(workspaceId && selectedCompanyId)
+  const processButtonLabel = busy
+    ? "Processing documents"
+    : !selectedCompanyId
+      ? "Select client first"
+      : processLabel
 
   useEffect(() => {
     if (isProcessing) onOpenChange(false)
@@ -124,7 +133,7 @@ export function ProgressiveUploadSheet({
       .catch(() => {
         if (!mounted) return
         setCompanies([])
-        setCompaniesError("Companies could not be loaded.")
+        setCompaniesError("Clients could not be loaded.")
       })
       .finally(() => {
         if (mounted) setCompaniesLoading(false)
@@ -135,6 +144,25 @@ export function ProgressiveUploadSheet({
     }
   }, [companiesReloadKey, onSelectedCompanyIdChange, open, selectedCompanyId, workspaceId])
 
+  const createClient = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const cleanName = newClientName.trim()
+    if (!workspaceId || !cleanName || busy || creatingClient) return
+
+    setCreatingClient(true)
+    setCreateClientError("")
+    try {
+      const client = await companyApi.create(workspaceId, { name: cleanName })
+      setCompanies(current => [client, ...current.filter(item => item.id !== client.id)])
+      onSelectedCompanyIdChange(client.id)
+      setNewClientName("")
+    } catch {
+      setCreateClientError("Could not add this client.")
+    } finally {
+      setCreatingClient(false)
+    }
+  }
+
   return (
     <Sheet open={open} onOpenChange={(nextOpen) => {
       if (!busy) onOpenChange(nextOpen)
@@ -144,21 +172,21 @@ export function ProgressiveUploadSheet({
           <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--workspace-primary)]">New batch</p>
           <SheetTitle className="text-xl font-bold tracking-tight">Upload documents</SheetTitle>
           <SheetDescription className="leading-5 text-foreground/80">
-            Drop a mixed batch — every file&apos;s type is detected automatically.
+            Choose a client, then drop the batch for review.
           </SheetDescription>
         </SheetHeader>
 
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-5">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-1.5 block text-xs font-semibold text-foreground">Company</span>
+              <span className="mb-1.5 block text-xs font-semibold text-foreground">Client</span>
               <select
                 value={selectedCompanyId}
                 onChange={(event) => onSelectedCompanyIdChange(event.target.value)}
                 disabled={busy || companiesLoading || !workspaceId}
                 className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-ring/40"
               >
-                <option value="">{companiesLoading ? "Loading…" : "Select a company"}</option>
+                <option value="">{companiesLoading ? "Loading..." : "Select a client"}</option>
                 {companies.map(company => (
                   <option key={company.id} value={company.id}>{company.name}</option>
                 ))}
@@ -177,6 +205,39 @@ export function ProgressiveUploadSheet({
               </select>
             </label>
           </div>
+          <form
+            className="rounded-lg border border-[var(--workspace-border)] bg-white p-3"
+            onSubmit={createClient}
+          >
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+              <label className="min-w-0 flex-1">
+                <span className="mb-1.5 block text-xs font-semibold text-foreground">Add client</span>
+                <input
+                  value={newClientName}
+                  onChange={(event) => {
+                    setNewClientName(event.target.value)
+                    if (createClientError) setCreateClientError("")
+                  }}
+                  disabled={busy || creatingClient || !workspaceId}
+                  placeholder="Client name"
+                  className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-ring/40"
+                />
+              </label>
+              <Button
+                type="submit"
+                variant="surface"
+                size="sm"
+                disabled={busy || creatingClient || !workspaceId || !newClientName.trim()}
+                className="h-10 shrink-0 px-4"
+              >
+                {creatingClient ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
+                Add
+              </Button>
+            </div>
+            {createClientError ? (
+              <p className="mt-2 text-xs font-semibold text-destructive">{createClientError}</p>
+            ) : null}
+          </form>
           {companiesError ? (
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-xs font-semibold text-destructive">{companiesError}</p>
@@ -313,13 +374,13 @@ export function ProgressiveUploadSheet({
             {busy ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
             <AnimatePresence mode="wait" initial={false}>
               <motion.span
-                key={busy ? "busy" : "idle"}
+                key={processButtonLabel}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={m.tFast}
               >
-                {busy ? "Processing documents" : processLabel}
+                {processButtonLabel}
               </motion.span>
             </AnimatePresence>
           </Button>

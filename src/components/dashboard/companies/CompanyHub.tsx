@@ -59,8 +59,8 @@ const WORKFLOW_TABS: WorkflowTab[] = [
   {
     id: "inbox",
     label: "Inbox",
-    description: "Open submissions and collected source documents for this company.",
-    action: "Open company inbox",
+    description: "Open submissions and collected source documents for this client.",
+    action: "Open client inbox",
     href: (companyId) => `/dashboard/inbox?company_id=${encodeURIComponent(companyId)}`,
     icon: Inbox,
   },
@@ -83,7 +83,7 @@ const WORKFLOW_TABS: WorkflowTab[] = [
   {
     id: "accounting",
     label: "Accounting",
-    description: "Manage the accounting connection used for this company's reviewed drafts.",
+    description: "Manage the accounting connection used for this client's reviewed drafts.",
     action: "Open accounting setup",
     href: (companyId) => `/dashboard/integrations?company_id=${encodeURIComponent(companyId)}`,
     icon: PlugZap,
@@ -212,14 +212,14 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
   }
 
   if (authLoading || !user) {
-    return <DashboardRouteLoader label="Loading company" />
+    return <DashboardRouteLoader label="Loading client" />
   }
 
   return (
-    <DashboardShell activeItem="companies" title={company?.name || "Company"} user={user}>
+    <DashboardShell activeItem="companies" title={company?.name || "Client"} user={user}>
       <PageHeader
-        title={company?.name || "Company"}
-        description={company ? `Last upload: ${formatDate(company.lastUploadAt)}` : "Company workspace"}
+        title={company?.name || "Client"}
+        description={company ? `Last upload: ${formatDate(company.lastUploadAt)}` : "Client workspace"}
         breadcrumb={
           <Link href="/dashboard/clients" className="font-semibold text-foreground hover:underline">
             Clients
@@ -232,15 +232,15 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
         <Card className="rounded-xl">
           <CardContent className="flex items-center gap-2 p-6 text-sm font-medium text-foreground">
             <Loader2 className="size-4 animate-spin" />
-            Loading company workspace...
+            Loading client workspace...
           </CardContent>
         </Card>
       ) : loadError || !company ? (
         <Card className="rounded-xl">
           <EmptyState
             icon={<Building2 />}
-            title="Company unavailable"
-            description="This company could not be loaded."
+            title="Client unavailable"
+            description="This client could not be loaded."
             action={
               <InlineAction onClick={() => void load()}>
                 <RefreshCw className="size-4" />

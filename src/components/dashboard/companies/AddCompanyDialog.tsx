@@ -45,7 +45,7 @@ export function AddCompanyDialog({ workspaceId, onCreated }: AddCompanyDialogPro
       setOpen(false)
       onCreated()
     } catch {
-      setError("Could not add this company.")
+      setError("Could not add this client.")
     } finally {
       setSaving(false)
     }
@@ -56,7 +56,7 @@ export function AddCompanyDialog({ workspaceId, onCreated }: AddCompanyDialogPro
       <DialogTrigger asChild>
         <InlineAction disabled={!workspaceId}>
           <Plus className="size-4" />
-          Add company
+          Add client
         </InlineAction>
       </DialogTrigger>
       <DialogContent>
@@ -64,9 +64,9 @@ export function AddCompanyDialog({ workspaceId, onCreated }: AddCompanyDialogPro
           <div className="flex size-10 items-center justify-center rounded-full bg-muted text-foreground">
             <Building2 className="size-5" />
           </div>
-          <DialogTitle>Add company</DialogTitle>
+          <DialogTitle>Add client</DialogTitle>
           <DialogDescription className="font-normal text-foreground">
-            A workspace for its document batches, review queue, and draft bills.
+            A home for their batches, review queue, and draft bills.
           </DialogDescription>
         </DialogHeader>
         <form className="space-y-5" onSubmit={submit}>
@@ -74,8 +74,8 @@ export function AddCompanyDialog({ workspaceId, onCreated }: AddCompanyDialogPro
             autoFocus
             value={name}
             onChange={(event) => setName(event.target.value)}
-            placeholder="Company name"
-            aria-label="Company name"
+            placeholder="Client name"
+            aria-label="Client name"
           />
           {error ? <p className="text-sm font-medium text-destructive">{error}</p> : null}
           <DialogFooter>
@@ -89,7 +89,7 @@ export function AddCompanyDialog({ workspaceId, onCreated }: AddCompanyDialogPro
               className="!border-[var(--workspace-primary)] !bg-[var(--workspace-primary)] !text-white hover:!border-[var(--workspace-primary-hover)] hover:!bg-[var(--workspace-primary-hover)]"
             >
               {saving ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
-              Add company
+              Add client
             </Button>
           </DialogFooter>
         </form>

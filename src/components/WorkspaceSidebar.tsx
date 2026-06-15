@@ -42,7 +42,7 @@ type SidebarItem = {
 const SIDEBAR_W = 220
 
 const PRIMARY_ITEMS: SidebarItem[] = [
-  { key: "companies", label: "Companies", href: "/dashboard", icon: Home },
+  { key: "companies", label: "Clients", href: "/dashboard", icon: Home },
 ]
 
 const DOCUMENT_ITEMS: SidebarItem[] = [

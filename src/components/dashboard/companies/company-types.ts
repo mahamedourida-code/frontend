@@ -38,7 +38,7 @@ export function normalizeCompany(value: unknown): CompanySummary {
 
   return {
     id: String(company.id || company.company_id || ""),
-    name: firstString(company.name, company.company_name) || "Untitled company",
+    name: firstString(company.name, company.company_name) || "Untitled client",
     quickbooksConnected: Boolean(company.quickbooks_connected ?? quickbooks.connected),
     quickbooksCompanyName: firstString(company.quickbooks_company_name, quickbooks.company_name),
     accountingProvider: company.accounting_destination === "xero" ? "xero" : "quickbooks",

@@ -71,7 +71,7 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
       setCompanies(companiesFromResponse(response))
     } catch {
       setCompanies([])
-      setLoadError("Companies are unavailable right now.")
+      setLoadError("Clients are unavailable right now.")
     } finally {
       setLoading(false)
     }
@@ -96,13 +96,13 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
             <Input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search companies"
-              aria-label="Search companies"
+              placeholder="Search clients"
+              aria-label="Search clients"
               className="h-9 rounded-md bg-white pl-9"
             />
           </div>
           <div className="flex items-center gap-5">
-            <InlineAction onClick={() => void load()} disabled={loading} aria-label="Refresh companies">
+            <InlineAction onClick={() => void load()} disabled={loading} aria-label="Refresh clients">
               <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
               Refresh
             </InlineAction>
@@ -120,7 +120,7 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
           <Table className="ax-table min-w-[1180px]">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="min-w-[230px] px-4">Company</TableHead>
+                <TableHead className="min-w-[230px] px-4">Client</TableHead>
                 <TableHead>Accounting</TableHead>
                 <TableHead className="text-right">Purchases</TableHead>
                 <TableHead className="text-right">Receipts</TableHead>
@@ -139,8 +139,8 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
                   <TableCell colSpan={9} className="h-48">
                     <EmptyState
                       icon={<Building2 />}
-                      title={query ? "No matching companies" : "No companies yet"}
-                      description={query ? "Try a different search term." : "Add a company to give its mixed document batches a clear home."}
+                      title={query ? "No matching clients" : "No clients yet"}
+                      description={query ? "Try a different search term." : "Add a client to give each batch a clear home."}
                       compact
                     />
                   </TableCell>

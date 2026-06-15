@@ -20,15 +20,15 @@ export default function DashboardPage() {
   }, [loading, router, user])
 
   if (loading || !user) {
-    return <DashboardRouteLoader label="Loading companies" />
+    return <DashboardRouteLoader label="Loading clients" />
   }
 
   return (
-    <DashboardShell activeItem="companies" title="Companies" user={user} showBack={false}>
+    <DashboardShell activeItem="companies" title="Clients" user={user} showBack={false}>
       <div className="space-y-8">
         <PageHeader
-          title="Companies"
-          description="Every client company, its batches, and accounting handoff in one place."
+          title="Clients"
+          description="Start with a client, then upload a batch for review."
         />
         <CompaniesTable workspaceId={activeWorkspace?.id} />
       </div>
