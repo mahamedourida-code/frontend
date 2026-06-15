@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { ocrApi } from '@/lib/api-client'
+import { reconcileHistoryDeletions } from '@/lib/recent-files-store'
 import { toast } from 'sonner'
 
 export type HistoryJob = {
@@ -46,6 +47,12 @@ export function useHistory(): UseHistoryReturn {
       setJobs(historyJobs)
       setHasMore(Boolean(response.has_more ?? response.hasMore ?? totalCount > historyJobs.length))
       setTotal(totalCount)
+
+      // Drop any optimistic-delete marks the server has now confirmed gone, so the
+      // durable set self-heals and never hides a legitimately-present row.
+      reconcileHistoryDeletions(
+        historyJobs.flatMap((job: HistoryJob) => [job.id, job.job_id, job.original_job_id]),
+      )
     } catch (err: any) {
       const errorMessage = err.detail || err.message || 'Failed to load history'
       setError(errorMessage)

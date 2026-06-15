@@ -5,7 +5,7 @@ import Link from "next/link"
 import { format } from "date-fns"
 import { ArrowRight, FileText } from "lucide-react"
 import { ocrApi } from "@/lib/api-client"
-import { isHistoryItemDeleted, subscribeHistoryDeletions } from "@/lib/recent-files-store"
+import { isHistoryItemDeleted, reconcileHistoryDeletions, subscribeHistoryDeletions } from "@/lib/recent-files-store"
 import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
 
 type WorkspaceFile = {
@@ -76,7 +76,10 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
     setLoading(true)
     try {
       const response = await ocrApi.getHistory(50, 0)
-      setFiles(normalizeFiles(response))
+      const normalized = normalizeFiles(response)
+      setFiles(normalized)
+      // Self-heal the durable delete set against what the server actually returns.
+      reconcileHistoryDeletions(normalized.map((file) => file.id))
     } catch {
       setFiles([])
     } finally {
