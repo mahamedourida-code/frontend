@@ -897,7 +897,7 @@ function SettingsContent() {
                       </div>
                       <div className="mt-4 flex justify-end border-t border-border pt-4">
                         <InlineAction
-                          className={accountingTextAction}
+                          tone="success"
                           disabled={vendorRuleAction === rule.id}
                           onClick={() => void saveVendorRule(rule)}
                         >
@@ -916,7 +916,7 @@ function SettingsContent() {
                   <CardHeader className="p-5 sm:p-6">
                     <div className="flex items-start gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#f3ece2] dark:bg-blue-950/40">
-                        <DownloadCloud className="h-5 w-5 text-[#A98467]" />
+                        <DownloadCloud className="h-5 w-5 text-[var(--workspace-blue)]" />
                       </div>
                       <div>
                         <CardTitle className="text-lg font-medium">Accounting connections</CardTitle>
@@ -942,7 +942,7 @@ function SettingsContent() {
                   <CardHeader className="p-5 sm:p-6">
                     <div className="flex items-start gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#f3ece2] dark:bg-blue-950/40">
-                        <FileSpreadsheet className="h-5 w-5 text-[#A98467]" />
+                        <FileSpreadsheet className="h-5 w-5 text-[var(--workspace-blue)]" />
                       </div>
                       <div>
                         <CardTitle className="text-lg font-medium">Purchase order import</CardTitle>
@@ -1000,7 +1000,7 @@ function SettingsContent() {
                   <CardHeader className="p-5">
                     <div className="flex items-center gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#f3ece2] dark:bg-blue-950/40">
-                        <Settings2 className="h-5 w-5 text-[#A98467]" />
+                        <Settings2 className="h-5 w-5 text-[var(--workspace-blue)]" />
                       </div>
                       <div>
                         <CardTitle className="font-medium">Processing Settings</CardTitle>
@@ -1090,7 +1090,7 @@ function SettingsContent() {
                   <CardHeader className="p-5">
                     <div className="flex items-center gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#f3ece2] dark:bg-blue-950/40">
-                        <Languages className="h-5 w-5 text-[#A98467]" />
+                        <Languages className="h-5 w-5 text-[var(--workspace-blue)]" />
                       </div>
                       <div>
                         <CardTitle className="font-medium">OCR Detection Language</CardTitle>

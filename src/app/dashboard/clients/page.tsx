@@ -161,7 +161,7 @@ export default function ClientsPage() {
                     <TableCell className="px-4 py-3">
                       <Link
                         href={`/dashboard/companies/${client.id}`}
-                        className="flex items-center gap-3 font-medium text-[var(--workspace-primary)]"
+                        className="flex items-center gap-3 font-medium text-[var(--workspace-blue)]"
                         onClick={event => event.stopPropagation()}
                       >
                         <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-muted)]">
@@ -185,7 +185,7 @@ export default function ClientsPage() {
                               href={`/dashboard/companies/${client.id}`}
                               onClick={event => event.stopPropagation()}
                               aria-label={`Open ${client.name}`}
-                              className="ax-interactive inline-flex size-8 items-center justify-center rounded-md text-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)]"
+                              className="ax-interactive inline-flex size-8 items-center justify-center rounded-md text-[var(--workspace-blue)] hover:bg-[var(--workspace-blue-soft)]"
                             >
                               <ArrowRight className="size-4" />
                             </Link>

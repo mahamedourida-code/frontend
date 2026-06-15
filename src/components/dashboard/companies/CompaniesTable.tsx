@@ -155,7 +155,7 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
                     <TableCell className="px-4">
                       <Link
                         href={`/dashboard/companies/${encodeURIComponent(company.id)}`}
-                        className="flex items-center gap-3 font-normal text-[var(--workspace-primary)]"
+                        className="flex items-center gap-3 font-normal text-[var(--workspace-blue)]"
                         onClick={(event) => event.stopPropagation()}
                       >
                         <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-muted)]">

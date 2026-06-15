@@ -155,7 +155,7 @@ function BatchRow({ batch, index }: { batch: Batch; index: number }) {
       <StatusBadge tone={batchStatusTone(batch.status)} className="hidden sm:inline-flex">
         {statusLabel(batch.status)}
       </StatusBadge>
-      <ArrowUpRight className="size-4 shrink-0 text-[var(--workspace-primary)] opacity-0 transition-opacity group-hover:opacity-100" />
+      <ArrowUpRight className="size-4 shrink-0 text-[var(--workspace-blue)] opacity-0 transition-opacity group-hover:opacity-100" />
     </motion.button>
   )
 }

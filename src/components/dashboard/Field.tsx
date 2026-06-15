@@ -45,7 +45,7 @@ export function Field({
           className="flex items-center gap-1.5 text-[13px] font-medium text-foreground"
         >
           {icon ? (
-            <span className="inline-flex shrink-0 text-[var(--workspace-primary)] [&_svg]:size-[15px]">
+            <span className="inline-flex shrink-0 text-[var(--workspace-blue)] [&_svg]:size-[15px]">
               {icon}
             </span>
           ) : null}

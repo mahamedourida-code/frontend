@@ -242,7 +242,7 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
             title="Client unavailable"
             description="This client could not be loaded."
             action={
-              <InlineAction onClick={() => void load()}>
+              <InlineAction tone="warning" onClick={() => void load()}>
                 <RefreshCw className="size-4" />
                 Try again
               </InlineAction>

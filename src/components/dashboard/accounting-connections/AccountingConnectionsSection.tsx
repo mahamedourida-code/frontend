@@ -224,7 +224,7 @@ export function AccountingConnectionsSection({
                     {selected ? "Selected for draft bills" : "Choose as destination"}
                   </span>
                 </span>
-                {selected ? <Check className="ms-auto size-4 shrink-0 text-[var(--workspace-primary)]" /> : null}
+                {selected ? <Check className="ms-auto size-4 shrink-0 text-[var(--workspace-success)]" /> : null}
               </button>
             )
           })}
@@ -277,7 +277,7 @@ export function AccountingConnectionsSection({
                           <RefreshCw className={cn("size-4", action === `${provider.id}:sync` && "animate-spin")} />
                           Sync lists
                         </InlineAction>
-                        <InlineAction onClick={() => void disconnect(provider.id)} disabled={Boolean(action)}>
+                        <InlineAction tone="danger" onClick={() => void disconnect(provider.id)} disabled={Boolean(action)}>
                           Disconnect
                         </InlineAction>
                       </>
@@ -295,7 +295,7 @@ export function AccountingConnectionsSection({
       </WorkspaceSection>
 
       <div className={cn("flex items-start gap-3 rounded-xl border px-5 py-4", workspaceWarmPanel)}>
-        <ShieldCheck className="mt-0.5 size-5 shrink-0 text-[var(--workspace-primary)]" />
+        <ShieldCheck className="mt-0.5 size-5 shrink-0 text-[var(--workspace-blue)]" />
         <div>
           <h3 className="text-sm font-semibold text-foreground">Controlled publishing</h3>
           <p className="mt-1.5 text-sm font-normal leading-6 text-foreground">
