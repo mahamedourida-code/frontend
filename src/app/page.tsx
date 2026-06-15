@@ -210,12 +210,6 @@ const footerSocialLinks = [
   },
 ];
 
-const folderPanelTitleStyle = {
-  fontSize: "clamp(2.35rem, 4.25vw, 4.45rem)",
-  lineHeight: 1.02,
-  letterSpacing: "0",
-} as const;
-
 const folderPanelBodyStyle = {
   fontSize: "clamp(1.12rem, 1.25vw, 1.35rem)",
   lineHeight: 1.6,
@@ -223,7 +217,8 @@ const folderPanelBodyStyle = {
 } as const;
 
 const folderPanelTextClass = "max-w-[640px]";
-const folderPanelTitleClass = "ax-h2 ax-marketing-section-title max-w-[660px] font-bold text-neutral-950";
+const folderPanelTitleClass =
+  "ax-h1 ax-marketing-display max-w-[660px] text-balance !font-semibold !leading-[1.08] !tracking-normal text-neutral-950";
 const folderPanelBodyClass = "ax-body ax-marketing-body mt-5 max-w-[610px] font-semibold text-neutral-950";
 const folderPanelCtaClass =
   "mt-8 inline-flex h-12 items-center rounded-full border-2 border-neutral-950 bg-transparent px-8 text-[15px] font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white";
@@ -450,7 +445,7 @@ export default function Home() {
             {/* A — text left · video right */}
             <div className="grid min-h-[86svh] items-center gap-10 py-20 sm:py-24 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 lg:py-28">
               <div className={folderPanelTextClass} data-animate="headline">
-                <h3 className={folderPanelTitleClass} style={folderPanelTitleStyle}>
+                <h3 className={folderPanelTitleClass}>
                   Throw us the whole <span className="text-[var(--brand-brown-dark)]">folder</span>.
                 </h3>
                 <p className={folderPanelBodyClass} style={folderPanelBodyStyle}>
@@ -471,7 +466,7 @@ export default function Home() {
                 <VideoPlaceholder caption="Review board: source document side-by-side with extracted data" />
               </div>
               <div className={folderPanelTextClass} data-animate="headline">
-                <h3 className={folderPanelTitleClass} style={folderPanelTitleStyle}>
+                <h3 className={folderPanelTitleClass}>
                   See everything before it touches QuickBooks or Xero.
                 </h3>
                 <p className={folderPanelBodyClass} style={folderPanelBodyStyle}>
@@ -486,7 +481,7 @@ export default function Home() {
             {/* C — text left · video right */}
             <div className="grid min-h-[86svh] items-center gap-10 border-t border-black/15 py-20 sm:py-24 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20 lg:py-28">
               <div className={folderPanelTextClass} data-animate="headline">
-                <h3 className={folderPanelTitleClass} style={folderPanelTitleStyle}>
+                <h3 className={folderPanelTitleClass}>
                   The messy stuff. WhatsApp photos. Handwritten receipts.
                 </h3>
                 <p className={folderPanelBodyClass} style={folderPanelBodyStyle}>
@@ -507,7 +502,7 @@ export default function Home() {
                 <VideoPlaceholder caption="AP queue: code, review, and publish bills to QuickBooks or Xero in one screen" />
               </div>
               <div className={folderPanelTextClass} data-animate="headline">
-                <h3 className={folderPanelTitleClass} style={folderPanelTitleStyle}>
+                <h3 className={folderPanelTitleClass}>
                   Reviewed, coded, posted. No copy-pasting.
                 </h3>
                 <p className={folderPanelBodyClass} style={folderPanelBodyStyle}>
