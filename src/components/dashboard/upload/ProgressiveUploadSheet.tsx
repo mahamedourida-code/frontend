@@ -299,7 +299,7 @@ export function ProgressiveUploadSheet({
               isDragging ? "border-[var(--workspace-primary)] bg-[var(--workspace-blue-soft)]" : "border-[var(--workspace-border)] bg-white hover:border-[var(--workspace-primary)]"
             )}
           >
-            <FolderUp className="mx-auto size-7 text-[var(--workspace-primary)]" />
+            <FolderUp className="mx-auto size-7 text-[var(--workspace-blue)]" />
             <p className="mt-2 text-sm font-bold text-foreground">
               {isDragging ? "Drop documents here" : "Drop files here"}
             </p>

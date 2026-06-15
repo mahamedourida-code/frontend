@@ -47,6 +47,7 @@ export function InvoiceDraftBillAction({
 
   return (
     <InlineAction
+      tone="success"
       onClick={(event) => {
         stopCardClick(event)
         void onSendToAccountsPayable(file)

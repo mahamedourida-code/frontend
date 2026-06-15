@@ -252,7 +252,7 @@ export function UploadDropzone({
             alt=""
           />
         ) : (
-          <FolderUp className="mx-auto mb-3 h-7 w-7 text-[var(--brand-brown-fg)]" />
+          <FolderUp className="mx-auto mb-3 h-7 w-7 text-[var(--workspace-blue)]" />
         )}
         <h3 className="text-xl font-semibold tracking-tight text-foreground">
           {isDragging ? "Drop documents to upload" : uploadedFiles.length ? "Add more documents" : "Upload documents"}
@@ -1415,9 +1415,9 @@ export function ResultActions({
                     type="button"
                     onClick={() => setResultFilter(tab.value)}
                     className={cn(
-                      "ax-interactive relative inline-flex h-12 items-center gap-1.5 border-b-2 px-0 text-[13px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#A98467]/20",
+                      "ax-interactive relative inline-flex h-12 items-center gap-1.5 border-b-2 px-0 text-[13px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--workspace-blue)]/20",
                       active
-                        ? "border-[#A98467] text-[#8a6a52]"
+                        ? "border-[var(--workspace-blue)] text-[var(--workspace-blue)]"
                         : "border-transparent text-[#475467] hover:text-[#111827]",
                     )}
                   >
@@ -1496,7 +1496,7 @@ export function ResultActions({
                             href={docHref}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#A98467] shadow-none transition-colors hover:border-[#A98467] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[#A98467]/20"
+                            className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[var(--workspace-blue)] shadow-none transition-colors hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[var(--workspace-blue)]/20"
                             aria-label={`Open ${file.filename || summary.identity}`}
                           >
                             <Eye className="size-3.5" />
@@ -1505,7 +1505,7 @@ export function ResultActions({
                           <button
                             type="button"
                             onClick={() => openComparison(index)}
-                            className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#A98467] shadow-none transition-colors hover:border-[#A98467] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[#A98467]/20"
+                            className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[var(--workspace-blue)] shadow-none transition-colors hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[var(--workspace-blue)]/20"
                             aria-label={`Open ${file.filename || summary.identity}`}
                           >
                             <Eye className="size-3.5" />
@@ -1518,7 +1518,7 @@ export function ResultActions({
                             href={docHref}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[#8a6a52]"
+                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[var(--workspace-blue)]"
                           >
                             {file.filename || `Result ${index + 1}`}
                           </a>
@@ -1526,7 +1526,7 @@ export function ResultActions({
                           <button
                             type="button"
                             onClick={() => openComparison(index)}
-                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[#8a6a52]"
+                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[var(--workspace-blue)]"
                           >
                             {file.filename || `Result ${index + 1}`}
                           </button>
@@ -1585,7 +1585,7 @@ export function ResultActions({
                               href={docHref}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[#8a6a52] shadow-none transition-colors hover:border-[#A98467] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[#A98467]/20"
+                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[var(--workspace-blue)] shadow-none transition-colors hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[var(--workspace-blue)]/20"
                             >
                               Open
                             </a>
@@ -1593,7 +1593,7 @@ export function ResultActions({
                             <button
                               type="button"
                               onClick={() => openComparison(index)}
-                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[#8a6a52] shadow-none transition-colors hover:border-[#A98467] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[#A98467]/20"
+                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[var(--workspace-blue)] shadow-none transition-colors hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[var(--workspace-blue)]/20"
                             >
                               Open
                             </button>
@@ -1609,7 +1609,7 @@ export function ResultActions({
                       <button
                         type="button"
                         onClick={() => setResultFilter("all")}
-                        className="ml-3 inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-[11px] font-semibold text-[#8a6a52] shadow-none hover:border-[#A98467] hover:bg-[#f3ece2]"
+                        className="ml-3 inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-[11px] font-semibold text-[var(--workspace-blue)] shadow-none hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2]"
                       >
                         Show all
                       </button>
@@ -1750,7 +1750,7 @@ export function ResultActions({
                   <div className="border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-4 py-4">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <span className="flex items-center gap-2.5">
-                        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-[var(--workspace-primary)] [&_svg]:size-[18px]">
+                        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-purple)_10%,transparent)] text-[var(--workspace-purple)] [&_svg]:size-[18px]">
                           <ReceiptText />
                         </span>
                         <span className="text-[15px] font-semibold tracking-tight text-foreground">Vendor memory</span>
@@ -1765,7 +1765,7 @@ export function ResultActions({
                           const value = comparisonFile.vendor_suggestion?.suggested_fields[field.key]
                           return value ? (
                             <span key={field.key} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--button-warm-ring)] bg-white px-2.5 py-1 text-[12px] font-medium text-foreground">
-                              <span className="inline-flex shrink-0 text-[var(--workspace-primary)] [&_svg]:size-[14px]">{field.icon}</span>
+                              <span className="inline-flex shrink-0 text-[var(--workspace-purple)] [&_svg]:size-[14px]">{field.icon}</span>
                               {value}
                             </span>
                           ) : null
@@ -2134,6 +2134,7 @@ export function ResultActions({
                                   />
                                   {needsYou ? (
                                     <InlineAction
+                                      tone="success"
                                       onClick={() => setConfirmedFields(prev => ({ ...prev, [field.path]: true }))}
                                       className="h-8 shrink-0 px-1 text-[11px]"
                                       aria-label={`Confirm ${field.label}`}
@@ -2155,7 +2156,7 @@ export function ResultActions({
                         {collapseConfident && uncertainCount === 0 ? (
                           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-4 py-2.5">
                             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                              <Check className="size-3.5 shrink-0 text-[var(--brand-brown-fg)]" />
+                              <Check className="size-3.5 shrink-0 text-[var(--workspace-success)]" />
                               Nothing left to check on this document.
                             </span>
                             {comparisonFile.document_id && !["ready", "published", "failed", "deleted"].includes(comparisonFile.review_status || "") ? (
@@ -2541,7 +2542,7 @@ function BatchStagingBoard({
         <div className="overflow-hidden rounded-[4px] border border-[#c8ced6] bg-white shadow-none">
           <div className="flex min-h-12 flex-col gap-2 border-b border-[#cfd4da] bg-white px-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-h-12 flex-wrap items-stretch gap-4">
-              <span className="relative inline-flex h-12 items-center gap-1.5 border-b-2 border-[#A98467] px-0 text-[13px] font-semibold text-[#8a6a52]">
+              <span className="relative inline-flex h-12 items-center gap-1.5 border-b-2 border-[var(--workspace-blue)] px-0 text-[13px] font-semibold text-[var(--workspace-blue)]">
                 <span>{tabLabel}</span>
                 {rowCount > 0 ? <span className="tabular-nums text-[#667085]">{rowCount}</span> : null}
               </span>
@@ -2586,7 +2587,7 @@ function BatchStagingBoard({
                           <td className="border-b border-l-[3px] border-b-[#e4e7ef] border-l-transparent px-3 py-2 align-middle">
                             <Link
                               href={`/dashboard/client?job_id=${file.id}`}
-                              className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#A98467] shadow-none transition-colors hover:border-[#A98467] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[#A98467]/20"
+                              className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[var(--workspace-blue)] shadow-none transition-colors hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[var(--workspace-blue)]/20"
                               aria-label={`Open ${file.filename}`}
                             >
                               <Eye className="size-3.5" />
@@ -2595,7 +2596,7 @@ function BatchStagingBoard({
                           <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             <Link
                               href={`/dashboard/client?job_id=${file.id}`}
-                              className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[#8a6a52]"
+                              className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[var(--workspace-blue)]"
                             >
                               {file.filename}
                             </Link>
@@ -2619,7 +2620,7 @@ function BatchStagingBoard({
                             <div className="flex justify-end">
                               <Link
                                 href={`/dashboard/client?job_id=${file.id}`}
-                                className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[#8a6a52] shadow-none transition-colors hover:border-[#A98467] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[#A98467]/20"
+                                className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[var(--workspace-blue)] shadow-none transition-colors hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[var(--workspace-blue)]/20"
                               >
                                 Open
                               </Link>
@@ -2635,7 +2636,7 @@ function BatchStagingBoard({
                         <button
                           type="button"
                           onClick={onOpenUpload}
-                          className="ml-3 inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-[11px] font-semibold text-[#8a6a52] shadow-none hover:border-[#A98467] hover:bg-[#f3ece2]"
+                          className="ml-3 inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-[11px] font-semibold text-[var(--workspace-blue)] shadow-none hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2]"
                         >
                           Upload your first batch
                         </button>
