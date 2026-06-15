@@ -252,7 +252,7 @@ export function UploadDropzone({
             alt=""
           />
         ) : (
-          <FolderUp className="mx-auto mb-3 h-7 w-7 text-[var(--workspace-blue)]" />
+          <FolderUp className="mx-auto mb-3 h-7 w-7 text-[var(--workspace-primary)]" />
         )}
         <h3 className="text-xl font-semibold tracking-tight text-foreground">
           {isDragging ? "Drop documents to upload" : uploadedFiles.length ? "Add more documents" : "Upload documents"}
@@ -1415,9 +1415,9 @@ export function ResultActions({
                     type="button"
                     onClick={() => setResultFilter(tab.value)}
                     className={cn(
-                      "ax-interactive relative inline-flex h-12 items-center gap-1.5 border-b-2 px-0 text-[13px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--workspace-blue)]/20",
+                      "ax-interactive relative inline-flex h-12 items-center gap-1.5 border-b-2 px-0 text-[13px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/20",
                       active
-                        ? "border-[var(--workspace-blue)] text-[var(--workspace-blue)]"
+                        ? "border-[var(--workspace-primary)] text-[var(--workspace-primary)]"
                         : "border-transparent text-[#475467] hover:text-[#111827]",
                     )}
                   >
@@ -1492,24 +1492,27 @@ export function ResultActions({
                     >
                       <td className={cn("border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", rowAccentClass(displayState, duplicateWarning))}>
                         {docHref ? (
-                          <a
-                            href={docHref}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[var(--workspace-blue)] shadow-none transition-colors hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[var(--workspace-blue)]/20"
-                            aria-label={`Open ${file.filename || summary.identity}`}
-                          >
-                            <Eye className="size-3.5" />
-                          </a>
+                          <Button asChild variant="surface" size="icon" className={cn("!size-7", workspaceNormalControlClass)}>
+                            <a
+                              href={docHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`Open ${file.filename || summary.identity}`}
+                            >
+                              <Eye className="size-3.5" />
+                            </a>
+                          </Button>
                         ) : (
-                          <button
+                          <Button
                             type="button"
+                            variant="surface"
+                            size="icon"
                             onClick={() => openComparison(index)}
-                            className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[var(--workspace-blue)] shadow-none transition-colors hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[var(--workspace-blue)]/20"
+                            className={cn("!size-7", workspaceNormalControlClass)}
                             aria-label={`Open ${file.filename || summary.identity}`}
                           >
                             <Eye className="size-3.5" />
-                          </button>
+                          </Button>
                         )}
                       </td>
                       <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
@@ -1518,7 +1521,7 @@ export function ResultActions({
                             href={docHref}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[var(--workspace-blue)]"
+                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[var(--workspace-primary)]"
                           >
                             {file.filename || `Result ${index + 1}`}
                           </a>
@@ -1526,7 +1529,7 @@ export function ResultActions({
                           <button
                             type="button"
                             onClick={() => openComparison(index)}
-                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[var(--workspace-blue)]"
+                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[var(--workspace-primary)]"
                           >
                             {file.filename || `Result ${index + 1}`}
                           </button>
@@ -1585,7 +1588,7 @@ export function ResultActions({
                               href={docHref}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[var(--workspace-blue)] shadow-none transition-colors hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[var(--workspace-blue)]/20"
+                              className={cn("ax-interactive inline-flex h-7 items-center px-2.5 text-[11px] font-semibold transition-colors", workspaceNormalControlClass)}
                             >
                               Open
                             </a>
@@ -1593,7 +1596,7 @@ export function ResultActions({
                             <button
                               type="button"
                               onClick={() => openComparison(index)}
-                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[var(--workspace-blue)] shadow-none transition-colors hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[var(--workspace-blue)]/20"
+                              className={cn("ax-interactive inline-flex h-7 items-center px-2.5 text-[11px] font-semibold transition-colors", workspaceNormalControlClass)}
                             >
                               Open
                             </button>
@@ -1609,7 +1612,7 @@ export function ResultActions({
                       <button
                         type="button"
                         onClick={() => setResultFilter("all")}
-                        className="ml-3 inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-[11px] font-semibold text-[var(--workspace-blue)] shadow-none hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2]"
+                        className={cn("ml-3 inline-flex h-7 items-center px-3 text-[11px] font-semibold", workspaceNormalControlClass)}
                       >
                         Show all
                       </button>
@@ -2542,7 +2545,7 @@ function BatchStagingBoard({
         <div className="overflow-hidden rounded-[4px] border border-[#c8ced6] bg-white shadow-none">
           <div className="flex min-h-12 flex-col gap-2 border-b border-[#cfd4da] bg-white px-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-h-12 flex-wrap items-stretch gap-4">
-              <span className="relative inline-flex h-12 items-center gap-1.5 border-b-2 border-[var(--workspace-blue)] px-0 text-[13px] font-semibold text-[var(--workspace-blue)]">
+              <span className="relative inline-flex h-12 items-center gap-1.5 border-b-2 border-[var(--workspace-primary)] px-0 text-[13px] font-semibold text-[var(--workspace-primary)]">
                 <span>{tabLabel}</span>
                 {rowCount > 0 ? <span className="tabular-nums text-[#667085]">{rowCount}</span> : null}
               </span>
@@ -2587,7 +2590,7 @@ function BatchStagingBoard({
                           <td className="border-b border-l-[3px] border-b-[#e4e7ef] border-l-transparent px-3 py-2 align-middle">
                             <Link
                               href={`/dashboard/client?job_id=${file.id}`}
-                              className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[var(--workspace-blue)] shadow-none transition-colors hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[var(--workspace-blue)]/20"
+                              className={cn("ax-interactive inline-flex size-7 items-center justify-center transition-colors", workspaceNormalControlClass)}
                               aria-label={`Open ${file.filename}`}
                             >
                               <Eye className="size-3.5" />
@@ -2596,7 +2599,7 @@ function BatchStagingBoard({
                           <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             <Link
                               href={`/dashboard/client?job_id=${file.id}`}
-                              className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[var(--workspace-blue)]"
+                              className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[var(--workspace-primary)]"
                             >
                               {file.filename}
                             </Link>
@@ -2620,7 +2623,7 @@ function BatchStagingBoard({
                             <div className="flex justify-end">
                               <Link
                                 href={`/dashboard/client?job_id=${file.id}`}
-                                className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-[11px] font-semibold text-[var(--workspace-blue)] shadow-none transition-colors hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2] focus-visible:ring-2 focus-visible:ring-[var(--workspace-blue)]/20"
+                                className={cn("ax-interactive inline-flex h-7 items-center px-2.5 text-[11px] font-semibold transition-colors", workspaceNormalControlClass)}
                               >
                                 Open
                               </Link>
@@ -2636,7 +2639,7 @@ function BatchStagingBoard({
                         <button
                           type="button"
                           onClick={onOpenUpload}
-                          className="ml-3 inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-[11px] font-semibold text-[var(--workspace-blue)] shadow-none hover:border-[var(--workspace-blue)] hover:bg-[#f3ece2]"
+                          className={cn("ml-3 inline-flex h-7 items-center px-3 text-[11px] font-semibold", workspaceNormalControlClass)}
                         >
                           Upload your first batch
                         </button>

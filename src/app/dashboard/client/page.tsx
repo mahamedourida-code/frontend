@@ -58,6 +58,42 @@ function ProcessImagesFallback() {
   return <DashboardRouteLoader label="Loading conversion workspace" />
 }
 
+function csvToReviewGrid(csvText: unknown): any[][] | undefined {
+  if (typeof csvText !== "string" || !csvText.trim()) return undefined
+
+  const rows: string[][] = []
+  let row: string[] = []
+  let cell = ""
+  let quoted = false
+
+  for (let index = 0; index < csvText.length; index += 1) {
+    const char = csvText[index]
+    const next = csvText[index + 1]
+
+    if (char === '"' && quoted && next === '"') {
+      cell += '"'
+      index += 1
+    } else if (char === '"') {
+      quoted = !quoted
+    } else if (char === "," && !quoted) {
+      row.push(cell.trim())
+      cell = ""
+    } else if ((char === "\n" || char === "\r") && !quoted) {
+      if (char === "\r" && next === "\n") index += 1
+      row.push(cell.trim())
+      if (row.some(Boolean)) rows.push(row)
+      row = []
+      cell = ""
+    } else {
+      cell += char
+    }
+  }
+
+  row.push(cell.trim())
+  if (row.some(Boolean)) rows.push(row)
+  return rows.length ? rows : undefined
+}
+
 export default function ProcessImagesPage() {
   return (
     <Suspense fallback={<ProcessImagesFallback />}>
@@ -1738,7 +1774,11 @@ Best regards`
     const durableExtraction = durableDocument?.extractions.find(extraction => (
       file.file_id ? extraction.result_file_id === file.file_id : extraction.source_page === file.source_page
     )) || durableDocument?.extractions[0]
-    const reviewGrid = durableExtraction?.reviewed_data?.review_grid
+    const reviewGrid =
+      durableExtraction?.reviewed_data?.review_grid ||
+      durableExtraction?.raw_structured_data?.review_grid ||
+      csvToReviewGrid(durableExtraction?.reviewed_data?.csv) ||
+      csvToReviewGrid(durableExtraction?.raw_structured_data?.csv)
     const tracedFile = trace
       ? {
           ...file,

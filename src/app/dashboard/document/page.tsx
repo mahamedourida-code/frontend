@@ -29,11 +29,11 @@ type LineItemConfig = {
 
 const STATUS_STYLE: Record<string, string> = {
   ready: "border-[#bbf7d0] bg-[#ecfdf3] text-[#166534]",
-  published: "border-[#bfdbfe] bg-[#eff6ff] text-[#0f5fcb]",
+  published: "border-[#e7d8c6] bg-[#f8f3eb] text-[var(--brand-brown-deep)]",
   edited: "border-[#ddd6fe] bg-[#f5f3ff] text-[#5b21b6]",
   failed: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]",
   needs_review: "border-[#fed7aa] bg-[#fff7ed] text-[#92400e]",
-  deleted: "border-[#e4e7ef] bg-white text-[#475467]",
+  deleted: "border-[#e8e1d8] bg-white text-[#475467]",
 }
 const STATUS_LABEL: Record<string, string> = {
   ready: "Ready",
@@ -46,14 +46,14 @@ const STATUS_LABEL: Record<string, string> = {
 const TYPE_TONE: Record<string, string> = {
   invoice: "text-[#166534]",
   receipt: "text-[#b45309]",
-  bank_statement: "text-[#0f5fcb]",
+  bank_statement: "text-[var(--brand-brown-fg)]",
   notes: "text-[#5b21b6]",
   table: "text-[#0f766e]",
 }
 const TYPE_ACCENT: Record<string, string> = {
   invoice: "#166534",
   receipt: "#b45309",
-  bank_statement: "#0f5fcb",
+  bank_statement: "#6b4f2e",
   notes: "#5b21b6",
   table: "#0f766e",
   auto: "#475467",
@@ -78,17 +78,58 @@ function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url)
 }
 
+function csvToGrid(csvText: unknown): any[][] | null {
+  if (typeof csvText !== "string" || !csvText.trim()) return null
+
+  const rows: string[][] = []
+  let row: string[] = []
+  let cell = ""
+  let quoted = false
+
+  for (let index = 0; index < csvText.length; index += 1) {
+    const char = csvText[index]
+    const next = csvText[index + 1]
+
+    if (char === '"' && quoted && next === '"') {
+      cell += '"'
+      index += 1
+    } else if (char === '"') {
+      quoted = !quoted
+    } else if (char === "," && !quoted) {
+      row.push(cell.trim())
+      cell = ""
+    } else if ((char === "\n" || char === "\r") && !quoted) {
+      if (char === "\r" && next === "\n") index += 1
+      row.push(cell.trim())
+      if (row.some(Boolean)) rows.push(row)
+      row = []
+      cell = ""
+    } else {
+      cell += char
+    }
+  }
+
+  row.push(cell.trim())
+  if (row.some(Boolean)) rows.push(row)
+  return rows.length ? rows : null
+}
+
+function gridFromPayload(payload: unknown): any[][] | null {
+  if (!payload || typeof payload !== "object") return null
+  const record = payload as Record<string, any>
+  if (Array.isArray(record.review_grid)) return record.review_grid
+  return csvToGrid(record.csv)
+}
+
 function FullLoader({ label = "Opening document" }: { label?: string }) {
   return (
-    <div className="flex min-h-screen items-center justify-center gap-2 bg-[#f4f6fa] text-sm font-semibold text-[#475467]">
-      <Loader2 className="size-4 animate-spin text-[#1877F2]" />
+    <div className="flex min-h-screen items-center justify-center gap-2 bg-background text-sm font-semibold text-[#475467]">
+      <Loader2 className="size-4 animate-spin text-[var(--brand-brown-fg)]" />
       {label}
     </div>
   )
 }
 
-/** A boxed, labelled, editable field — Xero "Contact / Issue date / Reference" style.
- *  Label sits ABOVE the box; box has a clean 1px border and generous height. */
 function FormField({
   label,
   value,
@@ -106,7 +147,7 @@ function FormField({
     <label className="block">
       <span className={cn("mb-2 flex items-center gap-1.5 text-[12px] font-bold tracking-tight", labelTone || "text-[#111827]")}>
         {label}
-        {saving ? <Loader2 className="size-3 animate-spin text-[#1877F2]" /> : null}
+        {saving ? <Loader2 className="size-3 animate-spin text-[var(--brand-brown-fg)]" /> : null}
       </span>
       <input
         key={`${label}-${value}`}
@@ -114,7 +155,7 @@ function FormField({
         onBlur={(event) => {
           if (event.target.value !== value) onSave(event.target.value)
         }}
-        className="h-11 w-full rounded-md border border-[#d7dce3] bg-white px-3 text-[14px] font-semibold text-[#111827] outline-none transition focus:border-[#1877F2] focus:ring-2 focus:ring-[#1877F2]/20"
+        className="h-11 w-full rounded-md border border-[#ded6cc] bg-white px-3 text-[14px] font-semibold text-[#111827] outline-none transition focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-[#a98467]/20"
         placeholder="—"
       />
     </label>
@@ -187,24 +228,23 @@ function DocumentReviewContent() {
 
   if (error || !doc) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f4f6fa] px-6 text-center">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-6 text-center">
         <p className="text-base font-bold text-[#111827]">{error || "Document not found"}</p>
-        <Link
-          href="/dashboard/client"
-          className="inline-flex h-10 items-center gap-2 rounded-full border border-[#cfd4d9] bg-white px-4 text-sm font-semibold text-[#0f5fcb] hover:border-[#1877F2] hover:bg-[#eff6ff]"
-        >
-          <ArrowLeft className="size-4" />
-          Back to review
-        </Link>
+        <Button asChild variant="surface" className="h-10 px-4 text-sm">
+          <Link href="/dashboard/client">
+            <ArrowLeft className="size-4" />
+            Back to review
+          </Link>
+        </Button>
       </div>
     )
   }
 
   const extraction = doc.extractions?.find((item) => item.reviewed_data || item.raw_structured_data) || doc.extractions?.[0]
-  const data = (extraction?.reviewed_data || extraction?.raw_structured_data || {}) as Record<string, any>
-  const reviewGrid = Array.isArray((extraction?.reviewed_data as any)?.review_grid)
-    ? ((extraction!.reviewed_data as any).review_grid as any[][])
-    : null
+  const reviewedPayload = (extraction?.reviewed_data || null) as Record<string, any> | null
+  const rawPayload = (extraction?.raw_structured_data || null) as Record<string, any> | null
+  const data = (reviewedPayload || rawPayload || {}) as Record<string, any>
+  const reviewGrid = gridFromPayload(reviewedPayload) || gridFromPayload(rawPayload)
   const docType = doc.resolved_mode || doc.detected_mode || doc.selected_mode || "auto"
   const status = doc.review_status || extraction?.review_status || "needs_review"
   const sourceUrl = extraction?.source_preview_url || doc.source_access_url || ""
@@ -345,26 +385,25 @@ function DocumentReviewContent() {
   const canSendToBills = docType === "invoice" && ["ready", "published"].includes(status)
 
   return (
-    <div className="min-h-screen bg-[#f4f6fa] text-[#111827]">
+    <div className="min-h-screen bg-background text-[#111827]">
       {/* Top bar */}
-      <header className="sticky top-0 z-30 border-b border-[#e4e7ef] bg-white/95 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-[#e8e1d8] bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-[1560px] flex-wrap items-center gap-3 px-5 py-3 sm:px-7">
-          <Link
-            href={`/dashboard/client?job_id=${jobId}`}
-            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#475467] transition-colors hover:border-[#1877F2] hover:bg-[#eff6ff] hover:text-[#0f5fcb]"
-          >
-            <ArrowLeft className="size-4" />
-            Review
-          </Link>
+          <Button asChild variant="surface" size="sm" className="h-9 px-3 text-xs">
+            <Link href={`/dashboard/client?job_id=${jobId}`}>
+              <ArrowLeft className="size-4" />
+              Review
+            </Link>
+          </Button>
           <span
-            className="flex size-9 shrink-0 items-center justify-center rounded-xl"
+            className="flex size-9 shrink-0 items-center justify-center rounded-full"
             style={{ backgroundColor: `${accent}14`, color: accent }}
           >
             {docType === "receipt" ? <Receipt className="size-4" /> : docType === "table" ? <ScanLine className="size-4" /> : <FileText className="size-4" />}
           </span>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <span className={cn("inline-flex h-5 items-center rounded-full border px-2 text-[11px] font-semibold", STATUS_STYLE[status] || STATUS_STYLE.needs_review)}>
+              <span className={cn("inline-flex h-5 items-center whitespace-nowrap rounded-full border px-2 text-[11px] font-semibold leading-none", STATUS_STYLE[status] || STATUS_STYLE.needs_review)}>
                 {STATUS_LABEL[status] || status}
               </span>
               <span className={cn("text-[11px] font-bold uppercase tracking-[0.08em]", TYPE_TONE[docType] || "text-[#475467]")}>
@@ -379,7 +418,7 @@ function DocumentReviewContent() {
               variant="surface"
               onClick={() => void download()}
               disabled={downloading}
-              className="h-9 gap-2 rounded-full border-[#cfd4d9] bg-white px-3 text-xs text-[#111827] shadow-none hover:border-[#1877F2] hover:bg-[#eff6ff]"
+              className="h-9 px-3 text-xs"
             >
               {downloading ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
               Download
@@ -390,7 +429,7 @@ function DocumentReviewContent() {
                 variant="surface"
                 onClick={() => void sendToBills()}
                 disabled={sendingBill || sentToBills}
-                className="h-9 gap-2 rounded-full border-[#cfd4d9] bg-white px-3 text-xs text-[#111827] shadow-none hover:border-[#1877F2] hover:bg-[#eff6ff]"
+                className="h-9 px-3 text-xs"
               >
                 {sendingBill ? <Loader2 className="size-4 animate-spin" /> : null}
                 {sentToBills ? "Sent to bills" : "Send to draft bills"}
@@ -402,7 +441,7 @@ function DocumentReviewContent() {
                 variant="glossy"
                 onClick={() => void markReady()}
                 disabled={markingReady}
-                className="h-9 gap-2 rounded-full border border-[#16a34a] bg-[#16a34a] px-4 text-xs font-semibold text-white shadow-none hover:border-[#15803d] hover:bg-[#15803d]"
+                className="h-9 px-4 text-xs"
               >
                 {markingReady ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
                 Mark ready
@@ -420,11 +459,11 @@ function DocumentReviewContent() {
       >
         {/* Source preview — sticky on desktop */}
         <div className="lg:sticky lg:top-[84px] lg:self-start">
-          <div className="overflow-hidden rounded-2xl border border-[#e4e7ef] bg-white shadow-sm">
-            <div className="border-b border-[#e4e7ef] px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.08em] text-[#475467]">
+          <div className="overflow-hidden rounded-lg border border-[#e8e1d8] bg-white shadow-sm">
+            <div className="border-b border-[#e8e1d8] px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.08em] text-[#475467]">
               Source document
             </div>
-            <div className="flex max-h-[78vh] items-center justify-center overflow-auto bg-[#f8f9fb] p-4">
+            <div className="flex max-h-[78vh] items-center justify-center overflow-auto bg-[#faf8f5] p-4">
               {sourceUrl ? (
                 <img src={sourceUrl} alt={doc.original_filename} className="max-h-[74vh] w-full rounded-lg object-contain" />
               ) : (
@@ -437,10 +476,8 @@ function DocumentReviewContent() {
           </div>
         </div>
 
-        {/* Extracted form — modelled on Xero "Edit Bill" / "New invoice" */}
-        <div className="overflow-hidden rounded-2xl border border-[#e4e7ef] bg-white shadow-sm">
-          {/* Header fields row: boxed, labelled fields + LARGE total on the right */}
-          <div className="border-b border-[#eef1f6] px-7 py-7">
+        <div className="overflow-hidden rounded-lg border border-[#e8e1d8] bg-white shadow-sm">
+          <div className="border-b border-[#eee7de] px-7 py-7">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
               <div className="grid min-w-0 flex-1 grid-cols-2 gap-x-5 gap-y-5 lg:grid-cols-3">
                 {headerFields.length ? (
@@ -462,24 +499,22 @@ function DocumentReviewContent() {
                   </div>
                 )}
               </div>
-              {/* Total — fixed-width boxed value so a long/garbled figure can never
-                  squeeze the fields (Xero keeps Total in a box, not a raw number). */}
               <div className="w-full shrink-0 lg:w-52">
                 <p className="text-[12px] font-bold tracking-tight text-[#475467] lg:text-right">{totalLabel}</p>
-                <div className="mt-2 flex h-12 items-center justify-end rounded-md border border-[#d7dce3] bg-[#f8f9fb] px-3">
+                <div className="mt-2 flex h-12 items-center justify-end rounded-md border border-[#ded6cc] bg-[#faf8f5] px-3">
                   <span className="truncate text-[20px] font-extrabold tabular-nums text-[#111827]" title={totalDisplay}>{totalDisplay}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Line items (invoice / receipt / bank) — generous, Xero-style table */}
+          {/* Line items */}
           {lineItems ? (
             lineItems.rows.length ? (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[720px] border-collapse">
                   <thead>
-                    <tr className="border-b border-[#e4e7ef] bg-[#f8f9fb]">
+                    <tr className="border-b border-[#e8e1d8] bg-[#faf8f5]">
                       {lineItems.columns.map(([label], index) => (
                         <th
                           key={label}
@@ -495,7 +530,7 @@ function DocumentReviewContent() {
                   </thead>
                   <tbody>
                     {lineItems.rows.map((row, rowIndex) => (
-                      <tr key={rowIndex} className="border-b border-[#eef1f6] transition-colors hover:bg-[#f8fbff]">
+                      <tr key={rowIndex} className="border-b border-[#eee7de] transition-colors hover:bg-[#faf7f2]">
                         {lineItems.columns.map(([, key], colIndex) => {
                           const numeric = colIndex >= lineItems.numericFrom
                           const isAmount = colIndex === lineItems.columns.length - 1
@@ -510,7 +545,7 @@ function DocumentReviewContent() {
                                   }
                                 }}
                                 className={cn(
-                                  "h-10 w-full min-w-[80px] rounded-md border border-[#e7ebf0] bg-white px-2.5 text-[14px] text-[#111827] outline-none transition focus:border-[#1877F2] focus:ring-2 focus:ring-[#1877F2]/20",
+                                  "h-10 w-full min-w-[80px] rounded-md border border-[#eee7de] bg-white px-2.5 text-[14px] text-[#111827] outline-none transition focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-[#a98467]/20",
                                   numeric && "text-right tabular-nums",
                                   isAmount && "font-bold",
                                 )}
@@ -534,13 +569,13 @@ function DocumentReviewContent() {
               <table className="w-full min-w-[640px] border-collapse text-[13px]">
                 <tbody>
                   {reviewGrid.map((row, rowIndex) => (
-                    <tr key={rowIndex} className={rowIndex === 0 ? "bg-[#f8f9fb] font-semibold" : "bg-white transition-colors hover:bg-[#f8fbff]"}>
+                    <tr key={rowIndex} className={rowIndex === 0 ? "bg-[#faf8f5] font-semibold" : "bg-white transition-colors hover:bg-[#faf7f2]"}>
                       {row.map((cell, cellIndex) => (
                         <td
                           key={cellIndex}
                           className={cn(
-                            "border border-[#eef1f6] px-2 py-1",
-                            rowIndex === 0 && "border-[#e4e7ef]",
+                            "border border-[#eee7de] px-2 py-1",
+                            rowIndex === 0 && "border-[#e8e1d8]",
                           )}
                         >
                           <input
@@ -552,7 +587,7 @@ function DocumentReviewContent() {
                               }
                             }}
                             className={cn(
-                              "h-10 w-full min-w-[110px] rounded-md border border-transparent bg-transparent px-2.5 text-[13px] outline-none transition focus:border-[#1877F2] focus:bg-white focus:ring-2 focus:ring-[#1877F2]/20",
+                              "h-10 w-full min-w-[110px] rounded-md border border-transparent bg-transparent px-2.5 text-[13px] outline-none transition focus:border-[var(--brand-brown-fg)] focus:bg-white focus:ring-2 focus:ring-[#a98467]/20",
                               rowIndex === 0 ? "text-[12px] font-bold tracking-tight text-[#475467]" : "font-medium text-[#111827]",
                             )}
                           />
@@ -565,7 +600,7 @@ function DocumentReviewContent() {
             </div>
           ) : null}
 
-          {/* Totals block — Subtotal / VAT / large bold TOTAL with rule lines (Xero) */}
+          {/* Totals block */}
           {showInvoiceTotals ? (
             <div className="px-7 py-7">
               <div className="ml-auto w-full max-w-[360px]">
@@ -573,7 +608,7 @@ function DocumentReviewContent() {
                   <span className="shrink-0 font-semibold text-[#475467]">Subtotal</span>
                   <span className="min-w-0 truncate text-right font-semibold tabular-nums text-[#111827]" title={money(data.subtotal)}>{money(data.subtotal)}</span>
                 </div>
-                <div className="flex items-center justify-between gap-4 border-t border-[#e4e7ef] py-2 text-[14px]">
+                <div className="flex items-center justify-between gap-4 border-t border-[#e8e1d8] py-2 text-[14px]">
                   <span className="shrink-0 font-semibold text-[#475467]">VAT</span>
                   <span className="min-w-0 truncate text-right font-semibold tabular-nums text-[#111827]" title={money(data.tax_vat_amount)}>{money(data.tax_vat_amount)}</span>
                 </div>
