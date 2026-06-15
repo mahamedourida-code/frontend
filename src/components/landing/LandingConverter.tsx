@@ -459,7 +459,9 @@ export default function LandingConverter() {
         const totalOriginal = compressionResults.reduce((sum, r) => sum + r.originalSize, 0);
         const totalCompressed = compressionResults.reduce((sum, r) => sum + r.compressedSize, 0);
         const totalReduction = Math.round(((totalOriginal - totalCompressed) / totalOriginal) * 100);
-        toast.info(`Compressed ${compressedCount} image(s) (${totalReduction}% smaller)`);
+        // Diagnostic/process toast — silenced in production (internal machinery, not a user outcome).
+        // toast.info(`Compressed ${compressedCount} image(s) (${totalReduction}% smaller)`);
+        void totalReduction;
       }
 
       // Extract compressed files for upload

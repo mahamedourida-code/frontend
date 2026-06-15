@@ -110,7 +110,8 @@ export function useOCR(): UseOCRReturn {
         filesToUpload = compressionResults.map(r => r.file)
         const compressedCount = compressionResults.filter(r => r.compressed).length
         if (compressedCount > 0) {
-          toast.success(`${compressedCount} images optimized before upload`)
+          // Diagnostic/process toast — silenced in production (internal machinery, not a user outcome).
+          // toast.success(`${compressedCount} images optimized before upload`)
         }
       } catch (e) {
       }

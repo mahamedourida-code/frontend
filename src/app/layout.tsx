@@ -101,7 +101,6 @@ export default function RootLayout({
                 {children}
               </div>
               <Toaster
-                richColors
                 position="top-right"
                 toastOptions={{ duration: 3500, className: "ax-toast ax-interactive" }}
               />
