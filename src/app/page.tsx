@@ -583,7 +583,6 @@ export default function Home() {
               className="mx-auto max-w-3xl text-center"
               data-animate="headline"
             >
-              <p className="ax-eyebrow text-[var(--brand-brown)]">Security</p>
               <h2 className="ax-h2 ax-marketing-section-title mt-3 font-bold text-neutral-950">
                 Your data never leaves the review board{" "}
                 <span className="font-bold text-[var(--brand-brown)]">uninvited</span>.
@@ -648,7 +647,6 @@ export default function Home() {
 
             {/* FAQ */}
             <div className="mx-auto mt-20 max-w-[928px] text-center" data-animate="headline">
-              <p className="ax-eyebrow text-[var(--brand-brown)]">FAQ</p>
               <h3 className="ax-h2 ax-marketing-section-title mt-3 font-bold text-neutral-950">
                 Questions we hear from{" "}
                 <span className="font-bold">bookkeepers</span>.
