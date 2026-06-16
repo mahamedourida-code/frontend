@@ -72,35 +72,41 @@ function TestimonialCard({ testimonial, index }: { testimonial: typeof firstRowT
   return (
     <div
       key={index}
-      className="w-[460px] flex-shrink-0 rounded-xl border border-gray-200 bg-white p-6 text-gray-950 shadow-sm transition-all duration-300 hover:shadow-md dark:border-gray-200 dark:bg-white dark:text-gray-950"
+      className="flex w-[420px] flex-shrink-0 flex-col rounded-2xl bg-white p-7 ring-1 ring-black/10 transition-shadow duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]"
     >
-      <div className="mb-5 flex items-center gap-3">
+      <p className="ax-body flex-1 text-[17px] font-semibold leading-7 text-neutral-900">
+        {testimonial.text}
+      </p>
+
+      <div className="mt-6 flex items-center gap-3 border-t border-black/10 pt-5">
         <Image
           src={testimonial.avatar}
           alt={testimonial.name}
-          width={52}
-          height={52}
-          className="h-13 w-13 rounded-full object-cover"
+          width={44}
+          height={44}
+          className="h-11 w-11 rounded-full object-cover ring-1 ring-black/10"
         />
         <div className="flex-1">
-          <p className="text-lg font-bold text-gray-950">{testimonial.name}</p>
-          <p className="text-sm font-medium text-gray-500">{testimonial.handle}</p>
+          <p className="text-[15px] font-bold text-neutral-950">{testimonial.name}</p>
+          <p className="text-[13px] font-semibold text-[var(--brand-brown)]">{testimonial.handle}</p>
         </div>
-        <svg className="h-5 w-5 text-gray-950 opacity-60" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-        </svg>
       </div>
-
-      <div className="mb-5 border-t border-dashed border-gray-200" />
-      <p className="text-[17px] font-semibold leading-7 text-gray-900">{testimonial.text}</p>
     </div>
   );
 }
 
 export default function TestimonialsMarquee() {
   return (
-    <section className="relative z-10 -mt-6 overflow-hidden pb-10 pt-0 sm:-mt-8 lg:-mt-10">
-      <div className="w-full">
+    <section className="relative z-10 overflow-hidden bg-white pb-16 pt-20 lg:pb-20 lg:pt-28">
+      <div className="mx-auto mb-12 max-w-[928px] px-4 text-center sm:px-6 lg:mb-14 lg:px-8">
+        <p className="ax-eyebrow text-[var(--brand-brown)]">Testimonials</p>
+        <h2 className="ax-h2 ax-marketing-section-title mt-3 font-bold text-neutral-950">
+          The people who reconcile the books.
+        </h2>
+      </div>
+      <div className="relative w-full">
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-24 bg-gradient-to-r from-white to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-24 bg-gradient-to-l from-white to-transparent" />
         <div className="relative mb-6 overflow-hidden">
           <div
             className="flex items-start gap-6"
