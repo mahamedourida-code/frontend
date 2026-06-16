@@ -87,6 +87,7 @@ import { useMotionTokens } from "@/lib/motion"
 
 type QueueFilter =
   | "needs_attention"
+  | "pending_approval"
   | "ready_to_publish"
   | "published"
   | "duplicates"
@@ -99,6 +100,7 @@ type MoreFilter = Extract<QueueFilter, "duplicates" | "missing_info" | "failed" 
 const queueStatuses: Array<{ value: AccountsPayableStatus; label: string }> = [
   { value: "needs_coding", label: "Needs coding" },
   { value: "needs_review", label: "Needs review" },
+  { value: "pending_approval", label: "Awaiting approval" },
   { value: "ready_to_publish", label: "Ready to publish" },
   { value: "published", label: "Published" },
   { value: "failed", label: "Failed" },
@@ -108,6 +110,7 @@ const queueStatuses: Array<{ value: AccountsPayableStatus; label: string }> = [
 const statusTone: Record<AccountsPayableStatus, "warning" | "review" | "info" | "success" | "error" | "neutral"> = {
   needs_coding: "warning",
   needs_review: "review",
+  pending_approval: "review",
   ready_to_publish: "info",
   published: "success",
   failed: "error",
@@ -297,6 +300,9 @@ function buildDraftUpdate(draft: AccountsPayableDraftData): AccountsPayableDraft
     tax_code_ref_id: draft.tax_code_ref_id,
     reference: draft.reference,
     currency: draft.currency,
+    class_ref_id: draft.class_ref_id,
+    location_ref_id: draft.location_ref_id,
+    tracking_option_ref_ids: draft.tracking_option_ref_ids,
     line_items: draft.line_items,
   }
 }
@@ -480,6 +486,7 @@ function AccountsPayableContent() {
     }, {
       needs_coding: 0,
       needs_review: 0,
+      pending_approval: 0,
       ready_to_publish: 0,
       published: 0,
       failed: 0,
@@ -571,17 +578,41 @@ function AccountsPayableContent() {
       .map(({ item }) => item)
   }, [items, filter, clientJobIds, reviewScores, missingInfo])
   const lineItems = Array.isArray(draft.line_items) ? draft.line_items : []
-  const lineColumns = (
-    Array.from(new Set(lineItems.flatMap(line => Object.keys(line)))).slice(0, 6).length
-      ? Array.from(new Set(lineItems.flatMap(line => Object.keys(line)))).slice(0, 6)
-      : ["description", "quantity", "unit_price", "line_total"]
-  )
+  // Per-line coding keys live in their own select columns, not the generic data
+  // columns — keep them out of the auto-detected text columns.
+  const LINE_CODING_KEYS = new Set(["account_ref_id", "tax_code_ref_id", "class_ref_id", "tracking_option_ref_ids"])
+  const lineColumns = (() => {
+    const keys = Array.from(new Set(lineItems.flatMap(line => Object.keys(line)))).filter(key => !LINE_CODING_KEYS.has(key))
+    return keys.slice(0, 6).length ? keys.slice(0, 6) : ["description", "quantity", "unit_price", "line_total"]
+  })()
   const activeLocked = activeItem?.status === "published" || activeItem?.status === "discarded"
   const vendors = accountingReferences.filter(item => item.resource_type === "vendor" && item.active)
   const accounts = accountingReferences.filter(item => item.resource_type === "account" && item.active)
   const taxCodes = accountingReferences.filter(item => item.resource_type === "tax_code" && item.active)
+  // Dimensional coding references — Class + Location (QuickBooks) / Tracking (Xero).
+  const classes = accountingReferences.filter(item => item.resource_type === "class" && item.active)
+  const locations = accountingReferences.filter(item => item.resource_type === "location" && item.active)
+  const trackingOptions = accountingReferences.filter(item => item.resource_type === "tracking_option" && item.active)
+  // Group tracking options by their category so each category gets its own select.
+  const trackingGroups = useMemo(() => {
+    const groups = new Map<string, { categoryId: string; categoryName: string; options: AccountingReferenceItem[] }>()
+    for (const option of trackingOptions) {
+      const details = (option.details || {}) as { category_id?: string; category_name?: string }
+      const categoryId = String(details.category_id || "uncategorized")
+      const categoryName = String(details.category_name || "Tracking")
+      if (!groups.has(categoryId)) groups.set(categoryId, { categoryId, categoryName, options: [] })
+      groups.get(categoryId)!.options.push(option)
+    }
+    return Array.from(groups.values())
+  }, [trackingOptions])
   const destinationName = accountingDestination === "xero" ? "Xero" : accountingDestination === "quickbooks" ? "QuickBooks" : "accounting destination"
   const isQuickBooks = accountingDestination === "quickbooks"
+  // Approval gate — owner = approver, reviewer = preparer (role rides on the
+  // active workspace membership record).
+  const isApprover = activeWorkspace?.role === "owner"
+  // Line-item splits — only show per-line coding columns when the destination is
+  // connected and there's a chart to code against.
+  const showLineCoding = Boolean(accountingConnection?.connected) && (accounts.length > 0 || taxCodes.length > 0)
   const activeAccountingPublication =
     accountingDestination === "xero"
       ? activeXeroPublication
@@ -661,11 +692,51 @@ function AccountsPayableContent() {
     }))
   }
 
+  // Dimensional coding — single-value header dimensions (Class / Location).
+  const selectDimension = (idField: "class_ref_id" | "location_ref_id", value: string) => {
+    setDraft(current => ({ ...current, [idField]: value === "none" ? "" : value }))
+  }
+
+  // Xero tracking — one option per category; replace the option for that category
+  // within the header's tracking_option_ref_ids list.
+  const selectTrackingOption = (categoryOptionIds: string[], value: string) => {
+    setDraft(current => {
+      const kept = (current.tracking_option_ref_ids || []).filter(id => !categoryOptionIds.includes(id))
+      return {
+        ...current,
+        tracking_option_ref_ids: value === "none" ? kept : [...kept, value],
+      }
+    })
+  }
+
   const updateLineCell = (rowIndex: number, key: string, value: string) => {
     setDraft(current => {
       const updated = (current.line_items || []).map((line, index) => (
         index === rowIndex ? { ...line, [key]: value } : line
       ))
+      return { ...current, line_items: updated }
+    })
+  }
+
+  // Line-item splits — per-line account / tax (+ class / tracking) coding. "none"
+  // clears the ref so the header coding stays the default/fallback.
+  const updateLineCoding = (rowIndex: number, key: "account_ref_id" | "tax_code_ref_id" | "class_ref_id", value: string) => {
+    setDraft(current => {
+      const updated = (current.line_items || []).map((line, index) => (
+        index === rowIndex ? { ...line, [key]: value === "none" ? "" : value } : line
+      ))
+      return { ...current, line_items: updated }
+    })
+  }
+
+  const updateLineTracking = (rowIndex: number, categoryOptionIds: string[], value: string) => {
+    setDraft(current => {
+      const updated = (current.line_items || []).map((line, index) => {
+        if (index !== rowIndex) return line
+        const existing = Array.isArray(line.tracking_option_ref_ids) ? (line.tracking_option_ref_ids as string[]) : []
+        const kept = existing.filter(id => !categoryOptionIds.includes(id))
+        return { ...line, tracking_option_ref_ids: value === "none" ? kept : [...kept, value] }
+      })
       return { ...current, line_items: updated }
     })
   }
@@ -908,6 +979,59 @@ function AccountsPayableContent() {
     }
   }
 
+  // Approval gate — preparer submits the coded bill for approval.
+  const submitActive = async () => {
+    if (!activeItem) return
+    if (hasActiveDuplicate(activeItem)) {
+      toast.error("Resolve or dismiss the duplicate warning before submitting.")
+      return
+    }
+    setSaving(true)
+    try {
+      await accountsPayableApi.update(activeItem.id, {
+        draft_data: buildDraftUpdate(draft),
+        attachment_visible: attachmentVisible,
+      })
+      const response = await accountsPayableApi.submit(activeItem.id)
+      mergeItem(response.item)
+      toast.success("Submitted for approval.")
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || "Could not submit this draft bill.")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  // Approval gate — approver approves a pending bill (→ ready_to_publish).
+  const approveActive = async () => {
+    if (!activeItem) return
+    setSaving(true)
+    try {
+      const response = await accountsPayableApi.approve(activeItem.id)
+      mergeItem(response.item)
+      toast.success("Approved.")
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || "Could not approve this draft bill.")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  // Approval gate — approver returns a pending bill for re-coding.
+  const returnActive = async () => {
+    if (!activeItem) return
+    setSaving(true)
+    try {
+      const response = await accountsPayableApi.returnItem(activeItem.id)
+      mergeItem(response.item)
+      toast.success("Returned for coding.")
+    } catch (error: any) {
+      toast.error(error?.detail || error?.message || "Could not return this draft bill.")
+    } finally {
+      setSaving(false)
+    }
+  }
+
   if (authLoading || !user) return <DashboardRouteLoader label="Loading draft bills" />
 
   return (
@@ -942,6 +1066,7 @@ function AccountsPayableContent() {
           published={counts.published}
           duplicates={duplicateCount}
           missingInfo={missingInfoCount}
+          pendingApproval={counts.pending_approval}
           activeSegment={activeSegment}
           onSelectSegment={(key) => setFilter(key)}
           selectedCount={selectedReadyIds.length}
@@ -1036,6 +1161,7 @@ function AccountsPayableContent() {
                 size="sm"
                 tabs={[
                   { value: "needs_attention", label: "Needs attention", count: counts.needs_coding + counts.needs_review },
+                  { value: "pending_approval", label: "Awaiting approval", count: counts.pending_approval },
                   { value: "ready_to_publish", label: "Ready to publish", count: counts.ready_to_publish },
                   { value: "published", label: "Published", count: counts.published },
                 ]}
@@ -1206,6 +1332,13 @@ function AccountsPayableContent() {
                     <div className="min-w-0">
                       <h2 className="text-[19px] font-semibold tracking-tight text-[var(--data-entity)]">{draft.vendor || "Vendor missing"}</h2>
                       <p className="mt-1 break-all text-[13px] text-foreground">{activeItem.source_filename}</p>
+                      {/* Approval gate — terse audit one-liners. */}
+                      {activeItem.submitted_by_email ? (
+                        <p className="mt-1 text-xs font-medium text-slate-950">Prepared by {activeItem.submitted_by_email}</p>
+                      ) : null}
+                      {activeItem.approved_by_email ? (
+                        <p className="mt-0.5 text-xs font-medium text-slate-950">Approved by {activeItem.approved_by_email}</p>
+                      ) : null}
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       {activeItem.source_access_url ? (
@@ -1583,6 +1716,105 @@ function AccountsPayableContent() {
                     </div>
                   </div>
 
+                  {/* Dimensional coding — Class + Location (QuickBooks) / Tracking
+                      (Xero). Only render selects that actually have references. */}
+                  {(isQuickBooks ? classes.length > 0 || locations.length > 0 : trackingGroups.length > 0) ? (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {isQuickBooks ? (
+                        <>
+                          {classes.length ? (
+                            <div className="space-y-1.5">
+                              <FieldLabel
+                                htmlFor="ap-class-ref"
+                                dirty={valuesDiffer(draft.class_ref_id, activeItem.draft_data.class_ref_id)}
+                              >
+                                <Symbol name="code-department" size="inline" className="size-5" alt="" />
+                                Class
+                              </FieldLabel>
+                              <Select
+                                value={String(draft.class_ref_id || "none")}
+                                onValueChange={value => selectDimension("class_ref_id", value)}
+                                disabled={activeLocked || !accountingConnection?.connected}
+                              >
+                                <SelectTrigger id="ap-class-ref" className={inlineFieldClass}>
+                                  <SelectValue placeholder="No class" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="none">No class</SelectItem>
+                                  {classes.map(cls => (
+                                    <SelectItem key={cls.external_id} value={cls.external_id}>{cls.display_name}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          ) : null}
+                          {locations.length ? (
+                            <div className="space-y-1.5">
+                              <FieldLabel
+                                htmlFor="ap-location-ref"
+                                dirty={valuesDiffer(draft.location_ref_id, activeItem.draft_data.location_ref_id)}
+                              >
+                                <Symbol name="code-department" size="inline" className="size-5" alt="" />
+                                Location
+                              </FieldLabel>
+                              <Select
+                                value={String(draft.location_ref_id || "none")}
+                                onValueChange={value => selectDimension("location_ref_id", value)}
+                                disabled={activeLocked || !accountingConnection?.connected}
+                              >
+                                <SelectTrigger id="ap-location-ref" className={inlineFieldClass}>
+                                  <SelectValue placeholder="No location" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="none">No location</SelectItem>
+                                  {locations.map(loc => (
+                                    <SelectItem key={loc.external_id} value={loc.external_id}>{loc.display_name}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          ) : null}
+                        </>
+                      ) : (
+                        trackingGroups.map(group => {
+                          const groupOptionIds = group.options.map(option => option.external_id)
+                          const selectedId = (draft.tracking_option_ref_ids || []).find(id => groupOptionIds.includes(id)) || "none"
+                          return (
+                            <div key={group.categoryId} className="space-y-1.5">
+                              <FieldLabel
+                                htmlFor={`ap-tracking-${group.categoryId}`}
+                                dirty={valuesDiffer(selectedId === "none" ? "" : selectedId, (activeItem.draft_data.tracking_option_ref_ids || []).find(id => groupOptionIds.includes(id)) || "")}
+                              >
+                                <Symbol name="code-category-chip" size="inline" className="size-5" alt="" />
+                                Tracking
+                              </FieldLabel>
+                              <Select
+                                value={selectedId}
+                                onValueChange={value => selectTrackingOption(groupOptionIds, value)}
+                                disabled={activeLocked || !accountingConnection?.connected}
+                              >
+                                <SelectTrigger id={`ap-tracking-${group.categoryId}`} className={inlineFieldClass}>
+                                  <SelectValue placeholder={group.categoryName} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="none">No {group.categoryName.toLowerCase()}</SelectItem>
+                                  {group.options.map(option => {
+                                    const details = (option.details || {}) as { option_name?: string }
+                                    return (
+                                      <SelectItem key={option.external_id} value={option.external_id}>
+                                        {details.option_name || option.display_name}
+                                      </SelectItem>
+                                    )
+                                  })}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )
+                        })
+                      )}
+                    </div>
+                  ) : null}
+
                   {draft.due_date ? (
                     <div className="flex items-center gap-4 py-1">
                       <Symbol name="code-aging-timeline" size="medium" className="h-24 w-24 sm:h-28 sm:w-28" alt="" />
@@ -1665,7 +1897,16 @@ function AccountsPayableContent() {
 
                   <div>
                     <div className="mb-2 flex items-center justify-between gap-3">
-                      <p className="text-sm font-medium text-slate-950">Line items</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium text-slate-950">Line items</p>
+                        {/* Line-item splits — per-line coding overrides the header. */}
+                        {showLineCoding ? (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-medium text-slate-700">
+                            <Symbol name="code-double-entry" size="inline" className="size-4" alt="" />
+                            Split
+                          </span>
+                        ) : null}
+                      </div>
                       {!activeLocked ? (
                         <InlineAction onClick={addLineItem}>
                           Add line
@@ -1682,11 +1923,25 @@ function AccountsPayableContent() {
                                   {column.replaceAll("_", " ")}
                                 </th>
                               ))}
+                              {showLineCoding ? (
+                                <>
+                                  <th className="w-[150px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-wider text-slate-500">Account</th>
+                                  <th className="w-[120px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-wider text-slate-500">Tax</th>
+                                  {isQuickBooks && classes.length ? (
+                                    <th className="w-[120px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-wider text-slate-500">Class</th>
+                                  ) : null}
+                                  {!isQuickBooks && trackingGroups.length ? (
+                                    <th className="w-[120px] whitespace-nowrap border-b border-slate-200 px-2 py-2 text-left text-[10px] font-medium uppercase tracking-wider text-slate-500">Tracking</th>
+                                  ) : null}
+                                </>
+                              ) : null}
                               {!activeLocked ? <th className="w-14 border-b border-slate-200 px-2 py-2" /> : null}
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-200">
-                            {lineItems.map((line, rowIndex) => (
+                            {lineItems.map((line, rowIndex) => {
+                              const lineTracking = Array.isArray(line.tracking_option_ref_ids) ? (line.tracking_option_ref_ids as string[]) : []
+                              return (
                               <tr key={rowIndex} className="bg-white last:border-b-0">
                                 {lineColumns.map(column => (
                                   <td key={column} className="p-1.5">
@@ -1698,6 +1953,94 @@ function AccountsPayableContent() {
                                     />
                                   </td>
                                 ))}
+                                {showLineCoding ? (
+                                  <>
+                                    <td className="p-1.5">
+                                      <Select
+                                        value={String(line.account_ref_id || "none")}
+                                        onValueChange={value => updateLineCoding(rowIndex, "account_ref_id", value)}
+                                        disabled={activeLocked}
+                                      >
+                                        <SelectTrigger className="h-8 min-w-[140px] rounded-sm text-xs">
+                                          <SelectValue placeholder="Header" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="none">Header</SelectItem>
+                                          {accounts.map(account => (
+                                            <SelectItem key={account.external_id} value={account.external_id}>{account.display_name}</SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </td>
+                                    <td className="p-1.5">
+                                      <Select
+                                        value={String(line.tax_code_ref_id || "none")}
+                                        onValueChange={value => updateLineCoding(rowIndex, "tax_code_ref_id", value)}
+                                        disabled={activeLocked}
+                                      >
+                                        <SelectTrigger className="h-8 min-w-[110px] rounded-sm text-xs">
+                                          <SelectValue placeholder="Header" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="none">Header</SelectItem>
+                                          {taxCodes.map(taxCode => (
+                                            <SelectItem key={taxCode.external_id} value={taxCode.external_id}>{taxCode.display_name}</SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </td>
+                                    {isQuickBooks && classes.length ? (
+                                      <td className="p-1.5">
+                                        <Select
+                                          value={String(line.class_ref_id || "none")}
+                                          onValueChange={value => updateLineCoding(rowIndex, "class_ref_id", value)}
+                                          disabled={activeLocked}
+                                        >
+                                          <SelectTrigger className="h-8 min-w-[110px] rounded-sm text-xs">
+                                            <SelectValue placeholder="Header" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="none">Header</SelectItem>
+                                            {classes.map(cls => (
+                                              <SelectItem key={cls.external_id} value={cls.external_id}>{cls.display_name}</SelectItem>
+                                            ))}
+                                          </SelectContent>
+                                        </Select>
+                                      </td>
+                                    ) : null}
+                                    {!isQuickBooks && trackingGroups.length ? (
+                                      <td className="p-1.5">
+                                        {trackingGroups.map(group => {
+                                          const groupOptionIds = group.options.map(option => option.external_id)
+                                          const selectedId = lineTracking.find(id => groupOptionIds.includes(id)) || "none"
+                                          return (
+                                            <Select
+                                              key={group.categoryId}
+                                              value={selectedId}
+                                              onValueChange={value => updateLineTracking(rowIndex, groupOptionIds, value)}
+                                              disabled={activeLocked}
+                                            >
+                                              <SelectTrigger className="mb-1 h-8 min-w-[110px] rounded-sm text-xs last:mb-0">
+                                                <SelectValue placeholder={group.categoryName} />
+                                              </SelectTrigger>
+                                              <SelectContent>
+                                                <SelectItem value="none">Header</SelectItem>
+                                                {group.options.map(option => {
+                                                  const details = (option.details || {}) as { option_name?: string }
+                                                  return (
+                                                    <SelectItem key={option.external_id} value={option.external_id}>
+                                                      {details.option_name || option.display_name}
+                                                    </SelectItem>
+                                                  )
+                                                })}
+                                              </SelectContent>
+                                            </Select>
+                                          )
+                                        })}
+                                      </td>
+                                    ) : null}
+                                  </>
+                                ) : null}
                                 {!activeLocked ? (
                                   <td className="p-1.5">
                                     <InlineAction tone="danger" onClick={() => removeLineItem(rowIndex)} className="text-xs">
@@ -1706,7 +2049,8 @@ function AccountsPayableContent() {
                                   </td>
                                 ) : null}
                               </tr>
-                            ))}
+                              )
+                            })}
                           </tbody>
                         </table>
                       </div>
@@ -1715,14 +2059,33 @@ function AccountsPayableContent() {
                     )}
                   </div>
 
+                  {/* Approval gate — awaiting-approval state. */}
+                  {activeItem.status === "pending_approval" ? (
+                    <div className="flex items-center gap-4 py-1">
+                      <Symbol name="approved-stamp" size="medium" className="h-24 w-24 sm:h-28 sm:w-28" alt="" />
+                      <div className="space-y-1">
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-white px-2.5 py-0.5 text-xs font-medium text-violet-700">
+                          <Symbol name="code-period-close" size="inline" className="size-4" alt="" />
+                          Awaiting approval
+                        </span>
+                        {activeItem.submitted_by_email ? (
+                          <p className="text-xs font-medium text-slate-950">Prepared by {activeItem.submitted_by_email}</p>
+                        ) : null}
+                      </div>
+                    </div>
+                  ) : null}
+
                   {activeItem.status === "ready_to_publish" && !activeLocked ? (
                     <div className="flex items-center gap-4 py-1">
                       <Symbol name="success-bill-ready" size="medium" className="h-28 w-28 sm:h-32 sm:w-32" alt="" />
-                      <div>
+                      <div className="space-y-1">
                         <p className="text-base font-medium text-slate-950">Coded and ready</p>
-                        <p className="mt-0.5 max-w-sm text-sm leading-relaxed text-foreground/70">
+                        <p className="max-w-sm text-sm leading-relaxed text-foreground/70">
                           Every field is filled in. Publish it to {destinationName} as a draft bill, or send it back for another look.
                         </p>
+                        {activeItem.approved_by_email ? (
+                          <p className="text-xs font-medium text-slate-950">Approved by {activeItem.approved_by_email}</p>
+                        ) : null}
                       </div>
                     </div>
                   ) : null}
@@ -1730,35 +2093,81 @@ function AccountsPayableContent() {
                   <div className="sticky bottom-0 z-10 -mx-4 -mb-4 flex flex-wrap justify-end gap-2 border-t border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:relative sm:bottom-auto sm:mx-0 sm:mb-0 sm:bg-transparent sm:px-0 sm:py-4 sm:backdrop-blur-0 sm:supports-[backdrop-filter]:bg-transparent">
                     {!activeLocked ? (
                       <>
-                        <MotionButton variant="surface" onClick={() => void persistDraft()} disabled={saving} className="h-9">
-                          Save changes
-                        </MotionButton>
-                        {activeItem.status === "ready_to_publish" ? (
-                          <>
-                            <InlineAction onClick={() => void persistDraft("needs_coding")} disabled={saving} className="px-2">
-                              Return to coding
-                            </InlineAction>
-                            <MotionButton
-                              ref={activePublishRef}
-                              variant="glossy"
-                              onClick={() => void publishActive()}
-                              disabled={saving || !accountingConnection?.connected || activeHasDuplicate}
-                              title={activeHasDuplicate ? "Resolve duplicate warnings before publishing" : undefined}
-                              className={cn("h-9", workspacePrimaryButton)}
-                            >
-                              Publish to {destinationName}
-                            </MotionButton>
-                          </>
+                        {activeItem.status === "pending_approval" ? (
+                          // Approval gate — approver acts; preparer just waits.
+                          isApprover ? (
+                            <>
+                              <MotionButton
+                                variant="surface"
+                                onClick={() => void returnActive()}
+                                disabled={saving}
+                                className="h-9"
+                              >
+                                Return
+                              </MotionButton>
+                              <MotionButton
+                                variant="glossy"
+                                onClick={() => void approveActive()}
+                                disabled={saving}
+                                className={cn("h-9", workspacePrimaryButton)}
+                              >
+                                <Symbol name="approved-stamp" size="inline" className="mr-1 size-4" alt="" />
+                                Approve
+                              </MotionButton>
+                            </>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-950">
+                              <Symbol name="code-period-close" size="inline" className="size-4" alt="" />
+                              Awaiting approval
+                            </span>
+                          )
                         ) : (
-                          <Button
-                            variant="reviewed"
-                            onClick={() => void persistDraft("ready_to_publish")}
-                            disabled={saving || activeHasDuplicate}
-                            title={activeHasDuplicate ? "Resolve duplicate warnings before marking ready" : undefined}
-                            className="h-9"
-                          >
-                            Mark ready to publish
-                          </Button>
+                          <>
+                            <MotionButton variant="surface" onClick={() => void persistDraft()} disabled={saving} className="h-9">
+                              Save changes
+                            </MotionButton>
+                            {activeItem.status === "ready_to_publish" ? (
+                              <>
+                                <InlineAction onClick={() => void persistDraft("needs_coding")} disabled={saving} className="px-2">
+                                  Return to coding
+                                </InlineAction>
+                                {isApprover ? (
+                                  <MotionButton
+                                    ref={activePublishRef}
+                                    variant="glossy"
+                                    onClick={() => void publishActive()}
+                                    disabled={saving || !accountingConnection?.connected || activeHasDuplicate}
+                                    title={activeHasDuplicate ? "Resolve duplicate warnings before publishing" : undefined}
+                                    className={cn("h-9", workspacePrimaryButton)}
+                                  >
+                                    Publish to {destinationName}
+                                  </MotionButton>
+                                ) : null}
+                              </>
+                            ) : isApprover ? (
+                              // Owner can approve their own coding straight through.
+                              <Button
+                                variant="reviewed"
+                                onClick={() => void persistDraft("ready_to_publish")}
+                                disabled={saving || activeHasDuplicate}
+                                title={activeHasDuplicate ? "Resolve duplicate warnings before marking ready" : undefined}
+                                className="h-9"
+                              >
+                                Mark ready to publish
+                              </Button>
+                            ) : (
+                              // Reviewer (preparer) submits into the approval gate.
+                              <MotionButton
+                                variant="glossy"
+                                onClick={() => void submitActive()}
+                                disabled={saving || activeHasDuplicate}
+                                title={activeHasDuplicate ? "Resolve duplicate warnings before submitting" : undefined}
+                                className={cn("h-9", workspacePrimaryButton)}
+                              >
+                                Submit
+                              </MotionButton>
+                            )}
+                          </>
                         )}
                       </>
                     ) : null}

@@ -341,6 +341,7 @@ export interface VendorRule {
 export type AccountsPayableStatus =
   | 'needs_coding'
   | 'needs_review'
+  | 'pending_approval'
   | 'ready_to_publish'
   | 'published'
   | 'failed'
@@ -374,6 +375,10 @@ export interface AccountsPayableDraftData {
   tax_code?: string
   tax_code_ref_id?: string
   currency?: string
+  // Header dimensional coding — Class + Location (QuickBooks) / Tracking (Xero).
+  class_ref_id?: string
+  location_ref_id?: string
+  tracking_option_ref_ids?: string[]
   subtotal?: unknown
   tax_amount?: unknown
   total?: unknown
@@ -468,6 +473,13 @@ export interface AccountsPayableItem {
   created_at: string
   updated_at: string
   published_at?: string | null
+  // Approval gate — preparer submits, approver approves.
+  submitted_by?: string | null
+  submitted_at?: string | null
+  submitted_by_email?: string | null
+  approved_by?: string | null
+  approved_at?: string | null
+  approved_by_email?: string | null
   quickbooks_publication?: QuickBooksBillPublication | null
   xero_publication?: XeroBillPublication | null
 }
@@ -484,7 +496,14 @@ export interface QuickBooksConnectionStatus {
 }
 
 export interface QuickBooksReferenceItem {
-  resource_type: 'vendor' | 'account' | 'tax_code'
+  resource_type:
+    | 'vendor'
+    | 'account'
+    | 'tax_code'
+    | 'class'
+    | 'location'
+    | 'tracking_category'
+    | 'tracking_option'
   external_id: string
   display_name: string
   active: boolean
@@ -1311,7 +1330,7 @@ export const accountsPayableApi = {
   update: async (
     itemId: string,
     updates: {
-      draft_data?: Pick<AccountsPayableDraftData, 'vendor' | 'vendor_ref_id' | 'invoice_number' | 'invoice_date' | 'due_date' | 'account_category' | 'account_ref_id' | 'tax_code' | 'tax_code_ref_id' | 'reference' | 'currency' | 'line_items'>
+      draft_data?: Pick<AccountsPayableDraftData, 'vendor' | 'vendor_ref_id' | 'invoice_number' | 'invoice_date' | 'due_date' | 'account_category' | 'account_ref_id' | 'tax_code' | 'tax_code_ref_id' | 'reference' | 'currency' | 'class_ref_id' | 'location_ref_id' | 'tracking_option_ref_ids' | 'line_items'>
       attachment_visible?: boolean
       status?: AccountsPayableStatus
       reason?: string
@@ -1324,6 +1343,27 @@ export const accountsPayableApi = {
 
   publish: async (itemId: string): Promise<{ item: AccountsPayableItem }> => {
     const response = await apiClient.post<{ item: AccountsPayableItem }>(`/api/v1/accounts-payable/${itemId}/publish`)
+    return response.data
+  },
+
+  // Approval gate — preparer submits coded bill for approval.
+  submit: async (itemId: string): Promise<{ item: AccountsPayableItem }> => {
+    const response = await apiClient.post<{ item: AccountsPayableItem }>(`/api/v1/accounts-payable/${itemId}/submit`)
+    return response.data
+  },
+
+  // Approval gate — approver approves a pending bill (→ ready_to_publish).
+  approve: async (itemId: string): Promise<{ item: AccountsPayableItem }> => {
+    const response = await apiClient.post<{ item: AccountsPayableItem }>(`/api/v1/accounts-payable/${itemId}/approve`)
+    return response.data
+  },
+
+  // Approval gate — approver returns a pending bill for re-coding.
+  returnItem: async (itemId: string, reason?: string): Promise<{ item: AccountsPayableItem }> => {
+    const response = await apiClient.post<{ item: AccountsPayableItem }>(
+      `/api/v1/accounts-payable/${itemId}/return`,
+      { reason },
+    )
     return response.data
   },
 

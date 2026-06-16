@@ -38,6 +38,8 @@ interface PriorityBoardProps {
   /** Sub-breakdown of the attention bucket, surfaced as quiet chips. */
   duplicates: number
   missingInfo: number
+  /** Bills sitting in the approval gate, awaiting an approver. */
+  pendingApproval: number
   /** Which segment the queue is currently focused on (drives the highlight). */
   activeSegment: PrioritySegmentKey | null
   /** Focus the queue on a segment. */
@@ -88,6 +90,7 @@ export function PriorityBoard({
   published,
   duplicates,
   missingInfo,
+  pendingApproval,
   activeSegment,
   onSelectSegment,
   selectedCount,
@@ -131,6 +134,7 @@ export function PriorityBoard({
   ]
 
   const attentionChips = [
+    pendingApproval > 0 ? { label: `${pendingApproval} awaiting approval`, key: "approval" } : null,
     duplicates > 0 ? { label: duplicates === 1 ? "1 duplicate" : `${duplicates} duplicates`, key: "dup" } : null,
     missingInfo > 0 ? { label: `${missingInfo} missing info`, key: "missing" } : null,
   ].filter(Boolean) as Array<{ label: string; key: string }>
