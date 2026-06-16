@@ -100,10 +100,12 @@ export default function RootLayout({
               <div className="relative z-10">
                 {children}
               </div>
+              {/* Notifications disabled — no success/error workspace toasts
               <Toaster
                 position="top-right"
                 toastOptions={{ duration: 3500, className: "ax-toast ax-interactive" }}
               />
+              */}
               <CookieNotice />
               <Suspense fallback={null}>
                 <DemoModal />
