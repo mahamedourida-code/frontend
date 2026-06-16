@@ -525,9 +525,6 @@ export default function Home() {
           <IntegrationsLogos />
         </div>
 
-        {/* ── Scroll-grow cinematic section (white), before the features band ── */}
-        <ScrollGrowSection />
-
         {/* ── 4 · Why Choose Us — white band, brown cycling typewriter ── */}
         <div className="relative isolate overflow-hidden">
           <div
@@ -682,6 +679,9 @@ export default function Home() {
         </ScrollAnimatedSection>
           </div>
         </div>
+
+        {/* ── Scroll-grow cinematic section (white) — last section after FAQ ── */}
+        <ScrollGrowSection />
       </main>
 
       {/* ── Footer — Descript dark-footer recipe, recolored to black ── */}
