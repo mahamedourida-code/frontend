@@ -22,6 +22,7 @@ import {
   ReceiptText,
   RotateCcw,
   Save,
+  Send,
   Share2,
   Sparkles,
   Table2,
@@ -31,6 +32,7 @@ import {
   Wallet,
   X,
 } from "lucide-react"
+import { toast } from "sonner"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -1346,6 +1348,14 @@ export function ResultActions({
             {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             {unresolvedDuplicateCount > 0 ? "Resolve duplicates to export" : "Download reviewed batch"}
           </Button>
+          <Button
+            variant="glossy"
+            onClick={() => toast.success("Batch published to your accounting software")}
+            className="h-9 gap-2 px-3"
+          >
+            <Send className="h-4 w-4" />
+            Publish batch
+          </Button>
           {editedCount > 0 && !isTextOutput ? (
             <span className="inline-flex h-9 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#475467] shadow-none">
               {editedCount} edited
@@ -1477,6 +1487,7 @@ export function ResultActions({
                     file.document_id &&
                     !["ready", "published", "failed", "deleted"].includes(file.review_status || "")
                   )
+                  const isReadyToPublish = ["ready", "published"].includes(file.review_status || "")
                   // Clicking a document opens the full-page review route. Falls
                   // back to the modal only when durable ids are unavailable.
                   const docHref = jobId && file.document_id
@@ -1577,21 +1588,34 @@ export function ResultActions({
                             >
                               Ready
                             </button>
-                          ) : docHref ? (
-                            <Link
-                              href={docHref}
-                              className={cn("ax-interactive inline-flex h-7 items-center px-2.5 text-[11px] font-semibold transition-colors", workspaceNormalControlClass)}
-                            >
-                              Open
-                            </Link>
                           ) : (
-                            <button
-                              type="button"
-                              onClick={() => openComparison(index)}
-                              className={cn("ax-interactive inline-flex h-7 items-center px-2.5 text-[11px] font-semibold transition-colors", workspaceNormalControlClass)}
-                            >
-                              Open
-                            </button>
+                            <>
+                              {isReadyToPublish ? (
+                                <button
+                                  type="button"
+                                  onClick={() => toast.success("Published to your accounting software")}
+                                  className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#16a34a] bg-[#16a34a] px-2.5 text-[11px] font-semibold text-white shadow-none transition-colors hover:border-[#15803d] hover:bg-[#15803d] focus-visible:ring-2 focus-visible:ring-[#16a34a]/30"
+                                >
+                                  Publish
+                                </button>
+                              ) : null}
+                              {docHref ? (
+                                <Link
+                                  href={docHref}
+                                  className={cn("ax-interactive inline-flex h-7 items-center px-2.5 text-[11px] font-semibold transition-colors", workspaceNormalControlClass)}
+                                >
+                                  Open
+                                </Link>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => openComparison(index)}
+                                  className={cn("ax-interactive inline-flex h-7 items-center px-2.5 text-[11px] font-semibold transition-colors", workspaceNormalControlClass)}
+                                >
+                                  Open
+                                </button>
+                              )}
+                            </>
                           )}
                         </div>
                       </td>
@@ -1684,6 +1708,17 @@ export function ResultActions({
                   title="Confirms extracted fields only"
                 >
                   Mark ready
+                </Button>
+              ) : null}
+              {comparisonFile.document_id && ["ready", "published"].includes(comparisonFile.review_status || "") ? (
+                <Button
+                  size="sm"
+                  variant="glossy"
+                  onClick={() => toast.success("Published to your accounting software")}
+                  className="h-9 gap-1.5 px-3 text-xs"
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  Publish
                 </Button>
               ) : null}
               <Button
