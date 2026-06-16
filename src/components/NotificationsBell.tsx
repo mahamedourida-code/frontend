@@ -6,9 +6,9 @@ import {
   Bell,
   CheckCheck,
   CheckCircle2,
-  Copy,
-  KeyRound,
-  Upload,
+  // Copy,
+  // KeyRound,
+  // Upload,
   ArrowUpRight,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -34,28 +34,30 @@ const GROUP_META: Record<
     icon: CheckCircle2,
     tone: "text-[#16a34a] bg-[#f0fdf4]",
   },
-  duplicate_detected: {
-    label: "Duplicate detected",
-    icon: Copy,
-    tone: "text-[#d97706] bg-[#fffbeb]",
-  },
-  quickbooks_token: {
-    label: "QuickBooks",
-    icon: KeyRound,
-    tone: "text-[#dc2626] bg-[#fef2f2]",
-  },
-  client_uploaded: {
-    label: "Client upload",
-    icon: Upload,
-    tone: "text-[#A98467] bg-[#f3ece2]",
-  },
+  // Customer-card notification groups are intentionally commented out.
+  //
+  // duplicate_detected: {
+  //   label: "Duplicate detected",
+  //   icon: Copy,
+  //   tone: "text-[#d97706] bg-[#fffbeb]",
+  // },
+  // quickbooks_token: {
+  //   label: "QuickBooks",
+  //   icon: KeyRound,
+  //   tone: "text-[#dc2626] bg-[#fef2f2]",
+  // },
+  // client_uploaded: {
+  //   label: "Client upload",
+  //   icon: Upload,
+  //   tone: "text-[#A98467] bg-[#f3ece2]",
+  // },
 }
 
 const GROUP_ORDER: NotificationGroup[] = [
   "job_finished",
-  "duplicate_detected",
-  "quickbooks_token",
-  "client_uploaded",
+  // "duplicate_detected",
+  // "quickbooks_token",
+  // "client_uploaded",
 ]
 
 function relativeTime(ts: number): string {
@@ -238,7 +240,7 @@ export function NotificationsBell() {
               <GroupedList
                 items={items}
                 onJump={handleJump}
-                emptyLabel="Finished jobs, duplicate flags and accounting alerts will show up here."
+                emptyLabel="Finished batches will show up here."
               />
             </TabsContent>
             <TabsContent value="unread" className="m-0">

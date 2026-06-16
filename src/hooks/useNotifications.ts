@@ -10,10 +10,8 @@ import { useProcessingState } from "@/contexts/ProcessingStateContext"
  * says not to add one). Instead we derive notifications from the same
  * client-side signals the app already raises:
  *   - ProcessingStateContext → "job finished" / "results ready"
- *   - a lightweight `axliner:notify` window event → any other producer
- *     (duplicate detected, QuickBooks token expiring, client uploaded) can
- *     surface a notification by dispatching the event alongside its toast,
- *     without coupling to this module.
+ * Non-batch/customer-card notifications are intentionally disabled for the
+ * workspace pages.
  *
  * Everything lives in memory + localStorage (read state survives reloads).
  * Degrades gracefully to an empty "You're all caught up" state.
@@ -21,9 +19,10 @@ import { useProcessingState } from "@/contexts/ProcessingStateContext"
 
 export type NotificationGroup =
   | "job_finished"
-  | "duplicate_detected"
-  | "quickbooks_token"
-  | "client_uploaded"
+  // Customer-card notifications are intentionally commented out for workspace pages.
+  // | "duplicate_detected"
+  // | "quickbooks_token"
+  // | "client_uploaded"
 
 export type AppNotification = {
   id: string
@@ -36,34 +35,30 @@ export type AppNotification = {
   read: boolean
 }
 
-export type NotifyPayload = {
-  group: NotificationGroup
-  title: string
-  preview: string
-  href?: string
-  /** stable key — repeat dispatches with the same dedupeKey are ignored */
-  dedupeKey?: string
-}
-
 const READ_STORAGE_KEY = "axliner_notifications_read_v1"
-const NOTIFY_EVENT = "axliner:notify"
+// const NOTIFY_EVENT = "axliner:notify"
 const MAX_ITEMS = 40
 
-const DEFAULT_HREF: Record<NotificationGroup, string> = {
-  job_finished: "/dashboard/client",
-  duplicate_detected: "/dashboard/client",
-  quickbooks_token: "/dashboard/integrations",
-  client_uploaded: "/dashboard/inbox",
-}
+// type NotifyPayload = {
+//   group: NotificationGroup
+//   title: string
+//   preview: string
+//   href?: string
+//   /** stable key - repeat dispatches with the same dedupeKey are ignored */
+//   dedupeKey?: string
+// }
 
-/**
- * Fire a notification from anywhere in the app (alongside an existing toast):
- *   notify({ group: "duplicate_detected", title: "Possible duplicate", preview: "Acme #1042 matches May 3", href: "/dashboard/client" })
- */
-export function notify(payload: NotifyPayload) {
-  if (typeof window === "undefined") return
-  window.dispatchEvent(new CustomEvent<NotifyPayload>(NOTIFY_EVENT, { detail: payload }))
-}
+// const DEFAULT_HREF: Record<NotificationGroup, string> = {
+//   job_finished: "/dashboard/client",
+//   duplicate_detected: "/dashboard/client",
+//   quickbooks_token: "/dashboard/integrations",
+//   client_uploaded: "/dashboard/inbox",
+// }
+
+// export function notify(payload: NotifyPayload) {
+//   if (typeof window === "undefined") return
+//   window.dispatchEvent(new CustomEvent<NotifyPayload>(NOTIFY_EVENT, { detail: payload }))
+// }
 
 function loadReadSet(): Set<string> {
   if (typeof window === "undefined") return new Set()
@@ -92,7 +87,7 @@ export function useNotifications() {
   const { state: processingState } = useProcessingState()
   const [items, setItems] = useState<AppNotification[]>([])
   const readRef = useRef<Set<string>>(new Set())
-  const seenKeysRef = useRef<Set<string>>(new Set())
+  // const seenKeysRef = useRef<Set<string>>(new Set())
 
   // hydrate the read-set once
   useEffect(() => {
@@ -133,26 +128,27 @@ export function useNotifications() {
     addItem,
   ])
 
-  // ── Source 2: `axliner:notify` window events ──────────────────────
-  useEffect(() => {
-    const onNotify = (event: Event) => {
-      const detail = (event as CustomEvent<NotifyPayload>).detail
-      if (!detail?.group || !detail?.title) return
-      const key = detail.dedupeKey || `${detail.group}:${detail.title}:${detail.preview}`
-      if (seenKeysRef.current.has(key)) return
-      seenKeysRef.current.add(key)
-      addItem({
-        id: `evt-${key}`,
-        group: detail.group,
-        title: detail.title,
-        preview: detail.preview,
-        href: detail.href || DEFAULT_HREF[detail.group],
-        createdAt: Date.now(),
-      })
-    }
-    window.addEventListener(NOTIFY_EVENT, onNotify)
-    return () => window.removeEventListener(NOTIFY_EVENT, onNotify)
-  }, [addItem])
+  // Customer-card notification events are intentionally commented out.
+  //
+  // useEffect(() => {
+  //   const onNotify = (event: Event) => {
+  //     const detail = (event as CustomEvent<NotifyPayload>).detail
+  //     if (!detail?.group || !detail?.title) return
+  //     const key = detail.dedupeKey || `${detail.group}:${detail.title}:${detail.preview}`
+  //     if (seenKeysRef.current.has(key)) return
+  //     seenKeysRef.current.add(key)
+  //     addItem({
+  //       id: `evt-${key}`,
+  //       group: detail.group,
+  //       title: detail.title,
+  //       preview: detail.preview,
+  //       href: detail.href || DEFAULT_HREF[detail.group],
+  //       createdAt: Date.now(),
+  //     })
+  //   }
+  //   window.addEventListener(NOTIFY_EVENT, onNotify)
+  //   return () => window.removeEventListener(NOTIFY_EVENT, onNotify)
+  // }, [addItem])
 
   const markAllRead = useCallback(() => {
     setItems((prev) => {
