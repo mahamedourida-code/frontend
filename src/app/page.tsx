@@ -386,32 +386,32 @@ export default function Home() {
   };
 
   return (
-    <div className="ax-marketing-page relative min-h-screen bg-white text-neutral-950">
+    <div className="ax-marketing-page relative min-h-screen bg-[#F6F1EA] text-neutral-950">
       <AnnouncementBar />
       <MarketingNavBar onSectionClick={scrollToSection} />
 
       {/* Hero Section */}
       <main className="relative z-10 pt-[var(--axn-bar,0px)]">
         {/* ── 1 · HERO (white) ── */}
-        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden bg-white">
+        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden bg-[#F6F1EA]">
           <div
             ref={topBackgroundRef}
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat will-change-transform"
             style={{
-              backgroundColor: "#ffffff",
+              backgroundColor: "#F6F1EA",
             }}
           />
           <div className="relative z-10">
         <section ref={heroRef} className="relative flex min-h-[calc(100svh-var(--axn-bar,0px))] items-center overflow-hidden py-12 lg:py-16">
           <div className="ax-marketing-container relative z-10 w-full">
-            <div className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20">
+            <div className="grid items-center gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:gap-20">
               {/* Left — title, subtitle, CTA */}
               <div className="text-center lg:text-left">
                 <h1 className="ax-marketing-display text-balance !font-semibold !leading-[1.05] !tracking-normal text-black text-[2.75rem] sm:text-[3.5rem] lg:text-[4rem]">
-                  Handwritten invoices to QuickBooks and Xero,
+                  Handwritten invoices, reviewed
                   <br />
-                  reviewed by you first
+                  for QuickBooks and Xero
                 </h1>
                 <p className="ax-marketing-lead mx-auto mt-7 max-w-[600px] text-lg font-semibold text-neutral-950 sm:text-xl lg:mx-0">
                   Upload invoices, receipts, bank statements, and handwritten files. AxLiner turns them into clean data you can review, export, or publish.
@@ -425,7 +425,7 @@ export default function Home() {
               </div>
 
               {/* Right — product walkthrough video */}
-              <div className="relative mx-auto w-full max-w-[720px] lg:mx-0">
+              <div className="relative mx-auto w-full max-w-[520px] lg:mx-0 lg:ml-auto">
                 <HeroVideo />
               </div>
             </div>
@@ -443,7 +443,7 @@ export default function Home() {
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
-            style={{ backgroundColor: "#ffffff" }}
+            style={{ backgroundColor: "#F6F1EA" }}
           />
           <div className="relative z-10">
         <div id="how-it-works" className="ax-marketing-band-mint text-neutral-950" style={{ backgroundColor: "#F6F1EA" }}>
@@ -536,10 +536,10 @@ export default function Home() {
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
-            style={{ backgroundColor: "#ffffff" }}
+            style={{ backgroundColor: "#F6F1EA" }}
           />
           <div className="relative z-10">
-        <ScrollAnimatedSection id="features" className="relative z-20 bg-white pt-20 pb-24 text-neutral-950 lg:pt-24 lg:pb-28">
+        <ScrollAnimatedSection id="features" className="relative z-20 bg-[#F6F1EA] pt-20 pb-24 text-neutral-950 lg:pt-24 lg:pb-28">
           <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
             <div className="mb-14" data-animate="headline">
               <h2
@@ -570,9 +570,9 @@ export default function Home() {
         <TestimonialsMarquee />
 
         {/* ── Security + FAQ — redesigned to match the system (white) ── */}
-        <div className="relative isolate overflow-hidden bg-white">
+        <div className="relative isolate overflow-hidden bg-[#F6F1EA]">
           <div className="relative z-10">
-        <ScrollAnimatedSection id="security" className="relative z-10 overflow-hidden bg-white py-20 lg:py-28">
+        <ScrollAnimatedSection id="security" className="relative z-10 overflow-hidden bg-[#F6F1EA] py-20 lg:py-28">
           <div className="container relative z-10 mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
             {/* Heading — matches the white-section type scale, brown accent */}
             <motion.div
