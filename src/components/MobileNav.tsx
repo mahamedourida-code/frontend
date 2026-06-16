@@ -42,6 +42,8 @@ import {
   ReceiptText,
   Building2,
   Inbox,
+  Layers,
+  ListChecks,
   PlugZap,
   Users,
   ScanLine,
@@ -137,7 +139,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
 
   const mainNavItems: MobileNavItem[] = [
     {
-      label: "Companies",
+      label: "Clients",
       href: "/dashboard",
       icon: Building2,
       show: isAuthenticated
@@ -149,9 +151,21 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       show: isAuthenticated
     },
     {
-      label: "Review",
+      label: "Batches",
+      href: "/dashboard/batches",
+      icon: Layers,
+      show: isAuthenticated
+    },
+    {
+      label: "Review board",
       href: "/dashboard/client",
       icon: BookCheck,
+      show: isAuthenticated
+    },
+    {
+      label: "Integrations",
+      href: "/dashboard/integrations",
+      icon: PlugZap,
       show: isAuthenticated
     },
     {
@@ -161,15 +175,15 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       show: isAuthenticated
     },
     {
-      label: "Activity",
-      href: "/history",
-      icon: Activity,
+      label: "Setup",
+      href: "/dashboard/setup",
+      icon: ListChecks,
       show: isAuthenticated
     },
     {
-      label: "Integrations",
-      href: "/dashboard/integrations",
-      icon: PlugZap,
+      label: "Activity",
+      href: "/history",
+      icon: Activity,
       show: isAuthenticated
     },
     {
@@ -236,7 +250,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
     onClick: () => void
   }> = isAuthenticated
     ? [
-        { label: "Companies", icon: Building2, active: pathname === "/dashboard" || pathname.startsWith("/dashboard/companies/"), onClick: () => handleNavigation("/dashboard") },
+        { label: "Clients", icon: Building2, active: pathname === "/dashboard" || pathname.startsWith("/dashboard/companies/"), onClick: () => handleNavigation("/dashboard") },
         { label: "Review", icon: BookCheck, active: pathname === "/dashboard/client", onClick: () => handleNavigation("/dashboard/client") },
         { label: "Inbox", icon: Inbox, active: pathname === "/dashboard/inbox", onClick: () => handleNavigation("/dashboard/inbox") },
       ]

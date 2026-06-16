@@ -174,7 +174,7 @@ export function DashboardShell({
                 className="ax-interactive group inline-flex h-9 w-full max-w-[340px] cursor-pointer items-center gap-2 rounded-md border border-white/18 bg-white/8 px-3 text-sm font-normal text-white/62 transition-colors hover:border-white/35 hover:bg-white/12 hover:text-white"
               >
                 <Search className="size-4 shrink-0 text-white/88" />
-                <span className="truncate">Search clients, documents, batches...</span>
+                <span className="truncate">Jump to a page or document...</span>
                 <kbd className="ms-auto hidden shrink-0 rounded border border-white/15 bg-white/8 px-1.5 py-0.5 font-sans text-[10px] font-medium text-white/55 sm:inline-flex">
                   ⌘K
                 </kbd>

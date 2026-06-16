@@ -43,9 +43,9 @@ const GROUP_ORDER: CommandGroup[] = ["navigate", "act", "find"]
 
 // Navigate: every accountant workspace route (mirrors WorkspaceSidebar).
 const NAVIGATE_ITEMS: CommandItem[] = [
-  { id: "nav-companies", group: "navigate", label: "Companies",        hint: "Workspace", keywords: "clients customers home",        icon: Building2,   href: "/dashboard" },
+  { id: "nav-companies", group: "navigate", label: "Clients",          hint: "Workspace", keywords: "companies customers home",      icon: Building2,   href: "/dashboard" },
   { id: "nav-inbox",    group: "navigate", label: "Inbox",            hint: "Workspace", keywords: "intake client submissions",    icon: Inbox,       href: "/dashboard/inbox" },
-  { id: "nav-review",   group: "navigate", label: "Review batches",   hint: "Workspace", keywords: "documents exceptions results", icon: BookCheck,   href: "/dashboard/client" },
+  { id: "nav-review",   group: "navigate", label: "Review board",     hint: "Workspace", keywords: "batches documents exceptions results", icon: BookCheck,   href: "/dashboard/client" },
   { id: "nav-bills",    group: "navigate", label: "Draft bills",      hint: "Workspace", keywords: "accounts payable ap queue coding", icon: ReceiptText, href: "/dashboard/accounts-payable" },
   { id: "nav-activity", group: "navigate", label: "Activity",         hint: "Workspace", keywords: "history saved jobs results",   icon: Activity,    href: "/history" },
   { id: "nav-integrations", group: "navigate", label: "Integrations", hint: "Workspace", keywords: "quickbooks xero accounting sync", icon: PlugZap,     href: "/dashboard/integrations" },

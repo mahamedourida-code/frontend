@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import Link from "next/link"
-import { Activity, BookCheck, BookOpenText, ChevronDown, ChevronRight, Home, Inbox, Layers, ListChecks, PlugZap, ReceiptText, Settings, type LucideIcon } from "lucide-react"
+import { Activity, BookCheck, BookOpenText, Building2, Inbox, Layers, ListChecks, PlugZap, ReceiptText, Settings, type LucideIcon } from "lucide-react"
 import { AxMark } from "@/components/AppIcon"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { cn } from "@/lib/utils"
@@ -43,23 +43,27 @@ type SidebarItem = {
 
 const SIDEBAR_W = 220
 
+// Top-level home. "Clients" is the one name everywhere (sidebar, mobile, ⌘K).
 const PRIMARY_ITEMS: SidebarItem[] = [
-  { key: "companies", label: "Clients", href: "/dashboard", icon: Home },
-  { key: "setup", label: "Setup", href: "/dashboard/setup", icon: ListChecks },
+  { key: "companies", label: "Clients", href: "/dashboard", icon: Building2 },
 ]
 
+// The daily flow, flat and in pipeline order: intake → batch → review.
 const DOCUMENT_ITEMS: SidebarItem[] = [
   { key: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
   { key: "batches", label: "Batches", href: "/dashboard/batches", icon: Layers },
-  { key: "review", label: "Review", href: "/dashboard/client", icon: BookCheck },
+  { key: "review", label: "Review board", href: "/dashboard/client", icon: BookCheck },
 ]
 
+// Accounting: connect first (prerequisite), then the bills you publish.
 const ACCOUNTING_ITEMS: SidebarItem[] = [
-  { key: "accounts_payable", label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
   { key: "integrations", label: "Integrations", href: "/dashboard/integrations", icon: PlugZap },
+  { key: "accounts_payable", label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
 ]
 
+// Setup, Activity, Guide, Settings — config + reference live together at the bottom.
 const SUPPORT_ITEMS: SidebarItem[] = [
+  { key: "setup", label: "Setup", href: "/dashboard/setup", icon: ListChecks },
   { key: "activity", label: "Activity", href: "/history", icon: Activity },
   { key: "guide", label: "Guide", href: "/dashboard/guide", icon: BookOpenText },
   { key: "settings", label: "Settings", href: "/dashboard/settings", icon: Settings },
@@ -81,12 +85,6 @@ function normalizeActiveItem(activeItem: WorkspaceSidebarItemKey): SidebarItem["
 export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }: WorkspaceSidebarProps) {
   const reviewCount = useReviewCount()
   const normalizedActiveItem = normalizeActiveItem(activeItem)
-  const [documentsOpen, setDocumentsOpen] = useState(() =>
-    normalizedActiveItem === "inbox" || normalizedActiveItem === "batches" || normalizedActiveItem === "review",
-  )
-  const [accountingOpen, setAccountingOpen] = useState(() =>
-    normalizedActiveItem === "accounts_payable" || normalizedActiveItem === "integrations",
-  )
 
   useEffect(() => {
     document.documentElement.style.setProperty("--sidebar-w", `${SIDEBAR_W}px`)
@@ -95,12 +93,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
     }
   }, [])
 
-  useEffect(() => {
-    if (normalizedActiveItem === "inbox" || normalizedActiveItem === "batches" || normalizedActiveItem === "review") setDocumentsOpen(true)
-    if (normalizedActiveItem === "accounts_payable" || normalizedActiveItem === "integrations") setAccountingOpen(true)
-  }, [normalizedActiveItem])
-
-  const renderItem = (item: SidebarItem, inset = false) => {
+  const renderItem = (item: SidebarItem) => {
     const Icon = item.icon
     const isActive = normalizedActiveItem === item.key
     const showDot = Boolean(notifications?.[item.key])
@@ -113,7 +106,6 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         aria-current={isActive ? "page" : undefined}
         className={cn(
           "ax-interactive relative flex h-[41px] items-center gap-2.5 rounded-md px-3 text-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#8a6a52]/25",
-          inset && "ms-6 h-9",
           isActive
             ? "bg-[#efe7db] font-medium text-[#5b4636]"
             : "font-normal text-[var(--workspace-ink)] hover:bg-white hover:text-[#6b4f2e]",
@@ -141,24 +133,12 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
     )
   }
 
-  const renderGroup = (
-    label: string,
-    Icon: LucideIcon,
-    items: SidebarItem[],
-    open: boolean,
-    setOpen: (open: boolean) => void,
-  ) => (
+  const renderSection = (label: string, items: SidebarItem[]) => (
     <div className="space-y-1">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="ax-interactive flex h-10 w-full items-center gap-2.5 rounded-md px-3 text-left text-[14px] font-normal text-[var(--workspace-ink)] outline-none hover:bg-white hover:text-[#6b4f2e] focus-visible:ring-2 focus-visible:ring-[#8a6a52]/25"
-      >
-        <Icon className="size-[17px] text-slate-700" />
-        <span className="flex-1 truncate">{label}</span>
-        {open ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
-      </button>
-      {open ? <div className="space-y-1">{items.map((item) => renderItem(item, true))}</div> : null}
+      <p className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6b4f2e]">
+        {label}
+      </p>
+      {items.map((item) => renderItem(item))}
     </div>
   )
 
@@ -178,9 +158,9 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
 
       <nav aria-label="Sections" className="flex flex-1 flex-col gap-1 px-2 py-3">
         {PRIMARY_ITEMS.map((item) => renderItem(item))}
-        {renderGroup("Documents", Inbox, DOCUMENT_ITEMS, documentsOpen, setDocumentsOpen)}
-        {renderGroup("Accounting", ReceiptText, ACCOUNTING_ITEMS, accountingOpen, setAccountingOpen)}
-        <div className="mt-2 border-t border-[var(--workspace-border)] pt-2">
+        {renderSection("Documents", DOCUMENT_ITEMS)}
+        {renderSection("Accounting", ACCOUNTING_ITEMS)}
+        <div className="mt-auto border-t border-[var(--workspace-border)] pt-2">
           {SUPPORT_ITEMS.map((item) => renderItem(item))}
         </div>
       </nav>
