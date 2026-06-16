@@ -9,7 +9,6 @@ import { IntegrationsLogos } from "@/components/landing/IntegrationsLogos";
 import ScrollAnimatedSection from "@/components/ScrollAnimatedSection";
 import { AppLogo } from "@/components/AppIcon";
 import { BrandVisualFrame } from "@/components/BrandVisual";
-import { VideoPlaceholder } from "@/components/landing/VideoPlaceholder";
 import { FeatureHoverCards } from "@/components/landing/FeatureHoverCards";
 import { OutcomeStats } from "@/components/landing/OutcomeStats";
 import { TypewriterWord } from "@/components/landing/TypewriterWord";
@@ -221,8 +220,6 @@ const folderPanelTitleClass =
 const folderPanelBodyClass = "ax-body ax-marketing-body mt-5 max-w-[610px] font-semibold text-neutral-950";
 const folderPanelCtaClass =
   "mt-8 inline-flex h-12 items-center rounded-full border-2 border-neutral-950 bg-transparent px-8 text-[15px] font-bold text-neutral-950 transition-colors hover:bg-neutral-950 hover:text-white";
-const folderPanelMediaClass =
-  "overflow-hidden rounded-[2rem] bg-white p-3 shadow-[0_30px_90px_-42px_rgba(0,0,0,0.42)] ring-1 ring-black/10 sm:p-4 lg:rounded-[2.5rem] lg:p-5";
 
 function FolderDropVideo() {
   return (
@@ -268,7 +265,7 @@ function ReviewBoardVideo() {
   return (
     <div className="overflow-hidden rounded-[2.25rem] bg-[#F6F1EA] sm:rounded-[2.75rem]">
       <video
-        className="block w-full origin-center scale-x-[1.025] scale-y-[1.055]"
+        className="block w-full origin-center scale-x-[1.075] scale-y-[1.085]"
         aria-label="AxLiner review board walkthrough"
         autoPlay
         loop
@@ -482,10 +479,10 @@ export default function Home() {
               </div>
               <div className={folderPanelTextClass} data-animate="headline">
                 <h3 className={folderPanelTitleClass}>
-                  See everything before it touches QuickBooks or Xero.
+                  Review every entry before it posts.
                 </h3>
                 <p className={folderPanelBodyClass} style={folderPanelBodyStyle}>
-                  Every document lands in your review board first: source on the left, editable fields on the right. AxLiner prepares it, you approve it.
+                  Each document opens in your review board — source on the left, extracted fields on the right. Nothing reaches QuickBooks or Xero until you approve it.
                 </p>
                 <NextLink href="/dashboard/client" className={folderPanelCtaClass}>
                   Explore the review board →
@@ -497,31 +494,31 @@ export default function Home() {
             <div className="grid min-h-[86svh] items-center gap-10 border-t border-black/15 py-20 sm:py-24 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20 lg:py-28">
               <div className={folderPanelTextClass} data-animate="headline">
                 <h3 className={folderPanelTitleClass}>
-                  The messy stuff. WhatsApp photos. Handwritten receipts.
+                  Handwritten and photographed receipts, handled.
                 </h3>
                 <p className={folderPanelBodyClass} style={folderPanelBodyStyle}>
-                  Built for the receipt photographed in bad light, not just clean PDFs. Confidence flags show you exactly which fields to check.
+                  Built for shoebox receipts and phone photos, not just clean PDFs. Confidence flags show which fields to verify before you post.
                 </p>
                 <NextLink href="/dashboard/client" className={folderPanelCtaClass}>
                   Try with a handwritten document →
                 </NextLink>
               </div>
-              <div className={folderPanelMediaClass} data-animate="stagger">
-                <VideoPlaceholder caption="Handwritten receipt → structured spreadsheet with confidence flags" />
+              <div data-animate="stagger">
+                <FolderDropVideo />
               </div>
             </div>
 
             {/* D — video left · text right */}
             <div className="grid min-h-[86svh] items-center gap-10 border-t border-black/15 py-20 pb-24 sm:py-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20 lg:py-28 lg:pb-32">
-              <div className={`${folderPanelMediaClass} order-last lg:order-first`} data-animate="stagger">
-                <VideoPlaceholder caption="AP queue: code, review, and publish bills to QuickBooks or Xero in one screen" />
+              <div className="order-last lg:order-first" data-animate="stagger">
+                <ReviewBoardVideo />
               </div>
               <div className={folderPanelTextClass} data-animate="headline">
                 <h3 className={folderPanelTitleClass}>
-                  Reviewed, coded, posted. No copy-pasting.
+                  Coded and posted as a draft bill.
                 </h3>
                 <p className={folderPanelBodyClass} style={folderPanelBodyStyle}>
-                  Code each bill with vendor, account, and tax, then publish a draft to QuickBooks or Xero with the document attached.
+                  Set vendor, account, and tax, then post a draft to QuickBooks or Xero with the source attached — no manual keying.
                 </p>
                 <NextLink href="/dashboard/client" className={folderPanelCtaClass}>
                   Start free
