@@ -412,9 +412,9 @@ export default function Home() {
               {/* Left — title, subtitle, CTA */}
               <div className="text-center lg:text-left">
                 <h1 className="ax-marketing-display text-balance !font-semibold !leading-[1.05] !tracking-normal text-black text-[2.75rem] sm:text-[3.5rem] lg:text-[4rem]">
-                  All your client documents
+                  Handwritten invoices to QuickBooks and Xero,
                   <br />
-                  reviewed in one place
+                  reviewed by you first
                 </h1>
                 <p className="ax-marketing-lead mx-auto mt-7 max-w-[600px] text-lg font-semibold text-neutral-950 sm:text-xl lg:mx-0">
                   Upload invoices, receipts, bank statements, and handwritten files. AxLiner turns them into clean data you can review, export, or publish.
