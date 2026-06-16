@@ -406,22 +406,22 @@ export default function Home() {
             }}
           />
           <div className="relative z-10">
-        <section ref={heroRef} className="relative overflow-hidden pt-16 pb-10 sm:pt-20 sm:pb-12 lg:pt-20 lg:pb-14">
-          <div className="ax-marketing-container relative z-10">
-            <div className="grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
+        <section ref={heroRef} className="relative flex min-h-[calc(100svh-var(--axn-bar,0px))] items-center overflow-hidden py-12 lg:py-16">
+          <div className="ax-marketing-container relative z-10 w-full">
+            <div className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20">
               {/* Left — title, subtitle, CTA */}
               <div className="text-center lg:text-left">
-                <h1 className="ax-h1 ax-marketing-display text-balance !font-semibold !leading-[1.08] !tracking-normal text-black">
+                <h1 className="ax-marketing-display text-balance !font-semibold !leading-[1.05] !tracking-normal text-black text-[2.75rem] sm:text-[3.5rem] lg:text-[4rem]">
                   All your client documents
                   <br />
                   reviewed in one place
                 </h1>
-                <p className="ax-body ax-marketing-lead mx-auto mt-6 max-w-[560px] font-semibold text-neutral-950 lg:mx-0">
+                <p className="ax-marketing-lead mx-auto mt-7 max-w-[600px] text-lg font-semibold text-neutral-950 sm:text-xl lg:mx-0">
                   Upload invoices, receipts, bank statements, and handwritten files. AxLiner turns them into clean data you can review, export, or publish.
                 </p>
 
-                <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
-                  <Button variant="glossy" asChild className="h-[52px] rounded-md border-[#A98467] bg-[#A98467] px-10 text-base font-bold text-white hover:border-[#8a6a52] hover:bg-[#8a6a52] hover:text-white hover:no-underline">
+                <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
+                  <Button variant="glossy" asChild className="h-[58px] rounded-md border-[#A98467] bg-[#A98467] px-12 text-lg font-bold text-white hover:border-[#8a6a52] hover:bg-[#8a6a52] hover:text-white hover:no-underline">
                     <NextLink href="/dashboard/client">Start free</NextLink>
                   </Button>
                 </div>
@@ -432,7 +432,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 28 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
-                className="relative mx-auto w-full max-w-[620px] lg:mx-0"
+                className="relative mx-auto w-full max-w-[720px] lg:mx-0"
               >
                 <HeroVideo />
               </motion.div>
