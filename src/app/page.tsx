@@ -243,7 +243,7 @@ function FolderDropVideo() {
 
 function HeroVideo() {
   return (
-    <div className="overflow-hidden rounded-[1.5rem] bg-[#F6F1EA] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.35)] sm:rounded-[2rem]">
+    <div className="overflow-hidden rounded-[1.5rem] bg-[#F6F1EA] shadow-[0_40px_90px_-30px_rgba(0,0,0,0.45)] ring-1 ring-black/5 sm:rounded-[2rem]">
       <video
         className="block aspect-video w-full origin-center scale-[1.03] object-cover"
         aria-label="AxLiner product walkthrough"
@@ -425,14 +425,9 @@ export default function Home() {
               </div>
 
               {/* Right — product walkthrough video */}
-              <motion.div
-                initial={{ opacity: 0, y: 28 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
-                className="relative mx-auto w-full max-w-[720px] lg:mx-0"
-              >
+              <div className="relative mx-auto w-full max-w-[720px] lg:mx-0">
                 <HeroVideo />
-              </motion.div>
+              </div>
             </div>
           </div>
         </section>
