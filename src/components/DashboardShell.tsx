@@ -221,9 +221,16 @@ export function DashboardShell({
                   // so the page opens the sheet on arrival.
                   if (pathname === "/dashboard/client") {
                     window.dispatchEvent(new CustomEvent("axliner:open-upload"))
-                  } else {
-                    router.push("/dashboard/client#upload-files")
+                    return
                   }
+                  // Carry the client you're working in (a client hub) or your
+                  // last-used one, so the batch isn't silently filed under the
+                  // default client.
+                  const hubMatch = pathname.match(/^\/dashboard\/companies\/([^/]+)/)
+                  const companyId =
+                    hubMatch?.[1] ||
+                    (typeof window !== "undefined" ? window.localStorage.getItem("axliner:selectedCompanyId") || "" : "")
+                  router.push(`/dashboard/client${companyId ? `?company_id=${encodeURIComponent(companyId)}` : ""}#upload-files`)
                 }}
                 className="hidden h-9 !border-[#A98467] !bg-[#A98467] px-3 text-sm !text-white hover:!border-[#8a6a52] hover:!bg-[#8a6a52] hover:!text-white sm:inline-flex"
               >

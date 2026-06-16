@@ -120,6 +120,8 @@ export function ProgressiveUploadSheet({
     total + (isPdfFile(file) ? (pdfPageCounts[index] || 1) : 0)
   ), 0)
   const busy = isUploading || isProcessing
+  const selectedCompany = companies.find(company => company.id === selectedCompanyId)
+  const needsClientChoice = !selectedCompanyId && companies.length > 1
   const canProcess = Boolean(workspaceId && selectedCompanyId)
   const processButtonLabel = busy
     ? "Processing documents"
@@ -143,7 +145,10 @@ export function ProgressiveUploadSheet({
         setCompanies(records)
         const selectedStillExists = records.some(company => company.id === selectedCompanyId)
         if (!selectedStillExists) {
-          onSelectedCompanyIdChange(records.find(company => company.is_default)?.id || records[0]?.id || "")
+          // Only auto-pick when there is a single client; with more than one,
+          // leave it empty to force an explicit choice so a batch is never
+          // silently filed under the default client.
+          onSelectedCompanyIdChange(records.length === 1 ? records[0].id : "")
         }
       })
       .catch(() => {
@@ -186,9 +191,15 @@ export function ProgressiveUploadSheet({
       <SheetContent className="w-full gap-0 bg-[var(--workspace-popout-bg)] sm:max-w-[560px]">
         <SheetHeader className="border-b border-[var(--workspace-popout-border)] px-5 py-5 pr-12">
           <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--workspace-primary)]">New batch</p>
-          <SheetTitle className="text-xl font-bold tracking-tight">Upload documents</SheetTitle>
+          <SheetTitle className="text-xl font-bold tracking-tight">
+            {selectedCompany ? `Upload to ${selectedCompany.name}` : "Upload documents"}
+          </SheetTitle>
           <SheetDescription className="leading-5 text-foreground/80">
-            Choose a client, then drop the batch for review.
+            {selectedCompany ? (
+              <>This batch will be filed under <span className="font-semibold text-foreground">{selectedCompany.name}</span>.</>
+            ) : (
+              "Choose a client, then drop the batch for review."
+            )}
           </SheetDescription>
         </SheetHeader>
 
@@ -220,6 +231,11 @@ export function ProgressiveUploadSheet({
                   <option key={company.id} value={company.id}>{company.name}</option>
                 ))}
               </select>
+              {needsClientChoice ? (
+                <span className="mt-1.5 block text-xs font-semibold text-amber-700">
+                  Pick a client so this batch lands in the right place.
+                </span>
+              ) : null}
             </label>
             <label className="block">
               <span className="mb-1.5 block text-xs font-semibold text-foreground">Format</span>

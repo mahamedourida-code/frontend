@@ -150,7 +150,12 @@ export function ProcessImagesContent() {
   const [overridingDocumentId, setOverridingDocumentId] = useState<string | null>(null)
   const [firstImageUrl, setFirstImageUrl] = useState<string>('')
   const [activePreviewFileId, setActivePreviewFileId] = useState<string>('')
-  const [selectedCompanyId, setSelectedCompanyId] = useState(() => searchParams.get("company_id") || "")
+  const [selectedCompanyId, setSelectedCompanyId] = useState(() => {
+    const fromUrl = searchParams.get("company_id")
+    if (fromUrl) return fromUrl
+    if (typeof window !== "undefined") return window.localStorage.getItem("axliner:selectedCompanyId") || ""
+    return ""
+  })
   const [outputMode, setOutputMode] = useState<WorkspaceOutputMode>("table")
   const reviewedExportFormat: "xlsx" | "csv" | "txt" =
     outputMode === "csv"
@@ -218,6 +223,13 @@ export function ProcessImagesContent() {
     const requestedCompanyId = searchParams.get("company_id")
     if (requestedCompanyId) setSelectedCompanyId(requestedCompanyId)
   }, [searchParams])
+
+  // Keep the active client sticky across navigation so the next batch defaults to
+  // the client you were last working in — never silently back to the default.
+  useEffect(() => {
+    if (typeof window === "undefined" || !selectedCompanyId) return
+    window.localStorage.setItem("axliner:selectedCompanyId", selectedCompanyId)
+  }, [selectedCompanyId])
 
   useEffect(() => {
     if (!ocrError) return

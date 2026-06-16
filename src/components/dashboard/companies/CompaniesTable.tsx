@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Building2, ChevronRight, RefreshCw, Search } from "lucide-react"
+import { Building2, ChevronRight, RefreshCw, Search, Upload } from "lucide-react"
 
 import { AddCompanyDialog } from "@/components/dashboard/companies/AddCompanyDialog"
 import { companiesFromResponse, type CompanySummary } from "@/components/dashboard/companies/company-types"
@@ -129,14 +129,15 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
                 <TableHead className="text-right">Needs review</TableHead>
                 <TableHead className="text-right">Draft bills</TableHead>
                 <TableHead className="min-w-[130px] px-4">Last upload</TableHead>
+                <TableHead className="px-4 text-right">Upload</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
-                Array.from({ length: 5 }).map((_, index) => <SkeletonTableRow key={`company-skel-${index}`} columns={9} />)
+                Array.from({ length: 5 }).map((_, index) => <SkeletonTableRow key={`company-skel-${index}`} columns={10} />)
               ) : visibleCompanies.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="h-48">
+                  <TableCell colSpan={10} className="h-48">
                     <EmptyState
                       icon={<Building2 />}
                       title={query ? "No matching clients" : "No clients yet"}
@@ -186,6 +187,17 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
                     <CountCell value={company.needsReview} emphasis />
                     <CountCell value={company.bills} />
                     <TableCell className="px-4 text-muted-foreground">{formatDate(company.lastUploadAt)}</TableCell>
+                    <TableCell className="px-4 text-right">
+                      <InlineAction asChild>
+                        <Link
+                          href={`/dashboard/client?company_id=${encodeURIComponent(company.id)}#upload-files`}
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          <Upload className="size-3.5" />
+                          Upload
+                        </Link>
+                      </InlineAction>
+                    </TableCell>
                   </TableRow>
                 ))
               )}

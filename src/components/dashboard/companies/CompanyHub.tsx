@@ -13,6 +13,7 @@ import {
   PlugZap,
   ReceiptText,
   RefreshCw,
+  Upload,
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -225,7 +226,22 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
             Clients
           </Link>
         }
-        actions={company ? <InlineAction onClick={openRename}>Rename</InlineAction> : undefined}
+        actions={company ? (
+          <>
+            <Button
+              asChild
+              variant="glossy"
+              size="sm"
+              className="!border-[#A98467] !bg-[#A98467] px-3 !text-white hover:!border-[#8a6a52] hover:!bg-[#8a6a52] hover:!text-white"
+            >
+              <Link href={`/dashboard/client?company_id=${encodeURIComponent(companyId)}#upload-files`}>
+                <Upload className="size-4" />
+                Upload documents
+              </Link>
+            </Button>
+            <InlineAction onClick={openRename}>Rename</InlineAction>
+          </>
+        ) : undefined}
       />
 
       {loading ? (
