@@ -20,8 +20,11 @@ import {
 import { AnimatePresence, motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { useHistory, type HistoryJob } from "@/hooks/useHistory"
+import { useAuth } from "@/hooks/useAuth"
+import { useWorkspaces } from "@/hooks/useWorkspaces"
+import { companyApi, type CompanySummary } from "@/lib/api-client"
 
-type CommandGroup = "navigate" | "act" | "find"
+type CommandGroup = "navigate" | "act" | "clients" | "documents"
 
 type CommandItem = {
   id: string
@@ -36,10 +39,11 @@ type CommandItem = {
 const GROUP_LABELS: Record<CommandGroup, string> = {
   navigate: "Navigate",
   act: "Act",
-  find: "Find",
+  clients: "Clients",
+  documents: "Documents",
 }
 
-const GROUP_ORDER: CommandGroup[] = ["navigate", "act", "find"]
+const GROUP_ORDER: CommandGroup[] = ["navigate", "act", "clients", "documents"]
 
 // Navigate: every accountant workspace route (mirrors WorkspaceSidebar).
 const NAVIGATE_ITEMS: CommandItem[] = [
@@ -86,13 +90,25 @@ function searchText(item: CommandItem): string {
 function recentJobToItem(job: HistoryJob, index: number): CommandItem {
   const name = job.filename || `Job ${job.original_job_id || job.id || index + 1}`
   return {
-    id: `find-${job.original_job_id || job.id || index}`,
-    group: "find",
+    id: `doc-${job.original_job_id || job.id || index}`,
+    group: "documents",
     label: name,
-    hint: "Open in History",
+    hint: "Open in Activity",
     keywords: job.status ?? "",
     icon: FileText,
     href: "/history",
+  }
+}
+
+function companyToItem(company: CompanySummary): CommandItem {
+  return {
+    id: `client-${company.id}`,
+    group: "clients",
+    label: company.name,
+    hint: company.bills ? `${company.bills} draft bills` : "Client",
+    keywords: "client company customer vendor",
+    icon: Building2,
+    href: `/dashboard/companies/${company.id}`,
   }
 }
 
@@ -118,24 +134,46 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
 
-  // Lazily reads recent saved jobs as the "Find" source (client-side hook, no new backend).
+  // Live sources: recent documents (history) + this workspace's clients. Both only
+  // load while the palette is mounted (i.e. open), so the dashboard never pays for them.
   const { jobs } = useHistory()
+  const { user } = useAuth()
+  const { activeWorkspace } = useWorkspaces(user)
+  const [companies, setCompanies] = useState<CompanySummary[]>([])
 
-  const findItems = useMemo<CommandItem[]>(
+  useEffect(() => {
+    const workspaceId = activeWorkspace?.id
+    if (!workspaceId) return
+    let mounted = true
+    companyApi.list(workspaceId)
+      .then(data => { if (mounted) setCompanies(data.companies ?? []) })
+      .catch(() => undefined)
+    return () => { mounted = false }
+  }, [activeWorkspace?.id])
+
+  const documentItems = useMemo<CommandItem[]>(
     () => (jobs ?? []).slice(0, 20).map(recentJobToItem),
     [jobs]
+  )
+  const clientItems = useMemo<CommandItem[]>(
+    () => companies.map(companyToItem),
+    [companies]
   )
 
   // Flat, ordered, fuzzy-filtered list (keeps a single moving selection across groups).
   const results = useMemo(() => {
-    const base: CommandItem[] = [...NAVIGATE_ITEMS, ...ACT_ITEMS, ...findItems]
     const q = query.trim()
-    const scored = base
-      .map(item => ({ item, score: fuzzyScore(searchText(item), q) }))
-      .filter(entry => entry.score >= 0)
-    if (q) scored.sort((a, b) => a.score - b.score)
-    return scored.map(entry => entry.item)
-  }, [query, findItems])
+    const staticItems = [...NAVIGATE_ITEMS, ...ACT_ITEMS]
+    if (q) {
+      return [...staticItems, ...clientItems, ...documentItems]
+        .map(item => ({ item, score: fuzzyScore(searchText(item), q) }))
+        .filter(entry => entry.score >= 0)
+        .sort((a, b) => a.score - b.score)
+        .map(entry => entry.item)
+    }
+    // Resting state (no query): pages + a few recent clients and documents.
+    return [...staticItems, ...clientItems.slice(0, 5), ...documentItems.slice(0, 5)]
+  }, [query, clientItems, documentItems])
 
   // Group the flat results while preserving the flat index for keyboard nav.
   const grouped = useMemo(() => {
@@ -187,9 +225,6 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
     el?.scrollIntoView({ block: "nearest" })
   }, [activeIndex])
 
-  const showFindEmpty =
-    grouped.every(g => g.group !== "find") && findItems.length === 0 && !query
-
   return (
     <motion.div
       key="cp-root"
@@ -220,7 +255,7 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
                 ref={inputRef}
                 value={query}
                 onChange={e => setQuery(e.target.value)}
-                placeholder="Navigate, act, or find a document..."
+                placeholder="Search clients, documents, or jump to a page..."
                 className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
               />
               <kbd className="hidden rounded-md border border-border bg-muted px-1.5 py-0.5 font-sans text-[10px] font-medium text-muted-foreground sm:block">
@@ -286,17 +321,6 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
                       </ul>
                     </div>
                   ))}
-
-                  {showFindEmpty && (
-                    <div className="pb-1">
-                      <div className="px-4 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                        {GROUP_LABELS.find}
-                      </div>
-                      <p className="px-4 py-3 text-xs text-muted-foreground">
-                        Start typing to search your recent documents.
-                      </p>
-                    </div>
-                  )}
                 </motion.div>
               )}
             </div>
