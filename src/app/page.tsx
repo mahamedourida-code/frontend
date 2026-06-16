@@ -443,16 +443,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── 1.5 · headline statement band ── */}
-        <section className="bg-white py-24 sm:py-32">
-          <div className="mx-auto max-w-[1100px] px-4 text-center sm:px-6 lg:px-8">
-            <h2 className="ax-marketing-display text-balance !font-semibold !leading-[1.1] !tracking-normal text-black text-[2.25rem] sm:text-[3rem] lg:text-[3.5rem]">
-              Less typing. Fewer mistakes.
-              <br />
-              More done, faster.
-            </h2>
-          </div>
-        </section>
+        {/* ── 1.5 · Outcome stat band — moved before "Throw us" ── */}
+        <OutcomeStats />
 
         {/* ── 2 · "Throw us the whole folder" — full-bleed cyan band (now SECOND) ── */}
         <div className="relative isolate overflow-hidden">
@@ -584,9 +576,6 @@ export default function Home() {
 
         {/* ── 7 · Organizations testimonials (white) ── */}
         <TestimonialsMarquee />
-
-        {/* ── 8 · Outcome stat band — animated count-up social proof (white) ── */}
-        <OutcomeStats />
 
         {/* ── Security + FAQ — redesigned to match the system (white) ── */}
         <div className="relative isolate overflow-hidden bg-white">
