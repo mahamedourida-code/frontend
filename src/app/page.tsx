@@ -244,6 +244,26 @@ function FolderDropVideo() {
   );
 }
 
+function ReviewBoardVideo() {
+  return (
+    <div className="overflow-hidden rounded-[2.25rem] bg-[#F6F1EA] sm:rounded-[2.75rem]">
+      <video
+        className="block w-full origin-center scale-x-[1.025] scale-y-[1.055]"
+        aria-label="AxLiner review board walkthrough"
+        autoPlay
+        loop
+        muted
+        poster="/landing/review-board-poster.png"
+        playsInline
+        preload="metadata"
+      >
+        <source src="/landing/review-board.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  );
+}
+
 export default function Home() {
   const router = useRouter();
   const heroRef = useRef<HTMLElement>(null);
@@ -462,8 +482,8 @@ export default function Home() {
 
             {/* B — video left · text right */}
             <div className="grid min-h-[86svh] items-center gap-10 border-t border-black/15 py-20 sm:py-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20 lg:py-28">
-              <div className={`${folderPanelMediaClass} order-last lg:order-first`} data-animate="stagger">
-                <VideoPlaceholder caption="Review board: source document side-by-side with extracted data" />
+              <div className="order-last lg:order-first" data-animate="stagger">
+                <ReviewBoardVideo />
               </div>
               <div className={folderPanelTextClass} data-animate="headline">
                 <h3 className={folderPanelTitleClass}>
