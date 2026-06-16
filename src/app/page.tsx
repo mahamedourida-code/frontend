@@ -248,7 +248,7 @@ function HeroVideo() {
   return (
     <div className="overflow-hidden rounded-[1.5rem] bg-[#F6F1EA] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.35)] sm:rounded-[2rem]">
       <video
-        className="block w-full"
+        className="block w-full origin-center scale-[1.03]"
         aria-label="AxLiner product walkthrough"
         autoPlay
         loop
