@@ -11,7 +11,6 @@ import { AppLogo } from "@/components/AppIcon";
 import { BrandVisualFrame } from "@/components/BrandVisual";
 import { VideoPlaceholder } from "@/components/landing/VideoPlaceholder";
 import { FeatureHoverCards } from "@/components/landing/FeatureHoverCards";
-import { VerifiableShowcase } from "@/components/landing/VerifiableShowcase";
 import { OutcomeStats } from "@/components/landing/OutcomeStats";
 import { TypewriterWord } from "@/components/landing/TypewriterWord";
 import { ScrollGrowSection } from "@/components/landing/ScrollGrowSection";
@@ -559,9 +558,6 @@ export default function Home() {
         </ScrollAnimatedSection>
           </div>
         </div>
-
-        {/* ── 6 · Verifiable, not invisible (white) ── */}
-        <VerifiableShowcase />
 
         {/* ── 7 · Organizations testimonials (white) ── */}
         <TestimonialsMarquee />
