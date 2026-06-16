@@ -42,7 +42,7 @@ export function VerifiableShowcase() {
         </motion.div>
 
         {/* ── Side-by-side contrast ── */}
-        <div className="mt-14 grid items-stretch gap-5 lg:mt-16 lg:grid-cols-2 lg:gap-6">
+        <div className="mt-14 grid items-start gap-5 lg:mt-16 lg:grid-cols-2 lg:gap-6">
           {/* LEFT — Black-box AI (opaque, no provenance) */}
           <motion.div
             initial={{ opacity: 0, y: 28 }}
@@ -99,7 +99,7 @@ export function VerifiableShowcase() {
               alt="AxLiner Review Board — extracted fields beside the source document"
               width={1583}
               height={686}
-              className="h-full w-full object-cover"
+              className="h-auto w-full"
               priority={false}
             />
           </motion.div>
