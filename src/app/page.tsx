@@ -244,6 +244,26 @@ function FolderDropVideo() {
   );
 }
 
+function HeroVideo() {
+  return (
+    <div className="overflow-hidden bg-[#F6F1EA]">
+      <video
+        className="block w-full"
+        aria-label="AxLiner product walkthrough"
+        autoPlay
+        loop
+        muted
+        poster="/landing/hero-poster.png"
+        playsInline
+        preload="metadata"
+      >
+        <source src="/landing/hero.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  );
+}
+
 function ReviewBoardVideo() {
   return (
     <div className="overflow-hidden rounded-[2.25rem] bg-[#F6F1EA] sm:rounded-[2.75rem]">
@@ -414,36 +434,7 @@ export default function Home() {
               transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
               className="relative mx-auto mt-14 max-w-[1040px] lg:mt-16"
             >
-              <div className="rounded-[1.5rem] border border-black/10 bg-white p-2 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.35)] sm:rounded-[2.25rem] sm:p-3">
-                <div className="relative aspect-video w-full overflow-hidden rounded-[1.1rem] bg-neutral-950 ring-1 ring-black/5 sm:rounded-[1.6rem]">
-                  {/* window chrome */}
-                  <div className="absolute inset-x-0 top-0 z-10 flex h-9 items-center gap-1.5 bg-neutral-900/90 px-4">
-                    <span className="size-2.5 rounded-full bg-[#ff5f57]" />
-                    <span className="size-2.5 rounded-full bg-[#febc2e]" />
-                    <span className="size-2.5 rounded-full bg-[#28c840]" />
-                  </div>
-                  {/* subtle dot grid */}
-                  <div
-                    aria-hidden="true"
-                    className="absolute inset-0 opacity-[0.06]"
-                    style={{
-                      backgroundImage: "radial-gradient(circle, #ffffff 1.4px, transparent 1.4px)",
-                      backgroundSize: "26px 26px",
-                    }}
-                  />
-                  {/* play button */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="flex size-20 items-center justify-center rounded-full bg-[var(--brand-green)] text-black shadow-[inset_0_1px_0_0_rgba(255,255,255,0.7),0_8px_22px_-10px_rgba(0,0,0,0.35)] transition-transform duration-200 hover:scale-105">
-                      <svg viewBox="0 0 16 16" fill="currentColor" className="ml-1 size-7" aria-hidden="true">
-                        <path d="M3 2.25 14.5 8 3 13.75V2.25Z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <p className="absolute inset-x-0 bottom-4 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-white/45">
-                    Product walkthrough — coming soon
-                  </p>
-                </div>
-              </div>
+              <HeroVideo />
             </motion.div>
           </div>
         </section>
