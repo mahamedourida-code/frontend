@@ -97,7 +97,7 @@ function TestimonialCard({ testimonial, index }: { testimonial: typeof firstRowT
 
 export default function TestimonialsMarquee() {
   return (
-    <section className="relative z-10 overflow-hidden bg-white pb-16 pt-20 lg:pb-20 lg:pt-28">
+    <section className="relative z-10 overflow-hidden bg-[#F6F1EA] pb-16 pt-20 lg:pb-20 lg:pt-28">
       <div className="mx-auto mb-12 max-w-[928px] px-4 text-center sm:px-6 lg:mb-14 lg:px-8">
         <h2 className="ax-h2 ax-marketing-section-title mt-3 font-bold text-neutral-950">
           The people who reconcile the books.
