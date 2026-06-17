@@ -62,6 +62,7 @@ import {
 } from "@/lib/invoice-schema"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
 import { format } from "date-fns"
 import { ocrApi } from "@/lib/api-client"
 import { isHistoryItemDeleted, subscribeHistoryDeletions } from "@/lib/recent-files-store"
@@ -1327,19 +1328,6 @@ export function ResultActions({
       {isComplete ? (
         <div className="flex flex-wrap items-center gap-2 rounded-[4px] border border-[#c8ced6] bg-white px-3 py-2 shadow-none">
           <Button
-            variant="surface"
-            onClick={() => {
-              setEditedTables({})
-              setComparisonIndex(null)
-              setEditingCell(null)
-              onReset()
-            }}
-            className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}
-          >
-            <RotateCcw className="h-4 w-4" />
-            New batch
-          </Button>
-          <Button
             variant="glossy"
             onClick={handleReviewedBatchDownload}
             disabled={reviewedDownloadBusy || unresolvedDuplicateCount > 0}
@@ -2458,6 +2446,9 @@ function BatchStagingBoard({
   onConvert: () => void
 }) {
   const m = useMotionTokens()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const autoOpenedRef = useRef(false)
   const busy = isProcessing || isUploading
   const mode: "idle" | "staged" | "processing" = busy ? "processing" : uploadedFiles.length ? "staged" : "idle"
 
@@ -2495,6 +2486,19 @@ function BatchStagingBoard({
     .filter((file) => !isHistoryItemDeleted(file.id))
     .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime())
     .slice(0, 6)
+
+  // Land straight on the most recent batch's review board instead of a list of
+  // batches: when truly idle (no staged files, nothing processing) and there's
+  // history, open the latest batch via the same ?job_id path the rows used.
+  const latestRecentId =
+    recent.find((file) => !["failed", "error"].includes(String(file.status)))?.id ?? recent[0]?.id
+
+  useEffect(() => {
+    if (mode !== "idle" || recentLoading || autoOpenedRef.current || !latestRecentId) return
+    if (searchParams.get("job_id")) return
+    autoOpenedRef.current = true
+    router.replace(`/dashboard/client?job_id=${latestRecentId}`)
+  }, [mode, recentLoading, latestRecentId, searchParams, router])
 
   const stagedCount = uploadedFiles.length
   const rowCount = mode === "idle" ? recent.length : stagedCount
@@ -2600,7 +2604,7 @@ function BatchStagingBoard({
               </thead>
               <tbody>
                 {mode === "idle" ? (
-                  recentLoading ? (
+                  (recentLoading || latestRecentId) ? (
                     Array.from({ length: 3 }).map((_, index) => (
                       <tr key={`skeleton-${index}`} className="h-12 bg-white">
                         <td colSpan={11} className="border-b border-[#e4e7ef] px-3 py-3"><span className="block h-3 w-2/3 rounded-md ax-skeleton" /></td>
