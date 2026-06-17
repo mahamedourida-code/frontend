@@ -243,7 +243,7 @@ function FolderDropVideo() {
 
 function HeroVideo() {
   return (
-    <div className="overflow-hidden rounded-[1.5rem] bg-[#F6F1EA] shadow-[0_40px_90px_-30px_rgba(0,0,0,0.45)] ring-1 ring-black/5 sm:rounded-[2rem]">
+    <div className="overflow-hidden rounded-[1.5rem] bg-[#F6F1EA] sm:rounded-[2rem]">
       <video
         className="block aspect-video w-full origin-center scale-[1.03] object-cover"
         aria-label="AxLiner product walkthrough"
@@ -405,10 +405,10 @@ export default function Home() {
           <div className="relative z-10">
         <section ref={heroRef} className="relative flex min-h-[calc(100svh-var(--axn-bar,0px))] items-center overflow-hidden py-12 lg:py-16">
           <div className="ax-marketing-container relative z-10 w-full">
-            <div className="grid items-center gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:gap-20">
+            <div className="grid items-center gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
               {/* Left — title, subtitle, CTA */}
               <div className="text-center lg:text-left">
-                <h1 className="ax-marketing-display text-balance !font-semibold !leading-[1.05] !tracking-normal text-black text-[2.75rem] sm:text-[3.5rem] lg:text-[4rem]">
+                <h1 className="ax-marketing-display text-balance !font-semibold !leading-[1.05] !tracking-normal text-black text-[2.25rem] sm:text-[2.85rem] lg:text-[3.25rem]">
                   Handwritten invoices, reviewed
                   <br />
                   for QuickBooks and Xero
@@ -425,7 +425,7 @@ export default function Home() {
               </div>
 
               {/* Right — product walkthrough video */}
-              <div className="relative mx-auto w-full max-w-[520px] lg:mx-0 lg:ml-auto">
+              <div className="relative mx-auto w-full max-w-[680px] lg:mx-0 lg:ml-auto">
                 <HeroVideo />
               </div>
             </div>
