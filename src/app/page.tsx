@@ -418,7 +418,7 @@ export default function Home() {
 
               <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                 <Button variant="glossy" asChild className="h-[58px] rounded-md border-[#A98467] bg-[#A98467] px-12 text-lg font-bold text-white hover:border-[#8a6a52] hover:bg-[#8a6a52] hover:text-white hover:no-underline">
-                  <NextLink href="/dashboard/client">Start free</NextLink>
+                  <NextLink href="/sign-up?next=%2Fdashboard%2Fclient">Start free</NextLink>
                 </Button>
               </div>
 
@@ -513,7 +513,7 @@ export default function Home() {
                 <p className={folderPanelBodyClass} style={folderPanelBodyStyle}>
                   Set vendor, account, and tax, then post a draft to QuickBooks or Xero with the source attached — no manual keying.
                 </p>
-                <NextLink href="/dashboard/client" className={folderPanelCtaClass}>
+                <NextLink href="/sign-up?next=%2Fdashboard%2Fclient" className={folderPanelCtaClass}>
                   Start free
                 </NextLink>
               </div>
