@@ -19,7 +19,7 @@ export function IntegrationsLogos({ showNames = true }: { showNames?: boolean })
   const reduce = useReducedMotion()
 
   return (
-    <section className="relative z-10 bg-[#F6F1EA] py-16 sm:py-20">
+    <section className="relative z-10 bg-[#FDFBF7] py-16 sm:py-20">
       <div className="mx-auto max-w-[1100px] px-4 sm:px-6 lg:px-8">
         <h2 className="text-center text-xl font-bold tracking-tight text-black text-balance sm:text-2xl">
           Works with the tools you already use

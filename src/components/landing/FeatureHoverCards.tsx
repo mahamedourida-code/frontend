@@ -12,7 +12,7 @@ type SolutionCard = {
 }
 
 /* Calm brand surfaces alternate so the grid stays easy to scan. */
-const CARD_SURFACES = ["bg-[#F6F1EA]", "bg-[#F6F1EA]"]
+const CARD_SURFACES = ["bg-[#FDFBF7]", "bg-[#FDFBF7]"]
 
 /* ── Single card ──────────────────────────────────────────────── */
 
@@ -42,7 +42,7 @@ function HoverCard({ card, index, surface }: { card: SolutionCard; index: number
         {/* ── Top scrim — keeps the dark title legible over the photo ── */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 z-[5] h-[240px] rounded-t-2xl bg-gradient-to-b from-[#F6F1EA] via-[#F6F1EA]/55 to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-0 z-[5] h-[240px] rounded-t-2xl bg-gradient-to-b from-[#FDFBF7] via-[#FDFBF7]/55 to-transparent"
         />
 
         {/* ── Title + description overlay — dark text over scrim ── */}
