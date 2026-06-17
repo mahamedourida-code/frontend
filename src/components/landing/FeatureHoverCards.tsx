@@ -1,8 +1,7 @@
 "use client"
 
-import { useRef } from "react"
 import Link from "next/link"
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion"
+import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 type SolutionCard = {
@@ -13,27 +12,11 @@ type SolutionCard = {
 }
 
 /* Calm brand surfaces alternate so the grid stays easy to scan. */
-const CARD_SURFACES = ["bg-[var(--brand-green)]", "bg-[#f7f3e9]"]
+const CARD_SURFACES = ["bg-[#F6F1EA]", "bg-[#F6F1EA]"]
 
 /* ── Single card ──────────────────────────────────────────────── */
 
 function HoverCard({ card, index, surface }: { card: SolutionCard; index: number; surface: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-
-  /* 3D tilt */
-  const rawX = useMotionValue(0)
-  const rawY = useMotionValue(0)
-  const rotateY = useSpring(useTransform(rawX, [-0.5, 0.5], [-4, 4]), { stiffness: 260, damping: 26 })
-  const rotateX = useSpring(useTransform(rawY, [-0.5, 0.5], [4, -4]), { stiffness: 260, damping: 26 })
-
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return
-    const r = ref.current.getBoundingClientRect()
-    rawX.set((e.clientX - r.left) / r.width - 0.5)
-    rawY.set((e.clientY - r.top) / r.height - 0.5)
-  }
-  const onLeave = () => { rawX.set(0); rawY.set(0) }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 32 }}
@@ -41,13 +24,7 @@ function HoverCard({ card, index, surface }: { card: SolutionCard; index: number
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: index * 0.055 }}
     >
-      <motion.div
-        ref={ref}
-        style={{ rotateX, rotateY, transformPerspective: 900 }}
-        className="group relative h-[600px] overflow-hidden"
-        onMouseMove={onMove}
-        onMouseLeave={onLeave}
-      >
+      <div className="group relative h-[600px] overflow-hidden">
         {/* ── Image card — fills cell, slides DOWN + shrinks on hover ── */}
         <div className={cn(
           "absolute inset-0 overflow-hidden rounded-2xl ring-1 ring-black/10",
@@ -65,7 +42,7 @@ function HoverCard({ card, index, surface }: { card: SolutionCard; index: number
         {/* ── Top scrim — keeps the dark title legible over the photo ── */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 z-[5] h-[240px] rounded-t-2xl bg-gradient-to-b from-white/90 via-white/55 to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-0 z-[5] h-[240px] rounded-t-2xl bg-gradient-to-b from-[#F6F1EA] via-[#F6F1EA]/55 to-transparent"
         />
 
         {/* ── Title + description overlay — dark text over scrim ── */}
@@ -93,7 +70,7 @@ function HoverCard({ card, index, surface }: { card: SolutionCard; index: number
         </div>
 
         <Link href={card.href} className="absolute inset-0 z-20" aria-label={`Discover ${card.title}`} />
-      </motion.div>
+      </div>
     </motion.div>
   )
 }
