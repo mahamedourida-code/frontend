@@ -340,7 +340,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
         "fixed inset-x-0 top-[var(--axn-bar,0px)] z-50 h-[84px] border-b",
         "transition-[background-color,border-color,box-shadow] duration-200",
         scrolled
-          ? "border-black/10 bg-white/95 shadow-[0_1px_0_0_rgba(0,0,0,0.06)] backdrop-blur-xl"
+          ? "border-black/10 bg-white shadow-[0_1px_0_0_rgba(0,0,0,0.06)]"
           : "border-transparent bg-transparent",
       )}
     >

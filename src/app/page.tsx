@@ -243,7 +243,7 @@ function FolderDropVideo() {
 
 function HeroVideo() {
   return (
-    <div className="overflow-hidden rounded-[1.5rem] bg-[#FCFBF8] sm:rounded-[2rem]">
+    <div className="overflow-hidden rounded-[1.5rem] bg-[#FCFBF8] shadow-[0_40px_90px_-30px_rgba(0,0,0,0.45)] ring-1 ring-black/5 sm:rounded-[2rem]">
       <video
         className="block aspect-video w-full origin-center scale-[1.03] object-cover"
         aria-label="AxLiner product walkthrough"
