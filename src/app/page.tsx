@@ -223,7 +223,7 @@ const folderPanelCtaClass =
 
 function FolderDropVideo() {
   return (
-    <div className="overflow-hidden rounded-[2.25rem] bg-[#FDFBF7] sm:rounded-[2.75rem]">
+    <div className="overflow-hidden rounded-[2.25rem] border border-black bg-[#FDFBF7] sm:rounded-[2.75rem]">
       <video
         className="block w-full origin-center scale-x-[1.025] scale-y-[1.055]"
         aria-label="AxLiner folder upload walkthrough"
@@ -263,7 +263,7 @@ function HeroVideo() {
 
 function ReviewBoardVideo() {
   return (
-    <div className="overflow-hidden rounded-[2.25rem] bg-[#FDFBF7] sm:rounded-[2.75rem]">
+    <div className="overflow-hidden rounded-[2.25rem] border border-black bg-[#FDFBF7] sm:rounded-[2.75rem]">
       <video
         className="block w-full origin-center scale-x-[1.075] scale-y-[1.085]"
         aria-label="AxLiner review board walkthrough"
