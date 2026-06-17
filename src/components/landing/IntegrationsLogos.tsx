@@ -41,7 +41,7 @@ export function IntegrationsLogos({ showNames = true }: { showNames?: boolean })
               }}
               className="flex flex-col"
             >
-              <div className="flex h-24 items-center justify-center rounded-2xl bg-[#f1f1f1] px-8 py-5 sm:h-28">
+              <div className="flex h-24 items-center justify-center rounded-2xl bg-white px-8 py-5 ring-1 ring-black/5 sm:h-28">
                 <img
                   src={logo.src}
                   alt={logo.alt}
