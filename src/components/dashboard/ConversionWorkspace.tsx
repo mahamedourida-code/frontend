@@ -1342,7 +1342,7 @@ export function ResultActions({
             className="h-9 gap-2 px-3 rounded-full border border-emerald-600 bg-emerald-600 text-white shadow-none transition-colors hover:border-emerald-700 hover:bg-white hover:text-emerald-700 hover:no-underline focus-visible:ring-emerald-600/30"
           >
             <Send className="h-4 w-4" />
-            Publish batch
+            Publish
           </Button>
           {editedCount > 0 && !isTextOutput ? (
             <span className="inline-flex h-9 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#475467] shadow-none">
