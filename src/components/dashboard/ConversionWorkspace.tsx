@@ -1327,23 +1327,32 @@ export function ResultActions({
     <div className="space-y-2.5">
       {isComplete ? (
         <div className="flex flex-wrap items-center gap-2 rounded-[4px] border border-[#c8ced6] bg-white px-3 py-2 shadow-none">
-          <Button
-            variant="glossy"
-            onClick={handleReviewedBatchDownload}
-            disabled={reviewedDownloadBusy || unresolvedDuplicateCount > 0}
-            className="h-9 gap-2 px-3 rounded-full border border-[#A98467] bg-[#A98467] text-white shadow-none transition-colors hover:border-[#A98467] hover:bg-white hover:text-[#A98467] hover:no-underline focus-visible:ring-[#A98467]/30"
-          >
-            {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-            {unresolvedDuplicateCount > 0 ? "Resolve duplicates to export" : "Download reviewed batch"}
-          </Button>
-          <Button
-            variant="glossy"
-            onClick={() => toast.success("Batch published to your accounting software")}
-            className="h-9 gap-2 px-3 rounded-full border border-emerald-600 bg-emerald-600 text-white shadow-none transition-colors hover:border-emerald-700 hover:bg-white hover:text-emerald-700 hover:no-underline focus-visible:ring-emerald-600/30"
-          >
-            <Send className="h-4 w-4" />
-            Publish
-          </Button>
+          <details className="group relative">
+            <summary className="ax-interactive inline-flex h-9 cursor-pointer list-none items-center gap-2 rounded-full border border-emerald-600 bg-emerald-600 px-4 text-sm font-semibold text-white shadow-none outline-none transition-colors hover:border-emerald-700 hover:bg-white hover:text-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-600/30 [&::-webkit-details-marker]:hidden">
+              <Send className="h-4 w-4" />
+              Publish
+              <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="absolute left-0 top-11 z-30 w-48 space-y-1 rounded-[8px] border border-[#c8ced6] bg-white p-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+              <button
+                type="button"
+                onClick={handleReviewedBatchDownload}
+                disabled={reviewedDownloadBusy || unresolvedDuplicateCount > 0}
+                className="ax-interactive inline-flex h-9 w-full items-center justify-start gap-2 rounded-md px-3 text-xs font-semibold text-[#111827] transition-colors hover:bg-[#f3ece2] hover:text-[#8a6a52] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                {unresolvedDuplicateCount > 0 ? "Resolve duplicates" : "Download"}
+              </button>
+              <button
+                type="button"
+                onClick={() => toast.success("Batch published to your accounting software")}
+                className="ax-interactive inline-flex h-9 w-full items-center justify-start gap-2 rounded-md px-3 text-xs font-semibold text-[#111827] transition-colors hover:bg-[#ecfdf3] hover:text-emerald-700"
+              >
+                <Send className="h-4 w-4" />
+                To software
+              </button>
+            </div>
+          </details>
           {editedCount > 0 && !isTextOutput ? (
             <span className="inline-flex h-9 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#475467] shadow-none">
               {editedCount} edited
