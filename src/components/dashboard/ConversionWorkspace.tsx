@@ -1343,7 +1343,7 @@ export function ResultActions({
             variant="glossy"
             onClick={handleReviewedBatchDownload}
             disabled={reviewedDownloadBusy || unresolvedDuplicateCount > 0}
-            className={cn("h-9 gap-2 px-3", workspacePrimaryControlClass)}
+            className="h-9 gap-2 px-3 rounded-full border border-[#A98467] bg-[#A98467] text-white shadow-none transition-colors hover:border-[#A98467] hover:bg-white hover:text-[#A98467] hover:no-underline focus-visible:ring-[#A98467]/30"
           >
             {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             {unresolvedDuplicateCount > 0 ? "Resolve duplicates to export" : "Download reviewed batch"}
@@ -1351,7 +1351,7 @@ export function ResultActions({
           <Button
             variant="glossy"
             onClick={() => toast.success("Batch published to your accounting software")}
-            className="h-9 gap-2 px-3"
+            className="h-9 gap-2 px-3 rounded-full border border-emerald-600 bg-emerald-600 text-white shadow-none transition-colors hover:border-emerald-700 hover:bg-white hover:text-emerald-700 hover:no-underline focus-visible:ring-emerald-600/30"
           >
             <Send className="h-4 w-4" />
             Publish batch
