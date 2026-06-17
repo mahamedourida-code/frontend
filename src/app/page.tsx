@@ -223,7 +223,7 @@ const folderPanelCtaClass =
 
 function FolderDropVideo() {
   return (
-    <div className="overflow-hidden rounded-[2.25rem] bg-[#F6F1EA] sm:rounded-[2.75rem]">
+    <div className="overflow-hidden rounded-[2.25rem] bg-[#FCFBF8] sm:rounded-[2.75rem]">
       <video
         className="block w-full origin-center scale-x-[1.025] scale-y-[1.055]"
         aria-label="AxLiner folder upload walkthrough"
@@ -243,7 +243,7 @@ function FolderDropVideo() {
 
 function HeroVideo() {
   return (
-    <div className="overflow-hidden rounded-[1.5rem] bg-[#F6F1EA] sm:rounded-[2rem]">
+    <div className="overflow-hidden rounded-[1.5rem] bg-[#FCFBF8] sm:rounded-[2rem]">
       <video
         className="block aspect-video w-full origin-center scale-[1.03] object-cover"
         aria-label="AxLiner product walkthrough"
@@ -263,7 +263,7 @@ function HeroVideo() {
 
 function ReviewBoardVideo() {
   return (
-    <div className="overflow-hidden rounded-[2.25rem] bg-[#F6F1EA] sm:rounded-[2.75rem]">
+    <div className="overflow-hidden rounded-[2.25rem] bg-[#FCFBF8] sm:rounded-[2.75rem]">
       <video
         className="block w-full origin-center scale-x-[1.075] scale-y-[1.085]"
         aria-label="AxLiner review board walkthrough"
@@ -386,20 +386,20 @@ export default function Home() {
   };
 
   return (
-    <div className="ax-marketing-page relative min-h-screen bg-[#F6F1EA] text-neutral-950">
+    <div className="ax-marketing-page relative min-h-screen bg-[#FCFBF8] text-neutral-950">
       <AnnouncementBar />
       <MarketingNavBar onSectionClick={scrollToSection} />
 
       {/* Hero Section */}
       <main className="relative z-10 pt-[var(--axn-bar,0px)]">
         {/* ── 1 · HERO (white) ── */}
-        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden bg-[#F6F1EA]">
+        <div ref={topBackgroundSectionRef} className="relative isolate overflow-hidden bg-[#FCFBF8]">
           <div
             ref={topBackgroundRef}
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat will-change-transform"
             style={{
-              backgroundColor: "#F6F1EA",
+              backgroundColor: "#FCFBF8",
             }}
           />
           <div className="relative z-10">
@@ -441,10 +441,10 @@ export default function Home() {
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
-            style={{ backgroundColor: "#F6F1EA" }}
+            style={{ backgroundColor: "#FCFBF8" }}
           />
           <div className="relative z-10">
-        <div id="how-it-works" className="ax-marketing-band-mint text-neutral-950" style={{ backgroundColor: "#F6F1EA" }}>
+        <div id="how-it-works" className="ax-marketing-band-mint text-neutral-950" style={{ backgroundColor: "#FCFBF8" }}>
           <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
 
             {/* A — text left · video right */}
@@ -534,10 +534,10 @@ export default function Home() {
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
-            style={{ backgroundColor: "#F6F1EA" }}
+            style={{ backgroundColor: "#FCFBF8" }}
           />
           <div className="relative z-10">
-        <ScrollAnimatedSection id="features" className="relative z-20 bg-[#F6F1EA] pt-20 pb-24 text-neutral-950 lg:pt-24 lg:pb-28">
+        <ScrollAnimatedSection id="features" className="relative z-20 bg-[#FCFBF8] pt-20 pb-24 text-neutral-950 lg:pt-24 lg:pb-28">
           <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
             <div className="mb-14" data-animate="headline">
               <h2
@@ -568,9 +568,9 @@ export default function Home() {
         <TestimonialsMarquee />
 
         {/* ── Security + FAQ — redesigned to match the system (white) ── */}
-        <div className="relative isolate overflow-hidden bg-[#F6F1EA]">
+        <div className="relative isolate overflow-hidden bg-[#FCFBF8]">
           <div className="relative z-10">
-        <ScrollAnimatedSection id="security" className="relative z-10 overflow-hidden bg-[#F6F1EA] py-20 lg:py-28">
+        <ScrollAnimatedSection id="security" className="relative z-10 overflow-hidden bg-[#FCFBF8] py-20 lg:py-28">
           <div className="container relative z-10 mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
             {/* Heading — matches the white-section type scale, brown accent */}
             <motion.div
