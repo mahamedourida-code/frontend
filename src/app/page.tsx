@@ -412,7 +412,7 @@ export default function Home() {
                 <br />
                 reviewed for QuickBooks and Xero
               </h1>
-              <p className="ax-marketing-lead mx-auto mt-6 max-w-[620px] text-balance text-lg font-semibold text-neutral-950 sm:text-xl">
+              <p className="ax-marketing-lead mx-auto mt-6 max-w-[760px] text-base font-semibold text-neutral-950 sm:text-lg">
                 Batch-upload invoices, receipts, bank statements, and handwritten files. AxLiner turns them into clean data you review, then export or publish.
               </p>
 
