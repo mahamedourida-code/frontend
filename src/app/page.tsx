@@ -403,29 +403,27 @@ export default function Home() {
             }}
           />
           <div className="relative z-10">
-        <section ref={heroRef} className="relative flex min-h-[calc(100svh-var(--axn-bar,0px))] items-center overflow-hidden py-12 lg:py-16">
+        <section ref={heroRef} className="relative overflow-hidden py-16 lg:py-24">
           <div className="ax-marketing-container relative z-10 w-full">
-            <div className="grid items-center gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-              {/* Left — title, subtitle, CTA */}
-              <div className="text-center">
-                <h1 className="ax-marketing-display text-balance !font-semibold !leading-[1.05] !tracking-normal text-black text-[2.25rem] sm:text-[2.85rem] lg:text-[3.25rem]">
-                  Invoice and receipt data entry,
-                  <br />
-                  reviewed for QuickBooks and Xero
-                </h1>
-                <p className="ax-marketing-lead mx-auto mt-7 max-w-[600px] text-balance text-lg font-semibold text-neutral-950 sm:text-xl">
-                  Batch-upload invoices, receipts, bank statements, and handwritten files. AxLiner turns them into clean data you review, then export or publish.
-                </p>
+            <div className="mx-auto flex max-w-[1080px] flex-col items-center text-center">
+              {/* Title, subtitle, CTA */}
+              <h1 className="ax-marketing-display text-balance !font-semibold !leading-[1.05] !tracking-normal text-black text-[2.5rem] sm:text-[3.25rem] lg:text-[3.75rem]">
+                Invoice and receipt data entry,
+                <br />
+                reviewed for QuickBooks and Xero
+              </h1>
+              <p className="ax-marketing-lead mx-auto mt-6 max-w-[620px] text-balance text-lg font-semibold text-neutral-950 sm:text-xl">
+                Batch-upload invoices, receipts, bank statements, and handwritten files. AxLiner turns them into clean data you review, then export or publish.
+              </p>
 
-                <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                  <Button variant="glossy" asChild className="h-[58px] rounded-md border-[#A98467] bg-[#A98467] px-12 text-lg font-bold text-white hover:border-[#8a6a52] hover:bg-[#8a6a52] hover:text-white hover:no-underline">
-                    <NextLink href="/dashboard/client">Start free</NextLink>
-                  </Button>
-                </div>
+              <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+                <Button variant="glossy" asChild className="h-[58px] rounded-md border-[#A98467] bg-[#A98467] px-12 text-lg font-bold text-white hover:border-[#8a6a52] hover:bg-[#8a6a52] hover:text-white hover:no-underline">
+                  <NextLink href="/dashboard/client">Start free</NextLink>
+                </Button>
               </div>
 
-              {/* Right — product walkthrough video */}
-              <div className="relative mx-auto w-full max-w-[680px] lg:mx-0 lg:ml-auto">
+              {/* Product walkthrough video — big, centered, below */}
+              <div className="relative mt-14 w-full max-w-[960px] lg:mt-16">
                 <HeroVideo />
               </div>
             </div>
