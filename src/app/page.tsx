@@ -223,7 +223,7 @@ const folderPanelCtaClass =
 
 function FolderDropVideo() {
   return (
-    <div className="overflow-hidden rounded-[2.25rem] bg-[#EAE0CF] sm:rounded-[2.75rem]">
+    <div className="overflow-hidden rounded-[2.25rem] bg-[#F6F1EA] sm:rounded-[2.75rem]">
       <video
         className="block w-full origin-center scale-x-[1.025] scale-y-[1.055]"
         aria-label="AxLiner folder upload walkthrough"
@@ -263,7 +263,7 @@ function HeroVideo() {
 
 function ReviewBoardVideo() {
   return (
-    <div className="overflow-hidden rounded-[2.25rem] bg-[#EAE0CF] sm:rounded-[2.75rem]">
+    <div className="overflow-hidden rounded-[2.25rem] bg-[#F6F1EA] sm:rounded-[2.75rem]">
       <video
         className="block w-full origin-center scale-x-[1.075] scale-y-[1.085]"
         aria-label="AxLiner review board walkthrough"
@@ -441,10 +441,10 @@ export default function Home() {
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat"
-            style={{ backgroundColor: "#EAE0CF" }}
+            style={{ backgroundColor: "#F6F1EA" }}
           />
           <div className="relative z-10">
-        <div id="how-it-works" className="ax-marketing-band-mint text-neutral-950" style={{ backgroundColor: "#EAE0CF" }}>
+        <div id="how-it-works" className="ax-marketing-band-mint text-neutral-950" style={{ backgroundColor: "#F6F1EA" }}>
           <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
 
             {/* A — text left · video right */}
