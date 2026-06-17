@@ -112,7 +112,7 @@ export function OutcomeStats() {
   return (
     <section
       aria-labelledby="outcome-stats-heading"
-      className="relative overflow-hidden bg-[#F6F1EA] py-20 lg:py-28"
+      className="relative overflow-hidden bg-[#EAE0CF] py-20 lg:py-28"
     >
       <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
         {/* ── Header ── */}
