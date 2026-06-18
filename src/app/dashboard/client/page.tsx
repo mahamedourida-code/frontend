@@ -234,7 +234,7 @@ export function ProcessImagesContent() {
   useEffect(() => {
     if (!ocrError) return
     setWorkspaceBanner({
-      title: "Processing failed",
+      title: "Couldn't read these",
       description: ocrError,
       tone: "error",
     })
@@ -304,8 +304,8 @@ export function ProcessImagesContent() {
     resumeJob(requestedJobId)
       .catch(() => {
         setWorkspaceBanner({
-          title: "Batch unavailable",
-          description: "This imported batch could not be opened.",
+          title: "Stack unavailable",
+          description: "This imported stack could not be opened.",
           tone: "error",
         })
       })
@@ -320,9 +320,9 @@ export function ProcessImagesContent() {
       setUploadedFiles([])
       await resumeJob(latestRecoverableJob.job_id, latestRecoverableJob.session_id)
       setLatestRecoverableJob(null)
-      toast.success("Latest batch resumed.")
+      toast.success("Latest stack resumed.")
     } catch (error: any) {
-      toast.error(error?.detail || "Could not resume the latest batch.")
+      toast.error(error?.detail || "Could not resume the latest stack.")
     } finally {
       setRecoveryLoading(false)
     }
@@ -637,7 +637,7 @@ export function ProcessImagesContent() {
       }
       setWorkspaceBanner({
         title: "Reprocessing continues",
-        description: "The result will appear in this batch when ready.",
+        description: "The result will appear in this stack when ready.",
         tone: "info",
       })
     } catch (error) {
@@ -845,7 +845,7 @@ export function ProcessImagesContent() {
     if (noCredits) {
       setWorkspaceBanner({
         title: "No credits left",
-        description: "Upgrade when batch conversion is saving more time than manual retyping.",
+        description: "Upgrade when reading stacks is saving more time than manual retyping.",
         actionLabel: "Buy credits",
         onAction: () => router.push("/pricing?from=no-credits"),
         tone: "warning",
@@ -854,7 +854,7 @@ export function ProcessImagesContent() {
     }
     if (uploadedFiles.length > maxUploadFiles) {
       setWorkspaceBanner({
-        title: "Reduce batch size",
+        title: "Fewer documents",
         description: `Your current plan allows up to ${maxUploadFiles} files per run.`,
         actionLabel: "See plans",
         onAction: () => router.push("/pricing?from=batch-limit"),
@@ -924,7 +924,7 @@ export function ProcessImagesContent() {
     await cancelProcessing()
     setLatestRecoverableJob(null)
     void fetchUserStats()
-    toast.info("Batch cancelled.")
+    toast.info("Stack cancelled.")
   }, [cancelProcessing])
 
   const handleRemoveFile = (index: number) => {
@@ -1345,7 +1345,7 @@ Best regards`
   const handleShareAll = async () => {
     
     if (!jobId || !resultFiles || resultFiles.length === 0) {
-      toast.error('Unable to share batch: No files available')
+      toast.error('Could not share these files: none available')
       return
     }
     
@@ -1443,9 +1443,9 @@ Best regards`
       const blob = await ocrApi.downloadReviewedBatch(jobId, reviewedExportFormat)
       const batchSource = jobDocuments[0]?.original_filename || uploadedFiles[0]?.name || "axliner_batch"
       downloadBlob(blob, `${filenameStem(batchSource, "axliner_batch")}_reviewed.zip`)
-      toast.success('Reviewed batch downloaded.')
+      toast.success('Reviewed stack downloaded.')
     } catch (error: any) {
-      toast.error(error?.detail || error?.message || 'Could not prepare the reviewed batch.')
+      toast.error(error?.detail || error?.message || 'Could not prepare the reviewed stack.')
     }
   }
 
@@ -1510,7 +1510,7 @@ Best regards`
     } catch (error: any) {
       setWorkspaceBanner({
         title: "Document was not deleted",
-        description: error?.detail || error?.message || "Try again after the batch has finished.",
+        description: error?.detail || error?.message || "Try again after the stack has finished.",
         tone: "error",
       })
     }
@@ -1519,17 +1519,17 @@ Best regards`
   const handleDeleteStoredBatch = async () => {
     if (!jobId) return
     const confirmed = window.confirm(
-      "Permanently delete this batch, including source files, outputs, extracted values, and review edits? Existing accounting records are not removed.",
+      "Permanently delete this stack, including source files, outputs, extracted values, and review edits? Existing accounting records are not removed.",
     )
     if (!confirmed) return
     try {
       await ocrApi.deleteStoredBatch(jobId)
       handleReset()
-      toast.success("Batch deleted.")
+      toast.success("Stack deleted.")
     } catch (error: any) {
       setWorkspaceBanner({
-        title: "Batch was not deleted",
-        description: error?.detail || error?.message || "Try again after the batch has finished.",
+        title: "Stack was not deleted",
+        description: error?.detail || error?.message || "Try again after the stack has finished.",
         tone: "error",
       })
     }
@@ -1544,7 +1544,7 @@ Best regards`
     if (!jobId || !file?.document_id || !file?.processing_unit_id) {
       setWorkspaceBanner({
         title: "Correction was not saved",
-        description: "This result is missing durable document metadata. Reopen the batch and try again.",
+        description: "This result is missing durable document metadata. Reopen the stack and try again.",
         tone: "error",
       })
       return false
@@ -1831,15 +1831,15 @@ Best regards`
   const creditBanner: WorkspaceBanner | null = noCredits && !isProcessing
     ? {
         title: "No credits left",
-        description: "Upgrade when batch conversion is saving more time than manual retyping.",
+        description: "Upgrade when reading stacks is saving more time than manual retyping.",
         actionLabel: "Buy credits",
         onAction: () => router.push("/pricing?from=no-credits"),
         tone: "warning",
       }
     : batchExceedsCredits && !isProcessing
       ? {
-          title: "This batch needs more credits",
-          description: `${creditEstimate} credits estimated, ${creditAvailable} available. Reduce the batch or upgrade for larger handwritten runs.`,
+          title: "This stack needs more credits",
+          description: `${creditEstimate} credits estimated, ${creditAvailable} available. Reduce the stack or upgrade for larger handwritten runs.`,
           actionLabel: "See plans",
           onAction: () => router.push("/pricing?from=credit-estimate"),
           tone: "warning",
@@ -1850,7 +1850,7 @@ Best regards`
     <DashboardShell
       activeItem="process"
       title="Auto-detect documents"
-      eyebrow="Batch"
+      eyebrow="Stack"
       user={user}
       contentClassName="max-w-none px-3 py-3 sm:px-5 lg:px-6"
     >

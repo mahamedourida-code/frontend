@@ -14,7 +14,7 @@ import { useAuth } from "@/hooks/useAuth"
 
 const workflow = [
   {
-    title: "Upload a mixed batch",
+    title: "Upload a mixed stack",
     description: "Add invoices, receipts, statements, or scans together. AxLiner keeps the source documents grouped for review.",
     icon: Upload,
   },
@@ -25,7 +25,7 @@ const workflow = [
   },
   {
     title: "Export or publish drafts",
-    description: "Download reviewed Excel or CSV files, or send approved invoice records to your accounting software as draft bills.",
+    description: "Download reviewed Excel or CSV files, or send approved invoice records to QuickBooks or Xero as draft bills.",
     icon: FileSpreadsheet,
   },
 ]
@@ -58,7 +58,7 @@ export default function GuidePage() {
     <DashboardShell activeItem="guide" title="Guide" user={user} showBack={false}>
       <PageHeader
         title="Accountant guide"
-        description="Run each document batch from intake to reviewed accounting output."
+        description="Run each document stack from intake to reviewed accounting output."
         actions={(
           <Button asChild variant="glossy">
             <Link href="/dashboard/client#upload-files">
@@ -72,7 +72,7 @@ export default function GuidePage() {
       <div className="max-w-5xl space-y-6">
         <Card className="gap-0 overflow-hidden rounded-xl py-0">
           <CardHeader className="border-b border-border p-5 sm:p-6">
-            <CardTitle className="text-lg">Daily batch workflow</CardTitle>
+            <CardTitle className="text-lg">Daily stack workflow</CardTitle>
             <CardDescription className="mt-1 leading-5">
               Keep the routine simple: upload, review exceptions, then export or publish.
             </CardDescription>

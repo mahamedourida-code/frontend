@@ -103,8 +103,8 @@ function SourceBadge({ kind }: { kind: keyof typeof SOURCE_LABEL }) {
 function messageState(message: EmailIntakeMessage) {
   const state = message.job_status || message.status
   if (state === "completed" || state === "partially_completed") return "Ready"
-  if (state === "processing") return "Processing"
-  if (state === "queued" || state === "received") return "Queued"
+  if (state === "processing") return "Reading"
+  if (state === "queued" || state === "received") return "Waiting"
   if (state === "rejected") return "Rejected"
   return "Failed"
 }
@@ -856,7 +856,7 @@ export default function EmailInboxPage() {
                     {messages.map((message) => {
                       const state = messageState(message)
                       const documentNames = message.documents.map(document => document.original_filename).join(", ")
-                      const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Processing" ? "processing" : "neutral"
+                      const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Reading" ? "processing" : "neutral"
                       return (
                         <MotionTableRow key={message.id} layout variants={m.fadeUp} exit="exit">
                           <MotionTableCell className={cn(cell, "max-w-[220px] pl-6")}>
@@ -897,7 +897,7 @@ export default function EmailInboxPage() {
                 {messages.map((message) => {
                   const state = messageState(message)
                   const documentNames = message.documents.map(document => document.original_filename).join(", ")
-                  const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Processing" ? "processing" : "neutral"
+                  const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Reading" ? "processing" : "neutral"
                   return (
                     <MobileRow
                       key={message.id}

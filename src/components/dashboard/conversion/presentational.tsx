@@ -192,7 +192,7 @@ export function ResumeBatchBanner({
       <div className="flex items-center gap-3">
         <Loader2 className="h-4 w-4 text-muted-foreground" />
         <div>
-          <p className="text-sm font-semibold">Return to unfinished batch</p>
+          <p className="text-sm font-semibold">Return to unfinished stack</p>
           <p className="text-xs text-muted-foreground">
             {latestRecoverableJob.processed_images || 0} of {latestRecoverableJob.total_images || 0} files processed
           </p>
@@ -203,7 +203,7 @@ export function ResumeBatchBanner({
         disabled={recoveryLoading}
         className="shrink-0"
       >
-        {recoveryLoading ? "Resuming..." : "Open batch"}
+        {recoveryLoading ? "Resuming..." : "Open stack"}
       </InlineAction>
     </div>
   )

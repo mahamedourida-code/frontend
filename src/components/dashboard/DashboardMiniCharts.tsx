@@ -177,9 +177,9 @@ export function DashboardMiniCharts({
       chartType: "area",
     },
     {
-      label: "Active jobs",
+      label: "Active stacks",
       value: activeJobs,
-      delta: "queued or processing",
+      delta: "waiting or reading",
       accentClass: "bg-amber-400",
       sparkColor: "#f59e0b",
       sparkFillId: "fill-active",
@@ -188,7 +188,7 @@ export function DashboardMiniCharts({
     {
       label: "Failed",
       value: failedJobs,
-      delta: `of ${totalJobs.toLocaleString()} total jobs`,
+      delta: `of ${totalJobs.toLocaleString()} total stacks`,
       accentClass: "bg-rose-500",
       sparkColor: "#f43f5e",
       sparkFillId: "fill-failed",

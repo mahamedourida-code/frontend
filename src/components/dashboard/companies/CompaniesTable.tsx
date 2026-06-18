@@ -141,7 +141,7 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
                     <EmptyState
                       icon={<Building2 />}
                       title={query ? "No matching clients" : "No clients yet"}
-                      description={query ? "Try a different search term." : "Add a client to give each batch a clear home."}
+                      description={query ? "Try a different search term." : "Add a client to give each stack a clear home."}
                       compact
                     />
                   </TableCell>

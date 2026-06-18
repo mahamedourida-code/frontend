@@ -60,7 +60,7 @@ export function ProcessingStages({ progress, isComplete, className }: Processing
   const finished = isComplete || clamped >= 100
 
   return (
-    <ol className={cn("flex flex-col gap-1.5", className)} aria-label="Processing stages">
+    <ol className={cn("flex flex-col gap-1.5", className)} aria-label="Reading stages">
       {STAGES.map((label, index) => {
         const isDone = index < activeIndex || (finished && index <= activeIndex)
         const isActive = index === activeIndex && !isDone

@@ -28,7 +28,7 @@ export default function DashboardPage() {
       <div className="space-y-8">
         <PageHeader
           title="Clients"
-          description="Start with a client, then upload a batch for review."
+          description="Start with a client, then upload a stack for review."
         />
         <CompaniesTable workspaceId={activeWorkspace?.id} />
       </div>

@@ -233,7 +233,7 @@ export function AccountingConnectionsSection({
 
       {!hasConnection ? (
         <div className="rounded-xl border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-5 py-4">
-          <p className="text-sm font-bold text-foreground">Connect your accounting software</p>
+          <p className="text-sm font-bold text-foreground">Connect QuickBooks or Xero</p>
           <p className="mt-2 text-sm font-normal text-foreground">
             Connect the destination you use, then sync suppliers, accounts, and VAT codes before publishing.
           </p>
@@ -299,7 +299,7 @@ export function AccountingConnectionsSection({
         <div>
           <h3 className="text-sm font-semibold text-foreground">Controlled publishing</h3>
           <p className="mt-1.5 text-sm font-normal leading-6 text-foreground">
-            AxLiner creates reviewed, unpaid draft bills in your selected accounting software. It does not approve or pay bills.
+            AxLiner creates reviewed, unpaid draft bills in QuickBooks or Xero. It does not approve or pay bills.
           </p>
         </div>
       </div>

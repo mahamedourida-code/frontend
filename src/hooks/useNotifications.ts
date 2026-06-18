@@ -114,7 +114,7 @@ export function useNotifications() {
       addItem({
         id: `job-${processingState.jobId}`,
         group: "job_finished",
-        title: "Batch finished",
+        title: "Stack finished",
         preview: `${count} document${count === 1 ? "" : "s"} ready for review`,
         href: "/dashboard/client",
         createdAt: processingState.lastUpdated || Date.now(),

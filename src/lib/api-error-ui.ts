@@ -49,7 +49,7 @@ function goTo(href: string) {
 function formatRetry(error: any): string {
   const retryAfter = readValue(error, "retry_after") ?? readValue(error, "retry_after_seconds")
   const seconds = Number(retryAfter)
-  if (!Number.isFinite(seconds) || seconds <= 0) return "Wait a moment, then retry the batch."
+  if (!Number.isFinite(seconds) || seconds <= 0) return "Wait a moment, then retry the stack."
   if (seconds < 60) return `Try again in about ${Math.ceil(seconds)} seconds.`
   return `Try again in about ${Math.ceil(seconds / 60)} minutes.`
 }
@@ -101,7 +101,7 @@ export function getApiErrorUi(error: any, context: ErrorActionContext = {}): Err
 
   if (status === 429 || code.includes("RATE_LIMIT") || code.includes("QUEUE")) {
     return {
-      title: code.includes("QUEUE") ? "Queue is full" : "Too many requests",
+      title: code.includes("QUEUE") ? "Too busy right now" : "Too many requests",
       description: formatRetry(error),
       action: context.onRetry ? { label: "Retry", onClick: context.onRetry } : undefined,
     }
@@ -136,7 +136,7 @@ export function getApiErrorUi(error: any, context: ErrorActionContext = {}): Err
 
   if (code === "PLAN_BATCH_LIMIT_EXCEEDED" || code === "ABSOLUTE_BATCH_LIMIT_EXCEEDED") {
     return {
-      title: "Reduce batch size",
+      title: "Fewer documents",
       description: message,
       action: { label: "See plans", onClick: () => goTo(upgradeHref) },
     }
@@ -159,8 +159,8 @@ export function showApiErrorToast(error: any, context: ErrorActionContext = {}) 
 
 export function showBatchLimitToast(maxFiles: number, context: ErrorActionContext = {}) {
   const upgradeHref = context.upgradeHref || "/pricing?from=batch-limit"
-  toast.error("Reduce batch size", {
-    description: `Your current plan allows up to ${maxFiles} files per run. Upgrade when bigger batches save more time than splitting them.`,
+  toast.error("Fewer documents", {
+    description: `Your current plan allows up to ${maxFiles} files per run. Upgrade when bigger stacks save more time than splitting them.`,
     action: {
       label: "See plans",
       onClick: () => goTo(upgradeHref),

@@ -35,7 +35,7 @@ export function InboxSummaryStrip({
   onSelect,
 }: InboxSummaryStripProps) {
   const stats: Stat[] = [
-    { key: "processing", label: "Processing", value: processing, dot: "bg-sky-500" },
+    { key: "processing", label: "Reading", value: processing, dot: "bg-sky-500" },
     { key: "needs_you", label: "Needs you", value: needsYou, dot: "bg-amber-400", selectable: "needs_you" },
     { key: "ready", label: "Ready", value: ready, dot: "bg-emerald-500", selectable: "ready" },
     { key: "published", label: "Published", value: published, dot: "bg-sky-400", selectable: "published" },

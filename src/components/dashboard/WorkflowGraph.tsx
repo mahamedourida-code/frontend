@@ -23,7 +23,7 @@ const ROOT: GraphNode = {
 
 // Tier 2 — the primary destinations.
 const PRIMARY: GraphNode[] = [
-  { label: "Upload & review", href: "/dashboard/client#upload-files", symbol: "nav-step-1-upload", hint: "Drop a batch" },
+  { label: "Upload & review", href: "/dashboard/client#upload-files", symbol: "nav-step-1-upload", hint: "Drop a stack" },
   { label: "Draft bills", href: "/dashboard/accounts-payable", symbol: "nav-node-draft-bills", hint: "Code & publish" },
   { label: "Inbox", href: "/dashboard/inbox", symbol: "nav-node-inbox", hint: "Incoming docs" },
 ]

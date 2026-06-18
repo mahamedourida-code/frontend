@@ -151,7 +151,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
       show: isAuthenticated
     },
     {
-      label: "Batches",
+      label: "Stacks",
       href: "/dashboard/batches",
       icon: Layers,
       show: isAuthenticated

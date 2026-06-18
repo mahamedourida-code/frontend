@@ -431,7 +431,7 @@ function HistoryContent() {
   }
 
   const handleDelete = async (jobId: string, job?: any) => {
-    if (!confirm('Permanently delete this batch and its files? This cannot be undone.')) return
+    if (!confirm('Permanently delete this stack and its files? This cannot be undone.')) return
     const ids = [jobId, job?.id, job?.job_id, job?.original_job_id]
     // Optimistic: hide the row instantly across every view, then delete in the
     // background. Restore it only if the background delete actually fails.
@@ -439,10 +439,10 @@ function HistoryContent() {
     if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('axliner:history-changed'))
     try {
       await ocrApi.deleteStoredBatch(jobId)
-      toast.success('Batch deleted')
+      toast.success('Stack deleted')
     } catch (err: any) {
       unmarkHistoryItemsDeleted(ids)
-      toast.error(err.detail || err.message || 'Could not delete the batch')
+      toast.error(err.detail || err.message || 'Could not delete the stack')
     }
   }
 
@@ -453,7 +453,7 @@ function HistoryContent() {
       return
     }
 
-    if (!confirm(`Permanently delete ${selectedRows.length} batch(es) and their files? This cannot be undone.`)) {
+    if (!confirm(`Permanently delete ${selectedRows.length} stack(s) and their files? This cannot be undone.`)) {
       return
     }
 
@@ -480,8 +480,8 @@ function HistoryContent() {
         unmarkHistoryItemsDeleted([g.jobId, g.job.id, g.job.job_id, g.job.original_job_id])
       }
     })
-    if (successCount > 0) toast.success(`Deleted ${successCount} batch(es)${errorCount > 0 ? ` (${errorCount} failed)` : ''}`)
-    if (errorCount > 0 && successCount === 0) toast.error(`Failed to delete ${errorCount} batch(es)`)
+    if (successCount > 0) toast.success(`Deleted ${successCount} stack(s)${errorCount > 0 ? ` (${errorCount} failed)` : ''}`)
+    if (errorCount > 0 && successCount === 0) toast.error(`Failed to delete ${errorCount} stack(s)`)
   }
 
   const handleDeleteAll = async () => {
@@ -489,7 +489,7 @@ function HistoryContent() {
       .map((job) => ({ job, jobId: resolveJobId(job) }))
       .filter((g) => g.jobId)
     if (groups.length === 0) return
-    if (!confirm(`Permanently delete all ${groups.length} batch(es) and their files? This cannot be undone.`)) {
+    if (!confirm(`Permanently delete all ${groups.length} stack(s) and their files? This cannot be undone.`)) {
       return
     }
 
@@ -507,7 +507,7 @@ function HistoryContent() {
       }
     })
     const deleted = results.length - errorCount
-    toast.success(`Deleted ${deleted} batch(es)${errorCount > 0 ? ` (${errorCount} failed)` : ''}`)
+    toast.success(`Deleted ${deleted} stack(s)${errorCount > 0 ? ` (${errorCount} failed)` : ''}`)
   }
 
   return (
@@ -556,7 +556,7 @@ function HistoryContent() {
                 {filteredJobs.filter(job => job.status === "completed" && job.result_url).length === 1 ? "" : "s"} ready to export
               </p>
               <p className="mt-0.5 text-sm font-normal text-foreground">
-                Download the reviewed spreadsheets, or reopen a batch to post its journal entries.
+                Download the reviewed spreadsheets, or reopen a stack to post its journal entries.
               </p>
             </div>
             <Symbol name="code-journal-entry" size="inline" className="ml-auto hidden h-16 w-16 sm:block sm:h-20 sm:w-20" />
@@ -765,7 +765,7 @@ function HistoryContent() {
                       icon={<FileSpreadsheet />}
                       eyebrow="History"
                       title="No documents yet"
-                      description="Every batch you process appears here — open any one to review, export, or delete it."
+                      description="Every stack you process appears here — open any one to review, export, or delete it."
                     />
                   </TableCell>
                 </TableRow>

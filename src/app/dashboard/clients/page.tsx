@@ -224,7 +224,7 @@ export default function ClientsPage() {
           <DialogHeader>
             <DialogTitle className="text-foreground">Add a client</DialogTitle>
             <DialogDescription className="text-foreground">
-              Name this client. You can connect their accounting software next.
+              Name this client. You can connect QuickBooks or Xero next.
             </DialogDescription>
           </DialogHeader>
           <Input

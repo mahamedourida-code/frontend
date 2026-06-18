@@ -428,7 +428,7 @@ export function normalizeRecentFiles(response: any): import("./types").RecentBat
 
 export function recentStatusChip(status: string): { label: string; chip: string; dot: string } {
   if (["processing", "pending", "queued"].includes(status))
-    return { label: "Processing", chip: "border-[#e3d4c2] bg-[#f3ece2] text-[#8a6a52]", dot: "bg-[#A98467]" }
+    return { label: "Reading", chip: "border-[#e3d4c2] bg-[#f3ece2] text-[#8a6a52]", dot: "bg-[#A98467]" }
   if (["failed", "error"].includes(status))
     return { label: "Failed", chip: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]", dot: "bg-[#ef4444]" }
   if (status === "requires_review")

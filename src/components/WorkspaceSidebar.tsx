@@ -54,7 +54,7 @@ const PRIMARY_ITEMS: SidebarItem[] = [
 // The daily flow, flat and in pipeline order: intake → batch → review.
 const DOCUMENT_ITEMS: SidebarItem[] = [
   { key: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
-  { key: "batches", label: "Batches", href: "/dashboard/batches", icon: Layers },
+  { key: "batches", label: "Stacks", href: "/dashboard/batches", icon: Layers },
   { key: "review", label: "Review board", href: "/dashboard/client", icon: BookCheck },
 ]
 

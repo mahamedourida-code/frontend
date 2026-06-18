@@ -1345,7 +1345,7 @@ export function ResultActions({
               </button>
               <button
                 type="button"
-                onClick={() => toast.success("Batch published to your accounting software")}
+                onClick={() => toast.success("Published to QuickBooks or Xero")}
                 className="ax-interactive inline-flex h-9 w-full items-center justify-start gap-2 rounded-md px-3 text-xs font-semibold text-[#111827] transition-colors hover:bg-[#ecfdf3] hover:text-emerald-700"
               >
                 <Send className="h-4 w-4" />
@@ -1402,7 +1402,7 @@ export function ResultActions({
                   className="h-9 w-full justify-start gap-2 rounded-full border border-red-300 bg-white px-3 text-xs text-red-600 shadow-none hover:border-red-600 hover:bg-red-600 hover:text-white"
                 >
                   <Trash2 className="h-4 w-4" />
-                  Delete batch
+                  Delete stack
                 </Button>
               ) : null}
             </div>
@@ -1590,7 +1590,7 @@ export function ResultActions({
                               {isReadyToPublish ? (
                                 <button
                                   type="button"
-                                  onClick={() => toast.success("Published to your accounting software")}
+                                  onClick={() => toast.success("Published to QuickBooks or Xero")}
                                   className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#16a34a] bg-[#16a34a] px-2.5 text-[11px] font-semibold text-white shadow-none transition-colors hover:border-[#15803d] hover:bg-[#15803d] focus-visible:ring-2 focus-visible:ring-[#16a34a]/30"
                                 >
                                   Publish
@@ -1711,7 +1711,7 @@ export function ResultActions({
                 <Button
                   size="sm"
                   variant="glossy"
-                  onClick={() => toast.success("Published to your accounting software")}
+                  onClick={() => toast.success("Published to QuickBooks or Xero")}
                   className="h-9 gap-1.5 px-3 text-xs"
                 >
                   <Send className="h-3.5 w-3.5" />
@@ -2511,8 +2511,8 @@ function BatchStagingBoard({
 
   const stagedCount = uploadedFiles.length
   const rowCount = mode === "idle" ? recent.length : stagedCount
-  const tabLabel = mode === "idle" ? "Recent" : mode === "staged" ? "Staged" : "Processing"
-  const bandLabel = mode === "idle" ? "Recent files" : mode === "staged" ? "Ready to process" : "Working through this batch"
+  const tabLabel = mode === "idle" ? "Recent" : mode === "staged" ? "Staged" : "Reading"
+  const bandLabel = mode === "idle" ? "Recent files" : mode === "staged" ? "Ready to process" : "Working through this stack"
   const countLabel = mode === "idle" ? `${rowCount} shown` : `${rowCount} file${rowCount === 1 ? "" : "s"}`
   const dash = <span className="text-[#98a2b3]">–</span>
 
@@ -2528,7 +2528,7 @@ function BatchStagingBoard({
               className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}
             >
               <RotateCcw className="h-4 w-4" />
-              New batch
+              New stack
             </Button>
             <Button
               variant="glossy"
@@ -2641,7 +2641,7 @@ function BatchStagingBoard({
                               {file.filename}
                             </Link>
                           </td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#0f766e]">Batch</td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#0f766e]">Stack</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             <span className={cn("inline-flex h-5 items-center gap-1.5 whitespace-nowrap rounded-full border px-2 text-[11px] font-semibold leading-none", st.chip)}>
                               <span className={cn("size-1.5 rounded-full", st.dot)} />
@@ -2672,13 +2672,13 @@ function BatchStagingBoard({
                   ) : (
                     <tr>
                       <td colSpan={11} className="border-b border-[#e4e7ef] px-4 py-12 text-center text-[13px] font-medium text-[#475467]">
-                        <span>No documents yet — your processed batches will land here.</span>
+                        <span>No documents yet — your processed stacks will land here.</span>
                         <button
                           type="button"
                           onClick={onOpenUpload}
                           className={cn("ml-3 inline-flex h-7 items-center px-3 text-[11px] font-semibold", workspaceNormalControlClass)}
                         >
-                          Upload your first batch
+                          Upload your first stack
                         </button>
                       </td>
                     </tr>
@@ -2715,7 +2715,7 @@ function BatchStagingBoard({
                             {processing ? (
                               <span className="inline-flex h-5 items-center gap-1.5 rounded-full border border-[#e3d4c2] bg-[#f3ece2] px-2 text-[11px] font-semibold text-[#8a6a52]">
                                 <span className="size-1.5 animate-pulse rounded-full bg-[#A98467]" />
-                                Processing
+                                Reading
                               </span>
                             ) : (
                               <span className="inline-flex h-5 items-center gap-1.5 rounded-full border border-[#cfd4d9] bg-white px-2 text-[11px] font-semibold text-[#475467]">

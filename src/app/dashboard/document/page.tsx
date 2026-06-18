@@ -202,7 +202,7 @@ function DocumentReviewContent() {
       const response = await ocrApi.getJobDocuments(jobId)
       const found = response.documents.find((item) => item.id === documentId) || null
       if (!found) {
-        setError("This document is no longer part of the batch.")
+        setError("This document is no longer part of the stack.")
         setDoc(null)
       } else {
         setDoc(found)
@@ -262,7 +262,7 @@ function DocumentReviewContent() {
 
   const persist = async (fieldPath: Array<string | number>, value: string) => {
     if (!processingUnitId) {
-      toast.error("This document is missing edit metadata. Reopen the batch and try again.")
+      toast.error("This document is missing edit metadata. Reopen the stack and try again.")
       return
     }
     setSavingPath(fieldPath.join("."))

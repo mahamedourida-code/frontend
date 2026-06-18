@@ -112,7 +112,7 @@ export function DashboardShell({
   const activeJob = useMemo(() => {
     if (processingState.status === "processing") {
       return {
-        label: "Job running",
+        label: "Reading documents",
         href: "/dashboard/client",
         progress: getProgressLabel(null, processingState.progress),
         tone: "active" as const,
@@ -130,7 +130,7 @@ export function DashboardShell({
 
     if (recoverableJob) {
       return {
-        label: recoverableJob.status === "queued" ? "Queued job" : "Resume job",
+        label: recoverableJob.status === "queued" ? "Unfinished stack" : "Resume stack",
         href: "/dashboard/client",
         progress: getProgressLabel(recoverableJob, 0),
         tone: "active" as const,

@@ -68,7 +68,7 @@ const WORKFLOW_TABS: WorkflowTab[] = [
   {
     id: "review",
     label: "Review",
-    description: "Work through mixed batches and correct the exceptions before export.",
+    description: "Work through mixed stacks and correct the exceptions before export.",
     action: "Open review board",
     href: (companyId) => `/dashboard/client?company_id=${encodeURIComponent(companyId)}`,
     icon: BookCheck,
@@ -76,7 +76,7 @@ const WORKFLOW_TABS: WorkflowTab[] = [
   {
     id: "bills",
     label: "Draft bills",
-    description: "Code reviewed supplier invoices, then publish them to your accounting software.",
+    description: "Code reviewed supplier invoices, then publish them to QuickBooks or Xero.",
     action: "Open draft bills",
     href: (companyId) => `/dashboard/accounts-payable?company_id=${encodeURIComponent(companyId)}`,
     icon: ReceiptText,

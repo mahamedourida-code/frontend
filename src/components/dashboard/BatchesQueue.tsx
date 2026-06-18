@@ -46,7 +46,7 @@ const BUCKET_META: Record<
   { title: string; hint: string; icon: React.ReactNode; tone: "default" | "active" }
 > = {
   processing: {
-    title: "Processing",
+    title: "Reading",
     hint: "Still extracting — they'll move to review when they finish.",
     icon: <LoaderCircle className="animate-spin" />,
     tone: "active",
@@ -65,7 +65,7 @@ const BUCKET_META: Record<
   },
   earlier: {
     title: "Earlier",
-    hint: "Older batches — reopen any to review or re-export.",
+    hint: "Older stacks — reopen any to review or re-export.",
     icon: <Inbox />,
     tone: "default",
   },
@@ -86,7 +86,8 @@ function batchStatusTone(status: string): StatusTone {
 function statusLabel(status: string): string {
   if (status === "completed") return "Ready"
   if (status === "partially_completed") return "Partial"
-  if (status === "queued") return "Queued"
+  if (status === "queued") return "Waiting"
+  if (status === "processing") return "Reading"
   return status.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase())
 }
 
@@ -108,7 +109,7 @@ function toBatch(job: Record<string, any>): Batch | null {
   if (!jobId) return null
   return {
     jobId: String(jobId),
-    title: job.filename || "Untitled batch",
+    title: job.filename || "Untitled stack",
     status: job.status || "unknown",
     count: pickCount(job.metadata ?? job.processing_metadata),
     createdAt: job.created_at || job.updated_at || job.saved_at || null,
@@ -175,7 +176,7 @@ export function BatchesQueue() {
         : response.jobs || response.history || response.items || response.data || []
       setBatches(rows.map(toBatch).filter((b): b is Batch => b !== null))
     } catch (err: any) {
-      setError(err?.detail || err?.message || "Could not load batches")
+      setError(err?.detail || err?.message || "Could not load stacks")
       setBatches([])
     } finally {
       setRefreshing(false)
@@ -207,8 +208,8 @@ export function BatchesQueue() {
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-foreground">
           {isLoading
-            ? "Loading batches…"
-            : `${total} ${total === 1 ? "batch" : "batches"} in your queue`}
+            ? "Loading stacks…"
+            : `${total} ${total === 1 ? "stack" : "stacks"} to review`}
         </p>
         <InlineAction onClick={load} disabled={refreshing}>
           <RefreshCw className={cn("size-4", refreshing && "animate-spin")} />
@@ -232,12 +233,12 @@ export function BatchesQueue() {
           ))}
         </div>
       ) : total === 0 ? (
-        <WorkspaceSection title="Your batches" icon={<Layers />}>
+        <WorkspaceSection title="Your stacks" icon={<Layers />}>
           <EmptyState
             icon={<Inbox />}
-            eyebrow="Batches"
-            title="No batches yet"
-            description="Drop a folder of invoices, receipts, or statements into the review board. Each batch you process lands here, grouped by what needs your attention."
+            eyebrow="Stacks"
+            title="No stacks yet"
+            description="Drop a folder of invoices, receipts, or statements into the review board. Each stack you process lands here, grouped by what needs your attention."
           />
         </WorkspaceSection>
       ) : (

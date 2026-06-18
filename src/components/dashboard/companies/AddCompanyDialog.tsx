@@ -66,7 +66,7 @@ export function AddCompanyDialog({ workspaceId, onCreated }: AddCompanyDialogPro
           </div>
           <DialogTitle>Add client</DialogTitle>
           <DialogDescription className="font-normal text-foreground">
-            A home for their batches, review queue, and draft bills.
+            A home for their stacks, review board, and draft bills.
           </DialogDescription>
         </DialogHeader>
         <form className="space-y-5" onSubmit={submit}>

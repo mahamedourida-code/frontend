@@ -137,7 +137,7 @@ export function computeReviewScore(item: AccountsPayableItem): ReviewScore {
       key: "new_vendor",
       tone: "caution",
       title: "Vendor not mapped",
-      reason: "This vendor isn't linked to your accounting software yet — confirm the match before publishing.",
+      reason: "This vendor isn't linked to QuickBooks or Xero yet — confirm the match before publishing.",
     })
   }
 

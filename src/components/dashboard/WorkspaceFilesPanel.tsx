@@ -25,7 +25,7 @@ function fileStatusTone(status: string): StatusTone {
 
 function fileStatusLabel(status: string) {
   if (status === "completed") return "Ready"
-  if (["processing", "pending", "queued"].includes(status)) return "Processing"
+  if (["processing", "pending", "queued"].includes(status)) return "Reading"
   if (["failed", "error"].includes(status)) return "Failed"
   if (status === "requires_review") return "Needs review"
   return status.replace(/_/g, " ")
@@ -125,7 +125,7 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-bold text-foreground">Recent files</h2>
-          <p className="mt-0.5 text-xs font-medium text-muted-foreground">Your latest processed batches.</p>
+          <p className="mt-0.5 text-xs font-medium text-muted-foreground">Your latest processed stacks.</p>
         </div>
         <Link href="/history" className="inline-flex items-center gap-1 text-sm font-semibold text-foreground hover:text-primary">
           View all

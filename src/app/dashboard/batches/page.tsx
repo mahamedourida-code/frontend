@@ -10,7 +10,7 @@ import { PageHeader } from "@/components/dashboard/PageHeader"
 import { useAuth } from "@/hooks/useAuth"
 
 function BatchesFallback() {
-  return <DashboardRouteLoader label="Loading batches" />
+  return <DashboardRouteLoader label="Loading stacks" />
 }
 
 export default function BatchesPage() {
@@ -40,10 +40,10 @@ function BatchesContent() {
   }
 
   return (
-    <DashboardShell activeItem="batches" title="Batches" user={user}>
+    <DashboardShell activeItem="batches" title="Stacks" user={user}>
       <PageHeader
-        title="Batches"
-        description="Today's queue at a glance. Scan what's processing or needs review, then open one to drill into the full review board."
+        title="Stacks"
+        description="Today's stacks at a glance. Scan what's reading or needs review, then open one to drill into the full review board."
       />
       <BatchesQueue />
     </DashboardShell>

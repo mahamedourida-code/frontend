@@ -752,7 +752,7 @@ function SettingsContent() {
                   ))}
 
                   <div className={cn("p-4 text-sm font-medium text-foreground", softPanel)}>
-                    Batch limits:
+                    Stack limits:
                     <span className="ml-1 font-semibold text-foreground">
                       {limits ? `${limits.max_files_per_batch} files, ${limits.max_file_size_mb} MB each` : "loading live limits"}
                     </span>

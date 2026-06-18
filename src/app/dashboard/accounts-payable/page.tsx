@@ -1112,7 +1112,7 @@ function AccountsPayableContent() {
         <div className="space-y-6">
           <WorkspaceSection
             icon={<TableIcon />}
-            title="Queue"
+            title="To review"
             contentClassName="p-0"
             actions={
               <details className="relative">

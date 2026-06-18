@@ -30,7 +30,7 @@ const GROUP_META: Record<
   { label: string; icon: typeof Bell; tone: string }
 > = {
   job_finished: {
-    label: "Job finished",
+    label: "Stack finished",
     icon: CheckCircle2,
     tone: "text-[#16a34a] bg-[#f0fdf4]",
   },
@@ -240,7 +240,7 @@ export function NotificationsBell() {
               <GroupedList
                 items={items}
                 onJump={handleJump}
-                emptyLabel="Finished batches will show up here."
+                emptyLabel="Finished stacks will show up here."
               />
             </TabsContent>
             <TabsContent value="unread" className="m-0">

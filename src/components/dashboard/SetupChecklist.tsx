@@ -299,8 +299,8 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
             </h2>
             <p className="mt-1 text-sm text-foreground">
               {allDone
-                ? "Every essential is configured. You're ready to run batches end to end."
-                : "Complete these to get the most out of batch review and publishing."}
+                ? "Every essential is configured. You're ready to run stacks end to end."
+                : "Complete these to get the most out of stack review and publishing."}
             </p>
           </div>
           <StatusBadge tone={allDone ? "success" : "info"}>
