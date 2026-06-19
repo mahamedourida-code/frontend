@@ -3,6 +3,7 @@ import type { AxiosProgressEvent } from 'axios'
 import { createClient } from '@/utils/supabase/client'
 import { publicConfig } from '@/lib/public-config'
 import { getOrCreateTrialUUID } from '@/lib/free-trial'
+import { downscaleImagesForUpload } from '@/lib/image-downscale'
 
 // Create Supabase client instance
 const supabase = createClient()
@@ -922,11 +923,15 @@ export const ocrApi = {
    */
   uploadBatchMultipart: async (files: File[], options?: UploadBatchMultipartOptions): Promise<BatchConvertResponse> => {
 
+    // Shrink large photos in the browser before upload (skips PDFs and
+    // small images; any failure falls back to the original file).
+    const uploadFiles = await downscaleImagesForUpload(files)
+
     // Create FormData object
     const formData = new FormData()
 
     // Append each file
-    files.forEach(file => {
+    uploadFiles.forEach(file => {
       formData.append('files', file)
     })
 
@@ -1676,8 +1681,9 @@ export const clientIntakeApi = {
   },
 
   submitPublicFiles: async (token: string, files: File[]): Promise<{ accepted: boolean; submission_id: string; status: string }> => {
+    const uploadFiles = await downscaleImagesForUpload(files)
     const formData = new FormData()
-    files.forEach(file => formData.append('files', file))
+    uploadFiles.forEach(file => formData.append('files', file))
     const response = await apiClient.post(`/api/v1/client-intake/public/${encodeURIComponent(token)}/upload`, formData, {
       headers: { 'Content-Type': undefined },
       timeout: isMobile ? 120000 : 90000,
