@@ -2434,12 +2434,13 @@ export function ResultActions({
                                   <span className={cn("inline-flex items-center gap-1", !value && "text-[#98a2b3]")}>
                                     {value || " "}
                                     {isUncertain && rowIndex !== 0 ? (
-                                      <AlertTriangle
-                                        className="inline-block shrink-0 text-rose-400"
-                                        size={12}
-                                        title="Needs review"
-                                        aria-label="Needs review"
-                                      />
+                                      <span title="Needs review" className="inline-flex shrink-0">
+                                        <AlertTriangle
+                                          className="text-rose-400"
+                                          size={12}
+                                          aria-label="Needs review"
+                                        />
+                                      </span>
                                     ) : null}
                                     {isUncertain && rowIndex !== 0 ? (
                                       <span className="sr-only">Needs review</span>

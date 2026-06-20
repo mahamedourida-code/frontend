@@ -1,7 +1,8 @@
 /**
- * Warm brown override used by older dashboard call sites. It now matches the
- * landing sign-up interaction: brown at rest, white + underline on hover.
+ * Filled primary button used by older dashboard call sites. Matches the Button
+ * `primary` treatment via the shared button tokens — black on the marketing
+ * site, Facebook-blue inside the workspace — darkening on hover.
  */
 export const clayButton =
-  "border-2 border-[var(--brand-brown-dark)] bg-[var(--brand-brown-dark)] text-white shadow-none " +
-  "hover:border-black hover:bg-white hover:text-black hover:underline hover:decoration-1 hover:underline-offset-4"
+  "border border-[var(--btn-primary-bg)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] shadow-none " +
+  "hover:bg-[var(--btn-primary-bg-hover)] hover:border-[var(--btn-primary-bg-hover)]"

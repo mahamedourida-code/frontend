@@ -570,7 +570,7 @@ function DocumentReviewContent() {
                                 />
                                 {isUncertain && (
                                   <>
-                                    <AlertTriangle size={12} className="shrink-0 text-rose-400" title="Needs review" aria-label="Needs review" />
+                                    <span title="Needs review" className="inline-flex shrink-0"><AlertTriangle size={12} className="text-rose-400" aria-label="Needs review" /></span>
                                     <span className="sr-only">Needs review</span>
                                   </>
                                 )}
@@ -622,7 +622,7 @@ function DocumentReviewContent() {
                               />
                               {isUncertain && (
                                 <>
-                                  <AlertTriangle size={12} className="shrink-0 text-rose-400" title="Needs review" aria-label="Needs review" />
+                                  <span title="Needs review" className="inline-flex shrink-0"><AlertTriangle size={12} className="text-rose-400" aria-label="Needs review" /></span>
                                   <span className="sr-only">Needs review</span>
                                 </>
                               )}

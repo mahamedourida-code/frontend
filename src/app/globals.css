@@ -197,6 +197,15 @@
     --button-warm: var(--workspace-soft);
     --button-warm-hover: #eef2f8;
     --button-warm-ring: var(--workspace-border);
+    /* Workspace buttons: Facebook-blue primary, black secondary. */
+    --btn-primary-bg: var(--workspace-blue);
+    --btn-primary-bg-hover: var(--workspace-blue-hover);
+    --btn-primary-fg: #ffffff;
+    --btn-secondary-bg: #0a0a0a;
+    --btn-secondary-fg: #ffffff;
+    --btn-secondary-border: #0a0a0a;
+    --btn-secondary-bg-hover: #262626;
+    --btn-secondary-fg-hover: #ffffff;
     --workspace-popout-bg: var(--workspace-soft);
     --workspace-popout-border: var(--workspace-border);
     --workspace-popout-hover: #ffffff;
@@ -551,6 +560,19 @@
   --button-surface: #f4f5f5;
   --button-surface-hover: #e7e9e8;
   --button-surface-ring: #cbd1ce;
+  /* Button system — Devin-style monochrome on the marketing site: black
+     primary, white thin-border secondary that inverts to black on hover. The
+     workspace (.ax-dashboard-content) overrides these to a Facebook-blue
+     primary + black secondary. Defined in :root only so site buttons never
+     theme-flip. */
+  --btn-primary-bg: #0a0a0a;
+  --btn-primary-bg-hover: #262626;
+  --btn-primary-fg: #ffffff;
+  --btn-secondary-bg: #ffffff;
+  --btn-secondary-fg: #0a0a0a;
+  --btn-secondary-border: #0a0a0a;
+  --btn-secondary-bg-hover: #0a0a0a;
+  --btn-secondary-fg-hover: #ffffff;
   --ax-marketing-page: #ffffff;
   --ax-marketing-ink: #171717;
   --ax-marketing-muted: #404040;
