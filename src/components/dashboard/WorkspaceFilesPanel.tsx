@@ -7,6 +7,7 @@ import { ArrowRight, FileText } from "lucide-react"
 import { ocrApi } from "@/lib/api-client"
 import { isHistoryItemDeleted, reconcileHistoryDeletions, subscribeHistoryDeletions } from "@/lib/recent-files-store"
 import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
+import { ShimmerText } from "@/components/ui/ShimmerText"
 
 type WorkspaceFile = {
   id: string
@@ -157,7 +158,9 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
                 </span>
               </span>
               <StatusBadge tone={fileStatusTone(file.status)} className="hidden shrink-0 sm:inline-flex">
-                {fileStatusLabel(file.status)}
+                {fileStatusTone(file.status) === "processing"
+                  ? <ShimmerText>{fileStatusLabel(file.status)}</ShimmerText>
+                  : fileStatusLabel(file.status)}
               </StatusBadge>
             </Link>
           ))}

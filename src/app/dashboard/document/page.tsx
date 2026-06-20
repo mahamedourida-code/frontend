@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { ShimmerText } from "@/components/ui/ShimmerText"
 import { DashboardShell } from "@/components/DashboardShell"
 import { useAuth } from "@/hooks/useAuth"
 import { accountsPayableApi, ocrApi, type JobDocumentRecord } from "@/lib/api-client"
@@ -125,9 +126,9 @@ function gridFromPayload(payload: unknown): any[][] | null {
 
 function FullLoader({ label = "Opening document" }: { label?: string }) {
   return (
-    <div className="flex min-h-screen items-center justify-center gap-2 bg-background text-sm font-semibold text-[#475467]">
+    <div className="flex min-h-screen items-center justify-center gap-2 bg-background text-sm font-semibold">
       <Loader2 className="size-4 animate-spin text-[var(--brand-brown-fg)]" />
-      {label}
+      <ShimmerText>{label}</ShimmerText>
     </div>
   )
 }

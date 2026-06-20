@@ -13,6 +13,7 @@ import { FeatureHoverCards } from "@/components/landing/FeatureHoverCards";
 import { OutcomeStats } from "@/components/landing/OutcomeStats";
 import { TypewriterWord } from "@/components/landing/TypewriterWord";
 import { ScrollGrowSection } from "@/components/landing/ScrollGrowSection";
+import { ScrollRevealText } from "@/components/landing/ScrollRevealText";
 import { useRouter } from "next/navigation";
 
 import NextLink from "next/link";
@@ -566,6 +567,15 @@ export default function Home() {
 
         {/* ── 7 · Organizations testimonials (white) ── */}
         <TestimonialsMarquee />
+
+        {/* ── Scroll-reveal statement — word-by-word scroll light-up ── */}
+        <section className="relative isolate overflow-hidden bg-[#FDFBF7] py-24 lg:py-32">
+          <div className="mx-auto max-w-[1100px] px-4 sm:px-6 lg:px-8">
+            <ScrollRevealText className="text-3xl font-bold leading-[1.15] tracking-tight sm:text-4xl lg:text-5xl">
+              Throw us the whole folder. AxLiner reads every invoice, receipt, and bank statement, flags what&apos;s unsure, and hands you reviewed entries — ready to publish to QuickBooks or Xero.
+            </ScrollRevealText>
+          </div>
+        </section>
 
         {/* ── Security + FAQ — redesigned to match the system (white) ── */}
         <div className="relative isolate overflow-hidden bg-[#FDFBF7]">

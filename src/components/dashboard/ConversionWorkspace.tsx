@@ -35,6 +35,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button, buttonVariants } from "@/components/ui/button"
+import { ShimmerText } from "@/components/ui/ShimmerText"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { BankReconciliationPanel } from "@/components/dashboard/BankReconciliationPanel"
@@ -2636,14 +2637,14 @@ function BatchStagingBoard({
           <div className="flex min-h-12 flex-col gap-2 border-b border-[#cfd4da] bg-white px-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-h-12 flex-wrap items-stretch gap-4">
               <span className="relative inline-flex h-12 items-center gap-1.5 border-b-2 border-[var(--workspace-primary)] px-0 text-[13px] font-semibold text-[var(--workspace-primary)]">
-                <span>{tabLabel}</span>
+                <span>{mode === "processing" ? <ShimmerText>{tabLabel}</ShimmerText> : tabLabel}</span>
                 {rowCount > 0 ? <span className="tabular-nums text-[#667085]">{rowCount}</span> : null}
               </span>
             </div>
           </div>
 
           <div className="flex min-h-10 items-center justify-between gap-3 border-b border-[#d9dde3] bg-[#f6f7fb] px-4 py-2 text-[12px] text-[#475467]">
-            <span className="font-semibold text-[#344054]">{bandLabel}</span>
+            <span className="font-semibold text-[#344054]">{mode === "processing" ? <ShimmerText>{bandLabel}</ShimmerText> : bandLabel}</span>
             <span className="tabular-nums">{countLabel}</span>
           </div>
 
@@ -2699,7 +2700,7 @@ function BatchStagingBoard({
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             <span className={cn("inline-flex h-5 items-center gap-1.5 whitespace-nowrap rounded-full border px-2 text-[11px] font-semibold leading-none", st.chip)}>
                               <span className={cn("size-1.5 rounded-full", st.dot)} />
-                              {st.label}
+                              {st.label === "Reading" ? <ShimmerText>{st.label}</ShimmerText> : st.label}
                             </span>
                           </td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
@@ -2768,9 +2769,9 @@ function BatchStagingBoard({
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#111827]">Auto-detect</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             {processing ? (
-                              <span className="inline-flex h-5 items-center gap-1.5 rounded-full border border-[#bfdbfe] bg-[var(--workspace-blue-soft)] px-2 text-[11px] font-semibold text-[var(--workspace-blue)]">
+                              <span className="inline-flex h-5 items-center gap-1.5 rounded-full border border-[#bfdbfe] bg-[var(--workspace-blue-soft)] px-2 text-[11px] font-semibold">
                                 <span className="size-1.5 animate-pulse rounded-full bg-[var(--workspace-blue)]" />
-                                Reading
+                                <ShimmerText>Reading</ShimmerText>
                               </span>
                             ) : (
                               <span className="inline-flex h-5 items-center gap-1.5 rounded-full border border-[#cfd4d9] bg-white px-2 text-[11px] font-semibold text-[#475467]">
@@ -2786,7 +2787,9 @@ function BatchStagingBoard({
                           <td className="border-b border-[#e4e7ef] px-3 py-2 text-right align-middle">{dash}</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             {processing ? (
-                              <span className="text-[12px] font-semibold text-[var(--workspace-blue)]">Reading…</span>
+                              <span className="text-[12px] font-semibold">
+                                <ShimmerText>Reading…</ShimmerText>
+                              </span>
                             ) : (
                               dash
                             )}
