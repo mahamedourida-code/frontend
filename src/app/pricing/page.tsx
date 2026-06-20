@@ -667,7 +667,7 @@ function PricingContent() {
 
                     <Button
                       className={cn(
-                        "h-12 w-full rounded-full text-base font-bold",
+                        "h-12 w-full rounded-lg text-base font-bold",
                         isPopular && "!border-neutral-950/25 !bg-transparent !text-neutral-950 shadow-none hover:!border-neutral-950 hover:!bg-neutral-950 hover:!text-white"
                       )}
                       variant="surface"
@@ -781,11 +781,11 @@ function PricingContent() {
         <Button
           asChild
           variant="glossy"
-          className="mt-9 h-12 min-w-[300px] rounded-full !border-[var(--brand-brown)] !bg-[var(--brand-brown)] !text-black hover:!border-[var(--brand-brown-deep)] hover:!bg-[var(--button-warm)] hover:!text-[var(--brand-brown-deep)]"
+          className="mt-9 h-12 min-w-[300px] rounded-lg"
         >
           <Link href="/dashboard/client">Start now</Link>
         </Button>
-        <p className="mt-4 text-sm font-semibold text-neutral-500">Checkout handled by {providerLabel}.</p>
+        <p className="mt-4 text-sm font-semibold text-neutral-900">Checkout handled by {providerLabel}.</p>
       </section>
     </main>
   )

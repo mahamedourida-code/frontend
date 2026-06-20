@@ -137,16 +137,16 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         aria-current={isActive ? "page" : undefined}
         title={collapsed ? item.label : undefined}
         className={cn(
-          "ax-interactive relative flex h-[41px] items-center gap-2.5 rounded-md text-[14px] outline-none focus-visible:ring-2 focus-visible:ring-[#8a6a52]/25",
+          "ax-interactive relative flex h-[41px] items-center gap-2.5 rounded-md text-[14px] outline-none focus-visible:ring-2 focus-visible:ring-black/25",
           collapsed ? "justify-center px-0" : "px-3",
           isActive
-            ? "bg-[#efe7db] font-medium text-[#5b4636]"
-            : "font-normal text-[var(--workspace-ink)] hover:bg-white hover:text-[#6b4f2e]",
+            ? "bg-[var(--workspace-blue-soft)] font-medium text-[var(--workspace-ink)]"
+            : "font-normal text-[var(--workspace-ink)] hover:bg-white hover:text-[var(--workspace-primary)]",
         )}
       >
-        {isActive && !collapsed ? <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-[#8a6a52]" aria-hidden="true" /> : null}
+        {isActive && !collapsed ? <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-[var(--workspace-primary)]" aria-hidden="true" /> : null}
         <span className="relative flex shrink-0 items-center justify-center">
-          <Icon className={cn("size-[17px]", isActive ? "text-[#6b4f2e]" : "text-slate-700")} />
+          <Icon className={cn("size-[17px]", isActive ? "text-[var(--workspace-primary)]" : "text-slate-700")} />
           {(showDot || (collapsed && count > 0)) && (
             <span className="absolute -right-1 -top-1 size-1.5 rounded-full bg-amber-400 ring-2 ring-[var(--workspace-sidebar)]" aria-hidden="true" />
           )}
@@ -156,7 +156,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
           <span
             className={cn(
               "ms-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-medium leading-none",
-              isActive ? "bg-[#6b4f2e] text-white" : "bg-[#8a6a52] text-white",
+              isActive ? "bg-[var(--workspace-primary)] text-white" : "bg-[var(--workspace-primary-hover)] text-white",
             )}
           >
             {count > 99 ? "99+" : count}
@@ -171,7 +171,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
       {collapsed ? (
         <div className="mx-auto my-2 h-px w-6 bg-[var(--workspace-border)]" aria-hidden="true" />
       ) : (
-        <p className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6b4f2e]">
+        <p className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--workspace-primary)]">
           {label}
         </p>
       )}

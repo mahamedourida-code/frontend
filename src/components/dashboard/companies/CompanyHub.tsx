@@ -232,7 +232,7 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
               asChild
               variant="glossy"
               size="sm"
-              className="!border-[#A98467] !bg-[#A98467] px-3 !text-white hover:!border-[#8a6a52] hover:!bg-[#8a6a52] hover:!text-white"
+              className="!border-[var(--workspace-primary)] !bg-[var(--workspace-primary)] px-3 !text-white hover:!border-[var(--workspace-primary-hover)] hover:!bg-[var(--workspace-primary-hover)] hover:!text-white"
             >
               <Link href={`/dashboard/client?company_id=${encodeURIComponent(companyId)}#upload-files`}>
                 <Upload className="size-4" />

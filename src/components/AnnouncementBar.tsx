@@ -9,7 +9,7 @@ const STORAGE_KEY = "axliner-announce-dismissed"
 const BAR_H = "36px"
 
 /**
- * Thin top-of-page announcement bar (brown brand band). It is `fixed` at the very
+ * Thin top-of-page announcement bar (neutral band). It is `fixed` at the very
  * top and publishes its height to `--axn-bar` on the document, which the fixed
  * MarketingNavBar reads for its `top` offset — so the bar sits ABOVE the nav
  * instead of overlapping it. On dismiss (remembered in localStorage) the var
@@ -47,7 +47,7 @@ export function AnnouncementBar() {
           animate={{ y: 0, opacity: 1 }}
           exit={reduce ? { opacity: 0 } : { y: -40, opacity: 0 }}
           transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-          className="fixed inset-x-0 top-0 z-[60] flex h-9 items-center justify-center bg-[var(--brand-brown)] text-black"
+          className="fixed inset-x-0 top-0 z-[60] flex h-9 items-center justify-center bg-[#f5f5f5] text-black"
         >
           <div className="flex items-center gap-3 px-10">
             <p className="truncate text-[13.5px] font-semibold text-black">

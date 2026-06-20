@@ -70,7 +70,7 @@ type ProgressiveUploadSheetProps = {
 }
 
 const workspacePrimaryControlClass =
-  "border border-[#A98467] bg-[#A98467] text-white hover:border-[#8a6a52] hover:bg-[#8a6a52] focus-visible:ring-[#A98467]/30"
+  "border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] text-white hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)] focus-visible:ring-[var(--workspace-primary)]/30"
 
 function fileSize(bytes: number) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`

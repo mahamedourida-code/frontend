@@ -232,7 +232,7 @@ export function DashboardShell({
                     (typeof window !== "undefined" ? window.localStorage.getItem("axliner:selectedCompanyId") || "" : "")
                   router.push(`/dashboard/client${companyId ? `?company_id=${encodeURIComponent(companyId)}` : ""}#upload-files`)
                 }}
-                className="hidden h-9 !border-[#A98467] !bg-[#A98467] px-3 text-sm !text-white hover:!border-[#8a6a52] hover:!bg-[#8a6a52] hover:!text-white sm:inline-flex"
+                className="hidden h-9 !border-[var(--workspace-primary)] !bg-[var(--workspace-primary)] px-3 text-sm !text-white hover:!border-[var(--workspace-primary-hover)] hover:!bg-[var(--workspace-primary-hover)] hover:!text-white sm:inline-flex"
               >
                 <Upload className="size-4" />
                 Upload

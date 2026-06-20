@@ -403,10 +403,10 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
             <div className="h-11 w-[280px]" aria-hidden="true" />
           ) : isAuthenticated ? (
             <>
-              <Button variant="glossy" asChild className="h-11 px-5 text-[15px] font-bold bg-[var(--brand-brown)] border-[var(--brand-brown)] hover:border-black">
+              <Button variant="glossy" asChild className="h-11 rounded-lg px-5 text-[15px] font-bold">
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
-              <Button variant="ghost" asChild className="h-11 px-5 text-[15px] font-semibold bg-white text-black shadow-none border-2 border-black hover:bg-black hover:text-white">
+              <Button variant="surface" asChild className="h-11 rounded-lg px-5 text-[15px] font-semibold">
                 <Link href="?demo=1" scroll={false}>Request a demo</Link>
               </Button>
             </>
@@ -419,10 +419,10 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
               >
                 <Link href="/sign-in?next=%2Fdashboard%2Fclient">Log in</Link>
               </Button>
-              <Button variant="glossy" asChild className="h-11 px-5 text-[15px] font-bold bg-[var(--brand-brown)] border-[var(--brand-brown)] hover:border-black">
+              <Button variant="glossy" asChild className="h-11 rounded-lg px-5 text-[15px] font-bold">
                 <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign up</Link>
               </Button>
-              <Button variant="ghost" asChild className="h-11 px-5 text-[15px] font-semibold bg-white text-black shadow-none border-2 border-black hover:bg-black hover:text-white">
+              <Button variant="surface" asChild className="h-11 rounded-lg px-5 text-[15px] font-semibold">
                 <Link href="?demo=1" scroll={false}>Request a demo</Link>
               </Button>
             </>

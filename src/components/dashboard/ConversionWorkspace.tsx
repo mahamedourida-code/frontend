@@ -1354,7 +1354,7 @@ export function ResultActions({
                 type="button"
                 onClick={handleReviewedBatchDownload}
                 disabled={reviewedDownloadBusy || unresolvedDuplicateCount > 0}
-                className="ax-interactive inline-flex h-9 w-full items-center justify-start gap-2 rounded-md px-3 text-xs font-semibold text-[#111827] transition-colors hover:bg-[#f3ece2] hover:text-[#8a6a52] disabled:cursor-not-allowed disabled:opacity-50"
+                className="ax-interactive inline-flex h-9 w-full items-center justify-start gap-2 rounded-md px-3 text-xs font-semibold text-[#111827] transition-colors hover:bg-[var(--workspace-blue-soft)] hover:text-[var(--workspace-primary)] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
                 {unresolvedDuplicateCount > 0 ? "Resolve duplicates" : "Download"}
@@ -1404,7 +1404,7 @@ export function ResultActions({
                 <select
                   value={outputMode}
                   onChange={(event) => onOutputModeChange(event.target.value as OutputMode)}
-                  className="mt-1 h-9 w-full rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#111827] shadow-none outline-none focus:border-[#A98467] focus:ring-2 focus:ring-[#A98467]/20"
+                  className="mt-1 h-9 w-full rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#111827] shadow-none outline-none focus:border-[var(--workspace-primary)] focus:ring-2 focus:ring-black/15"
                 >
                   {reviewedExportOptions.map(format => (
                     <option key={format.value} value={format.value}>{format.label}</option>
@@ -1511,7 +1511,7 @@ export function ResultActions({
                   return (
                     <tr
                       key={fileKey}
-                      className="group h-12 bg-white transition-colors hover:bg-[#faf6f0]"
+                      className="group h-12 bg-white transition-colors hover:bg-[#f7f8fc]"
                     >
                       <td className={cn("border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", rowAccentClass(displayState, duplicateWarning))}>
                         {docHref ? (
@@ -2251,7 +2251,7 @@ export function ResultActions({
                           </thead>
                           <tbody>
                             {comparisonRows.rows.map((row, rowIndex) => (
-                              <tr key={rowIndex} className="bg-white transition-colors hover:bg-[#faf6f0]">
+                              <tr key={rowIndex} className="bg-white transition-colors hover:bg-[#f7f8fc]">
                                 {comparisonHandwritten ? (
                                   <td className="border-b border-[#eef1f6] px-2 py-1.5 text-center align-middle">
                                     <ConfidenceDot tier={getRowConfidenceTier(comparisonFile, rowIndex + 1)} size={8} withRing />
@@ -2282,7 +2282,7 @@ export function ResultActions({
                                           )
                                         }
                                       }}
-                                      className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-[13px] text-[#111827] outline-none focus:border-[#A98467] focus:bg-white focus:ring-2 focus:ring-[#A98467]/20"
+                                      className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-[13px] text-[#111827] outline-none focus:border-[var(--workspace-primary)] focus:bg-white focus:ring-2 focus:ring-black/15"
                                     />
                                   </td>
                                   )
@@ -2374,7 +2374,7 @@ export function ResultActions({
                         const isHandwrittenRow = isHandwrittenDocument(comparisonFile) && rowIndex > 0
                         const rowTier = isHandwrittenRow ? getRowConfidenceTier(comparisonFile, rowIndex) : null
                         return (
-                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-[#f8f9fa] font-semibold" : "bg-white transition-colors hover:bg-[#faf6f0]"}>
+                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-[#f8f9fa] font-semibold" : "bg-white transition-colors hover:bg-[#f7f8fc]"}>
                           {isHandwrittenDocument(comparisonFile) ? (
                             <td
                               className={cn(
@@ -2428,7 +2428,7 @@ export function ResultActions({
                                         event.currentTarget.blur()
                                       }
                                     }}
-                                    className="ax-interactive w-full rounded-md border border-[#A98467] bg-white px-2 py-1 text-[13px] text-[#111827] outline-none ring-2 ring-[#A98467]/20"
+                                    className="ax-interactive w-full rounded-md border border-[var(--workspace-primary)] bg-white px-2 py-1 text-[13px] text-[#111827] outline-none ring-2 ring-black/15"
                                   />
                                 ) : (
                                   <span className={cn("inline-flex items-center gap-1", !value && "text-[#98a2b3]")}>
@@ -2677,7 +2677,7 @@ function BatchStagingBoard({
                     recent.map((file) => {
                       const st = recentStatusChip(file.status)
                       return (
-                        <tr key={file.id} className="group h-12 bg-white transition-colors hover:bg-[#faf6f0]">
+                        <tr key={file.id} className="group h-12 bg-white transition-colors hover:bg-[#f7f8fc]">
                           <td className="border-b border-l-[3px] border-b-[#e4e7ef] border-l-transparent px-3 py-2 align-middle">
                             <Link
                               href={`/dashboard/client?job_id=${file.id}`}
@@ -2752,11 +2752,11 @@ function BatchStagingBoard({
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0 }}
                           transition={m.tFast}
-                          className="group h-12 bg-white transition-colors hover:bg-[#faf6f0]"
+                          className="group h-12 bg-white transition-colors hover:bg-[#f7f8fc]"
                         >
-                          <td className={cn("border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", processing ? "border-l-[#A98467]" : "border-l-transparent")}>
+                          <td className={cn("border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", processing ? "border-l-[var(--workspace-blue)]" : "border-l-transparent")}>
                             <span className="inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#94a3b8]">
-                              {processing ? <Loader2 className="size-3.5 animate-spin text-[#A98467]" /> : pdf ? <FileText className="size-3.5" /> : <FileImage className="size-3.5" />}
+                              {processing ? <Loader2 className="size-3.5 animate-spin text-[var(--workspace-blue)]" /> : pdf ? <FileText className="size-3.5" /> : <FileImage className="size-3.5" />}
                             </span>
                           </td>
                           <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
@@ -2765,11 +2765,11 @@ function BatchStagingBoard({
                               {pdf ? `${pageCount ? `${pageCount} page${pageCount === 1 ? "" : "s"}` : "PDF"} · ` : ""}{formatBytes(file.size)}
                             </span>
                           </td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#8a6a52]">Auto-detect</td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#111827]">Auto-detect</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             {processing ? (
-                              <span className="inline-flex h-5 items-center gap-1.5 rounded-full border border-[#e3d4c2] bg-[#f3ece2] px-2 text-[11px] font-semibold text-[#8a6a52]">
-                                <span className="size-1.5 animate-pulse rounded-full bg-[#A98467]" />
+                              <span className="inline-flex h-5 items-center gap-1.5 rounded-full border border-[#bfdbfe] bg-[var(--workspace-blue-soft)] px-2 text-[11px] font-semibold text-[var(--workspace-blue)]">
+                                <span className="size-1.5 animate-pulse rounded-full bg-[var(--workspace-blue)]" />
                                 Reading
                               </span>
                             ) : (
@@ -2786,7 +2786,7 @@ function BatchStagingBoard({
                           <td className="border-b border-[#e4e7ef] px-3 py-2 text-right align-middle">{dash}</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             {processing ? (
-                              <span className="text-[12px] font-semibold text-[#8a6a52]">Reading…</span>
+                              <span className="text-[12px] font-semibold text-[var(--workspace-blue)]">Reading…</span>
                             ) : (
                               dash
                             )}
@@ -2795,7 +2795,7 @@ function BatchStagingBoard({
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             <div className="flex justify-end">
                               {processing ? (
-                                <Loader2 className="h-4 w-4 animate-spin text-[#A98467]" />
+                                <Loader2 className="h-4 w-4 animate-spin text-[var(--workspace-blue)]" />
                               ) : (
                                 <button
                                   type="button"

@@ -202,7 +202,7 @@ export function HelpMenu() {
                 <>
                   <span className={cn(
                     "flex size-7 shrink-0 items-center justify-center rounded-full transition-colors",
-                    item.key === "shortcuts" && "bg-[#f3ece2] text-[#A98467]",
+                    item.key === "shortcuts" && "bg-[var(--workspace-blue-soft)] text-[var(--workspace-blue)]",
                     item.key === "docs" && "bg-[#f0fdf4] text-[#16a34a]",
                     item.key === "support" && "bg-[#fffbeb] text-[#d97706]",
                   )}>

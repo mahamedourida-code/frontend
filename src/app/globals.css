@@ -496,7 +496,7 @@
   --primary-foreground: hsl(164 80% 9%);
   /* Primary CTA green — the exact bright cyan-aqua pill (sampled from the
      reference). Identical in light & dark so CTA hierarchy never theme-flips. */
-  /* Validated brand primaries: cyan #06B6D4 + warm brown #A98467. */
+  /* Validated brand primaries: cyan #06B6D4 + monochrome black #0a0a0a. */
   --brand-green: #06B6D4;
   --brand-green-hover: #0599ac;
   --brand-green-fg: #000000;
@@ -506,10 +506,10 @@
   --workspace-topbar: #23384a;
   --workspace-topbar-hover: #2c465d;
   --workspace-sidebar: #f4f5fb;
-  --workspace-sidebar-active: #A98467;
-  --workspace-primary: #A98467;
-  --workspace-primary-hover: #8a6a52;
-  --workspace-blue-soft: #f3ece2;
+  --workspace-sidebar-active: #0a0a0a;
+  --workspace-primary: #0a0a0a;
+  --workspace-primary-hover: #262626;
+  --workspace-blue-soft: #eff6ff;
   --workspace-success: #16a34a;
   --workspace-success-hover: #15803d;
   --workspace-danger: #dc2626;
@@ -535,13 +535,13 @@
   --workspace-soft: #f7f8fc;
   --workspace-border: #e4e7ef;
   --workspace-button-border: #d0d5dd;
-  --workspace-row-hover: #faf6f0;
+  --workspace-row-hover: #f7f8fc;
   --workspace-table-header: #f6f7fb;
   --workspace-table-head: #475467;
-  --brand-brown: #A98467;
-  --brand-brown-fg: #6b4f2e;
-  --brand-brown-dark: #6b4f2e;
-  --brand-brown-deep: #3f2a1d;
+  --brand-brown: #0a0a0a;
+  --brand-brown-fg: #0a0a0a;
+  --brand-brown-dark: #0a0a0a;
+  --brand-brown-deep: #0a0a0a;
   --workspace-popout-bg: #ffffff;
   --workspace-popout-border: #e4e7ef;
   --workspace-popout-hover: #f8fbff;
@@ -554,9 +554,9 @@
   --brand-clay-hover: #dfccb2;
   --brand-clay-fg: #2f2418;
   --brand-clay-ring: #b49168;
-  --button-warm: #f7f3e9;
-  --button-warm-hover: #eee6d5;
-  --button-warm-ring: #c8b186;
+  --button-warm: #f5f5f5;
+  --button-warm-hover: #ececec;
+  --button-warm-ring: #e5e5e5;
   --button-surface: #f4f5f5;
   --button-surface-hover: #e7e9e8;
   --button-surface-ring: #cbd1ce;

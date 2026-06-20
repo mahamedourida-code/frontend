@@ -170,7 +170,7 @@ const moreFilters: Array<{ value: MoreFilter; label: string }> = [
 ]
 
 const workspacePrimaryButton =
-  "!border-[#A98467] !bg-[#A98467] !text-white !shadow-none hover:!border-[#8a6a52] hover:!bg-[#8a6a52] hover:!text-white"
+  "!border-[var(--workspace-primary)] !bg-[var(--workspace-primary)] !text-white !shadow-none hover:!border-[var(--workspace-primary-hover)] hover:!bg-[var(--workspace-primary-hover)] hover:!text-white"
 
 const workspaceSurfaceButton =
   "!border-slate-300 !bg-white !text-slate-900 !shadow-none hover:!border-slate-400 hover:!bg-slate-50 hover:!text-slate-900"
@@ -210,7 +210,7 @@ function AccountingDestinationGlyph({
 const statusTextColor: Record<"warning" | "review" | "info" | "success" | "error" | "neutral", string> = {
   warning: "text-amber-700",
   review: "text-blue-700",
-  info: "text-[#A98467]",
+  info: "text-[var(--workspace-blue)]",
   success: "text-emerald-700",
   error: "text-red-600",
   neutral: "text-slate-500",
@@ -1120,8 +1120,8 @@ function AccountsPayableContent() {
                   className={cn(
                     "ax-interactive flex h-8 cursor-pointer list-none items-center rounded-full border px-3.5 text-[13px] font-medium [&::-webkit-details-marker]:hidden",
                     moreFilters.some(option => option.value === filter)
-                      ? "border-[#A98467] bg-[#A98467] text-white"
-                      : "border-slate-300 bg-white text-foreground hover:border-[#A98467] hover:text-[#A98467]",
+                      ? "border-[var(--workspace-primary)] bg-[var(--workspace-primary)] text-white"
+                      : "border-slate-300 bg-white text-foreground hover:border-[var(--workspace-primary)] hover:text-[var(--workspace-primary)]",
                   )}
                 >
                   More filters
@@ -1140,8 +1140,8 @@ function AccountsPayableContent() {
                         className={cn(
                           "ax-interactive flex items-center justify-between rounded-md px-2.5 py-1.5 text-left text-[13px] font-medium",
                           filter === option.value
-                            ? "bg-[#A98467] text-white"
-                            : "bg-white text-foreground hover:bg-slate-100 hover:text-[#A98467]",
+                            ? "bg-[var(--workspace-primary)] text-white"
+                            : "bg-white text-foreground hover:bg-slate-100 hover:text-[var(--workspace-primary)]",
                         )}
                       >
                         {option.label}
@@ -1253,7 +1253,7 @@ function AccountsPayableContent() {
                             }}
                             className={cn(
                               "ax-interactive cursor-pointer bg-white font-normal text-slate-900 hover:bg-slate-50",
-                              isActive && "bg-[#f3ece2]/70",
+                              isActive && "bg-[var(--workspace-blue-soft)]/70",
                             )}
                           >
                             <td className="px-4 py-3" onClick={isReady ? event => event.stopPropagation() : undefined}>
@@ -1463,7 +1463,7 @@ function AccountsPayableContent() {
                   {autoAppliedRule ? (
                     <div className={cn("flex flex-wrap items-start justify-between gap-3 rounded-md border p-3", workspacePanel)}>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-medium uppercase tracking-wider text-[#A98467]">
+                        <p className="text-xs font-medium uppercase tracking-wider text-[var(--workspace-primary)]">
                           {autoAppliedRule.mode === "auto_ready" ? "Pre-filled & moved to Ready for your approval" : "Pre-filled from memory"}
                         </p>
                         <p className="mt-1 text-sm font-normal text-slate-950">
@@ -2307,7 +2307,7 @@ function AccountsPayableContent() {
         <DialogContent className="gap-4 rounded-md sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base font-medium">
-              <span className="inline-flex size-6 items-center justify-center rounded-md bg-[#f3ece2] text-[var(--workspace-blue)]">
+              <span className="inline-flex size-6 items-center justify-center rounded-md bg-[var(--workspace-blue-soft)] text-[var(--workspace-blue)]">
                 <FileText className="size-3.5" />
               </span>
               Match a purchase order
@@ -2341,7 +2341,7 @@ function AccountsPayableContent() {
                       "ax-interactive flex w-full items-center justify-between gap-3 rounded-lg border-2 bg-white px-3 py-2.5 text-left text-black transition-colors",
                       exceeds
                         ? "border-amber-300 hover:border-amber-500 hover:bg-amber-50"
-                        : "border-slate-200 hover:border-[#A98467] hover:bg-[#f3ece2]/60",
+                        : "border-slate-200 hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)]/60",
                     )}
                   >
                     <div className="min-w-0">

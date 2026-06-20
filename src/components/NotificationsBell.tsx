@@ -49,7 +49,7 @@ const GROUP_META: Record<
   // client_uploaded: {
   //   label: "Client upload",
   //   icon: Upload,
-  //   tone: "text-[#A98467] bg-[#f3ece2]",
+  //   tone: "text-[var(--workspace-blue)] bg-[var(--workspace-blue-soft)]",
   // },
 }
 
@@ -87,7 +87,7 @@ function NotificationRow({
       onClick={() => onJump(item.id)}
       className={cn(
         "group/row flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-[var(--workspace-popout-hover)]",
-        !item.read && "bg-[#f3ece2]"
+        !item.read && "bg-[var(--workspace-blue-soft)]"
       )}
     >
       <span
@@ -192,7 +192,7 @@ export function NotificationsBell() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 500, damping: 28 }}
-                className="absolute -right-0.5 -top-0.5 flex min-w-[18px] items-center justify-center rounded-full bg-[#A98467] px-1 text-[10px] font-bold leading-none text-white shadow-sm ring-2 ring-[var(--workspace-topbar)]"
+                className="absolute -right-0.5 -top-0.5 flex min-w-[18px] items-center justify-center rounded-full bg-[var(--workspace-danger)] px-1 text-[10px] font-bold leading-none text-white shadow-sm ring-2 ring-[var(--workspace-topbar)]"
               >
                 {unreadCount > 9 ? "9+" : unreadCount}
               </motion.span>
@@ -213,13 +213,13 @@ export function NotificationsBell() {
               <TabsList className="h-7 rounded-full bg-[#f3f6fb] p-0.5">
                 <TabsTrigger
                   value="all"
-                  className="h-6 rounded-full px-2.5 text-[12px] data-[state=active]:bg-white data-[state=active]:text-[#A98467]"
+                  className="h-6 rounded-full px-2.5 text-[12px] data-[state=active]:bg-white data-[state=active]:text-[var(--workspace-primary)]"
                 >
                   All
                 </TabsTrigger>
                 <TabsTrigger
                   value="unread"
-                  className="h-6 rounded-full px-2.5 text-[12px] data-[state=active]:bg-white data-[state=active]:text-[#A98467]"
+                  className="h-6 rounded-full px-2.5 text-[12px] data-[state=active]:bg-white data-[state=active]:text-[var(--workspace-primary)]"
                 >
                   Unread{unreadCount > 0 ? ` · ${unreadCount}` : ""}
                 </TabsTrigger>

@@ -31,11 +31,11 @@ type LineItemConfig = {
 
 const STATUS_STYLE: Record<string, string> = {
   ready: "border-[#bbf7d0] bg-[#ecfdf3] text-[#166534]",
-  published: "border-[#e7d8c6] bg-[#f8f3eb] text-[var(--brand-brown-deep)]",
+  published: "border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8]",
   edited: "border-[#ddd6fe] bg-[#f5f3ff] text-[#5b21b6]",
   failed: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]",
   needs_review: "border-[#fed7aa] bg-[#fff7ed] text-[#92400e]",
-  deleted: "border-[#e8e1d8] bg-white text-[#475467]",
+  deleted: "border-[#e5e5e5] bg-white text-[#475467]",
 }
 const STATUS_LABEL: Record<string, string> = {
   ready: "Ready",
@@ -55,7 +55,7 @@ const TYPE_TONE: Record<string, string> = {
 const TYPE_ACCENT: Record<string, string> = {
   invoice: "#166534",
   receipt: "#b45309",
-  bank_statement: "#6b4f2e",
+  bank_statement: "#3730a3",
   notes: "#5b21b6",
   table: "#0f766e",
   auto: "#475467",
@@ -157,7 +157,7 @@ function FormField({
         onBlur={(event) => {
           if (event.target.value !== value) onSave(event.target.value)
         }}
-        className="h-11 w-full rounded-md border border-[#ded6cc] bg-white px-3 text-[14px] font-semibold text-[#111827] outline-none transition focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-[#a98467]/20"
+        className="h-11 w-full rounded-md border border-[#d4d4d4] bg-white px-3 text-[14px] font-semibold text-[#111827] outline-none transition focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-black/15"
         placeholder="—"
       />
     </label>
@@ -402,7 +402,7 @@ function DocumentReviewContent() {
       showBack={false}
     >
       <div className="min-h-[calc(100svh-5rem)] bg-background text-[#111827]">
-        <header className="mb-6 rounded-lg border border-[#e8e1d8] bg-white/95 shadow-sm backdrop-blur">
+        <header className="mb-6 rounded-lg border border-[#e5e5e5] bg-white/95 shadow-sm backdrop-blur">
           <div className="mx-auto flex max-w-[1560px] flex-wrap items-center gap-3 px-5 py-3 sm:px-7">
           <Button asChild variant="surface" size="sm" className="h-9 px-3 text-xs">
             <Link href={`/dashboard/client?job_id=${jobId}`}>
@@ -474,11 +474,11 @@ function DocumentReviewContent() {
       >
         {/* Source preview — sticky on desktop */}
         <div className="lg:sticky lg:top-[84px] lg:self-start">
-          <div className="overflow-hidden rounded-lg border border-[#e8e1d8] bg-white shadow-sm">
-            <div className="border-b border-[#e8e1d8] px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.08em] text-[#475467]">
+          <div className="overflow-hidden rounded-lg border border-[#e5e5e5] bg-white shadow-sm">
+            <div className="border-b border-[#e5e5e5] px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.08em] text-[#475467]">
               Source document
             </div>
-            <div className="flex max-h-[78vh] items-center justify-center overflow-auto bg-[#faf8f5] p-4">
+            <div className="flex max-h-[78vh] items-center justify-center overflow-auto bg-[#f5f5f5] p-4">
               {sourceUrl ? (
                 <img src={sourceUrl} alt={doc.original_filename} className="max-h-[74vh] w-full rounded-lg object-contain" />
               ) : (
@@ -491,8 +491,8 @@ function DocumentReviewContent() {
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-lg border border-[#e8e1d8] bg-white shadow-sm">
-          <div className="border-b border-[#eee7de] px-7 py-7">
+        <div className="overflow-hidden rounded-lg border border-[#e5e5e5] bg-white shadow-sm">
+          <div className="border-b border-[#e5e5e5] px-7 py-7">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
               <div className="grid min-w-0 flex-1 grid-cols-2 gap-x-5 gap-y-5 lg:grid-cols-3">
                 {headerFields.length ? (
@@ -516,7 +516,7 @@ function DocumentReviewContent() {
               </div>
               <div className="w-full shrink-0 lg:w-52">
                 <p className="text-[12px] font-bold tracking-tight text-[#475467] lg:text-right">{totalLabel}</p>
-                <div className="mt-2 flex h-12 items-center justify-end rounded-md border border-[#ded6cc] bg-[#faf8f5] px-3">
+                <div className="mt-2 flex h-12 items-center justify-end rounded-md border border-[#d4d4d4] bg-[#f5f5f5] px-3">
                   <span className="truncate text-[20px] font-extrabold tabular-nums text-[#111827]" title={totalDisplay}>{totalDisplay}</span>
                 </div>
               </div>
@@ -529,7 +529,7 @@ function DocumentReviewContent() {
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[720px] border-collapse">
                   <thead>
-                    <tr className="border-b border-[#e8e1d8] bg-[#faf8f5]">
+                    <tr className="border-b border-[#e5e5e5] bg-[#f5f5f5]">
                       {lineItems.columns.map(([label], index) => (
                         <th
                           key={label}
@@ -545,7 +545,7 @@ function DocumentReviewContent() {
                   </thead>
                   <tbody>
                     {lineItems.rows.map((row, rowIndex) => (
-                      <tr key={rowIndex} className="border-b border-[#eee7de] transition-colors hover:bg-[#faf7f2]">
+                      <tr key={rowIndex} className="border-b border-[#e5e5e5] transition-colors hover:bg-[#f5f5f5]">
                         {lineItems.columns.map(([, key], colIndex) => {
                           const numeric = colIndex >= lineItems.numericFrom
                           const isAmount = colIndex === lineItems.columns.length - 1
@@ -562,8 +562,8 @@ function DocumentReviewContent() {
                                     }
                                   }}
                                   className={cn(
-                                    "h-10 w-full min-w-[80px] rounded-md border bg-white px-2.5 text-[14px] text-[#111827] outline-none transition focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-[#a98467]/20",
-                                    isUncertain ? "border-rose-400 ring-1 ring-rose-300/60" : "border-[#eee7de]",
+                                    "h-10 w-full min-w-[80px] rounded-md border bg-white px-2.5 text-[14px] text-[#111827] outline-none transition focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-black/15",
+                                    isUncertain ? "border-rose-400 ring-1 ring-rose-300/60" : "border-[#e5e5e5]",
                                     numeric && "text-right tabular-nums",
                                     isAmount && "font-bold",
                                   )}
@@ -594,15 +594,15 @@ function DocumentReviewContent() {
               <table className="w-full min-w-[640px] border-collapse text-[13px]">
                 <tbody>
                   {reviewGrid.map((row, rowIndex) => (
-                    <tr key={rowIndex} className={rowIndex === 0 ? "bg-[#faf8f5] font-semibold" : "bg-white transition-colors hover:bg-[#faf7f2]"}>
+                    <tr key={rowIndex} className={rowIndex === 0 ? "bg-[#f5f5f5] font-semibold" : "bg-white transition-colors hover:bg-[#f5f5f5]"}>
                       {row.map((cell, cellIndex) => {
                         const isUncertain = rowIndex !== 0 && uncertainSet.has(`${rowIndex}:${cellIndex}`)
                         return (
                           <td
                             key={cellIndex}
                             className={cn(
-                              "border border-[#eee7de] px-2 py-1",
-                              rowIndex === 0 && "border-[#e8e1d8]",
+                              "border border-[#e5e5e5] px-2 py-1",
+                              rowIndex === 0 && "border-[#d4d4d4]",
                             )}
                           >
                             <div className={cn(isUncertain && "flex items-center gap-1")}>
@@ -615,7 +615,7 @@ function DocumentReviewContent() {
                                   }
                                 }}
                                 className={cn(
-                                  "h-10 w-full min-w-[110px] rounded-md border px-2.5 text-[13px] outline-none transition focus:border-[var(--brand-brown-fg)] focus:bg-white focus:ring-2 focus:ring-[#a98467]/20",
+                                  "h-10 w-full min-w-[110px] rounded-md border px-2.5 text-[13px] outline-none transition focus:border-[var(--brand-brown-fg)] focus:bg-white focus:ring-2 focus:ring-black/15",
                                   isUncertain ? "border-rose-400 bg-white ring-1 ring-rose-300/60" : "border-transparent bg-transparent",
                                   rowIndex === 0 ? "text-[12px] font-bold tracking-tight text-[#475467]" : "font-medium text-[#111827]",
                                 )}
@@ -645,7 +645,7 @@ function DocumentReviewContent() {
                   <span className="shrink-0 font-semibold text-[#475467]">Subtotal</span>
                   <span className="min-w-0 truncate text-right font-semibold tabular-nums text-[#111827]" title={money(data.subtotal)}>{money(data.subtotal)}</span>
                 </div>
-                <div className="flex items-center justify-between gap-4 border-t border-[#e8e1d8] py-2 text-[14px]">
+                <div className="flex items-center justify-between gap-4 border-t border-[#e5e5e5] py-2 text-[14px]">
                   <span className="shrink-0 font-semibold text-[#475467]">VAT</span>
                   <span className="min-w-0 truncate text-right font-semibold tabular-nums text-[#111827]" title={money(data.tax_vat_amount)}>{money(data.tax_vat_amount)}</span>
                 </div>

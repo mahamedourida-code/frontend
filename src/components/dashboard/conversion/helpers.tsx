@@ -269,7 +269,7 @@ export function documentTypeToneClass(type?: string) {
   const classes: Record<string, string> = {
     invoice: "text-[#166534]",
     receipt: "text-[#b45309]",
-    bank_statement: "text-[#8a6a52]",
+    bank_statement: "text-[#3730a3]",
     notes: "text-[#5b21b6]",
     table: "text-[#0f766e]",
   }
@@ -281,7 +281,7 @@ export function statusChipClass(state: ReturnType<typeof getOutputBadge>["state"
     failed: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]",
     needs_review: "border-[#fed7aa] bg-[#fff7ed] text-[#92400e]",
     ready: "border-[#bbf7d0] bg-[#ecfdf3] text-[#166534]",
-    published: "border-[#e3d4c2] bg-[#f3ece2] text-[#8a6a52]",
+    published: "border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8]",
     edited: "border-[#ddd6fe] bg-[#f5f3ff] text-[#5b21b6]",
   }
   return classes[state]
@@ -292,7 +292,7 @@ export function statusDotClass(state: ReturnType<typeof getOutputBadge>["state"]
     failed: "bg-[#ef4444]",
     needs_review: "bg-[#f59e0b]",
     ready: "bg-[#16a34a]",
-    published: "bg-[#A98467]",
+    published: "bg-[#1d4ed8]",
     edited: "bg-[#7c3aed]",
   }
   return classes[state]
@@ -304,7 +304,7 @@ export function rowAccentClass(state: ReturnType<typeof getOutputBadge>["state"]
     failed: "border-l-[#ef4444]",
     needs_review: "border-l-[#f59e0b]",
     ready: "border-l-[#16a34a]",
-    published: "border-l-[#A98467]",
+    published: "border-l-[#1d4ed8]",
     edited: "border-l-[#7c3aed]",
   }
   return classes[state]
@@ -320,7 +320,7 @@ export function resultIssue(
   if (badge.state === "failed") return { label: "Failed", className: "text-[#b42318]" }
   if (reviewLevel.highValue) return { label: "High value", className: "text-[#92400e]" }
   if (badge.state === "needs_review") return { label: "Needs review", className: "text-[#92400e]" }
-  if (badge.state === "published") return { label: "Published", className: "text-[#8a6a52]" }
+  if (badge.state === "published") return { label: "Published", className: "text-[#1d4ed8]" }
   if (badge.state === "edited" || file.review_status === "edited") return { label: "Edited", className: "text-[#5b21b6]" }
   return { label: "Clean", className: "text-[#166534]" }
 }
@@ -428,7 +428,7 @@ export function normalizeRecentFiles(response: any): import("./types").RecentBat
 
 export function recentStatusChip(status: string): { label: string; chip: string; dot: string } {
   if (["processing", "pending", "queued"].includes(status))
-    return { label: "Reading", chip: "border-[#e3d4c2] bg-[#f3ece2] text-[#8a6a52]", dot: "bg-[#A98467]" }
+    return { label: "Reading", chip: "border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8]", dot: "bg-[#1d4ed8]" }
   if (["failed", "error"].includes(status))
     return { label: "Failed", chip: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]", dot: "bg-[#ef4444]" }
   if (status === "requires_review")

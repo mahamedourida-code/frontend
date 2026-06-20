@@ -67,7 +67,7 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
         </div>
       </section>
 
-      <section className="ax-marketing-band-warm border-y border-black/20 bg-[#f7f3e9]">
+      <section className="ax-marketing-band-warm border-y border-black/20 bg-[#f5f5f5]">
         <div className="ax-marketing-container-reading py-12 sm:py-14 lg:py-16">
           <p className="ax-marketing-eyebrow text-black">Workflow</p>
           <h2 className="ax-marketing-subtitle mt-4 text-black">

@@ -339,7 +339,7 @@ export default function OCRPage() {
         </section>
 
         {/* ── Messy inputs band ─────────────────────────────────────────── */}
-        <section className="bg-[#f7f3e9] py-20 lg:py-28">
+        <section className="bg-[#f5f5f5] py-20 lg:py-28">
           <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
             <motion.div
               variants={fadeUp}

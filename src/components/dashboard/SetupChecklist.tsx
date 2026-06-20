@@ -317,7 +317,7 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
           aria-label="Setup completion"
         >
           <motion.div
-            className="h-full rounded-full bg-[#A98467]"
+            className="h-full rounded-full bg-[var(--workspace-primary)]"
             initial={{ width: 0 }}
             animate={{ width: `${percent}%` }}
             transition={m.reduced ? { duration: 0.001 } : { duration: 0.5, ease: [0.2, 0, 0, 1] }}
@@ -404,7 +404,7 @@ function ChecklistRow({ item }: { item: ChecklistItem }) {
         ) : (
           <Link
             href={item.href}
-            className="ax-interactive inline-flex h-9 items-center gap-1.5 rounded-full border border-[#A98467] bg-[#A98467] px-4 text-sm font-semibold text-white shadow-none transition-colors hover:border-[#8a6a52] hover:bg-[#8a6a52]"
+            className="ax-interactive inline-flex h-9 items-center gap-1.5 rounded-full border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] px-4 text-sm font-semibold text-white shadow-none transition-colors hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)]"
           >
             {item.cta}
             <ArrowRight className="size-4" />
