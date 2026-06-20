@@ -886,6 +886,21 @@ export function ResultActions({
   // P10 — invoice schema language (display labels only)
   const [invoiceLanguage, setInvoiceLanguage] = useState<InvoiceLanguage>("en")
   const [dismissedLanguageSuggestion, setDismissedLanguageSuggestion] = useState<InvoiceLanguage | null>(null)
+  // Reset per-upload review state when the job changes. Result keys come from a
+  // content-derived file_id (getResultKey), so re-uploading the same document —
+  // even after deleting it — reuses the old key. Without this, the in-memory
+  // edit buffers from the previous upload bled into the new one, making a
+  // first-time document show a stale "Edited" badge and stale cell values.
+  // editedTables is only an optimistic overlay over the persisted data, so
+  // clearing it loses nothing real (persisted edits still render from durable
+  // reviewed_data).
+  useEffect(() => {
+    setEditedTables({})
+    setVendorDrafts({})
+    setConfirmedFields({})
+    setEditingCell(null)
+    setComparisonIndex(null)
+  }, [jobId])
   useEffect(() => {
     setInvoiceLanguage(readInvoiceLanguage())
     const onChange = (event: Event) => {
