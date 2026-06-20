@@ -53,11 +53,13 @@ function ToolTile({
   index,
   progress,
   reduce,
+  showNames,
 }: {
   tool: Tool
   index: number
   progress: MotionValue<number>
   reduce: boolean
+  showNames: boolean
 }) {
   // Per-column parallax depth — the middle column travels a touch more
   // so the grid reads as three planes rather than one flat sheet.
@@ -106,6 +108,7 @@ function ToolTile({
           />
 
           {/* status chip */}
+          {showNames ? (
           <div className="relative z-10">
             {live ? (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--brand-green)] px-2.5 py-1 text-[11px] font-bold text-[var(--brand-green-fg)]">
@@ -124,6 +127,7 @@ function ToolTile({
               </span>
             )}
           </div>
+          ) : null}
 
           {/* logo */}
           <div className="relative z-10 flex flex-1 items-center justify-center py-7">
@@ -141,10 +145,12 @@ function ToolTile({
           </div>
 
           {/* name + blurb */}
+          {showNames ? (
           <div className="relative z-10">
             <p className="text-[15px] font-bold tracking-tight text-black">{tool.name}</p>
             <p className="mt-0.5 text-[13px] font-medium text-black">{tool.blurb}</p>
           </div>
+          ) : null}
 
           {/* mint corner glow on hover */}
           <span
@@ -157,7 +163,7 @@ function ToolTile({
   )
 }
 
-export function IntegrationsLogos() {
+export function IntegrationsLogos({ showNames = true }: { showNames?: boolean }) {
   const reduce = useReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({
@@ -187,6 +193,7 @@ export function IntegrationsLogos() {
 
       <div className="relative mx-auto max-w-[1180px] px-4 sm:px-6 lg:px-8">
         {/* header */}
+        {showNames ? (
         <motion.div
           initial="hidden"
           whileInView="show"
@@ -223,8 +230,10 @@ export function IntegrationsLogos() {
             Pull documents in, push clean records out. Live with QuickBooks &amp; Xero today — more on the way.
           </motion.p>
         </motion.div>
+        ) : null}
 
         {/* scroll-scrubbed flow beam */}
+        {showNames ? (
         <div className="relative mx-auto mt-12 h-px w-full max-w-3xl bg-black/[0.07]">
           <motion.div
             style={reduce ? { width: "100%" } : { width: beamWidth }}
@@ -237,6 +246,7 @@ export function IntegrationsLogos() {
             />
           ) : null}
         </div>
+        ) : null}
 
         {/* tile grid */}
         <motion.ul
@@ -248,7 +258,7 @@ export function IntegrationsLogos() {
           className="mt-12 grid grid-cols-1 gap-4 sm:mt-14 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3"
         >
           {TOOLS.map((tool, index) => (
-            <ToolTile key={tool.alt} tool={tool} index={index} progress={scrollYProgress} reduce={!!reduce} />
+            <ToolTile key={tool.alt} tool={tool} index={index} progress={scrollYProgress} reduce={!!reduce} showNames={showNames} />
           ))}
         </motion.ul>
       </div>
