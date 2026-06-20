@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import {
+  AlertTriangle,
   ArrowLeft,
   Check,
   Download,
@@ -246,6 +247,12 @@ function DocumentReviewContent() {
   const rawPayload = (extraction?.raw_structured_data || null) as Record<string, any> | null
   const data = (reviewedPayload || rawPayload || {}) as Record<string, any>
   const reviewGrid = gridFromPayload(reviewedPayload) || gridFromPayload(rawPayload)
+  const uncertainCellsRaw = (reviewedPayload?.uncertain_cells || rawPayload?.uncertain_cells) as number[][] | undefined
+  const uncertainSet = new Set<string>(
+    Array.isArray(uncertainCellsRaw)
+      ? uncertainCellsRaw.map(([r, c]) => `${r}:${c}`)
+      : []
+  )
   const docType = doc.resolved_mode || doc.detected_mode || doc.selected_mode || "auto"
   const status = doc.review_status || extraction?.review_status || "needs_review"
   const sourceUrl = extraction?.source_preview_url || doc.source_access_url || ""
@@ -542,22 +549,32 @@ function DocumentReviewContent() {
                         {lineItems.columns.map(([, key], colIndex) => {
                           const numeric = colIndex >= lineItems.numericFrom
                           const isAmount = colIndex === lineItems.columns.length - 1
+                          const isUncertain = uncertainSet.has(`${rowIndex + 1}:${colIndex}`)
                           return (
                             <td key={key} className="px-1.5 py-1.5 align-middle">
-                              <input
-                                key={`${rowIndex}-${key}-${row[key] ?? ""}`}
-                                defaultValue={String(row[key] ?? "")}
-                                onBlur={(event) => {
-                                  if (event.target.value !== String(row[key] ?? "")) {
-                                    void persist([lineItems.root, rowIndex, key], event.target.value)
-                                  }
-                                }}
-                                className={cn(
-                                  "h-10 w-full min-w-[80px] rounded-md border border-[#eee7de] bg-white px-2.5 text-[14px] text-[#111827] outline-none transition focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-[#a98467]/20",
-                                  numeric && "text-right tabular-nums",
-                                  isAmount && "font-bold",
+                              <div className={cn(isUncertain && "flex items-center gap-1")}>
+                                <input
+                                  key={`${rowIndex}-${key}-${row[key] ?? ""}`}
+                                  defaultValue={String(row[key] ?? "")}
+                                  onBlur={(event) => {
+                                    if (event.target.value !== String(row[key] ?? "")) {
+                                      void persist([lineItems.root, rowIndex, key], event.target.value)
+                                    }
+                                  }}
+                                  className={cn(
+                                    "h-10 w-full min-w-[80px] rounded-md border bg-white px-2.5 text-[14px] text-[#111827] outline-none transition focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-[#a98467]/20",
+                                    isUncertain ? "border-rose-400 ring-1 ring-rose-300/60" : "border-[#eee7de]",
+                                    numeric && "text-right tabular-nums",
+                                    isAmount && "font-bold",
+                                  )}
+                                />
+                                {isUncertain && (
+                                  <>
+                                    <AlertTriangle size={12} className="shrink-0 text-rose-400" title="Needs review" aria-label="Needs review" />
+                                    <span className="sr-only">Needs review</span>
+                                  </>
                                 )}
-                              />
+                              </div>
                             </td>
                           )
                         })}
@@ -578,29 +595,41 @@ function DocumentReviewContent() {
                 <tbody>
                   {reviewGrid.map((row, rowIndex) => (
                     <tr key={rowIndex} className={rowIndex === 0 ? "bg-[#faf8f5] font-semibold" : "bg-white transition-colors hover:bg-[#faf7f2]"}>
-                      {row.map((cell, cellIndex) => (
-                        <td
-                          key={cellIndex}
-                          className={cn(
-                            "border border-[#eee7de] px-2 py-1",
-                            rowIndex === 0 && "border-[#e8e1d8]",
-                          )}
-                        >
-                          <input
-                            key={`${rowIndex}-${cellIndex}-${cell ?? ""}`}
-                            defaultValue={String(cell ?? "")}
-                            onBlur={(event) => {
-                              if (event.target.value !== String(cell ?? "")) {
-                                void persist(["review_grid", rowIndex, cellIndex], event.target.value)
-                              }
-                            }}
+                      {row.map((cell, cellIndex) => {
+                        const isUncertain = rowIndex !== 0 && uncertainSet.has(`${rowIndex}:${cellIndex}`)
+                        return (
+                          <td
+                            key={cellIndex}
                             className={cn(
-                              "h-10 w-full min-w-[110px] rounded-md border border-transparent bg-transparent px-2.5 text-[13px] outline-none transition focus:border-[var(--brand-brown-fg)] focus:bg-white focus:ring-2 focus:ring-[#a98467]/20",
-                              rowIndex === 0 ? "text-[12px] font-bold tracking-tight text-[#475467]" : "font-medium text-[#111827]",
+                              "border border-[#eee7de] px-2 py-1",
+                              rowIndex === 0 && "border-[#e8e1d8]",
                             )}
-                          />
-                        </td>
-                      ))}
+                          >
+                            <div className={cn(isUncertain && "flex items-center gap-1")}>
+                              <input
+                                key={`${rowIndex}-${cellIndex}-${cell ?? ""}`}
+                                defaultValue={String(cell ?? "")}
+                                onBlur={(event) => {
+                                  if (event.target.value !== String(cell ?? "")) {
+                                    void persist(["review_grid", rowIndex, cellIndex], event.target.value)
+                                  }
+                                }}
+                                className={cn(
+                                  "h-10 w-full min-w-[110px] rounded-md border px-2.5 text-[13px] outline-none transition focus:border-[var(--brand-brown-fg)] focus:bg-white focus:ring-2 focus:ring-[#a98467]/20",
+                                  isUncertain ? "border-rose-400 bg-white ring-1 ring-rose-300/60" : "border-transparent bg-transparent",
+                                  rowIndex === 0 ? "text-[12px] font-bold tracking-tight text-[#475467]" : "font-medium text-[#111827]",
+                                )}
+                              />
+                              {isUncertain && (
+                                <>
+                                  <AlertTriangle size={12} className="shrink-0 text-rose-400" title="Needs review" aria-label="Needs review" />
+                                  <span className="sr-only">Needs review</span>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        )
+                      })}
                     </tr>
                   ))}
                 </tbody>

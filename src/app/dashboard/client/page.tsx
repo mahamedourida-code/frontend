@@ -1806,6 +1806,8 @@ Best regards`
       processing_unit_id: durableExtraction?.processing_unit_id,
       review_status: durableDocument?.review_status || durableExtraction?.review_status,
       review_grid: Array.isArray(reviewGrid) ? reviewGrid as any[][] : undefined,
+      uncertain_cells: (durableExtraction?.reviewed_data?.uncertain_cells || durableExtraction?.raw_structured_data?.uncertain_cells) as number[][] | undefined,
+      certainty: (durableExtraction?.reviewed_data?.certainty ?? durableExtraction?.raw_structured_data?.certainty) as number | undefined,
       reviewed_data: durableExtraction?.reviewed_data || durableExtraction?.raw_structured_data,
       document_type:
         durableDocument?.resolved_mode ||

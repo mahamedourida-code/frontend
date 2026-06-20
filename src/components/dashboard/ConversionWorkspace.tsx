@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useReducer, useRef, useState, type ChangeEvent, type DragEvent } from "react"
 import {
+  AlertTriangle,
   ArrowRight,
   BookOpen,
   Check,
@@ -1470,6 +1471,7 @@ export function ResultActions({
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5">Due date</th>
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5 text-right">Total</th>
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5">Issue</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Certainty</th>
                   <th className="w-28 border-b border-[#cfd4d9] px-3 py-2.5 text-right">Action</th>
                 </tr>
               </thead>
@@ -1568,6 +1570,19 @@ export function ResultActions({
                         {issue.label}
                       </td>
                       <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                        {(() => {
+                          const pct = file.certainty ?? 100
+                          const tone: "good" | "caution" | "risk" = pct >= 90 ? "good" : pct >= 70 ? "caution" : "risk"
+                          return (
+                            <AnomalyChip
+                              tone={tone}
+                              label={`${pct}%`}
+                              reason={pct >= 90 ? "High certainty — all fields extracted cleanly." : pct >= 70 ? "Some fields may need a quick check." : "Low certainty — review flagged cells before exporting."}
+                            />
+                          )
+                        })()}
+                      </td>
+                      <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                         <div className="flex justify-end gap-1.5">
                           {duplicateWarning ? (
                             <button
@@ -1620,7 +1635,7 @@ export function ResultActions({
                   )
                 }) : (
                   <tr>
-                    <td colSpan={11} className="border-b border-[#e4e7ef] px-4 py-8 text-center text-[13px] font-medium text-[#475467]">
+                    <td colSpan={12} className="border-b border-[#e4e7ef] px-4 py-8 text-center text-[13px] font-medium text-[#475467]">
                       <span>No documents in this view.</span>
                       <button
                         type="button"
@@ -2333,6 +2348,11 @@ export function ResultActions({
                   {comparisonHandwritten ? (
                     <ConfidenceLegend className="border-b border-[#e4e7ef] bg-[#f8f9fa] px-4 py-2" />
                   ) : null}
+                  {(() => {
+                    const uncertainCellSet = new Set<string>(
+                      (comparisonFile.uncertain_cells || []).map(([r, c]) => `${r}:${c}`)
+                    )
+                    return (
                   <table className="w-full min-w-[680px] border-collapse text-[13px] text-[#111827]">
                     <tbody>
                       {comparisonTable.map((row, rowIndex) => {
@@ -2362,6 +2382,7 @@ export function ResultActions({
                               editingCell.row === rowIndex &&
                               editingCell.col === cellIndex
                             const value = row[cellIndex] || ""
+                            const isUncertain = uncertainCellSet.has(`${rowIndex}:${cellIndex}`)
 
                             return (
                               <td
@@ -2372,8 +2393,11 @@ export function ResultActions({
                                   }
                                 }}
                                 className={cn(
-                                  "min-w-[120px] border border-[#eef1f6] px-3 py-2 text-left",
+                                  "min-w-[120px] border px-3 py-2 text-left",
                                   rowIndex === 0 ? "border-[#e4e7ef] text-[11px] font-bold uppercase tracking-[0.04em] text-[#475467]" : "font-medium",
+                                  isUncertain && rowIndex !== 0
+                                    ? "border-rose-400 ring-1 ring-rose-300/60"
+                                    : "border-[#eef1f6]",
                                 )}
                               >
                                 {isEditing ? (
@@ -2392,8 +2416,19 @@ export function ResultActions({
                                     className="ax-interactive w-full rounded-md border border-[#A98467] bg-white px-2 py-1 text-[13px] text-[#111827] outline-none ring-2 ring-[#A98467]/20"
                                   />
                                 ) : (
-                                  <span className={cn(!value && "text-[#98a2b3]")}>
+                                  <span className={cn("inline-flex items-center gap-1", !value && "text-[#98a2b3]")}>
                                     {value || " "}
+                                    {isUncertain && rowIndex !== 0 ? (
+                                      <AlertTriangle
+                                        className="inline-block shrink-0 text-rose-400"
+                                        size={12}
+                                        title="Needs review"
+                                        aria-label="Needs review"
+                                      />
+                                    ) : null}
+                                    {isUncertain && rowIndex !== 0 ? (
+                                      <span className="sr-only">Needs review</span>
+                                    ) : null}
                                   </span>
                                 )}
                               </td>
@@ -2404,6 +2439,8 @@ export function ResultActions({
                       })}
                     </tbody>
                   </table>
+                    )
+                  })()}
                   </>
                 ) : (
                   <div className="flex min-h-[420px] items-center justify-center gap-2 text-sm font-semibold text-muted-foreground">
@@ -2608,6 +2645,7 @@ function BatchStagingBoard({
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5">Due date</th>
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5 text-right">Total</th>
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5">Issue</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Certainty</th>
                   <th className="w-28 border-b border-[#cfd4d9] px-3 py-2.5 text-right">Action</th>
                 </tr>
               </thead>
@@ -2616,7 +2654,7 @@ function BatchStagingBoard({
                   (recentLoading || latestRecentId) ? (
                     Array.from({ length: 3 }).map((_, index) => (
                       <tr key={`skeleton-${index}`} className="h-12 bg-white">
-                        <td colSpan={11} className="border-b border-[#e4e7ef] px-3 py-3"><span className="block h-3 w-2/3 rounded-md ax-skeleton" /></td>
+                        <td colSpan={12} className="border-b border-[#e4e7ef] px-3 py-3"><span className="block h-3 w-2/3 rounded-md ax-skeleton" /></td>
                       </tr>
                     ))
                   ) : recent.length ? (
@@ -2656,6 +2694,7 @@ function BatchStagingBoard({
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 text-right align-middle">{dash}</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             <div className="flex justify-end">
                               <Link
@@ -2671,7 +2710,7 @@ function BatchStagingBoard({
                     })
                   ) : (
                     <tr>
-                      <td colSpan={11} className="border-b border-[#e4e7ef] px-4 py-12 text-center text-[13px] font-medium text-[#475467]">
+                      <td colSpan={12} className="border-b border-[#e4e7ef] px-4 py-12 text-center text-[13px] font-medium text-[#475467]">
                         <span>No documents yet — your processed stacks will land here.</span>
                         <button
                           type="button"
@@ -2736,6 +2775,7 @@ function BatchStagingBoard({
                               dash
                             )}
                           </td>
+                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             <div className="flex justify-end">
                               {processing ? (

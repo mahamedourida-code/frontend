@@ -32,6 +32,8 @@ export type ResultFile = {
   status?: string
   review_status?: string
   review_grid?: any[][]
+  uncertain_cells?: number[][]
+  certainty?: number
   document_type?: string
   reviewed_data?: Record<string, any>
   duplicate_warnings?: DocumentDuplicateWarning[]

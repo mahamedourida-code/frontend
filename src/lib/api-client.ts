@@ -269,6 +269,8 @@ export interface ProcessedFile {
   is_handwritten?: boolean
   row_confidence?: number[]
   review_flags?: Array<Record<string, unknown>>
+  uncertain_cells?: number[][]
+  certainty?: number
   created_at: string
 }
 
