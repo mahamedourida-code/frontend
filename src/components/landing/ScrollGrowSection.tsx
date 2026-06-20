@@ -71,7 +71,7 @@ export function ScrollGrowSection() {
           style={prefersReduced ? undefined : { y: textY }}
           className="pointer-events-none absolute inset-y-0 left-[6vw] z-10 flex max-w-[640px] flex-col items-start justify-center text-left [text-shadow:0_2px_28px_rgba(0,0,0,0.45)]"
         >
-          <h2 className="text-balance text-5xl font-black leading-[0.95] tracking-tight text-white sm:text-7xl md:text-8xl">
+          <h2 className="ax-h1 text-balance font-black leading-[0.95] text-white">
             Built for how finance actually{" "}
             <span className="text-[var(--brand-green)]">works</span>
           </h2>

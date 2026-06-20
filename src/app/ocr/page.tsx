@@ -642,7 +642,7 @@ export default function OCRPage() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.5 }}
-              className="text-[40px] font-bold leading-[1.08] tracking-tight text-white md:text-[48px] lg:text-[56px]"
+              className="ax-h2 font-bold leading-[1.08] text-white"
             >
               Give it a messy document.
             </motion.h2>

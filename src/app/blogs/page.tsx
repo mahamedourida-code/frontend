@@ -100,7 +100,7 @@ export default function BlogsPage() {
                 <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-700">
                   Featured / {featured.eyebrow}
                 </p>
-                <h2 className="mt-5 text-3xl font-bold leading-[1.1] tracking-tight text-neutral-900 sm:text-4xl lg:text-[42px]">
+                <h2 className="ax-h2 mt-5 font-bold leading-[1.1] text-neutral-900">
                   <span className="bg-[linear-gradient(to_bottom,transparent_62%,var(--brand-green-hover)_62%,var(--brand-green-hover)_92%,transparent_92%)] decoration-clone box-decoration-clone px-0.5 group-hover:bg-[linear-gradient(to_bottom,transparent_60%,#6ee7b7_60%,#6ee7b7_94%,transparent_94%)]">
                     {featured.title}
                   </span>
@@ -163,7 +163,7 @@ export default function BlogsPage() {
                     Issue no. {String(index + 2).padStart(2, "0")} · {post.eyebrow}
                   </p>
 
-                  <h2 className="mt-3 text-2xl font-bold leading-tight tracking-tight text-neutral-900 sm:text-3xl">
+                  <h2 className="ax-h3 mt-3 font-bold leading-tight text-neutral-900">
                     <Link href={`/blogs/${post.slug}`} className="transition-colors hover:text-emerald-700">
                       {post.title}
                     </Link>

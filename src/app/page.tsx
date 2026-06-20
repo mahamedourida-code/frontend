@@ -217,7 +217,7 @@ const folderPanelBodyStyle = {
 
 const folderPanelTextClass = "max-w-[640px]";
 const folderPanelTitleClass =
-  "ax-h1 ax-marketing-display max-w-[660px] text-balance !font-semibold !leading-[1.08] !tracking-normal text-neutral-950";
+  "ax-h1 ax-marketing-display max-w-[660px] text-balance !font-medium !leading-[1.08] !tracking-[-0.04em] text-neutral-950";
 const folderPanelBodyClass = "ax-body ax-marketing-body mt-5 max-w-[610px] font-semibold text-neutral-950";
 const folderPanelCtaClass =
   "mt-8 inline-flex h-12 items-center rounded-lg border border-[var(--btn-secondary-border)] bg-[var(--btn-secondary-bg)] px-8 text-[15px] font-bold text-[var(--btn-secondary-fg)] transition-colors hover:bg-[var(--btn-secondary-bg-hover)] hover:text-[var(--btn-secondary-fg-hover)] hover:border-[var(--btn-secondary-bg-hover)]";
@@ -408,7 +408,7 @@ export default function Home() {
           <div className="ax-marketing-container relative z-10 w-full">
             <div className="mx-auto flex max-w-[1080px] flex-col items-center text-center">
               {/* Title, subtitle, CTA */}
-              <h1 className="ax-marketing-display text-balance !font-semibold !leading-[1.05] !tracking-normal text-black text-[2.5rem] sm:text-[3.25rem] lg:text-[3.75rem]">
+              <h1 className="ax-h1 ax-marketing-display text-balance !font-medium !leading-[1.05] !tracking-[-0.04em] text-black">
                 Invoice and receipt data entry,
                 <br />
                 reviewed for QuickBooks and Xero
@@ -543,7 +543,6 @@ export default function Home() {
             <div className="mb-14" data-animate="headline">
               <h2
                 className="ax-h2 ax-marketing-section-title font-bold text-neutral-950"
-                style={{ fontSize: "clamp(2.5rem, 5.4vw, 4.25rem)", lineHeight: 1.05 }}
               >
                 <span className="block">
                   Turn every{" "}

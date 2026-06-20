@@ -558,7 +558,7 @@ function PricingContent() {
       <section className="pt-[152px]">
         <div className="mx-auto max-w-[1296px] px-4 sm:px-6 lg:px-0">
           <div className="text-center">
-            <h1 className="text-[44px] font-semibold leading-[1.1] tracking-normal text-neutral-950 sm:text-[56px]">
+            <h1 className="ax-h1 font-semibold leading-[1.1] tracking-normal text-neutral-950">
               Pricing
             </h1>
             <p className="mx-auto mt-4 max-w-[980px] text-[16px] font-semibold leading-7 text-neutral-700">
@@ -639,7 +639,7 @@ function PricingContent() {
                   >
                     <div>
                       <div className="flex items-start justify-between gap-4">
-                        <h2 className="text-[34px] font-semibold leading-tight tracking-normal text-neutral-950">{copy.name}</h2>
+                        <h2 className="ax-h3 font-semibold leading-tight tracking-normal text-neutral-950">{copy.name}</h2>
                         {isPopular && (
                           <span className="rounded-full bg-neutral-950 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-white">
                             Popular
@@ -689,7 +689,7 @@ function PricingContent() {
 
       {paidPlans.length > 0 && (
         <section className="mx-auto mt-28 max-w-[1248px] px-4 sm:px-6 lg:px-0">
-          <h2 className="text-center text-[44px] font-semibold leading-tight tracking-normal text-neutral-950 sm:text-[54px]">
+          <h2 className="ax-h2 text-center font-semibold leading-tight tracking-normal text-neutral-950">
             Compare plans
           </h2>
 
@@ -760,7 +760,7 @@ function PricingContent() {
       )}
 
       <section className="mx-auto mt-32 grid max-w-[1248px] gap-12 px-4 pb-28 sm:px-6 lg:grid-cols-[280px_1fr] lg:px-0">
-        <h2 className="text-[56px] font-semibold leading-none tracking-normal text-neutral-950">FAQ</h2>
+        <h2 className="ax-h2 font-semibold leading-none tracking-normal text-neutral-950">FAQ</h2>
         <div className="divide-y divide-neutral-200 border-y border-neutral-200">
           {faqs.map((item) => (
             <details key={item.question} className="group py-5">
@@ -775,7 +775,7 @@ function PricingContent() {
       </section>
 
       <section className="pb-24 text-center">
-        <h2 className="text-[42px] font-semibold leading-tight tracking-normal text-neutral-950 sm:text-[56px]">
+        <h2 className="ax-h2 font-semibold leading-tight tracking-normal text-neutral-950">
           Clear the next client folder faster.
         </h2>
         <Button

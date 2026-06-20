@@ -153,7 +153,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
                   <span className="text-[11px] font-bold leading-none tracking-[0.18em] text-emerald-700">
                     §{String(sIndex + 1).padStart(2, "0")}
                   </span>
-                  <h2 className="text-[28px] font-bold leading-tight tracking-tight text-neutral-900 sm:text-[30px]">
+                  <h2 className="ax-h3 font-bold leading-tight text-neutral-900">
                     {section.title}
                   </h2>
                 </div>
@@ -205,7 +205,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
             <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-emerald-700">
               Keep reading
             </p>
-            <h3 className="mt-3 text-3xl font-bold leading-tight tracking-tight text-neutral-900 sm:text-4xl">
+            <h3 className="ax-h2 mt-3 font-bold leading-tight text-neutral-900">
               Other issues from the journal
             </h3>
           </div>
