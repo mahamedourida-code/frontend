@@ -3,7 +3,6 @@
 import type { Ref } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import { useCountUp } from "@/hooks/useCountUp"
-import { TypewriterWord } from "@/components/landing/TypewriterWord"
 
 /* ──────────────────────────────────────────────────────────────
    A5 — Outcome stat band (Nanonets / Stampli "lead with the
@@ -111,26 +110,12 @@ export function OutcomeStats() {
 
   return (
     <section
-      aria-labelledby="outcome-stats-heading"
+      aria-label="AxLiner outcomes"
       className="relative overflow-hidden bg-[#FDFBF7] py-20 lg:py-28"
     >
       <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
-        {/* ── Header ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: easeOut }}
-          className="mx-auto max-w-2xl text-center"
-        >
-          <h2 id="outcome-stats-heading" className="ax-h2 font-bold text-neutral-950">
-            Less typing. Fewer mistakes. More{" "}
-            <TypewriterWord words={["reviewed", "coded", "posted", "approved"]} highlight />, faster.
-          </h2>
-        </motion.div>
-
-        {/* ── The four outcome counters ── */}
-        <dl className="mt-14 grid grid-cols-1 gap-y-12 rounded-3xl bg-[var(--brand-brown)] px-8 py-12 ring-1 ring-black/10 sm:grid-cols-2 sm:gap-x-8 lg:mt-16 lg:grid-cols-4 lg:gap-x-6 lg:px-12 lg:py-14">
+        {/* ── The four outcome counters — monochrome proof band ── */}
+        <dl className="grid grid-cols-1 gap-y-12 rounded-3xl bg-neutral-950 px-8 py-12 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.07)] ring-1 ring-white/10 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-4 lg:gap-x-6 lg:px-12 lg:py-14">
           {STATS.map((stat, index) => (
             <OutcomeStat key={stat.label} stat={stat} index={index} animate={animate} />
           ))}

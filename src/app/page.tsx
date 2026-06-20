@@ -433,8 +433,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── 1.5 · Outcome stat band — moved before "Throw us" ── */}
-        <OutcomeStats />
+        {/* ── 1.5 · Integrations showcase — scroll-driven band, leads the page ── */}
+        <IntegrationsLogos />
 
         {/* ── 2 · "Throw us the whole folder" — full-bleed cyan band (now SECOND) ── */}
         <div className="relative isolate overflow-hidden">
@@ -524,9 +524,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── Integrations — brown-tinted logo wall (white) ── */}
+        {/* ── Outcome proof band — monochrome black/white counters ── */}
         <div ref={contrastSectionRef}>
-          <IntegrationsLogos />
+          <OutcomeStats />
         </div>
 
         {/* ── 4 · Why Choose Us — white band, brown cycling typewriter ── */}
