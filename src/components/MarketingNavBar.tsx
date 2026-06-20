@@ -403,7 +403,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
             <div className="h-11 w-[280px]" aria-hidden="true" />
           ) : isAuthenticated ? (
             <>
-              <Button variant="glossy" asChild className="h-11 rounded-lg px-5 text-[15px] font-bold">
+              <Button variant="blue" asChild className="h-11 rounded-lg px-5 text-[15px] font-bold">
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
               <Button variant="surface" asChild className="h-11 rounded-lg px-5 text-[15px] font-semibold">
@@ -415,11 +415,11 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
               <Button
                 asChild
                 variant="ghost"
-                className="h-11 px-4 text-[15px] font-semibold text-black hover:bg-transparent hover:text-[var(--brand-green)]"
+                className="h-11 px-4 text-[15px] font-semibold text-black hover:bg-transparent hover:text-[var(--workspace-blue)]"
               >
                 <Link href="/sign-in?next=%2Fdashboard%2Fclient">Log in</Link>
               </Button>
-              <Button variant="glossy" asChild className="h-11 rounded-lg px-5 text-[15px] font-bold">
+              <Button variant="blue" asChild className="h-11 rounded-lg px-5 text-[15px] font-bold">
                 <Link href="/sign-up?next=%2Fdashboard%2Fclient">Sign up</Link>
               </Button>
               <Button variant="surface" asChild className="h-11 rounded-lg px-5 text-[15px] font-semibold">

@@ -685,7 +685,7 @@ function PricingContent() {
         </div>
       </section>
 
-      <IntegrationsLogos showNames={false} />
+      <IntegrationsLogos />
 
       {paidPlans.length > 0 && (
         <section className="mx-auto mt-28 max-w-[1248px] px-4 sm:px-6 lg:px-0">

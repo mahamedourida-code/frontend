@@ -199,13 +199,14 @@
     --button-warm-ring: var(--workspace-border);
     /* Workspace buttons: Facebook-blue primary, black secondary. */
     --btn-primary-bg: var(--workspace-blue);
-    --btn-primary-bg-hover: var(--workspace-blue-hover);
+    --btn-primary-bg-hover: #ffffff;
     --btn-primary-fg: #ffffff;
+    --btn-primary-fg-hover: var(--workspace-blue);
     --btn-secondary-bg: #0a0a0a;
     --btn-secondary-fg: #ffffff;
     --btn-secondary-border: #0a0a0a;
-    --btn-secondary-bg-hover: #262626;
-    --btn-secondary-fg-hover: #ffffff;
+    --btn-secondary-bg-hover: #ffffff;
+    --btn-secondary-fg-hover: #0a0a0a;
     --workspace-popout-bg: var(--workspace-soft);
     --workspace-popout-border: var(--workspace-border);
     --workspace-popout-hover: #ffffff;
@@ -566,13 +567,16 @@
      primary + black secondary. Defined in :root only so site buttons never
      theme-flip. */
   --btn-primary-bg: #0a0a0a;
-  --btn-primary-bg-hover: #262626;
+  --btn-primary-bg-hover: #ffffff;
   --btn-primary-fg: #ffffff;
+  --btn-primary-fg-hover: #0a0a0a;
   --btn-secondary-bg: #ffffff;
   --btn-secondary-fg: #0a0a0a;
   --btn-secondary-border: #0a0a0a;
   --btn-secondary-bg-hover: #0a0a0a;
   --btn-secondary-fg-hover: #ffffff;
+  /* Soft new brown — used only for the cycling-word text animations. */
+  --soft-brown: #b8997a;
   --ax-marketing-page: #ffffff;
   --ax-marketing-ink: #171717;
   --ax-marketing-muted: #404040;

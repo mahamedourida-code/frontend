@@ -15,10 +15,10 @@ import { cn } from "@/lib/utils"
  * The site/workspace values live in globals.css (`--btn-*`).
  */
 const BTN_PRIMARY =
-  "border border-[var(--btn-primary-bg)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] hover:bg-[var(--btn-primary-bg-hover)] hover:border-[var(--btn-primary-bg-hover)]"
+  "border border-[var(--btn-primary-bg)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] hover:bg-[var(--btn-primary-bg-hover)] hover:text-[var(--btn-primary-fg-hover)]"
 
 const BTN_SECONDARY =
-  "border border-[var(--btn-secondary-border)] bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-fg)] hover:bg-[var(--btn-secondary-bg-hover)] hover:text-[var(--btn-secondary-fg-hover)] hover:border-[var(--btn-secondary-bg-hover)]"
+  "border border-[var(--btn-secondary-border)] bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-fg)] hover:bg-[var(--btn-secondary-bg-hover)] hover:text-[var(--btn-secondary-fg-hover)]"
 
 const buttonVariants = cva(
   "ax-interactive inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold shadow-none transition-colors disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
@@ -38,6 +38,9 @@ const buttonVariants = cva(
         ink: BTN_PRIMARY,
         lime: BTN_PRIMARY,
         reviewed: BTN_PRIMARY,
+        // Facebook-blue CTA (marketing nav auth) — inverts to white on hover.
+        blue:
+          "border border-[var(--workspace-blue)] bg-[var(--workspace-blue)] text-white hover:bg-white hover:text-[var(--workspace-blue)]",
         // Danger — kept red.
         destructive:
           "border border-destructive bg-destructive text-white hover:bg-white hover:text-destructive focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",

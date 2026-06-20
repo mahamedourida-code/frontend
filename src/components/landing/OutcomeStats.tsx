@@ -3,6 +3,7 @@
 import type { Ref } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import { useCountUp } from "@/hooks/useCountUp"
+import { TypewriterWord } from "@/components/landing/TypewriterWord"
 
 /* ──────────────────────────────────────────────────────────────
    A5 — Outcome stat band (Nanonets / Stampli "lead with the
@@ -114,6 +115,25 @@ export function OutcomeStats() {
       className="relative overflow-hidden bg-[#FDFBF7] py-20 lg:py-28"
     >
       <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
+        {/* ── Animated headline above the proof band ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: easeOut }}
+          className="mx-auto mb-12 max-w-3xl text-center lg:mb-14"
+        >
+          <h2 className="ax-h2 font-bold tracking-tight text-neutral-950">
+            Less typing. Fewer mistakes. More{" "}
+            <TypewriterWord
+              words={["reviewed", "coded", "posted", "approved"]}
+              className="rounded-md border border-[var(--soft-brown)] px-2 font-bold text-[var(--soft-brown)]"
+              caretClassName="bg-[var(--soft-brown)]"
+            />
+            , faster.
+          </h2>
+        </motion.div>
+
         {/* ── The four outcome counters — monochrome proof band ── */}
         <dl className="grid grid-cols-1 gap-y-12 rounded-3xl bg-neutral-950 px-8 py-12 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.07)] ring-1 ring-white/10 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-4 lg:gap-x-6 lg:px-12 lg:py-14">
           {STATS.map((stat, index) => (

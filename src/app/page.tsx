@@ -435,7 +435,7 @@ export default function Home() {
         </div>
 
         {/* ── 1.5 · Integrations showcase — scroll-driven band, leads the page ── */}
-        <IntegrationsLogos />
+        <IntegrationsLogos showTitle />
 
         {/* ── 2 · "Throw us the whole folder" — full-bleed cyan band (now SECOND) ── */}
         <div className="relative isolate overflow-hidden">
@@ -549,7 +549,8 @@ export default function Home() {
                   Turn every{" "}
                   <TypewriterWord
                     words={["invoice", "receipt", "bank statement", "handwritten table", "expense report"]}
-                    className="font-bold text-[var(--brand-brown)]"
+                    className="rounded-md border border-[var(--soft-brown)] px-2 font-bold text-[var(--soft-brown)]"
+                    caretClassName="bg-[var(--soft-brown)]"
                   />
                 </span>
                 <span className="block">
