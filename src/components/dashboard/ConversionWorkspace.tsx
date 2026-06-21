@@ -539,6 +539,61 @@ export function SelectedFilesTray({
   )
 }
 
+// Extracted-data table, styled to Zoho's "Create Bill" item grid: a grey uppercase
+// header row, thin bordered cells, right-aligned numerics, and a soft row hover —
+// all via workspace tokens. Presentation only: the row 0 = header convention and the
+// row/cell mapping are unchanged (the data grid itself is untouched).
+function isNumericCell(value: unknown): boolean {
+  if (typeof value !== "string") return false
+  const trimmed = value.trim()
+  if (!trimmed) return false
+  return /^[-+]?[$€£]?\s?[\d][\d.,\s]*%?$/.test(trimmed)
+}
+
+function ExtractedTable({ rows }: { rows: any[][] }) {
+  if (!rows.length) return null
+  const [header, ...body] = rows
+  return (
+    <table className="w-full border-collapse text-sm text-[var(--workspace-ink)]">
+      <thead>
+        <tr className="bg-[var(--workspace-table-header)]">
+          {header.map((cell, cellIndex) => (
+            <th
+              key={cellIndex}
+              className={cn(
+                "border-b border-[var(--workspace-border)] px-3 py-2.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-[var(--workspace-table-head)]",
+                isNumericCell(cell) ? "text-right" : "text-left",
+              )}
+            >
+              {cell || ""}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {body.map((row, rowIndex) => (
+          <tr
+            key={rowIndex}
+            className="border-b border-[var(--workspace-border)] transition-colors last:border-b-0 hover:bg-[var(--workspace-row-hover)]"
+          >
+            {row.map((cell, cellIndex) => (
+              <td
+                key={cellIndex}
+                className={cn(
+                  "border-r border-[var(--workspace-border)] px-3 py-2.5 align-top last:border-r-0",
+                  isNumericCell(cell) ? "text-right tabular-nums" : "text-left",
+                )}
+              >
+                {cell ?? ""}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
 export function ResultPreviewPanel({
   isComplete,
   resultFiles,
@@ -624,7 +679,7 @@ export function ResultPreviewPanel({
                 flexShrink: 0,
               }}
             >
-              <p className="mb-2 text-[13px] font-semibold text-foreground">Before</p>
+              <p className="mb-2 text-[13px] font-semibold text-foreground">Source document</p>
               <div
                 role="button"
                 tabIndex={0}
@@ -662,26 +717,14 @@ export function ResultPreviewPanel({
 
             {/* After pane */}
             <div className="hidden min-w-0 flex-1 xl:block">
-              <p className="mb-2 text-[13px] font-semibold text-foreground">After</p>
+              <p className="mb-2 text-[13px] font-semibold text-foreground">Extracted data</p>
               <div className="max-h-[420px] min-h-[260px] overflow-auto rounded-lg border border-border bg-white">
                 {isTextOutput || textPreview ? (
                   <pre className="min-h-[260px] whitespace-pre-wrap p-4 text-sm font-medium leading-6 text-gray-950">
                     {textPreview || "Text preview is loading..."}
                   </pre>
                 ) : tablePreviewData.length ? (
-                  <table className="w-full border-collapse text-sm text-gray-950">
-                    <tbody>
-                      {tablePreviewData.map((row, rowIndex) => (
-                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-[var(--button-warm)] font-semibold text-foreground" : "bg-white"}>
-                          {row.map((cell, cellIndex) => (
-                            <td key={cellIndex} className="border border-gray-200 px-3 py-2 text-left text-gray-950">
-                              {cell || ""}
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  <ExtractedTable rows={tablePreviewData} />
                 ) : (
                   <div className="flex min-h-[260px] items-center justify-center p-4 text-sm font-semibold text-muted-foreground">
                     Preview is loading
@@ -693,26 +736,14 @@ export function ResultPreviewPanel({
         ) : (
           /* No image — full-width after pane */
           <div className="flex-1">
-            <p className="mb-2 text-[13px] font-semibold text-foreground">After</p>
+            <p className="mb-2 text-[13px] font-semibold text-foreground">Extracted data</p>
             <div className="max-h-[420px] min-h-[260px] overflow-auto rounded-lg border border-border bg-white">
               {isTextOutput || textPreview ? (
                 <pre className="min-h-[260px] whitespace-pre-wrap p-4 text-sm font-medium leading-6 text-gray-950">
                   {textPreview || "Text preview is loading..."}
                 </pre>
               ) : tablePreviewData.length ? (
-                <table className="w-full border-collapse text-sm text-gray-950">
-                  <tbody>
-                    {tablePreviewData.map((row, rowIndex) => (
-                      <tr key={rowIndex} className={rowIndex === 0 ? "bg-[var(--button-warm)] font-semibold text-foreground" : "bg-white"}>
-                        {row.map((cell, cellIndex) => (
-                          <td key={cellIndex} className="border border-gray-200 px-3 py-2 text-left text-gray-950">
-                            {cell || ""}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <ExtractedTable rows={tablePreviewData} />
               ) : (
                 <div className="flex min-h-[260px] items-center justify-center p-4 text-sm font-semibold text-muted-foreground">
                   Preview is loading
@@ -726,26 +757,14 @@ export function ResultPreviewPanel({
       {/* After pane stacked below Before on small screens */}
       {firstImageUrl && (
         <div className="mt-3 xl:hidden">
-          <p className="mb-2 text-[13px] font-semibold text-foreground">After</p>
+          <p className="mb-2 text-[13px] font-semibold text-foreground">Extracted data</p>
           <div className="max-h-[420px] min-h-[260px] overflow-auto rounded-lg border border-border bg-white">
             {isTextOutput || textPreview ? (
               <pre className="min-h-[260px] whitespace-pre-wrap p-4 text-sm font-medium leading-6 text-gray-950">
                 {textPreview || "Text preview is loading..."}
               </pre>
             ) : tablePreviewData.length ? (
-              <table className="w-full border-collapse text-sm text-gray-950">
-                <tbody>
-                  {tablePreviewData.map((row, rowIndex) => (
-                    <tr key={rowIndex} className={rowIndex === 0 ? "bg-[var(--button-warm)] font-semibold text-foreground" : "bg-white"}>
-                      {row.map((cell, cellIndex) => (
-                        <td key={cellIndex} className="border border-gray-200 px-3 py-2 text-left text-gray-950">
-                          {cell || ""}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <ExtractedTable rows={tablePreviewData} />
             ) : (
               <div className="flex min-h-[260px] items-center justify-center p-4 text-sm font-semibold text-muted-foreground">
                 Preview is loading
