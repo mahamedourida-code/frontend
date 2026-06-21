@@ -573,7 +573,7 @@ function SettingsContent() {
                     </div>
                   </Field>
 
-                  <div className="flex items-center justify-end gap-5 border-t border-border pt-4">
+                  <div className="flex items-center justify-end gap-4 border-t border-border pt-4">
                     <InlineAction
                       className={accountingTextAction}
                       onClick={() => setFullName(user?.user_metadata?.full_name || "")}
@@ -713,9 +713,10 @@ function SettingsContent() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center">
+                  <div className="flex flex-wrap items-center gap-3 border-t border-border pt-4">
                     <Button
                       variant="glossy"
+                      size="sm"
                       onClick={() => router.push("/pricing")}
                     >
                       {noCredits ? "Buy credits" : "Compare plans"}
@@ -895,14 +896,15 @@ function SettingsContent() {
                           </Field>
                         ))}
                       </div>
-                      <div className="mt-4 flex justify-end border-t border-border pt-4">
-                        <InlineAction
-                          tone="success"
+                      <div className="mt-4 flex items-center justify-end gap-4 border-t border-border pt-4">
+                        <Button
+                          variant="glossy"
+                          size="sm"
                           disabled={vendorRuleAction === rule.id}
                           onClick={() => void saveVendorRule(rule)}
                         >
                           {vendorRuleAction === rule.id ? 'Saving…' : 'Save changes'}
-                        </InlineAction>
+                        </Button>
                       </div>
                     </section>
                   ))}

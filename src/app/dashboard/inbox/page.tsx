@@ -409,10 +409,10 @@ export default function EmailInboxPage() {
         <PageHeader
           title="Inbox"
           actions={
-            <InlineAction onClick={() => void loadInbox()} disabled={loading}>
+            <Button variant="ghost" size="sm" onClick={() => void loadInbox()} disabled={loading}>
               <RefreshCw className={cn("size-4", loading && "animate-spin")} />
               Refresh
-            </InlineAction>
+            </Button>
           }
         />
 
@@ -422,11 +422,11 @@ export default function EmailInboxPage() {
 
             {/* Client upload links */}
             <WorkspaceSection icon={<Link2 />} title="Client upload links">
-              <div className="flex gap-3">
-                <Input value={linkLabel} onChange={event => setLinkLabel(event.target.value)} placeholder="Client documents" />
-                <Button variant="glossy" onClick={() => void createClientLink()} disabled={actionBusy === "link"} className={workspacePrimaryButton}>
-                  <Link2 className="size-4" />
-                  Create
+              <div className="flex gap-2.5">
+                <Input value={linkLabel} onChange={event => setLinkLabel(event.target.value)} placeholder="Client documents" className="flex-1" />
+                <Button variant="glossy" size="sm" onClick={() => void createClientLink()} disabled={actionBusy === "link"} className={workspacePrimaryButton}>
+                  <Link2 className="size-3.5" />
+                  Create link
                 </Button>
               </div>
 
@@ -555,16 +555,17 @@ export default function EmailInboxPage() {
 
             {/* Reviewers */}
             <WorkspaceSection icon={<Users />} title="Reviewers">
-              <div className="flex gap-3">
-                <Input type="email" value={reviewerEmail} onChange={event => setReviewerEmail(event.target.value)} placeholder="reviewer@firm.com" />
+              <div className="flex gap-2.5">
+                <Input type="email" value={reviewerEmail} onChange={event => setReviewerEmail(event.target.value)} placeholder="reviewer@firm.com" className="flex-1" />
                 <Button
                   variant="glossy"
+                  size="sm"
                   onClick={() => void inviteReviewer()}
                   disabled={actionBusy === "reviewer" || !reviewerEmail.trim()}
                   className={workspacePrimaryButton}
                 >
-                  <Users className="size-4" />
-                  Add
+                  <Users className="size-3.5" />
+                  Add reviewer
                 </Button>
               </div>
 

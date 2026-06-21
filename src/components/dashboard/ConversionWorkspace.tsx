@@ -1343,87 +1343,95 @@ export function ResultActions({
     <>
     <div className="space-y-2.5">
       {isComplete ? (
-        <div className="flex flex-wrap items-center gap-2 rounded-[4px] border border-[#c8ced6] bg-white px-3 py-2 shadow-none">
-          <details className="group relative">
-            <summary className="ax-interactive inline-flex h-9 cursor-pointer list-none items-center gap-2 rounded-full border border-emerald-600 bg-emerald-600 px-4 text-sm font-semibold text-white shadow-none outline-none transition-colors hover:border-emerald-700 hover:bg-white hover:text-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-600/30 [&::-webkit-details-marker]:hidden">
-              <Send className="h-4 w-4" />
-              Publish
-              <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
-            </summary>
-            <div className="absolute left-0 top-11 z-30 w-48 space-y-1 rounded-[8px] border border-[#c8ced6] bg-white p-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-              <button
-                type="button"
-                onClick={handleReviewedBatchDownload}
-                disabled={reviewedDownloadBusy || unresolvedDuplicateCount > 0}
-                className="ax-interactive inline-flex h-9 w-full items-center justify-start gap-2 rounded-md px-3 text-xs font-semibold text-[#111827] transition-colors hover:bg-[var(--workspace-blue-soft)] hover:text-[var(--workspace-primary)] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-                {unresolvedDuplicateCount > 0 ? "Resolve duplicates" : "Download"}
-              </button>
-              <button
-                type="button"
-                onClick={() => toast.success("Published to QuickBooks or Xero")}
-                className="ax-interactive inline-flex h-9 w-full items-center justify-start gap-2 rounded-md px-3 text-xs font-semibold text-[#111827] transition-colors hover:bg-[#ecfdf3] hover:text-emerald-700"
-              >
-                <Send className="h-4 w-4" />
-                To software
-              </button>
-            </div>
-          </details>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[4px] border border-[#c8ced6] bg-white px-4 py-2.5 shadow-none">
+          <span className="text-sm font-semibold text-[#111827]">Reviewed stack</span>
           {editedCount > 0 && !isTextOutput ? (
-            <span className="inline-flex h-9 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#475467] shadow-none">
+            <span className="inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-xs font-semibold text-[#475467] shadow-none">
               {editedCount} edited
             </span>
           ) : null}
-          <details className="group relative ml-auto">
-            <summary className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-9 cursor-pointer list-none gap-2 px-3 text-xs [&::-webkit-details-marker]:hidden", workspaceNormalControlClass)}>
-              More actions
-              <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
-            </summary>
-             <div className="absolute right-0 top-11 z-30 w-56 space-y-2 rounded-[4px] border border-[#c8ced6] bg-white p-2 shadow-none">
-              {!isSaved ? (
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <details className="group relative ml-auto sm:ml-0">
+              <summary className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-9 cursor-pointer list-none gap-2 px-3 text-xs [&::-webkit-details-marker]:hidden", workspaceNormalControlClass)}>
+                More actions
+                <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
+              </summary>
+              <div className="absolute right-0 top-11 z-30 w-56 space-y-2 rounded-[8px] border border-[#c8ced6] bg-white p-2 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+                {!isSaved ? (
+                  <Button
+                    onClick={onSaveToHistory}
+                    disabled={isSaving}
+                    size="sm"
+                    variant="surface"
+                    className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspaceNormalControlClass)}
+                  >
+                    {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                    Save to history
+                  </Button>
+                ) : null}
                 <Button
-                  onClick={onSaveToHistory}
-                  disabled={isSaving}
+                  size="sm"
                   variant="surface"
+                  onClick={safeResultFiles.length > 1 ? onShareAll : () => firstResultFile && onShareFile(firstResultFile)}
                   className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspaceNormalControlClass)}
                 >
-                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                  Save to history
+                  <Share2 className="h-4 w-4" />
+                  Share
                 </Button>
-              ) : null}
-              <Button
-                variant="surface"
-                onClick={safeResultFiles.length > 1 ? onShareAll : () => firstResultFile && onShareFile(firstResultFile)}
-                className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspaceNormalControlClass)}
-              >
-                <Share2 className="h-4 w-4" />
-                Share
-              </Button>
-              <label className="block text-xs font-semibold text-muted-foreground">
-                Download format
-                <select
-                  value={outputMode}
-                  onChange={(event) => onOutputModeChange(event.target.value as OutputMode)}
-                  className="mt-1 h-9 w-full rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#111827] shadow-none outline-none focus:border-[var(--workspace-primary)] focus:ring-2 focus:ring-black/15"
-                >
-                  {reviewedExportOptions.map(format => (
-                    <option key={format.value} value={format.value}>{format.label}</option>
-                  ))}
-                </select>
-              </label>
-              {onDeleteBatch ? (
+                <label className="block px-1 pt-1 text-xs font-semibold text-[#475467]">
+                  Download format
+                  <select
+                    value={outputMode}
+                    onChange={(event) => onOutputModeChange(event.target.value as OutputMode)}
+                    className="mt-1.5 h-9 w-full rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#111827] shadow-none outline-none focus:border-[var(--workspace-primary)] focus:ring-2 focus:ring-black/15"
+                  >
+                    {reviewedExportOptions.map(format => (
+                      <option key={format.value} value={format.value}>{format.label}</option>
+                    ))}
+                  </select>
+                </label>
+                {onDeleteBatch ? (
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => void onDeleteBatch()}
+                    className="h-9 w-full justify-start gap-2 px-3 text-xs"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Delete stack
+                  </Button>
+                ) : null}
+              </div>
+            </details>
+            <details className="group relative">
+              <summary className={cn(buttonVariants({ variant: "glossy", size: "default" }), "h-9 cursor-pointer list-none gap-2 px-4 text-sm [&::-webkit-details-marker]:hidden", workspacePrimaryControlClass)}>
+                <Send className="h-4 w-4" />
+                Publish
+                <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
+              </summary>
+              <div className="absolute right-0 top-11 z-30 w-52 space-y-1.5 rounded-[8px] border border-[#c8ced6] bg-white p-2 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
                 <Button
-                  variant="destructive"
-                  onClick={() => void onDeleteBatch()}
-                  className="h-9 w-full justify-start gap-2 rounded-full border border-red-300 bg-white px-3 text-xs text-red-600 shadow-none hover:border-red-600 hover:bg-red-600 hover:text-white"
+                  size="sm"
+                  variant="surface"
+                  onClick={handleReviewedBatchDownload}
+                  disabled={reviewedDownloadBusy || unresolvedDuplicateCount > 0}
+                  className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspaceNormalControlClass)}
                 >
-                  <Trash2 className="h-4 w-4" />
-                  Delete stack
+                  {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                  {unresolvedDuplicateCount > 0 ? "Resolve duplicates" : "Download"}
                 </Button>
-              ) : null}
-            </div>
-          </details>
+                <Button
+                  size="sm"
+                  variant="glossy"
+                  onClick={() => toast.success("Published to QuickBooks or Xero")}
+                  className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspacePrimaryControlClass)}
+                >
+                  <Send className="h-4 w-4" />
+                  To software
+                </Button>
+              </div>
+            </details>
+          </div>
         </div>
       ) : null}
 

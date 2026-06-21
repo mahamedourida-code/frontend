@@ -136,12 +136,12 @@ function WorkflowRow({ tab, companyId }: { tab: WorkflowTab; companyId: string }
         <h2 className="text-sm font-bold text-foreground">{tab.label}</h2>
         <p className="mt-0.5 max-w-2xl text-sm text-foreground">{tab.description}</p>
       </div>
-      <InlineAction asChild>
+      <Button asChild variant="surface" size="sm">
         <Link href={tab.href(companyId)}>
           {tab.action}
-          <ArrowRight className="size-4" />
+          <ArrowRight className="size-3.5" />
         </Link>
-      </InlineAction>
+      </Button>
     </div>
   )
 }
@@ -308,7 +308,7 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
             <InlineAction onClick={() => setRenameOpen(false)} disabled={renaming}>
               Cancel
             </InlineAction>
-            <Button variant="reviewed" size="sm" onClick={() => void submitRename()} disabled={renaming}>
+            <Button variant="glossy" size="sm" onClick={() => void submitRename()} disabled={renaming}>
               {renaming ? "Saving…" : "Save"}
             </Button>
           </DialogFooter>
