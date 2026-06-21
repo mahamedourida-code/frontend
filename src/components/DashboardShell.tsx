@@ -13,6 +13,7 @@ import { HelpMenu } from "@/components/HelpMenu"
 import { MobileNav } from "@/components/MobileNav"
 import { CommandPalette } from "@/components/CommandPalette"
 import { AccountMenu } from "@/components/AccountMenu"
+import { OrgSwitcher } from "@/components/OrgSwitcher"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { ocrApi, type RecoverableJobSummary } from "@/lib/api-client"
@@ -160,6 +161,9 @@ export function DashboardShell({
                 <Separator orientation="vertical" className="h-5 bg-white/15" />
               </>
             )}
+
+            {/* LEFT: organisation switcher (desktop) — the org you're working in, always visible */}
+            <OrgSwitcher user={user} />
 
             {/* Mobile: page title only */}
             <div className="me-auto min-w-0 md:hidden">

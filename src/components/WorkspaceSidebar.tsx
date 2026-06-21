@@ -58,10 +58,11 @@ const DOCUMENT_ITEMS: SidebarItem[] = [
   { key: "review", label: "Review board", href: "/dashboard/client", icon: BookCheck },
 ]
 
-// Accounting: connect first (prerequisite), then the bills you publish.
+// Accounting: the daily destination (draft bills you publish) leads; connection
+// management sits just under it. The target accountant has already connected QB/Xero.
 const ACCOUNTING_ITEMS: SidebarItem[] = [
-  { key: "integrations", label: "Integrations", href: "/dashboard/integrations", icon: PlugZap },
   { key: "accounts_payable", label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
+  { key: "integrations", label: "Integrations", href: "/dashboard/integrations", icon: PlugZap },
 ]
 
 // Setup, Activity, Guide, Settings — config + reference live together at the bottom.
