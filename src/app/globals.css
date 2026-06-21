@@ -209,15 +209,17 @@
     --button-warm-hover: #eef2f8;
     --button-warm-ring: var(--workspace-border);
     /* Workspace buttons: Facebook-blue primary, black secondary. */
-    --btn-primary-bg: var(--workspace-blue);
-    --btn-primary-bg-hover: #ffffff;
-    --btn-primary-fg: #ffffff;
-    --btn-primary-fg-hover: var(--workspace-blue);
-    --btn-secondary-bg: #0a0a0a;
-    --btn-secondary-fg: #ffffff;
-    --btn-secondary-border: #0a0a0a;
-    --btn-secondary-bg-hover: #ffffff;
-    --btn-secondary-fg-hover: #0a0a0a;
+    --btn-primary-bg: #ffffff;
+    --btn-primary-bg-hover: var(--workspace-blue);
+    --btn-primary-fg: var(--workspace-blue);
+    --btn-primary-fg-hover: #ffffff;
+    --btn-primary-border: var(--workspace-blue);
+    --btn-primary-border-hover: var(--workspace-blue);
+    --btn-secondary-bg: #ffffff;
+    --btn-secondary-fg: var(--workspace-ink);
+    --btn-secondary-border: var(--workspace-button-border);
+    --btn-secondary-bg-hover: var(--workspace-soft);
+    --btn-secondary-fg-hover: var(--workspace-ink);
     --workspace-popout-bg: var(--workspace-soft);
     --workspace-popout-border: var(--workspace-border);
     --workspace-popout-hover: #ffffff;
@@ -581,6 +583,8 @@
   --btn-primary-bg-hover: #ffffff;
   --btn-primary-fg: #ffffff;
   --btn-primary-fg-hover: #0a0a0a;
+  --btn-primary-border: #0a0a0a;
+  --btn-primary-border-hover: #0a0a0a;
   --btn-secondary-bg: #ffffff;
   --btn-secondary-fg: #0a0a0a;
   --btn-secondary-border: #0a0a0a;

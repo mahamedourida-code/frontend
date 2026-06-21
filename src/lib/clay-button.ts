@@ -4,5 +4,5 @@
  * site, Facebook-blue inside the workspace — darkening on hover.
  */
 export const clayButton =
-  "border border-[var(--btn-primary-bg)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] shadow-none " +
-  "hover:bg-[var(--btn-primary-bg-hover)] hover:border-[var(--btn-primary-bg-hover)]"
+  "border border-[var(--btn-primary-border)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] shadow-none " +
+  "hover:bg-[var(--btn-primary-bg-hover)] hover:text-[var(--btn-primary-fg-hover)] hover:border-[var(--btn-primary-border-hover)]"

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { DashboardShell } from "@/components/DashboardShell"
 import { CompaniesTable } from "@/components/dashboard/companies/CompaniesTable"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
-import { HomeOverview } from "@/components/dashboard/home/HomeOverview"
+import { PageHeader } from "@/components/dashboard/PageHeader"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 
@@ -20,24 +20,17 @@ export default function DashboardPage() {
   }, [loading, router, user])
 
   if (loading || !user) {
-    return <DashboardRouteLoader label="Loading workspace" />
+    return <DashboardRouteLoader label="Loading clients" />
   }
 
   return (
     <DashboardShell activeItem="companies" title="Clients" user={user} showBack={false}>
       <div className="space-y-8">
-        <HomeOverview
-          user={user}
-          workspaceId={activeWorkspace?.id}
-          workspaceName={activeWorkspace?.name}
+        <PageHeader
+          title="Clients"
+          description="Start with a client, then upload a stack for review."
         />
-
-        <section className="space-y-3">
-          <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--workspace-ink)]">
-            Your clients
-          </h2>
-          <CompaniesTable workspaceId={activeWorkspace?.id} />
-        </section>
+        <CompaniesTable workspaceId={activeWorkspace?.id} />
       </div>
     </DashboardShell>
   )

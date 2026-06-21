@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
  * The site/workspace values live in globals.css (`--btn-*`).
  */
 const BTN_PRIMARY =
-  "border border-[var(--btn-primary-bg)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] hover:bg-[var(--btn-primary-bg-hover)] hover:text-[var(--btn-primary-fg-hover)]"
+  "border border-[var(--btn-primary-border)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] hover:bg-[var(--btn-primary-bg-hover)] hover:text-[var(--btn-primary-fg-hover)] hover:border-[var(--btn-primary-border-hover)]"
 
 const BTN_SECONDARY =
   "border border-[var(--btn-secondary-border)] bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-fg)] hover:bg-[var(--btn-secondary-bg-hover)] hover:text-[var(--btn-secondary-fg-hover)]"
@@ -40,7 +40,7 @@ const buttonVariants = cva(
         reviewed: BTN_PRIMARY,
         // Facebook-blue CTA (marketing nav auth) — inverts to white on hover.
         blue:
-          "border border-[var(--workspace-blue)] bg-[var(--workspace-blue)] text-white hover:bg-white hover:text-[var(--workspace-blue)]",
+          "border border-[var(--workspace-blue)] bg-white text-[var(--workspace-blue)] hover:bg-[var(--workspace-blue)] hover:text-white",
         // Danger — kept red.
         destructive:
           "border border-destructive bg-destructive text-white hover:bg-white hover:text-destructive focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
