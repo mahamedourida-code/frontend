@@ -40,7 +40,7 @@ const buttonVariants = cva(
         reviewed: BTN_PRIMARY,
         // Facebook-blue CTA (marketing nav auth) — inverts to white on hover.
         blue:
-          "border border-[var(--workspace-blue)] bg-white text-[var(--workspace-blue)] hover:bg-[var(--workspace-blue)] hover:text-white",
+          "border border-[var(--workspace-blue)] bg-[var(--workspace-blue)] text-white hover:bg-white hover:text-[var(--workspace-blue)]",
         // Smart / vendor-memory accent — outline purple that fills on hover.
         purple:
           "border border-[var(--workspace-purple)] bg-white text-[var(--workspace-purple)] hover:bg-[var(--workspace-purple)] hover:text-white",
