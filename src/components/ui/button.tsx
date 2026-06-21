@@ -41,6 +41,9 @@ const buttonVariants = cva(
         // Facebook-blue CTA (marketing nav auth) — inverts to white on hover.
         blue:
           "border border-[var(--workspace-blue)] bg-white text-[var(--workspace-blue)] hover:bg-[var(--workspace-blue)] hover:text-white",
+        // Smart / vendor-memory accent — outline purple that fills on hover.
+        purple:
+          "border border-[var(--workspace-purple)] bg-white text-[var(--workspace-purple)] hover:bg-[var(--workspace-purple)] hover:text-white",
         // Danger — kept red.
         destructive:
           "border border-destructive bg-destructive text-white hover:bg-white hover:text-destructive focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",

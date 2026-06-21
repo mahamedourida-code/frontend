@@ -1881,11 +1881,12 @@ export function ResultActions({
                         <Button
                           type="button"
                           size="sm"
-                          variant="surface"
+                          variant="purple"
                           onClick={() => void saveVendorRule()}
                           disabled={vendorRuleSavingId === comparisonFile.document_id}
                           className="mt-4 h-9 px-4 text-xs"
                         >
+                          <Sparkles className="size-3.5" />
                           {vendorRuleSavingId === comparisonFile.document_id
                             ? "Saving..."
                             : comparisonFile.vendor_suggestion
