@@ -44,7 +44,7 @@ import {
 import { cn } from "@/lib/utils"
 
 const workspacePrimaryButton =
-  "!rounded-full !border-[var(--workspace-primary)] !bg-[var(--workspace-primary)] !text-white !shadow-none hover:!border-[var(--workspace-primary-hover)] hover:!bg-[var(--workspace-primary-hover)] hover:!text-white"
+  "!rounded-lg !border-[var(--btn-primary-bg)] !bg-[var(--btn-primary-bg)] !text-[var(--btn-primary-fg)] !shadow-none hover:!bg-[var(--btn-primary-bg-hover)] hover:!text-[var(--btn-primary-fg-hover)]"
 
 // The shared ui Table cells/rows, wrapped so the existing stagger /
 // AnimatePresence / layout animations still play on every row.

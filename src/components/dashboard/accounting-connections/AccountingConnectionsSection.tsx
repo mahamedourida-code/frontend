@@ -51,7 +51,7 @@ const providers: Array<{
 ]
 
 const workspacePrimaryButton =
-  "!border-[var(--workspace-primary)] !bg-[var(--workspace-primary)] !text-white !shadow-none hover:!border-[var(--workspace-primary-hover)] hover:!bg-[var(--workspace-primary-hover)]"
+  "!rounded-lg !border-[var(--btn-primary-bg)] !bg-[var(--btn-primary-bg)] !text-[var(--btn-primary-fg)] !shadow-none hover:!bg-[var(--btn-primary-bg-hover)] hover:!text-[var(--btn-primary-fg-hover)]"
 
 const workspaceWarmPanel = "border-[var(--workspace-border)] bg-[var(--workspace-soft)]"
 
@@ -282,7 +282,7 @@ export function AccountingConnectionsSection({
                         </InlineAction>
                       </>
                     ) : (
-                      <Button variant="glossy" size="sm" className={cn("rounded-md", workspacePrimaryButton)} onClick={() => void connect(provider.id)} disabled={Boolean(action) || loading}>
+                      <Button variant="glossy" size="sm" className={workspacePrimaryButton} onClick={() => void connect(provider.id)} disabled={Boolean(action) || loading}>
                         {action === `${provider.id}:connect` ? "Connecting..." : `Connect ${provider.id === "xero" ? "Xero" : "QuickBooks"}`}
                       </Button>
                     )}

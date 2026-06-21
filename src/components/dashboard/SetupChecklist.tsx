@@ -404,7 +404,7 @@ function ChecklistRow({ item }: { item: ChecklistItem }) {
         ) : (
           <Link
             href={item.href}
-            className="ax-interactive inline-flex h-9 items-center gap-1.5 rounded-full border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] px-4 text-sm font-semibold text-white shadow-none transition-colors hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)]"
+            className="ax-interactive inline-flex h-9 items-center gap-1.5 rounded-lg border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] px-4 text-sm font-semibold text-white shadow-none transition-colors hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)]"
           >
             {item.cta}
             <ArrowRight className="size-4" />

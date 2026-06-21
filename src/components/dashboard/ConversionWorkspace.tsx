@@ -1351,7 +1351,7 @@ export function ResultActions({
             </span>
           ) : null}
           <div className="ml-auto flex flex-wrap items-center gap-2">
-            <details className="group relative ml-auto sm:ml-0">
+            <details className="group relative">
               <summary className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-9 cursor-pointer list-none gap-2 px-3 text-xs [&::-webkit-details-marker]:hidden", workspaceNormalControlClass)}>
                 More actions
                 <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
@@ -1659,15 +1659,19 @@ export function ResultActions({
                   )
                 }) : (
                   <tr>
-                    <td colSpan={12} className="border-b border-[#e4e7ef] px-4 py-8 text-center text-[13px] font-medium text-[#475467]">
-                      <span>No documents in this view.</span>
-                      <button
-                        type="button"
-                        onClick={() => setResultFilter("all")}
-                        className={cn("ml-3 inline-flex h-7 items-center px-3 text-[11px] font-semibold", workspaceNormalControlClass)}
-                      >
-                        Show all
-                      </button>
+                    <td colSpan={12} className="border-b border-[#e4e7ef] px-4 py-10 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <span className="text-[13px] font-medium text-[#475467]">No documents in this view.</span>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="surface"
+                          onClick={() => setResultFilter("all")}
+                          className={cn("h-8 px-4 text-xs", workspaceNormalControlClass)}
+                        >
+                          Show all
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 )}
@@ -1688,14 +1692,14 @@ export function ResultActions({
           }}
         >
           <div className={cn("relative w-full max-w-[1240px] rounded-md border p-3 sm:p-4", workspacePanelSurfaceClass)}>
-            <div className="absolute right-4 top-4 z-10 flex items-center gap-3">
+            <div className="absolute right-4 top-4 z-10 flex items-center gap-2">
               {comparisonFile.file_id || comparisonFile.document_id ? (
                 <details className="group relative">
                   <summary className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-9 cursor-pointer list-none gap-1.5 px-3 text-xs [&::-webkit-details-marker]:hidden")}>
                     Actions
                     <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
                   </summary>
-                  <div className={cn("absolute right-0 top-11 z-20 w-44 space-y-2 rounded-md border p-2", workspacePanelSurfaceClass)}>
+                  <div className={cn("absolute right-0 top-11 z-20 w-44 space-y-1.5 rounded-md border p-2", workspacePanelSurfaceClass)}>
                     {comparisonFile.file_id ? (
                       <Button
                         size="sm"
@@ -1709,9 +1713,9 @@ export function ResultActions({
                     ) : null}
                     <Button
                       size="sm"
-                        variant="surface"
-                        onClick={() => onDownloadFile(comparisonFile, comparisonIndex ?? undefined)}
-                        className="h-9 w-full justify-start gap-1.5 px-3 text-xs"
+                      variant="surface"
+                      onClick={() => onDownloadFile(comparisonFile, comparisonIndex ?? undefined)}
+                      className="h-9 w-full justify-start gap-1.5 px-3 text-xs"
                     >
                       <Download className="h-3.5 w-3.5" />
                       Download
@@ -1721,7 +1725,7 @@ export function ResultActions({
                         size="sm"
                         variant="destructive"
                         onClick={() => void onDeleteDocument(comparisonFile)}
-                        className="h-9 w-full justify-start gap-1.5 px-3 text-xs"
+                        className="mt-1 h-9 w-full justify-start gap-1.5 px-3 text-xs"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                         Delete
@@ -1738,11 +1742,12 @@ export function ResultActions({
               {comparisonFile.document_id && !["ready", "published", "failed", "deleted"].includes(comparisonFile.review_status || "") ? (
                 <Button
                   size="sm"
-                  variant="surface"
+                  variant="glossy"
                   onClick={() => void onMarkDocumentReady?.(comparisonFile)}
-                  className="h-9 px-3 text-xs"
+                  className={cn("h-9 gap-1.5 px-4 text-xs", workspacePrimaryControlClass)}
                   title="Confirms extracted fields only"
                 >
+                  <Check className="h-3.5 w-3.5" />
                   Mark ready
                 </Button>
               ) : null}
@@ -1751,20 +1756,22 @@ export function ResultActions({
                   size="sm"
                   variant="glossy"
                   onClick={() => toast.success("Published to QuickBooks or Xero")}
-                  className="h-9 gap-1.5 px-3 text-xs"
+                  className={cn("h-9 gap-1.5 px-4 text-xs", workspacePrimaryControlClass)}
                 >
                   <Send className="h-3.5 w-3.5" />
                   Publish
                 </Button>
               ) : null}
+              {/* Close stands apart from the action cluster. */}
+              <span className="mx-0.5 h-6 w-px bg-[var(--workspace-border)]" aria-hidden />
               <Button
-                size="sm"
+                size="icon"
                 variant="surface"
                 onClick={() => {
                   setComparisonIndex(null)
                   setEditingCell(null)
                 }}
-                className="h-9 px-3"
+                className="!size-9"
                 aria-label="Close comparison"
               >
                 <X className="h-4 w-4" />
@@ -2584,34 +2591,37 @@ function BatchStagingBoard({
       <div className="flex flex-wrap items-center gap-2 rounded-[4px] border border-[#c8ced6] bg-white px-3 py-2 shadow-none">
         {mode === "staged" ? (
           <>
-            <Button
-              variant="surface"
-              onClick={onClearFiles}
-              className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}
-            >
-              <RotateCcw className="h-4 w-4" />
-              New stack
-            </Button>
-            <Button
-              variant="glossy"
-              onClick={onConvert}
-              disabled={noCredits}
-              className={cn("h-9 gap-2 px-4", workspacePrimaryControlClass)}
-            >
-              <ArrowRight className="h-4 w-4" />
-              Process {stagedCount} file{stagedCount === 1 ? "" : "s"}
-            </Button>
+            {/* Context leads on the left; actions group on the right, primary last. */}
             <span className="inline-flex h-9 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#475467]">
               {stagedCount} staged
             </span>
-            <Button
-              variant="surface"
-              onClick={onOpenUpload}
-              className={cn("ml-auto h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}
-            >
-              <FolderUp className="h-4 w-4" />
-              Add more
-            </Button>
+            <div className="ml-auto flex flex-wrap items-center gap-2">
+              <Button
+                variant="surface"
+                onClick={onClearFiles}
+                className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}
+              >
+                <RotateCcw className="h-4 w-4" />
+                New stack
+              </Button>
+              <Button
+                variant="surface"
+                onClick={onOpenUpload}
+                className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}
+              >
+                <FolderUp className="h-4 w-4" />
+                Add more
+              </Button>
+              <Button
+                variant="glossy"
+                onClick={onConvert}
+                disabled={noCredits}
+                className={cn("h-9 gap-2 px-4", workspacePrimaryControlClass)}
+              >
+                <ArrowRight className="h-4 w-4" />
+                Process {stagedCount} file{stagedCount === 1 ? "" : "s"}
+              </Button>
+            </div>
           </>
         ) : (
           <>
@@ -2735,15 +2745,19 @@ function BatchStagingBoard({
                     })
                   ) : (
                     <tr>
-                      <td colSpan={12} className="border-b border-[#e4e7ef] px-4 py-12 text-center text-[13px] font-medium text-[#475467]">
-                        <span>No documents yet — your processed stacks will land here.</span>
-                        <button
-                          type="button"
-                          onClick={onOpenUpload}
-                          className={cn("ml-3 inline-flex h-7 items-center px-3 text-[11px] font-semibold", workspaceNormalControlClass)}
-                        >
-                          Upload your first stack
-                        </button>
+                      <td colSpan={12} className="border-b border-[#e4e7ef] px-4 py-14 text-center">
+                        <div className="flex flex-col items-center gap-4">
+                          <span className="text-[13px] font-medium text-[#475467]">No documents yet — your processed stacks will land here.</span>
+                          <Button
+                            type="button"
+                            variant="glossy"
+                            onClick={onOpenUpload}
+                            className={cn("h-9 gap-2 px-5", workspacePrimaryControlClass)}
+                          >
+                            <Upload className="h-4 w-4" />
+                            Upload your first stack
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   )

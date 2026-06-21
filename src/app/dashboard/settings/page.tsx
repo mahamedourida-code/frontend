@@ -72,7 +72,7 @@ const accountingSubPanel =
   "rounded-lg border border-slate-200 bg-slate-50/80 shadow-none dark:border-slate-800 dark:bg-slate-900/40"
 
 const accountingPrimaryButton =
-  "!border-[var(--workspace-primary)] !bg-[var(--workspace-primary)] !text-white !shadow-none hover:!bg-[var(--workspace-primary-hover)] focus-visible:!ring-[var(--workspace-primary)]/30"
+  "!rounded-lg !border-[var(--btn-primary-bg)] !bg-[var(--btn-primary-bg)] !text-[var(--btn-primary-fg)] !shadow-none hover:!bg-[var(--btn-primary-bg-hover)] hover:!text-[var(--btn-primary-fg-hover)] focus-visible:!ring-[var(--btn-primary-bg)]/30"
 
 function SettingsFallback() {
   return <DashboardRouteLoader label="Loading settings" />

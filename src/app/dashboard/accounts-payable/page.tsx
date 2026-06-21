@@ -170,10 +170,10 @@ const moreFilters: Array<{ value: MoreFilter; label: string }> = [
 ]
 
 const workspacePrimaryButton =
-  "!border-[var(--workspace-primary)] !bg-[var(--workspace-primary)] !text-white !shadow-none hover:!border-[var(--workspace-primary-hover)] hover:!bg-[var(--workspace-primary-hover)] hover:!text-white"
+  "!rounded-lg !border-[var(--btn-primary-bg)] !bg-[var(--btn-primary-bg)] !text-[var(--btn-primary-fg)] !shadow-none hover:!bg-[var(--btn-primary-bg-hover)] hover:!text-[var(--btn-primary-fg-hover)]"
 
 const workspaceSurfaceButton =
-  "!border-slate-300 !bg-white !text-slate-900 !shadow-none hover:!border-slate-400 hover:!bg-slate-50 hover:!text-slate-900"
+  "!rounded-lg !border-[var(--btn-secondary-border)] !bg-[var(--btn-secondary-bg)] !text-[var(--btn-secondary-fg)] !shadow-none hover:!bg-[var(--btn-secondary-bg-hover)] hover:!text-[var(--btn-secondary-fg-hover)]"
 
 const workspacePanel = "ax-workspace-panel border-slate-200 bg-slate-50/70"
 

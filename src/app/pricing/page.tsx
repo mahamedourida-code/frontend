@@ -269,9 +269,10 @@ function compareBillingLabel(plan: BillingPlan) {
     : "Billed monthly"
 }
 
+// Black circle with white check — no color accent
 function CompareTick() {
   return (
-    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[var(--brand-green)] text-[var(--brand-green-fg)] shadow-[0_0_0_1px_var(--brand-green-ring)]">
+    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-neutral-950 text-white">
       <Check aria-hidden="true" className="h-3.5 w-3.5 stroke-[3]" />
     </span>
   )
@@ -555,19 +556,21 @@ function PricingContent() {
     <main className="ax-marketing-page min-h-screen bg-white text-black">
       <MarketingNavBar />
 
+      {/* Hero */}
       <section className="pt-[152px]">
         <div className="mx-auto max-w-[1296px] px-4 sm:px-6 lg:px-0">
           <div className="text-center">
-            <h1 className="ax-h1 font-semibold leading-[1.1] tracking-normal text-neutral-950">
-              Pricing
+            <h1 className="ax-h1 font-bold leading-[1.05] tracking-tight text-neutral-950">
+              Simple, honest pricing.
             </h1>
-            <p className="mx-auto mt-4 max-w-[980px] text-[16px] font-semibold leading-7 text-neutral-700">
+            <p className="mx-auto mt-5 max-w-[720px] text-[18px] font-semibold leading-7 text-neutral-700">
               Processing capacity for full client folders, reviewed exports, and approved accounting handoff. Start free with {freePlan.credits.toLocaleString()} credits.
             </p>
           </div>
 
-          <div className="mt-8 flex items-center justify-center gap-4">
-            <span className={cn("text-sm font-bold", billingMode === "month" ? "text-neutral-950" : "text-neutral-500")}>
+          {/* Billing toggle */}
+          <div className="mt-10 flex items-center justify-center gap-4">
+            <span className={cn("text-sm font-bold", billingMode === "month" ? "text-neutral-950" : "text-neutral-400")}>
               Monthly
             </span>
             <button
@@ -585,6 +588,7 @@ function PricingContent() {
             </button>
             <span className={cn("relative text-sm font-semibold transition-colors", billingMode === "year" ? "text-neutral-950" : "text-neutral-400")}>
               Annual
+              {/* GREEN annual-discount badge — intentionally kept green */}
               {yearlyDiscountPercent > 0 && (
                 <span className="ml-3 rounded-full border border-[#b6fcdf] bg-[#e9fef6] px-3.5 py-1.5 text-[15px] font-bold leading-none text-[#28b57b]">
                   {yearlyDiscountPercent}% off
@@ -594,10 +598,10 @@ function PricingContent() {
           </div>
 
           {isFreeAccount && (
-            <div className="mx-auto mt-5 flex w-fit items-center gap-4 rounded-full border border-neutral-900/15 bg-white px-5 py-3 shadow-sm">
+            <div className="mx-auto mt-6 flex w-fit items-center gap-4 rounded-full border border-neutral-900/15 bg-white px-5 py-3 shadow-sm">
               <CreditStack className="h-6 w-6 text-neutral-950" />
               <span className="text-sm font-bold text-neutral-950">
-                <span className="text-[var(--brand-green-fg)]">{accountCredits.toLocaleString()}</span> credits left
+                <span className="text-neutral-950">{accountCredits.toLocaleString()}</span> credits left
               </span>
             </div>
           )}
@@ -609,13 +613,14 @@ function PricingContent() {
             </div>
           )}
 
-          <div id="plans" className="mt-8 grid gap-5 lg:grid-cols-3">
+          {/* Plan cards */}
+          <div id="plans" className="mt-10 grid gap-6 lg:grid-cols-3">
             {billingLoading && plans.length === 0 ? (
               fallbackPlans.slice(1, 4).map((plan) => (
-                <article key={plan.key} className="min-h-[560px] rounded-[42px] border border-neutral-200 bg-gradient-to-b from-white to-neutral-50 p-8">
+                <article key={plan.key} className="min-h-[600px] rounded-[42px] border border-neutral-200 bg-gradient-to-b from-white to-neutral-50 p-10">
                   <div className="h-full animate-pulse">
                     <div className="h-8 w-28 rounded-full bg-neutral-200" />
-                    <div className="mt-10 h-16 w-40 rounded-[16px] bg-neutral-200" />
+                    <div className="mt-10 h-20 w-40 rounded-[16px] bg-neutral-200" />
                     <div className="mt-8 h-24 rounded-[20px] bg-neutral-200" />
                     <div className="mt-auto h-12 rounded-full bg-neutral-200" />
                   </div>
@@ -631,52 +636,72 @@ function PricingContent() {
                   <article
                     key={`${plan.plan}-${plan.interval}`}
                     className={cn(
-                      "flex min-h-[561px] flex-col gap-8 rounded-[42px] border p-8",
+                      "flex min-h-[600px] flex-col gap-8 rounded-[42px] border p-10",
                       isPopular
-                        ? "border-[var(--brand-green-ring)] bg-gradient-to-b from-white to-[var(--brand-green)]"
-                        : "border-neutral-200 bg-gradient-to-b from-white to-neutral-50"
+                        ? "border-neutral-950 bg-neutral-950 text-white"
+                        : "border-neutral-200 bg-white"
                     )}
                   >
                     <div>
                       <div className="flex items-start justify-between gap-4">
-                        <h2 className="ax-h3 font-semibold leading-tight tracking-normal text-neutral-950">{copy.name}</h2>
+                        <h2 className={cn(
+                          "ax-h3 font-bold leading-tight tracking-tight",
+                          isPopular ? "text-white" : "text-neutral-950"
+                        )}>
+                          {copy.name}
+                        </h2>
                         {isPopular && (
-                          <span className="rounded-full bg-neutral-950 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-white">
+                          <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-white">
                             Popular
                           </span>
                         )}
                       </div>
-                      <div className="mt-8 flex items-end gap-2 text-neutral-950">
-                        <span className="pb-2 text-2xl font-semibold">$</span>
-                        <span className="text-[72px] font-semibold leading-none tracking-normal">{priceNumber(plan)}</span>
+                      <div className={cn("mt-8 flex items-end gap-2", isPopular ? "text-white" : "text-neutral-950")}>
+                        <span className="pb-3 text-3xl font-semibold">$</span>
+                        <span className="text-[88px] font-bold leading-none tracking-tight">{priceNumber(plan)}</span>
                       </div>
-                      <p className="mt-2 text-base font-semibold text-neutral-600">{priceSubtext(plan)}</p>
-                      <p className="mt-5 text-lg font-bold text-neutral-950">{creditsLabel(plan)}</p>
+                      <p className={cn("mt-2 text-base font-semibold", isPopular ? "text-white/60" : "text-neutral-500")}>
+                        {priceSubtext(plan)}
+                      </p>
+                      <p className={cn("mt-5 text-lg font-bold", isPopular ? "text-white" : "text-neutral-950")}>
+                        {creditsLabel(plan)}
+                      </p>
                     </div>
 
-                    <p className="text-[17px] font-semibold leading-7 text-neutral-800">{copy.description}</p>
+                    <p className={cn("text-[17px] font-semibold leading-7", isPopular ? "text-white/80" : "text-neutral-700")}>
+                      {copy.description}
+                    </p>
 
                     <ul className="flex-1 space-y-3">
                       {copy.included.map((feature) => (
-                        <li key={feature} className="flex items-start gap-3 text-base font-semibold leading-7 text-neutral-900">
-                          <Check aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-[var(--brand-green-fg)]" />
-                          <span>{feature}</span>
+                        <li key={feature} className="flex items-start gap-3 text-base font-semibold leading-7">
+                          <Check aria-hidden="true" className={cn("mt-1 h-4 w-4 shrink-0", isPopular ? "text-white" : "text-neutral-950")} />
+                          <span className={isPopular ? "text-white/90" : "text-neutral-900"}>{feature}</span>
                         </li>
                       ))}
                     </ul>
 
-                    <Button
-                      className={cn(
-                        "h-12 w-full rounded-lg text-base font-bold",
-                        isPopular && "!border-neutral-950/25 !bg-transparent !text-neutral-950 shadow-none hover:!border-neutral-950 hover:!bg-neutral-950 hover:!text-white"
-                      )}
-                      variant="surface"
-                      disabled={isLoading}
-                      onClick={() => startCheckout(plan)}
-                    >
-                      {isLoading ? "Opening checkout..." : "Buy now"}
-                      {!isLoading && <ArrowRight aria-hidden="true" className="h-4 w-4" />}
-                    </Button>
+                    {isPopular ? (
+                      <button
+                        type="button"
+                        disabled={isLoading}
+                        onClick={() => startCheckout(plan)}
+                        className="flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-white/20 bg-white text-base font-bold text-neutral-950 transition-all hover:bg-white/90 disabled:opacity-60"
+                      >
+                        {isLoading ? "Opening checkout..." : "Buy now"}
+                        {!isLoading && <ArrowRight aria-hidden="true" className="h-4 w-4" />}
+                      </button>
+                    ) : (
+                      <Button
+                        variant="glossy"
+                        className="h-12 w-full rounded-lg text-base font-bold"
+                        disabled={isLoading}
+                        onClick={() => startCheckout(plan)}
+                      >
+                        {isLoading ? "Opening checkout..." : "Buy now"}
+                        {!isLoading && <ArrowRight aria-hidden="true" className="h-4 w-4" />}
+                      </Button>
+                    )}
                   </article>
                 )
               })
@@ -688,8 +713,8 @@ function PricingContent() {
       <IntegrationsLogos />
 
       {paidPlans.length > 0 && (
-        <section className="mx-auto mt-28 max-w-[1248px] px-4 sm:px-6 lg:px-0">
-          <h2 className="ax-h2 text-center font-semibold leading-tight tracking-normal text-neutral-950">
+        <section className="mx-auto mt-32 max-w-[1248px] px-4 sm:px-6 lg:px-0">
+          <h2 className="ax-h2 text-center font-bold leading-tight tracking-tight text-neutral-950">
             Compare plans
           </h2>
 
@@ -701,8 +726,8 @@ function PricingContent() {
               const copy = planCopyByPlan[plan.plan] || planCopyByPlan.pro
               return (
                 <div key={`sticky-${plan.plan}-${plan.interval}`} className="border-l border-neutral-200 bg-white px-6 py-7">
-                  <p className="text-[26px] font-semibold leading-tight text-neutral-950">{copy.name}</p>
-                  <p className="mt-4 text-[34px] font-semibold leading-none text-neutral-950">{comparePriceLabel(plan)}</p>
+                  <p className="text-[26px] font-bold leading-tight text-neutral-950">{copy.name}</p>
+                  <p className="mt-4 text-[34px] font-bold leading-none text-neutral-950">{comparePriceLabel(plan)}</p>
                   <p className="mt-2 text-base font-semibold text-neutral-700">{compareBillingLabel(plan)}</p>
                 </div>
               )
@@ -720,8 +745,8 @@ function PricingContent() {
                     const copy = planCopyByPlan[plan.plan] || planCopyByPlan.pro
                     return (
                       <TableHead key={`${plan.plan}-${plan.interval}`} className="border-b border-l border-neutral-200 bg-white px-6 py-7 align-top">
-                        <p className="text-[26px] font-semibold leading-tight text-neutral-950">{copy.name}</p>
-                        <p className="mt-4 text-[34px] font-semibold leading-none text-neutral-950">{comparePriceLabel(plan)}</p>
+                        <p className="text-[26px] font-bold leading-tight text-neutral-950">{copy.name}</p>
+                        <p className="mt-4 text-[34px] font-bold leading-none text-neutral-950">{comparePriceLabel(plan)}</p>
                         <p className="mt-2 text-base font-semibold text-neutral-700">{compareBillingLabel(plan)}</p>
                       </TableHead>
                     )
@@ -759,12 +784,12 @@ function PricingContent() {
         </section>
       )}
 
-      <section className="mx-auto mt-32 grid max-w-[1248px] gap-12 px-4 pb-28 sm:px-6 lg:grid-cols-[280px_1fr] lg:px-0">
-        <h2 className="ax-h2 font-semibold leading-none tracking-normal text-neutral-950">FAQ</h2>
+      <section className="mx-auto mt-36 grid max-w-[1248px] gap-12 px-4 pb-28 sm:px-6 lg:grid-cols-[280px_1fr] lg:px-0">
+        <h2 className="ax-h2 font-bold leading-none tracking-tight text-neutral-950">FAQ</h2>
         <div className="divide-y divide-neutral-200 border-y border-neutral-200">
           {faqs.map((item) => (
-            <details key={item.question} className="group py-5">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-semibold text-neutral-950">
+            <details key={item.question} className="group py-6">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-bold text-neutral-950">
                 {item.question}
                 <span className="text-2xl font-semibold text-neutral-400 transition-transform group-open:rotate-45">+</span>
               </summary>
@@ -774,14 +799,14 @@ function PricingContent() {
         </div>
       </section>
 
-      <section className="pb-24 text-center">
-        <h2 className="ax-h2 font-semibold leading-tight tracking-normal text-neutral-950">
+      <section className="pb-28 text-center">
+        <h2 className="ax-h2 font-bold leading-tight tracking-tight text-neutral-950">
           Clear the next client folder faster.
         </h2>
         <Button
           asChild
           variant="glossy"
-          className="mt-9 h-12 min-w-[300px] rounded-lg"
+          className="mt-10 h-12 min-w-[300px] rounded-lg text-base font-bold"
         >
           <Link href="/dashboard/client">Start now</Link>
         </Button>
