@@ -638,7 +638,7 @@ function PricingContent() {
                     className={cn(
                       "flex min-h-[600px] flex-col gap-8 rounded-[42px] border p-10",
                       isPopular
-                        ? "border-neutral-950 bg-neutral-950 text-white"
+                        ? "border-neutral-950 bg-white"
                         : "border-neutral-200 bg-white"
                     )}
                   >
@@ -646,62 +646,50 @@ function PricingContent() {
                       <div className="flex items-start justify-between gap-4">
                         <h2 className={cn(
                           "ax-h3 font-bold leading-tight tracking-tight",
-                          isPopular ? "text-white" : "text-neutral-950"
+                          "text-neutral-950"
                         )}>
                           {copy.name}
                         </h2>
                         {isPopular && (
-                          <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-white">
+                          <span className="rounded-full bg-neutral-950 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-white">
                             Popular
                           </span>
                         )}
                       </div>
-                      <div className={cn("mt-8 flex items-end gap-2", isPopular ? "text-white" : "text-neutral-950")}>
+                      <div className={cn("mt-8 flex items-end gap-2", "text-neutral-950")}>
                         <span className="pb-3 text-3xl font-semibold">$</span>
                         <span className="text-[88px] font-bold leading-none tracking-tight">{priceNumber(plan)}</span>
                       </div>
-                      <p className={cn("mt-2 text-base font-semibold", isPopular ? "text-white/60" : "text-neutral-500")}>
+                      <p className={cn("mt-2 text-base font-semibold", "text-neutral-500")}>
                         {priceSubtext(plan)}
                       </p>
-                      <p className={cn("mt-5 text-lg font-bold", isPopular ? "text-white" : "text-neutral-950")}>
+                      <p className={cn("mt-5 text-lg font-bold", "text-neutral-950")}>
                         {creditsLabel(plan)}
                       </p>
                     </div>
 
-                    <p className={cn("text-[17px] font-semibold leading-7", isPopular ? "text-white/80" : "text-neutral-700")}>
+                    <p className={cn("text-[17px] font-semibold leading-7", "text-neutral-700")}>
                       {copy.description}
                     </p>
 
                     <ul className="flex-1 space-y-3">
                       {copy.included.map((feature) => (
                         <li key={feature} className="flex items-start gap-3 text-base font-semibold leading-7">
-                          <Check aria-hidden="true" className={cn("mt-1 h-4 w-4 shrink-0", isPopular ? "text-white" : "text-neutral-950")} />
-                          <span className={isPopular ? "text-white/90" : "text-neutral-900"}>{feature}</span>
+                          <Check aria-hidden="true" className={cn("mt-1 h-4 w-4 shrink-0", "text-neutral-950")} />
+                          <span className="text-neutral-900">{feature}</span>
                         </li>
                       ))}
                     </ul>
 
-                    {isPopular ? (
-                      <button
-                        type="button"
-                        disabled={isLoading}
-                        onClick={() => startCheckout(plan)}
-                        className="flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-white/20 bg-white text-base font-bold text-neutral-950 transition-all hover:bg-white/90 disabled:opacity-60"
-                      >
-                        {isLoading ? "Opening checkout..." : "Buy now"}
-                        {!isLoading && <ArrowRight aria-hidden="true" className="h-4 w-4" />}
-                      </button>
-                    ) : (
-                      <Button
-                        variant="glossy"
-                        className="h-12 w-full rounded-lg text-base font-bold"
-                        disabled={isLoading}
-                        onClick={() => startCheckout(plan)}
-                      >
-                        {isLoading ? "Opening checkout..." : "Buy now"}
-                        {!isLoading && <ArrowRight aria-hidden="true" className="h-4 w-4" />}
-                      </Button>
-                    )}
+                    <Button
+                      variant="glossy"
+                      className="h-12 w-full rounded-lg text-base font-bold"
+                      disabled={isLoading}
+                      onClick={() => startCheckout(plan)}
+                    >
+                      {isLoading ? "Opening checkout..." : "Buy now"}
+                      {!isLoading && <ArrowRight aria-hidden="true" className="h-4 w-4" />}
+                    </Button>
                   </article>
                 )
               })

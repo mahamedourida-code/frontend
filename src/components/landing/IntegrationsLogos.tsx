@@ -10,6 +10,7 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion"
+import { TypewriterWord } from "@/components/landing/TypewriterWord"
 
 /* "Works with the tools you already use" — a raw animated logo wall.
    Black silhouette logos on white tiles, with a 3D staggered entrance,
@@ -125,7 +126,13 @@ export function IntegrationsLogos({ showTitle = false }: { showTitle?: boolean }
             transition={{ duration: 0.6, ease: EASE }}
             className="ax-h2 mb-12 text-center font-bold tracking-tight text-black text-balance sm:mb-14"
           >
-            Works with the tools you already use
+            Works with the{" "}
+            <TypewriterWord
+              words={["tools", "apps", "software", "spreadsheets"]}
+              className="rounded-md border border-black bg-black px-2 font-bold text-white"
+              caretClassName="bg-white"
+            />{" "}
+            you already use
           </motion.h2>
         ) : null}
 

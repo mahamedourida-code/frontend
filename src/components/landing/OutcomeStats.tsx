@@ -93,11 +93,11 @@ function OutcomeStat({
     >
       <dd
         ref={ref as Ref<HTMLDivElement>}
-        className="text-4xl font-bold leading-none tracking-tight tabular-nums text-white sm:text-5xl"
+        className="text-4xl font-bold leading-none tracking-tight tabular-nums text-neutral-950 sm:text-5xl"
       >
         {stat.format(value)}
       </dd>
-      <dt className="mt-3 text-[15px] font-bold text-white">{stat.label}</dt>
+      <dt className="mt-3 text-[15px] font-bold text-neutral-950">{stat.label}</dt>
     </motion.div>
   )
 }
@@ -127,15 +127,15 @@ export function OutcomeStats() {
             Less typing. Fewer mistakes. More{" "}
             <TypewriterWord
               words={["reviewed", "coded", "posted", "approved"]}
-              className="rounded-md border border-[var(--soft-brown)] px-2 font-bold text-[var(--soft-brown)]"
-              caretClassName="bg-[var(--soft-brown)]"
+              className="rounded-md border border-black bg-black px-2 font-bold text-white"
+              caretClassName="bg-white"
             />
             , faster.
           </h2>
         </motion.div>
 
         {/* ── The four outcome counters — monochrome proof band ── */}
-        <dl className="grid grid-cols-1 gap-y-12 rounded-3xl bg-neutral-950 px-8 py-12 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.07)] ring-1 ring-white/10 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-4 lg:gap-x-6 lg:px-12 lg:py-14">
+        <dl className="grid grid-cols-1 gap-y-12 rounded-3xl bg-white px-8 py-12 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.08)] ring-1 ring-black/[0.08] sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-4 lg:gap-x-6 lg:px-12 lg:py-14">
           {STATS.map((stat, index) => (
             <OutcomeStat key={stat.label} stat={stat} index={index} animate={animate} />
           ))}

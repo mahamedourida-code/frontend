@@ -548,8 +548,8 @@ export default function Home() {
                   Turn every{" "}
                   <TypewriterWord
                     words={["invoice", "receipt", "bank statement", "handwritten table", "expense report"]}
-                    className="rounded-md border border-[var(--soft-brown)] px-2 font-bold text-[var(--soft-brown)]"
-                    caretClassName="bg-[var(--soft-brown)]"
+                    className="rounded-md border border-black bg-black px-2 font-bold text-white"
+                    caretClassName="bg-white"
                   />
                 </span>
                 <span className="block">
@@ -565,9 +565,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── 7 · Organizations testimonials (white) ── */}
-        <TestimonialsMarquee />
-
         {/* ── Scroll-reveal statement — word-by-word scroll light-up ── */}
         <section className="relative isolate overflow-hidden bg-[#FDFBF7] py-24 lg:py-32">
           <div className="mx-auto max-w-[1100px] px-4 sm:px-6 lg:px-8">
@@ -576,6 +573,9 @@ export default function Home() {
             </ScrollRevealText>
           </div>
         </section>
+
+        {/* ── 7 · Organizations testimonials (white) ── */}
+        <TestimonialsMarquee />
 
         {/* ── Security + FAQ — redesigned to match the system (white) ── */}
         <div className="relative isolate overflow-hidden bg-[#FDFBF7]">
