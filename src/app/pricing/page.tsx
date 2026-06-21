@@ -560,8 +560,8 @@ function PricingContent() {
       <section className="pt-[152px]">
         <div className="mx-auto max-w-[1296px] px-4 sm:px-6 lg:px-0">
           <div className="text-center">
-            <h1 className="ax-h1 font-bold leading-[1.05] tracking-tight text-neutral-950">
-              Simple, honest pricing.
+            <h1 className="ax-h1 font-medium leading-[1.05] tracking-tight text-neutral-950">
+              Pricing
             </h1>
             <p className="mx-auto mt-5 max-w-[720px] text-[18px] font-semibold leading-7 text-neutral-700">
               Processing capacity for full client folders, reviewed exports, and approved accounting handoff. Start free with {freePlan.credits.toLocaleString()} credits.
@@ -658,7 +658,7 @@ function PricingContent() {
                       </div>
                       <div className={cn("mt-8 flex items-end gap-2", "text-neutral-950")}>
                         <span className="pb-3 text-3xl font-semibold">$</span>
-                        <span className="text-[88px] font-bold leading-none tracking-tight">{priceNumber(plan)}</span>
+                        <span className="text-[88px] font-medium leading-none tracking-tight">{priceNumber(plan)}</span>
                       </div>
                       <p className={cn("mt-2 text-base font-semibold", "text-neutral-500")}>
                         {priceSubtext(plan)}
