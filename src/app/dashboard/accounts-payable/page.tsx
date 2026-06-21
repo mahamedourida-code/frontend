@@ -1095,16 +1095,16 @@ function AccountsPayableContent() {
             longer competes with the queue. */}
         <div className="flex flex-wrap items-center justify-end gap-4">
           {clientId ? (
-            <InlineAction onClick={() => router.push("/dashboard/accounts-payable")}>
+            <InlineAction tone="neutral" onClick={() => router.push("/dashboard/accounts-payable")}>
               Clear filter
             </InlineAction>
           ) : null}
           {accountingConnection?.connected ? (
-            <InlineAction onClick={() => void loadAccountingDestination(true)} disabled={syncingReferences}>
+            <InlineAction tone="brand" onClick={() => void loadAccountingDestination(true)} disabled={syncingReferences}>
               {syncingReferences ? "Refreshing..." : "Refresh lists"}
             </InlineAction>
           ) : null}
-          <InlineAction onClick={() => router.push("/dashboard/integrations")}>
+          <InlineAction tone="brand" onClick={() => router.push("/dashboard/integrations")}>
             Manage integration
           </InlineAction>
         </div>
