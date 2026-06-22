@@ -2,45 +2,53 @@
 
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { GrowthChart } from "@/components/landing/GrowthChart";
 
-/* Use-cases bento — rebuilt to match Devin AI's "Use cases" section:
-   a 3×3 staircase grid where three tall cards carry a real product
-   screenshot anchored to the bottom-right (top-cropped), and three short
-   cards are text-only. Minimal 2–5 word titles, one blue accent CTA per
-   relevant card. Static — no scroll animation. Bullets stay solid black
-   (AxLiner brand rule: no grey text), blue accents use --brand-link. */
+/* Use-cases bento, modelled on Devin AI's "Use cases" section: #efefef cards,
+   16px radius, minimal 2–5 word titles, one blue accent link per relevant card.
+   Two outer tall cards each carry a single visual docked to the TOP-LEFT corner
+   (only that corner inherits the card radius — Devin's framing), flanking two
+   stacked text cards. Static (no scroll animation). Bullets stay solid black
+   (AxLiner: no grey text); accents use --brand-link. */
 
-interface Card {
-  layout: "tall" | "short";
+interface TextCard {
   title: string;
   bullets: string[];
-  image?: { src: string; alt: string };
   cta?: { label: string; href: string };
+  className: string;
 }
 
-const cards: Card[] = [
+const reviewCard = {
+  title: "The review board",
+  bullets: [
+    "Flagged exceptions surface first, not buried",
+    "Field- and row-level confidence on every value",
+    "Source on the left, editable fields on the right",
+  ],
+  cta: { label: "Open the review board", href: "/dashboard/client" },
+};
+
+const growthCard = {
+  title: "Take on more clients",
+  bullets: [
+    "Hours of manual data entry, gone",
+    "Close the month days sooner",
+    "Grow the book of business, not the headcount",
+  ],
+  cta: { label: "See plans", href: "/pricing" },
+};
+
+const textCards: TextCard[] = [
   {
-    layout: "tall",
-    title: "The review board",
-    bullets: [
-      "Flagged exceptions surface first, not buried",
-      "Field- and row-level confidence on every value",
-      "Source on the left, editable fields on the right",
-    ],
-    image: { src: "/product-board.png", alt: "The AxLiner batch review board with statuses, confidence flags, and one-click publish" },
-    cta: { label: "Open the review board", href: "/dashboard/client" },
-  },
-  {
-    layout: "short",
     title: "Read the whole folder",
     bullets: [
       "Invoices, receipts, bank statements, handwritten tables",
       "Photos, PDFs, scans, HEIC — all in one stack",
       "Batch the entire client folder at once",
     ],
+    className: "lg:col-start-2 lg:row-start-1",
   },
   {
-    layout: "short",
     title: "Publish to your books",
     bullets: [
       "Reviewed draft bills to QuickBooks or Xero",
@@ -48,54 +56,56 @@ const cards: Card[] = [
       "Never pays, approves, or reconciles for you",
     ],
     cta: { label: "See QuickBooks & Xero", href: "/integrations" },
-  },
-  {
-    layout: "tall",
-    title: "Clean spreadsheets out",
-    bullets: [
-      "Export reviewed Excel or CSV anytime",
-      "Columns mapped to the right schema",
-      "Numbers, dates, and totals already parsed",
-    ],
-    image: { src: "/after.png", alt: "Reviewed data exported to a clean Excel spreadsheet" },
-    cta: { label: "See export formats", href: "/products" },
-  },
-  {
-    layout: "tall",
-    title: "Any table, handled",
-    bullets: [
-      "Wide, dense tables read column by column",
-      "Handwritten ledgers and printed grids alike",
-      "Every cell placed where it belongs",
-    ],
-    image: { src: "/ee.png", alt: "A dense multi-column table extracted into a structured spreadsheet" },
-  },
-  {
-    layout: "short",
-    title: "Built for many clients",
-    bullets: [
-      "A workspace per firm, a client per company",
-      "Per-client coding and accounting connections",
-      "Made for bookkeepers running many books",
-    ],
+    className: "lg:col-start-2 lg:row-start-2",
   },
 ];
 
-// Devin's staircase: col1 = tall→short, col2 = short→tall, col3 = tall→short.
-const placement = [
-  "lg:col-start-1 lg:row-start-1 lg:row-span-2",
-  "lg:col-start-1 lg:row-start-3",
-  "lg:col-start-2 lg:row-start-1",
-  "lg:col-start-2 lg:row-start-2 lg:row-span-2",
-  "lg:col-start-3 lg:row-start-1 lg:row-span-2",
-  "lg:col-start-3 lg:row-start-3",
-];
+function CardBody({
+  title,
+  bullets,
+  cta,
+}: {
+  title: string;
+  bullets: string[];
+  cta?: { label: string; href: string };
+}) {
+  return (
+    <div className="flex flex-1 flex-col px-8 pb-8 pt-7 lg:px-9">
+      <h3
+        className="font-medium tracking-[-0.04em] text-[#191919]"
+        style={{ fontSize: "23px", lineHeight: "1.18" }}
+      >
+        {title}
+      </h3>
+      <ul className="mt-5 space-y-2.5">
+        {bullets.map((bullet) => (
+          <li
+            key={bullet}
+            className="flex gap-2 text-[15px] font-normal leading-snug text-[#191919]"
+          >
+            <span aria-hidden className="shrink-0">—</span>
+            <span>{bullet}</span>
+          </li>
+        ))}
+      </ul>
+      {cta && (
+        <Link
+          href={cta.href}
+          className="mt-7 inline-flex w-fit items-center gap-1 text-[15px] font-medium text-[var(--brand-link)] hover:underline"
+        >
+          {cta.label}
+          <ChevronRight className="size-4" />
+        </Link>
+      )}
+    </div>
+  );
+}
 
 export function CapabilityBoxes() {
   return (
     <section className="bg-[#FDFBF7] py-24 lg:py-32">
       <div className="mx-auto max-w-[1120px] px-4 sm:px-6 lg:px-8">
-        {/* Section header — minimal, left-aligned, one blue accent word */}
+        {/* Minimal heading, one blue accent word */}
         <h2
           className="font-medium tracking-[-0.04em] text-[#191919]"
           style={{ fontSize: "clamp(40px, 5vw, 60px)", lineHeight: "1.06" }}
@@ -107,62 +117,39 @@ export function CapabilityBoxes() {
           unsure, and hands back reviewed entries — ready to publish.
         </p>
 
-        {/* Staircase bento */}
-        <div className="mt-14 grid grid-cols-1 gap-4 lg:mt-16 lg:grid-cols-3 lg:grid-rows-[repeat(3,300px)]">
-          {cards.map((card, index) => {
-            const isTall = card.layout === "tall";
-            return (
-              <article
-                key={card.title}
-                className={`flex flex-col overflow-hidden rounded-2xl bg-[#efefef] ${
-                  isTall ? "min-h-[440px]" : "min-h-[260px]"
-                } ${placement[index]}`}
-              >
-                <div className="flex flex-col px-8 pb-6 pt-12 lg:px-9 lg:pt-14">
-                  <h3
-                    className="font-medium tracking-[-0.04em] text-[#191919]"
-                    style={{ fontSize: "23px", lineHeight: "1.18" }}
-                  >
-                    {card.title}
-                  </h3>
+        {/* Bento — two tall visual cards flanking two stacked text cards */}
+        <div className="mt-14 grid grid-cols-1 gap-4 lg:mt-16 lg:grid-cols-3 lg:grid-rows-[repeat(2,300px)]">
+          {/* Review board — visual docked top-left, colourful rows showing */}
+          <article className="flex min-h-[460px] flex-col overflow-hidden rounded-2xl bg-[#efefef] lg:col-start-1 lg:row-start-1 lg:row-span-2">
+            <div className="h-[208px] w-[88%] shrink-0 overflow-hidden rounded-tl-2xl lg:h-[232px]">
+              <img
+                src="/review-board-crop.png"
+                alt="The AxLiner batch review board — document type, status, and vendor for each row"
+                loading="lazy"
+                draggable={false}
+                className="h-full w-full object-cover object-[62%_18%]"
+              />
+            </div>
+            <CardBody {...reviewCard} />
+          </article>
 
-                  <ul className="mt-5 space-y-2.5">
-                    {card.bullets.map((bullet) => (
-                      <li
-                        key={bullet}
-                        className="flex gap-2 text-[15px] font-normal leading-snug text-[#191919]"
-                      >
-                        <span aria-hidden className="shrink-0">—</span>
-                        <span>{bullet}</span>
-                      </li>
-                    ))}
-                  </ul>
+          {/* Stacked text cards */}
+          {textCards.map((card) => (
+            <article
+              key={card.title}
+              className={`flex min-h-[260px] flex-col rounded-2xl bg-[#efefef] ${card.className}`}
+            >
+              <CardBody title={card.title} bullets={card.bullets} cta={card.cta} />
+            </article>
+          ))}
 
-                  {card.cta && (
-                    <Link
-                      href={card.cta.href}
-                      className="mt-7 inline-flex w-fit items-center gap-1 text-[15px] font-medium text-[var(--brand-link)] hover:underline"
-                    >
-                      {card.cta.label}
-                      <ChevronRight className="size-4" />
-                    </Link>
-                  )}
-                </div>
-
-                {isTall && card.image && (
-                  <div className="mt-3 flex-1 w-[90%] self-end overflow-hidden">
-                    <img
-                      src={card.image.src}
-                      alt={card.image.alt}
-                      loading="lazy"
-                      draggable={false}
-                      className="h-full w-full object-cover object-top"
-                    />
-                  </div>
-                )}
-              </article>
-            );
-          })}
+          {/* Growth chart — recreated, docked top-left */}
+          <article className="flex min-h-[460px] flex-col overflow-hidden rounded-2xl bg-[#efefef] lg:col-start-3 lg:row-start-1 lg:row-span-2">
+            <div className="h-[208px] w-[88%] shrink-0 overflow-hidden rounded-tl-2xl lg:h-[232px]">
+              <GrowthChart />
+            </div>
+            <CardBody {...growthCard} />
+          </article>
         </div>
       </div>
     </section>
