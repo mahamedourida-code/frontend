@@ -148,6 +148,8 @@ type ConversionWorkspaceProps = {
   isUploading: boolean
   isProcessing: boolean
   isComplete: boolean
+  processingTotal?: number
+  processingDone?: number
   uploadedSizeMb: number
   creditAvailable: number
   creditEstimate: number
@@ -808,6 +810,8 @@ export function ResultActions({
   jobId,
   resultFiles,
   isComplete,
+  isProcessing = false,
+  pendingCount = 0,
   outputMode,
   onOutputModeChange,
   documentMode,
@@ -875,7 +879,7 @@ export function ResultActions({
   | "quickBooksReferences"
   | "onRefreshQuickBooksReferences"
   | "onPublishReceipt"
->) {
+> & { isProcessing?: boolean; pendingCount?: number }) {
   const [comparisonIndex, setComparisonIndex] = useState<number | null>(null)
   const [editingCell, setEditingCell] = useState<{ fileKey: string; row: number; col: number } | null>(null)
   // C2 — source highlighting: the field value currently hovered/focused, so we
@@ -1494,7 +1498,15 @@ export function ResultActions({
           </div>
 
           <div className="flex min-h-10 items-center justify-between gap-3 border-b border-[#d9dde3] bg-[#f6f7fb] px-4 py-2 text-[12px] text-[#475467]">
-            <span className="font-semibold text-[#344054]">Review results</span>
+            <div className="flex items-center gap-3">
+              <span className="font-semibold text-[#344054]">Review results</span>
+              {isProcessing && pendingCount > 0 ? (
+                <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-700">
+                  <Loader2 className="size-3.5 animate-spin" />
+                  Reading {pendingCount} more
+                </span>
+              ) : null}
+            </div>
             <span className="tabular-nums">
               {filteredResultEntries.length}/{filterCounts.all} shown
             </span>
@@ -2888,6 +2900,8 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     isUploading,
     isProcessing,
     isComplete,
+    processingTotal,
+    processingDone,
     creditAvailable,
     creditEstimate,
     maxUploadFiles,
@@ -2934,9 +2948,18 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     overridingDocumentId,
     onOverrideDocumentMode,
   } = props
-  const hasResults = Boolean(isComplete && (
-    (resultFiles?.length || 0) > 0 || (classifiedDocuments?.length || 0) > 0
-  ))
+  // Progressive review board: the board appears the moment the FIRST document is
+  // ready, then grows file-by-file as the rest of the batch finishes — never
+  // waiting for the whole stack. When complete we still show the board even if
+  // every file failed (so the failures are reviewable). The remaining in-flight
+  // files surface as the live "Reading N more" line inside the board.
+  const readyCount = resultFiles?.length || 0
+  const hasResults = Boolean(
+    readyCount > 0 || (isComplete && (classifiedDocuments?.length || 0) > 0)
+  )
+  const pendingCount = isProcessing
+    ? Math.max(0, (processingTotal ?? 0) - readyCount)
+    : 0
   const [uploadSheetOpen, setUploadSheetOpen] = useState(false)
 
   // The upload sheet is the single entry point for a new batch. Opening it from
@@ -3024,6 +3047,8 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
             <ResultActions
               jobId={jobId}
               resultFiles={resultFiles}
+              isProcessing={isProcessing}
+              pendingCount={pendingCount}
               isComplete={isComplete}
               outputMode={outputMode}
               onOutputModeChange={onOutputModeChange}

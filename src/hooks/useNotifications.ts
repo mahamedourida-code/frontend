@@ -18,6 +18,7 @@ import { useProcessingState } from "@/contexts/ProcessingStateContext"
  */
 
 export type NotificationGroup =
+  | "document_ready"
   | "job_finished"
   // Customer-card notifications are intentionally commented out for workspace pages.
   // | "duplicate_detected"
@@ -59,6 +60,24 @@ const MAX_ITEMS = 40
 //   if (typeof window === "undefined") return
 //   window.dispatchEvent(new CustomEvent<NotifyPayload>(NOTIFY_EVENT, { detail: payload }))
 // }
+
+/**
+ * Turn a generated output filename ("IMG_1042_img_0_receipt.xlsx") into a human
+ * document name ("IMG 1042"). Prefer the original filename when we have it.
+ */
+function prettyDocName(file: { filename?: string; original_filename?: string }): string {
+  const raw = (file.original_filename || file.filename || "").trim()
+  if (!raw) return "Document"
+  let name = raw.replace(/\.[^./\\]+$/, "")
+  name = name.replace(
+    /_(processed|table|invoice|receipt|bank[_-]?statement|notes(?:[_-]?tables)?|invoice[_-]?line[_-]?items|invoice[_-]?receipt|transactions|text)$/i,
+    "",
+  )
+  name = name.replace(/_(img|image|page)[_-]?\d+/gi, "")
+  name = name.replace(/_[0-9a-f]{12,}$/i, "")
+  name = name.replace(/[_-]+/g, " ").trim()
+  return name || "Document"
+}
 
 function loadReadSet(): Set<string> {
   if (typeof window === "undefined") return new Set()
@@ -102,6 +121,36 @@ export function useNotifications() {
       return merged.slice(0, MAX_ITEMS)
     })
   }, [])
+
+  // ── Source 1a: each document the moment it is ready ───────────────
+  // The batch streams results file-by-file, so we raise one quiet notification
+  // per document as it lands — never a toast, never waiting for the whole stack.
+  // Dedupe is by file id (addItem ignores repeats), so re-renders are safe.
+  useEffect(() => {
+    const files = processingState.processedFiles
+    if (!files || files.length === 0) return
+    const jobId = processingState.jobId
+    files.forEach((file) => {
+      if (!file?.file_id) return
+      const needsReview = Boolean(file.requires_review)
+      addItem({
+        id: `file-${file.file_id}`,
+        group: "document_ready",
+        title: prettyDocName(file),
+        preview: needsReview ? "Needs review" : "Ready to review",
+        href:
+          jobId && file.document_id
+            ? `/dashboard/document?job=${jobId}&doc=${file.document_id}`
+            : "/dashboard/client",
+        createdAt: processingState.lastUpdated || Date.now(),
+      })
+    })
+  }, [
+    processingState.processedFiles,
+    processingState.jobId,
+    processingState.lastUpdated,
+    addItem,
+  ])
 
   // ── Source 1: processing lifecycle ────────────────────────────────
   useEffect(() => {

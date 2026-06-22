@@ -4,11 +4,7 @@ import { useMemo, useState } from "react"
 import Link from "next/link"
 import {
   Bell,
-  CheckCheck,
-  CheckCircle2,
-  // Copy,
-  // KeyRound,
-  // Upload,
+  Check,
   ArrowUpRight,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -29,35 +25,21 @@ const GROUP_META: Record<
   NotificationGroup,
   { label: string; icon: typeof Bell; tone: string }
 > = {
+  document_ready: {
+    label: "Ready to review",
+    icon: Check,
+    tone: "text-emerald-700 bg-emerald-50",
+  },
   job_finished: {
     label: "Stack finished",
-    icon: CheckCircle2,
-    tone: "text-[#16a34a] bg-[#f0fdf4]",
+    icon: Check,
+    tone: "text-emerald-700 bg-emerald-50",
   },
-  // Customer-card notification groups are intentionally commented out.
-  //
-  // duplicate_detected: {
-  //   label: "Duplicate detected",
-  //   icon: Copy,
-  //   tone: "text-[#d97706] bg-[#fffbeb]",
-  // },
-  // quickbooks_token: {
-  //   label: "QuickBooks",
-  //   icon: KeyRound,
-  //   tone: "text-[#dc2626] bg-[#fef2f2]",
-  // },
-  // client_uploaded: {
-  //   label: "Client upload",
-  //   icon: Upload,
-  //   tone: "text-[var(--workspace-blue)] bg-[var(--workspace-blue-soft)]",
-  // },
 }
 
 const GROUP_ORDER: NotificationGroup[] = [
+  "document_ready",
   "job_finished",
-  // "duplicate_detected",
-  // "quickbooks_token",
-  // "client_uploaded",
 ]
 
 function relativeTime(ts: number): string {
@@ -86,33 +68,33 @@ function NotificationRow({
       href={item.href}
       onClick={() => onJump(item.id)}
       className={cn(
-        "group/row flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-[var(--workspace-popout-hover)]",
-        !item.read && "bg-[var(--workspace-blue-soft)]"
+        "group/row flex items-start gap-3.5 rounded-xl px-3 py-3 transition-colors hover:bg-[var(--workspace-popout-hover)]",
+        !item.read && "bg-emerald-50/70"
       )}
     >
       <span
         className={cn(
-          "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full",
+          "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full",
           meta.tone
         )}
       >
-        <Icon className="size-4" />
+        <Icon className="size-4" strokeWidth={2.5} />
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="truncate text-[13px] font-semibold text-foreground">
+          <span className="truncate text-[14px] font-semibold text-foreground">
             {item.title}
           </span>
           {!item.read && (
-            <span className="size-1.5 shrink-0 rounded-full bg-emerald-500" />
+            <span className="size-1.5 shrink-0 rounded-full bg-emerald-600" />
           )}
         </div>
-        <p className="truncate text-[12.5px] text-muted-foreground">{item.preview}</p>
-        <span className="mt-0.5 block text-[11px] text-muted-foreground/70">
+        <p className="truncate text-[13px] font-medium text-foreground/70">{item.preview}</p>
+        <span className="mt-1 block text-[12px] text-foreground/55">
           {relativeTime(item.createdAt)}
         </span>
       </div>
-      <ArrowUpRight className="mt-1 size-3.5 shrink-0 text-muted-foreground/0 transition-colors group-hover/row:text-muted-foreground" />
+      <ArrowUpRight className="mt-1 size-4 shrink-0 text-foreground/0 transition-colors group-hover/row:text-foreground/60" />
     </Link>
   )
 }
@@ -137,12 +119,12 @@ function GroupedList({
 
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-2 px-6 py-12 text-center">
-        <span className="flex size-11 items-center justify-center rounded-full bg-[#f0fdf4]">
-          <CheckCheck className="size-5 text-[#16a34a]" />
+      <div className="flex flex-col items-center justify-center gap-2.5 px-6 py-14 text-center">
+        <span className="flex size-12 items-center justify-center rounded-full bg-emerald-50">
+          <Check className="size-5 text-emerald-700" strokeWidth={2.5} />
         </span>
-        <p className="text-[13px] font-semibold text-foreground">You&apos;re all caught up</p>
-        <p className="max-w-[14rem] text-[12px] text-muted-foreground">{emptyLabel}</p>
+        <p className="text-[14px] font-semibold text-foreground">All caught up</p>
+        <p className="max-w-[15rem] text-[13px] font-medium text-foreground/65">{emptyLabel}</p>
       </div>
     )
   }
@@ -151,7 +133,7 @@ function GroupedList({
     <div className="flex flex-col gap-3 px-1.5 py-2">
       {GROUP_ORDER.filter((g) => grouped.has(g)).map((g) => (
         <div key={g}>
-          <div className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+          <div className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-foreground/55">
             {GROUP_META[g].label}
           </div>
           <div className="flex flex-col gap-0.5">
@@ -192,7 +174,7 @@ export function NotificationsBell() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 500, damping: 28 }}
-                className="absolute -right-0.5 -top-0.5 flex min-w-[18px] items-center justify-center rounded-full bg-[var(--workspace-danger)] px-1 text-[10px] font-bold leading-none text-white shadow-sm ring-2 ring-[var(--workspace-topbar)]"
+                className="absolute -right-0.5 -top-0.5 flex min-w-[18px] items-center justify-center rounded-full bg-emerald-600 px-1 text-[10px] font-bold leading-none text-white shadow-sm ring-2 ring-[var(--workspace-topbar)]"
               >
                 {unreadCount > 9 ? "9+" : unreadCount}
               </motion.span>
@@ -204,59 +186,59 @@ export function NotificationsBell() {
       <PopoverContent
         align="end"
         sideOffset={10}
-        className="w-[22rem] overflow-hidden rounded-xl border-[var(--workspace-border)] bg-white p-0 text-[var(--workspace-ink)] shadow-[0_16px_44px_rgba(15,23,42,0.14)]"
+        className="w-[27rem] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl border-[var(--workspace-border)] bg-white p-0 text-[var(--workspace-ink)] shadow-[0_18px_50px_rgba(15,23,42,0.16)]"
       >
         <Tabs defaultValue="all" className="gap-0">
-          <div className="flex items-center justify-between gap-2 border-b border-[var(--workspace-border)] px-3 py-2.5">
-            <div className="flex items-center gap-2">
-              <span className="text-[13px] font-bold text-foreground">Notifications</span>
-              <TabsList className="h-7 rounded-full bg-[#f3f6fb] p-0.5">
+          <div className="flex items-center justify-between gap-2 border-b border-[var(--workspace-border)] px-4 py-3.5">
+            <div className="flex items-center gap-2.5">
+              <span className="text-[16px] font-bold tracking-tight text-foreground">Notifications</span>
+              <TabsList className="h-7 rounded-full bg-[var(--workspace-soft)] p-0.5">
                 <TabsTrigger
                   value="all"
-                  className="h-6 rounded-full px-2.5 text-[12px] data-[state=active]:bg-white data-[state=active]:text-[var(--workspace-primary)]"
+                  className="h-6 rounded-full px-3 text-[12px] font-semibold data-[state=active]:bg-white data-[state=active]:text-emerald-700"
                 >
                   All
                 </TabsTrigger>
                 <TabsTrigger
                   value="unread"
-                  className="h-6 rounded-full px-2.5 text-[12px] data-[state=active]:bg-white data-[state=active]:text-[var(--workspace-primary)]"
+                  className="h-6 rounded-full px-3 text-[12px] font-semibold data-[state=active]:bg-white data-[state=active]:text-emerald-700"
                 >
-                  Unread{unreadCount > 0 ? ` · ${unreadCount}` : ""}
+                  Unread{unreadCount > 0 ? ` ${unreadCount}` : ""}
                 </TabsTrigger>
               </TabsList>
             </div>
             <button
               onClick={markAllRead}
               disabled={unreadCount === 0}
-              className="ax-interactive inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11.5px] font-medium text-[var(--workspace-primary)] transition-colors hover:text-[var(--workspace-primary-hover)] disabled:pointer-events-none disabled:opacity-40"
+              className="ax-interactive inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-semibold text-emerald-700 transition-colors hover:text-emerald-800 disabled:pointer-events-none disabled:opacity-40"
             >
-              <CheckCheck className="size-3.5" />
+              <Check className="size-3.5" strokeWidth={2.5} />
               Mark all read
             </button>
           </div>
 
-          <div className="max-h-[24rem] overflow-y-auto">
+          <div className="max-h-[30rem] overflow-y-auto">
             <TabsContent value="all" className="m-0">
               <GroupedList
                 items={items}
                 onJump={handleJump}
-                emptyLabel="Finished stacks will show up here."
+                emptyLabel="Documents show up here as each one is ready to review."
               />
             </TabsContent>
             <TabsContent value="unread" className="m-0">
               <GroupedList
                 items={unread}
                 onJump={handleJump}
-                emptyLabel="No unread notifications — nice and tidy."
+                emptyLabel="No unread notifications."
               />
             </TabsContent>
           </div>
 
-          <div className="border-t border-[var(--workspace-border)] px-3 py-2">
+          <div className="border-t border-[var(--workspace-border)] px-3 py-2.5">
             <Link
               href="/history"
               onClick={() => setOpen(false)}
-              className="ax-interactive block rounded-full py-1.5 text-center text-[12px] font-medium text-[var(--workspace-primary)] transition-colors hover:text-[var(--workspace-primary-hover)]"
+              className="ax-interactive block rounded-full py-2 text-center text-[13px] font-semibold text-emerald-700 transition-colors hover:text-emerald-800"
             >
               View activity history
             </Link>

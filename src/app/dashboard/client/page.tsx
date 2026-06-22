@@ -1751,7 +1751,12 @@ Best regards`
     if (persistedResults.length) {
       return persistedResults.map(file => ({ ...file, document_id: document.id }))
     }
-    return document.extractions.map(extraction => ({
+    // Mid-batch, a document that hasn't finished reading yet has no result file and
+    // an in-flight extraction. Those don't belong on the review board — they surface
+    // as the live "Reading …" state — so only terminal extractions become rows.
+    return document.extractions
+      .filter(extraction => !["queued", "processing"].includes(extraction.status))
+      .map(extraction => ({
       file_id: extraction.result_file_id || undefined,
       filename: document.original_filename,
       original_filename: document.original_filename,
@@ -1876,6 +1881,8 @@ Best regards`
         isUploading={isUploading}
         isProcessing={isProcessing}
         isComplete={Boolean(isComplete)}
+        processingTotal={progress?.total_images ?? uploadedFiles.length}
+        processingDone={progress?.processed_images ?? (displayResultFiles?.length ?? 0)}
         uploadedSizeMb={uploadedSizeMb}
         creditAvailable={creditAvailable}
         creditEstimate={creditEstimate}

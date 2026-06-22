@@ -171,7 +171,18 @@ export function useOCR(): UseOCRReturn {
     setProgress(response.progress || null)
 
     if (response.results) {
-      setFiles(response.results.files)
+      // Merge by file_id rather than overwrite: results now stream in mid-batch
+      // (the status endpoint returns each file the moment it is ready), and the
+      // WebSocket may already have appended some. Union keeps both transports in
+      // lockstep so a file never flickers out between a poll and a socket push.
+      const incoming = response.results.files || []
+      setFiles(prev => {
+        if (!prev || prev.length === 0) return incoming
+        const byId = new Map<string, any>()
+        for (const file of prev) if (file?.file_id) byId.set(file.file_id, file)
+        for (const file of incoming) if (file?.file_id) byId.set(file.file_id, file)
+        return Array.from(byId.values())
+      })
     }
 
     if (response.errors && response.errors.length > 0) {
