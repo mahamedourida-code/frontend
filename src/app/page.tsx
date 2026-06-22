@@ -434,8 +434,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── 1.5 · Integrations showcase — scroll-driven band, leads the page ── */}
-        <IntegrationsLogos showTitle />
+        {/* ── 1.5 · Use cases — Devin-style staircase bento (leads the page) ── */}
+        <CapabilityBoxes />
 
         {/* ── 2 · "Throw us the whole folder" — full-bleed cyan band (now SECOND) ── */}
         <div className="relative isolate overflow-hidden">
@@ -565,8 +565,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── Scroll-reveal statement — word-by-word scroll light-up ── */}
-        <CapabilityBoxes />
+        {/* ── Integrations showcase — static logo wall ── */}
+        <IntegrationsLogos showTitle />
 
         {/* ── 7 · Organizations testimonials (white) ── */}
         <TestimonialsMarquee />

@@ -2,115 +2,167 @@
 
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { ScrollRevealText } from "@/components/landing/ScrollRevealText";
+
+/* Use-cases bento — rebuilt to match Devin AI's "Use cases" section:
+   a 3×3 staircase grid where three tall cards carry a real product
+   screenshot anchored to the bottom-right (top-cropped), and three short
+   cards are text-only. Minimal 2–5 word titles, one blue accent CTA per
+   relevant card. Static — no scroll animation. Bullets stay solid black
+   (AxLiner brand rule: no grey text), blue accents use --brand-link. */
 
 interface Card {
-  heading: string;
+  layout: "tall" | "short";
+  title: string;
   bullets: string[];
-  link?: { label: string; href: string };
+  image?: { src: string; alt: string };
+  cta?: { label: string; href: string };
 }
 
 const cards: Card[] = [
   {
-    heading: "Read the whole folder",
+    layout: "tall",
+    title: "The review board",
     bullets: [
-      "— Invoices, receipts, bank statements, handwritten tables",
-      "— Batch-upload the entire client folder at once",
-      "— Photos, PDFs, scans, HEIC — all in one stack",
+      "Flagged exceptions surface first, not buried",
+      "Field- and row-level confidence on every value",
+      "Source on the left, editable fields on the right",
     ],
-    link: { label: "See document types", href: "/products" },
+    image: { src: "/product-board.png", alt: "The AxLiner batch review board with statuses, confidence flags, and one-click publish" },
+    cta: { label: "Open the review board", href: "/dashboard/client" },
   },
   {
-    heading: "Review, don't retype",
+    layout: "short",
+    title: "Read the whole folder",
     bullets: [
-      "— Flagged exceptions surface first, not buried",
-      "— Field- and row-level confidence on every value",
-      "— Vendor memory pre-codes repeat suppliers",
+      "Invoices, receipts, bank statements, handwritten tables",
+      "Photos, PDFs, scans, HEIC — all in one stack",
+      "Batch the entire client folder at once",
     ],
-    link: { label: "Open the review board", href: "/dashboard/client" },
   },
   {
-    heading: "Publish to your books",
+    layout: "short",
+    title: "Publish to your books",
     bullets: [
-      "— Reviewed draft bills to QuickBooks or Xero",
-      "— Export clean Excel or CSV anytime",
-      "— AxLiner never pays, approves, or reconciles",
+      "Reviewed draft bills to QuickBooks or Xero",
+      "Source attached to every posted entry",
+      "Never pays, approves, or reconciles for you",
     ],
-    link: { label: "See integrations", href: "/integrations" },
+    cta: { label: "See QuickBooks & Xero", href: "/integrations" },
   },
   {
-    heading: "Built for many clients",
+    layout: "tall",
+    title: "Clean spreadsheets out",
     bullets: [
-      "— A workspace per firm, a client per company",
-      "— Per-client coding and accounting connections",
-      "— Made for bookkeepers running many books",
+      "Export reviewed Excel or CSV anytime",
+      "Columns mapped to the right schema",
+      "Numbers, dates, and totals already parsed",
+    ],
+    image: { src: "/after.png", alt: "Reviewed data exported to a clean Excel spreadsheet" },
+    cta: { label: "See export formats", href: "/products" },
+  },
+  {
+    layout: "tall",
+    title: "Any table, handled",
+    bullets: [
+      "Wide, dense tables read column by column",
+      "Handwritten ledgers and printed grids alike",
+      "Every cell placed where it belongs",
+    ],
+    image: { src: "/ee.png", alt: "A dense multi-column table extracted into a structured spreadsheet" },
+  },
+  {
+    layout: "short",
+    title: "Built for many clients",
+    bullets: [
+      "A workspace per firm, a client per company",
+      "Per-client coding and accounting connections",
+      "Made for bookkeepers running many books",
     ],
   },
+];
+
+// Devin's staircase: col1 = tall→short, col2 = short→tall, col3 = tall→short.
+const placement = [
+  "lg:col-start-1 lg:row-start-1 lg:row-span-2",
+  "lg:col-start-1 lg:row-start-3",
+  "lg:col-start-2 lg:row-start-1",
+  "lg:col-start-2 lg:row-start-2 lg:row-span-2",
+  "lg:col-start-3 lg:row-start-1 lg:row-span-2",
+  "lg:col-start-3 lg:row-start-3",
 ];
 
 export function CapabilityBoxes() {
   return (
     <section className="bg-[#FDFBF7] py-24 lg:py-32">
-      <div className="mx-auto max-w-[1080px] px-4 sm:px-6 lg:px-8">
-        {/* Section header — left-aligned */}
+      <div className="mx-auto max-w-[1120px] px-4 sm:px-6 lg:px-8">
+        {/* Section header — minimal, left-aligned, one blue accent word */}
         <h2
-          className="font-medium tracking-tight text-[#191919]"
-          style={{ fontSize: "clamp(40px, 5vw, 54px)", lineHeight: "1.05" }}
+          className="font-medium tracking-[-0.04em] text-[#191919]"
+          style={{ fontSize: "clamp(40px, 5vw, 60px)", lineHeight: "1.06" }}
         >
-          Turn the whole folder into reviewed books
+          From folder to <span className="text-[var(--brand-link)]">books</span>.
         </h2>
-        <p className="mt-4 max-w-[520px] text-[18px] font-normal leading-7 text-[#191919]">
-          Batch in any mix of documents. AxLiner reads them, flags what&apos;s
+        <p className="mt-5 max-w-[480px] text-[17px] font-normal leading-7 text-[#191919]">
+          Drop the whole folder. AxLiner reads every document, flags what&apos;s
           unsure, and hands back reviewed entries — ready to publish.
         </p>
 
-        {/* Real product shot — the review board */}
-        <div className="mt-12 overflow-hidden rounded-2xl border border-black/10 shadow-[0_30px_70px_-35px_rgba(15,23,42,0.45)]">
-          <img
-            src="/product-board.png"
-            alt="The AxLiner review board — every document with its status, confidence, and one-click publish to QuickBooks or Xero"
-            width={1877}
-            height={668}
-            className="block h-auto w-full"
-          />
-        </div>
-
-        {/* Card grid */}
-        <div className="mt-12 grid grid-cols-1 gap-3 md:grid-cols-2">
-          {cards.map((card) => (
-            <div
-              key={card.heading}
-              className="flex flex-col rounded-2xl bg-[#efefef] p-10"
-            >
-              <h3
-                className="mb-5 font-medium text-[#191919]"
-                style={{ fontSize: "22px", lineHeight: "28px" }}
+        {/* Staircase bento */}
+        <div className="mt-14 grid grid-cols-1 gap-4 lg:mt-16 lg:grid-cols-3 lg:grid-rows-[repeat(3,300px)]">
+          {cards.map((card, index) => {
+            const isTall = card.layout === "tall";
+            return (
+              <article
+                key={card.title}
+                className={`flex flex-col overflow-hidden rounded-2xl bg-[#efefef] ${
+                  isTall ? "min-h-[440px]" : "min-h-[260px]"
+                } ${placement[index]}`}
               >
-                {card.heading}
-              </h3>
-
-              <div className="space-y-3">
-                {card.bullets.map((bullet) => (
-                  <ScrollRevealText
-                    key={bullet}
-                    className="text-[17px] font-normal leading-[25px]"
+                <div className="flex flex-col px-8 pb-6 pt-12 lg:px-9 lg:pt-14">
+                  <h3
+                    className="font-medium tracking-[-0.04em] text-[#191919]"
+                    style={{ fontSize: "23px", lineHeight: "1.18" }}
                   >
-                    {bullet}
-                  </ScrollRevealText>
-                ))}
-              </div>
+                    {card.title}
+                  </h3>
 
-              {card.link && (
-                <Link
-                  href={card.link.href}
-                  className="mt-6 inline-flex items-center gap-1 text-[17px] font-medium text-[var(--brand-link)] hover:underline"
-                >
-                  {card.link.label}
-                  <ChevronRight className="size-4" />
-                </Link>
-              )}
-            </div>
-          ))}
+                  <ul className="mt-5 space-y-2.5">
+                    {card.bullets.map((bullet) => (
+                      <li
+                        key={bullet}
+                        className="flex gap-2 text-[15px] font-normal leading-snug text-[#191919]"
+                      >
+                        <span aria-hidden className="shrink-0">—</span>
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {card.cta && (
+                    <Link
+                      href={card.cta.href}
+                      className="mt-7 inline-flex w-fit items-center gap-1 text-[15px] font-medium text-[var(--brand-link)] hover:underline"
+                    >
+                      {card.cta.label}
+                      <ChevronRight className="size-4" />
+                    </Link>
+                  )}
+                </div>
+
+                {isTall && card.image && (
+                  <div className="mt-3 flex-1 w-[90%] self-end overflow-hidden">
+                    <img
+                      src={card.image.src}
+                      alt={card.image.alt}
+                      loading="lazy"
+                      draggable={false}
+                      className="h-full w-full object-cover object-top"
+                    />
+                  </div>
+                )}
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
