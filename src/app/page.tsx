@@ -387,7 +387,7 @@ export default function Home() {
   };
 
   return (
-    <div className="ax-marketing-page relative min-h-screen bg-[#FDFBF7] text-neutral-950">
+    <div className="ax-home ax-marketing-page relative min-h-screen bg-[#FDFBF7] text-neutral-950">
       <AnnouncementBar />
       <MarketingNavBar onSectionClick={scrollToSection} />
 
@@ -554,7 +554,7 @@ export default function Home() {
                 </span>
                 <span className="block">
                   into reviewed{" "}
-                  <span className="font-bold">accounting work</span>.
+                  <span className="font-bold text-[var(--landing-blue)]">accounting work</span>.
                 </span>
               </h2>
             </div>
@@ -587,7 +587,7 @@ export default function Home() {
             >
               <h2 className="ax-h2 ax-marketing-section-title mt-3 font-bold text-neutral-950">
                 Your data never leaves the review board{" "}
-                <span className="font-bold text-[var(--brand-brown)]">uninvited</span>.
+                <span className="font-bold text-[var(--landing-blue)]">uninvited</span>.
               </h2>
               <p className="ax-body ax-marketing-body mx-auto mt-5 max-w-2xl font-semibold text-neutral-950">
                 Documents are processed and deleted after export. No training on your data, no persistent storage beyond your retention window, no third-party sharing — built around GDPR, SOC 2, and HIPAA-conscious workflows from day one.
@@ -651,7 +651,7 @@ export default function Home() {
             <div className="mx-auto mt-20 max-w-[928px] text-center" data-animate="headline">
               <h3 className="ax-h2 ax-marketing-section-title mt-3 font-bold text-neutral-950">
                 Questions we hear from{" "}
-                <span className="font-bold">bookkeepers</span>.
+                <span className="font-bold text-[var(--landing-blue)]">bookkeepers</span>.
               </h3>
             </div>
 

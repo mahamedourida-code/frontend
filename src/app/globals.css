@@ -517,6 +517,9 @@
   --brand-green-ring: #0e7490;
   --brand-link: #1877F2;
   --brand-link-hover: #0b5fcc;
+  /* Devin-matched bright accent blue for landing-page heading accents + links. */
+  --landing-blue: #317cff;
+  --landing-blue-hover: #1f63e0;
   --workspace-topbar: #23384a;
   --workspace-topbar-hover: #2c465d;
   --workspace-sidebar: #f4f5fb;
@@ -997,6 +1000,14 @@ body {
     font-weight: 500;
     line-height: 1.2;
     letter-spacing: -0.04em;
+  }
+  /* Home landing page only: one Devin-matched section-title tier
+     (~32px mobile → ~60px desktop) so every section heading on the home
+     page reads at the same, larger size. Other marketing pages keep the
+     compact size above. */
+  .ax-home .ax-marketing-section-title {
+    font-size: clamp(2rem, 1.1rem + 3.2vw, 3.75rem);
+    line-height: 1.1;
   }
 
   .ax-marketing-subtitle {

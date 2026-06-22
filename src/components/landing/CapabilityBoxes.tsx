@@ -9,7 +9,7 @@ import { GrowthChart } from "@/components/landing/GrowthChart";
    Two outer tall cards each carry a single visual docked to the TOP-LEFT corner
    (only that corner inherits the card radius — Devin's framing), flanking two
    stacked text cards. Static (no scroll animation). Bullets stay solid black
-   (AxLiner: no grey text); accents use --brand-link. */
+   (AxLiner: no grey text); accents use --landing-blue. */
 
 interface TextCard {
   title: string;
@@ -91,7 +91,7 @@ function CardBody({
       {cta && (
         <Link
           href={cta.href}
-          className="mt-7 inline-flex w-fit items-center gap-1 text-[15px] font-medium text-[var(--brand-link)] hover:underline"
+          className="mt-7 inline-flex w-fit items-center gap-1 text-[15px] font-medium text-[var(--landing-blue)] hover:underline"
         >
           {cta.label}
           <ChevronRight className="size-4" />
@@ -106,11 +106,8 @@ export function CapabilityBoxes() {
     <section className="bg-[#FDFBF7] py-24 lg:py-32">
       <div className="mx-auto max-w-[1120px] px-4 sm:px-6 lg:px-8">
         {/* Minimal heading, one blue accent word */}
-        <h2
-          className="font-medium tracking-[-0.04em] text-[#191919]"
-          style={{ fontSize: "clamp(40px, 5vw, 60px)", lineHeight: "1.06" }}
-        >
-          From folder to <span className="text-[var(--brand-link)]">books</span>.
+        <h2 className="ax-h2 ax-marketing-section-title text-[#191919]">
+          From folder to <span className="text-[var(--landing-blue)]">books</span>.
         </h2>
         <p className="mt-5 max-w-[480px] text-[17px] font-normal leading-7 text-[#191919]">
           Drop the whole folder. AxLiner reads every document, flags what&apos;s

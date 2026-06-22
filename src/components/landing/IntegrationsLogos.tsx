@@ -79,7 +79,7 @@ export function IntegrationsLogos({ showTitle = false }: { showTitle?: boolean }
     <section className="relative z-10 overflow-hidden bg-[#FDFBF7] py-16 sm:py-20">
       <div className="relative mx-auto max-w-[1180px] px-4 sm:px-6 lg:px-8">
         {showTitle ? (
-          <h2 className="ax-h2 mb-12 text-center font-bold tracking-tight text-black text-balance sm:mb-14">
+          <h2 className="ax-h2 ax-marketing-section-title mb-12 text-center text-black text-balance sm:mb-14">
             Works with the{" "}
             <TypewriterWord
               words={["tools", "apps", "software", "spreadsheets"]}
