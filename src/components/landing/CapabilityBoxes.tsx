@@ -83,7 +83,7 @@ function CardBody({
             key={bullet}
             className="flex gap-2 text-[15px] font-normal leading-snug text-[#191919]"
           >
-            <span aria-hidden className="shrink-0">—</span>
+            <span aria-hidden className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#191919]" />
             <span>{bullet}</span>
           </li>
         ))}
@@ -121,13 +121,13 @@ export function CapabilityBoxes() {
         <div className="mt-14 grid grid-cols-1 gap-4 lg:mt-16 lg:grid-cols-3 lg:grid-rows-[repeat(2,300px)]">
           {/* Review board — visual docked top-left, colourful rows showing */}
           <article className="flex min-h-[460px] flex-col overflow-hidden rounded-2xl bg-[#efefef] lg:col-start-1 lg:row-start-1 lg:row-span-2">
-            <div className="h-[208px] w-[88%] shrink-0 overflow-hidden rounded-tl-2xl lg:h-[232px]">
+            <div className="aspect-[945/608] w-[88%] shrink-0 overflow-hidden rounded-tl-2xl">
               <img
                 src="/review-board-crop.png"
-                alt="The AxLiner batch review board — document type, status, and vendor for each row"
+                alt="The AxLiner batch review board: document type, status, and vendor for each row"
                 loading="lazy"
                 draggable={false}
-                className="h-full w-full object-cover object-[62%_18%]"
+                className="h-full w-full object-cover object-top"
               />
             </div>
             <CardBody {...reviewCard} />
@@ -145,7 +145,7 @@ export function CapabilityBoxes() {
 
           {/* Growth chart — recreated, docked top-left */}
           <article className="flex min-h-[460px] flex-col overflow-hidden rounded-2xl bg-[#efefef] lg:col-start-3 lg:row-start-1 lg:row-span-2">
-            <div className="h-[208px] w-[88%] shrink-0 overflow-hidden rounded-tl-2xl lg:h-[232px]">
+            <div className="aspect-[945/608] w-[88%] shrink-0 overflow-hidden rounded-tl-2xl">
               <GrowthChart />
             </div>
             <CardBody {...growthCard} />

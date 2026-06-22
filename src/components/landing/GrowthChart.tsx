@@ -1,7 +1,7 @@
 "use client";
 
 /* A recreation of the Stripe/Baremetrics-style MRR card, re-skinned for
-   AxLiner: bigger headline number, emerald growth line (--data-money), a
+   AxLiner: bigger headline number, purple growth line (#8B5DFE), a
    greyed dashed "previous period" line underneath. It stands in as the
    product "screenshot" inside a use-case card — the upward trend is the
    quiet payoff of getting data-entry hours back. All text is black/green
@@ -101,11 +101,11 @@ export function GrowthChart() {
           vectorEffect="non-scaling-stroke"
         />
 
-        {/* current period — emerald growth line */}
+        {/* current period — purple growth line (matches the source chart) */}
         <polyline
           points={toPoints(MAIN)}
           fill="none"
-          stroke="var(--data-money)"
+          stroke="#8B5DFE"
           strokeWidth={5}
           strokeLinecap="round"
           strokeLinejoin="round"
