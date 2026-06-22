@@ -73,9 +73,9 @@ export function ScrollGrowSection() {
         >
           <h2 className="ax-h1 text-balance font-black leading-[0.95] text-white">
             Built for how finance actually{" "}
-            <span className="text-[var(--brand-green)]">works</span>
+            <span className="text-[var(--landing-blue)]">works</span>
           </h2>
-          <p className="mt-6 max-w-md text-lg font-semibold text-[var(--brand-green)] sm:text-xl">
+          <p className="mt-6 max-w-md text-lg font-semibold text-[var(--landing-blue)] sm:text-xl">
             Real invoices, real receipts, real handwriting. Reviewed and ready for your books.
           </p>
         </motion.div>

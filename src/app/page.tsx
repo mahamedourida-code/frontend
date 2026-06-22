@@ -548,8 +548,8 @@ export default function Home() {
                   Turn every{" "}
                   <TypewriterWord
                     words={["invoice", "receipt", "bank statement", "handwritten table", "expense report"]}
-                    className="rounded-md border border-black bg-black px-2 font-bold text-white"
-                    caretClassName="bg-white"
+                    className="rounded-lg bg-[#317cff]/12 px-2 font-medium text-[var(--landing-blue)]"
+                    caretClassName="bg-[var(--landing-blue)]"
                   />
                 </span>
                 <span className="block">
@@ -695,14 +695,14 @@ export default function Home() {
               </NextLink>
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--brand-green)]">Headquarters</p>
+                  <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--landing-blue)]">Headquarters</p>
                   <address className="mt-2 text-[15px] font-semibold not-italic leading-relaxed text-white">
                     Rue du Lac de Constance<br />
                     Tunis, Tunisia, 13310, TN
                   </address>
                 </div>
                 <div>
-                  <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--brand-green)]">Email</p>
+                  <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--landing-blue)]">Email</p>
                   <a
                     href="mailto:contact@axliner.com"
                     className="mt-2 inline-block text-[15px] font-semibold text-white transition-opacity hover:opacity-70"
@@ -732,7 +732,7 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-12 py-12 sm:grid-cols-3 lg:grid-cols-5 lg:gap-8">
             {footerColumns.map((column) => (
               <div key={column.title}>
-                <p className="text-lg font-bold text-[var(--brand-green)]">
+                <p className="text-lg font-bold text-[var(--landing-blue)]">
                   {column.title}
                 </p>
                 <ul className="mt-6 space-y-4">

@@ -1001,13 +1001,16 @@ body {
     line-height: 1.2;
     letter-spacing: -0.04em;
   }
-  /* Home landing page only: one Devin-matched section-title tier
-     (~32px mobile → ~60px desktop) so every section heading on the home
-     page reads at the same, larger size. Other marketing pages keep the
-     compact size above. */
-  .ax-home .ax-marketing-section-title {
-    font-size: clamp(2rem, 1.1rem + 3.2vw, 3.75rem);
-    line-height: 1.1;
+  /* Home landing page: EVERY section + hero heading reads at ONE uniform
+     size, weight, and tracking — pixel-for-pixel consistent down the page.
+     Covers the display headings (hero, "folder" statements, scroll-grow)
+     and all the section titles alike, overriding their per-class sizes and
+     any inline font utilities. Other marketing pages keep their own sizes. */
+  .ax-home :is(.ax-h1, .ax-h2, .ax-marketing-display, .ax-marketing-section-title) {
+    font-size: clamp(2.25rem, 1.2rem + 3.3vw, 4rem) !important;
+    line-height: 1.08 !important;
+    font-weight: 500 !important;
+    letter-spacing: -0.04em !important;
   }
 
   .ax-marketing-subtitle {

@@ -83,8 +83,8 @@ export function IntegrationsLogos({ showTitle = false }: { showTitle?: boolean }
             Works with the{" "}
             <TypewriterWord
               words={["tools", "apps", "software", "spreadsheets"]}
-              className="rounded-md border border-black bg-black px-2 font-bold text-white"
-              caretClassName="bg-white"
+              className="rounded-lg bg-[#317cff]/12 px-2 font-medium text-[var(--landing-blue)]"
+              caretClassName="bg-[var(--landing-blue)]"
             />{" "}
             you already use
           </h2>
