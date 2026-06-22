@@ -51,7 +51,7 @@ const cards: Card[] = [
 export function CapabilityBoxes() {
   return (
     <section className="bg-[#FDFBF7] py-24 lg:py-32">
-      <div className="mx-auto max-w-[1000px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1080px] px-4 sm:px-6 lg:px-8">
         {/* Section header — left-aligned */}
         <h2
           className="font-medium tracking-tight text-[#191919]"
@@ -64,12 +64,23 @@ export function CapabilityBoxes() {
           unsure, and hands back reviewed entries — ready to publish.
         </p>
 
+        {/* Real product shot — the review board */}
+        <div className="mt-12 overflow-hidden rounded-2xl border border-black/10 shadow-[0_30px_70px_-35px_rgba(15,23,42,0.45)]">
+          <img
+            src="/product-board.png"
+            alt="The AxLiner review board — every document with its status, confidence, and one-click publish to QuickBooks or Xero"
+            width={1877}
+            height={668}
+            className="block h-auto w-full"
+          />
+        </div>
+
         {/* Card grid */}
-        <div className="mt-12 grid grid-cols-1 gap-2.5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid grid-cols-1 gap-3 md:grid-cols-2">
           {cards.map((card) => (
             <div
               key={card.heading}
-              className="flex flex-col rounded-2xl bg-[#efefef] p-8"
+              className="flex flex-col rounded-2xl bg-[#efefef] p-10"
             >
               <h3
                 className="mb-5 font-medium text-[#191919]"

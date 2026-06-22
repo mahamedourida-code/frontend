@@ -17,17 +17,14 @@ interface WordProps {
 }
 
 function RevealWord({ word, scrollYProgress, start, end }: WordProps) {
-  const opacity = useTransform(scrollYProgress, [start, end], [0.12, 1]);
-  const color = useTransform(
-    scrollYProgress,
-    [start, end],
-    ["rgba(10,10,10,0.18)", "rgba(10,10,10,1)"]
-  );
+  // Dim state stays partially visible (~45%), then fills to fully solid as it
+  // scrolls into view — a gentle "fill in", never appear-from-nothing.
+  const opacity = useTransform(scrollYProgress, [start, end], [0.45, 1]);
 
   return (
     <motion.span
-      style={{ opacity, color }}
-      className="inline-block will-change-[opacity,color]"
+      style={{ opacity }}
+      className="inline-block will-change-[opacity]"
     >
       {word}
     </motion.span>
