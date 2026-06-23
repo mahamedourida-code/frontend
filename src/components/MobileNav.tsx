@@ -39,7 +39,6 @@ import {
   Settings,
   LogOut,
   FileText,
-  Files,
   ReceiptText,
   Receipt,
   Building2,
@@ -53,7 +52,6 @@ import {
   SlidersHorizontal,
   Users,
   ScanLine,
-  Workflow,
 } from "lucide-react"
 
 interface MobileNavProps {
@@ -81,7 +79,7 @@ type MobileNavItem = {
   }>
 }
 
-type AuthenticatedNavGroupKey = "work" | "documentTypes" | "accounting" | "manage"
+type AuthenticatedNavGroupKey = "collect" | "review" | "output" | "uploadAs" | "manage"
 
 type AuthenticatedNavGroup = {
   key: AuthenticatedNavGroupKey
@@ -96,34 +94,42 @@ type AuthenticatedNavGroup = {
 
 const AUTHENTICATED_NAV_GROUPS: AuthenticatedNavGroup[] = [
   {
-    key: "work",
-    label: "Work",
-    icon: Workflow,
+    key: "collect",
+    label: "1. Collect",
+    icon: Inbox,
     items: [
       { label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
+      { label: "Upload documents", href: "/dashboard/client#upload-files", icon: Upload },
+    ],
+  },
+  {
+    key: "review",
+    label: "2. Review",
+    icon: BookCheck,
+    items: [
       { label: "Stacks", href: "/dashboard/batches", icon: Layers },
       { label: "Review board", href: "/dashboard/client", icon: BookCheck },
     ],
   },
   {
-    key: "documentTypes",
-    label: "Document types",
-    icon: Files,
+    key: "output",
+    label: "3. Output",
+    icon: ReceiptText,
     items: [
+      { label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
+      { label: "Integrations", href: "/dashboard/integrations", icon: PlugZap },
+    ],
+  },
+  {
+    key: "uploadAs",
+    label: "Upload as",
+    icon: Upload,
+    items: [
+      { label: "Auto-detect", href: "/dashboard/auto-detect", icon: ScanSearch },
       { label: "Invoices", href: "/dashboard/invoices", icon: FileText },
       { label: "Receipts", href: "/dashboard/receipts", icon: Receipt },
       { label: "Bank statements", href: "/dashboard/bank-statements", icon: Landmark },
       { label: "Notes", href: "/dashboard/notes", icon: NotebookText },
-      { label: "Auto-detect", href: "/dashboard/auto-detect", icon: ScanSearch },
-    ],
-  },
-  {
-    key: "accounting",
-    label: "Accounting",
-    icon: Landmark,
-    items: [
-      { label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
-      { label: "Integrations", href: "/dashboard/integrations", icon: PlugZap },
     ],
   },
   {
@@ -133,7 +139,6 @@ const AUTHENTICATED_NAV_GROUPS: AuthenticatedNavGroup[] = [
     items: [
       { label: "Setup", href: "/dashboard/setup", icon: ListChecks },
       { label: "Activity", href: "/history", icon: Activity },
-      { label: "Getting started", href: "/dashboard/guide", icon: BookOpenText },
       { label: "Settings", href: "/dashboard/settings", icon: Settings },
     ],
   },
@@ -150,9 +155,10 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
   const [isOpen, setIsOpen] = useState(false)
   const [audiencesOpen, setAudiencesOpen] = useState(false)
   const [authenticatedGroupsOpen, setAuthenticatedGroupsOpen] = useState<Record<AuthenticatedNavGroupKey, boolean>>({
-    work: true,
-    documentTypes: false,
-    accounting: false,
+    collect: true,
+    review: false,
+    output: false,
+    uploadAs: false,
     manage: false,
   })
   const router = useRouter()
@@ -407,6 +413,19 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                       >
                         <Building2 className="h-5 w-5" />
                         <span className="flex-1 text-left text-sm font-medium md:text-base">Clients</span>
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        aria-current={isDashboardRouteActive(pathname, "/dashboard/guide") ? "page" : undefined}
+                        onClick={() => handleNavigation("/dashboard/guide")}
+                        className={cn(
+                          "ax-interactive h-11 w-full justify-start gap-3 rounded-full px-3 text-foreground hover:bg-accent hover:text-accent-foreground",
+                          isDashboardRouteActive(pathname, "/dashboard/guide") && "bg-accent text-accent-foreground",
+                        )}
+                      >
+                        <BookOpenText className="h-5 w-5" />
+                        <span className="flex-1 text-left text-sm font-medium md:text-base">Getting started</span>
                       </Button>
 
                       {AUTHENTICATED_NAV_GROUPS.map((group) => {

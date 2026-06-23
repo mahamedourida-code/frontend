@@ -30,7 +30,16 @@ import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { companyApi, type CompanySummary } from "@/lib/api-client"
 
-type CommandGroup = "navigate" | "act" | "clients" | "documents"
+type CommandGroup =
+  | "workspace"
+  | "collect"
+  | "review"
+  | "output"
+  | "uploadAs"
+  | "manage"
+  | "act"
+  | "clients"
+  | "documents"
 
 type CommandItem = {
   id: string
@@ -43,36 +52,51 @@ type CommandItem = {
 }
 
 const GROUP_LABELS: Record<CommandGroup, string> = {
-  navigate: "Navigate",
-  act: "Act",
+  workspace: "Workspace",
+  collect: "1. Collect",
+  review: "2. Review",
+  output: "3. Output",
+  uploadAs: "Upload as",
+  manage: "Manage",
+  act: "Actions",
   clients: "Clients",
   documents: "Documents",
 }
 
-const GROUP_ORDER: CommandGroup[] = ["navigate", "act", "clients", "documents"]
+const GROUP_ORDER: CommandGroup[] = [
+  "workspace",
+  "collect",
+  "review",
+  "output",
+  "uploadAs",
+  "manage",
+  "act",
+  "clients",
+  "documents",
+]
 
 // Navigate: every accountant workspace route (mirrors WorkspaceSidebar).
 const NAVIGATE_ITEMS: CommandItem[] = [
-  { id: "nav-companies", group: "navigate", label: "Clients",          hint: "Workspace", keywords: "companies customers home",      icon: Building2,   href: "/dashboard" },
-  { id: "nav-inbox",    group: "navigate", label: "Inbox",            hint: "Workspace", keywords: "intake client submissions",    icon: Inbox,       href: "/dashboard/inbox" },
-  { id: "nav-stacks",   group: "navigate", label: "Stacks",           hint: "Work",      keywords: "batches jobs processing",         icon: Layers,      href: "/dashboard/batches" },
-  { id: "nav-review",   group: "navigate", label: "Review board",     hint: "Workspace", keywords: "batches documents exceptions results", icon: BookCheck,   href: "/dashboard/client" },
-  { id: "nav-invoices", group: "navigate", label: "Invoices",         hint: "Documents", keywords: "supplier vendor bills",            icon: FileText,    href: "/dashboard/invoices" },
-  { id: "nav-receipts", group: "navigate", label: "Receipts",         hint: "Documents", keywords: "expenses purchases",                 icon: Receipt,     href: "/dashboard/receipts" },
-  { id: "nav-statements", group: "navigate", label: "Bank statements", hint: "Documents", keywords: "bank transactions reconciliation", icon: Landmark, href: "/dashboard/bank-statements" },
-  { id: "nav-notes",    group: "navigate", label: "Notes",            hint: "Documents", keywords: "handwritten text",                    icon: NotebookText, href: "/dashboard/notes" },
-  { id: "nav-detect",   group: "navigate", label: "Auto-detect",      hint: "Documents", keywords: "classify mixed files",                icon: ScanSearch,  href: "/dashboard/auto-detect" },
-  { id: "nav-bills",    group: "navigate", label: "Draft bills",      hint: "Workspace", keywords: "accounts payable ap queue coding", icon: ReceiptText, href: "/dashboard/accounts-payable" },
-  { id: "nav-activity", group: "navigate", label: "Activity",         hint: "Workspace", keywords: "history saved jobs results",   icon: Activity,    href: "/history" },
-  { id: "nav-integrations", group: "navigate", label: "Integrations", hint: "Workspace", keywords: "quickbooks xero accounting sync", icon: PlugZap,     href: "/dashboard/integrations" },
-  { id: "nav-setup",    group: "navigate", label: "Setup",            hint: "Manage",    keywords: "workspace configuration checklist", icon: ListChecks, href: "/dashboard/setup" },
-  { id: "nav-guide",    group: "navigate", label: "Getting started",  hint: "Manage",    keywords: "guide help onboarding workflow docs", icon: BookOpen, href: "/dashboard/guide" },
-  { id: "nav-settings", group: "navigate", label: "Settings",         hint: "Workspace", keywords: "account billing plan",         icon: Settings,    href: "/dashboard/settings" },
+  { id: "nav-companies", group: "workspace", label: "Clients", hint: "Workspace", keywords: "companies customers home", icon: Building2, href: "/dashboard" },
+  { id: "nav-guide", group: "workspace", label: "Getting started", hint: "Workspace guide", keywords: "guide help onboarding workflow docs", icon: BookOpen, href: "/dashboard/guide" },
+  { id: "nav-inbox", group: "collect", label: "Inbox", hint: "Incoming files", keywords: "intake client submissions", icon: Inbox, href: "/dashboard/inbox" },
+  { id: "nav-upload", group: "collect", label: "Upload documents", hint: "Start a stack", keywords: "new add files import scan batches", icon: Upload, href: "/dashboard/client#upload-files" },
+  { id: "nav-stacks", group: "review", label: "Stacks", hint: "Processing batches", keywords: "batches jobs processing", icon: Layers, href: "/dashboard/batches" },
+  { id: "nav-review", group: "review", label: "Review board", hint: "Check exceptions", keywords: "batches documents exceptions results", icon: BookCheck, href: "/dashboard/client" },
+  { id: "nav-bills", group: "output", label: "Draft bills", hint: "Ready to publish", keywords: "accounts payable ap queue coding", icon: ReceiptText, href: "/dashboard/accounts-payable" },
+  { id: "nav-integrations", group: "output", label: "Integrations", hint: "QuickBooks or Xero", keywords: "quickbooks xero accounting sync", icon: PlugZap, href: "/dashboard/integrations" },
+  { id: "nav-detect", group: "uploadAs", label: "Auto-detect", hint: "Mixed documents", keywords: "classify mixed files", icon: ScanSearch, href: "/dashboard/auto-detect" },
+  { id: "nav-invoices", group: "uploadAs", label: "Invoices", hint: "Upload mode", keywords: "supplier vendor bills", icon: FileText, href: "/dashboard/invoices" },
+  { id: "nav-receipts", group: "uploadAs", label: "Receipts", hint: "Upload mode", keywords: "expenses purchases", icon: Receipt, href: "/dashboard/receipts" },
+  { id: "nav-statements", group: "uploadAs", label: "Bank statements", hint: "Upload mode", keywords: "bank transactions reconciliation", icon: Landmark, href: "/dashboard/bank-statements" },
+  { id: "nav-notes", group: "uploadAs", label: "Notes", hint: "Upload mode", keywords: "handwritten text", icon: NotebookText, href: "/dashboard/notes" },
+  { id: "nav-setup", group: "manage", label: "Setup", hint: "Workspace", keywords: "workspace configuration checklist", icon: ListChecks, href: "/dashboard/setup" },
+  { id: "nav-activity", group: "manage", label: "Activity", hint: "Saved work", keywords: "history saved jobs results", icon: Activity, href: "/history" },
+  { id: "nav-settings", group: "manage", label: "Settings", hint: "Account and billing", keywords: "account billing plan", icon: Settings, href: "/dashboard/settings" },
 ]
 
 // Act: actions that already have a destination (no invented endpoints)
 const ACT_ITEMS: CommandItem[] = [
-  { id: "act-upload",      group: "act", label: "Upload documents",         hint: "New stack",              keywords: "new add files import scan stacks batches",     icon: Upload,          href: "/dashboard/client#upload-files" },
   { id: "act-refresh-accounting", group: "act", label: "Refresh accounting lists", hint: "Accounting connection", keywords: "sync vendors accounts tax qbo xero", icon: RefreshCw, href: "/dashboard/integrations" },
   { id: "act-import-pos",  group: "act", label: "Import purchase orders",   hint: "Settings",               keywords: "po pos bills coding",           icon: FileSpreadsheet, href: "/dashboard/settings?section=accounting" },
 ]

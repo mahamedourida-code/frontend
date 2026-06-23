@@ -9,7 +9,6 @@ import {
   Building2,
   ChevronDown,
   FileText,
-  Files,
   Inbox,
   Landmark,
   Layers,
@@ -22,7 +21,7 @@ import {
   ScanSearch,
   Settings,
   SlidersHorizontal,
-  Workflow,
+  Upload,
   type LucideIcon,
 } from "lucide-react"
 import { motion, useReducedMotion } from "framer-motion"
@@ -50,6 +49,7 @@ export type WorkspaceSidebarItemKey =
   | "bank_statements"
   | "notes"
   | "auto_detect"
+  | "upload"
   | "pricing"
 
 interface WorkspaceSidebarProps {
@@ -77,13 +77,14 @@ type SidebarItem = {
     | "bank_statements"
     | "notes"
     | "auto_detect"
+    | "upload"
   >
   label: string
   href: string
   icon: LucideIcon
 }
 
-type SidebarGroupKey = "work" | "documentTypes" | "accounting" | "manage"
+type SidebarGroupKey = "collect" | "review" | "output" | "uploadAs" | "manage"
 
 type SidebarGroup = {
   key: SidebarGroupKey
@@ -99,39 +100,43 @@ const STORAGE_KEY = "axliner:sidebarCollapsed"
 // "Clients" is the one name everywhere (sidebar, mobile, command palette).
 const PRIMARY_ITEMS: SidebarItem[] = [
   { key: "companies", label: "Clients", href: "/dashboard", icon: Building2 },
+  { key: "guide", label: "Getting started", href: "/dashboard/guide", icon: BookOpenText },
 ]
 
-// Keep the daily flow in pipeline order: intake -> batch -> review.
-const WORK_ITEMS: SidebarItem[] = [
+const COLLECT_ITEMS: SidebarItem[] = [
   { key: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
+  { key: "upload", label: "Upload documents", href: "/dashboard/client#upload-files", icon: Upload },
+]
+
+const REVIEW_ITEMS: SidebarItem[] = [
   { key: "batches", label: "Stacks", href: "/dashboard/batches", icon: Layers },
   { key: "review", label: "Review board", href: "/dashboard/client", icon: BookCheck },
 ]
 
-const DOCUMENT_TYPE_ITEMS: SidebarItem[] = [
+const OUTPUT_ITEMS: SidebarItem[] = [
+  { key: "accounts_payable", label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
+  { key: "integrations", label: "Integrations", href: "/dashboard/integrations", icon: PlugZap },
+]
+
+const UPLOAD_AS_ITEMS: SidebarItem[] = [
+  { key: "auto_detect", label: "Auto-detect", href: "/dashboard/auto-detect", icon: ScanSearch },
   { key: "invoices", label: "Invoices", href: "/dashboard/invoices", icon: FileText },
   { key: "receipts", label: "Receipts", href: "/dashboard/receipts", icon: Receipt },
   { key: "bank_statements", label: "Bank statements", href: "/dashboard/bank-statements", icon: Landmark },
   { key: "notes", label: "Notes", href: "/dashboard/notes", icon: NotebookText },
-  { key: "auto_detect", label: "Auto-detect", href: "/dashboard/auto-detect", icon: ScanSearch },
-]
-
-const ACCOUNTING_ITEMS: SidebarItem[] = [
-  { key: "accounts_payable", label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
-  { key: "integrations", label: "Integrations", href: "/dashboard/integrations", icon: PlugZap },
 ]
 
 const MANAGE_ITEMS: SidebarItem[] = [
   { key: "setup", label: "Setup", href: "/dashboard/setup", icon: ListChecks },
   { key: "activity", label: "Activity", href: "/history", icon: Activity },
-  { key: "guide", label: "Getting started", href: "/dashboard/guide", icon: BookOpenText },
   { key: "settings", label: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
 const SIDEBAR_GROUPS: SidebarGroup[] = [
-  { key: "work", label: "Work", icon: Workflow, items: WORK_ITEMS },
-  { key: "documentTypes", label: "Document types", icon: Files, items: DOCUMENT_TYPE_ITEMS },
-  { key: "accounting", label: "Accounting", icon: Landmark, items: ACCOUNTING_ITEMS },
+  { key: "collect", label: "1. Collect", icon: Inbox, items: COLLECT_ITEMS },
+  { key: "review", label: "2. Review", icon: BookCheck, items: REVIEW_ITEMS },
+  { key: "output", label: "3. Output", icon: ReceiptText, items: OUTPUT_ITEMS },
+  { key: "uploadAs", label: "Upload as", icon: Upload, items: UPLOAD_AS_ITEMS },
   { key: "manage", label: "Manage", icon: SlidersHorizontal, items: MANAGE_ITEMS },
 ]
 
@@ -154,9 +159,10 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
   const prefersReducedMotion = useReducedMotion()
   const [collapsed, setCollapsed] = useState(false)
   const [openGroups, setOpenGroups] = useState<Record<SidebarGroupKey, boolean>>({
-    work: true,
-    documentTypes: false,
-    accounting: false,
+    collect: true,
+    review: false,
+    output: false,
+    uploadAs: false,
     manage: false,
   })
 
@@ -352,9 +358,9 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         className={cn("flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-3", collapsed && "cursor-pointer")}
       >
         {PRIMARY_ITEMS.map((item) => renderItem(item))}
-        {SIDEBAR_GROUPS.slice(0, 3).map((group) => renderGroup(group))}
+        {SIDEBAR_GROUPS.slice(0, -1).map((group) => renderGroup(group))}
         <div className="mt-auto border-t border-[var(--workspace-border)] pt-2">
-          {renderGroup(SIDEBAR_GROUPS[3])}
+          {renderGroup(SIDEBAR_GROUPS[SIDEBAR_GROUPS.length - 1])}
         </div>
       </nav>
     </motion.aside>
