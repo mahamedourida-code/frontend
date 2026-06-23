@@ -33,6 +33,7 @@ import {
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
+import { WorkspaceStageStrip } from "@/components/dashboard/WorkspaceStageStrip"
 import { SegmentedTabs } from "@/components/dashboard/SegmentedTabs"
 import { Field } from "@/components/dashboard/Field"
 import { Symbol } from "@/components/dashboard/Symbol"
@@ -1206,21 +1207,24 @@ function AccountsPayableContent() {
                             alt=""
                           />
                           <h3 className="mt-8 text-xl font-medium tracking-tight text-slate-950">
-                            {items.length ? "Nothing in this view" : "Turn invoices into draft bills"}
+                            {items.length ? "Nothing in this view" : "No draft bills yet"}
                           </h3>
                           {!items.length ? (
-                            <div className="mt-7 flex flex-col items-center gap-3">
+                            <div className="mt-4 flex w-full max-w-2xl flex-col items-center gap-4">
+                              <p className="max-w-xl text-sm leading-6 text-muted-foreground">
+                                Reviewed invoice batches appear here for coding and a final check before you publish unpaid draft bills to QuickBooks or Xero.
+                              </p>
+                              <WorkspaceStageStrip activeStage="output" />
                               <Button asChild variant="glossy" size="sm" className={workspacePrimaryButton}>
                                 <Link href="/dashboard/client#upload-files">
-                                  Auto-detect documents
-                                  <span className="text-[10px] font-medium uppercase tracking-wider opacity-70">Recommended</span>
+                                  Upload an invoice batch
                                 </Link>
                               </Button>
                               <Button asChild variant="surface" size="sm" className={workspaceSurfaceButton}>
-                                <Link href="/dashboard/client#upload-files">Upload documents</Link>
+                                <Link href="/dashboard/integrations">Connect QuickBooks or Xero</Link>
                               </Button>
                               <InlineAction asChild className="text-xs">
-                                <Link href="/blogs">Read the guide</Link>
+                                <Link href="/dashboard/guide">Read the guide</Link>
                               </InlineAction>
                             </div>
                           ) : null}

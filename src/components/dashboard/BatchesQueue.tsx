@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { motion, useReducedMotion } from "framer-motion"
 import {
@@ -10,10 +11,13 @@ import {
   Layers,
   LoaderCircle,
   RefreshCw,
+  Upload,
 } from "lucide-react"
 import { formatDistanceToNow, isToday } from "date-fns"
 
 import { EmptyState } from "@/components/dashboard/EmptyState"
+import { WorkspaceStageStrip } from "@/components/dashboard/WorkspaceStageStrip"
+import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
 import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
@@ -234,11 +238,25 @@ export function BatchesQueue() {
         </div>
       ) : total === 0 ? (
         <WorkspaceSection title="Your stacks" icon={<Layers />}>
+          <WorkspaceStageStrip activeStage="review" className="mx-auto max-w-2xl" />
           <EmptyState
             icon={<Inbox />}
-            eyebrow="Stacks"
-            title="No stacks yet"
-            description="Drop a folder of invoices, receipts, or statements into the review board. Each stack you process lands here, grouped by what needs your attention."
+            eyebrow="Batch history"
+            title="No processed stacks yet"
+            description="This queue shows each processed batch, grouped by reading, needs review, and completed work."
+            steps={[
+              "Upload invoices, receipts, statements, scans, or photos in one mixed batch.",
+              "Auto-detect classifies the documents and sends uncertain fields to review.",
+              "Confirm the exceptions, then export Excel/CSV or prepare reviewed draft bills.",
+            ]}
+            action={(
+              <Button asChild variant="glossy" size="sm">
+                <Link href="/dashboard/client#upload-files">
+                  <Upload className="size-3.5" />
+                  Upload your first batch
+                </Link>
+              </Button>
+            )}
           />
         </WorkspaceSection>
       ) : (

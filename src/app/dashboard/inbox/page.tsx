@@ -421,7 +421,7 @@ export default function EmailInboxPage() {
           <div className="grid gap-6 lg:grid-cols-2">
 
             {/* Client upload links */}
-            <WorkspaceSection icon={<Link2 />} title="Client upload links">
+            <WorkspaceSection id="client-upload-links" icon={<Link2 />} title="Client upload links">
               <div className="flex gap-2.5">
                 <Input value={linkLabel} onChange={event => setLinkLabel(event.target.value)} placeholder="Client documents" className="flex-1" />
                 <Button variant="glossy" size="sm" onClick={() => void createClientLink()} disabled={actionBusy === "link"} className={workspacePrimaryButton}>
@@ -598,7 +598,7 @@ export default function EmailInboxPage() {
 
         {/* Email-in address */}
         {activeWorkspace?.role === "owner" ? (
-          <WorkspaceSection icon={<AtSign />} title="Email-in address">
+          <WorkspaceSection id="email-in-address" icon={<AtSign />} title="Email-in address">
             <Field label="Forward documents to" icon={<Mail />}>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="min-w-0 break-all font-mono text-sm text-black">
@@ -745,7 +745,19 @@ export default function EmailInboxPage() {
           {loading ? (
             <EmptyState compact icon={<RefreshCw className="animate-spin" />} title="Loading submissions" />
           ) : submissions.length === 0 ? (
-            <EmptyState icon={<Inbox />} title="No submissions yet" />
+            <EmptyState
+              icon={<Inbox />}
+              eyebrow="Client intake"
+              title="No client files received"
+              description="Files sent through a client upload link appear here with their source, processing status, and a direct path to review."
+              action={(
+                <Button asChild variant="surface" size="sm">
+                  <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox#client-upload-links" : "/dashboard/client#upload-files"}>
+                    {activeWorkspace?.role === "owner" ? "Create an upload link" : "Upload documents"}
+                  </Link>
+                </Button>
+              )}
+            />
           ) : (
             <>
               {/* Desktop table */}
@@ -837,7 +849,19 @@ export default function EmailInboxPage() {
           {loading ? (
             <EmptyState compact icon={<RefreshCw className="animate-spin" />} title="Loading imports" />
           ) : messages.length === 0 ? (
-            <EmptyState icon={<Mail />} title="Inbox zero" />
+            <EmptyState
+              icon={<Mail />}
+              eyebrow="Email intake"
+              title="No emailed documents yet"
+              description="Attachments forwarded to your workspace email appear here with the sender, processing status, and a Review link."
+              action={(
+                <Button asChild variant="surface" size="sm">
+                  <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox#email-in-address" : "/dashboard/guide"}>
+                    {activeWorkspace?.role === "owner" ? "Find the email address" : "Open the intake guide"}
+                  </Link>
+                </Button>
+              )}
+            />
           ) : (
             <>
               <div className="hidden sm:block">
