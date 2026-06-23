@@ -88,7 +88,7 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
   }, [companies, query])
 
   return (
-    <Card className="ax-workspace-panel overflow-hidden rounded-md py-0">
+    <Card id="clients" className="ax-workspace-panel scroll-mt-20 overflow-hidden rounded-md py-0">
       <CardContent className="p-0">
         <div className="flex flex-col gap-3 border-b border-[var(--workspace-border)] bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative w-full sm:max-w-sm">
@@ -116,38 +116,53 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
           </div>
         ) : null}
 
-        <div className="overflow-x-auto">
-          <Table className="ax-table min-w-[1180px]">
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className="min-w-[230px] px-4">Client</TableHead>
-                <TableHead>Accounting</TableHead>
-                <TableHead className="text-right">Purchases</TableHead>
-                <TableHead className="text-right">Receipts</TableHead>
-                <TableHead className="text-right">Bank statements</TableHead>
-                <TableHead className="text-right">Other</TableHead>
-                <TableHead className="text-right">Needs review</TableHead>
-                <TableHead className="text-right">Draft bills</TableHead>
-                <TableHead className="min-w-[130px] px-4">Last upload</TableHead>
-                <TableHead className="px-4 text-right">Upload</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                Array.from({ length: 5 }).map((_, index) => <SkeletonTableRow key={`company-skel-${index}`} columns={10} />)
-              ) : visibleCompanies.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={10} className="h-48">
-                    <EmptyState
-                      icon={<Building2 />}
-                      title={query ? "No matching clients" : "No clients yet"}
-                      description={query ? "Try a different search term." : "Add a client to give each stack a clear home."}
-                      compact
-                    />
-                  </TableCell>
+        {!loading && visibleCompanies.length === 0 ? (
+          query ? (
+            <EmptyState
+              icon={<Building2 />}
+              title="No matching clients"
+              description="Try a different search term."
+              className="min-h-48"
+              compact
+            />
+          ) : (
+            <EmptyState
+              icon={<Building2 />}
+              eyebrow="Start here"
+              title="Add your first client"
+              description="Clients keep source files, review work, exports, and draft bills separate."
+              steps={[
+                <>Add the client you are working on.</>,
+                <>Open the client and upload a mixed stack.</>,
+                <>Review flags before you export or publish.</>,
+              ]}
+              action={<AddCompanyDialog workspaceId={workspaceId} onCreated={() => void load()} />}
+              className="min-h-[340px]"
+              compact
+            />
+          )
+        ) : (
+          <div className="overflow-x-auto">
+            <Table className="ax-table min-w-[1180px]">
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="min-w-[230px] px-4">Client</TableHead>
+                  <TableHead>Accounting</TableHead>
+                  <TableHead className="text-right">Purchases</TableHead>
+                  <TableHead className="text-right">Receipts</TableHead>
+                  <TableHead className="text-right">Bank statements</TableHead>
+                  <TableHead className="text-right">Other</TableHead>
+                  <TableHead className="text-right">Needs review</TableHead>
+                  <TableHead className="text-right">Draft bills</TableHead>
+                  <TableHead className="min-w-[130px] px-4">Last upload</TableHead>
+                  <TableHead className="px-4 text-right">Upload</TableHead>
                 </TableRow>
-              ) : (
-                visibleCompanies.map((company) => (
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  Array.from({ length: 5 }).map((_, index) => <SkeletonTableRow key={`company-skel-${index}`} columns={10} />)
+                ) : (
+                  visibleCompanies.map((company) => (
                   <TableRow
                     key={company.id}
                     className="ax-interactive cursor-pointer bg-white hover:bg-[var(--workspace-row-hover)]"
@@ -199,11 +214,12 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
                       </InlineAction>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

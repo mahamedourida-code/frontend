@@ -7,6 +7,7 @@ import { DashboardShell } from "@/components/DashboardShell"
 import { CompaniesTable } from "@/components/dashboard/companies/CompaniesTable"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { PageHeader } from "@/components/dashboard/PageHeader"
+import { WorkspaceFirstRunGuide } from "@/components/dashboard/WorkspaceFirstRunGuide"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 
@@ -29,7 +30,9 @@ export default function DashboardPage() {
         <PageHeader
           title="Clients"
           description="Start with a client, then upload a stack for review."
+          className="mb-0"
         />
+        <WorkspaceFirstRunGuide userId={user.id} workspaceId={activeWorkspace?.id} />
         <CompaniesTable workspaceId={activeWorkspace?.id} />
       </div>
     </DashboardShell>
