@@ -2,7 +2,29 @@
 
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
-import { Activity, BookCheck, BookOpenText, Building2, Inbox, Layers, ListChecks, PanelLeft, PlugZap, ReceiptText, Settings, type LucideIcon } from "lucide-react"
+import {
+  Activity,
+  BookCheck,
+  BookOpenText,
+  Building2,
+  ChevronDown,
+  FileText,
+  Files,
+  Inbox,
+  Landmark,
+  Layers,
+  ListChecks,
+  NotebookText,
+  PanelLeft,
+  PlugZap,
+  Receipt,
+  ReceiptText,
+  ScanSearch,
+  Settings,
+  SlidersHorizontal,
+  Workflow,
+  type LucideIcon,
+} from "lucide-react"
 import { motion, useReducedMotion } from "framer-motion"
 import { AxMark } from "@/components/AppIcon"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
@@ -23,6 +45,11 @@ export type WorkspaceSidebarItemKey =
   | "history"
   | "integrations"
   | "guide"
+  | "invoices"
+  | "receipts"
+  | "bank_statements"
+  | "notes"
+  | "auto_detect"
   | "pricing"
 
 interface WorkspaceSidebarProps {
@@ -35,42 +62,77 @@ interface WorkspaceSidebarProps {
 type SidebarItem = {
   key: Extract<
     WorkspaceSidebarItemKey,
-    "companies" | "setup" | "activity" | "inbox" | "batches" | "review" | "accounts_payable" | "integrations" | "guide" | "settings"
+    | "companies"
+    | "setup"
+    | "activity"
+    | "inbox"
+    | "batches"
+    | "review"
+    | "accounts_payable"
+    | "integrations"
+    | "guide"
+    | "settings"
+    | "invoices"
+    | "receipts"
+    | "bank_statements"
+    | "notes"
+    | "auto_detect"
   >
   label: string
   href: string
   icon: LucideIcon
 }
 
+type SidebarGroupKey = "work" | "documentTypes" | "accounting" | "manage"
+
+type SidebarGroup = {
+  key: SidebarGroupKey
+  label: string
+  icon: LucideIcon
+  items: SidebarItem[]
+}
+
 const EXPANDED_W = 220
 const COLLAPSED_W = 68
 const STORAGE_KEY = "axliner:sidebarCollapsed"
 
-// Top-level home. "Clients" is the one name everywhere (sidebar, mobile, ⌘K).
+// "Clients" is the one name everywhere (sidebar, mobile, command palette).
 const PRIMARY_ITEMS: SidebarItem[] = [
   { key: "companies", label: "Clients", href: "/dashboard", icon: Building2 },
 ]
 
-// The daily flow, flat and in pipeline order: intake → batch → review.
-const DOCUMENT_ITEMS: SidebarItem[] = [
+// Keep the daily flow in pipeline order: intake -> batch -> review.
+const WORK_ITEMS: SidebarItem[] = [
   { key: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
   { key: "batches", label: "Stacks", href: "/dashboard/batches", icon: Layers },
   { key: "review", label: "Review board", href: "/dashboard/client", icon: BookCheck },
 ]
 
-// Accounting: the daily destination (draft bills you publish) leads; connection
-// management sits just under it. The target accountant has already connected QB/Xero.
+const DOCUMENT_TYPE_ITEMS: SidebarItem[] = [
+  { key: "invoices", label: "Invoices", href: "/dashboard/invoices", icon: FileText },
+  { key: "receipts", label: "Receipts", href: "/dashboard/receipts", icon: Receipt },
+  { key: "bank_statements", label: "Bank statements", href: "/dashboard/bank-statements", icon: Landmark },
+  { key: "notes", label: "Notes", href: "/dashboard/notes", icon: NotebookText },
+  { key: "auto_detect", label: "Auto-detect", href: "/dashboard/auto-detect", icon: ScanSearch },
+]
+
 const ACCOUNTING_ITEMS: SidebarItem[] = [
   { key: "accounts_payable", label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
   { key: "integrations", label: "Integrations", href: "/dashboard/integrations", icon: PlugZap },
 ]
 
-// Setup, Activity, Guide, Settings — config + reference live together at the bottom.
-const SUPPORT_ITEMS: SidebarItem[] = [
+const MANAGE_ITEMS: SidebarItem[] = [
   { key: "setup", label: "Setup", href: "/dashboard/setup", icon: ListChecks },
   { key: "activity", label: "Activity", href: "/history", icon: Activity },
-  { key: "guide", label: "Guide", href: "/dashboard/guide", icon: BookOpenText },
+  { key: "guide", label: "Getting started", href: "/dashboard/guide", icon: BookOpenText },
   { key: "settings", label: "Settings", href: "/dashboard/settings", icon: Settings },
+]
+
+const SIDEBAR_GROUPS: SidebarGroup[] = [
+  { key: "work", label: "Work", icon: Workflow, items: WORK_ITEMS },
+  { key: "documentTypes", label: "Document types", icon: Files, items: DOCUMENT_TYPE_ITEMS },
+  { key: "accounting", label: "Accounting", icon: Landmark, items: ACCOUNTING_ITEMS },
+  { key: "manage", label: "Manage", icon: SlidersHorizontal, items: MANAGE_ITEMS },
 ]
 
 function useReviewCount(): number {
@@ -91,8 +153,13 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
   const normalizedActiveItem = normalizeActiveItem(activeItem)
   const prefersReducedMotion = useReducedMotion()
   const [collapsed, setCollapsed] = useState(false)
+  const [openGroups, setOpenGroups] = useState<Record<SidebarGroupKey, boolean>>({
+    work: true,
+    documentTypes: false,
+    accounting: false,
+    manage: false,
+  })
 
-  // Restore the last-used state before paint so the rail doesn't flash open.
   useEffect(() => {
     try {
       setCollapsed(window.localStorage.getItem(STORAGE_KEY) === "1")
@@ -114,18 +181,29 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
     }
   }, [collapsed])
 
-  // Collapsed rail: clicking any empty space (not an icon link) opens it back up,
-  // ChatGPT-style. Icon clicks still navigate and keep the rail collapsed.
+  useEffect(() => {
+    const activeGroup = SIDEBAR_GROUPS.find((group) =>
+      group.items.some((item) => item.key === normalizedActiveItem),
+    )
+    if (!activeGroup) return
+
+    setOpenGroups((current) =>
+      current[activeGroup.key] ? current : { ...current, [activeGroup.key]: true },
+    )
+  }, [normalizedActiveItem])
+
+  // In the collapsed rail, empty space reopens the full navigation. Icon links
+  // still navigate without changing the user's preferred rail width.
   const handleRailClick = useCallback(
-    (e: React.MouseEvent<HTMLElement>) => {
+    (event: React.MouseEvent<HTMLElement>) => {
       if (!collapsed) return
-      if ((e.target as HTMLElement).closest("a,button")) return
+      if ((event.target as HTMLElement).closest("a,button")) return
       setCollapsed(false)
     },
     [collapsed],
   )
 
-  const renderItem = (item: SidebarItem) => {
+  const renderItem = (item: SidebarItem, nested = false) => {
     const Icon = item.icon
     const isActive = normalizedActiveItem === item.key
     const showDot = Boolean(notifications?.[item.key])
@@ -138,18 +216,32 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         aria-current={isActive ? "page" : undefined}
         title={collapsed ? item.label : undefined}
         className={cn(
-          "ax-interactive relative flex h-[41px] items-center gap-2.5 rounded-md text-[14px] outline-none focus-visible:ring-2 focus-visible:ring-black/25",
-          collapsed ? "justify-center px-0" : "px-3",
+          "ax-interactive relative flex items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-black/25",
+          collapsed
+            ? "h-[41px] justify-center px-0 text-[14px]"
+            : nested
+              ? "h-9 gap-2 px-2.5 text-[13px]"
+              : "h-[41px] gap-2.5 px-3 text-[14px]",
           isActive
             ? "bg-[var(--workspace-blue-soft)] font-medium text-[var(--workspace-ink)]"
             : "font-normal text-[var(--workspace-ink)] hover:bg-white hover:text-[var(--workspace-primary)]",
         )}
       >
-        {isActive && !collapsed ? <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-[var(--workspace-primary)]" aria-hidden="true" /> : null}
+        {isActive && !collapsed ? (
+          <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-[var(--workspace-primary)]" aria-hidden="true" />
+        ) : null}
         <span className="relative flex shrink-0 items-center justify-center">
-          <Icon className={cn("size-[17px]", isActive ? "text-[var(--workspace-primary)]" : "text-slate-700")} />
+          <Icon
+            className={cn(
+              nested && !collapsed ? "size-[15px]" : "size-[17px]",
+              isActive ? "text-[var(--workspace-primary)]" : "text-slate-700",
+            )}
+          />
           {(showDot || (collapsed && count > 0)) && (
-            <span className="absolute -right-1 -top-1 size-1.5 rounded-full bg-amber-400 ring-2 ring-[var(--workspace-sidebar)]" aria-hidden="true" />
+            <span
+              className="absolute -right-1 -top-1 size-1.5 rounded-full bg-amber-400 ring-2 ring-[var(--workspace-sidebar)]"
+              aria-hidden="true"
+            />
           )}
         </span>
         {!collapsed && <span className="truncate">{item.label}</span>}
@@ -167,18 +259,58 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
     )
   }
 
-  const renderSection = (label: string, items: SidebarItem[]) => (
-    <div className="space-y-1">
-      {collapsed ? (
-        <div className="mx-auto my-2 h-px w-6 bg-[var(--workspace-border)]" aria-hidden="true" />
-      ) : (
-        <p className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--workspace-primary)]">
-          {label}
-        </p>
-      )}
-      {items.map((item) => renderItem(item))}
-    </div>
-  )
+  const renderGroup = (group: SidebarGroup) => {
+    if (collapsed) {
+      return (
+        <div key={group.key} className="space-y-1">
+          <div className="mx-auto my-2 h-px w-6 bg-[var(--workspace-border)]" aria-hidden="true" />
+          {group.items.map((item) => renderItem(item))}
+        </div>
+      )
+    }
+
+    const GroupIcon = group.icon
+    const isOpen = openGroups[group.key]
+    const containsActiveItem = group.items.some((item) => item.key === normalizedActiveItem)
+
+    return (
+      <div key={group.key} className="space-y-1">
+        <button
+          type="button"
+          aria-expanded={isOpen}
+          aria-controls={`sidebar-group-${group.key}`}
+          onClick={() => setOpenGroups((current) => ({ ...current, [group.key]: !current[group.key] }))}
+          className={cn(
+            "ax-interactive flex h-[41px] w-full items-center gap-2.5 rounded-md px-3 text-[14px] font-medium text-[var(--workspace-ink)] outline-none hover:bg-white focus-visible:ring-2 focus-visible:ring-black/25",
+            containsActiveItem && "bg-white/70",
+          )}
+        >
+          <GroupIcon
+            className={cn(
+              "size-[17px]",
+              containsActiveItem ? "text-[var(--workspace-primary)]" : "text-slate-700",
+            )}
+          />
+          <span className="flex-1 text-left">{group.label}</span>
+          <ChevronDown
+            className={cn(
+              "size-4 text-slate-500 transition-transform duration-150 ease-out",
+              isOpen && "rotate-180",
+            )}
+            aria-hidden="true"
+          />
+        </button>
+        {isOpen ? (
+          <div
+            id={`sidebar-group-${group.key}`}
+            className="ml-5 space-y-0.5 border-l border-[var(--workspace-border)] pl-2"
+          >
+            {group.items.map((item) => renderItem(item, true))}
+          </div>
+        ) : null}
+      </div>
+    )
+  }
 
   return (
     <motion.aside
@@ -201,7 +333,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         )}
         <button
           type="button"
-          onClick={() => setCollapsed((v) => !v)}
+          onClick={() => setCollapsed((value) => !value)}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-expanded={!collapsed}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -217,13 +349,12 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
       <nav
         aria-label="Sections"
         onClick={handleRailClick}
-        className={cn("flex flex-1 flex-col gap-1 px-2 py-3", collapsed && "cursor-pointer")}
+        className={cn("flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-3", collapsed && "cursor-pointer")}
       >
         {PRIMARY_ITEMS.map((item) => renderItem(item))}
-        {renderSection("Documents", DOCUMENT_ITEMS)}
-        {renderSection("Accounting", ACCOUNTING_ITEMS)}
+        {SIDEBAR_GROUPS.slice(0, 3).map((group) => renderGroup(group))}
         <div className="mt-auto border-t border-[var(--workspace-border)] pt-2">
-          {SUPPORT_ITEMS.map((item) => renderItem(item))}
+          {renderGroup(SIDEBAR_GROUPS[3])}
         </div>
       </nav>
     </motion.aside>
