@@ -20,12 +20,6 @@ import { cn } from "@/lib/utils"
  * with a quiet "looks clean" line; nothing to explain, nothing to open.
  */
 
-const TONE_DOT: Record<AnomalyTone, string> = {
-  good: "bg-emerald-500",
-  caution: "bg-amber-400",
-  risk: "bg-rose-500",
-}
-
 export function ReviewScoreBadge({
   score,
   side = "bottom",
@@ -62,7 +56,6 @@ export function ReviewScoreBadge({
             className,
           )}
         >
-          <span className={cn("inline-block size-1.5 shrink-0 rounded-full", TONE_DOT[score.tone])} />
           {score.label}
           <span className="tabular-nums opacity-70">{score.signals.length}</span>
         </button>
@@ -73,7 +66,6 @@ export function ReviewScoreBadge({
             Why this needs review
           </p>
           <p className="mt-0.5 flex items-center gap-1.5 text-sm font-semibold text-foreground">
-            <span className={cn("inline-block size-2 shrink-0 rounded-full", TONE_DOT[score.tone])} />
             {score.label}
             <span className="font-normal text-muted-foreground">
               · {score.signals.length} signal{score.signals.length === 1 ? "" : "s"}
@@ -89,12 +81,6 @@ export function ReviewScoreBadge({
               transition={{ duration: 0.16, delay: index * 0.03, ease: "easeOut" }}
               className="flex gap-2.5 px-3.5 py-2.5"
             >
-              <span
-                className={cn(
-                  "mt-1 inline-block size-1.5 shrink-0 rounded-full",
-                  TONE_DOT[signal.tone],
-                )}
-              />
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-foreground">{signal.title}</p>
                 <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{signal.reason}</p>

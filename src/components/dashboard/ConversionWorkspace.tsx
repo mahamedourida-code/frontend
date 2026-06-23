@@ -114,7 +114,6 @@ import {
   reviewData,
   rowAccentClass,
   statusChipClass,
-  statusDotClass,
   structuredFields,
   structuredRowPaths,
   structuredRows,
@@ -1601,8 +1600,7 @@ export function ResultActions({
                         {formatDocumentType(file.document_type)}
                       </td>
                       <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
-                        <span className={cn("inline-flex h-5 items-center gap-1.5 whitespace-nowrap rounded-full border px-2 text-[11px] font-semibold leading-none", statusChipClass(displayState))}>
-                          <span className={cn("size-1.5 rounded-full", statusDotClass(displayState))} />
+                        <span className={cn("inline-flex h-5 items-center whitespace-nowrap rounded-full border px-2 text-[11px] font-semibold leading-none", statusChipClass(displayState))}>
                           {statusLabel}
                         </span>
                       </td>
@@ -2748,8 +2746,7 @@ function BatchStagingBoard({
                           </td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#0f766e]">Stack</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
-                            <span className={cn("inline-flex h-5 items-center gap-1.5 whitespace-nowrap rounded-full border px-2 text-[11px] font-semibold leading-none", st.chip)}>
-                              <span className={cn("size-1.5 rounded-full", st.dot)} />
+                            <span className={cn("inline-flex h-5 items-center whitespace-nowrap rounded-full border px-2 text-[11px] font-semibold leading-none", st.chip)}>
                               {st.label === "Reading" ? <ShimmerText>{st.label}</ShimmerText> : st.label}
                             </span>
                           </td>
@@ -2823,13 +2820,11 @@ function BatchStagingBoard({
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#111827]">Auto-detect</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             {processing ? (
-                              <span className="inline-flex h-5 items-center gap-1.5 rounded-full border border-[#bfdbfe] bg-[var(--workspace-blue-soft)] px-2 text-[11px] font-semibold">
-                                <span className="size-1.5 animate-pulse rounded-full bg-[var(--workspace-blue)]" />
+                              <span className="inline-flex h-5 items-center rounded-full border border-[#bfdbfe] bg-[var(--workspace-blue-soft)] px-2 text-[11px] font-semibold">
                                 <ShimmerText>Reading</ShimmerText>
                               </span>
                             ) : (
-                              <span className="inline-flex h-5 items-center gap-1.5 rounded-full border border-[#cfd4d9] bg-white px-2 text-[11px] font-semibold text-[#475467]">
-                                <span className="size-1.5 rounded-full bg-[#94a3b8]" />
+                              <span className="inline-flex h-5 items-center rounded-full border border-[#cfd4d9] bg-white px-2 text-[11px] font-semibold text-[#475467]">
                                 Staged
                               </span>
                             )}

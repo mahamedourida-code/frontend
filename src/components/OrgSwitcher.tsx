@@ -73,9 +73,9 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
 
   if (isLoading && !activeWorkspace) {
     return (
-      <div className="hidden h-9 w-[150px] items-center gap-2 rounded-md border border-white/15 bg-white/5 px-2.5 md:flex">
-        <Loader2 className="size-4 animate-spin text-white/70" />
-        <span className="text-sm text-white/70">Workspace</span>
+      <div className="hidden h-10 w-[180px] items-center gap-2.5 rounded-md border border-white/15 bg-white/5 px-3 md:flex">
+        <Loader2 className="size-5 animate-spin text-white/70" />
+        <span className="text-[15px] font-semibold text-white/70">Workspace</span>
       </div>
     )
   }
@@ -89,21 +89,21 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
             disabled={busy}
             aria-label="Switch workspace"
             className={cn(
-              "ax-interactive group hidden h-9 max-w-[230px] cursor-pointer items-center gap-2 rounded-md border border-white/18 bg-white/8 px-2.5 text-white outline-none transition-colors hover:border-white/35 hover:bg-white/12 focus-visible:ring-2 focus-visible:ring-white/30 md:inline-flex",
+              "ax-interactive group hidden h-10 max-w-[285px] cursor-pointer items-center gap-2.5 rounded-md border border-white/18 bg-white/8 px-3 text-white outline-none transition-colors hover:border-white/35 hover:bg-white/12 focus-visible:ring-2 focus-visible:ring-white/30 md:inline-flex",
             )}
           >
-            <span className="flex size-5 shrink-0 items-center justify-center rounded bg-white/12 text-white">
-              {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Building2 className="size-3.5" />}
+            <span className="flex size-6 shrink-0 items-center justify-center rounded bg-white/12 text-white">
+              {busy ? <Loader2 className="size-4 animate-spin" /> : <Building2 className="size-4" />}
             </span>
             <span className="flex min-w-0 flex-col items-start leading-none">
-              <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-white/55">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/60">
                 Workspace
               </span>
-              <span className="mt-0.5 max-w-[150px] truncate text-[13px] font-semibold text-white">
+              <span className="mt-0.5 max-w-[190px] truncate text-[15px] font-bold text-white">
                 {activeName}
               </span>
             </span>
-            <ChevronsUpDown className="ms-auto size-3.5 shrink-0 text-white/55 group-hover:text-white/80" />
+            <ChevronsUpDown className="ms-auto size-4 shrink-0 text-white/60 group-hover:text-white/85" />
           </button>
         </DropdownMenuTrigger>
 

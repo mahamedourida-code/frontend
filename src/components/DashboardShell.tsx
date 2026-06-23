@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { WorkspaceSidebar, type WorkspaceSidebarItemKey } from "@/components/WorkspaceSidebar"
 import { NotificationsBell } from "@/components/NotificationsBell"
-import { HelpMenu } from "@/components/HelpMenu"
 import { MobileNav } from "@/components/MobileNav"
 import { CommandPalette } from "@/components/CommandPalette"
 import { AccountMenu } from "@/components/AccountMenu"
@@ -146,19 +145,19 @@ export function DashboardShell({
       <WorkspaceSidebar activeItem={activeItem} user={user} />
 
       <div className="ax-dashboard-content relative z-10 min-w-0">
-        <header className="sticky top-0 z-40 h-12 border-b border-[#1a2d3d] bg-[var(--workspace-topbar)] text-white">
-          <div className="relative flex h-full items-center gap-2 px-3 sm:gap-3">
+        <header className="sticky top-0 z-40 h-14 border-b border-[#1a2d3d] bg-[var(--workspace-topbar)] text-white">
+          <div className="relative flex h-full items-center gap-2.5 px-3 sm:gap-3.5">
             {showBack && (
               <>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => router.back()}
-                  className="size-8 text-white hover:bg-white/10 hover:text-white"
+                  className="size-10 text-white hover:bg-white/10 hover:text-white"
                 >
-                  <ChevronLeft className="size-4" />
+                  <ChevronLeft className="size-5" />
                 </Button>
-                <Separator orientation="vertical" className="h-5 bg-white/15" />
+                <Separator orientation="vertical" className="h-7 bg-white/15" />
               </>
             )}
 
@@ -167,7 +166,7 @@ export function DashboardShell({
 
             {/* Mobile: page title only */}
             <div className="me-auto min-w-0 md:hidden">
-              <div className="truncate text-[14px] font-medium">{title}</div>
+              <div className="truncate text-[15px] font-semibold">{title}</div>
             </div>
 
             {/* CENTER (the bar's main element): global ⌘K search */}
@@ -175,44 +174,44 @@ export function DashboardShell({
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive group inline-flex h-9 w-full max-w-[340px] cursor-pointer items-center gap-2 rounded-md border border-white/18 bg-white/8 px-3 text-sm font-normal text-white/62 transition-colors hover:border-white/35 hover:bg-white/12 hover:text-white"
+                className="ax-interactive group inline-flex h-10 w-full max-w-[420px] cursor-pointer items-center gap-2.5 rounded-md border border-white/18 bg-white/8 px-3.5 text-[15px] font-medium text-white/68 transition-colors hover:border-white/35 hover:bg-white/12 hover:text-white"
               >
-                <Search className="size-4 shrink-0 text-white/88" />
+                <Search className="size-5 shrink-0 text-white/88" />
                 <span className="truncate">Search clients, documents, pages...</span>
-                <kbd className="ms-auto hidden shrink-0 rounded border border-white/15 bg-white/8 px-1.5 py-0.5 font-sans text-[10px] font-medium text-white/55 sm:inline-flex">
+                <kbd className="ms-auto hidden shrink-0 rounded border border-white/15 bg-white/8 px-2 py-0.5 font-sans text-[11px] font-semibold text-white/60 sm:inline-flex">
                   ⌘K
                 </kbd>
               </button>
             </div>
 
             {/* RIGHT: calm cluster — job pill, notifications, help, upgrade, account */}
-            <div className="ms-auto flex min-w-0 items-center gap-2.5">
+            <div className="ms-auto flex min-w-0 items-center gap-3">
               {/* Mobile: compact ⌘K search trigger (full bar lives on md+) */}
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive inline-flex size-8 cursor-pointer items-center justify-center rounded-md border border-white/18 bg-white/8 text-white hover:bg-white/12 md:hidden"
+                className="ax-interactive inline-flex size-10 cursor-pointer items-center justify-center rounded-md border border-white/18 bg-white/8 text-white hover:bg-white/12 md:hidden"
               >
-                <Search className="size-4" />
+                <Search className="size-5" />
               </button>
 
               {activeJob && (
                 <Link
                   href={activeJob.href}
                   className={cn(
-                    "ax-interactive hidden h-8 cursor-pointer items-center gap-2 rounded-md border px-2.5 text-xs font-medium shadow-none sm:inline-flex",
+                    "ax-interactive hidden h-10 cursor-pointer items-center gap-2.5 rounded-md border px-3 text-sm font-semibold shadow-none sm:inline-flex",
                     activeJob.tone === "ready"
                       ? "border-white/20 bg-white/10 text-white hover:bg-white/16"
                       : "border-white/20 bg-white/10 text-white hover:bg-white/16"
                   )}
                 >
                   {activeJob.tone === "ready" ? (
-                    <Clock3 className="size-4" />
+                    <Clock3 className="size-5" />
                   ) : (
-                    <Loader2 className="size-4 animate-spin" />
+                    <Loader2 className="size-5 animate-spin" />
                   )}
                   <span>{activeJob.label}</span>
-                  <span className="text-xs opacity-75">{activeJob.progress}</span>
+                  <span className="text-sm opacity-75">{activeJob.progress}</span>
                 </Link>
               )}
 
@@ -236,15 +235,13 @@ export function DashboardShell({
                     (typeof window !== "undefined" ? window.localStorage.getItem("axliner:selectedCompanyId") || "" : "")
                   router.push(`/dashboard/client${companyId ? `?company_id=${encodeURIComponent(companyId)}` : ""}#upload-files`)
                 }}
-                className="hidden h-9 !border-[var(--workspace-primary)] !bg-[var(--workspace-primary)] px-3 text-sm !text-white hover:!border-[var(--workspace-primary-hover)] hover:!bg-[var(--workspace-primary-hover)] hover:!text-white sm:inline-flex"
+                className="hidden h-10 !border-[var(--workspace-primary)] !bg-[var(--workspace-primary)] px-4 text-[15px] !font-bold !text-white hover:!border-[var(--workspace-primary-hover)] hover:!bg-[var(--workspace-primary-hover)] hover:!text-white sm:inline-flex"
               >
-                <Upload className="size-4" />
+                <Upload className="size-5" />
                 Upload
               </Button>
 
               <NotificationsBell />
-              <HelpMenu />
-
               <AccountMenu
                 user={user}
                 planLabel={billingLoading && !billingStatus ? "Plan" : formatPlan(plan)}

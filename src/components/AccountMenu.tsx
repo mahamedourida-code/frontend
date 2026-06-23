@@ -125,11 +125,11 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
           <button
             type="button"
             aria-label="Account menu"
-            className="ax-interactive inline-flex size-8 items-center justify-center rounded-full border border-white/18 bg-white/10 transition-colors hover:bg-white/16 data-[state=open]:ring-2 data-[state=open]:ring-white/35"
+            className="ax-interactive inline-flex size-10 items-center justify-center rounded-full border border-white/18 bg-white/10 transition-colors hover:bg-white/16 data-[state=open]:ring-2 data-[state=open]:ring-white/35"
           >
-            <Avatar className="size-6">
+            <Avatar className="size-8">
               {avatarUrl && <AvatarImage src={avatarUrl} alt="" />}
-              <AvatarFallback className="bg-primary/15 text-[11px] font-semibold text-primary">
+              <AvatarFallback className="bg-primary/15 text-[13px] font-bold text-primary">
                 {initials(name)}
               </AvatarFallback>
             </Avatar>

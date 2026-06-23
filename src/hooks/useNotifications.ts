@@ -20,10 +20,9 @@ import { useProcessingState } from "@/contexts/ProcessingStateContext"
 export type NotificationGroup =
   | "document_ready"
   | "job_finished"
-  // Customer-card notifications are intentionally commented out for workspace pages.
-  // | "duplicate_detected"
-  // | "quickbooks_token"
-  // | "client_uploaded"
+  | "duplicate_detected"
+  | "quickbooks_token"
+  | "client_uploaded"
 
 export type AppNotification = {
   id: string
@@ -37,29 +36,30 @@ export type AppNotification = {
 }
 
 const READ_STORAGE_KEY = "axliner_notifications_read_v1"
-// const NOTIFY_EVENT = "axliner:notify"
+const NOTIFY_EVENT = "axliner:notify"
 const MAX_ITEMS = 40
 
-// type NotifyPayload = {
-//   group: NotificationGroup
-//   title: string
-//   preview: string
-//   href?: string
-//   /** stable key - repeat dispatches with the same dedupeKey are ignored */
-//   dedupeKey?: string
-// }
+export type NotifyPayload = {
+  group: NotificationGroup
+  title: string
+  preview: string
+  href?: string
+  /** stable key - repeat dispatches with the same dedupeKey are ignored */
+  dedupeKey?: string
+}
 
-// const DEFAULT_HREF: Record<NotificationGroup, string> = {
-//   job_finished: "/dashboard/client",
-//   duplicate_detected: "/dashboard/client",
-//   quickbooks_token: "/dashboard/integrations",
-//   client_uploaded: "/dashboard/inbox",
-// }
+const DEFAULT_HREF: Record<NotificationGroup, string> = {
+  document_ready: "/dashboard/client",
+  job_finished: "/dashboard/client",
+  duplicate_detected: "/dashboard/client",
+  quickbooks_token: "/dashboard/integrations",
+  client_uploaded: "/dashboard/inbox",
+}
 
-// export function notify(payload: NotifyPayload) {
-//   if (typeof window === "undefined") return
-//   window.dispatchEvent(new CustomEvent<NotifyPayload>(NOTIFY_EVENT, { detail: payload }))
-// }
+export function notify(payload: NotifyPayload) {
+  if (typeof window === "undefined") return
+  window.dispatchEvent(new CustomEvent<NotifyPayload>(NOTIFY_EVENT, { detail: payload }))
+}
 
 /**
  * Turn a generated output filename ("IMG_1042_img_0_receipt.xlsx") into a human
@@ -106,7 +106,7 @@ export function useNotifications() {
   const { state: processingState } = useProcessingState()
   const [items, setItems] = useState<AppNotification[]>([])
   const readRef = useRef<Set<string>>(new Set())
-  // const seenKeysRef = useRef<Set<string>>(new Set())
+  const seenKeysRef = useRef<Set<string>>(new Set())
 
   // hydrate the read-set once
   useEffect(() => {
@@ -152,6 +152,34 @@ export function useNotifications() {
     addItem,
   ])
 
+  useEffect(() => {
+    const files = processingState.processedFiles
+    if (!files || files.length === 0) return
+    const jobId = processingState.jobId
+    files.forEach((file: any) => {
+      const warnings = (file.duplicate_warnings || []).filter((warning: any) => !warning?.overridden)
+      if (!warnings.length) return
+      const warning = warnings[0]
+      const stableId = warning?.id || warning?.matched_document_id || file.file_id || file.document_id || file.filename
+      addItem({
+        id: `duplicate-${stableId}`,
+        group: "duplicate_detected",
+        title: "Possible duplicate",
+        preview: `${prettyDocName(file)} may match an existing client document`,
+        href:
+          jobId && file.document_id
+            ? `/dashboard/document?job=${jobId}&doc=${file.document_id}`
+            : "/dashboard/client",
+        createdAt: processingState.lastUpdated || Date.now(),
+      })
+    })
+  }, [
+    processingState.processedFiles,
+    processingState.jobId,
+    processingState.lastUpdated,
+    addItem,
+  ])
+
   // ── Source 1: processing lifecycle ────────────────────────────────
   useEffect(() => {
     if (
@@ -177,27 +205,25 @@ export function useNotifications() {
     addItem,
   ])
 
-  // Customer-card notification events are intentionally commented out.
-  //
-  // useEffect(() => {
-  //   const onNotify = (event: Event) => {
-  //     const detail = (event as CustomEvent<NotifyPayload>).detail
-  //     if (!detail?.group || !detail?.title) return
-  //     const key = detail.dedupeKey || `${detail.group}:${detail.title}:${detail.preview}`
-  //     if (seenKeysRef.current.has(key)) return
-  //     seenKeysRef.current.add(key)
-  //     addItem({
-  //       id: `evt-${key}`,
-  //       group: detail.group,
-  //       title: detail.title,
-  //       preview: detail.preview,
-  //       href: detail.href || DEFAULT_HREF[detail.group],
-  //       createdAt: Date.now(),
-  //     })
-  //   }
-  //   window.addEventListener(NOTIFY_EVENT, onNotify)
-  //   return () => window.removeEventListener(NOTIFY_EVENT, onNotify)
-  // }, [addItem])
+  useEffect(() => {
+    const onNotify = (event: Event) => {
+      const detail = (event as CustomEvent<NotifyPayload>).detail
+      if (!detail?.group || !detail?.title) return
+      const key = detail.dedupeKey || `${detail.group}:${detail.title}:${detail.preview}`
+      if (seenKeysRef.current.has(key)) return
+      seenKeysRef.current.add(key)
+      addItem({
+        id: `evt-${key}`,
+        group: detail.group,
+        title: detail.title,
+        preview: detail.preview,
+        href: detail.href || DEFAULT_HREF[detail.group],
+        createdAt: Date.now(),
+      })
+    }
+    window.addEventListener(NOTIFY_EVENT, onNotify)
+    return () => window.removeEventListener(NOTIFY_EVENT, onNotify)
+  }, [addItem])
 
   const markAllRead = useCallback(() => {
     setItems((prev) => {

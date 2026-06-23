@@ -103,7 +103,7 @@ export function AnomalyDot({
 }
 
 /**
- * Pill-shaped anomaly chip: dot + short label, with the full reason on hover.
+ * Pill-shaped anomaly chip: short label with the full reason on hover.
  * `rounded-full` per the brand pill rule.
  */
 export function AnomalyChip({
@@ -119,12 +119,11 @@ export function AnomalyChip({
       <button
         type="button"
         className={cn(
-          "inline-flex h-6 cursor-help items-center gap-1.5 rounded-full border px-2.5 text-xs font-medium leading-none whitespace-nowrap",
+          "inline-flex h-6 cursor-help items-center rounded-full border px-2.5 text-xs font-medium leading-none whitespace-nowrap",
           TONE_PILL[tone],
           className,
         )}
       >
-        <span className={cn("inline-block size-1.5 shrink-0 rounded-full", TONE_DOT[tone])} />
         {label}
       </button>
     </AnomalyReason>

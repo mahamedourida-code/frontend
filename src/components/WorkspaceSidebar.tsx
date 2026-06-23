@@ -188,15 +188,15 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
       animate={{ width: collapsed ? COLLAPSED_W : EXPANDED_W }}
       transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: [0.2, 0, 0, 1] }}
     >
-      <div className="flex h-12 shrink-0 items-center gap-2.5 bg-[var(--workspace-topbar)] px-3 text-white">
+      <div className="flex h-14 shrink-0 items-center gap-2.5 bg-[var(--workspace-topbar)] px-3 text-white">
         {!collapsed && (
           <Link
             href="/dashboard"
             aria-label="AxLiner home"
             className="ax-interactive flex min-w-0 flex-1 items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-white/30"
           >
-            <AxMark className="h-8 w-auto invert" />
-            <span className="truncate text-[18px] font-medium tracking-normal">AxLiner</span>
+            <AxMark className="h-9 w-auto invert" />
+            <span className="truncate text-[19px] font-semibold tracking-normal">AxLiner</span>
           </Link>
         )}
         <button
@@ -206,11 +206,11 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
           aria-expanded={!collapsed}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           className={cn(
-            "ax-interactive flex size-8 items-center justify-center rounded-md text-white/80 outline-none hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white/30",
+            "ax-interactive flex size-10 items-center justify-center rounded-md text-white/80 outline-none hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white/30",
             collapsed && "mx-auto",
           )}
         >
-          <PanelLeft className="size-[18px]" />
+          <PanelLeft className="size-5" />
         </button>
       </div>
 

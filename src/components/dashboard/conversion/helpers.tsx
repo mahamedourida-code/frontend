@@ -426,12 +426,12 @@ export function normalizeRecentFiles(response: any): import("./types").RecentBat
   })
 }
 
-export function recentStatusChip(status: string): { label: string; chip: string; dot: string } {
+export function recentStatusChip(status: string): { label: string; chip: string } {
   if (["processing", "pending", "queued"].includes(status))
-    return { label: "Reading", chip: "border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8]", dot: "bg-[#1d4ed8]" }
+    return { label: "Reading", chip: "border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8]" }
   if (["failed", "error"].includes(status))
-    return { label: "Failed", chip: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]", dot: "bg-[#ef4444]" }
+    return { label: "Failed", chip: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]" }
   if (status === "requires_review")
-    return { label: "Needs review", chip: "border-[#fed7aa] bg-[#fff7ed] text-[#92400e]", dot: "bg-[#f59e0b]" }
-  return { label: "Ready", chip: "border-[#bbf7d0] bg-[#ecfdf3] text-[#166534]", dot: "bg-[#16a34a]" }
+    return { label: "Needs review", chip: "border-[#fed7aa] bg-[#fff7ed] text-[#92400e]" }
+  return { label: "Ready", chip: "border-[#bbf7d0] bg-[#ecfdf3] text-[#166534]" }
 }
