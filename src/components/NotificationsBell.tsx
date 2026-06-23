@@ -203,18 +203,19 @@ export function NotificationsBell() {
           aria-label={
             unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"
           }
-          className="ax-interactive relative inline-flex h-10 items-center justify-center gap-2 rounded-md border border-white/16 bg-white/8 px-3 text-white/88 transition-colors hover:border-white/28 hover:bg-white/14 hover:text-white data-[state=open]:border-white/28 data-[state=open]:bg-[var(--workspace-topbar-hover)] data-[state=open]:text-white"
+          className="ax-interactive relative inline-flex size-10 items-center justify-center rounded-full text-white/88 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-white/35 data-[state=open]:text-white"
         >
-          <Bell className="size-5" />
+          <Bell className="size-6" />
           <AnimatePresence>
             {unreadCount > 0 && (
               <motion.span
                 key="badge"
-                initial={{ scale: 0, opacity: 0 }}
+                initial={{ scale: 0.78, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
+                exit={{ scale: 0.78, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 500, damping: 28 }}
-                className="min-w-4 text-center text-[13px] font-bold leading-none tabular-nums text-white"
+                aria-live="polite"
+                className="absolute -right-1 -top-1 flex size-6 items-center justify-center rounded-full bg-red-600 text-[11px] font-extrabold leading-none tabular-nums text-white ring-2 ring-[var(--workspace-topbar)]"
               >
                 {unreadCount > 9 ? "9+" : unreadCount}
               </motion.span>
