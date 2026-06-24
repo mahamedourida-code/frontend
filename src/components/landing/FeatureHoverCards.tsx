@@ -40,8 +40,8 @@ function HoverCard({ card, index, surface }: { card: SolutionCard; index: number
         </div>
 
         {/* ── Title + description overlay — dark text over the photo ── */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 px-6 pt-7">
-          <h3 className="inline-block rounded-md border border-black bg-black px-2.5 py-1 text-[26px] font-bold leading-tight tracking-tight text-white">
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 px-4 pt-4">
+          <h3 className="inline-block rounded-md border border-black bg-black px-2 py-0.5 text-[17px] font-bold leading-tight tracking-tight text-white">
             {card.title}
           </h3>
 
