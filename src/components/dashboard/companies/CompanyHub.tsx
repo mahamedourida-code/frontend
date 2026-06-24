@@ -9,7 +9,6 @@ import {
   Building2,
   FileText,
   Inbox,
-  Loader2,
   PlugZap,
   ReceiptText,
   RefreshCw,
@@ -24,6 +23,7 @@ import { DangerZone } from "@/components/dashboard/DangerZone"
 import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
+import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -245,12 +245,11 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
       />
 
       {loading ? (
-        <Card className="rounded-xl">
-          <CardContent className="flex items-center gap-2 p-6 text-sm font-medium text-foreground">
-            <Loader2 className="size-4 animate-spin" />
-            Loading client workspace...
-          </CardContent>
-        </Card>
+        <WorkspaceActivityIndicator
+          title="Opening client workspace"
+          detail="Retrieving recent documents, review work, and draft bills."
+          scope="page"
+        />
       ) : loadError || !company ? (
         <Card className="rounded-xl">
           <EmptyState

@@ -39,6 +39,7 @@ import { Field } from "@/components/dashboard/Field"
 import { Symbol } from "@/components/dashboard/Symbol"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
+import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { AnomalyChip } from "@/components/dashboard/AnomalyChip"
 import { ReviewScoreBadge } from "@/components/dashboard/ReviewScoreBadge"
 import { missingVatCopy, overPoCopy } from "@/lib/anomaly-reasons"
@@ -49,7 +50,6 @@ import { InlineAction } from "@/components/ui/inline-action"
 import { MotionButton } from "@/components/ui/motion-button"
 import { CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Skeleton } from "@/components/ui/skeleton"
 import { PublishSuccessBurst } from "@/components/dashboard/PublishSuccessBurst"
 import { PublishConfirmation, type PublishConfirmationState } from "@/components/dashboard/PublishConfirmation"
 import { SpotlightCard } from "@/components/dashboard/SpotlightCard"
@@ -209,12 +209,12 @@ function AccountingDestinationGlyph({
 }
 
 const statusTextColor: Record<"warning" | "review" | "info" | "success" | "error" | "neutral", string> = {
-  warning: "text-amber-700",
-  review: "text-blue-700",
-  info: "text-[var(--workspace-blue)]",
-  success: "text-emerald-700",
-  error: "text-red-600",
-  neutral: "text-slate-500",
+  warning: "text-[var(--text-attention)]",
+  review: "text-[var(--text-review)]",
+  info: "text-[var(--text-action)]",
+  success: "text-[var(--text-success)]",
+  error: "text-[var(--text-danger)]",
+  neutral: "text-[var(--workspace-muted)]",
 }
 
 // C9 — bookkeeper-friendly words for the fields vendor memory remembers, so the
@@ -1102,7 +1102,7 @@ function AccountsPayableContent() {
           ) : null}
           {accountingConnection?.connected ? (
             <InlineAction tone="brand" onClick={() => void loadAccountingDestination(true)} disabled={syncingReferences}>
-              {syncingReferences ? "Refreshing..." : "Refresh lists"}
+              {syncingReferences ? "Syncing reference lists" : "Refresh lists"}
             </InlineAction>
           ) : null}
           <InlineAction tone="brand" onClick={() => router.push("/dashboard/integrations")}>
@@ -1189,13 +1189,14 @@ function AccountsPayableContent() {
                 </thead>
                 <tbody className="divide-y divide-slate-200">
                   {loading ? (
-                    Array.from({ length: 5 }).map((_, index) => (
-                      <tr key={`ap-skeleton-${index}`}>
-                        <td colSpan={12} className="px-3 py-3">
-                          <Skeleton className="h-4 w-full max-w-[920px]" />
-                        </td>
-                      </tr>
-                    ))
+                    <tr>
+                      <td colSpan={12} className="p-4">
+                        <WorkspaceActivityIndicator
+                          title="Retrieving draft bills"
+                          detail="Checking supplier coding, VAT, due dates, and publishing status."
+                        />
+                      </td>
+                    </tr>
                   ) : visibleItems.length === 0 ? (
                     <tr>
                       <td colSpan={12}>
@@ -1283,20 +1284,20 @@ function AccountsPayableContent() {
                             </td>
                             <td className="max-w-[240px] px-4 py-3">
                               <div className="flex items-center gap-2">
-                                <span className="truncate font-semibold text-[var(--data-entity)]">{item.draft_data.vendor || "Supplier missing"}</span>
+                                <span className="ax-data-entity truncate">{item.draft_data.vendor || "Supplier missing"}</span>
                                 {hasDuplicate ? <span className="size-1.5 shrink-0 rounded-full bg-amber-500" title="Possible duplicate" /> : null}
                                 {missing?.missing ? <span className="size-1.5 shrink-0 rounded-full bg-rose-500" title="Missing information" /> : null}
                               </div>
                             </td>
-                            <td className="px-4 py-3 font-mono font-medium tabular-nums text-[var(--data-reference)]">{ledgerValue(item.draft_data.invoice_number)}</td>
-                            <td className="px-4 py-3 font-medium tabular-nums text-[var(--data-date)]">{shortDate(item.draft_data.invoice_date)}</td>
-                            <td className="px-4 py-3 font-medium tabular-nums text-[var(--data-due)]">{shortDate(item.draft_data.due_date)}</td>
+                            <td className="ax-data-reference px-4 py-3 font-mono">{ledgerValue(item.draft_data.invoice_number)}</td>
+                            <td className="ax-data-date px-4 py-3">{shortDate(item.draft_data.invoice_date)}</td>
+                            <td className="ax-data-due px-4 py-3">{shortDate(item.draft_data.due_date)}</td>
                             <td className="max-w-[200px] truncate px-4 py-3">{ledgerValue(item.draft_data.account_category)}</td>
                             <td className="max-w-[132px] truncate px-4 py-3">{ledgerValue(item.draft_data.tax_code)}</td>
                             <td className="px-4 py-3 font-mono">{ledgerValue(item.draft_data.currency)}</td>
                             <td className="px-4 py-3 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.subtotal)}</td>
                             <td className="px-4 py-3 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.tax_amount)}</td>
-                            <td className="px-4 py-3 text-right font-mono font-bold tabular-nums text-[var(--data-money)]">{ledgerValue(item.draft_data.total)}</td>
+                            <td className="ax-data-money px-4 py-3 text-right font-mono">{ledgerValue(item.draft_data.total)}</td>
                             <td className="px-4 py-3">
                               <AnimatePresence mode="popLayout" initial={false}>
                                 <motion.span
@@ -1334,7 +1335,7 @@ function AccountsPayableContent() {
                 <div className="space-y-5">
                   <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
                     <div className="min-w-0">
-                      <h2 className="text-[19px] font-semibold tracking-tight text-[var(--data-entity)]">{draft.vendor || "Vendor missing"}</h2>
+                      <h2 className="ax-data-entity text-[19px] font-semibold tracking-tight">{draft.vendor || "Vendor missing"}</h2>
                       <p className="mt-1 break-all text-[13px] text-foreground">{activeItem.source_filename}</p>
                       {/* Approval gate — terse audit one-liners. */}
                       {activeItem.submitted_by_email ? (
@@ -2323,7 +2324,7 @@ function AccountsPayableContent() {
 
           {poLoading ? (
             <div className="flex items-center justify-center py-8 text-sm font-medium text-muted-foreground">
-              <Loader2 className="mr-2 size-4 animate-spin" /> Loading purchase orders…
+              <Loader2 className="mr-2 size-4 animate-spin" /> Retrieving open purchase orders…
             </div>
           ) : poList.length === 0 ? (
             <div className={cn("rounded-xl border p-5 text-center", workspacePanel)}>

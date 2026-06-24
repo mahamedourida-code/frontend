@@ -615,7 +615,7 @@ export function ProcessImagesContent() {
     if (!jobId) return
     setOverridingDocumentId(documentId)
     setWorkspaceBanner({
-      title: "Reprocessing document",
+      title: "Reading document again",
       description: "The selected extractor is running against the stored source file.",
       tone: "info",
     })
@@ -636,7 +636,7 @@ export function ProcessImagesContent() {
         }
       }
       setWorkspaceBanner({
-        title: "Reprocessing continues",
+        title: "Document reading continues",
         description: "The result will appear in this stack when ready.",
         tone: "info",
       })

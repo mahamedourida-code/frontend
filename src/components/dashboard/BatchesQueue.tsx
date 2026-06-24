@@ -16,6 +16,7 @@ import {
 import { formatDistanceToNow, isToday } from "date-fns"
 
 import { EmptyState } from "@/components/dashboard/EmptyState"
+import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { WorkspaceStageStrip } from "@/components/dashboard/WorkspaceStageStrip"
 import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
@@ -51,8 +52,8 @@ const BUCKET_META: Record<
 > = {
   processing: {
     title: "Reading",
-    hint: "Still extracting — they'll move to review when they finish.",
-    icon: <LoaderCircle className="animate-spin" />,
+    hint: "Supplier, reference, date, and total fields are being prepared for review.",
+    icon: <LoaderCircle />,
     tone: "active",
   },
   review: {
@@ -211,12 +212,10 @@ export function BatchesQueue() {
     <div className="max-w-3xl space-y-6">
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-foreground">
-          {isLoading
-            ? "Loading stacks…"
-            : `${total} ${total === 1 ? "stack" : "stacks"} to review`}
+          {isLoading ? "Batch register" : `${total} ${total === 1 ? "stack" : "stacks"} to review`}
         </p>
         <InlineAction onClick={load} disabled={refreshing}>
-          <RefreshCw className={cn("size-4", refreshing && "animate-spin")} />
+          <RefreshCw className="size-4" />
           Refresh
         </InlineAction>
       </div>
@@ -228,22 +227,23 @@ export function BatchesQueue() {
       ) : null}
 
       {isLoading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-[60px] animate-pulse rounded-xl border border-border bg-[var(--workspace-soft)]"
-            />
-          ))}
-        </div>
+        <WorkspaceActivityIndicator
+          title="Retrieving the batch register"
+          detail="Collecting stacks that are ready, need review, or are still being read."
+        />
+      ) : refreshing ? (
+        <WorkspaceActivityIndicator
+          title="Refreshing the batch register"
+          detail="Checking for newly completed stacks and review work."
+        />
       ) : total === 0 ? (
         <WorkspaceSection title="Your stacks" icon={<Layers />}>
           <WorkspaceStageStrip activeStage="review" className="mx-auto max-w-2xl" />
           <EmptyState
             icon={<Inbox />}
             eyebrow="Batch history"
-            title="No processed stacks yet"
-            description="This queue shows each processed batch, grouped by reading, needs review, and completed work."
+            title="No review stacks yet"
+            description="This register groups each batch by reading, needs review, and completed work."
             steps={[
               "Upload invoices, receipts, statements, scans, or photos in one mixed batch.",
               "Auto-detect classifies the documents and sends uncertain fields to review.",

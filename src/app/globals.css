@@ -267,6 +267,37 @@
   .ax-dashboard-content .font-medium,
   .ax-dashboard-content .font-normal { font-weight: 500; }
 
+  /* Workspace text colour grammar: colour data and state, never ordinary prose. */
+  .ax-text-action { color: var(--text-action); font-weight: 600; }
+  .ax-text-working { color: var(--text-working); font-weight: 600; }
+  .ax-text-success { color: var(--text-success); font-weight: 600; }
+  .ax-text-attention { color: var(--text-attention); font-weight: 600; }
+  .ax-text-danger { color: var(--text-danger); font-weight: 600; }
+  .ax-text-review { color: var(--text-review); font-weight: 600; }
+  .ax-data-entity { color: var(--data-entity); font-weight: 600; }
+  .ax-data-reference { color: var(--data-reference); font-weight: 600; }
+  .ax-data-date { color: var(--data-date); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .ax-data-due { color: var(--data-due); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .ax-data-money { color: var(--data-money); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .ax-data-tax { color: var(--text-tax); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .ax-shimmer-text {
+    --ax-shimmer-base: var(--workspace-ink);
+    --ax-shimmer-sheen: #94a3b8;
+    background-image: linear-gradient(
+      110deg,
+      var(--ax-shimmer-base) 0%,
+      var(--ax-shimmer-base) 34%,
+      var(--ax-shimmer-sheen) 50%,
+      var(--ax-shimmer-base) 66%,
+      var(--ax-shimmer-base) 100%
+    );
+  }
+  .ax-shimmer-text[data-tone="working"] {
+    --ax-shimmer-base: var(--text-working);
+    --ax-shimmer-sheen: #67e8f9;
+  }
+
   body.ax-workspace :is(
     [data-slot="dialog-content"],
     [data-slot="sheet-content"],
@@ -616,6 +647,13 @@
   --data-date: #0e7490;       /* cyan — dates (issue / statement / period) */
   --data-due: #b45309;        /* amber — due dates & deadlines (time-sensitive) */
   --data-money: #047857;      /* emerald — amounts, totals, balances (money) */
+  --text-action: var(--workspace-blue);
+  --text-working: #1d4ed8;
+  --text-success: #15803d;
+  --text-attention: #b45309;
+  --text-danger: #b42318;
+  --text-review: #6d28d9;
+  --text-tax: #0f766e;
   /* Default text-button / link blue — the utility colour (Refresh, Sync, View…). */
   --workspace-blue: #1877F2;
   --workspace-blue-hover: #0b5fcc;

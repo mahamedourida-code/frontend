@@ -200,7 +200,7 @@ export function DashboardShell({
                 <Search className="size-5" />
               </button>
 
-              {activeJob && (
+              {activeJob && pathname !== "/dashboard/client" && (
                 <Link
                   href={activeJob.href}
                   className={cn(

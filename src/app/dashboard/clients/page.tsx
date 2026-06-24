@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { ArrowRight, Building2, Loader2, Plus, Trash2 } from "lucide-react"
+import { ArrowRight, Building2, Plus, Trash2 } from "lucide-react"
 
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
+import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Button } from "@/components/ui/button"
@@ -128,7 +129,11 @@ export default function ClientsPage() {
           contentClassName="p-0"
         >
           {loading ? (
-            <EmptyState compact icon={<Loader2 className="h-5 w-5 animate-spin" />} title="Loading clients" />
+            <WorkspaceActivityIndicator
+              title="Refreshing clients"
+              detail="Checking accounting connections and client workspace activity."
+              className="m-4 w-auto"
+            />
           ) : clients.length === 0 ? (
             <EmptyState
               icon={<Building2 />}
@@ -161,13 +166,13 @@ export default function ClientsPage() {
                     <TableCell className="px-4 py-3">
                       <Link
                         href={`/dashboard/companies/${client.id}`}
-                        className="flex items-center gap-3 font-medium text-[var(--workspace-blue)]"
+                        className="group flex items-center gap-3"
                         onClick={event => event.stopPropagation()}
                       >
                         <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-muted)]">
                           <Building2 className="size-4" />
                         </span>
-                        <span className="truncate">{client.name}</span>
+                        <span className="ax-data-entity truncate group-hover:text-[var(--workspace-blue)]">{client.name}</span>
                       </Link>
                     </TableCell>
                     <TableCell className="px-4 py-3">

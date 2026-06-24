@@ -343,7 +343,7 @@ function HistoryContent() {
                 <Trash2 className="h-3 w-3" />
               </Button>
             ) : (
-              <span className="text-xs text-muted-foreground">Processing…</span>
+              <span className="ax-text-working text-xs">Reading documents…</span>
             )}
           </div>
         )

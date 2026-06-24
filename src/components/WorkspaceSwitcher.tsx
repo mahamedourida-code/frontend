@@ -178,7 +178,7 @@ export function WorkspaceSwitcher({ user, onSignOut, menuSide = "right" }: Works
                 transition={{ duration: 0.12 }}
               >
                 {isLoading && workspaces.length === 0 ? (
-                  <p className="px-2 py-2 text-xs text-muted-foreground">Loading workspaces…</p>
+                  <p className="px-2 py-2 text-xs text-muted-foreground">Retrieving workspaces…</p>
                 ) : workspaces.length === 0 ? (
                   <p className="px-2 py-2 text-xs text-muted-foreground">No workspaces yet.</p>
                 ) : (

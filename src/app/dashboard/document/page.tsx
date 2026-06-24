@@ -16,8 +16,8 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { ShimmerText } from "@/components/ui/ShimmerText"
 import { DashboardShell } from "@/components/DashboardShell"
+import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { useAuth } from "@/hooks/useAuth"
 import { accountsPayableApi, ocrApi, type JobDocumentRecord } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
@@ -31,11 +31,11 @@ type LineItemConfig = {
 }
 
 const STATUS_STYLE: Record<string, string> = {
-  ready: "border-[#bbf7d0] bg-[#ecfdf3] text-[#166534]",
-  published: "border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8]",
-  edited: "border-[#ddd6fe] bg-[#f5f3ff] text-[#5b21b6]",
-  failed: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]",
-  needs_review: "border-[#fed7aa] bg-[#fff7ed] text-[#92400e]",
+  ready: "border-green-200 bg-white text-[var(--text-success)]",
+  published: "border-green-200 bg-white text-[var(--text-success)]",
+  edited: "border-violet-200 bg-white text-[var(--text-review)]",
+  failed: "border-red-200 bg-white text-[var(--text-danger)]",
+  needs_review: "border-amber-200 bg-white text-[var(--text-attention)]",
   deleted: "border-[#e5e5e5] bg-white text-[#475467]",
 }
 const STATUS_LABEL: Record<string, string> = {
@@ -47,11 +47,11 @@ const STATUS_LABEL: Record<string, string> = {
   deleted: "Deleted",
 }
 const TYPE_TONE: Record<string, string> = {
-  invoice: "text-[#166534]",
-  receipt: "text-[#b45309]",
-  bank_statement: "text-[var(--brand-brown-fg)]",
-  notes: "text-[#5b21b6]",
-  table: "text-[#0f766e]",
+  invoice: "text-[var(--workspace-muted)]",
+  receipt: "text-[var(--workspace-muted)]",
+  bank_statement: "text-[var(--workspace-muted)]",
+  notes: "text-[var(--workspace-muted)]",
+  table: "text-[var(--workspace-muted)]",
 }
 const TYPE_ACCENT: Record<string, string> = {
   invoice: "#166534",
@@ -126,11 +126,25 @@ function gridFromPayload(payload: unknown): any[][] | null {
 
 function FullLoader({ label = "Opening document" }: { label?: string }) {
   return (
-    <div className="flex min-h-screen items-center justify-center gap-2 bg-background text-sm font-semibold">
-      <Loader2 className="size-4 animate-spin text-[var(--brand-brown-fg)]" />
-      <ShimmerText>{label}</ShimmerText>
+    <div className="flex min-h-screen items-center justify-center bg-background px-5">
+      <WorkspaceActivityIndicator
+        title={label === "Opening document" ? "Opening document review" : label}
+        detail="Retrieving the source, extracted fields, and review notes."
+        scope="page"
+        className="max-w-xl"
+      />
     </div>
   )
+}
+
+function fieldValueClass(label: string) {
+  const normalized = label.toLowerCase()
+  if (normalized.includes("due")) return "ax-data-due"
+  if (normalized.includes("date") || normalized.includes("period")) return "ax-data-date"
+  if (normalized.includes("number") || normalized.includes("reference") || normalized.includes("ref")) return "ax-data-reference"
+  if (normalized.includes("total") || normalized.includes("amount") || normalized.includes("balance") || normalized.includes("price")) return "ax-data-money"
+  if (normalized.includes("vendor") || normalized.includes("supplier") || normalized.includes("merchant") || normalized.includes("account holder")) return "ax-data-entity"
+  return "text-[var(--workspace-ink)]"
 }
 
 function FormField({
@@ -158,7 +172,7 @@ function FormField({
         onBlur={(event) => {
           if (event.target.value !== value) onSave(event.target.value)
         }}
-        className="h-11 w-full rounded-md border border-[#d4d4d4] bg-white px-3 text-[14px] font-semibold text-[#111827] outline-none transition focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-black/15"
+        className={cn("h-11 w-full rounded-md border border-[#d4d4d4] bg-white px-3 text-[14px] font-semibold outline-none transition focus:border-[var(--workspace-blue)] focus:ring-2 focus:ring-black/15", fieldValueClass(label))}
         placeholder="—"
       />
     </label>
@@ -509,7 +523,7 @@ function DocumentReviewContent() {
                 ) : (
                   <div className="col-span-2 lg:col-span-3">
                     <span className="mb-2 block text-[12px] font-bold tracking-tight text-[#475467]">Document</span>
-                    <p className="truncate text-[15px] font-bold tracking-tight text-[#111827]">
+                    <p className="ax-data-entity truncate text-[15px] font-bold tracking-tight">
                       {data.vendor_name || data.merchant || data.account_holder || data.bank_name || doc.original_filename}
                     </p>
                   </div>
@@ -518,7 +532,7 @@ function DocumentReviewContent() {
               <div className="w-full shrink-0 lg:w-52">
                 <p className="text-[12px] font-bold tracking-tight text-[#475467] lg:text-right">{totalLabel}</p>
                 <div className="mt-2 flex h-12 items-center justify-end rounded-md border border-[#d4d4d4] bg-[#f5f5f5] px-3">
-                  <span className="truncate text-[20px] font-extrabold tabular-nums text-[#111827]" title={totalDisplay}>{totalDisplay}</span>
+                  <span className="ax-data-money truncate text-[20px] font-extrabold" title={totalDisplay}>{totalDisplay}</span>
                 </div>
               </div>
             </div>
@@ -566,7 +580,7 @@ function DocumentReviewContent() {
                                     "h-10 w-full min-w-[80px] rounded-md border bg-white px-2.5 text-[14px] text-[#111827] outline-none transition focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-black/15",
                                     isUncertain ? "border-rose-400 ring-1 ring-rose-300/60" : "border-[#e5e5e5]",
                                     numeric && "text-right tabular-nums",
-                                    isAmount && "font-bold",
+                                    isAmount && "ax-data-money font-bold",
                                   )}
                                 />
                                 {isUncertain && (
@@ -644,15 +658,15 @@ function DocumentReviewContent() {
               <div className="ml-auto w-full max-w-[360px]">
                 <div className="flex items-center justify-between gap-4 py-2 text-[14px]">
                   <span className="shrink-0 font-semibold text-[#475467]">Subtotal</span>
-                  <span className="min-w-0 truncate text-right font-semibold tabular-nums text-[#111827]" title={money(data.subtotal)}>{money(data.subtotal)}</span>
+                  <span className="ax-data-money min-w-0 truncate text-right" title={money(data.subtotal)}>{money(data.subtotal)}</span>
                 </div>
                 <div className="flex items-center justify-between gap-4 border-t border-[#e5e5e5] py-2 text-[14px]">
                   <span className="shrink-0 font-semibold text-[#475467]">VAT</span>
-                  <span className="min-w-0 truncate text-right font-semibold tabular-nums text-[#111827]" title={money(data.tax_vat_amount)}>{money(data.tax_vat_amount)}</span>
+                  <span className="ax-data-tax min-w-0 truncate text-right" title={money(data.tax_vat_amount)}>{money(data.tax_vat_amount)}</span>
                 </div>
                 <div className="flex items-center justify-between gap-4 border-t-2 border-[#111827] pt-3">
                   <span className="shrink-0 text-[18px] font-extrabold tracking-tight text-[#111827]">TOTAL</span>
-                  <span className="min-w-0 truncate text-right text-[22px] font-extrabold tabular-nums text-[#111827]" title={money(data.total)}>{money(data.total)}</span>
+                  <span className="ax-data-money min-w-0 truncate text-right text-[22px] font-extrabold" title={money(data.total)}>{money(data.total)}</span>
                 </div>
               </div>
             </div>

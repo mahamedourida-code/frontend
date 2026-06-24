@@ -6,6 +6,7 @@ import { Check, Cloud, Landmark, Plug2, RefreshCw, ShieldCheck, Target, type Luc
 import { toast } from "sonner"
 
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
+import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
@@ -241,7 +242,13 @@ export function AccountingConnectionsSection({
       ) : null}
 
       <WorkspaceSection icon={<Plug2 />} title="Accounting software" contentClassName="p-0">
-        {providers.map((provider, index) => {
+        {loading ? (
+          <WorkspaceActivityIndicator
+            title="Checking accounting connections"
+            detail="Retrieving QuickBooks and Xero company and reference-list status."
+            className="m-4 w-auto"
+          />
+        ) : providers.map((provider, index) => {
           const connection = connections[provider.id]
           const ProviderIcon = provider.Icon
           return (
@@ -258,7 +265,7 @@ export function AccountingConnectionsSection({
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="text-base font-bold text-foreground">{provider.name}</h2>
                       <StatusBadge tone={connection.connected ? "success" : "neutral"}>
-                        {loading ? "Checking" : connection.connected ? "Connected" : "Not connected"}
+                        {connection.connected ? "Connected" : "Not connected"}
                       </StatusBadge>
                     </div>
                     <p className="mt-1.5 truncate text-xs font-normal text-foreground">

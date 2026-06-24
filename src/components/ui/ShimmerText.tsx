@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 /**
@@ -18,20 +19,29 @@ import { cn } from "@/lib/utils"
 export function ShimmerText({
   children,
   className,
+  tone = "ink",
 }: {
   children: React.ReactNode
   className?: string
+  tone?: "ink" | "working"
 }) {
+  const prefersReducedMotion = useReducedMotion()
+
+  if (prefersReducedMotion) {
+    return (
+      <span className={cn(tone === "working" ? "text-[var(--text-working)]" : "text-[var(--workspace-ink)]", className)}>
+        {children}
+      </span>
+    )
+  }
+
   return (
     <span
+      data-tone={tone}
       className={cn(
-        "animate-shimmer bg-clip-text text-transparent [background-size:1000px_100%]",
+        "ax-shimmer-text animate-shimmer bg-clip-text text-transparent [background-size:220%_100%]",
         className,
       )}
-      style={{
-        backgroundImage:
-          "linear-gradient(110deg,#0a0a0a 0%,#0a0a0a 38%,#9ca3af 50%,#0a0a0a 62%,#0a0a0a 100%)",
-      }}
     >
       {children}
     </span>

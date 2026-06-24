@@ -7,7 +7,7 @@ import { ArrowRight, FileText } from "lucide-react"
 import { ocrApi } from "@/lib/api-client"
 import { isHistoryItemDeleted, reconcileHistoryDeletions, subscribeHistoryDeletions } from "@/lib/recent-files-store"
 import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
-import { ShimmerText } from "@/components/ui/ShimmerText"
+import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 
 type WorkspaceFile = {
   id: string
@@ -50,22 +50,6 @@ function normalizeFiles(response: any): WorkspaceFile[] {
       createdAt,
     }]
   })
-}
-
-function SkeletonRows() {
-  return (
-    <div className="divide-y divide-border overflow-hidden rounded-md border border-border bg-card">
-      {Array.from({ length: 3 }).map((_, index) => (
-        <div key={index} className="flex items-center gap-3 px-3 py-3">
-          <span className="size-8 shrink-0 rounded-md ax-skeleton" />
-          <span className="flex-1 space-y-2">
-            <span className="block h-3 w-1/2 rounded-md ax-skeleton" />
-            <span className="block h-2.5 w-1/4 rounded-md ax-skeleton" />
-          </span>
-        </div>
-      ))}
-    </div>
-  )
 }
 
 export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
@@ -135,10 +119,13 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
       </div>
 
       {loading ? (
-        <SkeletonRows />
+        <WorkspaceActivityIndicator
+          title="Refreshing recent documents"
+          detail="Checking the latest stacks and their review status."
+        />
       ) : recentFiles.length === 0 ? (
         <div className="rounded-md border border-dashed border-border bg-card px-4 py-5 text-sm text-muted-foreground">
-          Uploaded documents will appear here after processing.
+          Uploaded documents will appear here when their review record is ready.
         </div>
       ) : (
         <div className="divide-y divide-border overflow-hidden rounded-md border border-border bg-card">
@@ -153,14 +140,12 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold text-foreground">{file.filename}</span>
-                <span className="mt-0.5 block text-xs font-medium text-muted-foreground">
+                <span className="ax-data-date mt-0.5 block text-xs">
                   {format(new Date(file.createdAt), "MMM d, yyyy")}
                 </span>
               </span>
               <StatusBadge tone={fileStatusTone(file.status)} className="hidden shrink-0 sm:inline-flex">
-                {fileStatusTone(file.status) === "processing"
-                  ? <ShimmerText>{fileStatusLabel(file.status)}</ShimmerText>
-                  : fileStatusLabel(file.status)}
+                {fileStatusLabel(file.status)}
               </StatusBadge>
             </Link>
           ))}

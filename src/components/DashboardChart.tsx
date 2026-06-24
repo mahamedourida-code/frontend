@@ -36,7 +36,7 @@ export default function DashboardChart({ chartData, timeRange }: DashboardChartP
   if (!isMounted) {
     return (
       <div className="flex items-center justify-center h-[280px]">
-        <div className="text-muted-foreground">Loading chart...</div>
+        <div className="text-muted-foreground">Preparing activity chart...</div>
       </div>
     )
   }

@@ -15,6 +15,7 @@ import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { WorkspaceStageStrip } from "@/components/dashboard/WorkspaceStageStrip"
+import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Input } from "@/components/ui/input"
@@ -411,11 +412,18 @@ export default function EmailInboxPage() {
           title="Inbox"
           actions={
             <Button variant="ghost" size="sm" onClick={() => void loadInbox()} disabled={loading}>
-              <RefreshCw className={cn("size-4", loading && "animate-spin")} />
+              <RefreshCw className="size-4" />
               Refresh
             </Button>
           }
         />
+
+        {loading ? (
+          <WorkspaceActivityIndicator
+            title="Checking the intake inbox"
+            detail="Retrieving client submissions, emailed documents, and watched-folder imports."
+          />
+        ) : null}
 
         {!loading && submissions.length === 0 && messages.length === 0 ? (
           <WorkspaceStageStrip activeStage="collect" className="max-w-3xl" />
@@ -439,7 +447,7 @@ export default function EmailInboxPage() {
                 <div className="mt-4 space-y-3">
                   <Field label="Upload link" icon={<Link2 />}>
                     <div className="flex items-center gap-3 rounded-md border border-[#d8dde6] bg-[#f8fafc] px-3 py-2">
-                      <p className="min-w-0 flex-1 truncate font-mono text-xs text-black">{newUploadUrl}</p>
+                      <p className="ax-data-reference min-w-0 flex-1 truncate font-mono text-xs">{newUploadUrl}</p>
                       <InlineAction
                         className="shrink-0"
                         onClick={() => {
@@ -465,7 +473,7 @@ export default function EmailInboxPage() {
                   </Field>
                   <Field label="Status link" icon={<Clock />}>
                     <div className="flex items-center gap-3 rounded-md border border-[#d8dde6] bg-[#f8fafc] px-3 py-2">
-                      <p className="min-w-0 flex-1 truncate font-mono text-xs text-black">{newUploadUrl.replace("/upload/", "/status/")}</p>
+                      <p className="ax-data-reference min-w-0 flex-1 truncate font-mono text-xs">{newUploadUrl.replace("/upload/", "/status/")}</p>
                       <InlineAction
                         className="shrink-0"
                         onClick={() => {
@@ -747,14 +755,12 @@ export default function EmailInboxPage() {
           actions={<span className="text-[13px] font-semibold tabular-nums text-foreground">{submissionFileCount} files</span>}
           contentClassName="p-0"
         >
-          {loading ? (
-            <EmptyState compact icon={<RefreshCw className="animate-spin" />} title="Loading submissions" />
-          ) : submissions.length === 0 ? (
+          {loading ? null : submissions.length === 0 ? (
             <EmptyState
               icon={<Inbox />}
               eyebrow="Client intake"
               title="No client files received"
-              description="Files sent through a client upload link appear here with their source, processing status, and a direct path to review."
+              description="Files sent through a client upload link appear here with their source, review status, and a direct path to the batch."
               action={(
                 <Button asChild variant="surface" size="sm">
                   <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox#client-upload-links" : "/dashboard/client#upload-files"}>
@@ -788,7 +794,7 @@ export default function EmailInboxPage() {
                           <MotionTableCell className={cell}>
                             <SourceBadge kind="client_link" />
                           </MotionTableCell>
-                          <MotionTableCell className={cn(cell, "text-black")}>{formatReceivedAt(submission.created_at)}</MotionTableCell>
+                           <MotionTableCell className={cn(cell, "ax-data-date")}>{formatReceivedAt(submission.created_at)}</MotionTableCell>
                           <MotionTableCell className={cn(cell, "tabular-nums text-black")}>{submission.file_count}</MotionTableCell>
                           <MotionTableCell className={cell}>
                             <StatusBadge tone={submissionTone(submission)}>
@@ -851,14 +857,12 @@ export default function EmailInboxPage() {
           actions={<span className="text-[13px] font-semibold tabular-nums text-foreground">{importCount} files</span>}
           contentClassName="p-0"
         >
-          {loading ? (
-            <EmptyState compact icon={<RefreshCw className="animate-spin" />} title="Loading imports" />
-          ) : messages.length === 0 ? (
+          {loading ? null : messages.length === 0 ? (
             <EmptyState
               icon={<Mail />}
               eyebrow="Email intake"
               title="No emailed documents yet"
-              description="Attachments forwarded to your workspace email appear here with the sender, processing status, and a Review link."
+              description="Attachments forwarded to your workspace email appear here with the sender, review status, and a direct Review link."
               action={(
                 <Button asChild variant="surface" size="sm">
                   <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox#email-in-address" : "/dashboard/guide"}>
@@ -890,8 +894,8 @@ export default function EmailInboxPage() {
                       return (
                         <MotionTableRow key={message.id} layout variants={m.fadeUp} exit="exit">
                           <MotionTableCell className={cn(cell, "max-w-[220px] pl-6")}>
-                            <p className="truncate text-sm font-medium text-black">{message.sender || "Unknown sender"}</p>
-                            <p className="mt-1 truncate text-xs text-black">{message.source_email_reference}</p>
+                            <p className="ax-data-entity truncate text-sm">{message.sender || "Unknown sender"}</p>
+                            <p className="ax-data-reference mt-1 truncate text-xs">{message.source_email_reference}</p>
                           </MotionTableCell>
                           <MotionTableCell className={cn(cell, "max-w-[260px] truncate text-sm text-black")}>
                             {documentNames || `${message.attachment_count} attachment${message.attachment_count === 1 ? "" : "s"}`}
@@ -899,7 +903,7 @@ export default function EmailInboxPage() {
                           <MotionTableCell className={cell}>
                             <SourceBadge kind="email" />
                           </MotionTableCell>
-                          <MotionTableCell className={cn(cell, "text-black")}>{formatReceivedAt(message.received_at)}</MotionTableCell>
+                          <MotionTableCell className={cn(cell, "ax-data-date")}>{formatReceivedAt(message.received_at)}</MotionTableCell>
                           <MotionTableCell className={cell}>
                             <StatusBadge tone={tone}><BadgeValue value={state} /></StatusBadge>
                           </MotionTableCell>
@@ -950,7 +954,7 @@ export default function EmailInboxPage() {
                         )
                       }
                     >
-                      <p className="truncate text-xs text-black">{message.source_email_reference}</p>
+                      <p className="ax-data-reference truncate text-xs">{message.source_email_reference}</p>
                       <p className="truncate text-sm text-black">
                         {documentNames || `${message.attachment_count} attachment${message.attachment_count === 1 ? "" : "s"}`}
                       </p>

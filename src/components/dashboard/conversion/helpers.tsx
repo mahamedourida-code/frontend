@@ -265,24 +265,17 @@ export function resultDueDate(file: ResultFile, summary: ReturnType<typeof resul
   ])
 }
 
-export function documentTypeToneClass(type?: string) {
-  const classes: Record<string, string> = {
-    invoice: "text-[#166534]",
-    receipt: "text-[#b45309]",
-    bank_statement: "text-[#3730a3]",
-    notes: "text-[#5b21b6]",
-    table: "text-[#0f766e]",
-  }
-  return classes[type || ""] || "text-[#475467]"
+export function documentTypeToneClass(_type?: string) {
+  return "text-[var(--workspace-muted)]"
 }
 
 export function statusChipClass(state: ReturnType<typeof getOutputBadge>["state"]) {
   const classes: Record<ReturnType<typeof getOutputBadge>["state"], string> = {
-    failed: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]",
-    needs_review: "border-[#fed7aa] bg-[#fff7ed] text-[#92400e]",
-    ready: "border-[#bbf7d0] bg-[#ecfdf3] text-[#166534]",
-    published: "border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8]",
-    edited: "border-[#ddd6fe] bg-[#f5f3ff] text-[#5b21b6]",
+    failed: "border-red-200 bg-white text-[var(--text-danger)]",
+    needs_review: "border-amber-200 bg-white text-[var(--text-attention)]",
+    ready: "border-green-200 bg-white text-[var(--text-success)]",
+    published: "border-green-200 bg-white text-[var(--text-success)]",
+    edited: "border-violet-200 bg-white text-[var(--text-review)]",
   }
   return classes[state]
 }
@@ -316,13 +309,13 @@ export function resultIssue(
   reviewLevel: ReturnType<typeof deriveReviewLevel>,
   duplicateWarning?: DocumentDuplicateWarning,
 ) {
-  if (duplicateWarning) return { label: "Duplicate", className: "text-[#92400e]" }
-  if (badge.state === "failed") return { label: "Failed", className: "text-[#b42318]" }
-  if (reviewLevel.highValue) return { label: "High value", className: "text-[#92400e]" }
-  if (badge.state === "needs_review") return { label: "Needs review", className: "text-[#92400e]" }
-  if (badge.state === "published") return { label: "Published", className: "text-[#1d4ed8]" }
-  if (badge.state === "edited" || file.review_status === "edited") return { label: "Edited", className: "text-[#5b21b6]" }
-  return { label: "Clean", className: "text-[#166534]" }
+  if (duplicateWarning) return { label: "Duplicate", className: "ax-text-attention" }
+  if (badge.state === "failed") return { label: "Failed", className: "ax-text-danger" }
+  if (reviewLevel.highValue) return { label: "High value", className: "ax-text-attention" }
+  if (badge.state === "needs_review") return { label: "Needs review", className: "ax-text-attention" }
+  if (badge.state === "published") return { label: "Published", className: "ax-text-success" }
+  if (badge.state === "edited" || file.review_status === "edited") return { label: "Edited", className: "ax-text-review" }
+  return { label: "Clean", className: "ax-text-success" }
 }
 
 export function structuredRows(file: ResultFile, language: InvoiceLanguage = "en"): { columns: string[]; rows: any[][]; pathRoot?: string } | null {
@@ -428,10 +421,10 @@ export function normalizeRecentFiles(response: any): import("./types").RecentBat
 
 export function recentStatusChip(status: string): { label: string; chip: string } {
   if (["processing", "pending", "queued"].includes(status))
-    return { label: "Reading", chip: "border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8]" }
+    return { label: "Reading", chip: "border-blue-200 bg-white text-[var(--text-working)]" }
   if (["failed", "error"].includes(status))
-    return { label: "Failed", chip: "border-[#fecaca] bg-[#fff1f2] text-[#b42318]" }
+    return { label: "Failed", chip: "border-red-200 bg-white text-[var(--text-danger)]" }
   if (status === "requires_review")
-    return { label: "Needs review", chip: "border-[#fed7aa] bg-[#fff7ed] text-[#92400e]" }
-  return { label: "Ready", chip: "border-[#bbf7d0] bg-[#ecfdf3] text-[#166534]" }
+    return { label: "Needs review", chip: "border-amber-200 bg-white text-[var(--text-attention)]" }
+  return { label: "Ready", chip: "border-green-200 bg-white text-[var(--text-success)]" }
 }

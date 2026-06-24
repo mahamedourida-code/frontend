@@ -17,9 +17,9 @@ import {
   Users,
 } from "lucide-react"
 
-import { EmptyState } from "@/components/dashboard/EmptyState"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
+import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { InlineAction } from "@/components/ui/inline-action"
 import { useMotionTokens } from "@/lib/motion"
 import { cn } from "@/lib/utils"
@@ -283,7 +283,10 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
   if (loading) {
     return (
       <WorkspaceSection icon={<Check />} title="Setup checklist">
-        <EmptyState compact icon={<Plug className="animate-spin" />} title="Checking your setup" />
+        <WorkspaceActivityIndicator
+          title="Checking workspace setup"
+          detail="Reviewing intake, accounting connections, supplier defaults, and billing access."
+        />
       </WorkspaceSection>
     )
   }

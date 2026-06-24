@@ -8,9 +8,7 @@ import { Building2, ChevronRight, RefreshCw, Search, Upload } from "lucide-react
 import { AddCompanyDialog } from "@/components/dashboard/companies/AddCompanyDialog"
 import { companiesFromResponse, type CompanySummary } from "@/components/dashboard/companies/company-types"
 import { EmptyState } from "@/components/dashboard/EmptyState"
-import { SkeletonTableRow } from "@/components/dashboard/SkeletonCard"
-import { StatusBadge } from "@/components/dashboard/StatusBadge"
-import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
+import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { Card, CardContent } from "@/components/ui/card"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Input } from "@/components/ui/input"
@@ -108,7 +106,7 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
           </div>
           <div className="flex items-center gap-5">
             <InlineAction onClick={() => void load()} disabled={loading} aria-label="Refresh clients">
-              <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
+              <RefreshCw className="size-3.5" />
               Refresh
             </InlineAction>
             <AddCompanyDialog workspaceId={workspaceId} onCreated={() => void load()} />
@@ -129,7 +127,13 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
             className="min-h-48"
             compact
           />
-        ) : !loading && visibleCompanies.length === 0 ? (
+        ) : loading ? (
+          <WorkspaceActivityIndicator
+            title="Refreshing clients"
+            detail="Checking client activity, review work, and draft bill counts."
+            className="m-4 w-auto"
+          />
+        ) : visibleCompanies.length === 0 ? (
           query ? (
             <EmptyState
               icon={<Building2 />}
@@ -172,10 +176,7 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {loading ? (
-                  Array.from({ length: 5 }).map((_, index) => <SkeletonTableRow key={`company-skel-${index}`} columns={10} />)
-                ) : (
-                  visibleCompanies.map((company) => (
+                {visibleCompanies.map((company) => (
                   <TableRow
                     key={company.id}
                     className="ax-interactive cursor-pointer bg-white hover:bg-[var(--workspace-row-hover)]"
@@ -184,13 +185,13 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
                     <TableCell className="px-4">
                       <Link
                         href={`/dashboard/companies/${encodeURIComponent(company.id)}`}
-                        className="flex items-center gap-3 font-normal text-[var(--workspace-blue)]"
+                        className="group flex items-center gap-3"
                         onClick={(event) => event.stopPropagation()}
                       >
                         <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-muted)]">
                           <Building2 className="size-4" />
                         </span>
-                        <span className="truncate">{company.name}</span>
+                        <span className="ax-data-entity truncate group-hover:text-[var(--workspace-blue)]">{company.name}</span>
                         <ChevronRight className="ms-auto size-4 shrink-0 text-muted-foreground" />
                       </Link>
                     </TableCell>
@@ -214,7 +215,7 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
                     <CountCell value={company.other} />
                     <CountCell value={company.needsReview} emphasis />
                     <CountCell value={company.bills} />
-                    <TableCell className="px-4 text-muted-foreground">{formatDate(company.lastUploadAt)}</TableCell>
+                    <TableCell className="ax-data-date px-4">{formatDate(company.lastUploadAt)}</TableCell>
                     <TableCell className="px-4 text-right">
                       <InlineAction asChild>
                         <Link
@@ -227,8 +228,7 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
                       </InlineAction>
                     </TableCell>
                   </TableRow>
-                  ))
-                )}
+                  ))}
               </TableBody>
             </Table>
           </div>

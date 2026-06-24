@@ -35,19 +35,18 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button, buttonVariants } from "@/components/ui/button"
-import { ShimmerText } from "@/components/ui/ShimmerText"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { BankReconciliationPanel } from "@/components/dashboard/BankReconciliationPanel"
 import { ConfidenceDot, ConfidenceLegend } from "@/components/dashboard/ConfidenceDot"
 import { AnomalyChip } from "@/components/dashboard/AnomalyChip"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
+import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { WorkspaceStageStrip } from "@/components/dashboard/WorkspaceStageStrip"
 import { Field } from "@/components/dashboard/Field"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { Symbol } from "@/components/dashboard/Symbol"
 import { HandwrittenBadge } from "@/components/dashboard/HandwrittenBadge"
-import { ProcessingScanOverlay } from "@/components/dashboard/ProcessingScanOverlay"
 import { SourceHighlightOverlay } from "@/components/dashboard/SourceHighlightOverlay"
 import { ProgressiveUploadSheet } from "@/components/dashboard/upload/ProgressiveUploadSheet"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
@@ -485,7 +484,6 @@ export function SelectedFilesTray({
                     {pdf ? <FileText className="h-5 w-5 text-[var(--brand-brown-fg)]" /> : <FileImage className="h-5 w-5 text-[var(--brand-brown-fg)]" />}
                   </div>
                 )}
-                {isProcessing ? <ProcessingScanOverlay /> : null}
                 <Button
                   variant="ghost"
                   size="icon"
@@ -723,13 +721,13 @@ export function ResultPreviewPanel({
               <div className="max-h-[420px] min-h-[260px] overflow-auto rounded-lg border border-border bg-white">
                 {isTextOutput || textPreview ? (
                   <pre className="min-h-[260px] whitespace-pre-wrap p-4 text-sm font-medium leading-6 text-gray-950">
-                    {textPreview || "Text preview is loading..."}
+                    {textPreview || "Preparing document preview..."}
                   </pre>
                 ) : tablePreviewData.length ? (
                   <ExtractedTable rows={tablePreviewData} />
                 ) : (
                   <div className="flex min-h-[260px] items-center justify-center p-4 text-sm font-semibold text-muted-foreground">
-                    Preview is loading
+                    Preparing document preview
                   </div>
                 )}
               </div>
@@ -742,13 +740,13 @@ export function ResultPreviewPanel({
             <div className="max-h-[420px] min-h-[260px] overflow-auto rounded-lg border border-border bg-white">
               {isTextOutput || textPreview ? (
                 <pre className="min-h-[260px] whitespace-pre-wrap p-4 text-sm font-medium leading-6 text-gray-950">
-                  {textPreview || "Text preview is loading..."}
+                  {textPreview || "Preparing document preview..."}
                 </pre>
               ) : tablePreviewData.length ? (
                 <ExtractedTable rows={tablePreviewData} />
               ) : (
                 <div className="flex min-h-[260px] items-center justify-center p-4 text-sm font-semibold text-muted-foreground">
-                  Preview is loading
+                  Preparing document preview
                 </div>
               )}
             </div>
@@ -763,13 +761,13 @@ export function ResultPreviewPanel({
           <div className="max-h-[420px] min-h-[260px] overflow-auto rounded-lg border border-border bg-white">
             {isTextOutput || textPreview ? (
               <pre className="min-h-[260px] whitespace-pre-wrap p-4 text-sm font-medium leading-6 text-gray-950">
-                {textPreview || "Text preview is loading..."}
+                {textPreview || "Preparing document preview..."}
               </pre>
             ) : tablePreviewData.length ? (
               <ExtractedTable rows={tablePreviewData} />
             ) : (
               <div className="flex min-h-[260px] items-center justify-center p-4 text-sm font-semibold text-muted-foreground">
-                Preview is loading
+                Preparing document preview
               </div>
             )}
           </div>
@@ -1506,20 +1504,22 @@ export function ResultActions({
             ) : null}
           </div>
 
-          <div className="flex min-h-10 items-center justify-between gap-3 border-b border-[#d9dde3] bg-[#f6f7fb] px-4 py-2 text-[12px] text-[#475467]">
-            <div className="flex items-center gap-3">
+          {isProcessing && pendingCount > 0 ? (
+            <WorkspaceActivityIndicator
+              title="Preparing remaining documents for review"
+              detail="Checking extracted suppliers, references, dates, and totals."
+              done={safeResultFiles.length}
+              total={safeResultFiles.length + pendingCount}
+              className="rounded-none border-x-0 border-t-0"
+            />
+          ) : (
+            <div className="flex min-h-10 items-center justify-between gap-3 border-b border-[#d9dde3] bg-[#f6f7fb] px-4 py-2 text-[12px] text-[#475467]">
               <span className="font-semibold text-[#344054]">Review results</span>
-              {isProcessing && pendingCount > 0 ? (
-                <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-700">
-                  <Loader2 className="size-3.5 animate-spin" />
-                  Reading {pendingCount} more
-                </span>
-              ) : null}
+              <span className="tabular-nums">
+                {filteredResultEntries.length}/{filterCounts.all} shown
+              </span>
             </div>
-            <span className="tabular-nums">
-              {filteredResultEntries.length}/{filterCounts.all} shown
-            </span>
-          </div>
+          )}
 
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1120px] border-separate border-spacing-0 text-left text-[13px] text-[#111827]">
@@ -1614,19 +1614,19 @@ export function ResultActions({
                           {statusLabel}
                         </span>
                       </td>
-                      <td className="max-w-[180px] border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[var(--data-entity)]">
+                      <td className="ax-data-entity max-w-[180px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
                         <span className="block truncate">{formatCellValue(summary.identity)}</span>
                       </td>
-                      <td className="max-w-[150px] border-b border-[#e4e7ef] px-3 py-2 align-middle font-medium text-[var(--data-reference)]">
+                      <td className="ax-data-reference max-w-[150px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
                         <span className="block truncate">{resultReference(file)}</span>
                       </td>
-                      <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-medium text-[var(--data-date)] tabular-nums">
+                      <td className="ax-data-date border-b border-[#e4e7ef] px-3 py-2 align-middle">
                         {resultDate(file)}
                       </td>
-                      <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-medium text-[var(--data-due)] tabular-nums">
+                      <td className="ax-data-due border-b border-[#e4e7ef] px-3 py-2 align-middle">
                         {resultDueDate(file, summary)}
                       </td>
-                      <td className="border-b border-[#e4e7ef] px-3 py-2 text-right align-middle font-bold tabular-nums text-[var(--data-money)]">
+                      <td className="ax-data-money border-b border-[#e4e7ef] px-3 py-2 text-right align-middle">
                         {formatCellValue(summary.amount)}
                       </td>
                       <td className={cn("border-b border-[#e4e7ef] px-3 py-2 align-middle text-[12px] font-semibold", issue.className)}>
@@ -2391,7 +2391,7 @@ export function ResultActions({
                   </div>
                 ) : isTextOutput || comparisonText ? (
                   <pre className="min-h-[420px] whitespace-pre-wrap p-5 text-left text-sm leading-7 text-gray-950">
-                    {comparisonText || "Text preview is loading..."}
+                    {comparisonText || "Preparing document preview..."}
                   </pre>
                 ) : comparisonTable.length ? (
                   <>
@@ -2547,6 +2547,8 @@ function BatchStagingBoard({
   pdfPageCounts,
   isProcessing,
   isUploading,
+  processingDone,
+  processingTotal,
   noCredits,
   suppressAutoOpen,
   onOpenUpload,
@@ -2558,6 +2560,8 @@ function BatchStagingBoard({
   pdfPageCounts: Record<number, number>
   isProcessing: boolean
   isUploading: boolean
+  processingDone?: number
+  processingTotal?: number
   noCredits: boolean
   suppressAutoOpen: boolean
   onOpenUpload: () => void
@@ -2623,8 +2627,8 @@ function BatchStagingBoard({
 
   const stagedCount = uploadedFiles.length
   const rowCount = mode === "idle" ? recent.length : stagedCount
-  const tabLabel = mode === "idle" ? "Recent" : mode === "staged" ? "Staged" : "Reading"
-  const bandLabel = mode === "idle" ? "Recent files" : mode === "staged" ? "Ready to process" : "Working through this stack"
+  const tabLabel = mode === "idle" ? "Recent" : mode === "staged" ? "Staged" : "Documents"
+  const bandLabel = mode === "idle" ? "Recent files" : mode === "staged" ? "Ready to read" : "Reading documents"
   const countLabel = mode === "idle" ? `${rowCount} shown` : `${rowCount} file${rowCount === 1 ? "" : "s"}`
   const dash = <span className="text-[#98a2b3]">–</span>
 
@@ -2698,16 +2702,26 @@ function BatchStagingBoard({
           <div className="flex min-h-12 flex-col gap-2 border-b border-[#cfd4da] bg-white px-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-h-12 flex-wrap items-stretch gap-4">
               <span className="relative inline-flex h-12 items-center gap-1.5 border-b-2 border-[var(--workspace-primary)] px-0 text-[13px] font-semibold text-[var(--workspace-primary)]">
-                <span>{mode === "processing" ? <ShimmerText>{tabLabel}</ShimmerText> : tabLabel}</span>
+                <span>{tabLabel}</span>
                 {rowCount > 0 ? <span className="tabular-nums text-[#667085]">{rowCount}</span> : null}
               </span>
             </div>
           </div>
 
-          <div className="flex min-h-10 items-center justify-between gap-3 border-b border-[#d9dde3] bg-[#f6f7fb] px-4 py-2 text-[12px] text-[#475467]">
-            <span className="font-semibold text-[#344054]">{mode === "processing" ? <ShimmerText>{bandLabel}</ShimmerText> : bandLabel}</span>
-            <span className="tabular-nums">{countLabel}</span>
-          </div>
+          {mode === "processing" ? (
+            <WorkspaceActivityIndicator
+              title="Reading documents"
+              detail="Extracting supplier, reference, date, and total fields for review."
+              done={processingDone ?? 0}
+              total={processingTotal ?? uploadedFiles.length}
+              className="rounded-none border-x-0 border-t-0"
+            />
+          ) : (
+            <div className="flex min-h-10 items-center justify-between gap-3 border-b border-[#d9dde3] bg-[#f6f7fb] px-4 py-2 text-[12px] text-[#475467]">
+              <span className="font-semibold text-[#344054]">{bandLabel}</span>
+              <span className="tabular-nums">{countLabel}</span>
+            </div>
+          )}
 
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1120px] border-separate border-spacing-0 text-left text-[13px] text-[#111827]">
@@ -2730,11 +2744,14 @@ function BatchStagingBoard({
               <tbody>
                 {mode === "idle" ? (
                   (recentLoading || latestRecentId) ? (
-                    Array.from({ length: 3 }).map((_, index) => (
-                      <tr key={`skeleton-${index}`} className="h-12 bg-white">
-                        <td colSpan={12} className="border-b border-[#e4e7ef] px-3 py-3"><span className="block h-3 w-2/3 rounded-md ax-skeleton" /></td>
-                      </tr>
-                    ))
+                    <tr>
+                      <td colSpan={12} className="border-b border-[#e4e7ef] p-4">
+                        <WorkspaceActivityIndicator
+                          title="Refreshing recent documents"
+                          detail="Retrieving the latest stacks and review status."
+                        />
+                      </td>
+                    </tr>
                   ) : recent.length ? (
                     recent.map((file) => {
                       const st = recentStatusChip(file.status)
@@ -2760,7 +2777,7 @@ function BatchStagingBoard({
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#0f766e]">Stack</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             <span className={cn("inline-flex h-5 items-center whitespace-nowrap rounded-full border px-2 text-[11px] font-semibold leading-none", st.chip)}>
-                              {st.label === "Reading" ? <ShimmerText>{st.label}</ShimmerText> : st.label}
+                              {st.label}
                             </span>
                           </td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
@@ -2825,7 +2842,7 @@ function BatchStagingBoard({
                         >
                           <td className={cn("border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", processing ? "border-l-[var(--workspace-blue)]" : "border-l-transparent")}>
                             <span className="inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#94a3b8]">
-                              {processing ? <Loader2 className="size-3.5 animate-spin text-[var(--workspace-blue)]" /> : pdf ? <FileText className="size-3.5" /> : <FileImage className="size-3.5" />}
+                              {pdf ? <FileText className={cn("size-3.5", processing && "text-[var(--text-working)]")} /> : <FileImage className={cn("size-3.5", processing && "text-[var(--text-working)]")} />}
                             </span>
                           </td>
                           <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
@@ -2837,8 +2854,8 @@ function BatchStagingBoard({
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#111827]">Auto-detect</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             {processing ? (
-                              <span className="inline-flex h-5 items-center rounded-full border border-[#bfdbfe] bg-[var(--workspace-blue-soft)] px-2 text-[11px] font-semibold">
-                                <ShimmerText>Reading</ShimmerText>
+                              <span className="ax-text-working inline-flex h-5 items-center px-2 text-[11px]">
+                                In review
                               </span>
                             ) : (
                               <span className="inline-flex h-5 items-center rounded-full border border-[#cfd4d9] bg-white px-2 text-[11px] font-semibold text-[#475467]">
@@ -2852,20 +2869,12 @@ function BatchStagingBoard({
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 text-right align-middle">{dash}</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
-                            {processing ? (
-                              <span className="text-[12px] font-semibold">
-                                <ShimmerText>Reading…</ShimmerText>
-                              </span>
-                            ) : (
-                              dash
-                            )}
+                            {processing ? <span className="ax-text-working text-[12px]">Queued</span> : dash}
                           </td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
                           <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
                             <div className="flex justify-end">
-                              {processing ? (
-                                <Loader2 className="h-4 w-4 animate-spin text-[var(--workspace-blue)]" />
-                              ) : (
+                              {processing ? dash : (
                                 <button
                                   type="button"
                                   onClick={() => onRemoveFile(index)}
@@ -3051,6 +3060,8 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
               pdfPageCounts={pdfPageCounts}
               isProcessing={isProcessing}
               isUploading={isUploading}
+              processingDone={processingDone}
+              processingTotal={processingTotal}
               noCredits={noCredits}
               suppressAutoOpen={uploadSheetOpen || uploadIntentRef.current}
               onOpenUpload={() => setUploadOpen(true)}
