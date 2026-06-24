@@ -1,15 +1,64 @@
-import { Metadata } from 'next';
-import Home from '../page';
+import type { Metadata } from "next";
+
+import { ConversionMarketingPage } from "@/components/ConversionMarketingPage";
 
 export const metadata: Metadata = {
-  title: 'JPG to Excel Converter - Free Online Tool | AxLiner',
-  description: 'Convert JPG images to Excel spreadsheets instantly. AI-powered OCR extracts tables from JPG/JPEG photos and converts them to editable XLSX files. Free and fast.',
-  keywords: 'jpg to excel, jpeg to excel, jpg to xlsx, jpeg to spreadsheet, convert jpg to excel online',
-  openGraph: {
-    title: 'JPG to Excel Converter - Free Online Tool | AxLiner',
-    description: 'Convert JPG images to Excel spreadsheets instantly. AI-powered OCR extracts tables from JPG/JPEG photos.',
-    type: 'website',
-  },
+  title: "JPG to Excel Converter | AxLiner",
+  description:
+    "Convert batches of JPG and JPEG document photos into structured, reviewable Excel and CSV files.",
 };
 
-export default Home;
+export default function JpgToExcelPage() {
+  return (
+    <ConversionMarketingPage
+      eyebrow="JPG to Excel"
+      title={
+        <>
+          JPG folders become <span className="text-[var(--landing-blue)]">reviewed workbooks.</span>
+        </>
+      }
+      intro="Upload the camera photos together. AxLiner reads the documents, rebuilds the rows, and shows exactly what needs review."
+      heroImage={{
+        src: "/landing/hero-poster.png",
+        alt: "JPG accounting documents being extracted into the AxLiner review workflow",
+        width: 1280,
+        height: 720,
+      }}
+      sectionTitle={
+        <>
+          A converter designed for the <span className="text-[var(--landing-blue)]">entire folder.</span>
+        </>
+      }
+      sectionIntro="JPG is the input format. The product is a batch review process that carries clean data all the way to its destination."
+      blocks={[
+        {
+          title: "Camera photos welcome",
+          copy: "Send scans, exports, and phone photos together. AxLiner handles them in one batch without a file-by-file loop.",
+        },
+        {
+          title: "Source beside output",
+          copy: "Reviewers can verify flagged fields against the original JPG while editing the structured result.",
+        },
+        {
+          title: "One reviewed delivery",
+          copy: "Download Excel or CSV, or send supported reviewed drafts to QuickBooks or Xero when the batch is complete.",
+        },
+      ]}
+      steps={[
+        {
+          title: "Upload every JPG",
+          copy: "Drop the complete set of document photos into a single batch.",
+        },
+        {
+          title: "Review the exceptions",
+          copy: "Check the fields and rows AxLiner flags instead of rereading every image.",
+        },
+        {
+          title: "Deliver the batch",
+          copy: "Export the reviewed workbook or publish supported drafts to the books.",
+        },
+      ]}
+      finalTitle="Finish the folder, not one JPG."
+    />
+  );
+}

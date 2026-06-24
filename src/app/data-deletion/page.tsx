@@ -1,5 +1,6 @@
 import Link from "next/link"
 
+import { MarketingFooter } from "@/components/MarketingFooter"
 import { MarketingNavBar } from "@/components/MarketingNavBar"
 import { Button } from "@/components/ui/button"
 
@@ -13,13 +14,13 @@ const deletedData = [
 
 export default function DataDeletionPage() {
   return (
-    <main className="ax-marketing-page min-h-screen bg-white text-black">
+    <div className="ax-marketing-page min-h-screen bg-[#FDFBF7] text-[#191919]">
       <MarketingNavBar />
 
-      <article className="ax-marketing-container-reading max-w-[760px] pb-24 pt-32 lg:pt-36">
+      <article className="ax-marketing-container-reading max-w-[900px] pb-24 pt-32 lg:pt-40 [&>section]:mt-4 [&>section]:rounded-[28px] [&>section]:border [&>section]:border-black/10 [&>section]:bg-white [&>section]:p-6 [&>section]:shadow-[0_14px_45px_rgba(25,25,25,0.04)] sm:[&>section]:p-9">
         <header>
-          <p className="ax-marketing-eyebrow text-emerald-700">Data deletion</p>
-          <h1 className="ax-marketing-section-title mt-5 text-black">
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--landing-blue)]">Data deletion</p>
+          <h1 className="mt-5 text-[clamp(3.5rem,7vw,6.5rem)] font-medium leading-[0.92] tracking-[-0.06em]">
             Delete AxLiner account data with a clear request.
           </h1>
           <p className="ax-marketing-lead mt-5 text-black">
@@ -31,7 +32,7 @@ export default function DataDeletionPage() {
         </header>
 
         <section className="mt-10 border-t border-border pt-9">
-          <h2 className="ax-marketing-subtitle">What can be deleted</h2>
+          <h2 className="ax-marketing-subtitle !font-medium">What can be deleted</h2>
           <p className="ax-marketing-prose mt-5">
             A deletion request is meant to remove the account data AxLiner no longer needs to operate for you. That
             normally includes the following information.
@@ -47,7 +48,7 @@ export default function DataDeletionPage() {
         </section>
 
         <section className="mt-10 border-t border-border pt-9">
-          <h2 className="ax-marketing-subtitle">Delete from account settings</h2>
+          <h2 className="ax-marketing-subtitle !font-medium">Delete from account settings</h2>
           <div className="ax-marketing-prose mt-5 space-y-5">
             <p>
               If you can access the account, start from{" "}
@@ -65,7 +66,7 @@ export default function DataDeletionPage() {
         </section>
 
         <section className="mt-10 border-t border-border pt-9">
-          <h2 className="ax-marketing-subtitle">Request deletion by email</h2>
+          <h2 className="ax-marketing-subtitle !font-medium">Request deletion by email</h2>
           <div className="ax-marketing-prose mt-5 space-y-5">
             <p>
               If you cannot reach settings, email{" "}
@@ -92,7 +93,7 @@ export default function DataDeletionPage() {
         </section>
 
         <section className="mt-10 border-t border-border pt-9">
-          <h2 className="ax-marketing-subtitle">After deletion</h2>
+          <h2 className="ax-marketing-subtitle !font-medium">After deletion</h2>
           <div className="ax-marketing-prose mt-5 space-y-5">
             <p>
               Generated files, file metadata, job history, profile information, and active access paths are removed
@@ -108,7 +109,7 @@ export default function DataDeletionPage() {
         </section>
 
         <section className="mt-10 border-t border-border pt-9">
-          <h2 className="ax-marketing-subtitle">Related pages</h2>
+          <h2 className="ax-marketing-subtitle !font-medium">Related pages</h2>
           <p className="ax-marketing-prose mt-5">
             Read the <Link href="/privacy-policy" className="font-semibold text-primary underline underline-offset-4">privacy policy</Link>{" "}
             for the wider data handling explanation or use the{" "}
@@ -117,6 +118,7 @@ export default function DataDeletionPage() {
           </p>
         </section>
       </article>
-    </main>
+      <MarketingFooter />
+    </div>
   )
 }

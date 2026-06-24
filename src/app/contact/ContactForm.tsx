@@ -151,7 +151,7 @@ export function ContactForm() {
                 onClick={() => setTopic(t.value)}
                 aria-pressed={active}
                 className={
-                  "rounded-xl border px-3 py-2.5 text-[13.5px] font-semibold leading-tight transition-colors " +
+                  "rounded-full border px-3 py-2.5 text-[13.5px] font-semibold leading-tight transition-colors " +
                   (active
                     ? "border-[var(--landing-blue)] bg-[var(--landing-blue)]/10 text-black"
                     : "border-black/10 bg-white text-black hover:border-black/25")

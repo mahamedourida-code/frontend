@@ -1,335 +1,123 @@
-"use client";
-
 import Image from "next/image";
-import NextLink from "next/link";
-import { motion, type Variants } from "framer-motion";
+import Link from "next/link";
 
-// ── Animation helpers ──────────────────────────────────────────────────────
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 28 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
-};
-
-const staggerContainer: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
-};
-
-const fadeIn: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-};
-
-// ── Integration card data ──────────────────────────────────────────────────
-const integrations = [
+const integrationGroups = [
   {
-    name: "QuickBooks Online",
-    logo: "/integrations/quickbooks.png",
-    logoWidth: 52,
-    logoHeight: 52,
-    description: "Post reviewed draft bills directly to your QuickBooks AP queue — one click after review.",
-    status: "available" as const,
+    eyebrow: "Publish",
+    title: "QuickBooks + Xero",
+    body: "Send reviewed draft bills to either ledger only after the batch is approved.",
+    logos: [
+      { src: "/integrations/quickbooks.png", alt: "QuickBooks Online", width: 64, height: 64 },
+      { src: "/integrations/xero.png", alt: "Xero", width: 64, height: 64 },
+    ],
   },
   {
-    name: "Google Drive",
-    logo: "/drive.png",
-    logoWidth: 48,
-    logoHeight: 48,
-    description: "Connect a Drive folder and AxLiner auto-ingests every new file the moment it lands.",
-    status: "available" as const,
+    eyebrow: "Collect",
+    title: "Drive + Gmail",
+    body: "Bring folders and attachments into one intake queue instead of chasing files across tabs.",
+    logos: [
+      { src: "/drive.png", alt: "Google Drive", width: 64, height: 64 },
+      { src: "/integrations/gmail.webp", alt: "Gmail", width: 64, height: 64 },
+    ],
   },
   {
-    name: "Gmail",
-    logo: "/integrations/gmail.webp",
-    logoWidth: 48,
-    logoHeight: 48,
-    description: "Forward invoice emails to your AxLiner inbox — attachments queue automatically for extraction.",
-    status: "available" as const,
+    eyebrow: "Export",
+    title: "Excel + CSV",
+    body: "Download the corrected batch as a workbook or flat file, ready for the next system.",
+    logos: [{ src: "/logos/excel.png", alt: "Microsoft Excel", width: 64, height: 64 }],
   },
-  {
-    name: "Excel / CSV Export",
-    logo: null,
-    logoWidth: 48,
-    logoHeight: 48,
-    description: "Download any reviewed batch as a clean, multi-sheet Excel workbook or a flat CSV instantly.",
-    status: "available" as const,
-  },
-  {
-    name: "Xero",
-    logo: "/integrations/xero.png",
-    logoWidth: 52,
-    logoHeight: 52,
-    description: "Post reviewed draft bills straight to Xero — structured and ready for reconciliation.",
-    status: "available" as const,
-  },
-];
+] as const;
 
-// ── How it connects steps ──────────────────────────────────────────────────
 const steps = [
-  {
-    number: "01",
-    title: "Upload from anywhere",
-    body: "Drag files into the dashboard, drop an entire Drive folder, or forward an email to your AxLiner inbox. Every intake path lands in the same batch queue.",
-  },
-  {
-    number: "02",
-    title: "Review every line before it moves",
-    body: "AxLiner extracts structured data and surfaces it side-by-side with the source image. Correct outliers, confirm amounts, then approve the whole batch at once.",
-  },
-  {
-    number: "03",
-    title: "Post or export — your call",
-    body: "Push approved bills straight to QuickBooks or Xero, download as Excel/CSV, or both. Nothing leaves the review board until you say so.",
-  },
-];
-
-// ── Excel SVG icon (inline, no extra file needed) ──────────────────────────
-function ExcelIcon() {
-  return (
-    <svg viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
-      <rect width="48" height="48" rx="8" fill="#1D6F42" />
-      <text x="7" y="34" fontFamily="Arial, sans-serif" fontWeight="bold" fontSize="22" fill="#fff">
-        XLS
-      </text>
-    </svg>
-  );
-}
+  ["01", "Collect the batch", "Upload a folder or route attachments into the same client queue."],
+  ["02", "Review the exceptions", "Compare every source with editable fields and clear the flagged values."],
+  ["03", "Publish the draft", "Send approved bills to QuickBooks or Xero, or export the reviewed batch."],
+] as const;
 
 export default function IntegrationsClient() {
   return (
     <>
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-white px-4 pb-20 pt-24 sm:px-6 sm:pb-28 sm:pt-32 lg:px-8">
-        {/* soft mint glow behind hero text */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-gradient-to-b from-[var(--brand-green)]/40 via-[var(--brand-green)]/10 to-transparent"
-        />
-        <div className="relative mx-auto max-w-[1280px]">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-            className="flex flex-col items-center gap-6 text-center"
-          >
-            <motion.span
-              variants={fadeIn}
-              className="inline-flex items-center rounded-full bg-[var(--brand-green)] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#064e3b]"
-            >
-              Integrations
-            </motion.span>
-
-            <motion.h1
-              variants={fadeUp}
-              className="ax-marketing-display mx-auto max-w-[820px] text-[34px] font-bold leading-[1.08] tracking-tight text-neutral-950 md:text-[44px] lg:text-[54px]"
-            >
-              Seamless integrations with the{" "}
-              <span className="text-[#059669]">accounting tools</span> you already use
-            </motion.h1>
-
-            <motion.p
-              variants={fadeIn}
-              className="ax-marketing-body mx-auto max-w-[640px] text-[18px] font-medium leading-relaxed text-neutral-600"
-            >
-              AxLiner plugs into your existing stack. Capture documents from Drive, Gmail, or your desktop, review every extracted line, then publish reviewed drafts directly to QuickBooks or Xero.
-            </motion.p>
-
-            <motion.div variants={fadeIn} className="flex flex-col items-center gap-3 sm:flex-row">
-              <NextLink
-                href="/dashboard/client"
-                className="inline-flex h-12 items-center rounded-full bg-[var(--brand-green)] px-8 text-sm font-bold text-[#064e3b] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_6px_22px_-8px_rgba(16,185,129,0.55)] transition-all hover:bg-[var(--brand-green-hover)]"
+      <section className="bg-[#FDFBF7] px-4 pb-20 pt-36 sm:px-6 lg:px-8 lg:pb-28 lg:pt-44">
+        <div className="mx-auto grid max-w-[1320px] items-center gap-14 lg:grid-cols-[0.82fr_1.18fr] lg:gap-20">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--landing-blue)]">Integrations</p>
+            <h1 className="mt-5 text-balance text-[clamp(3.25rem,6vw,6.5rem)] font-medium leading-[0.95] tracking-[-0.055em] text-black">
+              Your stack, connected to the <span className="text-[var(--landing-blue)]">review board</span>.
+            </h1>
+            <p className="mt-7 max-w-[590px] text-[19px] font-medium leading-8 text-black">
+              Collect the folder, correct the batch, then publish reviewed drafts to QuickBooks or Xero.
+            </p>
+            <div className="mt-9 flex flex-wrap gap-3">
+              <Link
+                href="/sign-up?next=%2Fdashboard%2Fclient"
+                className="inline-flex h-12 items-center rounded-full bg-[var(--landing-blue)] px-7 text-[15px] font-bold text-white shadow-[inset_0_1px_0_rgb(255_255_255_/_0.25),0_1px_3px_rgb(0_0_0_/_0.18)]"
               >
-                Get started free →
-              </NextLink>
-              <NextLink
-                href="/pricing"
-                className="inline-flex h-12 items-center rounded-full border-2 border-neutral-900 px-8 text-sm font-bold text-neutral-900 transition-colors hover:bg-neutral-900 hover:text-white"
+                Start free
+              </Link>
+              <Link
+                href="/dashboard/integrations"
+                className="inline-flex h-12 items-center rounded-full border border-black bg-white px-7 text-[15px] font-bold text-black"
               >
-                See pricing
-              </NextLink>
-            </motion.div>
-          </motion.div>
+                Open integrations
+              </Link>
+            </div>
+          </div>
+
+          <div className="overflow-hidden rounded-2xl bg-[#efefef] p-3 sm:p-5">
+            <Image
+              src="/review-board-crop.png"
+              alt="AxLiner batch review board with source documents and editable accounting fields"
+              width={945}
+              height={608}
+              priority
+              sizes="(min-width: 1024px) 58vw, 100vw"
+              className="h-auto w-full rounded-xl object-contain"
+            />
+          </div>
         </div>
       </section>
 
-      {/* ── Integration cards grid ───────────────────────────────────────── */}
-      <section className="bg-white px-4 pb-24 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-[1280px]">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            variants={staggerContainer}
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            {integrations.map((integration) => (
-              <motion.div
-                key={integration.name}
-                variants={fadeIn}
-                className="group relative flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-7 shadow-sm transition-all duration-200 hover:border-emerald-300 hover:shadow-[0_4px_24px_-6px_rgba(16,185,129,0.18)]"
-              >
-                {/* logo */}
-                <div className="flex h-14 w-14 items-center justify-center">
-                  {integration.logo ? (
-                    <Image
-                      src={integration.logo}
-                      alt={`${integration.name} logo`}
-                      width={integration.logoWidth}
-                      height={integration.logoHeight}
-                      className="h-12 w-12 object-contain"
-                    />
-                  ) : (
-                    <ExcelIcon />
-                  )}
+      <section className="bg-white px-4 py-24 sm:px-6 lg:px-8 lg:py-32">
+        <div className="mx-auto max-w-[1120px]">
+          <h2 className="max-w-[760px] text-balance text-[clamp(2.5rem,5vw,5rem)] font-medium leading-[1] tracking-[-0.05em] text-black">
+            One batch. Three clean handoffs.
+          </h2>
+          <div className="mt-14 grid gap-4 lg:grid-cols-3">
+            {integrationGroups.map((group) => (
+              <article key={group.title} className="flex min-h-[360px] flex-col rounded-2xl bg-[#efefef] p-8">
+                <div className="flex min-h-20 items-center gap-4">
+                  {group.logos.map((logo) => (
+                    <div key={logo.alt} className="flex size-16 items-center justify-center rounded-2xl bg-white p-3 shadow-sm">
+                      <Image {...logo} className="h-auto max-h-10 w-auto max-w-10 object-contain" />
+                    </div>
+                  ))}
                 </div>
-
-                <div>
-                  <h3 className="text-[17px] font-bold text-neutral-950">{integration.name}</h3>
-                  <p className="mt-1.5 text-[14px] leading-relaxed text-neutral-500">
-                    {integration.description}
-                  </p>
+                <div className="mt-auto pt-10">
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--landing-blue)]">{group.eyebrow}</p>
+                  <h3 className="mt-3 text-[27px] font-medium tracking-[-0.035em] text-black">{group.title}</h3>
+                  <p className="mt-4 text-[16px] font-medium leading-7 text-black">{group.body}</p>
                 </div>
-              </motion.div>
+              </article>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* ── How it connects — 3 steps ────────────────────────────────────── */}
-      <section className="bg-[var(--brand-green)] px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-        <div className="mx-auto max-w-[1280px]">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={staggerContainer}
-            className="flex flex-col items-center gap-4 text-center"
-          >
-            <motion.span
-              variants={fadeIn}
-              className="inline-flex items-center rounded-full bg-[#064e3b]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#064e3b]"
-            >
-              How it connects
-            </motion.span>
-            <motion.h2
-              variants={fadeUp}
-              className="ax-marketing-section-title mx-auto max-w-[640px] text-[34px] font-bold leading-tight tracking-tight text-neutral-950 md:text-[44px]"
-            >
-              Three steps from intake to accounting
-            </motion.h2>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            variants={staggerContainer}
-            className="mt-16 grid gap-8 sm:grid-cols-3"
-          >
-            {steps.map((step) => (
-              <motion.div
-                key={step.number}
-                variants={fadeIn}
-                className="flex flex-col gap-4 rounded-2xl bg-white p-8 shadow-sm ring-1 ring-emerald-300/40"
-              >
-                <span className="text-[13px] font-black tracking-[0.15em] text-[#059669]">
-                  {step.number}
-                </span>
-                <h3 className="text-[19px] font-bold text-neutral-950">{step.title}</h3>
-                <p className="text-[14px] leading-relaxed text-neutral-600">{step.body}</p>
-              </motion.div>
+      <section className="bg-[#FDFBF7] px-4 py-24 sm:px-6 lg:px-8 lg:py-32">
+        <div className="mx-auto max-w-[1120px]">
+          <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--landing-blue)]">The workflow</p>
+          <h2 className="mt-4 max-w-[760px] text-balance text-[clamp(2.5rem,5vw,5rem)] font-medium leading-[1] tracking-[-0.05em] text-black">
+            Intake to books, without the tab maze.
+          </h2>
+          <div className="mt-14 grid gap-4 lg:grid-cols-3">
+            {steps.map(([number, title, body]) => (
+              <article key={number} className="rounded-2xl border border-black/10 bg-white p-8">
+                <p className="text-sm font-bold text-[var(--landing-blue)]">{number}</p>
+                <h3 className="mt-16 text-[26px] font-medium tracking-[-0.035em] text-black">{title}</h3>
+                <p className="mt-4 text-[16px] font-medium leading-7 text-black">{body}</p>
+              </article>
             ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── Supporting photo section ─────────────────────────────────────── */}
-      <section className="bg-white px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-        <div className="mx-auto max-w-[1280px]">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            variants={staggerContainer}
-            className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20"
-          >
-            {/* left: text */}
-            <motion.div variants={fadeUp} className="flex flex-col gap-5">
-              <span className="inline-flex w-fit items-center rounded-full bg-[var(--brand-green)] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#064e3b]">
-                Real-world capture
-              </span>
-              <h2 className="ax-marketing-section-title text-[34px] font-bold leading-tight tracking-tight text-neutral-950 md:text-[42px]">
-                Messy documents. WhatsApp photos. Crumpled receipts.
-              </h2>
-              <p className="ax-marketing-body text-[16px] leading-relaxed text-neutral-600">
-                Snap a photo with your phone, forward the email, or drop the scan. AxLiner extracts structured data from all of it — and surfaces per-field confidence flags so you know exactly which cells to double-check.
-              </p>
-              <NextLink
-                href="/dashboard/client"
-                className="inline-flex w-fit h-11 items-center rounded-full border-2 border-neutral-900 px-8 text-sm font-bold text-neutral-900 transition-colors hover:bg-neutral-900 hover:text-white"
-              >
-                Try a messy document →
-              </NextLink>
-            </motion.div>
-
-            {/* right: photo */}
-            <motion.div
-              variants={fadeIn}
-              className="overflow-hidden rounded-2xl shadow-[0_8px_40px_-12px_rgba(0,0,0,0.18)]"
-            >
-              <Image
-                src="/photos/istockphoto-2273856415-612x612.jpg"
-                alt="Person capturing a receipt with a mobile phone"
-                width={612}
-                height={612}
-                className="h-auto w-full object-cover"
-                priority={false}
-              />
-            </motion.div>
-          </motion.div>
-
-          {/* second row — reversed */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            variants={staggerContainer}
-            className="mt-16 grid items-center gap-12 lg:grid-cols-2 lg:gap-20"
-          >
-            {/* left: photo */}
-            <motion.div
-              variants={fadeIn}
-              className="overflow-hidden rounded-2xl shadow-[0_8px_40px_-12px_rgba(0,0,0,0.18)] lg:order-first"
-            >
-              <Image
-                src="/photos/istockphoto-2185212349-612x612.jpg"
-                alt="Accountant reviewing extracted invoice data on screen"
-                width={612}
-                height={612}
-                className="h-auto w-full object-cover"
-                priority={false}
-              />
-            </motion.div>
-
-            {/* right: text */}
-            <motion.div variants={fadeUp} className="flex flex-col gap-5 lg:order-last">
-              <span className="inline-flex w-fit items-center rounded-full bg-[var(--brand-green)] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#064e3b]">
-                Review board
-              </span>
-              <h2 className="ax-marketing-section-title text-[34px] font-bold leading-tight tracking-tight text-neutral-950 md:text-[42px]">
-                See everything before it touches QuickBooks or Xero.
-              </h2>
-              <p className="ax-marketing-body text-[16px] leading-relaxed text-neutral-600">
-                Every extracted document lands on the review board before export. Source image on the left, editable cells on the right. Correct, tab, approve — then post the whole reviewed batch to QuickBooks or Xero in one click.
-              </p>
-              <NextLink
-                href="/dashboard/client"
-                className="inline-flex w-fit h-11 items-center rounded-full border-2 border-neutral-900 px-8 text-sm font-bold text-neutral-900 transition-colors hover:bg-neutral-900 hover:text-white"
-              >
-                Explore the review board →
-              </NextLink>
-            </motion.div>
-          </motion.div>
+          </div>
         </div>
       </section>
     </>

@@ -85,8 +85,8 @@ export default function EndUserLicenseAgreementPage() {
       }
     >
       {sections.map((section) => (
-        <section key={section.id} id={section.id} className="scroll-mt-32 border-t border-border pt-9">
-          <h2 className="text-3xl font-semibold tracking-normal">{section.title}</h2>
+        <section key={section.id} id={section.id} className="scroll-mt-32">
+          <h2 className="text-3xl font-medium tracking-[-0.03em]">{section.title}</h2>
           <div className="mt-5 space-y-4">
             {section.body.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
@@ -95,16 +95,16 @@ export default function EndUserLicenseAgreementPage() {
         </section>
       ))}
 
-      <section className="border-t border-border pt-9">
-        <h2 className="text-3xl font-semibold tracking-normal">Related policies</h2>
+      <section>
+        <h2 className="text-3xl font-medium tracking-[-0.03em]">Related policies</h2>
         <div className="mt-7 flex flex-wrap gap-3">
-          <Button asChild variant="outline" className="rounded-md px-6">
+          <Button asChild variant="outline" className="px-6">
             <Link href="/terms-of-service">Terms of Service</Link>
           </Button>
-          <Button asChild variant="outline" className="rounded-md px-6">
+          <Button asChild variant="outline" className="px-6">
             <Link href="/privacy-policy">Privacy Policy</Link>
           </Button>
-          <Button asChild className="rounded-md px-6">
+          <Button asChild variant="glossy" className="px-6">
             <Link href="/contact">Contact AxLiner</Link>
           </Button>
         </div>

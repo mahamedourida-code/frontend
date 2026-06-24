@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 
+import { MarketingFooter } from "@/components/MarketingFooter"
 import { MarketingNavBar } from "@/components/MarketingNavBar"
 import { cn } from "@/lib/utils"
 
@@ -32,71 +33,63 @@ export function EditorialPageShell({
   articleClassName,
 }: EditorialPageShellProps) {
   return (
-    <main className={cn("ax-marketing-page min-h-screen bg-white text-black", className)}>
+    <div className={cn("ax-marketing-page min-h-screen bg-[#FDFBF7] text-[#191919]", className)}>
       <MarketingNavBar />
 
-      <div className="ax-marketing-container max-w-[1560px] pb-24 pt-32 lg:pt-36">
-        <div className="grid gap-10 lg:grid-cols-[minmax(224px,280px)_minmax(0,820px)] lg:items-start lg:gap-16 xl:grid-cols-[300px_minmax(0,820px)] xl:gap-20">
-          <aside className="hidden self-stretch border-r border-neutral-900/15 pr-8 lg:block xl:pr-10">
-            <nav
-              className="sticky top-28 overflow-hidden rounded-md border-2 border-neutral-900 bg-emerald-100 shadow-sm"
-              aria-label={`${eyebrow} sections`}
-            >
-              <div className="border-b-2 border-neutral-900 bg-white px-5 py-4">
-                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-black">
-                  In this page
-                </p>
+      <main>
+        <header className="ax-marketing-container max-w-[1500px] pb-16 pt-32 sm:pb-20 lg:pt-40">
+          <div className="max-w-[1120px]">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--landing-blue)]">{eyebrow}</p>
+            <h1 className="mt-5 max-w-[1050px] text-[clamp(3rem,7vw,7.25rem)] font-medium leading-[0.92] tracking-[-0.065em] text-[#191919]">
+              {title}
+            </h1>
+            <div className="mt-8 max-w-[720px] space-y-4 text-lg font-medium leading-8 text-[#3f3f3f] sm:text-xl">
+              {intro}
+            </div>
+            {meta ? (
+              <p className="mt-7 max-w-[720px] border-l-2 border-[var(--landing-blue)] pl-4 text-sm font-semibold leading-6 text-[#5b5b5b]">
+                {meta}
+              </p>
+            ) : null}
+          </div>
+          {hero ? <div className="mt-12 max-w-[1180px]">{hero}</div> : null}
+        </header>
+
+        <div className="ax-marketing-container max-w-[1500px] pb-24 sm:pb-32">
+          <div className="grid gap-10 lg:grid-cols-[220px_minmax(0,900px)] lg:items-start lg:gap-16 xl:gap-24">
+            {links.length > 0 ? (
+              <aside className="lg:sticky lg:top-28">
+                <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-[#777]">On this page</p>
+                <nav aria-label={`${eyebrow} sections`}>
+                  <ol className="flex gap-2 overflow-x-auto pb-2 lg:block lg:space-y-1">
+                    {links.map((link, index) => (
+                      <li key={link.id}>
+                        <a
+                          href={`#${link.id}`}
+                          className="group flex min-w-max items-center gap-3 rounded-full px-3 py-2 text-sm font-semibold text-[#555] transition-colors hover:bg-white hover:text-[#191919] lg:min-w-0"
+                        >
+                          <span className="text-[10px] font-bold text-[var(--landing-blue)]">
+                            {String(index + 1).padStart(2, "0")}
+                          </span>
+                          {link.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ol>
+                </nav>
+              </aside>
+            ) : null}
+
+            <article className={cn("min-w-0", articleClassName)}>
+              <div className="ax-marketing-prose space-y-8 [&>section]:rounded-[28px] [&>section]:border [&>section]:border-black/10 [&>section]:bg-white [&>section]:p-6 [&>section]:shadow-[0_18px_55px_rgba(25,25,25,0.06)] sm:[&>section]:p-9 lg:[&>section]:p-11 [&_h2]:text-[#191919] [&_h3]:text-[#191919] [&_p]:text-[#444]">
+                {children}
               </div>
-              <ol className="space-y-1 p-3">
-                {links.map((link, index) => (
-                  <li key={link.id}>
-                    <a
-                      href={`#${link.id}`}
-                      className="group grid grid-cols-[22px_1fr] gap-2 rounded-md px-2 py-2 text-left transition-colors hover:bg-white"
-                    >
-                      <span className="pt-0.5 text-[11px] font-bold text-black">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <span className="text-sm font-semibold leading-5 tracking-normal text-neutral-900 group-hover:text-emerald-700">
-                        {link.title}
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ol>
-            </nav>
-          </aside>
-
-          <article className={cn("min-w-0", articleClassName)}>
-            <header>
-              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-700">{eyebrow}</p>
-              <h1 className="ax-marketing-section-title mt-5 text-black">
-                {title}
-              </h1>
-              <div className="ax-marketing-body mt-6 max-w-[760px] space-y-4 text-black">{intro}</div>
-              {meta ? <p className="mt-5 text-sm font-bold text-neutral-700">{meta}</p> : null}
-              {hero}
-            </header>
-
-            <nav
-              className="mt-9 overflow-x-auto border-y-2 border-neutral-900 py-4 lg:hidden"
-              aria-label={`${eyebrow} sections`}
-            >
-              <ol className="flex min-w-max gap-6 pr-4 text-sm font-bold text-neutral-900">
-                {links.map((link) => (
-                  <li key={link.id}>
-                    <a href={`#${link.id}`} className="whitespace-nowrap transition-colors hover:text-emerald-700">
-                      {link.title}
-                    </a>
-                  </li>
-                ))}
-              </ol>
-            </nav>
-
-            <div className="ax-marketing-prose mt-10 space-y-12">{children}</div>
-          </article>
+            </article>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+
+      <MarketingFooter />
+    </div>
   )
 }

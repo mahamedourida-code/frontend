@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BrandVisualFrame } from "@/components/BrandVisual";
+import { MarketingFooter } from "@/components/MarketingFooter";
 import { MarketingNavBar } from "@/components/MarketingNavBar";
 import { blogPosts, getBlogPost } from "@/lib/blogs";
 
@@ -85,29 +86,29 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
   const otherPosts = blogPosts.filter((p) => p.slug !== post.slug).slice(0, 3);
 
   return (
-    <main className="ax-marketing-page min-h-screen bg-white text-black">
+    <div className="ax-marketing-page min-h-screen bg-[#FDFBF7] text-[#191919]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
       <MarketingNavBar />
 
-      <article className="ax-marketing-container-reading max-w-[760px] pb-20 pt-32 lg:pt-36">
+      <article className="ax-marketing-container-reading max-w-[900px] pb-20 pt-32 lg:pt-40">
         <header>
           <Link
             href="/blogs"
-            className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-700 transition-colors hover:text-emerald-800"
+            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-[var(--landing-blue)]"
           >
             <span aria-hidden="true">←</span>
             The AxLiner Journal
           </Link>
-          <p className="mt-6 text-[11px] font-bold uppercase tracking-[0.24em] text-neutral-900">
+          <p className="mt-10 text-xs font-bold uppercase tracking-[0.2em] text-[#777]">
             {post.eyebrow}
           </p>
-          <h1 className="ax-marketing-section-title mt-4 text-black">
+          <h1 className="mt-5 text-[clamp(3.25rem,7vw,6.5rem)] font-medium leading-[0.92] tracking-[-0.06em] text-[#191919]">
             {post.title}
           </h1>
-          <p className="ax-marketing-lead mt-6 text-black">
+          <p className="mt-7 max-w-[760px] text-lg font-medium leading-8 text-[#444] sm:text-xl">
             {post.description}
           </p>
 
@@ -117,7 +118,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
               alt={post.authorImageAlt}
               width={44}
               height={44}
-              className="h-11 w-11 rounded-full object-cover ring-2 ring-emerald-100"
+              className="h-11 w-auto rounded-full object-contain ring-2 ring-emerald-100"
             />
             <div>
               <p className="text-sm font-bold text-neutral-900">{post.authorName}</p>
@@ -127,39 +128,39 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
             </div>
           </div>
 
-          <BrandVisualFrame treatment="photo" className="mt-8 aspect-[16/9]">
+          <BrandVisualFrame treatment="photo" className="mt-10 min-h-[460px] bg-white">
             <Image
               src={post.image}
               alt={post.imageAlt}
               fill
               priority
               sizes="760px"
-              className="rounded-md object-cover"
+              className="object-contain p-4"
             />
           </BrandVisualFrame>
           <p className="mt-3 text-sm font-semibold leading-6 text-neutral-700">{post.imageAlt}</p>
         </header>
 
-        <section className="mt-10 border-t-2 border-neutral-900 pt-9">
+        <section className="mt-12 rounded-[32px] border border-black/10 bg-white p-6 shadow-[0_18px_55px_rgba(25,25,25,0.05)] sm:p-10 lg:p-12">
           {/* Dropcap intro */}
-          <p className="text-[21px] font-semibold leading-[34px] text-neutral-900 first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:text-[68px] first-letter:font-bold first-letter:leading-[0.85] first-letter:text-emerald-700">
+          <p className="text-[21px] font-medium leading-[34px] text-[#292929]">
             {post.intro}
           </p>
 
           <div className="mt-12 space-y-12">
             {post.sections.map((section, sIndex) => (
               <section key={section.title}>
-                <div className="flex items-baseline gap-4">
-                  <span className="text-[11px] font-bold leading-none tracking-[0.18em] text-emerald-700">
+                <div className="flex items-baseline gap-4 border-t border-black/10 pt-9">
+                  <span className="text-[11px] font-bold leading-none tracking-[0.18em] text-[var(--landing-blue)]">
                     §{String(sIndex + 1).padStart(2, "0")}
                   </span>
-                  <h2 className="ax-h3 font-bold leading-tight text-neutral-900">
+                  <h2 className="ax-h3 font-medium leading-tight text-neutral-900">
                     {section.title}
                   </h2>
                 </div>
                 <div className="mt-5 space-y-5">
                   {section.body.map((paragraph) => (
-                    <p key={paragraph} className="text-[19px] font-semibold leading-[32px] text-neutral-900">
+                    <p key={paragraph} className="text-[18px] font-medium leading-[32px] text-[#444]">
                       {paragraph}
                     </p>
                   ))}
@@ -169,7 +170,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
           </div>
 
           {/* Takeaway block */}
-          <div className="mt-14 rounded-md border-2 border-neutral-900 bg-emerald-100 px-7 py-8">
+          <div className="mt-14 rounded-[28px] border border-black/10 bg-[#d1fae5] px-7 py-8">
             <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-emerald-800">
               The takeaway
             </p>
@@ -185,7 +186,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
               alt={post.authorImageAlt}
               width={56}
               height={56}
-              className="h-14 w-14 rounded-full object-cover ring-2 ring-emerald-100"
+              className="h-14 w-auto rounded-full object-contain ring-2 ring-emerald-100"
             />
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-700">
@@ -198,14 +199,13 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
         </section>
       </article>
 
-      {/* Related issues */}
       {otherPosts.length > 0 ? (
         <section className="ax-marketing-container-editorial pb-24">
           <div className="border-t-2 border-neutral-900 pt-10">
             <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-emerald-700">
               Keep reading
             </p>
-            <h3 className="ax-h2 mt-3 font-bold leading-tight text-neutral-900">
+            <h3 className="ax-h2 mt-3 font-medium leading-tight text-neutral-900">
               Other issues from the journal
             </h3>
           </div>
@@ -215,12 +215,12 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
               <Link
                 href={`/blogs/${other.slug}`}
                 key={other.slug}
-                className="group block border-t border-neutral-900/15 pt-6"
+                className="group block rounded-[24px] border border-black/10 bg-white p-6 shadow-[0_12px_36px_rgba(25,25,25,0.04)]"
               >
                 <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-700">
                   {other.eyebrow}
                 </p>
-                <h4 className="mt-3 text-xl font-bold leading-snug tracking-tight text-neutral-900 transition-colors group-hover:text-emerald-700 sm:text-[22px]">
+                <h4 className="mt-3 text-xl font-medium leading-snug tracking-tight text-neutral-900 transition-colors group-hover:text-emerald-700 sm:text-[22px]">
                   {other.title}
                 </h4>
                 <p className="ax-marketing-card-copy mt-3 line-clamp-3">
@@ -237,6 +237,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
           </div>
         </section>
       ) : null}
-    </main>
+      <MarketingFooter />
+    </div>
   );
 }

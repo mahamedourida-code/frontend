@@ -41,52 +41,41 @@ export default function HowAxlinerIsBuiltPage() {
   return (
     <EditorialPageShell
       eyebrow="How AxLiner is built"
-      title="The model reads the document. The product layer makes it a batch a user can trust."
+      title="Built for the whole batch, not the perfect demo."
       meta="Technical note: AxLiner is designed around handwritten document extraction and spreadsheet review."
       links={engineLinks}
       hero={
-        <BrandVisualFrame treatment="photo" className="mt-9 aspect-[16/9]">
+        <BrandVisualFrame treatment="photo" className="mt-9 min-h-[420px] bg-white">
           <Image
             src="/purchase.webp"
             alt="AxLiner document engine workflow"
             fill
             priority
             sizes="(min-width: 1024px) 820px, 100vw"
-            className="rounded-md object-cover object-center"
+            className="object-contain"
           />
         </BrandVisualFrame>
       }
       intro={
-        <>
-          <p>
-            AxLiner is not only an OCR prompt. It combines a document-reading model path with table reconstruction,
-            durable jobs, and reviewable Excel output so a user can send several handwritten files through one flow.
-          </p>
-          <p>
-            The architecture is shaped around the moment after extraction: the page needs a clear owner, the files need
-            recoverable state, and the result needs to behave like a spreadsheet instead of an OCR transcript.
-          </p>
-        </>
+        <p>
+          AxLiner combines document reading, table reconstruction, durable batch jobs, and reviewable Excel output. Each
+          page keeps an owner and recoverable state, and each result behaves like a spreadsheet instead of an OCR transcript.
+        </p>
       }
     >
-      <section id="model" className="scroll-mt-32 border-t border-border pt-9">
-        <h2 className="text-3xl font-semibold tracking-normal">Model path</h2>
+      <section id="model" className="scroll-mt-32">
+        <h2 className="text-3xl font-medium tracking-[-0.03em]">Model path</h2>
         <div className="mt-5 space-y-4">
           <p>
             The extraction path starts with a vision-language model in the Qwen2-VL and olmOCR direction: document
             pixels are turned into a representation the model can read, and the prompt path is narrowed toward page
-            reading instead of general conversation.
-          </p>
-          <p>
-            That distinction matters for handwriting. A messy paper table is visual, linguistic, and structural at the
-            same time. AxLiner needs the reader to notice characters, but it also needs the product to keep the reading
-            attached to a file, page, row, and output that a user can inspect.
+            reading. The result stays attached to a file, page, row, and reviewable output.
           </p>
         </div>
         <div className="mt-7 space-y-4">
           {buildSteps.map(([title, copy], index) => (
-            <div key={title} className="grid gap-4 border-t border-border pt-4 sm:grid-cols-[64px_1fr]">
-              <span className="text-sm font-semibold text-muted-foreground">0{index + 1}</span>
+            <div key={title} className="grid gap-4 rounded-3xl bg-[#FDFBF7] p-5 sm:grid-cols-[64px_1fr]">
+              <span className="text-sm font-semibold text-[var(--landing-blue)]">0{index + 1}</span>
               <div>
                 <h3 className="text-xl font-semibold">{title}</h3>
                 <p className="mt-2 text-base leading-7 text-muted-foreground">{copy}</p>
@@ -96,21 +85,17 @@ export default function HowAxlinerIsBuiltPage() {
         </div>
       </section>
 
-      <section id="structure" className="scroll-mt-32 border-t border-border pt-9">
-        <h2 className="text-3xl font-semibold tracking-normal">Table structure</h2>
+      <section id="structure" className="scroll-mt-32">
+        <h2 className="text-3xl font-medium tracking-[-0.03em]">Table structure</h2>
         <div className="mt-5 space-y-4">
           <p>
             A workbook is more demanding than plain OCR text. The pipeline has to preserve the idea of a header, detect
             when writing belongs to the next row, keep totals attached to their column, and avoid turning a ruled table
-            into a paragraph.
-          </p>
-          <p>
-            AxLiner therefore treats structure recovery as a separate product concern. The result preview, editable
-            cells, corrected downloads, and batch comparison cards all depend on a consistent table schema after the
-            reading step.
+            into a paragraph. Preview, editable cells, corrected downloads, and batch comparison all depend on that
+            consistent schema.
           </p>
         </div>
-        <Card className="mt-7 border-border bg-card shadow-sm">
+        <Card className="mt-7 rounded-3xl border-black/10 bg-[#FDFBF7] shadow-none">
           <CardContent className="p-5">
             {telemetryRows.map(([label, copy, state]) => (
               <div
@@ -119,7 +104,7 @@ export default function HowAxlinerIsBuiltPage() {
               >
                 <span className="font-semibold">{label}</span>
                 <span className="leading-6 text-muted-foreground">{copy}</span>
-                <span className="w-fit rounded-md border border-border bg-background px-2.5 py-1 font-semibold">
+                <span className="w-fit rounded-full border border-black/10 bg-white px-3 py-1 font-semibold text-[var(--landing-blue)]">
                   {state}
                 </span>
               </div>
@@ -128,63 +113,54 @@ export default function HowAxlinerIsBuiltPage() {
         </Card>
       </section>
 
-      <section id="batch" className="scroll-mt-32 border-t border-border pt-9">
-        <h2 className="text-3xl font-semibold tracking-normal">Batch layer</h2>
+      <section id="batch" className="scroll-mt-32">
+        <h2 className="text-3xl font-medium tracking-[-0.03em]">Batch layer</h2>
         <div className="mt-5 space-y-4">
           <p>
-            Batch upload is where the model becomes software. The web request should not own the whole run. Queue
-            admission, workers, storage metadata, file ownership, and retry-safe outputs need to carry the job while
-            the user navigates, reloads, or downloads several results.
-          </p>
-          <p>
-            That layer protects the experience from a common OCR failure mode: one file works in a demo, but five files
-            become unclear in production. AxLiner keeps job state, result files, and review actions together because the
-            time saved comes from handling the group, not only the first image.
+            Queue admission, workers, storage metadata, file ownership, and retry-safe outputs carry the run beyond one
+            web request. Job state, result files, and review actions stay together because the time saved comes from the
+            whole group, not only the first image.
           </p>
         </div>
 
         {/* Team / engineering accent photo */}
-        <BrandVisualFrame treatment="photo" className="mt-8 aspect-[16/7]">
+        <BrandVisualFrame treatment="photo" className="mt-8 min-h-[340px] bg-[#FDFBF7]">
           <Image
             src="/photos/austin-distel-mpN7xjKQ_Ns-unsplash.jpg"
             alt="Engineering team designing the AxLiner batch processing layer"
             fill
             sizes="(min-width: 1024px) 820px, 100vw"
-            className="rounded-md object-cover object-center"
+            className="object-contain"
           />
         </BrandVisualFrame>
       </section>
 
-      <section id="export" className="scroll-mt-32 border-t border-border pt-9">
-        <h2 className="text-3xl font-semibold tracking-normal">Excel review</h2>
+      <section id="export" className="scroll-mt-32">
+        <h2 className="text-3xl font-medium tracking-[-0.03em]">Excel review</h2>
         <div className="mt-5 space-y-4">
           <p>
-            Output is finished when it is usable. The comparison view lets a user see the source beside the table,
-            correct cells inline, mark reviewed files, and download the corrected batch. That review loop is the bridge
-            between model output and finance, operations, or reporting work.
-          </p>
-          <p>
-            For teams that spend money on manual data entry, this is the practical target: fewer repeated keystrokes,
-            faster batch review, and spreadsheets that remain editable once they leave AxLiner.
+            The comparison view puts the source beside the table so teams can correct cells, mark reviewed files, and
+            download the batch. The target is fewer repeated keystrokes and editable spreadsheets that remain useful
+            after they leave AxLiner.
           </p>
         </div>
 
         {/* Product / developer build photo */}
-        <BrandVisualFrame treatment="photo" className="mt-8 aspect-[16/7]">
+        <BrandVisualFrame treatment="photo" className="mt-8 min-h-[340px] bg-[#FDFBF7]">
           <Image
             src="/photos/pexels-mikhail-nilov-8297034.jpg"
             alt="Developer building the AxLiner review board interface"
             fill
             sizes="(min-width: 1024px) 820px, 100vw"
-            className="rounded-md object-cover object-center"
+            className="object-contain"
           />
         </BrandVisualFrame>
 
         <div className="mt-9 flex flex-wrap gap-3">
-          <Button asChild className="rounded-md px-6">
+          <Button asChild variant="glossy" className="px-6">
             <Link href="/dashboard/client">Convert files</Link>
           </Button>
-          <Button asChild variant="outline" className="rounded-md px-6">
+          <Button asChild variant="outline" className="px-6">
             <Link href="/benchmarks">Read benchmarks</Link>
           </Button>
         </div>

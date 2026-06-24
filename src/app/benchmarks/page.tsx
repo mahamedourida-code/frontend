@@ -50,42 +50,31 @@ export default function BenchmarksPage() {
   return (
     <EditorialPageShell
       eyebrow="Benchmarks"
-      title="Handwritten OCR numbers should explain the workbook a user receives."
+      title="Measure the workbook, not just the words."
       meta="Benchmark note: AxLiner evaluates text recognition and spreadsheet structure together."
       links={benchmarkLinks}
       intro={
-        <>
-          <p>
-            A good OCR score is not enough when the source is a handwritten table. The useful question is whether a
-            user can open the result, see the intended columns, review uncertain cells, and move a batch forward
-            without rebuilding the workbook by hand.
-          </p>
-          <p>
-            These benchmark notes focus on that path: handwriting, noisy captures, table relationships, and the shape
-            of the Excel output after extraction.
-          </p>
-        </>
+        <p>
+          The useful measure is whether a team can review uncertain cells and move a handwritten batch forward without
+          rebuilding the workbook. We test recognition, noisy captures, table relationships, and Excel structure together.
+        </p>
       }
     >
-      <section id="measured" className="scroll-mt-32 border-t border-border pt-9">
-        <h2 className="text-3xl font-semibold tracking-normal">What we measure</h2>
+      <section id="measured" className="scroll-mt-32">
+        <h2 className="text-3xl font-medium tracking-[-0.03em]">What we measure</h2>
         <div className="mt-5 space-y-4">
           <p>
-            AxLiner is aimed at document work where structure matters. A receipt list, a paper ledger, a classroom
-            table, or a handwritten invoice grid can be readable to a person while still being difficult to restore
-            into rows and columns. That is why the benchmark surface includes recognition and structure metrics.
-          </p>
-          <p>
-            The headline scores below are a compact view of the same priorities. They keep handwriting, table recovery,
-            and tolerance for imperfect captures visible before the detailed measurements.
+            A receipt list, paper ledger, or handwritten invoice grid can be readable to a person and still be hard to
+            restore into rows and columns. The benchmark therefore measures recognition, structure recovery, and tolerance
+            for imperfect captures.
           </p>
         </div>
-        <div className="mt-7 grid gap-3 sm:grid-cols-3">
+        <div className="mt-8 grid gap-3 sm:grid-cols-3">
           {scoreCards.map((card) => (
-            <Card key={card.label} className="border-border bg-card shadow-sm">
+            <Card key={card.label} className="rounded-3xl border-black/10 bg-[#FDFBF7] shadow-none">
               <CardContent className="p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{card.label}</p>
-                <p className="mt-4 text-3xl font-semibold">{card.value}</p>
+                <p className="mt-4 text-3xl font-medium">{card.value}</p>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">{card.note}</p>
               </CardContent>
             </Card>
@@ -93,8 +82,8 @@ export default function BenchmarksPage() {
         </div>
       </section>
 
-      <section id="accuracy" className="scroll-mt-32 border-t border-border pt-9">
-        <h2 className="text-3xl font-semibold tracking-normal">Accuracy view</h2>
+      <section id="accuracy" className="scroll-mt-32">
+        <h2 className="text-3xl font-medium tracking-[-0.03em]">Accuracy view</h2>
         <p className="mt-5">
           The chart keeps the page readable while still showing the extraction story. Text accuracy matters first, but
           the benchmark is read next to table fidelity because spreadsheet teams pay for the reconstruction time after
@@ -105,25 +94,25 @@ export default function BenchmarksPage() {
         </div>
 
         {/* Supporting photo — person reviewing documents at laptop */}
-        <BrandVisualFrame treatment="photo" className="mt-8 aspect-[16/7]">
+        <BrandVisualFrame treatment="photo" className="mt-8 min-h-[320px] bg-[#FDFBF7]">
           <Image
             src="/photos/istockphoto-2185212349-612x612.jpg"
             alt="Professional reviewing extracted document data at a laptop"
             fill
             sizes="(min-width: 1024px) 820px, 100vw"
-            className="rounded-md object-cover object-center"
+            className="object-contain"
           />
         </BrandVisualFrame>
       </section>
 
-      <section id="workbook" className="scroll-mt-32 border-t border-border pt-9">
-        <h2 className="text-3xl font-semibold tracking-normal">Workbook metrics</h2>
+      <section id="workbook" className="scroll-mt-32">
+        <h2 className="text-3xl font-medium tracking-[-0.03em]">Workbook metrics</h2>
         <p className="mt-5">
           The comparison table records the signals users feel during review. Lower character error rates reduce spot
           fixes. Stronger structure recovery reduces reformatting. Noise tolerance matters when the original document
           came from a desk photo instead of a clean scanner.
         </p>
-        <Card className="mt-7 overflow-hidden border-border bg-card shadow-sm">
+        <Card className="mt-7 overflow-hidden rounded-3xl border-black/10 bg-[#FDFBF7] shadow-none">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[620px] text-sm">
@@ -152,8 +141,8 @@ export default function BenchmarksPage() {
         </Card>
       </section>
 
-      <section id="review" className="scroll-mt-32 border-t border-border pt-9">
-        <h2 className="text-3xl font-semibold tracking-normal">Review protocol</h2>
+      <section id="review" className="scroll-mt-32">
+        <h2 className="text-3xl font-medium tracking-[-0.03em]">Review protocol</h2>
         <div className="mt-5 space-y-4">
           <p>
             The final check follows the user flow. The source page is prepared, the model reads the handwriting, the
@@ -162,8 +151,8 @@ export default function BenchmarksPage() {
         </div>
         <div className="mt-7 space-y-4">
           {reviewSteps.map(([title, copy], index) => (
-            <div key={title} className="grid gap-4 border-t border-border pt-4 sm:grid-cols-[56px_1fr]">
-              <span className="flex h-11 w-11 items-center justify-center rounded-md bg-foreground text-sm font-semibold text-background">
+            <div key={title} className="grid gap-4 rounded-3xl bg-[#FDFBF7] p-5 sm:grid-cols-[56px_1fr]">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--landing-blue)] text-sm font-semibold text-white">
                 {String(index + 1).padStart(2, "0")}
               </span>
               <div>
@@ -174,10 +163,10 @@ export default function BenchmarksPage() {
           ))}
         </div>
         <div className="mt-9 flex flex-wrap gap-3">
-          <Button asChild className="rounded-md px-6">
+          <Button asChild variant="glossy" className="px-6">
             <Link href="/dashboard/client">Convert files</Link>
           </Button>
-          <Button asChild variant="outline" className="rounded-md px-6">
+          <Button asChild variant="outline" className="px-6">
             <Link href="/how-axliner-is-built">How the engine is built</Link>
           </Button>
         </div>

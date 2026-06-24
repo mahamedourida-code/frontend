@@ -88,8 +88,8 @@ export default function PrivacyPolicyPage() {
       }
     >
       {sections.map((section) => (
-        <section key={section.id} id={section.id} className="scroll-mt-32 border-t border-border pt-9">
-          <h2 className="text-3xl font-semibold tracking-normal">{section.title}</h2>
+        <section key={section.id} id={section.id} className="scroll-mt-32">
+          <h2 className="text-3xl font-medium tracking-[-0.03em]">{section.title}</h2>
           <p className="mt-5">{section.intro}</p>
           <ul className="mt-5 space-y-3">
             {section.items.map((item) => (
@@ -102,17 +102,17 @@ export default function PrivacyPolicyPage() {
         </section>
       ))}
 
-      <section className="border-t border-border pt-9">
-        <h2 className="text-3xl font-semibold tracking-normal">Questions or deletion requests</h2>
+      <section>
+        <h2 className="text-3xl font-medium tracking-[-0.03em]">Questions or deletion requests</h2>
         <p className="mt-5">
           Use the contact page for privacy questions and file or account deletion support. If the request is a deletion
           request, use the account email when possible and state the action you want AxLiner to take.
         </p>
         <div className="mt-7 flex flex-wrap gap-3">
-          <Button asChild className="rounded-md px-6">
+          <Button asChild variant="glossy" className="px-6">
             <Link href="/contact">Contact AxLiner</Link>
           </Button>
-          <Button asChild variant="outline" className="rounded-md px-6">
+          <Button asChild variant="outline" className="px-6">
             <Link href="/data-deletion">Data deletion</Link>
           </Button>
         </div>
