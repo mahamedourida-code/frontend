@@ -10,6 +10,7 @@ import {
   FileCheck2,
   FileSpreadsheet,
   FolderUp,
+  ListStart,
   PlugZap,
   ScanSearch,
 } from "lucide-react"
@@ -25,8 +26,8 @@ const firstTasks = [
   {
     title: "Add a client workspace",
     description: "Keep each client's source files, review history, and outputs together.",
-    href: "/dashboard/clients",
-    action: "View clients",
+    href: "/dashboard#clients",
+    action: "Open clients",
     icon: Building2,
   },
   {
@@ -46,8 +47,8 @@ const firstTasks = [
   {
     title: "Choose where reviewed work goes",
     description: "Export Excel or CSV, or connect QuickBooks or Xero for reviewed draft bills.",
-    href: "/dashboard/integrations",
-    action: "Choose output",
+    href: "/dashboard/client#reviewed-outputs",
+    action: "Open outputs",
     icon: PlugZap,
   },
 ]
@@ -72,8 +73,8 @@ const nextActions = [
   {
     title: "Export reviewed files",
     description: "Download the reviewed batch as Excel or CSV for the next accounting step.",
-    href: "/dashboard/batches",
-    action: "View batches",
+    href: "/dashboard/client#reviewed-outputs",
+    action: "Open review board",
     icon: FileSpreadsheet,
     iconClassName: "bg-[#eaf8ef] text-[#168349]",
   },
@@ -111,12 +112,20 @@ export default function GuidePage() {
         title="Getting started"
         description="Set up the path from a folder of source documents to reviewed accounting output."
         actions={(
-          <Button asChild variant="glossy">
-            <Link href="/dashboard/client#upload-files">
-              <FolderUp className="size-4" />
-              Upload documents
-            </Link>
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button asChild variant="surface">
+              <Link href="/dashboard?tour=start">
+                <ListStart className="size-4" />
+                Take a quick tour
+              </Link>
+            </Button>
+            <Button asChild variant="glossy">
+              <Link href="/dashboard/client#upload-files">
+                <FolderUp className="size-4" />
+                Upload documents
+              </Link>
+            </Button>
+          </div>
         )}
       />
 
@@ -142,17 +151,6 @@ export default function GuidePage() {
             </Button>
           </div>
 
-          <div className="overflow-hidden rounded-md border border-[var(--workspace-border)] bg-[#dbe7fb]">
-            <Image
-              src="/helpdoc-banner.png"
-              alt="An illustrated AxLiner help workspace with documents, review cards, and connected steps"
-              width={913}
-              height={451}
-              sizes="(max-width: 1280px) 100vw, 1120px"
-              className="h-auto w-full object-cover"
-              priority
-            />
-          </div>
         </section>
 
         <section
@@ -204,6 +202,19 @@ export default function GuidePage() {
               )
             })}
           </ol>
+        </section>
+
+        <section aria-label="AxLiner help overview" className="mx-auto w-full max-w-[980px]">
+          <div className="overflow-hidden rounded-md border border-[var(--workspace-border)] bg-[#dbe7fb]">
+            <Image
+              src="/helpdoc-banner.png"
+              alt="An illustrated AxLiner help workspace with documents, review cards, and connected steps"
+              width={913}
+              height={451}
+              sizes="(max-width: 1100px) 100vw, 980px"
+              className="h-auto w-full object-cover"
+            />
+          </div>
         </section>
 
         <section aria-labelledby="workflow-title">

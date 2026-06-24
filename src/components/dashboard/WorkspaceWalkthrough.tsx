@@ -40,25 +40,25 @@ type CoachmarkPosition = {
 
 export const WORKSPACE_WALKTHROUGH_STEPS = [
   {
-    target: '[data-workspace-tour="clients"]',
+    target: '[data-workspace-tour="clients"], [data-workspace-tour-fallback="clients"]',
     title: "Create your first client",
     body: "Keep each company and its document batches in one clear workspace.",
     placement: "right",
   },
   {
-    target: '[data-workspace-tour="upload"]',
+    target: '[data-workspace-tour="upload"], [data-workspace-tour-fallback="upload"]',
     title: "Upload a document stack",
     body: "Add PDFs, scans, and photos together. AxLiner sorts the batch for review.",
     placement: "right",
   },
   {
-    target: '[data-workspace-tour="review"]',
+    target: '[data-workspace-tour="review"], [data-workspace-tour-fallback="review"]',
     title: "Review flagged exceptions",
     body: "Check low-confidence fields and correct only the items that need attention.",
     placement: "right",
   },
   {
-    target: '[data-workspace-tour="outputs"]',
+    target: '[data-workspace-tour="outputs"], [data-workspace-tour-fallback="outputs"]',
     title: "Send reviewed output",
     body: "Export Excel or CSV, or create draft bills in QuickBooks or Xero.",
     placement: "right",
@@ -68,7 +68,7 @@ export const WORKSPACE_WALKTHROUGH_STEPS = [
 const TARGET_GAP = 8
 const COACHMARK_GAP = 14
 const VIEWPORT_MARGIN = 16
-const COACHMARK_MAX_WIDTH = 360
+const COACHMARK_MAX_WIDTH = 350
 const COACHMARK_ESTIMATED_HEIGHT = 238
 
 export function getWorkspaceWalkthroughStorageKey(userId: string, workspaceId: string) {
@@ -77,7 +77,12 @@ export function getWorkspaceWalkthroughStorageKey(userId: string, workspaceId: s
 
 function getTarget(selector: string) {
   try {
-    return document.querySelector<HTMLElement>(selector)
+    const targets = document.querySelectorAll<HTMLElement>(selector)
+    return Array.from(targets).find((target) => {
+      const rect = target.getBoundingClientRect()
+      const style = window.getComputedStyle(target)
+      return rect.width > 0 && rect.height > 0 && style.display !== "none" && style.visibility !== "hidden"
+    }) ?? null
   } catch {
     return null
   }
@@ -200,7 +205,7 @@ export function WorkspaceWalkthrough({
   const [targetRect, setTargetRect] = useState<TargetRect | null>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
   const coachmarkRef = useRef<HTMLDivElement>(null)
-  const previousRestartTokenRef = useRef(restartToken)
+  const previousRestartTokenRef = useRef<string | number | undefined>(undefined)
 
   const currentStep = steps[currentIndex]
   const coachmarkPosition = targetRect && currentStep
@@ -437,7 +442,7 @@ export function WorkspaceWalkthrough({
             aria-labelledby="workspace-walkthrough-title"
             aria-describedby="workspace-walkthrough-body"
             tabIndex={-1}
-            className="pointer-events-auto fixed rounded-lg border border-[var(--workspace-border)] bg-white p-5 text-[var(--workspace-ink)] shadow-[0_18px_50px_rgba(15,23,42,0.24)] outline-none"
+            className="pointer-events-auto fixed rounded-[10px] border border-white/10 bg-[#202432] p-4 text-white shadow-[0_18px_50px_rgba(15,23,42,0.32)] outline-none"
             style={coachmarkPosition}
             initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -445,13 +450,13 @@ export function WorkspaceWalkthrough({
             transition={{ duration: shouldReduceMotion ? 0 : 0.18, ease: "easeOut" }}
           >
             <div className="flex items-center justify-between gap-4">
-              <p className="text-xs font-semibold uppercase text-[var(--workspace-primary)]">
+              <p className="text-xs font-semibold uppercase text-[#9ec5ff]">
                 Step {currentIndex + 1} of {steps.length}
               </p>
               <button
                 type="button"
                 onClick={() => finish("skipped")}
-                className="ax-interactive text-xs font-semibold text-muted-foreground outline-none hover:text-foreground focus-visible:underline"
+                className="ax-interactive text-xs font-semibold text-white/65 outline-none hover:text-white focus-visible:underline"
               >
                 Skip tour
               </button>
@@ -462,7 +467,7 @@ export function WorkspaceWalkthrough({
             </h2>
             <p
               id="workspace-walkthrough-body"
-              className="mt-1.5 text-sm leading-6 text-muted-foreground"
+              className="mt-1.5 text-sm leading-6 text-white/70"
             >
               {currentStep.body}
             </p>

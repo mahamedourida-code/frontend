@@ -83,6 +83,7 @@ const NAVIGATE_ITEMS: CommandItem[] = [
   { id: "nav-upload", group: "collect", label: "Upload documents", hint: "Start a stack", keywords: "new add files import scan batches", icon: Upload, href: "/dashboard/client#upload-files" },
   { id: "nav-stacks", group: "review", label: "Stacks", hint: "Processing batches", keywords: "batches jobs processing", icon: Layers, href: "/dashboard/batches" },
   { id: "nav-review", group: "review", label: "Review board", hint: "Check exceptions", keywords: "batches documents exceptions results", icon: BookCheck, href: "/dashboard/client" },
+  { id: "nav-exports", group: "output", label: "Export Excel / CSV", hint: "Reviewed files", keywords: "download spreadsheet output", icon: FileSpreadsheet, href: "/dashboard/client#reviewed-outputs" },
   { id: "nav-bills", group: "output", label: "Draft bills", hint: "Ready to publish", keywords: "accounts payable ap queue coding", icon: ReceiptText, href: "/dashboard/accounts-payable" },
   { id: "nav-integrations", group: "output", label: "Integrations", hint: "QuickBooks or Xero", keywords: "quickbooks xero accounting sync", icon: PlugZap, href: "/dashboard/integrations" },
   { id: "nav-detect", group: "uploadAs", label: "Auto-detect", hint: "Mixed documents", keywords: "classify mixed files", icon: ScanSearch, href: "/dashboard/auto-detect" },

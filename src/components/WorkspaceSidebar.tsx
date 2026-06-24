@@ -8,6 +8,7 @@ import {
   BookOpenText,
   Building2,
   ChevronDown,
+  FileOutput,
   FileText,
   Inbox,
   Landmark,
@@ -27,6 +28,7 @@ import {
 import { motion, useReducedMotion } from "framer-motion"
 import { AxMark } from "@/components/AppIcon"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
+import { useCurrentHash } from "@/hooks/useCurrentHash"
 import { cn } from "@/lib/utils"
 
 export type WorkspaceSidebarItemKey =
@@ -50,6 +52,7 @@ export type WorkspaceSidebarItemKey =
   | "notes"
   | "auto_detect"
   | "upload"
+  | "exports"
   | "pricing"
 
 interface WorkspaceSidebarProps {
@@ -78,6 +81,7 @@ type SidebarItem = {
     | "notes"
     | "auto_detect"
     | "upload"
+    | "exports"
   >
   label: string
   href: string
@@ -114,6 +118,7 @@ const REVIEW_ITEMS: SidebarItem[] = [
 ]
 
 const OUTPUT_ITEMS: SidebarItem[] = [
+  { key: "exports", label: "Export Excel / CSV", href: "/dashboard/client#reviewed-outputs", icon: FileOutput },
   { key: "accounts_payable", label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
   { key: "integrations", label: "Integrations", href: "/dashboard/integrations", icon: PlugZap },
 ]
@@ -155,7 +160,13 @@ function normalizeActiveItem(activeItem: WorkspaceSidebarItemKey): SidebarItem["
 
 export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }: WorkspaceSidebarProps) {
   const reviewCount = useReviewCount()
-  const normalizedActiveItem = normalizeActiveItem(activeItem)
+  const currentHash = useCurrentHash()
+  const shellActiveItem = normalizeActiveItem(activeItem)
+  const normalizedActiveItem = shellActiveItem === "review" && currentHash === "#upload-files"
+    ? "upload"
+    : shellActiveItem === "review" && currentHash === "#reviewed-outputs"
+      ? "exports"
+      : shellActiveItem
   const prefersReducedMotion = useReducedMotion()
   const [collapsed, setCollapsed] = useState(false)
   const [openGroups, setOpenGroups] = useState<Record<SidebarGroupKey, boolean>>({
@@ -219,6 +230,17 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
       <Link
         key={item.key}
         href={item.href}
+        data-workspace-tour={
+          item.key === "companies"
+            ? "clients"
+            : item.key === "upload"
+              ? "upload"
+              : item.key === "review"
+                ? "review"
+                : item.key === "exports"
+                  ? "outputs"
+                  : undefined
+        }
         aria-current={isActive ? "page" : undefined}
         title={collapsed ? item.label : undefined}
         className={cn(

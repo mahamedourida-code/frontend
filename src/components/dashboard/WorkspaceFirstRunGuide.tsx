@@ -5,6 +5,7 @@ import Link from "next/link"
 import {
   ArrowRight,
   Building2,
+  Check,
   FileCheck2,
   FileOutput,
   FolderUp,
@@ -17,6 +18,7 @@ import { Button } from "@/components/ui/button"
 type WorkspaceFirstRunGuideProps = {
   userId?: string | null
   workspaceId?: string | null
+  hasClients: boolean
   onClientCreated: () => void
 }
 
@@ -50,6 +52,7 @@ function guideStorageKey(userId: string, workspaceId: string) {
 export function WorkspaceFirstRunGuide({
   userId,
   workspaceId,
+  hasClients,
   onClientCreated,
 }: WorkspaceFirstRunGuideProps) {
   const storageKey = userId && workspaceId ? guideStorageKey(userId, workspaceId) : null
@@ -94,13 +97,13 @@ export function WorkspaceFirstRunGuide({
         onClick={dismiss}
         aria-label="Dismiss workspace guide"
         title="Dismiss workspace guide"
-        className="ax-interactive absolute right-3 top-3 flex size-8 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-white hover:text-foreground focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)] sm:right-5"
+        className="ax-interactive absolute right-3 top-3 flex size-8 items-center justify-center rounded-full text-muted-foreground outline-none hover:bg-white hover:text-foreground focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)] sm:right-5"
       >
         <X className="size-4" />
       </button>
 
       <div className="pr-10">
-        <p className="text-xs font-semibold uppercase text-[var(--workspace-primary)]">First run</p>
+        <p className="text-xs font-semibold uppercase text-[var(--workspace-primary)]">Start here</p>
         <h2 id="workspace-first-run-title" className="mt-1 text-lg font-semibold text-[var(--workspace-ink)]">
           Take one stack from files to reviewed output
         </h2>
@@ -112,11 +115,19 @@ export function WorkspaceFirstRunGuide({
       <ol className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4" aria-label="Workspace workflow">
         {steps.map((step, index) => {
           const Icon = step.icon
+          const complete = index === 0 && hasClients
 
           return (
-            <li key={step.title} className="relative flex min-w-0 gap-3 pr-3">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-white text-[var(--workspace-primary)]">
-                <Icon className="size-[18px]" aria-hidden="true" />
+            <li
+              key={step.title}
+              className="relative flex min-w-0 gap-3 pr-3"
+              data-workspace-tour-fallback={["clients", "upload", "review", "outputs"][index]}
+            >
+              <span className={complete
+                ? "flex size-9 shrink-0 items-center justify-center rounded-md border border-emerald-200 bg-emerald-50 text-emerald-700"
+                : "flex size-9 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-white text-[var(--workspace-primary)]"
+              }>
+                {complete ? <Check className="size-[18px]" aria-hidden="true" /> : <Icon className="size-[18px]" aria-hidden="true" />}
               </span>
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-[var(--workspace-ink)]">
@@ -124,6 +135,7 @@ export function WorkspaceFirstRunGuide({
                     {index + 1}
                   </span>
                   {step.title}
+                  {complete ? <span className="sr-only"> (Completed)</span> : null}
                 </p>
                 <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{step.detail}</p>
               </div>
@@ -136,22 +148,45 @@ export function WorkspaceFirstRunGuide({
       </ol>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
-        <AddCompanyDialog
-          workspaceId={workspaceId ?? undefined}
-          onCreated={onClientCreated}
-          trigger={
-            <Button variant="glossy" size="sm" disabled={!workspaceId}>
-              <Building2 className="size-4" />
-              Add a client
+        {hasClients ? (
+          <>
+            <Button asChild variant="glossy" size="sm">
+              <Link href="/dashboard/client#upload-files" data-workspace-tour="upload">
+                <FolderUp className="size-4" />
+                Upload a stack
+              </Link>
             </Button>
-          }
-        />
-        <Button asChild variant="surface" size="sm">
-          <Link href="/dashboard/client#upload-files">
-            <FolderUp className="size-4" />
-            Upload for an existing client
-          </Link>
-        </Button>
+            <AddCompanyDialog
+              workspaceId={workspaceId ?? undefined}
+              onCreated={onClientCreated}
+              trigger={
+                <Button variant="surface" size="sm" disabled={!workspaceId} data-workspace-tour="clients">
+                  <Building2 className="size-4" />
+                  Add another client
+                </Button>
+              }
+            />
+          </>
+        ) : (
+          <>
+            <AddCompanyDialog
+              workspaceId={workspaceId ?? undefined}
+              onCreated={onClientCreated}
+              trigger={
+                <Button variant="glossy" size="sm" disabled={!workspaceId} data-workspace-tour="clients">
+                  <Building2 className="size-4" />
+                  Add a client
+                </Button>
+              }
+            />
+            <Button asChild variant="surface" size="sm">
+              <Link href="/dashboard/client#upload-files" data-workspace-tour="upload">
+                <FolderUp className="size-4" />
+                Upload for an existing client
+              </Link>
+            </Button>
+          </>
+        )}
       </div>
     </section>
   )

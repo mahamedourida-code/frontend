@@ -1355,6 +1355,15 @@ export function ResultActions({
     receiptPublishing,
   ])
 
+  useEffect(() => {
+    if (!isComplete || !safeResultFiles.length || window.location.hash !== "#reviewed-outputs") return
+
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById("reviewed-outputs")?.scrollIntoView({ block: "start" })
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [isComplete, safeResultFiles.length])
+
   // All hooks above must run on every render (Rules of Hooks). Only after the
   // last hook do we bail out to the empty state — during the processing /
   // detecting phase `safeResultFiles` is empty, and returning before the
@@ -1366,7 +1375,7 @@ export function ResultActions({
     <>
     <div className="space-y-2.5">
       {isComplete ? (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[4px] border border-[#c8ced6] bg-white px-4 py-2.5 shadow-none">
+        <div id="reviewed-outputs" className="scroll-mt-20 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[4px] border border-[#c8ced6] bg-white px-4 py-2.5 shadow-none">
           <span className="text-sm font-semibold text-[#111827]">Reviewed stack</span>
           {editedCount > 0 && !isTextOutput ? (
             <span className="inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-xs font-semibold text-[#475467] shadow-none">
@@ -2539,6 +2548,7 @@ function BatchStagingBoard({
   isProcessing,
   isUploading,
   noCredits,
+  suppressAutoOpen,
   onOpenUpload,
   onRemoveFile,
   onClearFiles,
@@ -2549,6 +2559,7 @@ function BatchStagingBoard({
   isProcessing: boolean
   isUploading: boolean
   noCredits: boolean
+  suppressAutoOpen: boolean
   onOpenUpload: () => void
   onRemoveFile: (index: number) => void
   onClearFiles: () => void
@@ -2603,11 +2614,12 @@ function BatchStagingBoard({
     recent.find((file) => !["failed", "error"].includes(String(file.status)))?.id ?? recent[0]?.id
 
   useEffect(() => {
-    if (mode !== "idle" || recentLoading || autoOpenedRef.current || !latestRecentId) return
+    if (mode !== "idle" || recentLoading || autoOpenedRef.current || !latestRecentId || suppressAutoOpen) return
     if (searchParams.get("job_id")) return
     autoOpenedRef.current = true
-    router.replace(`/dashboard/client?job_id=${latestRecentId}`)
-  }, [mode, recentLoading, latestRecentId, searchParams, router])
+    const requestedAnchor = window.location.hash
+    router.replace(`/dashboard/client?job_id=${latestRecentId}${requestedAnchor}`)
+  }, [mode, recentLoading, latestRecentId, searchParams, router, suppressAutoOpen])
 
   const stagedCount = uploadedFiles.length
   const rowCount = mode === "idle" ? recent.length : stagedCount
@@ -2961,6 +2973,12 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
     ? Math.max(0, (processingTotal ?? 0) - readyCount)
     : 0
   const [uploadSheetOpen, setUploadSheetOpen] = useState(false)
+  const uploadIntentRef = useRef(typeof window !== "undefined" && window.location.hash === "#upload-files")
+
+  const setUploadOpen = useCallback((open: boolean) => {
+    uploadIntentRef.current = open
+    setUploadSheetOpen(open)
+  }, [])
 
   // The upload sheet is the single entry point for a new batch. Opening it from
   // a finished batch starts fresh; from idle/staged it just adds to the staged
@@ -2969,14 +2987,15 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
   // so "Upload" always pops the sheet directly instead of changing the view.
   const openFreshUpload = useCallback(() => {
     if (hasResults) onReset()
-    setUploadSheetOpen(true)
-  }, [hasResults, onReset])
+    setUploadOpen(true)
+  }, [hasResults, onReset, setUploadOpen])
 
   useEffect(() => {
     const consumeHash = () => {
       if (window.location.hash !== "#upload-files") return
       openFreshUpload()
       history.replaceState(null, "", window.location.pathname + window.location.search)
+      window.dispatchEvent(new Event("axliner:location-changed"))
     }
 
     consumeHash()
@@ -2998,7 +3017,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
       <WorkspaceErrorBanner banner={banner} onDismiss={onDismissBanner} />
       <ProgressiveUploadSheet
         open={uploadSheetOpen}
-        onOpenChange={setUploadSheetOpen}
+        onOpenChange={setUploadOpen}
         uploadedFiles={uploadedFiles}
         workspaceId={workspaceId}
         selectedCompanyId={selectedCompanyId}
@@ -3033,7 +3052,8 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
               isProcessing={isProcessing}
               isUploading={isUploading}
               noCredits={noCredits}
-              onOpenUpload={() => setUploadSheetOpen(true)}
+              suppressAutoOpen={uploadSheetOpen || uploadIntentRef.current}
+              onOpenUpload={() => setUploadOpen(true)}
               onRemoveFile={onRemoveFile}
               onClearFiles={onClearFiles}
               onConvert={onConvert}

@@ -21,6 +21,7 @@ import { AppLogo } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { WorkspaceSwitcher } from "@/components/WorkspaceSwitcher"
+import { useCurrentHash } from "@/hooks/useCurrentHash"
 import {
   audienceSolutionGroups,
   audienceSolutionHref,
@@ -39,6 +40,7 @@ import {
   Settings,
   LogOut,
   FileText,
+  FileOutput,
   ReceiptText,
   Receipt,
   Building2,
@@ -116,6 +118,7 @@ const AUTHENTICATED_NAV_GROUPS: AuthenticatedNavGroup[] = [
     label: "3. Output",
     icon: ReceiptText,
     items: [
+      { label: "Export Excel / CSV", href: "/dashboard/client#reviewed-outputs", icon: FileOutput },
       { label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
       { label: "Integrations", href: "/dashboard/integrations", icon: PlugZap },
     ],
@@ -144,11 +147,18 @@ const AUTHENTICATED_NAV_GROUPS: AuthenticatedNavGroup[] = [
   },
 ]
 
-function isDashboardRouteActive(pathname: string, href: string) {
+function isDashboardRouteActive(pathname: string, href: string, currentHash = "") {
   if (href === "/dashboard") {
     return pathname === "/dashboard" || pathname.startsWith("/dashboard/companies/")
   }
-  return pathname === href
+
+  const [hrefPath, hrefHash = ""] = href.split("#")
+  if (pathname !== hrefPath) return false
+  if (hrefHash) return currentHash === `#${hrefHash}`
+  if (hrefPath === "/dashboard/client") {
+    return currentHash !== "#upload-files" && currentHash !== "#reviewed-outputs"
+  }
+  return true
 }
 
 export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInClick, user }: MobileNavProps) {
@@ -163,6 +173,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
   })
   const router = useRouter()
   const pathname = usePathname()
+  const currentHash = useCurrentHash()
 
   // Close menu on route change
   useEffect(() => {
@@ -172,14 +183,14 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
   useEffect(() => {
     if (!isAuthenticated) return
     const activeGroup = AUTHENTICATED_NAV_GROUPS.find((group) =>
-      group.items.some((item) => isDashboardRouteActive(pathname, item.href)),
+      group.items.some((item) => isDashboardRouteActive(pathname, item.href, currentHash)),
     )
     if (!activeGroup) return
 
     setAuthenticatedGroupsOpen((current) =>
       current[activeGroup.key] ? current : { ...current, [activeGroup.key]: true },
     )
-  }, [isAuthenticated, pathname])
+  }, [currentHash, isAuthenticated, pathname])
 
   const handleNavigation = (href: string) => {
     router.push(href)
@@ -404,11 +415,11 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                     <>
                       <Button
                         variant="ghost"
-                        aria-current={isDashboardRouteActive(pathname, "/dashboard") ? "page" : undefined}
+                        aria-current={isDashboardRouteActive(pathname, "/dashboard", currentHash) ? "page" : undefined}
                         onClick={() => handleNavigation("/dashboard")}
                         className={cn(
                           "ax-interactive h-11 w-full justify-start gap-3 rounded-full px-3 text-foreground hover:bg-accent hover:text-accent-foreground",
-                          isDashboardRouteActive(pathname, "/dashboard") && "bg-accent text-accent-foreground",
+                          isDashboardRouteActive(pathname, "/dashboard", currentHash) && "bg-accent text-accent-foreground",
                         )}
                       >
                         <Building2 className="h-5 w-5" />
@@ -417,11 +428,11 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
 
                       <Button
                         variant="ghost"
-                        aria-current={isDashboardRouteActive(pathname, "/dashboard/guide") ? "page" : undefined}
+                        aria-current={isDashboardRouteActive(pathname, "/dashboard/guide", currentHash) ? "page" : undefined}
                         onClick={() => handleNavigation("/dashboard/guide")}
                         className={cn(
                           "ax-interactive h-11 w-full justify-start gap-3 rounded-full px-3 text-foreground hover:bg-accent hover:text-accent-foreground",
-                          isDashboardRouteActive(pathname, "/dashboard/guide") && "bg-accent text-accent-foreground",
+                          isDashboardRouteActive(pathname, "/dashboard/guide", currentHash) && "bg-accent text-accent-foreground",
                         )}
                       >
                         <BookOpenText className="h-5 w-5" />
@@ -431,7 +442,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                       {AUTHENTICATED_NAV_GROUPS.map((group) => {
                         const GroupIcon = group.icon
                         const containsActiveItem = group.items.some((item) =>
-                          isDashboardRouteActive(pathname, item.href),
+                          isDashboardRouteActive(pathname, item.href, currentHash),
                         )
                         const groupOpen = authenticatedGroupsOpen[group.key]
 
@@ -465,7 +476,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                             <CollapsibleContent className="ml-5 space-y-1 border-l border-border pb-1 pl-2 pr-1">
                               {group.items.map((item) => {
                                 const ItemIcon = item.icon
-                                const isActive = isDashboardRouteActive(pathname, item.href)
+                                const isActive = isDashboardRouteActive(pathname, item.href, currentHash)
 
                                 return (
                                   <Button

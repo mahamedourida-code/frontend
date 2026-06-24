@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils"
 type CompaniesTableProps = {
   workspaceId?: string
   refreshKey?: number
+  onCompanyCountChange?: (count: number) => void
 }
 
 type CompanyApi = {
@@ -51,7 +52,7 @@ function CountCell({ value, emphasis = false }: { value: number; emphasis?: bool
   )
 }
 
-export function CompaniesTable({ workspaceId, refreshKey = 0 }: CompaniesTableProps) {
+export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChange }: CompaniesTableProps) {
   const router = useRouter()
   const [companies, setCompanies] = useState<CompanySummary[]>([])
   const [query, setQuery] = useState("")
@@ -61,6 +62,7 @@ export function CompaniesTable({ workspaceId, refreshKey = 0 }: CompaniesTablePr
   const load = useCallback(async () => {
     if (!workspaceId) {
       setCompanies([])
+      onCompanyCountChange?.(0)
       setLoading(false)
       return
     }
@@ -69,14 +71,16 @@ export function CompaniesTable({ workspaceId, refreshKey = 0 }: CompaniesTablePr
     setLoadError(null)
     try {
       const response = await (companyApi as CompanyApi).list(workspaceId)
-      setCompanies(companiesFromResponse(response))
+      const nextCompanies = companiesFromResponse(response)
+      setCompanies(nextCompanies)
+      onCompanyCountChange?.(nextCompanies.length)
     } catch {
       setCompanies([])
       setLoadError("Clients are unavailable right now.")
     } finally {
       setLoading(false)
     }
-  }, [workspaceId])
+  }, [onCompanyCountChange, workspaceId])
 
   useEffect(() => {
     void load()
@@ -112,12 +116,20 @@ export function CompaniesTable({ workspaceId, refreshKey = 0 }: CompaniesTablePr
         </div>
 
         {loadError ? (
-          <div className="border-b border-[var(--workspace-border)] bg-amber-50 px-4 py-3 text-sm font-normal text-amber-900">
-            {loadError}
-          </div>
-        ) : null}
-
-        {!loading && visibleCompanies.length === 0 ? (
+          <EmptyState
+            icon={<RefreshCw />}
+            title="Clients unavailable"
+            description={loadError}
+            action={(
+              <InlineAction onClick={() => void load()} disabled={loading}>
+                <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
+                Retry
+              </InlineAction>
+            )}
+            className="min-h-48"
+            compact
+          />
+        ) : !loading && visibleCompanies.length === 0 ? (
           query ? (
             <EmptyState
               icon={<Building2 />}
