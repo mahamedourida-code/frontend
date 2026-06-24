@@ -192,6 +192,10 @@
   }
   .ax-dashboard-content {
     color: var(--workspace-ink);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.55;
+    letter-spacing: 0;
     /* Text buttons (InlineAction tone="brand", .ax-text-action) stay BLUE inside
        the workspace — the brown wash was wrong. Context tones (success/warning/
        danger/purple) are applied per-action where the meaning calls for it. */
@@ -230,26 +234,94 @@
   .ax-dashboard-content li.text-muted-foreground,
   .ax-dashboard-content span.text-muted-foreground,
   .ax-dashboard-content div.text-muted-foreground {
-    font-weight: 400;
+    font-weight: 500;
   }
   /* Dashboard headings carry a touch more size & weight than defaults, so the
      app pages read with the same confidence as the marketing typography. */
-  .ax-dashboard-content h1 { font-weight: 600; letter-spacing: -0.02em; }
-  .ax-dashboard-content h2 { font-weight: 500; letter-spacing: -0.02em; }
-  .ax-dashboard-content h3 { font-weight: 500; letter-spacing: -0.02em; }
+  .ax-dashboard-content h1 { font-weight: 700 !important; letter-spacing: 0; }
+  .ax-dashboard-content h2 { font-weight: 700 !important; letter-spacing: 0; }
+  .ax-dashboard-content h3 { font-weight: 600 !important; letter-spacing: 0; }
   /* Dashboard type scale — compact and accounting-app-like.
      Scoped to .ax-dashboard-content ONLY so marketing/blog typography is untouched. */
-  .ax-dashboard-content .text-xs { font-size: 0.75rem; line-height: 1.2rem; }
-  .ax-dashboard-content .text-\[13px\] { font-size: 0.8125rem; line-height: 1.25rem; }
-  .ax-dashboard-content .text-sm { font-size: 0.875rem; line-height: 1.4rem; }
-  .ax-dashboard-content .text-\[15px\] { font-size: 0.9375rem; }
+  .ax-dashboard-content .text-\[10px\],
+  .ax-dashboard-content .text-\[11px\] { font-size: 0.75rem; line-height: 1rem; }
+  .ax-dashboard-content .text-\[12px\],
+  .ax-dashboard-content .text-xs { font-size: 0.8125rem; line-height: 1.125rem; }
+  .ax-dashboard-content .text-\[13px\] { font-size: 0.875rem; line-height: 1.35rem; }
+  .ax-dashboard-content .text-\[14px\],
+  .ax-dashboard-content .text-sm { font-size: 0.9375rem; line-height: 1.45rem; }
+  .ax-dashboard-content .text-\[15px\],
+  .ax-dashboard-content .text-base { font-size: 1rem; line-height: 1.5rem; }
+  .ax-dashboard-content .text-lg { font-size: 1.125rem; line-height: 1.55rem; }
+  .ax-dashboard-content .text-xl { font-size: 1.3125rem; line-height: 1.75rem; }
+  .ax-dashboard-content .text-2xl { font-size: 1.625rem; line-height: 2rem; }
+  .ax-dashboard-content :is(.tracking-tight, .tracking-tighter, [class*="tracking-\["]) {
+    letter-spacing: 0 !important;
+  }
   /* Muted subtext: keep hierarchy light inside the workspace. */
-  .ax-dashboard-content .text-muted-foreground { color: var(--workspace-muted); font-weight: 400; }
+  .ax-dashboard-content .text-muted-foreground { color: var(--workspace-muted); font-weight: 500; }
   .ax-dashboard-content .text-xs.text-muted-foreground,
   .ax-dashboard-content .text-\[13px\].text-muted-foreground { font-weight: 500; }
-  .ax-dashboard-content .font-bold { font-weight: 600; }
-  .ax-dashboard-content .font-semibold { font-weight: 500; }
-  .ax-dashboard-content .font-medium { font-weight: 400; }
+  .ax-dashboard-content .font-bold { font-weight: 700; }
+  .ax-dashboard-content .font-semibold { font-weight: 600; }
+  .ax-dashboard-content .font-medium,
+  .ax-dashboard-content .font-normal { font-weight: 500; }
+
+  body.ax-workspace :is(
+    [data-slot="dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="dropdown-menu-content"],
+    [data-slot="dropdown-menu-sub-content"],
+    [data-slot="select-content"],
+    [data-slot="popover-content"]
+  ) {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+  body.ax-workspace :is(
+    [data-slot="dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="dropdown-menu-content"],
+    [data-slot="dropdown-menu-sub-content"],
+    [data-slot="select-content"],
+    [data-slot="popover-content"]
+  ) :is(.text-xs, .text-\[11px\], .text-\[12px\]) {
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
+  }
+  body.ax-workspace :is(
+    [data-slot="dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="dropdown-menu-content"],
+    [data-slot="dropdown-menu-sub-content"],
+    [data-slot="select-content"],
+    [data-slot="popover-content"]
+  ) :is(.text-sm, .text-\[13px\], .text-\[14px\]) {
+    font-size: 0.9375rem;
+    line-height: 1.45rem;
+  }
+  body.ax-workspace :is(
+    [data-slot="dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="dropdown-menu-content"],
+    [data-slot="dropdown-menu-sub-content"],
+    [data-slot="select-content"],
+    [data-slot="popover-content"]
+  ) :is(.font-normal, .font-medium) {
+    font-weight: 500;
+  }
+  body.ax-workspace :is(
+    [data-slot="dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="dropdown-menu-content"],
+    [data-slot="dropdown-menu-sub-content"],
+    [data-slot="select-content"],
+    [data-slot="popover-content"]
+  ) .font-semibold {
+    font-weight: 600;
+  }
 
   .ax-workspace-panel {
     border: 1px solid var(--workspace-border);
@@ -264,13 +336,13 @@
   .ax-table :is(th) {
     background: var(--workspace-table-header);
     color: var(--workspace-table-head);
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 700;
     text-transform: uppercase;
   }
   .ax-table :is(td) {
     color: var(--workspace-ink);
-    font-weight: 400;
+    font-weight: 500;
   }
   .ax-table {
     border-collapse: collapse;
@@ -289,22 +361,22 @@
     padding: 0.75rem;
   }
   .ax-dashboard-content [data-slot="inline-action"] {
-    font-weight: 500;
+    font-weight: 600;
   }
   .ax-text-action {
     color: var(--brand-link);
-    font-weight: 500;
+    font-weight: 600;
   }
   .ax-text-action:hover {
     color: var(--brand-link-hover);
   }
   .ax-status-text {
-    font-weight: 400;
+    font-weight: 500;
     color: var(--workspace-muted);
   }
   .ax-dashboard-content [data-slot="button"] {
     border-radius: 9999px !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     text-decoration: none !important;
   }
   .ax-dashboard-content [data-slot="button"][data-variant="glossy"],

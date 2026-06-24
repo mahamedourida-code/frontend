@@ -246,13 +246,13 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         className={cn(
           "ax-interactive relative flex items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-black/25",
           collapsed
-            ? "h-[41px] justify-center px-0 text-[14px]"
+            ? "h-[41px] justify-center px-0 text-[15px]"
             : nested
-              ? "h-9 gap-2 px-2.5 text-[13px]"
-              : "h-[41px] gap-2.5 px-3 text-[14px]",
+              ? "h-9 gap-2 px-2.5 text-[14px]"
+              : "h-[41px] gap-2.5 px-3 text-[15px]",
           isActive
-            ? "bg-[var(--workspace-blue-soft)] font-medium text-[var(--workspace-ink)]"
-            : "font-normal text-[var(--workspace-ink)] hover:bg-white hover:text-[var(--workspace-primary)]",
+            ? "bg-[var(--workspace-blue-soft)] font-semibold text-[var(--workspace-ink)]"
+            : "font-medium text-[var(--workspace-ink)] hover:bg-white hover:text-[var(--workspace-primary)]",
         )}
       >
         {isActive && !collapsed ? (
@@ -276,7 +276,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         {!collapsed && count > 0 && (
           <span
             className={cn(
-              "ms-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-medium leading-none",
+              "ms-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-semibold leading-none",
               isActive ? "bg-[var(--workspace-primary)] text-white" : "bg-[var(--workspace-primary-hover)] text-white",
             )}
           >
@@ -309,7 +309,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
           aria-controls={`sidebar-group-${group.key}`}
           onClick={() => setOpenGroups((current) => ({ ...current, [group.key]: !current[group.key] }))}
           className={cn(
-            "ax-interactive flex h-[41px] w-full items-center gap-2.5 rounded-md px-3 text-[14px] font-medium text-[var(--workspace-ink)] outline-none hover:bg-white focus-visible:ring-2 focus-visible:ring-black/25",
+            "ax-interactive flex h-[41px] w-full items-center gap-2.5 rounded-md px-3 text-[15px] font-semibold text-[var(--workspace-ink)] outline-none hover:bg-white focus-visible:ring-2 focus-visible:ring-black/25",
             containsActiveItem && "bg-white/70",
           )}
         >

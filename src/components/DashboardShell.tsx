@@ -95,6 +95,11 @@ export function DashboardShell({
   }, [user?.id])
 
   useEffect(() => {
+    document.body.classList.add("ax-workspace")
+    return () => document.body.classList.remove("ax-workspace")
+  }, [])
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault()

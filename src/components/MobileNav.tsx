@@ -423,7 +423,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                         )}
                       >
                         <Building2 className="h-5 w-5" />
-                        <span className="flex-1 text-left text-sm font-medium md:text-base">Clients</span>
+                        <span className="flex-1 text-left text-base font-semibold">Clients</span>
                       </Button>
 
                       <Button
@@ -436,7 +436,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                         )}
                       >
                         <BookOpenText className="h-5 w-5" />
-                        <span className="flex-1 text-left text-sm font-medium md:text-base">Getting started</span>
+                        <span className="flex-1 text-left text-base font-semibold">Getting started</span>
                       </Button>
 
                       {AUTHENTICATED_NAV_GROUPS.map((group) => {
@@ -463,7 +463,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                 )}
                               >
                                 <GroupIcon className="h-5 w-5" />
-                                <span className="flex-1 text-left text-sm font-medium md:text-base">{group.label}</span>
+                                <span className="flex-1 text-left text-base font-semibold">{group.label}</span>
                                 <ChevronRight
                                   className={cn(
                                     "h-4 w-4 text-muted-foreground transition-transform duration-150 ease-out",
@@ -485,7 +485,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                     variant="ghost"
                                     size="sm"
                                     className={cn(
-                                      "ax-interactive h-9 w-full justify-start gap-2.5 rounded-full px-3 text-sm font-medium hover:bg-accent",
+                                      "ax-interactive h-10 w-full justify-start gap-2.5 rounded-full px-3 text-[15px] font-medium hover:bg-accent",
                                       isActive && "bg-accent text-accent-foreground",
                                     )}
                                   >

@@ -294,9 +294,9 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 placeholder="Search clients, documents, or jump to a page..."
-                className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                className="flex-1 bg-transparent text-[15px] font-medium text-foreground outline-none placeholder:text-muted-foreground"
               />
-              <kbd className="hidden rounded-md border border-border bg-muted px-1.5 py-0.5 font-sans text-[10px] font-medium text-muted-foreground sm:block">
+              <kbd className="hidden rounded-md border border-border bg-muted px-1.5 py-0.5 font-sans text-xs font-semibold text-muted-foreground sm:block">
                 ESC
               </kbd>
             </div>
@@ -304,7 +304,7 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
             {/* Results */}
             <div ref={listRef} className="max-h-[340px] overflow-y-auto py-1.5">
               {results.length === 0 ? (
-                <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+                <p className="px-4 py-8 text-center text-[15px] font-medium text-muted-foreground">
                   No results for &ldquo;{query}&rdquo;
                 </p>
               ) : (
@@ -315,7 +315,7 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
                 >
                   {grouped.map(({ group, rows }) => (
                     <div key={group} className="pb-1">
-                      <div className="px-4 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      <div className="px-4 pb-1 pt-2 text-xs font-bold uppercase tracking-normal text-muted-foreground">
                         {GROUP_LABELS[group]}
                       </div>
                       <ul>
@@ -350,8 +350,8 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
                                 )}>
                                   <Icon className="size-4" />
                                 </span>
-                                <span className="flex-1 truncate text-sm font-medium">{item.label}</span>
-                                <span className="shrink-0 text-xs text-muted-foreground">{item.hint}</span>
+                                <span className="flex-1 truncate text-[15px] font-semibold">{item.label}</span>
+                                <span className="shrink-0 text-[13px] font-medium text-muted-foreground">{item.hint}</span>
                               </button>
                             </motion.li>
                           )
@@ -364,7 +364,7 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
             </div>
 
             {/* Footer hints */}
-            <div className="flex items-center gap-4 border-t border-border px-4 py-2 text-[10px] text-muted-foreground">
+            <div className="flex items-center gap-4 border-t border-border px-4 py-2 text-xs font-medium text-muted-foreground">
               <span className="flex items-center gap-1"><kbd className="font-sans">↑↓</kbd> navigate</span>
               <span className="flex items-center gap-1"><kbd className="font-sans">↵</kbd> open</span>
               <span className="flex items-center gap-1"><kbd className="font-sans">esc</kbd> close</span>
