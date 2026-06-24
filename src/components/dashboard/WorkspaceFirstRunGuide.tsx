@@ -11,11 +11,13 @@ import {
   X,
 } from "lucide-react"
 
+import { AddCompanyDialog } from "@/components/dashboard/companies/AddCompanyDialog"
 import { Button } from "@/components/ui/button"
 
 type WorkspaceFirstRunGuideProps = {
   userId?: string | null
   workspaceId?: string | null
+  onClientCreated: () => void
 }
 
 const steps = [
@@ -48,6 +50,7 @@ function guideStorageKey(userId: string, workspaceId: string) {
 export function WorkspaceFirstRunGuide({
   userId,
   workspaceId,
+  onClientCreated,
 }: WorkspaceFirstRunGuideProps) {
   const storageKey = userId && workspaceId ? guideStorageKey(userId, workspaceId) : null
   const [guideState, setGuideState] = useState<{ key: string | null; dismissed: boolean }>({
@@ -133,16 +136,20 @@ export function WorkspaceFirstRunGuide({
       </ol>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
-        <Button asChild variant="glossy" size="sm">
+        <AddCompanyDialog
+          workspaceId={workspaceId ?? undefined}
+          onCreated={onClientCreated}
+          trigger={
+            <Button variant="glossy" size="sm" disabled={!workspaceId}>
+              <Building2 className="size-4" />
+              Add a client
+            </Button>
+          }
+        />
+        <Button asChild variant="surface" size="sm">
           <Link href="/dashboard/client#upload-files">
             <FolderUp className="size-4" />
-            Upload a stack
-          </Link>
-        </Button>
-        <Button asChild variant="surface" size="sm">
-          <Link href="/dashboard/guide">
-            Getting started
-            <ArrowRight className="size-4" />
+            Upload for an existing client
           </Link>
         </Button>
       </div>

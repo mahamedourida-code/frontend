@@ -1,6 +1,6 @@
 "use client"
 
-import { FormEvent, useState } from "react"
+import { FormEvent, type ReactElement, useState } from "react"
 import { Building2, Loader2, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -20,13 +20,14 @@ import { companyApi } from "@/lib/api-client"
 type AddCompanyDialogProps = {
   workspaceId?: string
   onCreated: () => void
+  trigger?: ReactElement
 }
 
 type CompanyApi = {
   create: (workspaceId: string, payload: { name: string }) => Promise<unknown>
 }
 
-export function AddCompanyDialog({ workspaceId, onCreated }: AddCompanyDialogProps) {
+export function AddCompanyDialog({ workspaceId, onCreated, trigger }: AddCompanyDialogProps) {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState("")
   const [saving, setSaving] = useState(false)
@@ -54,10 +55,12 @@ export function AddCompanyDialog({ workspaceId, onCreated }: AddCompanyDialogPro
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <InlineAction disabled={!workspaceId}>
-          <Plus className="size-4" />
-          Add client
-        </InlineAction>
+        {trigger ?? (
+          <InlineAction disabled={!workspaceId}>
+            <Plus className="size-4" />
+            Add client
+          </InlineAction>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

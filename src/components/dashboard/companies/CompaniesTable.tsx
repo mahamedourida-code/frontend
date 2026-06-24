@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils"
 
 type CompaniesTableProps = {
   workspaceId?: string
+  refreshKey?: number
 }
 
 type CompanyApi = {
@@ -50,7 +51,7 @@ function CountCell({ value, emphasis = false }: { value: number; emphasis?: bool
   )
 }
 
-export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
+export function CompaniesTable({ workspaceId, refreshKey = 0 }: CompaniesTableProps) {
   const router = useRouter()
   const [companies, setCompanies] = useState<CompanySummary[]>([])
   const [query, setQuery] = useState("")
@@ -79,7 +80,7 @@ export function CompaniesTable({ workspaceId }: CompaniesTableProps) {
 
   useEffect(() => {
     void load()
-  }, [load])
+  }, [load, refreshKey])
 
   const visibleCompanies = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()

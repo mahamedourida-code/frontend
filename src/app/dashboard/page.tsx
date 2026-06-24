@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 
 import { DashboardShell } from "@/components/DashboardShell"
@@ -15,6 +15,7 @@ export default function DashboardPage() {
   const router = useRouter()
   const { user, loading } = useAuth()
   const { activeWorkspace } = useWorkspaces(user)
+  const [clientsRefreshKey, setClientsRefreshKey] = useState(0)
 
   useEffect(() => {
     if (!loading && !user) router.replace("/sign-in?next=%2Fdashboard")
@@ -32,8 +33,12 @@ export default function DashboardPage() {
           description="Start with a client, then upload a stack for review."
           className="mb-0"
         />
-        <WorkspaceFirstRunGuide userId={user.id} workspaceId={activeWorkspace?.id} />
-        <CompaniesTable workspaceId={activeWorkspace?.id} />
+        <WorkspaceFirstRunGuide
+          userId={user.id}
+          workspaceId={activeWorkspace?.id}
+          onClientCreated={() => setClientsRefreshKey((current) => current + 1)}
+        />
+        <CompaniesTable workspaceId={activeWorkspace?.id} refreshKey={clientsRefreshKey} />
       </div>
     </DashboardShell>
   )
