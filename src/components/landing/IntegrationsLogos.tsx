@@ -2,12 +2,12 @@
 
 import { type MouseEvent } from "react"
 import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion"
-import { TypewriterWord } from "@/components/landing/TypewriterWord"
 
-/* "Works with the tools you already use" — a raw logo wall. Black silhouette
-   logos on white tiles with a magnetic + sheen hover. No scroll animation:
-   tiles render in place (no parallax, no scroll-triggered entrance) so the
-   section stays still as you scroll. Hover interactions are kept. */
+/* "Works with the tools you already use" — a compact logo wall. Black
+   silhouette logos sit in the same #efefef rounded cards as the use-cases
+   bento ("From folder to books"), just smaller. A magnetic + sheen hover
+   lifts a tile to white with a blue (--landing-blue) ring + corner glow.
+   No scroll animation, no cycling word. */
 
 type Tool = { src: string; alt: string }
 
@@ -46,7 +46,7 @@ function ToolTile({ tool, reduce }: { tool: Tool; reduce: boolean }) {
       <div
         onMouseMove={handleMove}
         onMouseLeave={handleLeave}
-        className="group relative flex h-28 items-center justify-center overflow-hidden rounded-2xl bg-white p-5 ring-1 ring-black/[0.06] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_22px_44px_-20px_rgba(16,185,129,0.45)] hover:ring-[var(--brand-green-ring)] sm:h-32"
+        className="group relative flex h-20 items-center justify-center overflow-hidden rounded-2xl bg-[#efefef] p-4 transition-[transform,background-color,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:bg-white hover:shadow-[0_16px_34px_-20px_rgba(49,124,255,0.55)] hover:ring-1 hover:ring-[var(--landing-blue)] sm:h-24"
       >
         {/* sheen sweep on hover */}
         <span
@@ -59,13 +59,13 @@ function ToolTile({ tool, reduce }: { tool: Tool; reduce: boolean }) {
             alt={tool.alt}
             loading="lazy"
             draggable={false}
-            className="max-h-10 w-auto max-w-[150px] object-contain transition-transform duration-300 group-hover:scale-[1.07] sm:max-h-12"
+            className="max-h-8 w-auto max-w-[120px] object-contain transition-transform duration-300 group-hover:scale-[1.06] sm:max-h-9"
           />
         </motion.div>
-        {/* mint corner glow on hover */}
+        {/* blue corner glow on hover */}
         <span
           aria-hidden
-          className="pointer-events-none absolute -bottom-16 -right-16 size-32 rounded-full bg-[var(--brand-green)] opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-70"
+          className="pointer-events-none absolute -bottom-12 -right-12 size-24 rounded-full bg-[var(--landing-blue)] opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-60"
         />
       </div>
     </li>
@@ -77,20 +77,16 @@ export function IntegrationsLogos({ showTitle = false }: { showTitle?: boolean }
 
   return (
     <section className="relative z-10 overflow-hidden bg-[#FDFBF7] py-16 sm:py-20">
-      <div className="relative mx-auto max-w-[1180px] px-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto max-w-[960px] px-4 sm:px-6 lg:px-8">
         {showTitle ? (
           <h2 className="ax-h2 ax-marketing-section-title mb-12 text-center text-black text-balance sm:mb-14">
             Works with the{" "}
-            <TypewriterWord
-              words={["tools", "apps", "software", "spreadsheets"]}
-              className="rounded-lg bg-[#317cff]/12 px-2 font-medium text-[var(--landing-blue)]"
-              caretClassName="bg-[var(--landing-blue)]"
-            />{" "}
+            <span className="text-[var(--landing-blue)]">tools</span>{" "}
             you already use
           </h2>
         ) : null}
 
-        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5">
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
           {TOOLS.map((tool) => (
             <ToolTile key={tool.alt} tool={tool} reduce={!!reduce} />
           ))}

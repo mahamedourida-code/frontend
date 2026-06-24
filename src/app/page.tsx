@@ -411,10 +411,10 @@ export default function Home() {
               <h1 className="ax-h1 ax-marketing-display text-balance !font-medium !leading-[1.05] !tracking-[-0.04em] text-black">
                 Invoice and receipt data entry,
                 <br />
-                reviewed for QuickBooks and Xero
+                built for <span className="text-[var(--landing-blue)]">bookkeepers</span>
               </h1>
               <p className="ax-marketing-lead mx-auto mt-6 max-w-[760px] text-base font-semibold text-neutral-950 sm:text-lg">
-                Batch-upload invoices, receipts, bank statements, and handwritten files. AxLiner turns them into clean data you review, then export or publish.
+                Bulk-upload invoices, receipts, statements, and handwriting. AxLiner extracts and codes every line item into reviewed entries — ready to post to the books or export to Excel.
               </p>
 
               <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
