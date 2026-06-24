@@ -14,6 +14,7 @@ import { Field } from "@/components/dashboard/Field"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
+import { WorkspaceStageStrip } from "@/components/dashboard/WorkspaceStageStrip"
 import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Input } from "@/components/ui/input"
@@ -415,6 +416,10 @@ export default function EmailInboxPage() {
             </Button>
           }
         />
+
+        {!loading && submissions.length === 0 && messages.length === 0 ? (
+          <WorkspaceStageStrip activeStage="collect" className="max-w-3xl" />
+        ) : null}
 
         {/* Management cards — stack on mobile, side-by-side on lg */}
         {activeWorkspace?.role === "owner" ? (

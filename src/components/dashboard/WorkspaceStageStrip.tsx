@@ -9,7 +9,7 @@ const stages = [
   {
     key: "collect",
     label: "Collect",
-    detail: "Upload a mixed batch",
+    detail: "Upload, email, or client link",
     href: "/dashboard/client#upload-files",
     icon: Upload,
   },
@@ -22,9 +22,9 @@ const stages = [
   },
   {
     key: "output",
-    label: "Output",
-    detail: "Excel/CSV or draft bills",
-    href: "/dashboard/accounts-payable",
+    label: "Export or publish",
+    detail: "Excel, CSV, or draft bills",
+    href: "/dashboard/guide#actions-title",
     icon: FileOutput,
   },
 ] as const
@@ -45,35 +45,48 @@ export function WorkspaceStageStrip({ activeStage, className }: WorkspaceStageSt
         {stages.map((stage, index) => {
           const Icon = stage.icon
           const active = activeStage === stage.key
+          const content = (
+            <>
+              <Icon
+                className={cn(
+                  "mt-0.5 size-4 shrink-0",
+                  active ? "text-[var(--workspace-primary)]" : "text-muted-foreground",
+                )}
+                aria-hidden="true"
+              />
+              <span className="min-w-0">
+                <span
+                  className={cn(
+                    "block text-[13px] font-semibold leading-4",
+                    active ? "text-foreground" : "text-muted-foreground group-hover:text-foreground",
+                  )}
+                >
+                  {stage.label}
+                </span>
+                <span className="mt-0.5 block text-xs leading-4 text-muted-foreground">
+                  {stage.detail}
+                </span>
+              </span>
+            </>
+          )
 
           return (
             <li key={stage.key} className="contents">
-              <Link
-                href={stage.href}
-                aria-current={active ? "step" : undefined}
-                className="ax-interactive group flex min-w-0 items-start gap-3 rounded-md px-2 py-1.5 text-left focus-visible:ring-2 focus-visible:ring-ring/45"
-              >
-                <Icon
-                  className={cn(
-                    "mt-0.5 size-4 shrink-0",
-                    active ? "text-[var(--workspace-primary)]" : "text-muted-foreground",
-                  )}
-                  aria-hidden="true"
-                />
-                <span className="min-w-0">
-                  <span
-                    className={cn(
-                      "block text-[13px] font-semibold leading-4",
-                      active ? "text-foreground" : "text-muted-foreground group-hover:text-foreground",
-                    )}
-                  >
-                    {stage.label}
-                  </span>
-                  <span className="mt-0.5 block text-xs leading-4 text-muted-foreground">
-                    {stage.detail}
-                  </span>
-                </span>
-              </Link>
+              {active ? (
+                <div
+                  aria-current="step"
+                  className="group flex min-w-0 items-start gap-3 rounded-md px-2 py-1.5 text-left"
+                >
+                  {content}
+                </div>
+              ) : (
+                <Link
+                  href={stage.href}
+                  className="ax-interactive group flex min-w-0 items-start gap-3 rounded-md px-2 py-1.5 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring/45"
+                >
+                  {content}
+                </Link>
+              )}
               {index < stages.length - 1 ? (
                 <span className="flex items-center justify-center text-slate-300" aria-hidden="true">
                   <ArrowDown className="size-3.5 sm:hidden" />
