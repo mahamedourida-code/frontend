@@ -220,9 +220,9 @@ export function DashboardShell({
                 </Link>
               )}
 
-              <Button
-                variant="glossy"
-                size="sm"
+              <button
+                type="button"
+                aria-label="Upload"
                 onClick={() => {
                   // On the review page, pop the upload sheet directly instead of
                   // doing a no-op navigation; elsewhere, route in with the hash
@@ -240,11 +240,10 @@ export function DashboardShell({
                     (typeof window !== "undefined" ? window.localStorage.getItem("axliner:selectedCompanyId") || "" : "")
                   router.push(`/dashboard/client${companyId ? `?company_id=${encodeURIComponent(companyId)}` : ""}#upload-files`)
                 }}
-                className="hidden h-10 !border-[var(--workspace-primary)] !bg-[var(--workspace-primary)] px-4 text-[15px] !font-bold !text-white hover:!border-[var(--workspace-primary-hover)] hover:!bg-[var(--workspace-primary-hover)] hover:!text-white sm:inline-flex"
+                className="ax-interactive relative inline-flex size-10 items-center justify-center rounded-full text-white/88 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-white/35"
               >
-                <Upload className="size-5" />
-                Upload
-              </Button>
+                <Upload className="size-6" />
+              </button>
 
               <NotificationsBell />
               <AccountMenu

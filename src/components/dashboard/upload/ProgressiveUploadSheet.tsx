@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState, type ChangeEvent, type DragEvent, type FormEvent } from "react"
-import { useSearchParams } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
 import {
   ArrowRight,
@@ -28,18 +27,6 @@ import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
 import { companyApi, type CompanySummary } from "@/lib/api-client"
 
 type OutputMode = "table" | "text" | "csv"
-
-// Accountant-facing context line for the legacy mode routes (?type=…). AxLiner
-// auto-detects each document's type per document — these banners only restate
-// the intent the user came in with; they never preselect or force a mode.
-const UPLOAD_TYPE_BANNER: Record<string, string> = {
-  invoice: "Uploading invoices",
-  receipt: "Uploading receipts",
-  bank_statement: "Uploading bank statements",
-  invoice_receipt: "Uploading invoices & receipts",
-  notes: "Uploading handwritten notes",
-  auto: "Auto-detect",
-}
 
 type ProgressiveUploadSheetProps = {
   open: boolean
@@ -105,9 +92,6 @@ export function ProgressiveUploadSheet({
   onCancel,
 }: ProgressiveUploadSheetProps) {
   const m = useMotionTokens()
-  const searchParams = useSearchParams()
-  const requestedType = searchParams.get("type") || ""
-  const uploadTypeLabel = UPLOAD_TYPE_BANNER[requestedType] || ""
   const [companies, setCompanies] = useState<CompanySummary[]>([])
   const [companiesLoading, setCompaniesLoading] = useState(false)
   const [companiesError, setCompaniesError] = useState("")
@@ -188,36 +172,17 @@ export function ProgressiveUploadSheet({
     <Sheet open={open} onOpenChange={(nextOpen) => {
       if (!busy) onOpenChange(nextOpen)
     }}>
-      <SheetContent className="w-full gap-0 bg-[var(--workspace-popout-bg)] sm:max-w-[560px]">
-        <SheetHeader className="border-b border-[var(--workspace-popout-border)] px-5 py-5 pr-12">
+      <SheetContent className="w-full gap-0 bg-[var(--workspace-popout-bg)] sm:max-w-[760px]">
+        <SheetHeader className="border-b border-[var(--workspace-popout-border)] px-6 py-5 pr-12">
           <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--workspace-primary)]">New stack</p>
           <SheetTitle className="text-xl font-bold tracking-tight">
             {selectedCompany ? `Upload to ${selectedCompany.name}` : "Upload documents"}
           </SheetTitle>
-          <SheetDescription className="leading-5 text-foreground/80">
-            {selectedCompany ? (
-              <>This stack will be filed under <span className="font-semibold text-foreground">{selectedCompany.name}</span>.</>
-            ) : (
-              "Choose a client, then drop the stack for review."
-            )}
-          </SheetDescription>
+          <SheetDescription className="sr-only">Upload documents for review.</SheetDescription>
         </SheetHeader>
 
-        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-5">
-          {uploadTypeLabel ? (
-            <motion.div
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={m.tFast}
-              className="rounded-lg border border-[var(--workspace-popout-border)] bg-[var(--workspace-blue-soft)] px-3.5 py-3"
-            >
-              <p className="text-sm font-bold text-foreground">{uploadTypeLabel}</p>
-              <p className="mt-1 text-xs font-medium text-foreground/70">
-                AxLiner classifies each document automatically — review and correct the type before you export or publish.
-              </p>
-            </motion.div>
-          ) : null}
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <label className="block">
               <span className="mb-1.5 block text-xs font-semibold text-foreground">Client</span>
               <select
@@ -233,7 +198,7 @@ export function ProgressiveUploadSheet({
               </select>
               {needsClientChoice ? (
                 <span className="mt-1.5 block text-xs font-semibold text-amber-700">
-                  Pick a client so this stack lands in the right place.
+                  Pick a client
                 </span>
               ) : null}
             </label>
@@ -311,7 +276,7 @@ export function ProgressiveUploadSheet({
             }}
             transition={m.spring}
             className={cn(
-              "rounded-lg border border-dashed px-4 py-7 text-center transition-colors",
+              "rounded-lg border border-dashed px-4 py-10 text-center transition-colors",
               isDragging ? "border-[var(--workspace-primary)] bg-[var(--workspace-blue-soft)]" : "border-[var(--workspace-border)] bg-white hover:border-[var(--workspace-primary)]"
             )}
           >
@@ -319,7 +284,6 @@ export function ProgressiveUploadSheet({
             <p className="mt-2 text-sm font-bold text-foreground">
               {isDragging ? "Drop documents here" : "Drop files here"}
             </p>
-            <p className="mt-1 text-xs font-medium text-foreground/70">PDFs, scans &amp; photos · invoices, receipts, statements, tables, notes</p>
             <label
               htmlFor="progressive-upload-input"
               className={cn(
@@ -399,7 +363,7 @@ export function ProgressiveUploadSheet({
           ) : null}
         </div>
 
-        <SheetFooter className="gap-3 border-t border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)] px-5 py-4">
+        <SheetFooter className="gap-3 border-t border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)] px-6 py-4">
           <div className="flex items-center justify-between gap-4 rounded-lg border border-[var(--workspace-popout-border)] bg-white px-3 py-2.5">
             <p className="text-xs font-semibold text-foreground">
               {creditEstimate} page{creditEstimate === 1 ? "" : "s"} · {creditEstimate} credit{creditEstimate === 1 ? "" : "s"}
