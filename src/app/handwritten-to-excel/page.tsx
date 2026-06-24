@@ -11,7 +11,6 @@ export const metadata: Metadata = {
 export default function HandwrittenToExcelPage() {
   return (
     <ConversionMarketingPage
-      eyebrow="Handwriting to Excel"
       title={
         <>
           Handwriting in. <span className="text-[var(--landing-blue)]">Usable rows out.</span>
@@ -19,10 +18,10 @@ export default function HandwrittenToExcelPage() {
       }
       intro="Photograph handwritten tables, logs, and expense notes. AxLiner structures the batch and puts uncertain values in front of the reviewer."
       heroImage={{
-        src: "/landing/hero-poster.png",
-        alt: "AxLiner turning handwritten accounting documents into structured fields",
-        width: 1280,
-        height: 720,
+        src: "/photos/kelly-sikkema-M98NRBuzbpc-unsplash.jpg",
+        alt: "Handwritten receipts and paperwork ready to be digitised",
+        width: 4965,
+        height: 3490,
       }}
       sectionTitle={
         <>

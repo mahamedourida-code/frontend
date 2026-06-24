@@ -89,7 +89,7 @@ export default function PrivacyPolicyPage() {
     >
       {sections.map((section) => (
         <section key={section.id} id={section.id} className="scroll-mt-32">
-          <h2 className="text-3xl font-medium tracking-[-0.03em]">{section.title}</h2>
+          <h2 className="ax-h2">{section.title}</h2>
           <p className="mt-5">{section.intro}</p>
           <ul className="mt-5 space-y-3">
             {section.items.map((item) => (
@@ -103,7 +103,7 @@ export default function PrivacyPolicyPage() {
       ))}
 
       <section>
-        <h2 className="text-3xl font-medium tracking-[-0.03em]">Questions or deletion requests</h2>
+        <h2 className="ax-h2">Questions or deletion requests</h2>
         <p className="mt-5">
           Use the contact page for privacy questions and file or account deletion support. If the request is a deletion
           request, use the account email when possible and state the action you want AxLiner to take.

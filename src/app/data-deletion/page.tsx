@@ -19,8 +19,7 @@ export default function DataDeletionPage() {
 
       <article className="ax-marketing-container-reading max-w-[900px] pb-24 pt-32 lg:pt-40 [&>section]:mt-4 [&>section]:rounded-[28px] [&>section]:border [&>section]:border-black/10 [&>section]:bg-white [&>section]:p-6 [&>section]:shadow-[0_14px_45px_rgba(25,25,25,0.04)] sm:[&>section]:p-9">
         <header>
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--landing-blue)]">Data deletion</p>
-          <h1 className="mt-5 text-[clamp(3.5rem,7vw,6.5rem)] font-medium leading-[0.92] tracking-[-0.06em]">
+          <h1 className="ax-h1">
             Delete AxLiner account data with a clear request.
           </h1>
           <p className="ax-marketing-lead mt-5 text-black">

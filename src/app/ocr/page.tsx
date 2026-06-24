@@ -11,7 +11,6 @@ export const metadata: Metadata = {
 export default function OCRPage() {
   return (
     <ConversionMarketingPage
-      eyebrow="Document OCR"
       title={
         <>
           OCR that knows <span className="text-[var(--landing-blue)]">what matters.</span>
@@ -19,10 +18,10 @@ export default function OCRPage() {
       }
       intro="AxLiner reads the real accounting pile—phone photos, faded receipts, scans, tables, and handwriting—then keeps every extracted field reviewable."
       heroImage={{
-        src: "/landing/hero-poster.png",
-        alt: "AxLiner extracting structured fields from accounting documents",
-        width: 1280,
-        height: 720,
+        src: "/photos/istockphoto-2273856415-612x612.jpg",
+        alt: "Accountant photographing an invoice with a phone, laptop open beside them",
+        width: 612,
+        height: 612,
       }}
       sectionTitle={
         <>

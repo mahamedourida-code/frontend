@@ -27,14 +27,25 @@ export default function BlogsPage() {
       <MarketingNavBar />
 
       <main className="mx-auto max-w-[1500px] px-4 pb-28 pt-32 sm:px-5 lg:px-9 lg:pt-40">
-        <header className="max-w-[1120px]">
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--landing-blue)]">The AxLiner Journal</p>
-          <h1 className="mt-5 text-[clamp(3.5rem,7vw,7.5rem)] font-medium leading-[0.9] tracking-[-0.065em]">
-            Field notes for the people who keep the books.
-          </h1>
-          <p className="mt-8 max-w-[720px] text-lg font-medium leading-8 text-[#444] sm:text-xl">
-            Practical writing on pricing, client work, modern bookkeeping, and where AI genuinely removes the busywork.
-          </p>
+        <header className="grid max-w-[1120px] gap-10 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-center">
+          <div>
+            <h1 className="ax-h1 max-w-[820px]">
+              Field notes for the people who keep the books.
+            </h1>
+            <p className="mt-6 max-w-[720px] text-lg font-medium leading-8 text-[#444] sm:text-xl">
+              Practical writing on pricing, client work, modern bookkeeping, and where AI genuinely removes the busywork.
+            </p>
+          </div>
+          <div className="relative hidden min-h-[320px] overflow-hidden rounded-[28px] border border-black/10 bg-white lg:block">
+            <Image
+              src="/photos/austin-distel-mpN7xjKQ_Ns-unsplash.jpg"
+              alt="Bookkeeper working in a modern office"
+              fill
+              priority
+              sizes="260px"
+              className="object-contain p-3"
+            />
+          </div>
         </header>
 
         {featured ? (
@@ -45,7 +56,7 @@ export default function BlogsPage() {
             <div className="flex flex-col justify-between p-7 sm:p-10 lg:p-12">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--landing-blue)]">Featured · {featured.eyebrow}</p>
               <div className="mt-16">
-                <h2 className="text-4xl font-medium leading-[1] tracking-[-0.05em] sm:text-5xl">{featured.title}</h2>
+                <h2 className="ax-h2">{featured.title}</h2>
                 <p className="mt-6 text-base font-medium leading-7 text-[#555] sm:text-lg">{featured.description}</p>
                 <div className="mt-8 flex flex-wrap items-center gap-3 text-sm font-semibold text-[#555]">
                   <Image src={featured.authorImage} alt={featured.authorImageAlt} width={36} height={36} className="h-9 w-auto rounded-full object-contain" />
@@ -61,7 +72,7 @@ export default function BlogsPage() {
           <div className="flex items-end justify-between border-b border-black/10 pb-6">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--landing-blue)]">Latest</p>
-              <h2 className="mt-3 text-3xl font-medium tracking-[-0.04em] sm:text-5xl">More from the journal</h2>
+              <h2 className="ax-h2 mt-3">More from the journal</h2>
             </div>
           </div>
 

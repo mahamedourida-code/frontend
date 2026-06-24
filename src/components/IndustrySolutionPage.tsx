@@ -5,9 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { MarketingFooter } from "@/components/MarketingFooter";
 import { MarketingNavBar } from "@/components/MarketingNavBar";
 import { Button } from "@/components/ui/button";
-import type { IndustrySolution } from "@/lib/industry-solutions";
-
-const REVIEW_BOARD_IMAGE = "/review-board-crop.png";
+import { POLIVALENT_SOLUTION_IMAGE, type IndustrySolution } from "@/lib/industry-solutions";
 
 function StepCard({
   index,
@@ -41,10 +39,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
       <main>
         <section className="px-4 pb-16 pt-32 sm:px-6 sm:pb-20 lg:pt-40">
           <div className="mx-auto max-w-[1120px] text-center">
-            <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--landing-blue)]">
-              {solution.eyebrow}
-            </p>
-            <h1 className="mx-auto mt-6 max-w-[920px] text-balance text-[clamp(2.75rem,6vw,5.35rem)] font-medium leading-[0.98] tracking-[-0.055em] text-[#191919]">
+            <h1 className="mx-auto max-w-[920px] text-balance text-[clamp(2.5rem,4.5vw,4rem)] font-medium leading-[1.02] tracking-[-0.045em] text-[#191919]">
               {solution.headline}
             </h1>
             <p className="mx-auto mt-7 max-w-[720px] text-pretty text-[18px] font-medium leading-8 text-[#191919] sm:text-[20px]">
@@ -84,10 +79,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
         <section className="px-4 py-20 sm:px-6 lg:py-28">
           <div className="mx-auto max-w-[1120px]">
             <div className="max-w-[640px]">
-              <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--landing-blue)]">
-                Built for the real batch
-              </p>
-              <h2 className="mt-5 text-balance text-[clamp(2.35rem,5vw,4rem)] font-medium leading-[1.04] tracking-[-0.05em] text-[#191919]">
+              <h2 className="text-balance text-[clamp(2rem,4vw,3.25rem)] font-medium leading-[1.05] tracking-[-0.045em] text-[#191919]">
                 The paperwork your team already has.
               </h2>
             </div>
@@ -111,10 +103,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
         <section className="bg-white px-4 py-20 sm:px-6 lg:py-28">
           <div className="mx-auto max-w-[1120px]">
             <div className="max-w-[700px]">
-              <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--landing-blue)]">
-                From intake to handoff
-              </p>
-              <h2 className="mt-5 text-balance text-[clamp(2.35rem,5vw,4rem)] font-medium leading-[1.04] tracking-[-0.05em] text-[#191919]">
+              <h2 className="text-balance text-[clamp(2rem,4vw,3.25rem)] font-medium leading-[1.05] tracking-[-0.045em] text-[#191919]">
                 One batch. Three controlled steps.
               </h2>
               <p className="mt-5 max-w-[570px] text-[18px] leading-7 text-[#191919]">
@@ -124,22 +113,21 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
 
             <div className="mt-12 grid gap-4 lg:mt-14 lg:grid-cols-[1.12fr_0.88fr]">
               <article className="flex min-h-[520px] flex-col overflow-hidden rounded-2xl bg-[#efefef]">
-                <div className="w-full bg-white">
+                <div className="relative aspect-[4/3] w-full bg-white">
                   <Image
-                    src={REVIEW_BOARD_IMAGE}
-                    alt="AxLiner Batch Review Board with source-backed rows and document statuses"
-                    width={945}
-                    height={608}
+                    src={POLIVALENT_SOLUTION_IMAGE}
+                    alt="AxLiner workspace overview"
+                    fill
                     sizes="(min-width: 1024px) 600px, calc(100vw - 32px)"
-                    className="h-auto w-full object-contain"
+                    className="object-contain"
                   />
                 </div>
                 <div className="flex flex-1 flex-col justify-end p-7 sm:p-9">
                   <h3 className="text-[28px] font-medium leading-tight tracking-[-0.04em] text-[#191919]">
-                    Review the exceptions, not every clean field.
+                    Keep the full batch visible.
                   </h3>
                   <p className="mt-4 max-w-[520px] text-[17px] leading-7 text-[#191919]">
-                    Field and row flags keep judgment focused. The original document remains beside the editable result.
+                    Move from intake to corrected output without losing the source, job state, or review trail.
                   </p>
                 </div>
               </article>
@@ -161,10 +149,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
         <section className="px-4 py-20 sm:px-6 lg:py-28">
           <div className="mx-auto grid max-w-[1120px] gap-4 lg:grid-cols-2">
             <article className="rounded-2xl bg-[#efefef] p-7 sm:p-9 lg:p-11">
-              <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--landing-blue)]">
-                Human review stays in the middle
-              </p>
-              <h2 className="mt-5 text-balance text-[clamp(2.25rem,4vw,3.5rem)] font-medium leading-[1.04] tracking-[-0.05em] text-[#191919]">
+              <h2 className="text-balance text-[clamp(2rem,4vw,3.15rem)] font-medium leading-[1.05] tracking-[-0.045em] text-[#191919]">
                 Correct the work before it moves.
               </h2>
               <p className="mt-6 max-w-[500px] text-[18px] leading-8 text-[#191919]">
@@ -173,10 +158,7 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
             </article>
 
             <article className="rounded-2xl bg-[#191919] p-7 text-white sm:p-9 lg:p-11">
-              <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--landing-blue)]">
-                Ready for the books
-              </p>
-              <h2 className="mt-5 text-balance text-[clamp(2.25rem,4vw,3.5rem)] font-medium leading-[1.04] tracking-[-0.05em] text-white">
+              <h2 className="text-balance text-[clamp(2rem,4vw,3.15rem)] font-medium leading-[1.05] tracking-[-0.045em] text-white">
                 Publish reviewed drafts, with control intact.
               </h2>
               <p className="mt-6 max-w-[500px] text-[18px] leading-8 text-white">
@@ -187,12 +169,9 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
         </section>
 
         <section className="px-4 pb-24 sm:px-6 lg:pb-32">
-          <div className="mx-auto flex max-w-[1120px] flex-col gap-8 rounded-[28px] bg-[var(--brand-green)] p-8 sm:p-10 lg:flex-row lg:items-end lg:justify-between lg:p-14">
+          <div className="mx-auto flex max-w-[1120px] flex-col gap-8 rounded-[28px] border border-black/10 bg-white p-8 sm:p-10 lg:flex-row lg:items-end lg:justify-between lg:p-12">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#191919]">
-                Start with the next batch
-              </p>
-              <h2 className="mt-5 max-w-[700px] text-balance text-[clamp(2.35rem,5vw,4rem)] font-medium leading-[1.04] tracking-[-0.05em] text-[#191919]">
+              <h2 className="max-w-[700px] text-balance text-[clamp(2rem,4vw,3.25rem)] font-medium leading-[1.05] tracking-[-0.045em] text-[#191919]">
                 Move {solution.title.toLowerCase()} paperwork from folder to reviewed output.
               </h2>
             </div>

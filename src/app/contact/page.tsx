@@ -27,8 +27,7 @@ export default function ContactPage() {
       <main className="mx-auto max-w-[1500px] px-4 pb-28 pt-32 sm:px-5 lg:px-9 lg:pt-40">
         <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1.25fr)_minmax(440px,0.75fr)] lg:gap-20">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--landing-blue)]">Contact</p>
-            <h1 className="mt-5 max-w-[850px] text-[clamp(3.5rem,7vw,7.5rem)] font-medium leading-[0.9] tracking-[-0.065em] text-[#191919]">
+            <h1 className="ax-h1 max-w-[780px] text-[#191919]">
               Bring us the messy batch.
             </h1>
             <p className="mt-7 max-w-[620px] text-lg font-medium leading-8 text-[#444] sm:text-xl">

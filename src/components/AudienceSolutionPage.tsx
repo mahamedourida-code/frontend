@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
@@ -11,9 +10,6 @@ import {
   getAudienceSolutionBySlug,
 } from "@/lib/audience-solutions";
 
-const REVIEW_BOARD_IMAGE = "/review-board-crop.png";
-const PRODUCT_BOARD_IMAGE = "/product-board.png";
-
 export function AudienceSolutionPage({ solution }: { solution: AudienceSolution }) {
   return (
     <div className="ax-marketing-page min-h-screen overflow-hidden bg-[#FDFBF7] text-[#191919]">
@@ -22,10 +18,7 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
       <main>
         <section className="px-4 pb-16 pt-32 sm:px-6 sm:pb-20 lg:pt-40">
           <div className="mx-auto max-w-[1120px] text-center">
-            <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--landing-blue)]">
-              {solution.eyebrow}
-            </p>
-            <h1 className="mx-auto mt-6 max-w-[960px] text-balance text-[clamp(2.75rem,6vw,5.35rem)] font-medium leading-[0.98] tracking-[-0.055em] text-[#191919]">
+            <h1 className="mx-auto max-w-[920px] text-balance text-[clamp(2.5rem,4.5vw,4rem)] font-medium leading-[1.02] tracking-[-0.045em] text-[#191919]">
               {solution.headline}
             </h1>
             <p className="mx-auto mt-7 max-w-[760px] text-pretty text-[18px] font-medium leading-8 text-[#191919] sm:text-[20px]">
@@ -46,28 +39,13 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
                 <ArrowRight className="size-4" />
               </Link>
             </div>
-
-            <div className="mt-14 rounded-[28px] bg-[#efefef] p-3 sm:mt-16 sm:p-5 lg:p-7">
-              <Image
-                src={REVIEW_BOARD_IMAGE}
-                alt="AxLiner Batch Review Board showing document statuses and source-backed extracted data"
-                width={945}
-                height={608}
-                priority
-                sizes="(min-width: 1120px) 1064px, calc(100vw - 32px)"
-                className="h-auto w-full rounded-2xl object-contain"
-              />
-            </div>
           </div>
         </section>
 
         <section className="px-4 py-20 sm:px-6 lg:py-28">
           <div className="mx-auto max-w-[1120px]">
             <div className="max-w-[680px]">
-              <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--landing-blue)]">
-                Why it works
-              </p>
-              <h2 className="mt-5 text-balance text-[clamp(2.35rem,5vw,4rem)] font-medium leading-[1.04] tracking-[-0.05em] text-[#191919]">
+              <h2 className="text-balance text-[clamp(2rem,4vw,3.25rem)] font-medium leading-[1.05] tracking-[-0.045em] text-[#191919]">
                 The batch, without the chaos.
               </h2>
             </div>
@@ -98,10 +76,7 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
         <section className="bg-white px-4 py-20 sm:px-6 lg:py-28">
           <div className="mx-auto max-w-[1120px]">
             <div className="max-w-[700px]">
-              <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--landing-blue)]">
-                The workflow
-              </p>
-              <h2 className="mt-5 text-balance text-[clamp(2.35rem,5vw,4rem)] font-medium leading-[1.04] tracking-[-0.05em] text-[#191919]">
+              <h2 className="text-balance text-[clamp(2rem,4vw,3.25rem)] font-medium leading-[1.05] tracking-[-0.045em] text-[#191919]">
                 Three steps. One accountable handoff.
               </h2>
             </div>
@@ -129,42 +104,21 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
           </div>
         </section>
 
-        <section className="px-4 py-20 sm:px-6 lg:py-28">
-          <div className="mx-auto max-w-[1120px] overflow-hidden rounded-[28px] bg-[#191919] text-white">
-            <div className="grid gap-10 p-7 sm:p-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-center lg:p-12">
-              <div>
-                <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--landing-blue)]">
-                  Reviewed before it moves
-                </p>
-                <h2 className="mt-5 text-balance text-[clamp(2.35rem,4.5vw,3.75rem)] font-medium leading-[1.04] tracking-[-0.05em] text-white">
-                  Finish the books, not the judgment.
-                </h2>
-                <p className="mt-6 max-w-[460px] text-[18px] leading-8 text-white">
-                  Export corrected Excel or CSV files, or publish reviewed draft bills to QuickBooks Online or Xero. AxLiner never pays, reconciles, or auto-approves them.
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-white p-3 sm:p-5">
-                <Image
-                  src={PRODUCT_BOARD_IMAGE}
-                  alt="AxLiner reviewed document workspace"
-                  width={1877}
-                  height={668}
-                  sizes="(min-width: 1024px) 600px, calc(100vw - 64px)"
-                  className="h-auto w-full rounded-xl object-contain"
-                />
-              </div>
-            </div>
+        <section className="px-4 py-20 sm:px-6 lg:py-24">
+          <div className="mx-auto max-w-[1120px] rounded-[28px] border border-black/10 bg-white p-8 sm:p-10 lg:p-12">
+            <h2 className="max-w-[720px] text-balance text-[clamp(2rem,4vw,3.25rem)] font-medium leading-[1.05] tracking-[-0.045em] text-[#191919]">
+              Reviewed drafts, with control intact.
+            </h2>
+            <p className="mt-5 max-w-[680px] text-[18px] leading-8 text-[#191919]">
+              Export corrected Excel or CSV files, or publish reviewed draft bills to QuickBooks Online or Xero. AxLiner never pays, reconciles, or auto-approves them.
+            </p>
           </div>
         </section>
 
         <section className="px-4 py-20 sm:px-6 lg:py-28">
           <div className="mx-auto max-w-[1120px]">
             <div className="max-w-[650px]">
-              <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--landing-blue)]">
-                Keep exploring
-              </p>
-              <h2 className="mt-5 text-balance text-[clamp(2.35rem,5vw,4rem)] font-medium leading-[1.04] tracking-[-0.05em] text-[#191919]">
+              <h2 className="text-balance text-[clamp(2rem,4vw,3.25rem)] font-medium leading-[1.05] tracking-[-0.045em] text-[#191919]">
                 The next part of the workflow.
               </h2>
             </div>
@@ -191,12 +145,9 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
         </section>
 
         <section className="px-4 pb-24 sm:px-6 lg:pb-32">
-          <div className="mx-auto flex max-w-[1120px] flex-col gap-8 rounded-[28px] bg-[var(--brand-green)] p-8 sm:p-10 lg:flex-row lg:items-end lg:justify-between lg:p-14">
+          <div className="mx-auto flex max-w-[1120px] flex-col gap-8 rounded-[28px] border border-black/10 bg-white p-8 sm:p-10 lg:flex-row lg:items-end lg:justify-between lg:p-12">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#191919]">
-                Start with the next client batch
-              </p>
-              <h2 className="mt-5 max-w-[700px] text-balance text-[clamp(2.35rem,5vw,4rem)] font-medium leading-[1.04] tracking-[-0.05em] text-[#191919]">
+              <h2 className="max-w-[700px] text-balance text-[clamp(2rem,4vw,3.25rem)] font-medium leading-[1.05] tracking-[-0.045em] text-[#191919]">
                 Put the whole folder through one reviewable workflow.
               </h2>
             </div>

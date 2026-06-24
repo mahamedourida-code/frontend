@@ -11,7 +11,6 @@ export const metadata: Metadata = {
 export default function JpgToExcelPage() {
   return (
     <ConversionMarketingPage
-      eyebrow="JPG to Excel"
       title={
         <>
           JPG folders become <span className="text-[var(--landing-blue)]">reviewed workbooks.</span>

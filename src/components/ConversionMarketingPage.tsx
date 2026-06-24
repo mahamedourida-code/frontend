@@ -20,7 +20,6 @@ type ContentBlock = {
 };
 
 type ConversionMarketingPageProps = {
-  eyebrow: string;
   title: ReactNode;
   intro: string;
   heroImage: ProductImage;
@@ -39,7 +38,6 @@ const reviewImage: ProductImage = {
 };
 
 export function ConversionMarketingPage({
-  eyebrow,
   title,
   intro,
   heroImage,
@@ -56,10 +54,7 @@ export function ConversionMarketingPage({
       <main>
         <section className="px-4 pb-20 pt-36 sm:px-6 sm:pb-24 lg:px-8 lg:pb-32 lg:pt-44">
           <div className="mx-auto max-w-[1180px] text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-black">
-              {eyebrow}
-            </p>
-            <h1 className="mx-auto mt-5 max-w-[1020px] text-balance text-[clamp(3rem,7vw,6.5rem)] font-medium leading-[0.98] tracking-[-0.055em] text-black">
+            <h1 className="mx-auto max-w-[920px] text-balance text-[clamp(2.5rem,4.5vw,4rem)] font-medium leading-[1.02] tracking-[-0.045em] text-black">
               {title}
             </h1>
             <p className="mx-auto mt-7 max-w-[700px] text-balance text-lg font-medium leading-8 text-black sm:text-xl">
@@ -96,7 +91,7 @@ export function ConversionMarketingPage({
 
         <section className="bg-white px-4 py-24 sm:px-6 lg:px-8 lg:py-32">
           <div className="mx-auto max-w-[1120px]">
-            <h2 className="max-w-[760px] text-balance text-[clamp(2.5rem,5vw,5rem)] font-medium leading-[1.02] tracking-[-0.05em] text-black">
+            <h2 className="max-w-[760px] text-balance text-[clamp(2rem,3.5vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.04em] text-black">
               {sectionTitle}
             </h2>
             <p className="mt-6 max-w-[620px] text-lg font-medium leading-8 text-black">
@@ -106,10 +101,7 @@ export function ConversionMarketingPage({
             <div className="mt-14 grid gap-4 lg:mt-16 lg:grid-cols-3 lg:grid-rows-2">
               <article className="flex flex-col overflow-hidden rounded-2xl bg-[#efefef] lg:col-span-2 lg:row-span-2">
                 <div className="p-6 pb-0 sm:p-8 sm:pb-0">
-                  <p className="text-sm font-semibold uppercase tracking-[0.14em] text-black">
-                    Batch Review Board
-                  </p>
-                  <h3 className="mt-3 max-w-xl text-3xl font-medium leading-tight tracking-[-0.035em] text-black sm:text-4xl">
+                  <h3 className="max-w-xl text-3xl font-medium leading-tight tracking-[-0.035em] text-black sm:text-4xl">
                     Correct the exceptions, not the entire batch.
                   </h3>
                 </div>
@@ -169,7 +161,7 @@ export function ConversionMarketingPage({
         <section id="workflow" className="bg-[#FDFBF7] px-4 py-24 sm:px-6 lg:px-8 lg:py-32">
           <div className="mx-auto max-w-[1120px]">
             <div className="flex flex-col gap-5 border-b border-black pb-8 lg:flex-row lg:items-end lg:justify-between">
-              <h2 className="max-w-[680px] text-[clamp(2.5rem,5vw,4.75rem)] font-medium leading-[1.02] tracking-[-0.05em] text-black">
+              <h2 className="max-w-[680px] text-[clamp(2rem,3.5vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.04em] text-black">
                 From source to books in three moves.
               </h2>
               <p className="max-w-[360px] text-base font-medium leading-7 text-black">
@@ -189,15 +181,15 @@ export function ConversionMarketingPage({
           </div>
         </section>
 
-        <section className="bg-black px-4 py-20 text-white sm:px-6 lg:px-8 lg:py-28">
+        <section className="border-t border-black/10 bg-white px-4 py-20 text-black sm:px-6 lg:px-8 lg:py-24">
           <div className="mx-auto flex max-w-[980px] flex-col items-center text-center">
-            <h2 className="text-balance text-[clamp(2.75rem,6vw,5.75rem)] font-medium leading-[1] tracking-[-0.05em] text-white">
+            <h2 className="text-balance text-[clamp(2.25rem,4vw,3.75rem)] font-medium leading-[1.04] tracking-[-0.045em] text-black">
               {finalTitle}
             </h2>
-            <p className="mt-6 max-w-[620px] text-lg font-medium leading-8 text-white">
-              Start with one client folder. Every source, flag, and reviewed result stays together.
+            <p className="mt-6 max-w-[620px] text-lg font-medium leading-8 text-black">
+              Start with one client folder. <span className="text-[var(--landing-blue)]">Every source, flag, and reviewed result</span> stays together.
             </p>
-            <Button variant="surface" size="lg" asChild className="mt-9 h-14 rounded-full px-9 text-base font-semibold">
+            <Button variant="glossy" size="lg" asChild className="mt-9 h-14 rounded-full px-9 text-base font-semibold">
               <Link href="/sign-up?next=%2Fdashboard%2Fclient">
                 Start free <ArrowRight className="size-4" />
               </Link>

@@ -17,12 +17,11 @@ export default function IntegrationsPage() {
       <MarketingNavBar />
       <IntegrationsClient />
 
-      <section className="bg-[var(--brand-green)] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+      <section className="bg-[#FDFBF7] px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
         <div className="mx-auto flex max-w-[1120px] flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-black">Ready for the next batch?</p>
-            <h2 className="mt-4 max-w-[760px] text-balance text-[clamp(2.5rem,5vw,5rem)] font-medium leading-[1] tracking-[-0.05em] text-black">
-              Put the folder through one reviewable workflow.
+            <h2 className="max-w-[760px] text-balance text-[clamp(2rem,4vw,3.25rem)] font-medium leading-[1.05] tracking-[-0.045em] text-black">
+              Put the folder through one <span className="text-[var(--landing-blue)]">reviewable workflow</span>.
             </h2>
           </div>
           <Link

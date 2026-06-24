@@ -11,7 +11,6 @@ export const metadata: Metadata = {
 export default function ScreenshotToExcelPage() {
   return (
     <ConversionMarketingPage
-      eyebrow="Screenshot to Excel"
       title={
         <>
           Screenshots become <span className="text-[var(--landing-blue)]">working data.</span>
@@ -19,10 +18,10 @@ export default function ScreenshotToExcelPage() {
       }
       intro="Drop a batch of captured tables, statements, and accounting screens. AxLiner rebuilds the structure and keeps every value reviewable."
       heroImage={{
-        src: "/landing/folder-drop-poster.png",
-        alt: "A mixed batch of screenshots entering the AxLiner workflow",
-        width: 1345,
-        height: 728,
+        src: "/photos/istockphoto-2254128413-612x612.jpg",
+        alt: "Glowing digital invoice on a laptop screen with AI extraction icons",
+        width: 612,
+        height: 612,
       }}
       sectionTitle={
         <>

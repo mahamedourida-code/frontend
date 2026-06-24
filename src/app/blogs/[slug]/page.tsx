@@ -102,10 +102,7 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
             <span aria-hidden="true">←</span>
             The AxLiner Journal
           </Link>
-          <p className="mt-10 text-xs font-bold uppercase tracking-[0.2em] text-[#777]">
-            {post.eyebrow}
-          </p>
-          <h1 className="mt-5 text-[clamp(3.25rem,7vw,6.5rem)] font-medium leading-[0.92] tracking-[-0.06em] text-[#191919]">
+          <h1 className="ax-h1 mt-8 text-[#191919]">
             {post.title}
           </h1>
           <p className="mt-7 max-w-[760px] text-lg font-medium leading-8 text-[#444] sm:text-xl">

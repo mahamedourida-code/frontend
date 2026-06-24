@@ -15,7 +15,7 @@ const updates = [
     number: "01",
     title: "Batch review board",
     body: "Upload the whole folder. AxLiner extracts every field and puts the exceptions in one focused review queue.",
-    tone: "bg-[var(--landing-blue)] text-white",
+    tone: "bg-white text-[#191919]",
   },
   {
     number: "02",
@@ -44,8 +44,7 @@ export default function WhatsNewPage() {
 
       <main className="mx-auto max-w-[1500px] px-4 pb-28 pt-32 sm:px-5 lg:px-9 lg:pt-40">
         <header className="max-w-[1050px]">
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--landing-blue)]">What&apos;s new</p>
-          <h1 className="mt-5 text-[clamp(3.5rem,7vw,7.5rem)] font-medium leading-[0.9] tracking-[-0.065em]">
+          <h1 className="ax-h1 max-w-[900px]">
             Less review noise. Better books.
           </h1>
           <p className="mt-8 max-w-[660px] text-lg font-medium leading-8 text-[#444] sm:text-xl">
@@ -60,9 +59,13 @@ export default function WhatsNewPage() {
               className={`${update.tone} min-h-[330px] rounded-[32px] border border-black/10 p-7 shadow-[0_18px_55px_rgba(25,25,25,0.06)] sm:p-10 ${index === 0 ? "md:row-span-2 md:min-h-[680px]" : ""}`}
             >
               <div className="flex h-full flex-col justify-between gap-16">
-                <span className="text-xs font-bold tracking-[0.2em] opacity-70">{update.number}</span>
+                <span
+                  className={`text-xs font-bold tracking-[0.2em] opacity-70 ${index === 0 ? "text-[var(--landing-blue)]" : ""}`}
+                >
+                  {update.number}
+                </span>
                 <div>
-                  <h2 className="text-3xl font-medium tracking-[-0.04em] sm:text-4xl">{update.title}</h2>
+                  <h2 className="ax-h2">{update.title}</h2>
                   <p className="mt-5 max-w-[540px] text-base font-medium leading-7 opacity-80 sm:text-lg">{update.body}</p>
                 </div>
               </div>
@@ -73,8 +76,7 @@ export default function WhatsNewPage() {
         <section className="mt-3 rounded-[32px] border border-black/10 bg-white p-8 sm:p-12">
           <div className="flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--landing-blue)]">Ready for a cleaner close?</p>
-              <h2 className="mt-4 max-w-2xl text-3xl font-medium tracking-[-0.04em] sm:text-5xl">Put the next folder through AxLiner.</h2>
+              <h2 className="ax-h2 max-w-2xl">Put the next folder through AxLiner.</h2>
             </div>
             <div className="flex flex-wrap gap-3">
               <Button asChild variant="glossy" size="lg"><Link href="/dashboard/client">Start free</Link></Button>

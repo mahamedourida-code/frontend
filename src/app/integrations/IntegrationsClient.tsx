@@ -3,7 +3,6 @@ import Link from "next/link";
 
 const integrationGroups = [
   {
-    eyebrow: "Publish",
     title: "QuickBooks + Xero",
     body: "Send reviewed draft bills to either ledger only after the batch is approved.",
     logos: [
@@ -12,7 +11,6 @@ const integrationGroups = [
     ],
   },
   {
-    eyebrow: "Collect",
     title: "Drive + Gmail",
     body: "Bring folders and attachments into one intake queue instead of chasing files across tabs.",
     logos: [
@@ -21,7 +19,6 @@ const integrationGroups = [
     ],
   },
   {
-    eyebrow: "Export",
     title: "Excel + CSV",
     body: "Download the corrected batch as a workbook or flat file, ready for the next system.",
     logos: [{ src: "/logos/excel.png", alt: "Microsoft Excel", width: 64, height: 64 }],
@@ -38,10 +35,9 @@ export default function IntegrationsClient() {
   return (
     <>
       <section className="bg-[#FDFBF7] px-4 pb-20 pt-36 sm:px-6 lg:px-8 lg:pb-28 lg:pt-44">
-        <div className="mx-auto grid max-w-[1320px] items-center gap-14 lg:grid-cols-[0.82fr_1.18fr] lg:gap-20">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--landing-blue)]">Integrations</p>
-            <h1 className="mt-5 text-balance text-[clamp(3.25rem,6vw,6.5rem)] font-medium leading-[0.95] tracking-[-0.055em] text-black">
+        <div className="mx-auto max-w-[1120px]">
+          <div className="max-w-[900px]">
+            <h1 className="text-balance text-[clamp(2.5rem,4.5vw,4rem)] font-medium leading-[1.02] tracking-[-0.045em] text-black">
               Your stack, connected to the <span className="text-[var(--landing-blue)]">review board</span>.
             </h1>
             <p className="mt-7 max-w-[590px] text-[19px] font-medium leading-8 text-black">
@@ -50,7 +46,7 @@ export default function IntegrationsClient() {
             <div className="mt-9 flex flex-wrap gap-3">
               <Link
                 href="/sign-up?next=%2Fdashboard%2Fclient"
-                className="inline-flex h-12 items-center rounded-full bg-[var(--landing-blue)] px-7 text-[15px] font-bold text-white shadow-[inset_0_1px_0_rgb(255_255_255_/_0.25),0_1px_3px_rgb(0_0_0_/_0.18)]"
+                className="inline-flex h-12 items-center rounded-full bg-[var(--brand-green)] px-7 text-[15px] font-bold text-[var(--brand-green-fg)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_0_0_1px_var(--brand-green-ring),0_1px_3px_0_rgba(0,0,0,0.12)]"
               >
                 Start free
               </Link>
@@ -63,23 +59,12 @@ export default function IntegrationsClient() {
             </div>
           </div>
 
-          <div className="overflow-hidden rounded-2xl bg-[#efefef] p-3 sm:p-5">
-            <Image
-              src="/review-board-crop.png"
-              alt="AxLiner batch review board with source documents and editable accounting fields"
-              width={945}
-              height={608}
-              priority
-              sizes="(min-width: 1024px) 58vw, 100vw"
-              className="h-auto w-full rounded-xl object-contain"
-            />
-          </div>
         </div>
       </section>
 
       <section className="bg-white px-4 py-24 sm:px-6 lg:px-8 lg:py-32">
         <div className="mx-auto max-w-[1120px]">
-          <h2 className="max-w-[760px] text-balance text-[clamp(2.5rem,5vw,5rem)] font-medium leading-[1] tracking-[-0.05em] text-black">
+          <h2 className="max-w-[760px] text-balance text-[clamp(2rem,4vw,3.25rem)] font-medium leading-[1.05] tracking-[-0.045em] text-black">
             One batch. Three clean handoffs.
           </h2>
           <div className="mt-14 grid gap-4 lg:grid-cols-3">
@@ -93,8 +78,7 @@ export default function IntegrationsClient() {
                   ))}
                 </div>
                 <div className="mt-auto pt-10">
-                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--landing-blue)]">{group.eyebrow}</p>
-                  <h3 className="mt-3 text-[27px] font-medium tracking-[-0.035em] text-black">{group.title}</h3>
+                  <h3 className="text-[27px] font-medium tracking-[-0.035em] text-black">{group.title}</h3>
                   <p className="mt-4 text-[16px] font-medium leading-7 text-black">{group.body}</p>
                 </div>
               </article>
@@ -103,10 +87,40 @@ export default function IntegrationsClient() {
         </div>
       </section>
 
+      <section className="bg-[#FDFBF7] px-4 py-24 sm:px-6 lg:px-8 lg:py-28">
+        <div className="mx-auto grid max-w-[1120px] gap-4 lg:grid-cols-2">
+          <article className="rounded-2xl border border-black/10 bg-white p-4 sm:p-6">
+            <Image
+              src="/photos/istockphoto-2273856415-612x612.jpg"
+              alt="Person capturing a receipt with a mobile phone"
+              width={612}
+              height={612}
+              sizes="(min-width: 1024px) 540px, 100vw"
+              className="h-auto w-full rounded-xl object-contain"
+            />
+            <h2 className="px-2 pb-2 pt-7 text-[clamp(1.75rem,3vw,2.5rem)] font-medium tracking-[-0.04em] text-black">
+              Capture the paperwork where it arrives.
+            </h2>
+          </article>
+          <article className="rounded-2xl border border-black/10 bg-white p-4 sm:p-6">
+            <Image
+              src="/photos/istockphoto-2185212349-612x612.jpg"
+              alt="Accountant reviewing extracted invoice data on screen"
+              width={612}
+              height={612}
+              sizes="(min-width: 1024px) 540px, 100vw"
+              className="h-auto w-full rounded-xl object-contain"
+            />
+            <h2 className="px-2 pb-2 pt-7 text-[clamp(1.75rem,3vw,2.5rem)] font-medium tracking-[-0.04em] text-black">
+              Review every draft before it moves.
+            </h2>
+          </article>
+        </div>
+      </section>
+
       <section className="bg-[#FDFBF7] px-4 py-24 sm:px-6 lg:px-8 lg:py-32">
         <div className="mx-auto max-w-[1120px]">
-          <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--landing-blue)]">The workflow</p>
-          <h2 className="mt-4 max-w-[760px] text-balance text-[clamp(2.5rem,5vw,5rem)] font-medium leading-[1] tracking-[-0.05em] text-black">
+          <h2 className="max-w-[760px] text-balance text-[clamp(2rem,4vw,3.25rem)] font-medium leading-[1.05] tracking-[-0.045em] text-black">
             Intake to books, without the tab maze.
           </h2>
           <div className="mt-14 grid gap-4 lg:grid-cols-3">

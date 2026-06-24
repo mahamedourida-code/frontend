@@ -86,7 +86,7 @@ export default function EndUserLicenseAgreementPage() {
     >
       {sections.map((section) => (
         <section key={section.id} id={section.id} className="scroll-mt-32">
-          <h2 className="text-3xl font-medium tracking-[-0.03em]">{section.title}</h2>
+          <h2 className="ax-h2">{section.title}</h2>
           <div className="mt-5 space-y-4">
             {section.body.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
@@ -96,7 +96,7 @@ export default function EndUserLicenseAgreementPage() {
       ))}
 
       <section>
-        <h2 className="text-3xl font-medium tracking-[-0.03em]">Related policies</h2>
+        <h2 className="ax-h2">Related policies</h2>
         <div className="mt-7 flex flex-wrap gap-3">
           <Button asChild variant="outline" className="px-6">
             <Link href="/terms-of-service">Terms of Service</Link>

@@ -11,7 +11,6 @@ export const metadata: Metadata = {
 export default function ImageToExcelPage() {
   return (
     <ConversionMarketingPage
-      eyebrow="Image to Excel"
       title={
         <>
           Turn image batches into <span className="text-[var(--landing-blue)]">clean spreadsheets.</span>
@@ -19,10 +18,10 @@ export default function ImageToExcelPage() {
       }
       intro="Upload the photos, scans, and screenshots together. AxLiner preserves the rows, flags uncertain cells, and produces one reviewed output."
       heroImage={{
-        src: "/landing/folder-drop-poster.png",
-        alt: "A folder of document images being uploaded to AxLiner",
-        width: 1345,
-        height: 728,
+        src: "/photos/istockphoto-2273856415-612x612.jpg",
+        alt: "Man photographing an invoice with a smartphone",
+        width: 612,
+        height: 612,
       }}
       sectionTitle={
         <>

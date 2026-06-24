@@ -61,7 +61,7 @@ export default function BenchmarksPage() {
       }
     >
       <section id="measured" className="scroll-mt-32">
-        <h2 className="text-3xl font-medium tracking-[-0.03em]">What we measure</h2>
+        <h2 className="ax-h2">What we measure</h2>
         <div className="mt-5 space-y-4">
           <p>
             A receipt list, paper ledger, or handwritten invoice grid can be readable to a person and still be hard to
@@ -83,7 +83,7 @@ export default function BenchmarksPage() {
       </section>
 
       <section id="accuracy" className="scroll-mt-32">
-        <h2 className="text-3xl font-medium tracking-[-0.03em]">Accuracy view</h2>
+        <h2 className="ax-h2">Accuracy view</h2>
         <p className="mt-5">
           The chart keeps the page readable while still showing the extraction story. Text accuracy matters first, but
           the benchmark is read next to table fidelity because spreadsheet teams pay for the reconstruction time after
@@ -106,7 +106,7 @@ export default function BenchmarksPage() {
       </section>
 
       <section id="workbook" className="scroll-mt-32">
-        <h2 className="text-3xl font-medium tracking-[-0.03em]">Workbook metrics</h2>
+        <h2 className="ax-h2">Workbook metrics</h2>
         <p className="mt-5">
           The comparison table records the signals users feel during review. Lower character error rates reduce spot
           fixes. Stronger structure recovery reduces reformatting. Noise tolerance matters when the original document
@@ -142,7 +142,7 @@ export default function BenchmarksPage() {
       </section>
 
       <section id="review" className="scroll-mt-32">
-        <h2 className="text-3xl font-medium tracking-[-0.03em]">Review protocol</h2>
+        <h2 className="ax-h2">Review protocol</h2>
         <div className="mt-5 space-y-4">
           <p>
             The final check follows the user flow. The source page is prepared, the model reads the handwriting, the

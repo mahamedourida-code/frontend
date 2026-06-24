@@ -11,7 +11,6 @@ export const metadata: Metadata = {
 export default function ProductsPage() {
   return (
     <ConversionMarketingPage
-      eyebrow="AxLiner products"
       title={
         <>
           One workflow for the <span className="text-[var(--landing-blue)]">whole folder.</span>
@@ -19,10 +18,10 @@ export default function ProductsPage() {
       }
       intro="Batch invoices, receipts, statements, tables, and handwriting. Review the exceptions once, then export or publish."
       heroImage={{
-        src: "/landing/folder-drop-poster.png",
-        alt: "AxLiner accepting a full folder of mixed accounting documents",
-        width: 1345,
-        height: 728,
+        src: "/photos/istockphoto-2185212349-612x612.jpg",
+        alt: "Professional reviewing documents and receipts at a laptop",
+        width: 612,
+        height: 612,
       }}
       sectionTitle={
         <>

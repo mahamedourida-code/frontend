@@ -39,11 +39,10 @@ export function EditorialPageShell({
       <main>
         <header className="ax-marketing-container max-w-[1500px] pb-16 pt-32 sm:pb-20 lg:pt-40">
           <div className="max-w-[1120px]">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[var(--landing-blue)]">{eyebrow}</p>
-            <h1 className="mt-5 max-w-[1050px] text-[clamp(3rem,7vw,7.25rem)] font-medium leading-[0.92] tracking-[-0.065em] text-[#191919]">
+            <h1 className="ax-h1 max-w-[920px] text-[#191919]">
               {title}
             </h1>
-            <div className="mt-8 max-w-[720px] space-y-4 text-lg font-medium leading-8 text-[#3f3f3f] sm:text-xl">
+            <div className="mt-6 max-w-[720px] space-y-4 text-lg font-medium leading-8 text-[#3f3f3f] sm:text-xl">
               {intro}
             </div>
             {meta ? (
@@ -52,7 +51,7 @@ export function EditorialPageShell({
               </p>
             ) : null}
           </div>
-          {hero ? <div className="mt-12 max-w-[1180px]">{hero}</div> : null}
+          {hero ? <div className="mt-10 max-w-[1180px]">{hero}</div> : null}
         </header>
 
         <div className="ax-marketing-container max-w-[1500px] pb-24 sm:pb-32">

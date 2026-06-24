@@ -64,7 +64,7 @@ export default function HowAxlinerIsBuiltPage() {
       }
     >
       <section id="model" className="scroll-mt-32">
-        <h2 className="text-3xl font-medium tracking-[-0.03em]">Model path</h2>
+        <h2 className="ax-h2">Model path</h2>
         <div className="mt-5 space-y-4">
           <p>
             The extraction path starts with a vision-language model in the Qwen2-VL and olmOCR direction: document
@@ -86,7 +86,7 @@ export default function HowAxlinerIsBuiltPage() {
       </section>
 
       <section id="structure" className="scroll-mt-32">
-        <h2 className="text-3xl font-medium tracking-[-0.03em]">Table structure</h2>
+        <h2 className="ax-h2">Table structure</h2>
         <div className="mt-5 space-y-4">
           <p>
             A workbook is more demanding than plain OCR text. The pipeline has to preserve the idea of a header, detect
@@ -114,7 +114,7 @@ export default function HowAxlinerIsBuiltPage() {
       </section>
 
       <section id="batch" className="scroll-mt-32">
-        <h2 className="text-3xl font-medium tracking-[-0.03em]">Batch layer</h2>
+        <h2 className="ax-h2">Batch layer</h2>
         <div className="mt-5 space-y-4">
           <p>
             Queue admission, workers, storage metadata, file ownership, and retry-safe outputs carry the run beyond one
@@ -136,7 +136,7 @@ export default function HowAxlinerIsBuiltPage() {
       </section>
 
       <section id="export" className="scroll-mt-32">
-        <h2 className="text-3xl font-medium tracking-[-0.03em]">Excel review</h2>
+        <h2 className="ax-h2">Excel review</h2>
         <div className="mt-5 space-y-4">
           <p>
             The comparison view puts the source beside the table so teams can correct cells, mark reviewed files, and
