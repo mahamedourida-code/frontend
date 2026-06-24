@@ -37,9 +37,6 @@ function OnboardingHintCard({ title, hint, action, className }: OnboardingHintCa
         className,
       )}
     >
-      <span className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[var(--brand-brown-fg)]">
-        How AxLiner works
-      </span>
       <h3 className="text-lg font-semibold tracking-tight text-[var(--brand-brown-deep)]">
         {title ?? MESSY_DOCS_COPY.uploadTitle}
       </h3>

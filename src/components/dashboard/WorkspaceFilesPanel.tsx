@@ -124,8 +124,8 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
           detail="Checking the latest stacks and their review status."
         />
       ) : recentFiles.length === 0 ? (
-        <div className="rounded-md border border-dashed border-border bg-card px-4 py-5 text-sm text-muted-foreground">
-          Uploaded documents will appear here when their review record is ready.
+        <div className="rounded-md border border-dashed border-border bg-card px-4 py-5 text-sm font-medium text-foreground">
+          No documents yet
         </div>
       ) : (
         <div className="divide-y divide-border overflow-hidden rounded-md border border-border bg-card">

@@ -9,7 +9,6 @@ import {
   Copy,
   KeyRound,
   Upload,
-  ArrowUpRight,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -119,22 +118,19 @@ function NotificationRow({
         <Icon className="size-4" strokeWidth={2.5} />
       </span>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-baseline justify-between gap-2">
           <span className="truncate text-[14px] font-bold leading-5 text-foreground">
             {item.title}
           </span>
-          {!item.read ? (
-            <span className={cn("shrink-0 text-[11px] font-bold uppercase tracking-[0.08em]", meta.activeClass)}>
-              New
-            </span>
-          ) : null}
+          <span className="shrink-0 text-[12px] font-medium text-foreground/55">
+            {relativeTime(item.createdAt)}
+          </span>
         </div>
-        <p className="mt-0.5 line-clamp-2 text-[13px] font-semibold leading-5 text-foreground/72">{item.preview}</p>
-        <span className="mt-1.5 block text-[12px] font-medium text-foreground/55">
-          {relativeTime(item.createdAt)}
-        </span>
+        <p className="mt-0.5 line-clamp-1 text-[13px] font-semibold leading-5 text-foreground/72">{item.preview}</p>
       </div>
-      <ArrowUpRight className="mt-1 size-4 shrink-0 text-foreground/0 transition-colors group-hover/row:text-foreground/60" />
+      {!item.read ? (
+        <span className={cn("mt-2 size-2 shrink-0 rounded-full", meta.lineClass)} aria-hidden="true" />
+      ) : null}
     </Link>
   )
 }
@@ -163,8 +159,7 @@ function GroupedList({
         <span className="flex size-12 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-200">
           <CheckCheck className="size-5 text-emerald-700" strokeWidth={2.5} />
         </span>
-        <p className="text-[15px] font-bold text-foreground">All caught up</p>
-        <p className="max-w-[16rem] text-[13px] font-semibold leading-5 text-foreground/65">{emptyLabel}</p>
+        <p className="text-[15px] font-bold text-foreground">{emptyLabel}</p>
       </div>
     )
   }
@@ -233,9 +228,6 @@ export function NotificationsBell() {
           <div className="flex items-center justify-between gap-3 border-b border-[var(--workspace-border)] px-4 py-4">
             <div className="min-w-0">
               <span className="block text-[17px] font-bold leading-6 text-foreground">Notifications</span>
-              <span className="block text-[12px] font-semibold leading-5 text-foreground/55">
-                Review, client, and accounting updates
-              </span>
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <TabsList className="h-8 rounded-full bg-[var(--workspace-soft)] p-0.5">
@@ -268,14 +260,14 @@ export function NotificationsBell() {
               <GroupedList
                 items={items}
                 onJump={handleJump}
-                emptyLabel="Documents, duplicate flags, and accounting alerts will show up here."
+                emptyLabel="All caught up"
               />
             </TabsContent>
             <TabsContent value="unread" className="m-0">
               <GroupedList
                 items={unread}
                 onJump={handleJump}
-                emptyLabel="No unread notifications."
+                emptyLabel="No unread"
               />
             </TabsContent>
           </div>

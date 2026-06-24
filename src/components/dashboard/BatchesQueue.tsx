@@ -48,29 +48,25 @@ type Bucket = "processing" | "review" | "today" | "earlier"
 
 const BUCKET_META: Record<
   Bucket,
-  { title: string; hint: string; icon: React.ReactNode; tone: "default" | "active" }
+  { title: string; icon: React.ReactNode; tone: "default" | "active" }
 > = {
   processing: {
     title: "Reading",
-    hint: "Supplier, reference, date, and total fields are being prepared for review.",
     icon: <LoaderCircle />,
     tone: "active",
   },
   review: {
     title: "Needs review",
-    hint: "Open one to correct exceptions, then export or publish.",
     icon: <Layers />,
     tone: "default",
   },
   today: {
     title: "Done today",
-    hint: "Reviewed and exported earlier today.",
     icon: <CircleCheck />,
     tone: "default",
   },
   earlier: {
     title: "Earlier",
-    hint: "Older stacks — reopen any to review or re-export.",
     icon: <Inbox />,
     tone: "default",
   },
@@ -241,14 +237,7 @@ export function BatchesQueue() {
           <WorkspaceStageStrip activeStage="review" className="mx-auto max-w-2xl" />
           <EmptyState
             icon={<Inbox />}
-            eyebrow="Batch history"
             title="No review stacks yet"
-            description="This register groups each batch by reading, needs review, and completed work."
-            steps={[
-              "Upload invoices, receipts, statements, scans, or photos in one mixed batch.",
-              "Auto-detect classifies the documents and sends uncertain fields to review.",
-              "Confirm the exceptions, then export Excel/CSV or prepare reviewed draft bills.",
-            ]}
             action={(
               <Button asChild variant="glossy" size="sm">
                 <Link href="/dashboard/client#upload-files">
@@ -267,7 +256,6 @@ export function BatchesQueue() {
             <WorkspaceSection
               key={bucket}
               title={meta.title}
-              hint={meta.hint}
               icon={meta.icon}
               tone={meta.tone}
               actions={

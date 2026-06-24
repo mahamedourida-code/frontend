@@ -758,9 +758,7 @@ export default function EmailInboxPage() {
           {loading ? null : submissions.length === 0 ? (
             <EmptyState
               icon={<Inbox />}
-              eyebrow="Client intake"
-              title="No client files received"
-              description="Files sent through a client upload link appear here with their source, review status, and a direct path to the batch."
+              title="No client files yet"
               action={(
                 <Button asChild variant="surface" size="sm">
                   <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox#client-upload-links" : "/dashboard/client#upload-files"}>
@@ -860,9 +858,7 @@ export default function EmailInboxPage() {
           {loading ? null : messages.length === 0 ? (
             <EmptyState
               icon={<Mail />}
-              eyebrow="Email intake"
               title="No emailed documents yet"
-              description="Attachments forwarded to your workspace email appear here with the sender, review status, and a direct Review link."
               action={(
                 <Button asChild variant="surface" size="sm">
                   <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox#email-in-address" : "/dashboard/guide"}>

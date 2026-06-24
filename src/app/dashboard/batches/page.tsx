@@ -43,7 +43,6 @@ function BatchesContent() {
     <DashboardShell activeItem="batches" title="Stacks" user={user}>
       <PageHeader
         title="Stacks"
-        description="Today's stacks at a glance. Scan what's reading or needs review, then open one to drill into the full review board."
       />
       <BatchesQueue />
     </DashboardShell>

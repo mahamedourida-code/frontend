@@ -763,9 +763,7 @@ function HistoryContent() {
                   <TableCell colSpan={columns.length} className="py-10">
                     <EmptyState
                       icon={<FileSpreadsheet />}
-                      eyebrow="History"
                       title="No documents yet"
-                      description="Every stack you process appears here — open any one to review, export, or delete it."
                     />
                   </TableCell>
                 </TableRow>

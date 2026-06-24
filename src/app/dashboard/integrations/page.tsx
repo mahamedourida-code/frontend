@@ -46,7 +46,6 @@ function IntegrationsContent() {
     <DashboardShell activeItem="integrations" title="Integrations" user={user}>
       <PageHeader
         title="Integrations"
-        description="Connect QuickBooks or Xero to publish reviewed draft bills."
       />
       <div className="max-w-3xl space-y-6">
         <AccountingConnectionsSection isOwner={isOwner} workspaceId={activeWorkspace?.id} />

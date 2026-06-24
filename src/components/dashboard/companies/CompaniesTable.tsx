@@ -145,14 +145,7 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
           ) : (
             <EmptyState
               icon={<Building2 />}
-              eyebrow="Start here"
               title="Add your first client"
-              description="Clients keep source files, review work, exports, and draft bills separate."
-              steps={[
-                <>Add the client you are working on.</>,
-                <>Open the client and upload a mixed stack.</>,
-                <>Review flags before you export or publish.</>,
-              ]}
               action={<AddCompanyDialog workspaceId={workspaceId} onCreated={() => void load()} />}
               className="min-h-[340px]"
               compact

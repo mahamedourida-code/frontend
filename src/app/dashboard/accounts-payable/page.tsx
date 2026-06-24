@@ -1212,9 +1212,6 @@ function AccountsPayableContent() {
                           </h3>
                           {!items.length ? (
                             <div className="mt-4 flex w-full max-w-2xl flex-col items-center gap-4">
-                              <p className="max-w-xl text-sm leading-6 text-muted-foreground">
-                                Reviewed invoice batches appear here for coding and a final check before you publish unpaid draft bills to QuickBooks or Xero.
-                              </p>
                               <WorkspaceStageStrip activeStage="output" />
                               <Button asChild variant="glossy" size="sm" className={workspacePrimaryButton}>
                                 <Link href="/dashboard/client#upload-files">
@@ -1328,7 +1325,6 @@ function AccountsPayableContent() {
               tone="active"
               symbol="code-map-to-account"
               title="Prepare draft bill"
-              hint={`Code the supplier, account, and VAT, then publish to ${destinationName}.`}
               contentClassName="p-0"
             >
             <CardContent className="p-4 sm:p-5">

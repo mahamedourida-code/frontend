@@ -48,7 +48,6 @@ export default function DashboardPage() {
       <div className="space-y-8">
         <PageHeader
           title="Clients"
-          description="Start with a client, then upload a stack for review."
           className="mb-0"
         />
         {hasClients !== null ? (

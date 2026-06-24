@@ -107,9 +107,6 @@ export function WorkspaceFirstRunGuide({
         <h2 id="workspace-first-run-title" className="mt-1 text-lg font-semibold text-[var(--workspace-ink)]">
           Take one stack from files to reviewed output
         </h2>
-        <p className="mt-1 text-sm leading-5 text-muted-foreground">
-          AxLiner keeps collection, review, and accounting output in one client workflow.
-        </p>
       </div>
 
       <ol className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4" aria-label="Workspace workflow">

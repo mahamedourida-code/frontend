@@ -110,7 +110,6 @@ export default function GuidePage() {
     <DashboardShell activeItem="guide" title="Getting started" user={user} showBack={false}>
       <PageHeader
         title="Getting started"
-        description="Set up the path from a folder of source documents to reviewed accounting output."
         actions={(
           <div className="flex flex-wrap items-center gap-2">
             <Button asChild variant="surface">

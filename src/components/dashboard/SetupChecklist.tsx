@@ -300,11 +300,6 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
             <h2 className="text-[15px] font-semibold tracking-tight text-foreground">
               {allDone ? "Setup complete" : "Finish setting up"}
             </h2>
-            <p className="mt-1 text-sm text-foreground">
-              {allDone
-                ? "Every essential is configured. You're ready to run stacks end to end."
-                : "Complete these to get the most out of stack review and publishing."}
-            </p>
           </div>
           <StatusBadge tone={allDone ? "success" : "info"}>
             {doneCount} of {totalCount} done

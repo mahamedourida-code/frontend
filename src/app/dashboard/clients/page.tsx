@@ -109,7 +109,6 @@ export default function ClientsPage() {
       <div className="max-w-4xl space-y-6">
         <PageHeader
           title="Clients"
-          description="Each client is its own workspace, inbox, and accounting connection."
           actions={
             <Button variant="glossy" size="sm" onClick={() => setAddOpen(true)}>
               <Plus className="size-4" />
@@ -137,9 +136,7 @@ export default function ClientsPage() {
           ) : clients.length === 0 ? (
             <EmptyState
               icon={<Building2 />}
-              eyebrow="Clients"
               title="No clients yet"
-              description="Add your first client to start collecting their documents."
               action={
                 <Button variant="surface" size="sm" onClick={() => setAddOpen(true)}>
                   <Plus className="size-4" />

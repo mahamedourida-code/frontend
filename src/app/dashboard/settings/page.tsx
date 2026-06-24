@@ -768,7 +768,6 @@ function SettingsContent() {
                   title="Vendor memory"
                   icon={<Store />}
                   actions={<StatusBadge tone="warning">Owner only</StatusBadge>}
-                  hint="Saved after confirmed invoice or receipt review."
                   contentClassName={vendorRules.length === 0 ? "p-0 sm:p-0" : "space-y-4"}
                 >
                   {vendorRulesLoading ? (

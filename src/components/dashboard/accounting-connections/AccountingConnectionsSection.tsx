@@ -196,7 +196,6 @@ export function AccountingConnectionsSection({
       <WorkspaceSection
         icon={<Target />}
         title="Publishing destination"
-        hint="Where reviewed draft bills are created — change it per workspace."
       >
         <div className="grid gap-4 sm:grid-cols-2">
           {providers.map(provider => {

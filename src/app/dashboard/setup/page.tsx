@@ -45,7 +45,6 @@ function SetupContent() {
     <DashboardShell activeItem="setup" title="Setup" user={user}>
       <PageHeader
         title="Setup"
-        description="Everything to configure in one place. Each item links to where it lives."
       />
       <div className="max-w-3xl text-black">
         <SetupChecklist workspace={activeWorkspace} />
