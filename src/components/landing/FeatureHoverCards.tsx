@@ -24,13 +24,13 @@ function HoverCard({ card, index, surface }: { card: SolutionCard; index: number
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: index * 0.055 }}
     >
-      <div className="group relative h-[600px] overflow-hidden">
+      <div className="group relative h-[440px] overflow-hidden">
         {/* ── Image card — fills cell, slides DOWN + shrinks on hover ── */}
         <div className={cn(
           "absolute inset-0 overflow-hidden rounded-2xl ring-1 ring-black/10",
           surface,
           "transition-transform duration-[460ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]",
-          "origin-top group-hover:translate-y-[150px] group-hover:scale-[0.92]",
+          "origin-top group-hover:translate-y-[120px] group-hover:scale-[0.92]",
         )}>
           <img
             src={card.asset}

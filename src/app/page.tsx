@@ -548,8 +548,8 @@ export default function Home() {
                   Turn every{" "}
                   <TypewriterWord
                     words={["invoice", "receipt", "bank statement", "handwritten table", "expense report"]}
-                    className="rounded-lg bg-[#317cff]/12 px-2 font-medium text-[var(--landing-blue)]"
-                    caretClassName="bg-[var(--landing-blue)]"
+                    className="rounded-md border border-black bg-black px-2 font-bold text-white"
+                    caretClassName="bg-white"
                   />
                 </span>
                 <span className="block">
@@ -685,7 +685,7 @@ export default function Home() {
       </main>
 
       {/* ── Footer — Descript dark-footer recipe, recolored to black ── */}
-      <footer className="relative z-10 bg-black text-white">
+      <footer className="relative z-10 bg-[#23384a] text-white">
         <div className="mx-auto max-w-[1200px] px-4 pt-16 pb-10 sm:px-6 lg:px-8 lg:pt-20">
           {/* Logo + contact + social row */}
           <div className="flex flex-col gap-8 pb-10 sm:flex-row sm:items-start sm:justify-between">
@@ -694,13 +694,6 @@ export default function Home() {
                 <AppLogo className="h-11 w-auto invert" />
               </NextLink>
               <div className="space-y-3">
-                <div>
-                  <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--landing-blue)]">Headquarters</p>
-                  <address className="mt-2 text-[15px] font-semibold not-italic leading-relaxed text-white">
-                    Rue du Lac de Constance<br />
-                    Tunis, Tunisia, 13310, TN
-                  </address>
-                </div>
                 <div>
                   <p className="text-sm font-bold uppercase tracking-[0.16em] text-[var(--landing-blue)]">Email</p>
                   <a

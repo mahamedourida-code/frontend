@@ -89,7 +89,7 @@ function OutcomeStat({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.5, ease: easeOut, delay: index * 0.08 }}
-      className="text-center lg:text-left"
+      className="flex flex-col rounded-2xl bg-[#efefef] p-8 text-left"
     >
       <dd
         ref={ref as Ref<HTMLDivElement>}
@@ -98,6 +98,7 @@ function OutcomeStat({
         {stat.format(value)}
       </dd>
       <dt className="mt-3 text-[15px] font-bold text-neutral-950">{stat.label}</dt>
+      <p className="mt-1.5 text-[13px] font-medium text-neutral-950">{stat.caption}</p>
     </motion.div>
   )
 }
@@ -135,7 +136,7 @@ export function OutcomeStats() {
         </motion.div>
 
         {/* ── The four outcome counters — monochrome proof band ── */}
-        <dl className="grid grid-cols-1 gap-y-12 rounded-3xl bg-white px-8 py-12 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.08)] ring-1 ring-black/[0.08] sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-4 lg:gap-x-6 lg:px-12 lg:py-14">
+        <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STATS.map((stat, index) => (
             <OutcomeStat key={stat.label} stat={stat} index={index} animate={animate} />
           ))}
