@@ -39,13 +39,7 @@ function HoverCard({ card, index, surface }: { card: SolutionCard; index: number
           />
         </div>
 
-        {/* ── Top scrim — keeps the dark title legible over the photo ── */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 z-[5] h-[240px] rounded-t-2xl bg-gradient-to-b from-[#FDFBF7] via-[#FDFBF7]/55 to-transparent"
-        />
-
-        {/* ── Title + description overlay — dark text over scrim ── */}
+        {/* ── Title + description overlay — dark text over the photo ── */}
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 px-6 pt-7">
           <h3 className="text-[26px] font-bold leading-tight tracking-tight text-neutral-950">
             {card.title}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -222,22 +222,74 @@ const folderPanelBodyClass = "ax-body ax-marketing-body mt-5 max-w-[610px] font-
 const folderPanelCtaClass =
   "mt-8 inline-flex h-12 items-center rounded-lg border border-[var(--btn-secondary-border)] bg-[var(--btn-secondary-bg)] px-8 text-[15px] font-bold text-[var(--btn-secondary-fg)] transition-colors hover:bg-[var(--btn-secondary-bg-hover)] hover:text-[var(--btn-secondary-fg-hover)] hover:border-[var(--btn-secondary-bg-hover)]";
 
+// The landing videos are heavy (hero ≈63 MB, folder-drop ≈31 MB, review-board
+// ≈17 MB). Autoplaying all of them with the source attached on first paint
+// floods bandwidth + the main thread and makes the whole page feel sluggish.
+// LazyVideo shows the poster immediately and only attaches the source + starts
+// playback when the element scrolls within ~400px of the viewport.
+type LazyVideoProps = {
+  src: string;
+  poster: string;
+  ariaLabel: string;
+  className: string;
+};
+
+function LazyVideo({ src, poster, ariaLabel, className }: LazyVideoProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [active, setActive] = useState(false);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el || active) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setActive(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "400px 0px" }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [active]);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!active || !el) return;
+    el.load();
+    void el.play().catch(() => {});
+  }, [active]);
+
+  return (
+    <video
+      ref={videoRef}
+      className={className}
+      aria-label={ariaLabel}
+      autoPlay
+      loop
+      muted
+      poster={poster}
+      playsInline
+      preload="none"
+    >
+      {active ? <source src={src} type="video/mp4" /> : null}
+      Your browser does not support the video tag.
+    </video>
+  );
+}
+
 function FolderDropVideo() {
   return (
     <div className="overflow-hidden rounded-[2.25rem] border border-black bg-[#FDFBF7] sm:rounded-[2.75rem]">
-      <video
+      <LazyVideo
         className="block w-full origin-center scale-x-[1.025] scale-y-[1.055]"
-        aria-label="AxLiner folder upload walkthrough"
-        autoPlay
-        loop
-        muted
+        ariaLabel="AxLiner folder upload walkthrough"
         poster="/landing/folder-drop-poster.png"
-        playsInline
-        preload="metadata"
-      >
-        <source src="/landing/folder-drop.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+        src="/landing/folder-drop.mp4"
+      />
     </div>
   );
 }
@@ -245,19 +297,12 @@ function FolderDropVideo() {
 function HeroVideo() {
   return (
     <div className="overflow-hidden rounded-[1.5rem] bg-[#FDFBF7] shadow-[0_40px_90px_-30px_rgba(0,0,0,0.45)] ring-1 ring-black/5 sm:rounded-[2rem]">
-      <video
+      <LazyVideo
         className="block aspect-video w-full origin-center scale-[1.03] object-cover"
-        aria-label="AxLiner product walkthrough"
-        autoPlay
-        loop
-        muted
+        ariaLabel="AxLiner product walkthrough"
         poster="/landing/hero-poster.png"
-        playsInline
-        preload="metadata"
-      >
-        <source src="/landing/hero.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+        src="/landing/hero.mp4"
+      />
     </div>
   );
 }
@@ -265,19 +310,12 @@ function HeroVideo() {
 function ReviewBoardVideo() {
   return (
     <div className="overflow-hidden rounded-[2.25rem] border border-black bg-[#FDFBF7] sm:rounded-[2.75rem]">
-      <video
+      <LazyVideo
         className="block w-full origin-center scale-x-[1.075] scale-y-[1.085]"
-        aria-label="AxLiner review board walkthrough"
-        autoPlay
-        loop
-        muted
+        ariaLabel="AxLiner review board walkthrough"
         poster="/landing/review-board-poster.png"
-        playsInline
-        preload="metadata"
-      >
-        <source src="/landing/review-board.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+        src="/landing/review-board.mp4"
+      />
     </div>
   );
 }

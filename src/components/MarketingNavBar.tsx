@@ -308,9 +308,9 @@ type MarketingNavBarProps = {
 };
 
 export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
-  const isAuthenticated = Boolean(user && !loading);
+  const isAuthenticated = Boolean(user);
 
   useEffect(() => {
     const update = () => setScrolled(window.scrollY > 12);
@@ -399,9 +399,7 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
         </div>
 
         <div className="hidden items-center gap-2.5 lg:flex">
-          {loading ? (
-            <div className="h-11 w-[280px]" aria-hidden="true" />
-          ) : isAuthenticated ? (
+          {isAuthenticated ? (
             <>
               <Button variant="blue" asChild className="h-11 rounded-lg px-5 text-[15px] font-bold">
                 <Link href="/dashboard">Dashboard</Link>
@@ -429,15 +427,11 @@ export function MarketingNavBar({ onSectionClick }: MarketingNavBarProps) {
           )}
         </div>
 
-        {loading ? (
-          <div className="h-10 w-10 lg:hidden" aria-hidden="true" />
-        ) : (
-          <MobileNav
-            isAuthenticated={isAuthenticated}
-            user={user}
-            onSectionClick={onSectionClick}
-          />
-        )}
+        <MobileNav
+          isAuthenticated={isAuthenticated}
+          user={user}
+          onSectionClick={onSectionClick}
+        />
       </div>
     </nav>
   );
