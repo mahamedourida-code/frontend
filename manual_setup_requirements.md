@@ -358,9 +358,17 @@ be fixed from code (it lives in the founder's Google Cloud project), two things 
 users hitting a dead end:
 
 - Disabled the Google provider on Supabase: `PATCH .../config/auth { "external_google_enabled": false }`.
-- Removed the "Continue with Google" button from `AuthScreen.tsx` — sign-in/up is now email-only.
+- Removed the "Continue with Google" button from `AuthScreen.tsx`.
 
-**MANUAL - to bring Google sign-in back:**
+**RESOLVED 2026-06-25:** a new Google OAuth client was created (client id
+`473129584699-96p12tt9ci10nm0rfuouu0ovbkubhse0.apps.googleusercontent.com`), set in Supabase Auth
+(`external_google_enabled=true` + new client id/secret via the Management API), and the "Continue with
+Google" button was restored in `AuthScreen.tsx`. Google sign-in works again. Notes: the client secret
+was shared in plaintext during setup — rotate it in Google Cloud if you want to be safe. Google One Tap
+on the landing stays removed; to re-add it, set `NEXT_PUBLIC_GOOGLE_CLIENT_ID` to the new id in Vercel
+and restore `<GoogleOneTap>` in `page.tsx`.
+
+**If Google breaks again (client deleted), recreate it:**
 
 1. Google Cloud Console → APIs & Services → Credentials → **Create OAuth client ID** (Web application).
 2. Authorized redirect URI: `https://iawkqvdtktnvxqgpupvt.supabase.co/auth/v1/callback`.
