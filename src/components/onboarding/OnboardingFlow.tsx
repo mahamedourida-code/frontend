@@ -248,7 +248,7 @@ function Atmosphere({ step, firstName }: { step: number; firstName: string }) {
             fill
             priority={i === 0}
             sizes="(min-width: 1024px) 45vw, 0vw"
-            className="object-cover object-center"
+            className="object-contain object-top"
           />
         </motion.div>
       ))}
@@ -494,9 +494,9 @@ function FinishStep({
       <Image
         src="/onboarding/finish.png"
         alt=""
-        width={240}
-        height={240}
-        className="mx-auto h-40 w-auto"
+        width={640}
+        height={640}
+        className="mx-auto h-80 w-auto"
         priority
       />
       <h1 className="mt-4 text-[28px] font-semibold leading-tight tracking-tight text-black">
