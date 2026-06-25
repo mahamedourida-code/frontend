@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 
 import { AddCompanyDialog } from "@/components/dashboard/companies/AddCompanyDialog"
+import { WorkspaceArt } from "@/components/dashboard/WorkspaceArt"
 import { Button } from "@/components/ui/button"
 
 type WorkspaceFirstRunGuideProps = {
@@ -102,11 +103,14 @@ export function WorkspaceFirstRunGuide({
         <X className="size-4" />
       </button>
 
-      <div className="pr-10">
-        <p className="text-xs font-semibold uppercase text-[var(--workspace-primary)]">Start here</p>
-        <h2 id="workspace-first-run-title" className="mt-1 text-lg font-semibold text-[var(--workspace-ink)]">
-          Take one stack from files to reviewed output
-        </h2>
+      <div className="flex items-start justify-between gap-4 pr-10">
+        <div>
+          <p className="text-xs font-semibold uppercase text-[var(--workspace-primary)]">Start here</p>
+          <h2 id="workspace-first-run-title" className="mt-1 text-lg font-semibold text-[var(--workspace-ink)]">
+            Take one stack from files to reviewed output
+          </h2>
+        </div>
+        <WorkspaceArt name="bot-welcome" className="hidden h-28 w-auto shrink-0 sm:block" />
       </div>
 
       <ol className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4" aria-label="Workspace workflow">

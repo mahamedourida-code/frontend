@@ -135,6 +135,7 @@ export default function ClientsPage() {
             />
           ) : clients.length === 0 ? (
             <EmptyState
+              art="bot-add-client"
               icon={<Building2 />}
               title="No clients yet"
               action={

@@ -236,6 +236,7 @@ export function BatchesQueue() {
         <WorkspaceSection title="Your stacks" icon={<Layers />}>
           <WorkspaceStageStrip activeStage="review" className="mx-auto max-w-2xl" />
           <EmptyState
+            art="bot-ap-queue"
             icon={<Inbox />}
             title="No review stacks yet"
             action={(

@@ -119,6 +119,7 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
 
         {loadError ? (
           <EmptyState
+            art="bot-error"
             icon={<RefreshCw />}
             title="Clients unavailable"
             description={loadError}
@@ -140,6 +141,7 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
         ) : visibleCompanies.length === 0 ? (
           query ? (
             <EmptyState
+              art="bot-search-empty"
               icon={<Building2 />}
               title="No matching clients"
               description="Try a different search term."
@@ -148,6 +150,7 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
             />
           ) : (
             <EmptyState
+              art="bot-add-client"
               icon={<Building2 />}
               title="Add your first client"
               action={<AddCompanyDialog workspaceId={workspaceId} onCreated={() => void load()} />}

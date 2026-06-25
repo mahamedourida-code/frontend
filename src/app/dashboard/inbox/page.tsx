@@ -757,6 +757,7 @@ export default function EmailInboxPage() {
         >
           {loading ? null : submissions.length === 0 ? (
             <EmptyState
+              art="upload-stack"
               icon={<Inbox />}
               title="No client files yet"
               action={(
@@ -857,6 +858,7 @@ export default function EmailInboxPage() {
         >
           {loading ? null : messages.length === 0 ? (
             <EmptyState
+              art="all-clear"
               icon={<Mail />}
               title="No emailed documents yet"
               action={(

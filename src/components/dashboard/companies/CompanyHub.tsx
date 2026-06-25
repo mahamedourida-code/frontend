@@ -253,6 +253,7 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
       ) : loadError || !company ? (
         <Card className="rounded-xl">
           <EmptyState
+            art="bot-error"
             icon={<Building2 />}
             title="Client unavailable"
             description="This client could not be loaded."

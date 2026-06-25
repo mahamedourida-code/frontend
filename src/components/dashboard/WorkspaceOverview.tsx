@@ -1,16 +1,14 @@
 "use client"
 
-import type { ReactNode } from "react"
-import { Building2, Files, ReceiptText, ScanSearch } from "lucide-react"
-
 import type { CompanySummary } from "@/components/dashboard/companies/company-types"
+import { WorkspaceArt } from "@/components/dashboard/WorkspaceArt"
 import { cn } from "@/lib/utils"
 
 type OverviewCell = {
   key: string
   label: string
   value: number
-  icon: ReactNode
+  art: string
   valueClass: string
   href?: string
   accent?: boolean
@@ -49,7 +47,7 @@ export function WorkspaceOverview({
       key: "review",
       label: "To review",
       value: needsReview,
-      icon: <ScanSearch className="size-5" strokeWidth={1.75} />,
+      art: "review",
       valueClass: needsReview ? "text-[var(--text-attention)]" : "text-foreground",
       href: "#clients",
       accent: needsReview > 0,
@@ -58,7 +56,7 @@ export function WorkspaceOverview({
       key: "drafts",
       label: "Draft bills",
       value: draftBills,
-      icon: <ReceiptText className="size-5" strokeWidth={1.75} />,
+      art: "draft-bills",
       valueClass: draftBills ? "text-[var(--data-money)]" : "text-foreground",
       href: "#clients",
     },
@@ -66,14 +64,14 @@ export function WorkspaceOverview({
       key: "documents",
       label: "Documents",
       value: documents,
-      icon: <Files className="size-5" strokeWidth={1.75} />,
+      art: "documents",
       valueClass: "text-foreground",
     },
     {
       key: "clients",
       label: connected ? `Clients · ${connected} connected` : "Clients",
       value: companies.length,
-      icon: <Building2 className="size-5" strokeWidth={1.75} />,
+      art: "clients",
       valueClass: "text-foreground",
     },
   ]
@@ -89,19 +87,10 @@ export function WorkspaceOverview({
         const body = (
           <>
             <div className="flex items-start justify-between gap-3">
-              <span className="min-w-0 truncate pt-1 text-xs font-semibold text-foreground">{cell.label}</span>
-              <span
-                className={cn(
-                  "flex size-11 shrink-0 items-center justify-center rounded-xl",
-                  cell.accent
-                    ? "bg-[color-mix(in_srgb,var(--text-attention)_12%,white)] text-[var(--text-attention)]"
-                    : "bg-[var(--workspace-soft)] text-[var(--workspace-topbar)]",
-                )}
-              >
-                {cell.icon}
-              </span>
+              <span className="min-w-0 truncate pt-1.5 text-xs font-semibold text-foreground">{cell.label}</span>
+              <WorkspaceArt name={cell.art} className="size-16 shrink-0" />
             </div>
-            <span className={cn("mt-3 block text-3xl font-semibold tabular-nums", cell.valueClass)}>
+            <span className={cn("-mt-1 block text-3xl font-semibold tabular-nums", cell.valueClass)}>
               {formatCount(cell.value)}
             </span>
           </>

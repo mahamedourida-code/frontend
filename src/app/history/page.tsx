@@ -762,6 +762,7 @@ function HistoryContent() {
                 <TableRow>
                   <TableCell colSpan={columns.length} className="py-10">
                     <EmptyState
+                      art="all-clear"
                       icon={<FileSpreadsheet />}
                       title="No documents yet"
                     />
