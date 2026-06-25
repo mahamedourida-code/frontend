@@ -350,6 +350,27 @@ Steps (Supabase Dashboard → Authentication → Emails / SMTP Settings, project
 Until custom SMTP is set, email sign-in works but is fragile (low hourly cap; links may not arrive
 under load).
 
+### Google sign-in - OAuth client was deleted (2026-06-25)
+
+"Continue with Google" returned **"The OAuth client was deleted"** (`deleted_client`) — the Google
+Cloud OAuth client `473129584699-...apps.googleusercontent.com` no longer exists. Because this can't
+be fixed from code (it lives in the founder's Google Cloud project), two things were done to stop
+users hitting a dead end:
+
+- Disabled the Google provider on Supabase: `PATCH .../config/auth { "external_google_enabled": false }`.
+- Removed the "Continue with Google" button from `AuthScreen.tsx` — sign-in/up is now email-only.
+
+**MANUAL - to bring Google sign-in back:**
+
+1. Google Cloud Console → APIs & Services → Credentials → **Create OAuth client ID** (Web application).
+2. Authorized redirect URI: `https://iawkqvdtktnvxqgpupvt.supabase.co/auth/v1/callback`.
+   Authorized JavaScript origin: `https://www.axliner.com`.
+3. Configure the OAuth consent screen (publish it; add the support email + privacy/ToS links).
+4. Put the new Client ID + Secret into Supabase → Authentication → Providers → **Google**, and toggle it
+   on (or `PATCH .../config/auth { external_google_enabled:true, external_google_client_id, external_google_secret }`).
+5. Re-add the Google button in `AuthScreen.tsx` (the `signInWithOAuth({ provider: "google" })` flow and
+   the redirect to `/auth/callback` are still wired in the routes).
+
 ## Rule For Later Prompts
 
 After each later prompt, append a new section here only if it adds a manual provider step, API credential, dashboard configuration, compliance action, or user authorization step. If a prompt needs no manual action, do not add a section.
