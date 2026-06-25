@@ -54,7 +54,6 @@ type Segment = {
   key: PrioritySegmentKey
   label: string
   count: number
-  caption: string
   icon: React.ReactNode
   /** Lead segment reads in amber; the rest stay calm. */
   tone: "attention" | "ready" | "done"
@@ -103,12 +102,6 @@ export function PriorityBoard({
       key: "needs_attention",
       label: "Needs attention",
       count: needsAttention,
-      caption:
-        needsAttention === 0
-          ? "Nothing waiting on you"
-          : needsAttention === 1
-            ? "1 bill needs a human"
-            : `${needsAttention} bills need a human`,
       icon: <AlertTriangle aria-hidden="true" />,
       tone: "attention",
     },
@@ -116,10 +109,6 @@ export function PriorityBoard({
       key: "ready_to_publish",
       label: "Ready to publish",
       count: ready,
-      caption:
-        ready === 0
-          ? "Coded bills land here"
-          : "Coded — one keystroke from the books",
       icon: <Send aria-hidden="true" />,
       tone: "ready",
     },
@@ -127,7 +116,6 @@ export function PriorityBoard({
       key: "published",
       label: "Published",
       count: published,
-      caption: published === 1 ? "1 bill on the books" : `${published} on the books`,
       icon: <CircleCheck aria-hidden="true" />,
       tone: "done",
     },
@@ -141,14 +129,8 @@ export function PriorityBoard({
 
   return (
     <div className="space-y-4">
-      {/* Calm header line: what this view is + the compact destination chip
-          (QuickBooks OR Xero), never a heavy panel. */}
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-        <p className="text-[13px] font-medium text-foreground">
-          Start with what needs attention, then publish what&apos;s ready.
-        </p>
-        <div className="flex shrink-0 items-center gap-2">{destinationChip}</div>
-      </div>
+      {/* Compact destination chip (QuickBooks OR Xero), never a heavy panel. */}
+      <div className="flex flex-wrap items-center justify-end gap-2">{destinationChip}</div>
 
       <div className="grid gap-3 sm:grid-cols-3">
         {segments.map((segment, index) => {
@@ -194,7 +176,6 @@ export function PriorityBoard({
                   </span>
                   <span className="truncate text-sm font-semibold text-foreground">{segment.label}</span>
                 </div>
-                <p className="mt-1.5 text-xs font-medium text-foreground">{segment.caption}</p>
               </div>
 
               {/* Attention sub-breakdown as quiet chips — duplicates / missing

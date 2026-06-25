@@ -33,7 +33,6 @@ import {
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
-import { WorkspaceStageStrip } from "@/components/dashboard/WorkspaceStageStrip"
 import { SegmentedTabs } from "@/components/dashboard/SegmentedTabs"
 import { Field } from "@/components/dashboard/Field"
 import { Symbol } from "@/components/dashboard/Symbol"
@@ -1204,15 +1203,14 @@ function AccountsPayableContent() {
                           <Symbol
                             name="firstsight-draft-bills-empty"
                             size="hero"
-                            className="h-56 w-56 sm:h-72 sm:w-72"
+                            className="h-24 w-24 sm:h-28 sm:w-28"
                             alt=""
                           />
-                          <h3 className="mt-8 text-xl font-medium tracking-tight text-slate-950">
+                          <h3 className="mt-5 text-xl font-medium tracking-tight text-slate-950">
                             {items.length ? "Nothing in this view" : "No draft bills yet"}
                           </h3>
                           {!items.length ? (
                             <div className="mt-4 flex w-full max-w-2xl flex-col items-center gap-4">
-                              <WorkspaceStageStrip activeStage="output" />
                               <Button asChild variant="glossy" size="sm" className={workspacePrimaryButton}>
                                 <Link href="/dashboard/client#upload-files">
                                   Upload an invoice batch

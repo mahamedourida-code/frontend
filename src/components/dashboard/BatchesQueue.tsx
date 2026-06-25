@@ -17,7 +17,6 @@ import { formatDistanceToNow, isToday } from "date-fns"
 
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
-import { WorkspaceStageStrip } from "@/components/dashboard/WorkspaceStageStrip"
 import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
 import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
@@ -234,7 +233,6 @@ export function BatchesQueue() {
         />
       ) : total === 0 ? (
         <WorkspaceSection title="Your stacks" icon={<Layers />}>
-          <WorkspaceStageStrip activeStage="review" className="mx-auto max-w-2xl" />
           <EmptyState
             art="bot-ap-queue"
             icon={<Inbox />}

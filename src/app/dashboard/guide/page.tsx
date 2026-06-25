@@ -138,9 +138,6 @@ export default function GuidePage() {
               <h2 id="welcome-title" className="mt-2 text-2xl font-bold text-[var(--workspace-ink)]">
                 Your first reviewed batch starts here
               </h2>
-              <p className="mt-2 text-[15px] leading-6 text-muted-foreground">
-                Upload the whole folder, correct only what needs attention, then export clean files or publish reviewed draft bills.
-              </p>
             </div>
             <Button asChild variant="surface" size="sm">
               <Link href="/dashboard/setup">
@@ -161,9 +158,6 @@ export default function GuidePage() {
               <h2 id="first-steps-title" className="text-lg font-bold text-[var(--workspace-ink)]">
                 Complete your first workflow
               </h2>
-              <p className="mt-1 text-sm leading-5 text-muted-foreground">
-                Follow these four steps in order. Each action opens the place where the work happens.
-              </p>
             </div>
             <span className="rounded-full border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-3 py-1 text-xs font-semibold text-[var(--workspace-ink)]">
               4 first steps
@@ -222,9 +216,6 @@ export default function GuidePage() {
             <h2 id="workflow-title" className="mt-2 text-xl font-bold text-[var(--workspace-ink)]">
               From source files to reviewed output
             </h2>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              The review step stays visible between extraction and every export or accounting destination.
-            </p>
           </div>
           <div className="mt-5 overflow-x-auto py-2">
             <AxLinerWorkflowDiagram />
@@ -236,9 +227,6 @@ export default function GuidePage() {
             <h2 id="actions-title" className="text-xl font-bold text-[var(--workspace-ink)]">
               Continue in AxLiner
             </h2>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              Go directly to the part of the workflow you need next.
-            </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">

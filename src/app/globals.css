@@ -193,7 +193,7 @@
   .ax-dashboard-content {
     color: var(--workspace-ink);
     font-size: 0.9375rem;
-    font-weight: 500;
+    font-weight: 400;
     line-height: 1.55;
     letter-spacing: 0;
     /* Text buttons (InlineAction tone="brand", .ax-text-action) stay BLUE inside
@@ -234,7 +234,7 @@
   .ax-dashboard-content li.text-muted-foreground,
   .ax-dashboard-content span.text-muted-foreground,
   .ax-dashboard-content div.text-muted-foreground {
-    font-weight: 500;
+    font-weight: 400;
   }
   /* Dashboard headings carry a touch more size & weight than defaults, so the
      app pages read with the same confidence as the marketing typography. */
@@ -259,13 +259,13 @@
     letter-spacing: 0 !important;
   }
   /* Workspace text is black, not grey — hierarchy comes from size/weight, not colour. */
-  .ax-dashboard-content .text-muted-foreground { color: var(--workspace-ink); font-weight: 500; }
+  .ax-dashboard-content .text-muted-foreground { color: var(--workspace-ink); font-weight: 400; }
   .ax-dashboard-content .text-xs.text-muted-foreground,
-  .ax-dashboard-content .text-\[13px\].text-muted-foreground { font-weight: 500; }
-  .ax-dashboard-content .font-bold { font-weight: 700; }
-  .ax-dashboard-content .font-semibold { font-weight: 600; }
+  .ax-dashboard-content .text-\[13px\].text-muted-foreground { font-weight: 400; }
+  .ax-dashboard-content .font-bold { font-weight: 600; }
+  .ax-dashboard-content .font-semibold { font-weight: 500; }
   .ax-dashboard-content .font-medium,
-  .ax-dashboard-content .font-normal { font-weight: 500; }
+  .ax-dashboard-content .font-normal { font-weight: 400; }
 
   /* Workspace text colour grammar: colour data and state, never ordinary prose. */
   .ax-text-action { color: var(--text-action); font-weight: 600; }
@@ -307,7 +307,7 @@
     [data-slot="popover-content"]
   ) {
     font-size: 0.9375rem;
-    font-weight: 500;
+    font-weight: 400;
     line-height: 1.5;
     letter-spacing: 0;
   }
@@ -341,7 +341,7 @@
     [data-slot="select-content"],
     [data-slot="popover-content"]
   ) :is(.font-normal, .font-medium) {
-    font-weight: 500;
+    font-weight: 400;
   }
   body.ax-workspace :is(
     [data-slot="dialog-content"],
@@ -351,7 +351,7 @@
     [data-slot="select-content"],
     [data-slot="popover-content"]
   ) .font-semibold {
-    font-weight: 600;
+    font-weight: 500;
   }
 
   .ax-workspace-panel {

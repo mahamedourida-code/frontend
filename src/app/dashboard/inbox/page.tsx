@@ -14,7 +14,6 @@ import { Field } from "@/components/dashboard/Field"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
-import { WorkspaceStageStrip } from "@/components/dashboard/WorkspaceStageStrip"
 import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
@@ -423,10 +422,6 @@ export default function EmailInboxPage() {
             title="Checking the intake inbox"
             detail="Retrieving client submissions, emailed documents, and watched-folder imports."
           />
-        ) : null}
-
-        {!loading && submissions.length === 0 && messages.length === 0 ? (
-          <WorkspaceStageStrip activeStage="collect" className="max-w-3xl" />
         ) : null}
 
         {/* Management cards — stack on mobile, side-by-side on lg */}

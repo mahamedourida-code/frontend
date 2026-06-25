@@ -42,7 +42,6 @@ import { ConfidenceDot, ConfidenceLegend } from "@/components/dashboard/Confiden
 import { AnomalyChip } from "@/components/dashboard/AnomalyChip"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
-import { WorkspaceStageStrip } from "@/components/dashboard/WorkspaceStageStrip"
 import { Field } from "@/components/dashboard/Field"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { Symbol } from "@/components/dashboard/Symbol"
@@ -2806,11 +2805,7 @@ function BatchStagingBoard({
                     <tr>
                       <td colSpan={12} className="border-b border-[#e4e7ef] px-4 py-14 text-center">
                         <div className="mx-auto flex max-w-3xl flex-col items-center gap-4">
-                          <WorkspaceStageStrip activeStage="collect" />
-                          <div className="space-y-1">
-                            <p className="text-[14px] font-semibold text-[#111827]">Start with a mixed batch</p>
-                            <p className="text-[13px] font-medium text-[#475467]">AxLiner auto-detects each document, then brings flagged fields here for review.</p>
-                          </div>
+                          <p className="text-[14px] font-semibold text-[#111827]">Start with a mixed batch</p>
                           <Button
                             type="button"
                             variant="glossy"
