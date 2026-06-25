@@ -27,6 +27,7 @@ type CompaniesTableProps = {
   workspaceId?: string
   refreshKey?: number
   onCompanyCountChange?: (count: number) => void
+  onCompaniesLoaded?: (companies: CompanySummary[]) => void
 }
 
 type CompanyApi = {
@@ -50,7 +51,7 @@ function CountCell({ value, emphasis = false }: { value: number; emphasis?: bool
   )
 }
 
-export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChange }: CompaniesTableProps) {
+export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChange, onCompaniesLoaded }: CompaniesTableProps) {
   const router = useRouter()
   const [companies, setCompanies] = useState<CompanySummary[]>([])
   const [query, setQuery] = useState("")
@@ -61,6 +62,7 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
     if (!workspaceId) {
       setCompanies([])
       onCompanyCountChange?.(0)
+      onCompaniesLoaded?.([])
       setLoading(false)
       return
     }
@@ -72,13 +74,15 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
       const nextCompanies = companiesFromResponse(response)
       setCompanies(nextCompanies)
       onCompanyCountChange?.(nextCompanies.length)
+      onCompaniesLoaded?.(nextCompanies)
     } catch {
       setCompanies([])
+      onCompaniesLoaded?.([])
       setLoadError("Clients are unavailable right now.")
     } finally {
       setLoading(false)
     }
-  }, [onCompanyCountChange, workspaceId])
+  }, [onCompaniesLoaded, onCompanyCountChange, workspaceId])
 
   useEffect(() => {
     void load()

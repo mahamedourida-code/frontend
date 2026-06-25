@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation"
 
 import { DashboardShell } from "@/components/DashboardShell"
 import { CompaniesTable } from "@/components/dashboard/companies/CompaniesTable"
+import type { CompanySummary } from "@/components/dashboard/companies/company-types"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { WorkspaceFirstRunGuide } from "@/components/dashboard/WorkspaceFirstRunGuide"
+import { WorkspaceOverview } from "@/components/dashboard/WorkspaceOverview"
 import { WorkspaceWalkthrough } from "@/components/dashboard/WorkspaceWalkthrough"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
@@ -18,6 +20,7 @@ export default function DashboardPage() {
   const { activeWorkspace } = useWorkspaces(user)
   const [clientsRefreshKey, setClientsRefreshKey] = useState(0)
   const [hasClients, setHasClients] = useState<boolean | null>(null)
+  const [companies, setCompanies] = useState<CompanySummary[]>([])
   const [tourRequest, setTourRequest] = useState<string | undefined>(undefined)
 
   const handleClientCreated = useCallback(() => {
@@ -66,10 +69,12 @@ export default function DashboardPage() {
             />
           </>
         ) : null}
+        <WorkspaceOverview companies={companies} />
         <CompaniesTable
           workspaceId={activeWorkspace?.id}
           refreshKey={clientsRefreshKey}
           onCompanyCountChange={handleCompanyCountChange}
+          onCompaniesLoaded={setCompanies}
         />
       </div>
     </DashboardShell>
