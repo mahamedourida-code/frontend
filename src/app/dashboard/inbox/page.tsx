@@ -759,7 +759,7 @@ export default function EmailInboxPage() {
             <EmptyState
               art="upload-stack"
               icon={<Inbox />}
-              title="No client files yet"
+              title="No files yet"
               action={(
                 <Button asChild variant="surface" size="sm">
                   <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox#client-upload-links" : "/dashboard/client#upload-files"}>
@@ -860,7 +860,7 @@ export default function EmailInboxPage() {
             <EmptyState
               art="all-clear"
               icon={<Mail />}
-              title="No emailed documents yet"
+              title="No emails yet"
               action={(
                 <Button asChild variant="surface" size="sm">
                   <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox#email-in-address" : "/dashboard/guide"}>

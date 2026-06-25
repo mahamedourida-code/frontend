@@ -24,26 +24,10 @@ type WorkspaceFirstRunGuideProps = {
 }
 
 const steps = [
-  {
-    title: "Add or select a client",
-    detail: "Give every stack a clear home.",
-    icon: Building2,
-  },
-  {
-    title: "Upload a mixed stack",
-    detail: "Combine PDFs, scans, and photos.",
-    icon: FolderUp,
-  },
-  {
-    title: "Review exceptions",
-    detail: "Correct flagged fields and rows.",
-    icon: FileCheck2,
-  },
-  {
-    title: "Export or publish",
-    detail: "Excel/CSV, or draft bills to QuickBooks or Xero.",
-    icon: FileOutput,
-  },
+  { title: "Add a client", icon: Building2 },
+  { title: "Upload a stack", icon: FolderUp },
+  { title: "Review", icon: FileCheck2 },
+  { title: "Export", icon: FileOutput },
 ]
 
 function guideStorageKey(userId: string, workspaceId: string) {
@@ -107,7 +91,7 @@ export function WorkspaceFirstRunGuide({
         <div>
           <p className="text-xs font-semibold uppercase text-[var(--workspace-primary)]">Start here</p>
           <h2 id="workspace-first-run-title" className="mt-1 text-lg font-semibold text-[var(--workspace-ink)]">
-            Take one stack from files to reviewed output
+            Your first stack
           </h2>
         </div>
         <WorkspaceArt name="bot-welcome" className="hidden h-28 w-auto shrink-0 sm:block" />
@@ -138,7 +122,6 @@ export function WorkspaceFirstRunGuide({
                   {step.title}
                   {complete ? <span className="sr-only"> (Completed)</span> : null}
                 </p>
-                <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{step.detail}</p>
               </div>
               {index < steps.length - 1 ? (
                 <ArrowRight className="absolute -right-1 top-2.5 hidden size-4 text-slate-300 xl:block" aria-hidden="true" />

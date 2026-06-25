@@ -58,7 +58,6 @@ export function WorkspaceSection({
   title,
   icon,
   step,
-  hint,
   symbol,
   actions,
   tone = "default",
@@ -89,7 +88,6 @@ export function WorkspaceSection({
       ) : null}
       <div className="min-w-0">
         <h2 className="truncate text-[15px] font-semibold tracking-tight text-foreground">{title}</h2>
-        {hint ? <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{hint}</p> : null}
       </div>
       {collapsible ? (
         <ChevronDown

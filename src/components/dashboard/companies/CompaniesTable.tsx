@@ -152,7 +152,7 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
             <EmptyState
               art="bot-add-client"
               icon={<Building2 />}
-              title="Add your first client"
+              title="Add a client"
               action={<AddCompanyDialog workspaceId={workspaceId} onCreated={() => void load()} />}
               className="min-h-[340px]"
               compact

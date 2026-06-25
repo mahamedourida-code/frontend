@@ -31,12 +31,10 @@ interface EmptyStateProps {
 function EmptyState({
   icon,
   title,
-  description,
   action,
   compact = false,
   className,
   eyebrow,
-  steps,
   art,
 }: EmptyStateProps) {
   return (
@@ -73,24 +71,6 @@ function EmptyState({
       >
         {title}
       </h3>
-      {description ? (
-        <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">{description}</p>
-      ) : null}
-      {steps && steps.length > 0 ? (
-        <ol className="mt-1 flex max-w-sm flex-col gap-2 text-left">
-          {steps.map((step, index) => (
-            <li key={index} className="flex items-start gap-2.5 text-sm text-muted-foreground">
-              <span
-                className="mt-px shrink-0 font-mono text-[0.8rem] font-semibold tabular-nums text-emerald-600"
-                aria-hidden="true"
-              >
-                {index + 1}
-              </span>
-              <span className="leading-snug">{step}</span>
-            </li>
-          ))}
-        </ol>
-      ) : null}
       {action ? <div className={cn(compact ? "mt-1" : "mt-2")}>{action}</div> : null}
     </div>
   )

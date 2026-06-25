@@ -238,7 +238,7 @@ export function BatchesQueue() {
           <EmptyState
             art="bot-ap-queue"
             icon={<Inbox />}
-            title="No review stacks yet"
+            title="No stacks yet"
             action={(
               <Button asChild variant="glossy" size="sm">
                 <Link href="/dashboard/client#upload-files">

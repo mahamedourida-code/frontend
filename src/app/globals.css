@@ -238,8 +238,8 @@
   }
   /* Dashboard headings carry a touch more size & weight than defaults, so the
      app pages read with the same confidence as the marketing typography. */
-  .ax-dashboard-content h1 { font-weight: 700 !important; letter-spacing: 0; }
-  .ax-dashboard-content h2 { font-weight: 700 !important; letter-spacing: 0; }
+  .ax-dashboard-content h1 { font-weight: 600 !important; letter-spacing: 0; }
+  .ax-dashboard-content h2 { font-weight: 600 !important; letter-spacing: 0; }
   .ax-dashboard-content h3 { font-weight: 600 !important; letter-spacing: 0; }
   /* Dashboard type scale — compact and accounting-app-like.
      Scoped to .ax-dashboard-content ONLY so marketing/blog typography is untouched. */
@@ -258,8 +258,8 @@
   .ax-dashboard-content :is(.tracking-tight, .tracking-tighter, [class*="tracking-\["]) {
     letter-spacing: 0 !important;
   }
-  /* Muted subtext: keep hierarchy light inside the workspace. */
-  .ax-dashboard-content .text-muted-foreground { color: var(--workspace-muted); font-weight: 500; }
+  /* Workspace text is black, not grey — hierarchy comes from size/weight, not colour. */
+  .ax-dashboard-content .text-muted-foreground { color: var(--workspace-ink); font-weight: 500; }
   .ax-dashboard-content .text-xs.text-muted-foreground,
   .ax-dashboard-content .text-\[13px\].text-muted-foreground { font-weight: 500; }
   .ax-dashboard-content .font-bold { font-weight: 700; }
@@ -403,7 +403,7 @@
   }
   .ax-status-text {
     font-weight: 500;
-    color: var(--workspace-muted);
+    color: var(--workspace-ink);
   }
   .ax-dashboard-content [data-slot="button"] {
     border-radius: 9999px !important;

@@ -13,19 +13,15 @@ interface PageHeaderProps {
 
 function PageHeader({
   title,
-  description,
   actions,
   breadcrumb,
   className,
 }: PageHeaderProps) {
   return (
-    <div className={cn("mb-8 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between", className)}>
+    <div className={cn("mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between", className)}>
       <div className="min-w-0 flex-1">
         {breadcrumb ? <div className="mb-2 text-sm font-medium text-muted-foreground">{breadcrumb}</div> : null}
         <AnimatedPageTitle title={title} />
-        {description ? (
-          <p className="mt-2 max-w-2xl text-base font-medium leading-relaxed text-muted-foreground">{description}</p>
-        ) : null}
       </div>
       {actions ? (
         <div className="flex flex-wrap items-center gap-3 sm:shrink-0">{actions}</div>
