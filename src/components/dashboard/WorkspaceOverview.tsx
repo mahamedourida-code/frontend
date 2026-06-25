@@ -1,5 +1,8 @@
 "use client"
 
+import type { ReactNode } from "react"
+import { Building2, Files, ReceiptText, ScanSearch } from "lucide-react"
+
 import type { CompanySummary } from "@/components/dashboard/companies/company-types"
 import { cn } from "@/lib/utils"
 
@@ -7,7 +10,7 @@ type OverviewCell = {
   key: string
   label: string
   value: number
-  dotClass: string
+  icon: ReactNode
   valueClass: string
   href?: string
   accent?: boolean
@@ -19,6 +22,10 @@ type OverviewCell = {
  * grammar. "To review" is the amber hero (the magnet for the eye); everything
  * else stays quiet. Counts are aggregated from the client list already loaded
  * by CompaniesTable, so there's no extra request.
+ *
+ * Each card carries a caricature visual in the black / slate-footer / landing-
+ * blue palette. The lucide glyphs below are placeholders — swap them for the
+ * generated art in `/public/workspace-art/*` (specs in `pp.md`) when ready.
  */
 export function WorkspaceOverview({
   companies,
@@ -42,7 +49,7 @@ export function WorkspaceOverview({
       key: "review",
       label: "To review",
       value: needsReview,
-      dotClass: "bg-amber-400",
+      icon: <ScanSearch className="size-5" strokeWidth={1.75} />,
       valueClass: needsReview ? "text-[var(--text-attention)]" : "text-foreground",
       href: "#clients",
       accent: needsReview > 0,
@@ -51,7 +58,7 @@ export function WorkspaceOverview({
       key: "drafts",
       label: "Draft bills",
       value: draftBills,
-      dotClass: "bg-emerald-500",
+      icon: <ReceiptText className="size-5" strokeWidth={1.75} />,
       valueClass: draftBills ? "text-[var(--data-money)]" : "text-foreground",
       href: "#clients",
     },
@@ -59,14 +66,14 @@ export function WorkspaceOverview({
       key: "documents",
       label: "Documents",
       value: documents,
-      dotClass: "bg-sky-500",
+      icon: <Files className="size-5" strokeWidth={1.75} />,
       valueClass: "text-foreground",
     },
     {
       key: "clients",
       label: connected ? `Clients · ${connected} connected` : "Clients",
       value: companies.length,
-      dotClass: "bg-[var(--workspace-primary)]",
+      icon: <Building2 className="size-5" strokeWidth={1.75} />,
       valueClass: "text-foreground",
     },
   ]
@@ -74,34 +81,35 @@ export function WorkspaceOverview({
   return (
     <div
       className={cn(
-        "ax-fade-in grid grid-cols-2 gap-px overflow-hidden rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-border)] sm:grid-cols-4",
+        "ax-fade-in grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-border)] sm:grid-cols-4",
         className,
       )}
     >
       {cells.map((cell) => {
         const body = (
           <>
-            <span className="flex items-center gap-1.5">
+            <div className="flex items-start justify-between gap-3">
+              <span className="min-w-0 truncate pt-1 text-xs font-semibold text-foreground">{cell.label}</span>
               <span
                 className={cn(
-                  "size-1.5 shrink-0 rounded-full",
-                  cell.dotClass,
-                  cell.accent && "ring-2 ring-amber-300/50",
+                  "flex size-11 shrink-0 items-center justify-center rounded-xl",
+                  cell.accent
+                    ? "bg-[color-mix(in_srgb,var(--text-attention)_12%,white)] text-[var(--text-attention)]"
+                    : "bg-[var(--workspace-soft)] text-[var(--workspace-topbar)]",
                 )}
-              />
-              <span className="truncate text-xs font-semibold text-foreground">{cell.label}</span>
-            </span>
-            <span className={cn("mt-2 block text-2xl font-semibold tabular-nums", cell.valueClass)}>
+              >
+                {cell.icon}
+              </span>
+            </div>
+            <span className={cn("mt-3 block text-3xl font-semibold tabular-nums", cell.valueClass)}>
               {formatCount(cell.value)}
             </span>
           </>
         )
 
         const cellClass = cn(
-          "block px-4 py-3.5",
-          cell.accent
-            ? "bg-[color-mix(in_srgb,var(--text-attention)_5%,white)]"
-            : "bg-white",
+          "block px-4 py-4 sm:px-5",
+          cell.accent ? "bg-[color-mix(in_srgb,var(--text-attention)_5%,white)]" : "bg-white",
         )
 
         if (cell.href) {
