@@ -17,10 +17,8 @@ import { CapabilityBoxes } from "@/components/landing/CapabilityBoxes";
 import { useRouter } from "next/navigation";
 
 import NextLink from "next/link";
-import { GoogleOneTap } from "@/components/GoogleOneTap";
 import { MarketingNavBar } from "@/components/MarketingNavBar";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
-import { useAuth } from "@/hooks/useAuth";
 
 const TestimonialsMarquee = dynamic(
   () => import("@/components/landing/TestimonialsMarquee"),
@@ -238,6 +236,7 @@ function LazyVideo({ src, poster, ariaLabel, className }: LazyVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [active, setActive] = useState(false);
 
+  // Attach the source only when the element scrolls near the viewport.
   useEffect(() => {
     const el = videoRef.current;
     if (!el || active) return;
@@ -249,18 +248,37 @@ function LazyVideo({ src, poster, ariaLabel, className }: LazyVideoProps) {
           observer.disconnect();
         }
       },
-      { rootMargin: "400px 0px" }
+      { rootMargin: "300px 0px" }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
   }, [active]);
 
+  // Once the source is attached, play only while actually on screen and pause
+  // when scrolled away — so several heavy videos never decode at the same time.
   useEffect(() => {
     const el = videoRef.current;
     if (!active || !el) return;
+
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+
     el.load();
-    void el.play().catch(() => {});
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.some((entry) => entry.isIntersecting);
+        if (visible) void el.play().catch(() => {});
+        else el.pause();
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
   }, [active]);
 
   return (
@@ -268,7 +286,6 @@ function LazyVideo({ src, poster, ariaLabel, className }: LazyVideoProps) {
       ref={videoRef}
       className={className}
       aria-label={ariaLabel}
-      autoPlay
       loop
       muted
       poster={poster}
@@ -328,13 +345,11 @@ export default function Home() {
   const contrastSectionRef = useRef<HTMLDivElement>(null);
   const securityBandRef = useRef<HTMLDivElement>(null);
 
-  const { user } = useAuth();
-  const isAuthenticated = Boolean(user);
-
   useEffect(() => {
     const topSection = topBackgroundSectionRef.current;
     const topBackground = topBackgroundRef.current;
     if (!topSection || !topBackground) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
 
     let ctx: any;
     let cancelled = false;
@@ -369,6 +384,7 @@ export default function Home() {
   useEffect(() => {
     const contrastSection = contrastSectionRef.current;
     if (!contrastSection) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
 
     let ctx: any;
     let cancelled = false;
@@ -802,7 +818,5 @@ export default function Home() {
           </div>
         </div>
       </footer>
-      
-      <GoogleOneTap enabled={!isAuthenticated} redirectPath="/dashboard/client" />
     </div>
   )}
