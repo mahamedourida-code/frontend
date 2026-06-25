@@ -232,17 +232,14 @@ export function OnboardingFlow() {
 function Atmosphere({ step, firstName }: { step: number; firstName: string }) {
   const second = step >= 3
   return (
-    <aside
-      className="relative hidden overflow-hidden lg:flex"
-      style={{ background: "linear-gradient(150deg, #021b16 0%, #021111 100%)" }}
-    >
-      {/* Two ink landscapes, inverted to faint white linework, crossfading by phase */}
+    <aside className="relative hidden overflow-hidden border-r border-black/10 bg-white lg:flex">
+      {/* The two ink landscapes on white, crossfading by phase */}
       {["/onboarding/backdrop-1.png", "/onboarding/backdrop-2.png"].map((src, i) => (
         <motion.div
           key={src}
           className="absolute inset-0"
           initial={false}
-          animate={{ opacity: (i === 1) === second ? 0.16 : 0 }}
+          animate={{ opacity: (i === 1) === second ? 1 : 0 }}
           transition={{ duration: 0.9, ease: "easeInOut" }}
         >
           <Image
@@ -251,21 +248,23 @@ function Atmosphere({ step, firstName }: { step: number; firstName: string }) {
             fill
             priority={i === 0}
             sizes="(min-width: 1024px) 45vw, 0vw"
-            className="object-cover object-center [filter:invert(1)_grayscale(1)]"
+            className="object-cover object-center"
           />
         </motion.div>
       ))}
-      {/* deepen the corners */}
+      {/* white fade only at the bottom so the birds read boldly up top but the headline stays legible */}
       <div
         className="absolute inset-0"
-        style={{ background: "radial-gradient(120% 90% at 50% 0%, transparent 40%, rgba(2,17,17,0.7) 100%)" }}
+        style={{ background: "linear-gradient(to top, #ffffff 20%, rgba(255,255,255,0) 50%)" }}
       />
 
       <div className="relative z-10 flex w-full flex-col justify-between px-12 py-12">
-        <AppLogo className="h-9 w-auto invert" />
+        <div className="self-start">
+          <AppLogo className="h-8 w-auto" />
+        </div>
 
         <div>
-          <h2 className="max-w-[360px] text-[34px] font-semibold leading-[1.12] tracking-tight text-white">
+          <h2 className="max-w-[360px] text-[34px] font-semibold leading-[1.12] tracking-tight text-black">
             {firstName ? `Welcome aboard, ${firstName}.` : "Throw us the whole folder."}
           </h2>
           <div className="mt-8 flex items-center gap-2">
@@ -274,7 +273,7 @@ function Atmosphere({ step, firstName }: { step: number; firstName: string }) {
                 key={i}
                 className={cn(
                   "h-1.5 rounded-full transition-all duration-300",
-                  i <= Math.min(step, STEP_COUNT - 1) ? "w-7 bg-white" : "w-3 bg-white/25",
+                  i <= Math.min(step, STEP_COUNT - 1) ? "w-7 bg-black" : "w-3 bg-black/20",
                 )}
               />
             ))}
@@ -341,14 +340,6 @@ function WelcomeStep({
   const missing = tried && !answers.firstName.trim()
   return (
     <div>
-      <Image
-        src="/onboarding/welcome.png"
-        alt=""
-        width={120}
-        height={120}
-        className="mb-3 h-16 w-auto"
-        priority
-      />
       <StepHead title="Let's set up your space" subtitle="Just a few quick questions." />
 
       <div className="space-y-5">
@@ -549,7 +540,7 @@ function IconCard({ option, active, onClick }: { option: Option; active: boolean
         </span>
       )}
       {option.icon ? (
-        <Image src={option.icon} alt="" width={48} height={48} className="h-11 w-11 object-contain" />
+        <Image src={option.icon} alt="" width={72} height={72} className="h-16 w-16 object-contain" />
       ) : null}
       <span className="text-[14px] font-semibold leading-tight text-black">{option.label}</span>
     </button>
