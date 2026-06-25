@@ -25,28 +25,24 @@ import { useAuth } from "@/hooks/useAuth"
 const firstTasks = [
   {
     title: "Add a client workspace",
-    description: "Keep each client's source files, review history, and outputs together.",
     href: "/dashboard#clients",
     action: "Open clients",
     icon: Building2,
   },
   {
     title: "Upload a mixed batch",
-    description: "Add invoices, receipts, statements, PDFs, scans, or phone photos in one go.",
     href: "/dashboard/client#upload-files",
     action: "Upload files",
     icon: FolderUp,
   },
   {
     title: "Review flagged exceptions",
-    description: "Correct uncertain fields and rows on the Batch Review Board before output.",
     href: "/dashboard/client",
     action: "Open review",
     icon: ScanSearch,
   },
   {
-    title: "Choose where reviewed work goes",
-    description: "Export Excel or CSV, or connect QuickBooks or Xero for reviewed draft bills.",
+    title: "Choose where work goes",
     href: "/dashboard/client#reviewed-outputs",
     action: "Open outputs",
     icon: PlugZap,
@@ -56,7 +52,6 @@ const firstTasks = [
 const nextActions = [
   {
     title: "Upload documents",
-    description: "Start a batch with mixed file types and let AxLiner classify each document.",
     href: "/dashboard/client#upload-files",
     action: "Upload a batch",
     icon: FolderUp,
@@ -64,7 +59,6 @@ const nextActions = [
   },
   {
     title: "Review exceptions",
-    description: "Work through flagged fields first, then confirm the records that are ready.",
     href: "/dashboard/client",
     action: "Open review board",
     icon: FileCheck2,
@@ -72,7 +66,6 @@ const nextActions = [
   },
   {
     title: "Export reviewed files",
-    description: "Download the reviewed batch as Excel or CSV for the next accounting step.",
     href: "/dashboard/client#reviewed-outputs",
     action: "Open review board",
     icon: FileSpreadsheet,
@@ -80,7 +73,6 @@ const nextActions = [
   },
   {
     title: "Connect accounting",
-    description: "Publish reviewed draft bills to QuickBooks or Xero. AxLiner never pays or auto-approves them.",
     href: "/dashboard/integrations",
     action: "Manage connections",
     icon: PlugZap,
@@ -130,37 +122,29 @@ export default function GuidePage() {
 
       <div className="max-w-[1120px] space-y-10 pb-10">
         <section aria-labelledby="welcome-title">
-          <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="max-w-2xl">
-              <p className="text-xs font-bold uppercase text-[var(--workspace-primary)]">
-                Welcome to AxLiner
-              </p>
-              <h2 id="welcome-title" className="mt-2 text-2xl font-bold text-[var(--workspace-ink)]">
-                Your first reviewed batch starts here
-              </h2>
-            </div>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <h2 id="welcome-title" className="text-2xl font-bold text-[var(--workspace-ink)]">
+              Welcome to AxLiner
+            </h2>
             <Button asChild variant="surface" size="sm">
               <Link href="/dashboard/setup">
-                Open full setup
+                Full setup
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
           </div>
-
         </section>
 
         <section
           aria-labelledby="first-steps-title"
           className="overflow-hidden rounded-md border border-[var(--workspace-border)] bg-card"
         >
-          <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--workspace-border)] px-5 py-5 sm:px-6">
-            <div>
-              <h2 id="first-steps-title" className="text-lg font-bold text-[var(--workspace-ink)]">
-                Complete your first workflow
-              </h2>
-            </div>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--workspace-border)] px-5 py-5 sm:px-6">
+            <h2 id="first-steps-title" className="text-lg font-bold text-[var(--workspace-ink)]">
+              First workflow
+            </h2>
             <span className="rounded-full border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-3 py-1 text-xs font-semibold text-[var(--workspace-ink)]">
-              4 first steps
+              4 steps
             </span>
           </div>
 
@@ -180,10 +164,7 @@ export default function GuidePage() {
                         {index + 1}
                       </span>
                     </span>
-                    <div className="min-w-0">
-                      <h3 className="text-[15px] font-semibold text-[var(--workspace-ink)]">{task.title}</h3>
-                      <p className="mt-1 text-sm leading-5 text-muted-foreground">{task.description}</p>
-                    </div>
+                    <h3 className="min-w-0 text-[15px] font-semibold text-[var(--workspace-ink)]">{task.title}</h3>
                   </div>
                   <Button asChild variant="surface" size="sm" className="self-start sm:self-auto">
                     <Link href={task.href}>
@@ -197,37 +178,32 @@ export default function GuidePage() {
           </ol>
         </section>
 
-        <section aria-label="AxLiner help overview" className="mx-auto w-full max-w-[980px]">
+        <section aria-label="AxLiner help overview" className="mx-auto w-full max-w-[280px]">
           <div className="overflow-hidden rounded-md border border-[var(--workspace-border)] bg-[#dbe7fb]">
             <Image
               src="/helpdoc-banner.png"
               alt="An illustrated AxLiner help workspace with documents, review cards, and connected steps"
               width={913}
               height={451}
-              sizes="(max-width: 1100px) 100vw, 980px"
+              sizes="280px"
               className="h-auto w-full object-cover"
             />
           </div>
         </section>
 
         <section aria-labelledby="workflow-title">
-          <div className="max-w-2xl">
-            <p className="text-xs font-bold uppercase text-[var(--workspace-primary)]">How it works</p>
-            <h2 id="workflow-title" className="mt-2 text-xl font-bold text-[var(--workspace-ink)]">
-              From source files to reviewed output
-            </h2>
-          </div>
+          <h2 id="workflow-title" className="text-xl font-bold text-[var(--workspace-ink)]">
+            How it works
+          </h2>
           <div className="mt-5 overflow-x-auto py-2">
             <AxLinerWorkflowDiagram />
           </div>
         </section>
 
         <section aria-labelledby="actions-title">
-          <div className="mb-5">
-            <h2 id="actions-title" className="text-xl font-bold text-[var(--workspace-ink)]">
-              Continue in AxLiner
-            </h2>
-          </div>
+          <h2 id="actions-title" className="mb-5 text-xl font-bold text-[var(--workspace-ink)]">
+            Continue
+          </h2>
 
           <div className="grid gap-4 sm:grid-cols-2">
             {nextActions.map((action) => {
@@ -236,13 +212,12 @@ export default function GuidePage() {
               return (
                 <article
                   key={action.title}
-                  className="flex min-h-[190px] flex-col rounded-md border border-[var(--workspace-border)] bg-card p-5 sm:p-6"
+                  className="flex flex-col rounded-md border border-[var(--workspace-border)] bg-card p-5 sm:p-6"
                 >
                   <span className={`flex size-10 items-center justify-center rounded-full ${action.iconClassName}`}>
                     <Icon className="size-[18px]" />
                   </span>
                   <h3 className="mt-4 text-base font-semibold text-[var(--workspace-ink)]">{action.title}</h3>
-                  <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">{action.description}</p>
                   <Link
                     href={action.href}
                     className="ax-interactive mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-[var(--workspace-blue)] hover:underline"

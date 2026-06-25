@@ -1,5 +1,7 @@
 "use client"
 
+import { motion, useReducedMotion } from "framer-motion"
+
 import type { CompanySummary } from "@/components/dashboard/companies/company-types"
 import { WorkspaceArt } from "@/components/dashboard/WorkspaceArt"
 import { cn } from "@/lib/utils"
@@ -32,6 +34,8 @@ export function WorkspaceOverview({
   companies: CompanySummary[]
   className?: string
 }) {
+  const reduceMotion = useReducedMotion()
+
   if (companies.length === 0) return null
 
   const needsReview = companies.reduce((sum, company) => sum + company.needsReview, 0)
@@ -79,11 +83,11 @@ export function WorkspaceOverview({
   return (
     <div
       className={cn(
-        "ax-fade-in grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-border)] sm:grid-cols-4",
+        "grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4",
         className,
       )}
     >
-      {cells.map((cell) => {
+      {cells.map((cell, index) => {
         const body = (
           <>
             <div className="flex items-start justify-between gap-3">
@@ -96,30 +100,46 @@ export function WorkspaceOverview({
           </>
         )
 
-        const cellClass = cn(
-          "block px-4 py-4 sm:px-5",
+        const cardClass = cn(
+          "block rounded-xl border border-[var(--workspace-border)] p-4 sm:p-5",
+          "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.8),0_1px_2px_0_rgba(16,24,40,0.06),0_2px_8px_-2px_rgba(16,24,40,0.10)]",
           cell.accent ? "bg-[color-mix(in_srgb,var(--text-attention)_5%,white)]" : "bg-white",
         )
 
+        const entrance = reduceMotion
+          ? undefined
+          : {
+              initial: { opacity: 0, y: 10 },
+              animate: { opacity: 1, y: 0 },
+              transition: {
+                duration: 0.3,
+                delay: index * 0.05,
+                ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+              },
+            }
+
         if (cell.href) {
           return (
-            <a
+            <motion.a
               key={cell.key}
               href={cell.href}
+              {...entrance}
+              whileHover={reduceMotion ? undefined : { y: -3 }}
+              whileTap={reduceMotion ? undefined : { scale: 0.99 }}
               className={cn(
-                cellClass,
-                "ax-interactive outline-none hover:bg-[var(--workspace-row-hover)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--workspace-primary)]",
+                cardClass,
+                "outline-none transition-shadow hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_2px_4px_0_rgba(16,24,40,0.08),0_10px_24px_-6px_rgba(16,24,40,0.18)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]",
               )}
             >
               {body}
-            </a>
+            </motion.a>
           )
         }
 
         return (
-          <div key={cell.key} className={cellClass}>
+          <motion.div key={cell.key} {...entrance} className={cardClass}>
             {body}
-          </div>
+          </motion.div>
         )
       })}
     </div>

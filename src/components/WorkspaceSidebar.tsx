@@ -97,6 +97,9 @@ type SidebarGroup = {
   items: SidebarItem[]
 }
 
+// framer-motion-wrapped Link so nav items can carry quiet hover micro-motion.
+const MotionLink = motion.create(Link)
+
 const EXPANDED_W = 220
 const COLLAPSED_W = 68
 const STORAGE_KEY = "axliner:sidebarCollapsed"
@@ -225,9 +228,12 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
     const isActive = normalizedActiveItem === item.key
     const showDot = Boolean(notifications?.[item.key])
     const count = item.key === "review" ? reviewCount : item.key === "inbox" ? unreadCount : 0
+    const activeSpring = prefersReducedMotion
+      ? { duration: 0 }
+      : { type: "spring" as const, stiffness: 500, damping: 40 }
 
     return (
-      <Link
+      <MotionLink
         key={item.key}
         href={item.href}
         data-workspace-tour={
@@ -243,6 +249,8 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         }
         aria-current={isActive ? "page" : undefined}
         title={collapsed ? item.label : undefined}
+        whileHover={prefersReducedMotion ? undefined : { x: 2 }}
+        transition={prefersReducedMotion ? { duration: 0 } : { type: "spring", stiffness: 600, damping: 30 }}
         className={cn(
           "ax-interactive relative flex items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-black/25",
           collapsed
@@ -251,14 +259,27 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
               ? "h-9 gap-2 px-2.5 text-[14px]"
               : "h-[41px] gap-2.5 px-3 text-[15px]",
           isActive
-            ? "bg-[var(--workspace-blue-soft)] font-semibold text-[var(--workspace-ink)]"
+            ? "font-semibold text-[var(--workspace-ink)]"
             : "font-medium text-[var(--workspace-ink)] hover:bg-white hover:text-[var(--workspace-primary)]",
         )}
       >
-        {isActive && !collapsed ? (
-          <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-[var(--workspace-primary)]" aria-hidden="true" />
+        {isActive ? (
+          <motion.span
+            layoutId="sidebar-active"
+            transition={activeSpring}
+            className="absolute inset-0 rounded-md bg-[var(--workspace-blue-soft)]"
+            aria-hidden="true"
+          />
         ) : null}
-        <span className="relative flex shrink-0 items-center justify-center">
+        {isActive && !collapsed ? (
+          <motion.span
+            layoutId="sidebar-active-bar"
+            transition={activeSpring}
+            className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-[var(--workspace-primary)]"
+            aria-hidden="true"
+          />
+        ) : null}
+        <span className="relative z-10 flex shrink-0 items-center justify-center">
           <Icon
             className={cn(
               nested && !collapsed ? "size-[15px]" : "size-[17px]",
@@ -272,18 +293,18 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
             />
           )}
         </span>
-        {!collapsed && <span className="truncate">{item.label}</span>}
+        {!collapsed && <span className="relative z-10 truncate">{item.label}</span>}
         {!collapsed && count > 0 && (
           <span
             className={cn(
-              "ms-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-semibold leading-none",
+              "relative z-10 ms-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-semibold leading-none",
               isActive ? "bg-[var(--workspace-primary)] text-white" : "bg-[var(--workspace-primary-hover)] text-white",
             )}
           >
             {count > 99 ? "99+" : count}
           </span>
         )}
-      </Link>
+      </MotionLink>
     )
   }
 
@@ -374,9 +395,12 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         </button>
       </div>
 
-      <nav
+      <motion.nav
         aria-label="Sections"
         onClick={handleRailClick}
+        initial={prefersReducedMotion ? false : { opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className={cn("flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-3", collapsed && "cursor-pointer")}
       >
         {PRIMARY_ITEMS.map((item) => renderItem(item))}
@@ -384,7 +408,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         <div className="mt-auto border-t border-[var(--workspace-border)] pt-2">
           {renderGroup(SIDEBAR_GROUPS[SIDEBAR_GROUPS.length - 1])}
         </div>
-      </nav>
+      </motion.nav>
     </motion.aside>
   )
 }

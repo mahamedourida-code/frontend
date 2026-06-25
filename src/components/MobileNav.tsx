@@ -16,6 +16,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
+import { motion, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { AppLogo } from "@/components/AppIcon"
 import { BillingSeal } from "@/components/BillingGlyphs"
@@ -174,6 +175,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
   const router = useRouter()
   const pathname = usePathname()
   const currentHash = useCurrentHash()
+  const prefersReducedMotion = useReducedMotion()
 
   // Close menu on route change
   useEffect(() => {
@@ -409,7 +411,16 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
               )}
 
               {/* Navigation Items */}
-              <div className="flex-1 overflow-y-auto py-3">
+              <motion.div
+                className="flex-1 overflow-y-auto py-3"
+                initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={
+                  prefersReducedMotion
+                    ? { duration: 0.15 }
+                    : { duration: 0.28, ease: [0.16, 1, 0.3, 1], delay: 0.04 }
+                }
+              >
                 <nav className="space-y-1 px-3">
                   {isAuthenticated ? (
                     <>
@@ -590,7 +601,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                   )}
                 </nav>
 
-              </div>
+              </motion.div>
 
               {/* Footer Actions */}
               <div className={cn(

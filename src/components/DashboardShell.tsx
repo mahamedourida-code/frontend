@@ -150,7 +150,12 @@ export function DashboardShell({
       <WorkspaceSidebar activeItem={activeItem} user={user} />
 
       <div className="ax-dashboard-content relative z-10 min-w-0">
-        <header className="sticky top-0 z-40 h-14 border-b border-[#1a2d3d] bg-[var(--workspace-topbar)] text-white">
+        <motion.header
+          initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
+          animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+          transition={prefersReducedMotion ? { duration: 0.15 } : { duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="sticky top-0 z-40 h-14 border-b border-[#1a2d3d] bg-[var(--workspace-topbar)] text-white"
+        >
           <div className="relative flex h-full items-center gap-2.5 px-3 sm:gap-3.5">
             {showBack && (
               <>
@@ -256,7 +261,7 @@ export function DashboardShell({
               {actions}
             </div>
           </div>
-        </header>
+        </motion.header>
 
         <main className={cn("mx-auto w-full max-w-[1440px] px-4 py-5 pb-24 sm:px-5 lg:px-6", contentClassName)}>
           {(eyebrow || title) && (

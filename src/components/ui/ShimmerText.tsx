@@ -39,7 +39,7 @@ export function ShimmerText({
     <span
       data-tone={tone}
       className={cn(
-        "ax-shimmer-text animate-shimmer bg-clip-text text-transparent [background-size:220%_100%] [animation-duration:3.4s] [animation-timing-function:ease-in-out]",
+        "ax-shimmer-text animate-shimmer bg-clip-text text-transparent [background-size:220%_100%] [animation-duration:6s] [animation-timing-function:ease-in-out]",
         className,
       )}
     >
