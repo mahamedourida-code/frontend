@@ -303,6 +303,53 @@ leaving the table with RLS on + zero policies means anon/auth clients can't read
 creating the table, run the Supabase advisors and submit one test lead from `/demo` to confirm a row
 lands.
 
+## Auth - Email Sign-In / Sign-Up (Magic Link + OTP)
+
+### What broke (2026-06-25)
+
+Production sign-in/sign-up was fully down. Live auth logs on `https://www.axliner.com` showed
+`error_code: email_provider_disabled` ("422: Email logins are disabled") and `error_code: otp_disabled`
+("422: Signups not allowed for otp") on `POST /otp`. Magic-link is the only working method (Google
+OAuth is separately broken), so this locked everyone out.
+
+### Fixed automatically (no manual action needed for this part)
+
+Root cause was a single flag on the Supabase Auth config: `external_email_enabled = false`. Re-enabled
+via the Management API (CLI was already authenticated + linked to `iawkqvdtktnvxqgpupvt`):
+
+```
+PATCH https://api.supabase.com/v1/projects/iawkqvdtktnvxqgpupvt/config/auth
+{ "external_email_enabled": true, "disable_signup": false }
+```
+
+Confirmed live: `GET https://iawkqvdtktnvxqgpupvt.supabase.co/auth/v1/settings` now returns
+`external.email = true`, `disable_signup = false`. `site_url` stayed `https://www.axliner.com`.
+NOTE: do **not** run `supabase config push` to fix auth — the local `supabase/config.toml` has
+`site_url = http://127.0.0.1:3000`, which would overwrite the production redirect URL and break the
+magic-link callback. Use the Management API (or the dashboard) for surgical auth-config changes.
+
+### MANUAL - configure custom SMTP (do this to keep it from breaking again)
+
+The project has **no custom SMTP** (`smtp_host` empty). It is sending through Supabase's built-in
+email service, which is rate-limited to a handful of messages per hour and is explicitly dev-only —
+this is the most likely reason email got disabled. For a production product you must connect your own
+SMTP/email provider. AxLiner cannot do this for you because it needs your provider's API key + a
+verified sender domain.
+
+Steps (Supabase Dashboard → Authentication → Emails / SMTP Settings, project `iawkqvdtktnvxqgpupvt`):
+
+1. Pick a provider and verify the sending domain (SPF/DKIM): Resend, Postmark, SendGrid, Amazon SES,
+   or similar. Sender should be something like `no-reply@axliner.com`.
+2. Enable **Custom SMTP** and fill in: host, port (587), username, password/API key, sender email
+   (`no-reply@axliner.com`), sender name (`AxLiner`).
+3. Raise **Authentication → Rate Limits → "Emails per hour"** from the built-in default to a real
+   number (e.g. 100+) once custom SMTP is on.
+4. (Optional) Customize the magic-link / confirmation email templates so they're branded.
+5. Keep SMTP credentials in Supabase only — never in Git or `NEXT_PUBLIC_*`.
+
+Until custom SMTP is set, email sign-in works but is fragile (low hourly cap; links may not arrive
+under load).
+
 ## Rule For Later Prompts
 
 After each later prompt, append a new section here only if it adds a manual provider step, API credential, dashboard configuration, compliance action, or user authorization step. If a prompt needs no manual action, do not add a section.

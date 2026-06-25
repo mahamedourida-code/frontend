@@ -129,19 +129,19 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
             </Link>
             <Link
               href={isSignUp ? `/sign-in?next=${encodeURIComponent(nextPath)}` : `/sign-up?next=${encodeURIComponent(nextPath)}`}
-              className="text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+              className="text-sm font-semibold text-foreground underline-offset-4 transition-colors hover:underline"
             >
               {isSignUp ? "Sign in" : "Sign up"}
             </Link>
           </header>
 
-          <div className="mx-auto flex w-full max-w-[390px] flex-1 flex-col justify-center py-12">
+          <div className="mx-auto flex w-full max-w-[410px] flex-1 flex-col justify-center py-12">
             <div>
-              <h1 className="text-2xl font-semibold leading-tight tracking-normal text-foreground">
+              <h1 className="text-[28px] font-semibold leading-tight tracking-tight text-foreground">
                 {isSignUp ? "Create your AxLiner account" : "Sign in to AxLiner"}
               </h1>
 
-              <div className="mt-7 space-y-4">
+              <div className="mt-8 space-y-5">
                 <OAuthButton provider="google" loading={providerLoading} disabled={emailLoading} onClick={handleOAuthSignIn} />
 
                 <div className="relative py-1">
@@ -165,9 +165,9 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
                   </Alert>
                 )}
 
-                <form className="space-y-4" onSubmit={handleEmailSubmit}>
+                <form className="space-y-5" onSubmit={handleEmailSubmit}>
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-sm font-semibold">
+                    <Label htmlFor="email" className="text-[14px] font-semibold">
                       Email address
                     </Label>
                     <Input
@@ -177,17 +177,17 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
                       onChange={(event) => setEmail(event.target.value)}
                       placeholder="name@company.com"
                       autoComplete="email"
-                      className="h-11 rounded-md bg-card text-sm"
+                      className="h-12 rounded-lg border-black/15 bg-card text-[15px]"
                     />
                   </div>
-                  <Button type="submit" className="h-11 w-full rounded-md text-sm font-semibold" disabled={emailLoading || providerLoading !== null}>
+                  <Button type="submit" className="h-12 w-full rounded-lg text-[15px] font-semibold" disabled={emailLoading || providerLoading !== null}>
                     {emailLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     {isSignUp ? "Create account" : "Email me a secure link"}
                   </Button>
                 </form>
               </div>
 
-              <p className="mt-7 text-sm text-muted-foreground">
+              <p className="mt-8 text-sm text-foreground">
                 {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
                 <Link
                   href={isSignUp ? `/sign-in?next=${encodeURIComponent(nextPath)}` : `/sign-up?next=${encodeURIComponent(nextPath)}`}
@@ -249,7 +249,7 @@ function OAuthButton({
     <Button
       type="button"
       variant="outline"
-      className="h-11 w-full rounded-md border-border bg-card text-sm font-semibold"
+      className="h-12 w-full rounded-lg border-black/15 bg-card text-[15px] font-semibold"
       disabled={disabled || loading !== null}
       onClick={() => onClick(provider)}
     >
