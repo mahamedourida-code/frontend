@@ -34,6 +34,24 @@ function getSafeRedirect(request: NextRequest, next: string | null) {
   return fallback
 }
 
+// Send first-time users through onboarding before the workspace.
+async function gateOnboarding(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  request: NextRequest,
+  redirectTo: URL,
+) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (user && !user.user_metadata?.onboarded_at) {
+    const url = new URL("/onboarding", request.url)
+    url.searchParams.set("next", redirectTo.pathname + redirectTo.search)
+    return url
+  }
+  return redirectTo
+}
+
 export async function GET(request: NextRequest) {
   const tokenHash = request.nextUrl.searchParams.get("token_hash")
   const code = request.nextUrl.searchParams.get("code")
@@ -45,7 +63,7 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error) {
-      return NextResponse.redirect(redirectTo)
+      return NextResponse.redirect(await gateOnboarding(supabase, request, redirectTo))
     }
   }
 
@@ -57,7 +75,7 @@ export async function GET(request: NextRequest) {
     })
 
     if (!error) {
-      return NextResponse.redirect(redirectTo)
+      return NextResponse.redirect(await gateOnboarding(supabase, request, redirectTo))
     }
   }
 
