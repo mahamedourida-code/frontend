@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useReducer, useRef, useState, type ChangeEvent, type DragEvent } from "react"
 import {
-  AlertTriangle,
   ArrowRight,
   BookOpen,
   Check,
@@ -39,7 +38,7 @@ import { InlineAction } from "@/components/ui/inline-action"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { BankReconciliationPanel } from "@/components/dashboard/BankReconciliationPanel"
 import { ConfidenceDot, ConfidenceLegend } from "@/components/dashboard/ConfidenceDot"
-import { AnomalyChip } from "@/components/dashboard/AnomalyChip"
+import { AnomalyChip, AnomalyDot } from "@/components/dashboard/AnomalyChip"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { Field } from "@/components/dashboard/Field"
@@ -52,7 +51,12 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { useMotionTokens } from "@/lib/motion"
 import { fieldAttention } from "@/lib/field-attention"
 import { reconciliationTotalCopy } from "@/lib/source-highlight"
-import { getRowConfidenceTier, isHandwrittenDocument } from "@/lib/handwritten"
+import { getRowConfidenceTier, isHandwrittenDocument, type ConfidenceTier } from "@/lib/handwritten"
+import {
+  lineCellConfidence,
+  rawCellConfidence,
+  type CellConfidence,
+} from "@/components/dashboard/conversion/field-confidence"
 import {
   detectInvoiceLanguage,
   invoiceLanguageName,
@@ -1029,6 +1033,59 @@ export function ResultActions({
   // user's explicit choice once they've made one for this document.
   const collapseConfident = onlyUncertain === null ? uncertainCount > 0 : onlyUncertain
   const comparisonColumnCount = Math.max(1, ...comparisonTable.map(row => row.length))
+  // Per-field (per-cell) confidence — the trust layer. Row tiers come from the
+  // existing handwritten signal; the helper degrades to value heuristics when
+  // no field-level data is present. Confident cells stay completely clean.
+  const lineRowTierAt = (rowIndex: number): ConfidenceTier | null =>
+    comparisonHandwritten && comparisonFile ? getRowConfidenceTier(comparisonFile, rowIndex + 1) : null
+  const lineCellInfoAt = (rowIndex: number, cellIndex: number, value: unknown): CellConfidence =>
+    lineCellConfidence(String(value ?? ""), comparisonRowPaths[cellIndex] || "", lineRowTierAt(rowIndex))
+  let uncertainLineCellCount = 0
+  if (comparisonRows) {
+    comparisonRows.rows.forEach((row, rowIndex) => {
+      row.forEach((value, cellIndex) => {
+        if (lineCellInfoAt(rowIndex, cellIndex, value).uncertain) uncertainLineCellCount += 1
+      })
+    })
+  }
+  // Raw extracted table: reuse the pipeline's `uncertain_cells` / `cell_confidence`
+  // when present, else the same heuristics. Header row never counts.
+  const rawUncertainSet = new Set<string>(
+    (comparisonFile?.uncertain_cells || []).map(([r, c]) => `${r}:${c}`),
+  )
+  const rawRowTierAt = (rowIndex: number): ConfidenceTier | null =>
+    comparisonFile && isHandwrittenDocument(comparisonFile) && rowIndex > 0
+      ? getRowConfidenceTier(comparisonFile, rowIndex)
+      : null
+  const rawCellInfoAt = (rowIndex: number, cellIndex: number, value: unknown): CellConfidence =>
+    rawCellConfidence(String(value ?? ""), {
+      flagged: rawUncertainSet.has(`${rowIndex}:${cellIndex}`),
+      rowTier: rawRowTierAt(rowIndex),
+      score: comparisonFile?.cell_confidence?.[rowIndex]?.[cellIndex],
+      isHeader: rowIndex === 0,
+    })
+  let uncertainRawCellCount = 0
+  if (comparisonTable.length) {
+    comparisonTable.forEach((row, rowIndex) => {
+      if (rowIndex === 0) return
+      for (let cellIndex = 0; cellIndex < comparisonColumnCount; cellIndex += 1) {
+        if (rawCellInfoAt(rowIndex, cellIndex, row[cellIndex] || "").uncertain) uncertainRawCellCount += 1
+      }
+    })
+  }
+  // Unified "to check" count for the structured surface (header + line cells).
+  const fieldsToCheck = uncertainCount + uncertainLineCellCount
+  // Focus the next cell that still needs a look, cycling from whatever's focused
+  // now. Drives keyboard-first triage straight to the amber cells.
+  const focusNextUncertainField = () => {
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>("[data-uncertain-cell]"))
+    if (!nodes.length) return
+    const active = document.activeElement as HTMLElement | null
+    const currentIndex = active ? nodes.indexOf(active) : -1
+    const next = nodes[(currentIndex + 1) % nodes.length]
+    next.focus()
+    ;(next as HTMLInputElement).select?.()
+  }
   const editedCount = Object.keys(editedTables).length
   const unresolvedDuplicateCount = safeResultFiles.reduce(
     (total, file) => total + activeDuplicateWarnings(file).length,
@@ -1288,16 +1345,6 @@ export function ResultActions({
     }
   }
 
-  // E — focus the first field that still "needs you" (C3 attention set), so the
-  // reviewer drops straight into the one thing to fix.
-  const focusFirstFlaggedField = () => {
-    const target = document.querySelector<HTMLInputElement>("[data-flagged-field]")
-    if (target) {
-      target.focus()
-      target.select?.()
-    }
-  }
-
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       // ⌘/Ctrl+Enter — confirm: mark the open document ready.
@@ -1331,7 +1378,7 @@ export function ResultActions({
       } else if (key === "e") {
         if (comparisonIndex === null) return
         event.preventDefault()
-        focusFirstFlaggedField()
+        focusNextUncertainField()
       } else if (key === "p") {
         // P — publish. Only the receipt → QuickBooks flow can publish from this
         // view; skip gracefully on anything else (no endpoint to call).
@@ -2151,10 +2198,10 @@ export function ResultActions({
                             focused view and a way back to the full document. */}
                         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-4 py-2.5">
                           <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                            {uncertainCount > 0 ? (
+                            {fieldsToCheck > 0 ? (
                               <>
-                                <span className="inline-block size-1.5 shrink-0 rounded-full bg-amber-400" />
-                                {uncertainCount} of {comparisonFields.length} field{comparisonFields.length === 1 ? "" : "s"} need{uncertainCount === 1 ? "s" : ""} you
+                                <span className="inline-block size-1.5 shrink-0 rounded-full bg-[var(--text-attention)]" />
+                                {fieldsToCheck} field{fieldsToCheck === 1 ? "" : "s"} to check
                               </>
                             ) : (
                               <>
@@ -2163,22 +2210,36 @@ export function ResultActions({
                               </>
                             )}
                           </span>
-                          {uncertainCount > 0 || collapseConfident ? (
-                            <button
-                              type="button"
-                              onClick={() => setOnlyUncertain(!collapseConfident)}
-                              className={cn("inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-[11px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background", workspaceNormalControlClass)}
-                            >
-                              {collapseConfident ? (
-                                <>
-                                  <Eye className="size-3.5" />
-                                  Review full document
-                                </>
-                              ) : (
-                                "Only fields that need you"
-                              )}
-                            </button>
-                          ) : null}
+                          <span className="flex items-center gap-2">
+                            {fieldsToCheck > 0 ? (
+                              <button
+                                type="button"
+                                onMouseDown={(event) => event.preventDefault()}
+                                onClick={focusNextUncertainField}
+                                className={cn("inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-[11px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background", workspaceNormalControlClass)}
+                                aria-label="Jump to the next field that needs a check"
+                              >
+                                <ArrowRight className="size-3.5" />
+                                Check next
+                              </button>
+                            ) : null}
+                            {uncertainCount > 0 || collapseConfident ? (
+                              <button
+                                type="button"
+                                onClick={() => setOnlyUncertain(!collapseConfident)}
+                                className={cn("inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-[11px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background", workspaceNormalControlClass)}
+                              >
+                                {collapseConfident ? (
+                                  <>
+                                    <Eye className="size-3.5" />
+                                    Review full document
+                                  </>
+                                ) : (
+                                  "Only fields that need you"
+                                )}
+                              </button>
+                            ) : null}
+                          </span>
                         </div>
                         <div className="grid gap-px border-b border-border bg-border sm:grid-cols-2">
                           <AnimatePresence initial={false}>
@@ -2237,6 +2298,7 @@ export function ResultActions({
                                   <input
                                     defaultValue={field.value}
                                     data-flagged-field={needsYou && field.path === uncertainFieldPaths[0] ? "" : undefined}
+                                    data-uncertain-cell={needsYou ? "" : undefined}
                                     onBlur={(event) => {
                                       if (event.target.value !== field.value) {
                                         void updateStructuredValue(comparisonFile, [field.path], event.target.value)
@@ -2315,30 +2377,48 @@ export function ResultActions({
                                 {row.map((value, cellIndex) => {
                                   const cellText = String(value || "")
                                   const cellLabel = comparisonRows.columns[cellIndex] || "Cell"
+                                  const cellInfo = lineCellInfoAt(rowIndex, cellIndex, value)
                                   const showCellSource = () => {
                                     if (cellText) setActiveSource({ value: cellText, label: cellLabel })
                                   }
                                   return (
                                   <td
                                     key={cellIndex}
-                                    className="border-b border-[#eef1f6] px-2 py-1.5"
+                                    className={cn(
+                                      "border-b border-[#eef1f6] px-2 py-1.5",
+                                      cellInfo.uncertain && "border-l-2 border-l-[var(--text-attention)]",
+                                    )}
                                     onMouseEnter={showCellSource}
                                     onMouseLeave={() => setActiveSource(null)}
                                     onFocus={showCellSource}
                                   >
-                                    <input
-                                      defaultValue={cellText}
-                                      onBlur={(event) => {
-                                        if (event.target.value !== String(value || "") && comparisonRows.pathRoot && comparisonRowPaths[cellIndex]) {
-                                          void updateStructuredValue(
-                                            comparisonFile,
-                                            [comparisonRows.pathRoot, rowIndex, comparisonRowPaths[cellIndex]],
-                                            event.target.value,
-                                          )
-                                        }
-                                      }}
-                                      className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-[13px] text-[#111827] outline-none focus:border-[var(--workspace-primary)] focus:bg-white focus:ring-2 focus:ring-black/15"
-                                    />
+                                    <span className="flex items-center gap-1">
+                                      <input
+                                        defaultValue={cellText}
+                                        data-uncertain-cell={cellInfo.uncertain ? "" : undefined}
+                                        onBlur={(event) => {
+                                          if (event.target.value !== String(value || "") && comparisonRows.pathRoot && comparisonRowPaths[cellIndex]) {
+                                            void updateStructuredValue(
+                                              comparisonFile,
+                                              [comparisonRows.pathRoot, rowIndex, comparisonRowPaths[cellIndex]],
+                                              event.target.value,
+                                            )
+                                          }
+                                        }}
+                                        className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-[13px] text-[#111827] outline-none focus:border-[var(--workspace-primary)] focus:bg-white focus:ring-2 focus:ring-black/15"
+                                      />
+                                      {cellInfo.uncertain ? (
+                                        <AnomalyDot
+                                          tone="caution"
+                                          withRing={false}
+                                          size={6}
+                                          side="top"
+                                          title={cellInfo.reason?.title ?? "Worth a check"}
+                                          reason={cellInfo.reason?.reason ?? "Confirm this against the source."}
+                                          className="bg-[var(--text-attention)]"
+                                        />
+                                      ) : null}
+                                    </span>
                                   </td>
                                   )
                                 })}
@@ -2418,11 +2498,24 @@ export function ResultActions({
                   {comparisonHandwritten ? (
                     <ConfidenceLegend className="border-b border-[#e4e7ef] bg-[#f8f9fa] px-4 py-2" />
                   ) : null}
-                  {(() => {
-                    const uncertainCellSet = new Set<string>(
-                      (comparisonFile.uncertain_cells || []).map(([r, c]) => `${r}:${c}`)
-                    )
-                    return (
+                  {uncertainRawCellCount > 0 ? (
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#e4e7ef] bg-[var(--button-warm)] px-4 py-2.5">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                        <span className="inline-block size-1.5 shrink-0 rounded-full bg-[var(--text-attention)]" />
+                        {uncertainRawCellCount} cell{uncertainRawCellCount === 1 ? "" : "s"} to check
+                      </span>
+                      <button
+                        type="button"
+                        onMouseDown={(event) => event.preventDefault()}
+                        onClick={focusNextUncertainField}
+                        className={cn("inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-3 text-[11px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background", workspaceNormalControlClass)}
+                        aria-label="Jump to the next cell that needs a check"
+                      >
+                        <ArrowRight className="size-3.5" />
+                        Check next
+                      </button>
+                    </div>
+                  ) : null}
                   <table className="w-full min-w-[680px] border-collapse text-[13px] text-[#111827]">
                     <tbody>
                       {comparisonTable.map((row, rowIndex) => {
@@ -2452,21 +2545,31 @@ export function ResultActions({
                               editingCell.row === rowIndex &&
                               editingCell.col === cellIndex
                             const value = row[cellIndex] || ""
-                            const isUncertain = uncertainCellSet.has(`${rowIndex}:${cellIndex}`)
+                            const cellInfo = rawCellInfoAt(rowIndex, cellIndex, value)
+                            const isUncertain = cellInfo.uncertain && rowIndex !== 0
+                            const focusable = isUncertain && !isEditing && !isTextOutput
 
                             return (
                               <td
                                 key={cellIndex}
+                                tabIndex={focusable ? 0 : undefined}
+                                data-uncertain-cell={focusable ? "" : undefined}
                                 onDoubleClick={() => {
                                   if (!isTextOutput && comparisonKey) {
                                     setEditingCell({ fileKey: comparisonKey, row: rowIndex, col: cellIndex })
                                   }
                                 }}
+                                onKeyDown={(event) => {
+                                  if (focusable && comparisonKey && (event.key === "Enter" || event.key === " ")) {
+                                    event.preventDefault()
+                                    setEditingCell({ fileKey: comparisonKey, row: rowIndex, col: cellIndex })
+                                  }
+                                }}
                                 className={cn(
-                                  "min-w-[120px] border px-3 py-2 text-left",
+                                  "min-w-[120px] border px-3 py-2 text-left outline-none",
                                   rowIndex === 0 ? "border-[#e4e7ef] text-[11px] font-bold uppercase tracking-[0.04em] text-[#475467]" : "font-medium",
-                                  isUncertain && rowIndex !== 0
-                                    ? "border-rose-400 ring-1 ring-rose-300/60"
+                                  isUncertain
+                                    ? "border-[#eef1f6] border-l-2 border-l-[var(--text-attention)] focus-visible:ring-2 focus-visible:ring-black/15"
                                     : "border-[#eef1f6]",
                                 )}
                               >
@@ -2488,17 +2591,16 @@ export function ResultActions({
                                 ) : (
                                   <span className={cn("inline-flex items-center gap-1", !value && "text-[#98a2b3]")}>
                                     {value || " "}
-                                    {isUncertain && rowIndex !== 0 ? (
-                                      <span title="Needs review" className="inline-flex shrink-0">
-                                        <AlertTriangle
-                                          className="text-rose-400"
-                                          size={12}
-                                          aria-label="Needs review"
-                                        />
-                                      </span>
-                                    ) : null}
-                                    {isUncertain && rowIndex !== 0 ? (
-                                      <span className="sr-only">Needs review</span>
+                                    {isUncertain ? (
+                                      <AnomalyDot
+                                        tone="caution"
+                                        withRing={false}
+                                        size={6}
+                                        side="top"
+                                        title={cellInfo.reason?.title ?? "Worth a check"}
+                                        reason={cellInfo.reason?.reason ?? "Confirm this against the source."}
+                                        className="bg-[var(--text-attention)]"
+                                      />
                                     ) : null}
                                   </span>
                                 )}
@@ -2510,8 +2612,6 @@ export function ResultActions({
                       })}
                     </tbody>
                   </table>
-                    )
-                  })()}
                   </>
                 ) : (
                   <div className="flex min-h-[420px] items-center justify-center gap-2 text-sm font-semibold text-muted-foreground">

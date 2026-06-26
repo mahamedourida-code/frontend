@@ -33,6 +33,12 @@ export type ResultFile = {
   review_status?: string
   review_grid?: any[][]
   uncertain_cells?: number[][]
+  /**
+   * Optional per-cell confidence scores aligned to the raw `review_grid`
+   * (0–1 or 0–100). Forward-compatible: consumed by the per-field confidence
+   * layer when the pipeline sends it, ignored (heuristics take over) when absent.
+   */
+  cell_confidence?: number[][]
   certainty?: number
   document_type?: string
   reviewed_data?: Record<string, any>
