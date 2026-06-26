@@ -46,7 +46,7 @@ import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoade
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { Symbol } from "@/components/dashboard/Symbol"
-import { SkeletonTableRow } from "@/components/dashboard/SkeletonCard"
+import { SkeletonRows } from "@/components/dashboard/SkeletonTable"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 
 // Tella-style "definition" shadow used on premium cards / tiles / the table shell.
@@ -792,9 +792,17 @@ function HistoryContent() {
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                Array.from({ length: 5 }).map((_, index) => (
-                  <SkeletonTableRow key={`skeleton-${index}`} columns={columns.length} />
-                ))
+                <SkeletonRows
+                  rows={5}
+                  columns={[
+                    { shape: "checkbox" },
+                    { shape: "thumbnail" },
+                    { shape: "text", width: 180 },
+                    { shape: "text", width: 110 },
+                    { shape: "badge" },
+                    { shape: "pill", width: 96, align: "right" },
+                  ]}
+                />
               ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row, index) => (
                   <motion.tr

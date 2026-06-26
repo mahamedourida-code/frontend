@@ -16,7 +16,7 @@ import {
 import { formatDistanceToNow, isToday } from "date-fns"
 
 import { EmptyState } from "@/components/dashboard/EmptyState"
-import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
+import { SkeletonList } from "@/components/dashboard/SkeletonTable"
 import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
 import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
@@ -221,16 +221,10 @@ export function BatchesQueue() {
         </div>
       ) : null}
 
-      {isLoading ? (
-        <WorkspaceActivityIndicator
-          title="Retrieving the batch register"
-          detail="Collecting stacks that are ready, need review, or are still being read."
-        />
-      ) : refreshing ? (
-        <WorkspaceActivityIndicator
-          title="Refreshing the batch register"
-          detail="Checking for newly completed stacks and review work."
-        />
+      {isLoading || refreshing ? (
+        <WorkspaceSection title="Your stacks" icon={<Layers />} contentClassName="px-2 py-2 sm:px-2">
+          <SkeletonList rows={5} />
+        </WorkspaceSection>
       ) : total === 0 ? (
         <WorkspaceSection title="Your stacks" icon={<Layers />}>
           <EmptyState

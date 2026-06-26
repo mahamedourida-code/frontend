@@ -13,7 +13,7 @@ import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
-import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
+import { SkeletonTable } from "@/components/dashboard/SkeletonTable"
 import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Button } from "@/components/ui/button"
@@ -194,10 +194,13 @@ export default function ClientsPage() {
           contentClassName="p-0"
         >
           {loading ? (
-            <WorkspaceActivityIndicator
-              title="Refreshing clients"
-              detail="Checking accounting connections and client workspace activity."
-              className="m-4 w-auto"
+            <SkeletonTable
+              rows={5}
+              columns={[
+                { header: "Client", shape: "entity", className: "px-4" },
+                { header: "Accounting", shape: "badge", className: "px-4" },
+                { header: "Actions", shape: "actions", align: "right", className: "w-px px-4" },
+              ]}
             />
           ) : clients.length === 0 ? (
             <EmptyState
