@@ -19,11 +19,11 @@ type OverviewCell = {
 }
 
 /**
- * Practice-level triage band for the dashboard home — answers "what needs me
- * now?" in one glance, the way Dext's overview does, but in AxLiner's colour
- * grammar. "To review" is the amber hero (the magnet for the eye); everything
- * else stays quiet. Counts are aggregated from the client list already loaded
- * by CompaniesTable, so there's no extra request.
+ * Quiet reference counts for the dashboard home — the secondary strip that sits
+ * BELOW the HomeAttention lead band. HomeAttention owns the amber "what needs me
+ * / what's aging" hero now, so these cards stay calm on purpose (foreground
+ * values, no amber accent) and never compete with it. Counts are aggregated from
+ * the client list already loaded by CompaniesTable, so there's no extra request.
  *
  * Each card carries a caricature visual in the black / slate-footer / landing-
  * blue palette. The lucide glyphs below are placeholders — swap them for the
@@ -50,14 +50,14 @@ export function WorkspaceOverview({
 
   const cells: OverviewCell[] = [
     {
+      // Quiet on purpose — HomeAttention above owns the amber "what needs me /
+      // what's aging" hero, so this stays a calm reference count.
       key: "review",
       label: "To review",
       value: needsReview,
       art: "review",
-      valueClass: needsReview ? "text-[var(--text-attention)]" : "text-foreground",
+      valueClass: "text-foreground",
       href: "#clients",
-      accent: needsReview > 0,
-      badge: needsReview > 0 ? { tone: "warning", label: "Review" } : undefined,
     },
     {
       key: "drafts",
