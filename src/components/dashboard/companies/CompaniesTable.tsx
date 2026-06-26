@@ -9,8 +9,8 @@ import { Building2, ChevronRight, RefreshCw, Search, Upload } from "lucide-react
 import { AddCompanyDialog } from "@/components/dashboard/companies/AddCompanyDialog"
 import { companiesFromResponse, type CompanySummary } from "@/components/dashboard/companies/company-types"
 import { EmptyState } from "@/components/dashboard/EmptyState"
+import { SkeletonTable } from "@/components/dashboard/SkeletonTable"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
-import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { Card, CardContent } from "@/components/ui/card"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Input } from "@/components/ui/input"
@@ -136,10 +136,22 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
             compact
           />
         ) : loading ? (
-          <WorkspaceActivityIndicator
-            title="Refreshing clients"
-            detail="Checking client activity, review work, and draft bill counts."
-            className="m-4 w-auto"
+          <SkeletonTable
+            rows={6}
+            className="overflow-x-auto"
+            tableClassName="min-w-[1180px]"
+            columns={[
+              { header: "Client", shape: "entity", className: "min-w-[230px] px-4" },
+              { header: "Accounting", shape: "badge" },
+              { header: "Purchases", shape: "text", width: 28, align: "right" },
+              { header: "Receipts", shape: "text", width: 28, align: "right" },
+              { header: "Bank statements", shape: "text", width: 28, align: "right" },
+              { header: "Other", shape: "text", width: 28, align: "right" },
+              { header: "Needs review", shape: "text", width: 28, align: "right" },
+              { header: "Draft bills", shape: "text", width: 28, align: "right" },
+              { header: "Last upload", shape: "text", width: 90, className: "min-w-[130px] px-4" },
+              { header: "Upload", shape: "pill", width: 78, align: "right", className: "px-4" },
+            ]}
           />
         ) : visibleCompanies.length === 0 ? (
           query ? (
