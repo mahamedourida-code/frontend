@@ -3,11 +3,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { motion, useReducedMotion } from "framer-motion"
 import { Building2, ChevronRight, RefreshCw, Search, Upload } from "lucide-react"
 
 import { AddCompanyDialog } from "@/components/dashboard/companies/AddCompanyDialog"
 import { companiesFromResponse, type CompanySummary } from "@/components/dashboard/companies/company-types"
 import { EmptyState } from "@/components/dashboard/EmptyState"
+import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { Card, CardContent } from "@/components/ui/card"
 import { InlineAction } from "@/components/ui/inline-action"
@@ -45,7 +47,7 @@ function formatDate(value: string | null) {
 
 function CountCell({ value, emphasis = false }: { value: number; emphasis?: boolean }) {
   return (
-    <TableCell className={cn("px-4 py-3 text-right tabular-nums", value ? "text-foreground" : "text-muted-foreground", emphasis && value && "font-semibold text-[var(--workspace-warning)]")}>
+    <TableCell className={cn("px-4 py-3 text-right tabular-nums", value ? "text-foreground" : "text-foreground/35", emphasis && value && "font-semibold text-[var(--workspace-warning)]")}>
       {value}
     </TableCell>
   )
@@ -53,6 +55,7 @@ function CountCell({ value, emphasis = false }: { value: number; emphasis?: bool
 
 export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChange, onCompaniesLoaded }: CompaniesTableProps) {
   const router = useRouter()
+  const prefersReducedMotion = useReducedMotion()
   const [companies, setCompanies] = useState<CompanySummary[]>([])
   const [query, setQuery] = useState("")
   const [loading, setLoading] = useState(true)
@@ -95,7 +98,7 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
   }, [companies, query])
 
   return (
-    <Card id="clients" className="ax-workspace-panel scroll-mt-20 overflow-hidden rounded-md py-0">
+    <Card id="clients" className="ax-workspace-panel scroll-mt-20 overflow-hidden rounded-xl py-0">
       <CardContent className="p-0">
         <div className="flex flex-col gap-3 border-b border-[var(--workspace-border)] bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative w-full sm:max-w-sm">
@@ -176,10 +179,14 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {visibleCompanies.map((company) => (
-                  <TableRow
+                {visibleCompanies.map((company, index) => (
+                  <motion.tr
                     key={company.id}
-                    className="ax-interactive cursor-pointer bg-white hover:bg-[var(--workspace-row-hover)]"
+                    data-slot="table-row"
+                    initial={prefersReducedMotion ? false : { opacity: 0, y: 4 }}
+                    animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1], delay: Math.min(index * 0.03, 0.3) }}
+                    className="ax-interactive cursor-pointer border-b border-[var(--workspace-border)] bg-white transition-colors hover:bg-[var(--workspace-row-hover)]"
                     onClick={() => router.push(`/dashboard/companies/${encodeURIComponent(company.id)}`)}
                   >
                     <TableCell className="px-4">
@@ -197,16 +204,16 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
                     </TableCell>
                     <TableCell>
                       {company.accountingConnected ? (
-                        <div>
-                          <span className="inline-flex rounded-md border border-blue-200 bg-white px-2 py-0.5 text-xs font-medium text-[var(--workspace-primary)]">
+                        <div className="flex flex-col gap-1">
+                          <StatusBadge tone="info" className="w-fit">
                             {company.accountingProvider === "xero" ? "Xero" : "QuickBooks"}
-                          </span>
+                          </StatusBadge>
                           {company.accountingCompanyName ? (
-                            <p className="mt-1 max-w-[150px] truncate text-xs text-muted-foreground">{company.accountingCompanyName}</p>
+                            <span className="ax-data-entity max-w-[160px] truncate text-xs">{company.accountingCompanyName}</span>
                           ) : null}
                         </div>
                       ) : (
-                        <span className="text-sm text-muted-foreground">Not connected</span>
+                        <StatusBadge tone="neutral">Not connected</StatusBadge>
                       )}
                     </TableCell>
                     <CountCell value={company.purchases} />
@@ -227,7 +234,7 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
                         </Link>
                       </InlineAction>
                     </TableCell>
-                  </TableRow>
+                  </motion.tr>
                   ))}
               </TableBody>
             </Table>

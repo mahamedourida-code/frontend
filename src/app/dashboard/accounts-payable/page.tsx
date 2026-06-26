@@ -1114,8 +1114,21 @@ function AccountsPayableContent() {
             icon={<TableIcon />}
             title="To review"
             contentClassName="p-0"
-            actions={
-              <details className="relative">
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 sm:px-6">
+              <SegmentedTabs
+                aria-label="Draft bills queue"
+                value={filter}
+                onValueChange={(value) => setFilter(value as QueueFilter)}
+                size="sm"
+                tabs={[
+                  { value: "needs_attention", label: "Needs attention", count: counts.needs_coding + counts.needs_review },
+                  { value: "pending_approval", label: "Awaiting approval", count: counts.pending_approval },
+                  { value: "ready_to_publish", label: "Ready to publish", count: counts.ready_to_publish },
+                  { value: "published", label: "Published", count: counts.published },
+                ]}
+              />
+              <details className="relative shrink-0">
                 <summary
                   className={cn(
                     "ax-interactive flex h-8 cursor-pointer list-none items-center rounded-full border px-3.5 text-[13px] font-medium [&::-webkit-details-marker]:hidden",
@@ -1151,26 +1164,11 @@ function AccountsPayableContent() {
                   })}
                 </div>
               </details>
-            }
-          >
-            <div className="px-5 py-4 sm:px-6">
-              <SegmentedTabs
-                aria-label="Draft bills queue"
-                value={filter}
-                onValueChange={(value) => setFilter(value as QueueFilter)}
-                size="sm"
-                tabs={[
-                  { value: "needs_attention", label: "Needs attention", count: counts.needs_coding + counts.needs_review },
-                  { value: "pending_approval", label: "Awaiting approval", count: counts.pending_approval },
-                  { value: "ready_to_publish", label: "Ready to publish", count: counts.ready_to_publish },
-                  { value: "published", label: "Published", count: counts.published },
-                ]}
-              />
             </div>
 
             <div className="overflow-x-auto border-t border-border">
               <table className={cn("w-full min-w-[1320px] text-left text-xs", workspaceTable)}>
-                <thead className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold uppercase tracking-wider text-foreground">
+                <thead className="border-b border-slate-200 bg-slate-50">
                   <tr>
                     <th className="w-10 px-4 py-3" />
                     <th className="min-w-[180px] px-4 py-3">Supplier</th>
@@ -1251,12 +1249,10 @@ function AccountsPayableContent() {
                                 setActiveId(item.id)
                               }
                             }}
-                            className={cn(
-                              "ax-interactive cursor-pointer bg-white font-normal text-slate-900 hover:bg-slate-50",
-                              isActive && "bg-[var(--workspace-blue-soft)]/70",
-                            )}
+                            data-state={isActive ? "selected" : undefined}
+                            className="ax-interactive cursor-pointer bg-white font-normal text-slate-900"
                           >
-                            <td className="px-4 py-3" onClick={isReady ? event => event.stopPropagation() : undefined}>
+                            <td className="px-4 py-3.5" onClick={isReady ? event => event.stopPropagation() : undefined}>
                               {isReady ? (
                                 <Checkbox
                                   checked={selectedReadyIds.includes(item.id)}
@@ -1277,23 +1273,23 @@ function AccountsPayableContent() {
                                 </AnimatePresence>
                               )}
                             </td>
-                            <td className="max-w-[240px] px-4 py-3">
+                            <td className="max-w-[240px] px-4 py-3.5">
                               <div className="flex items-center gap-2">
                                 <span className="ax-data-entity truncate">{item.draft_data.vendor || "Supplier missing"}</span>
                                 {hasDuplicate ? <span className="size-1.5 shrink-0 rounded-full bg-amber-500" title="Possible duplicate" /> : null}
                                 {missing?.missing ? <span className="size-1.5 shrink-0 rounded-full bg-rose-500" title="Missing information" /> : null}
                               </div>
                             </td>
-                            <td className="ax-data-reference px-4 py-3 font-mono">{ledgerValue(item.draft_data.invoice_number)}</td>
-                            <td className="ax-data-date px-4 py-3">{shortDate(item.draft_data.invoice_date)}</td>
-                            <td className="ax-data-due px-4 py-3">{shortDate(item.draft_data.due_date)}</td>
-                            <td className="max-w-[200px] truncate px-4 py-3">{ledgerValue(item.draft_data.account_category)}</td>
-                            <td className="max-w-[132px] truncate px-4 py-3">{ledgerValue(item.draft_data.tax_code)}</td>
-                            <td className="px-4 py-3 font-mono">{ledgerValue(item.draft_data.currency)}</td>
-                            <td className="px-4 py-3 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.subtotal)}</td>
-                            <td className="px-4 py-3 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.tax_amount)}</td>
-                            <td className="ax-data-money px-4 py-3 text-right font-mono">{ledgerValue(item.draft_data.total)}</td>
-                            <td className="px-4 py-3">
+                            <td className="ax-data-reference px-4 py-3.5 font-mono">{ledgerValue(item.draft_data.invoice_number)}</td>
+                            <td className="ax-data-date px-4 py-3.5">{shortDate(item.draft_data.invoice_date)}</td>
+                            <td className="ax-data-due px-4 py-3.5">{shortDate(item.draft_data.due_date)}</td>
+                            <td className="max-w-[200px] truncate px-4 py-3.5">{ledgerValue(item.draft_data.account_category)}</td>
+                            <td className="max-w-[132px] truncate px-4 py-3.5">{ledgerValue(item.draft_data.tax_code)}</td>
+                            <td className="px-4 py-3.5 font-mono">{ledgerValue(item.draft_data.currency)}</td>
+                            <td className="ax-data-money px-4 py-3.5 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.subtotal)}</td>
+                            <td className="ax-data-money px-4 py-3.5 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.tax_amount)}</td>
+                            <td className="ax-data-money px-4 py-3.5 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.total)}</td>
+                            <td className="px-4 py-3.5">
                               <AnimatePresence mode="popLayout" initial={false}>
                                 <motion.span
                                   key={item.status}
@@ -1301,9 +1297,9 @@ function AccountsPayableContent() {
                                   animate={{ opacity: 1, scale: 1 }}
                                   exit={m.reduced ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
                                   transition={m.tFast}
-                                  className={cn("inline-block text-xs font-medium", statusTextColor[tone])}
+                                  className="inline-flex"
                                 >
-                                  {statusLabel(item.status)}
+                                  <StatusBadge tone={tone}>{statusLabel(item.status)}</StatusBadge>
                                 </motion.span>
                               </AnimatePresence>
                             </td>

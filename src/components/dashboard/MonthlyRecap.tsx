@@ -186,7 +186,7 @@ function RecapStat({ block, animate }: { block: StatBlock; animate: boolean }) {
     <motion.div
       variants={CARD_ITEM}
       className={cn(
-        "relative overflow-hidden rounded-2xl border border-[var(--workspace-popout-border)] bg-card p-5 shadow-none",
+        "relative overflow-hidden rounded-xl border border-[var(--workspace-popout-border)] bg-card p-5 shadow-[0_1px_2px_0_rgba(16,24,40,0.04),0_1px_3px_0_rgba(16,24,40,0.06)]",
         block.hero && "sm:col-span-2",
       )}
     >
@@ -209,12 +209,12 @@ function RecapStat({ block, animate }: { block: StatBlock; animate: boolean }) {
       </div>
       <div
         className={cn(
-          "relative mt-2 font-bold leading-none tracking-tight text-foreground",
-          block.hero ? "text-5xl" : "text-3xl",
+          "relative mt-2 font-semibold leading-none tracking-tight tabular-nums text-foreground",
+          block.hero ? "text-4xl sm:text-5xl" : "text-2xl sm:text-3xl",
         )}
       >
         {unavailable ? (
-          <span className="text-2xl font-semibold text-muted-foreground">{block.fallback ?? "—"}</span>
+          <span className="text-2xl font-semibold text-foreground/70">{block.fallback ?? "—"}</span>
         ) : (
           <CountValue
             target={block.target as number}
@@ -224,7 +224,7 @@ function RecapStat({ block, animate }: { block: StatBlock; animate: boolean }) {
           />
         )}
       </div>
-      <p className="relative mt-2 text-xs font-medium text-muted-foreground">{block.caption}</p>
+      <p className="relative mt-2 text-xs font-medium text-foreground/70">{block.caption}</p>
     </motion.div>
   )
 }
@@ -310,7 +310,7 @@ function RecapBody({ metrics }: { metrics: RecapMetrics }) {
       </div>
 
       <motion.div
-        className="grid gap-3 px-6 py-6 sm:grid-cols-2"
+        className="grid gap-4 px-6 py-6 sm:grid-cols-2"
         variants={CARD_STAGGER}
         initial="hidden"
         animate="show"
@@ -322,7 +322,7 @@ function RecapBody({ metrics }: { metrics: RecapMetrics }) {
 
       {/* Footer — promise line + share */}
       <div className="flex flex-col gap-3 border-t border-border px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs font-medium text-muted-foreground">
+        <p className="text-xs font-medium text-foreground/70">
           Reviewed, never auto-posted.{" "}
           <span className="text-foreground">You stayed in control.</span>
         </p>
@@ -375,7 +375,7 @@ export function MonthlyRecapCard({ className }: { className?: string }) {
         type="button"
         onClick={() => handleOpenChange(true)}
         className={cn(
-          "ax-interactive group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl border border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)] p-5 text-left transition-colors hover:bg-[var(--workspace-popout-hover)]",
+          "ax-interactive group relative flex w-full items-center gap-4 overflow-hidden rounded-xl border border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)] p-5 text-left shadow-[0_1px_2px_0_rgba(16,24,40,0.04),0_1px_3px_0_rgba(16,24,40,0.06)] transition-[background-color,box-shadow] hover:bg-[var(--workspace-popout-hover)] hover:shadow-[0_2px_4px_0_rgba(16,24,40,0.06),0_8px_20px_-6px_rgba(16,24,40,0.14)]",
           className,
         )}
       >
@@ -392,7 +392,7 @@ export function MonthlyRecapCard({ className }: { className?: string }) {
             New
           </p>
           <p className="truncate text-[15px] font-bold text-foreground">This month with AxLiner</p>
-          <p className="truncate text-xs font-medium text-muted-foreground">
+          <p className="truncate text-xs font-medium text-foreground/70">
             Your recap — invoices reviewed, hours saved, ready to share.
           </p>
         </div>
@@ -411,7 +411,7 @@ export function MonthlyRecapCard({ className }: { className?: string }) {
               <span className="flex size-10 items-center justify-center rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-selection-bg)] text-[var(--brand-brown-deep)]">
                 <Sparkles className="size-5 animate-pulse" />
               </span>
-              <DialogTitle className="text-sm font-medium text-muted-foreground">
+              <DialogTitle className="text-sm font-medium text-foreground/70">
                 Gathering your month…
               </DialogTitle>
             </div>

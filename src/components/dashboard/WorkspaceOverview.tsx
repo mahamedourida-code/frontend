@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion"
 
 import type { CompanySummary } from "@/components/dashboard/companies/company-types"
+import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
 import { WorkspaceArt } from "@/components/dashboard/WorkspaceArt"
 import { cn } from "@/lib/utils"
 
@@ -14,6 +15,7 @@ type OverviewCell = {
   valueClass: string
   href?: string
   accent?: boolean
+  badge?: { tone: StatusTone; label: string }
 }
 
 /**
@@ -55,6 +57,7 @@ export function WorkspaceOverview({
       valueClass: needsReview ? "text-[var(--text-attention)]" : "text-foreground",
       href: "#clients",
       accent: needsReview > 0,
+      badge: needsReview > 0 ? { tone: "warning", label: "Review" } : undefined,
     },
     {
       key: "drafts",
@@ -73,10 +76,11 @@ export function WorkspaceOverview({
     },
     {
       key: "clients",
-      label: connected ? `Clients · ${connected} connected` : "Clients",
+      label: "Clients",
       value: companies.length,
       art: "clients",
       valueClass: "text-foreground",
+      badge: connected > 0 ? { tone: "success", label: `${connected} connected` } : undefined,
     },
   ]
 
@@ -90,13 +94,20 @@ export function WorkspaceOverview({
       {cells.map((cell, index) => {
         const body = (
           <>
-            <div className="flex items-start justify-between gap-3">
-              <span className="min-w-0 truncate pt-1.5 text-xs font-semibold text-foreground">{cell.label}</span>
-              <WorkspaceArt name={cell.art} className="size-16 shrink-0" />
+            <div className="flex items-start justify-between gap-2">
+              <span className="min-w-0 truncate pt-0.5 text-xs font-semibold text-foreground">{cell.label}</span>
+              {cell.badge ? (
+                <StatusBadge tone={cell.badge.tone} className="shrink-0">
+                  {cell.badge.label}
+                </StatusBadge>
+              ) : null}
             </div>
-            <span className={cn("-mt-1 block text-3xl font-semibold tabular-nums", cell.valueClass)}>
-              {formatCount(cell.value)}
-            </span>
+            <div className="mt-3 flex items-end justify-between gap-3">
+              <span className={cn("block text-2xl font-semibold tabular-nums sm:text-3xl", cell.valueClass)}>
+                {formatCount(cell.value)}
+              </span>
+              <WorkspaceArt name={cell.art} className="size-14 shrink-0" />
+            </div>
           </>
         )
 

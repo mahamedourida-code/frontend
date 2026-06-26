@@ -104,7 +104,7 @@ export function WorkspaceSection({
     <section
       id={id}
       className={cn(
-        "relative overflow-hidden rounded-xl border border-border bg-card shadow-none",
+        "relative overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_2px_0_rgba(16,24,40,0.04),0_1px_3px_0_rgba(16,24,40,0.06)]",
         toneAccent[tone],
         className,
       )}

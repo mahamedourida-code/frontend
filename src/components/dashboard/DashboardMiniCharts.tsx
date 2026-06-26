@@ -8,6 +8,8 @@ import {
   ResponsiveContainer,
 } from "recharts"
 
+import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
+
 type ProcessingPoint = {
   timestamp: Date
   count: number
@@ -35,9 +37,11 @@ type CardConfig = {
   value: number
   delta: string
   accentClass: string
+  valueClass?: string
   sparkColor: string
   sparkFillId: string
   chartType: "area" | "bar"
+  badge?: { tone: StatusTone; label: string }
 }
 
 function Sparkline({
@@ -105,37 +109,50 @@ function StatCard({
   value,
   delta,
   accentClass,
+  valueClass,
   sparkColor,
   sparkFillId,
   chartType,
+  badge,
   sparkData,
 }: CardConfig & { sparkData: { count: number }[] }) {
   return (
-    <div className="group relative flex overflow-hidden rounded-[14px] border border-border bg-card shadow-none transition-colors duration-200 hover:border-[var(--workspace-selection-border)]">
+    <div className="group relative flex overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_2px_0_rgba(16,24,40,0.04),0_1px_3px_0_rgba(16,24,40,0.06)] transition-shadow duration-200 hover:shadow-[0_2px_4px_0_rgba(16,24,40,0.06),0_8px_20px_-6px_rgba(16,24,40,0.14)]">
       {/* Left accent bar */}
       <div className={`w-1 shrink-0 self-stretch ${accentClass}`} />
 
       {/* Card body */}
-      <div className="flex flex-1 items-center gap-3 p-5">
-        {/* Stats column */}
-        <div className="min-w-0 flex-1">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+      <div className="flex min-w-0 flex-1 flex-col gap-3 p-5">
+        {/* Label + status badge */}
+        <div className="flex items-start justify-between gap-2">
+          <p className="min-w-0 truncate text-xs font-semibold uppercase tracking-wider text-foreground">
             {label}
           </p>
-          <p className="mt-1 text-3xl font-bold tabular-nums leading-none">
-            {value.toLocaleString()}
-          </p>
-          <p className="mt-1.5 text-xs text-muted-foreground">{delta}</p>
+          {badge ? (
+            <StatusBadge tone={badge.tone} className="shrink-0">
+              {badge.label}
+            </StatusBadge>
+          ) : null}
         </div>
 
-        {/* Sparkline — right 40% */}
-        <div className="h-16 shrink-0" style={{ width: "40%" }}>
-          <Sparkline
-            data={sparkData}
-            color={sparkColor}
-            fillId={sparkFillId}
-            type={chartType}
-          />
+        {/* Value + delta paired with sparkline */}
+        <div className="flex items-end justify-between gap-3">
+          <div className="min-w-0">
+            <p className={`text-2xl font-semibold leading-none tabular-nums sm:text-3xl ${valueClass ?? "text-foreground"}`}>
+              {value.toLocaleString()}
+            </p>
+            <p className="mt-1.5 text-xs font-medium text-foreground/70">{delta}</p>
+          </div>
+
+          {/* Sparkline */}
+          <div className="h-12 w-[42%] shrink-0">
+            <Sparkline
+              data={sparkData}
+              color={sparkColor}
+              fillId={sparkFillId}
+              type={chartType}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -166,33 +183,40 @@ export function DashboardMiniCharts({
       sparkColor: "var(--primary)",
       sparkFillId: "fill-total",
       chartType: "area",
+      badge: { tone: "neutral", label: "All time" },
     },
     {
       label: "Successful",
       value: successfulJobs,
       delta: `${successRate}% success rate`,
       accentClass: "bg-emerald-500",
+      valueClass: "text-[var(--text-success)]",
       sparkColor: "#10b981",
       sparkFillId: "fill-success",
       chartType: "area",
+      badge: { tone: "success", label: `${successRate}%` },
     },
     {
       label: "Active stacks",
       value: activeJobs,
       delta: "waiting or reading",
       accentClass: "bg-amber-400",
+      valueClass: activeJobs > 0 ? "text-[var(--text-attention)]" : "text-foreground",
       sparkColor: "#f59e0b",
       sparkFillId: "fill-active",
       chartType: "bar",
+      badge: activeJobs > 0 ? { tone: "processing", label: "Active" } : { tone: "neutral", label: "Idle" },
     },
     {
       label: "Failed",
       value: failedJobs,
       delta: `of ${totalJobs.toLocaleString()} total stacks`,
       accentClass: "bg-rose-500",
+      valueClass: failedJobs > 0 ? "text-[var(--text-danger)]" : "text-foreground",
       sparkColor: "#f43f5e",
       sparkFillId: "fill-failed",
       chartType: "area",
+      badge: failedJobs > 0 ? { tone: "error", label: "Attention" } : { tone: "success", label: "Clean" },
     },
   ]
 

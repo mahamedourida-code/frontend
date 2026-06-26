@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { motion, useReducedMotion } from "framer-motion"
 import { markHistoryItemsDeleted, unmarkHistoryItemsDeleted, isAnyHistoryItemDeleted, subscribeHistoryDeletions } from "@/lib/recent-files-store"
 import {
   ColumnDef,
@@ -48,6 +49,9 @@ import { Symbol } from "@/components/dashboard/Symbol"
 import { SkeletonTableRow } from "@/components/dashboard/SkeletonCard"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 
+// Tella-style "definition" shadow used on premium cards / tiles / the table shell.
+const CARD_SHADOW = "shadow-[0_1px_2px_0_rgba(16,24,40,0.04),0_1px_3px_0_rgba(16,24,40,0.06)]"
+
 function getFileTypeInfo(filename: string | null | undefined) {
   const ext = filename?.split(".").pop()?.toLowerCase()
   if (ext === "pdf") return { Icon: FileText, bg: "bg-rose-500/10", fg: "text-rose-600 dark:text-rose-400" }
@@ -76,6 +80,7 @@ function HistoryContent() {
   const { activeWorkspace } = useWorkspaces(user)
   const { jobs, isLoading, error, refresh } = useHistory()
   const router = useRouter()
+  const prefersReducedMotion = useReducedMotion()
   const searchParams = useSearchParams()
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -132,6 +137,40 @@ function HistoryContent() {
       return true
     })
   }, [jobs, dateFilter, date, clientJobIds, deletedTick])
+
+  // Quick-scan tallies for the stat tiles — derived only, no extra fetching.
+  const stats = React.useMemo(() => {
+    const total = filteredJobs.length
+    const ready = filteredJobs.filter((job) => job.status === "completed" && job.result_url).length
+    const working = filteredJobs.filter((job) => job.status === "processing" || job.status === "queued").length
+    const issues = filteredJobs.filter((job) => job.status === "failed" || job.status === "cancelled").length
+    return { total, ready, working, issues }
+  }, [filteredJobs])
+
+  const statTiles: { key: string; label: string; value: number; valueClass: string; badge: React.ReactNode }[] = [
+    { key: "total", label: "Documents", value: stats.total, valueClass: "text-foreground", badge: null },
+    {
+      key: "ready",
+      label: "Ready",
+      value: stats.ready,
+      valueClass: "text-[var(--data-money)]",
+      badge: stats.ready > 0 ? <StatusBadge tone="success">Export</StatusBadge> : null,
+    },
+    {
+      key: "working",
+      label: "In progress",
+      value: stats.working,
+      valueClass: "text-[var(--text-working)]",
+      badge: stats.working > 0 ? <StatusBadge tone="processing">Working</StatusBadge> : null,
+    },
+    {
+      key: "issues",
+      label: "Issues",
+      value: stats.issues,
+      valueClass: "text-[var(--text-danger)]",
+      badge: stats.issues > 0 ? <StatusBadge tone="error">Failed</StatusBadge> : null,
+    },
+  ]
 
   const handleDownload = async (job: HistoryJob) => {
     try {
@@ -286,13 +325,13 @@ function HistoryContent() {
       ),
       cell: ({ row }) => {
         const rawDate = row.original.saved_at || row.original.created_at
-        if (!rawDate) return <span className="text-xs text-muted-foreground">—</span>
+        if (!rawDate) return <span className="text-sm text-foreground/40">—</span>
         const relative = formatDistanceToNow(new Date(rawDate), { addSuffix: true })
         const absolute = formatDate(rawDate)
         return (
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="cursor-default text-sm text-muted-foreground">{relative}</span>
+              <span className="ax-data-date cursor-default text-sm tabular-nums">{relative}</span>
             </TooltipTrigger>
             <TooltipContent side="top">{absolute}</TooltipContent>
           </Tooltip>
@@ -301,7 +340,7 @@ function HistoryContent() {
     },
     {
       id: "status",
-      header: () => <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</span>,
+      header: () => "Status",
       cell: ({ row }) => {
         const status = row.original.status
         const label = status === "completed" ? "Ready" : (status?.replace(/_/g, " ") || "Unknown")
@@ -546,6 +585,28 @@ function HistoryContent() {
           </div>
         )}
 
+        {/* Stat tiles — quick scan of the stack at a glance */}
+        {!isLoading && filteredJobs.length > 0 && (
+          <div className="mb-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+            {statTiles.map((tile) => (
+              <div
+                key={tile.key}
+                className={cn("flex flex-col gap-3 rounded-xl border bg-card p-4", CARD_SHADOW)}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.055em] text-foreground">
+                    {tile.label}
+                  </span>
+                  {tile.badge}
+                </div>
+                <span className={cn("text-2xl font-semibold leading-none tabular-nums sm:text-3xl", tile.valueClass)}>
+                  {tile.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Export-ready accent — spreadsheets to download, journals to post */}
         {!isLoading && filteredJobs.filter(job => job.status === "completed" && job.result_url).length > 0 && (
           <div className="mb-4 flex items-center gap-4">
@@ -654,7 +715,7 @@ function HistoryContent() {
             {/* Selected files actions */}
             {table.getFilteredSelectedRowModel().rows.length > 0 && (
               <div className="flex items-center gap-1 lg:gap-2">
-                <span className="text-xs lg:text-sm text-muted-foreground">
+                <span className="text-xs font-medium text-foreground lg:text-sm">
                   {table.getFilteredSelectedRowModel().rows.length} selected
                 </span>
                 <Button
@@ -704,15 +765,15 @@ function HistoryContent() {
                 </Button>
               </>
             )}
-            <p className="text-xs lg:text-sm text-muted-foreground">
+            <p className="text-xs font-medium text-foreground lg:text-sm">
               {filteredJobs.length} {filteredJobs.length === 1 ? 'job' : 'jobs'}
             </p>
           </div>
         </div>
 
         {/* Data Table */}
-        <div className="rounded-md border">
-          <Table>
+        <div className={cn("overflow-hidden rounded-xl border bg-card", CARD_SHADOW)}>
+          <Table className="ax-table">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -735,12 +796,16 @@ function HistoryContent() {
                   <SkeletonTableRow key={`skeleton-${index}`} columns={columns.length} />
                 ))
               ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
+                table.getRowModel().rows.map((row, index) => (
+                  <motion.tr
                     key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
+                    data-slot="table-row"
+                    data-state={row.getIsSelected() ? "selected" : undefined}
+                    initial={prefersReducedMotion ? false : { opacity: 0, y: 4 }}
+                    animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1], delay: Math.min(index * 0.03, 0.3) }}
                     className={cn(
-                      "h-12 cursor-pointer transition-colors",
+                      "ax-interactive cursor-pointer border-b border-[var(--workspace-border)] transition-colors hover:bg-[var(--workspace-row-hover)]",
                       focusedRowId === row.id && "bg-accent/40"
                     )}
                     onClick={() => {
@@ -749,14 +814,14 @@ function HistoryContent() {
                     }}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="py-2">
+                      <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
                         )}
                       </TableCell>
                     ))}
-                  </TableRow>
+                  </motion.tr>
                 ))
               ) : (
                 <TableRow>

@@ -1,10 +1,11 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState, type ComponentType } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { motion, useReducedMotion } from "framer-motion"
 import { toast } from "sonner"
-import { ArrowRight, Building2, Plus, Trash2 } from "lucide-react"
+import { ArrowRight, BookCheck, Building2, Link2, Plus, ReceiptText, Trash2 } from "lucide-react"
 
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
@@ -37,9 +38,47 @@ import {
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { companyApi, type CompanySummary } from "@/lib/api-client"
+import { cn } from "@/lib/utils"
+
+const CARD_DEF_SHADOW =
+  "shadow-[0_1px_2px_0_rgba(16,24,40,0.04),0_1px_3px_0_rgba(16,24,40,0.06)]"
+
+function StatCard({
+  label,
+  value,
+  icon: Icon,
+  attention = false,
+}: {
+  label: string
+  value: number
+  icon: ComponentType<{ className?: string }>
+  attention?: boolean
+}) {
+  const needsAttention = attention && value > 0
+  return (
+    <div className={cn("rounded-xl border border-border bg-card p-5", CARD_DEF_SHADOW)}>
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground">{label}</p>
+        {attention ? (
+          <StatusBadge tone={needsAttention ? "warning" : "success"}>
+            {needsAttention ? "Review" : "Clear"}
+          </StatusBadge>
+        ) : (
+          <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-[var(--workspace-primary)]">
+            <Icon className="size-[18px]" />
+          </span>
+        )}
+      </div>
+      <p className={cn("mt-3 text-2xl font-semibold tabular-nums text-foreground sm:text-3xl", needsAttention && "text-[var(--text-attention)]")}>
+        {value}
+      </p>
+    </div>
+  )
+}
 
 export default function ClientsPage() {
   const router = useRouter()
+  const prefersReducedMotion = useReducedMotion()
   const { user, loading: authLoading } = useAuth()
   const { activeWorkspace, isLoading: workspaceLoading } = useWorkspaces(user)
   const workspaceId = activeWorkspace?.id
@@ -52,6 +91,13 @@ export default function ClientsPage() {
   const [creating, setCreating] = useState(false)
 
   const [deleteTarget, setDeleteTarget] = useState<CompanySummary | null>(null)
+
+  const stats = useMemo(() => {
+    const connected = clients.filter(client => client.accounting_connected).length
+    const needsReview = clients.reduce((sum, client) => sum + (client.document_counts?.needs_review ?? 0), 0)
+    const draftBills = clients.reduce((sum, client) => sum + (client.bills ?? 0), 0)
+    return { connected, needsReview, draftBills }
+  }, [clients])
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -117,6 +163,26 @@ export default function ClientsPage() {
           }
         />
 
+        {!loading && clients.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {([
+              { label: "Clients", value: clients.length, icon: Building2 },
+              { label: "Connected", value: stats.connected, icon: Link2 },
+              { label: "To review", value: stats.needsReview, icon: BookCheck, attention: true },
+              { label: "Draft bills", value: stats.draftBills, icon: ReceiptText },
+            ] as Array<{ label: string; value: number; icon: ComponentType<{ className?: string }>; attention?: boolean }>).map((card, index) => (
+              <motion.div
+                key={card.label}
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 6 }}
+                animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1], delay: index * 0.05 }}
+              >
+                <StatCard label={card.label} value={card.value} icon={card.icon} attention={card.attention} />
+              </motion.div>
+            ))}
+          </div>
+        ) : null}
+
         <WorkspaceSection
           icon={<Building2 />}
           title="Clients"
@@ -155,10 +221,14 @@ export default function ClientsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {clients.map(client => (
-                  <TableRow
+                {clients.map((client, index) => (
+                  <motion.tr
                     key={client.id}
-                    className="ax-interactive cursor-pointer bg-card hover:bg-[var(--workspace-row-hover)]"
+                    data-slot="table-row"
+                    initial={prefersReducedMotion ? false : { opacity: 0, y: 4 }}
+                    animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1], delay: Math.min(index * 0.03, 0.3) }}
+                    className="ax-interactive cursor-pointer border-b border-[var(--workspace-border)] bg-card transition-colors hover:bg-[var(--workspace-row-hover)]"
                     onClick={() => router.push(`/dashboard/companies/${client.id}`)}
                   >
                     <TableCell className="px-4 py-3">
@@ -213,7 +283,7 @@ export default function ClientsPage() {
                         </Tooltip>
                       </div>
                     </TableCell>
-                  </TableRow>
+                  </motion.tr>
                 ))}
               </TableBody>
             </Table>

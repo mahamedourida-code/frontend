@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, type ComponentType } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { motion, useReducedMotion } from "framer-motion"
 import {
   ArrowRight,
   BookCheck,
@@ -23,9 +24,10 @@ import { DangerZone } from "@/components/dashboard/DangerZone"
 import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
+import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -100,7 +102,10 @@ function formatDate(value: string | null) {
   }
 }
 
-function SummaryItem({
+const CARD_DEF_SHADOW =
+  "shadow-[0_1px_2px_0_rgba(16,24,40,0.04),0_1px_3px_0_rgba(16,24,40,0.06)]"
+
+function StatCard({
   label,
   value,
   icon: Icon,
@@ -111,15 +116,24 @@ function SummaryItem({
   icon: ComponentType<{ className?: string }>
   attention?: boolean
 }) {
+  const needsAttention = attention && value > 0
   return (
-    <div className="flex min-w-0 items-center gap-3 bg-card px-4 py-3">
-      <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-foreground", attention && value && "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200")}>
-        <Icon className="size-4" />
-      </span>
-      <div className="min-w-0">
-        <p className="truncate text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">{label}</p>
-        <p className={cn("mt-0.5 text-lg font-bold tabular-nums text-foreground", attention && value && "text-amber-700 dark:text-amber-300")}>{value}</p>
+    <div className={cn("rounded-xl border border-border bg-card p-5", CARD_DEF_SHADOW)}>
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground">{label}</p>
+        {attention ? (
+          <StatusBadge tone={needsAttention ? "warning" : "success"}>
+            {needsAttention ? "Review" : "Clear"}
+          </StatusBadge>
+        ) : (
+          <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-[var(--workspace-primary)]">
+            <Icon className="size-[18px]" />
+          </span>
+        )}
       </div>
+      <p className={cn("mt-3 text-2xl font-semibold tabular-nums text-foreground sm:text-3xl", needsAttention && "text-[var(--text-attention)]")}>
+        {value}
+      </p>
     </div>
   )
 }
@@ -128,9 +142,9 @@ function WorkflowRow({ tab, companyId }: { tab: WorkflowTab; companyId: string }
   const Icon = tab.icon
 
   return (
-    <div className="flex flex-col items-start gap-3 px-4 py-4 sm:flex-row sm:items-center">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
-        <Icon className="size-4" />
+    <div className="flex flex-col items-start gap-3 px-5 py-4 sm:flex-row sm:items-center">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-[var(--workspace-primary)]">
+        <Icon className="size-[18px]" />
       </span>
       <div className="min-w-0 flex-1">
         <h2 className="text-sm font-bold text-foreground">{tab.label}</h2>
@@ -148,6 +162,7 @@ function WorkflowRow({ tab, companyId }: { tab: WorkflowTab; companyId: string }
 
 export function CompanyHub({ companyId }: CompanyHubProps) {
   const router = useRouter()
+  const prefersReducedMotion = useReducedMotion()
   const { user, loading: authLoading } = useAuth()
   const [company, setCompany] = useState<CompanySummary | null>(null)
   const [loading, setLoading] = useState(true)
@@ -267,16 +282,25 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
         </Card>
       ) : (
         <div className="space-y-5">
-          <div className="overflow-hidden rounded-xl border border-border bg-border">
-            <div className="grid gap-px sm:grid-cols-2 xl:grid-cols-4">
-              <SummaryItem label="Purchases" value={company.purchases} icon={FileText} />
-              <SummaryItem label="Receipts" value={company.receipts} icon={ReceiptText} />
-              <SummaryItem label="Needs review" value={company.needsReview} icon={BookCheck} attention />
-              <SummaryItem label="Draft bills" value={company.bills} icon={ReceiptText} />
-            </div>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {([
+              { label: "Purchases", value: company.purchases, icon: FileText },
+              { label: "Receipts", value: company.receipts, icon: ReceiptText },
+              { label: "Needs review", value: company.needsReview, icon: BookCheck, attention: true },
+              { label: "Draft bills", value: company.bills, icon: ReceiptText },
+            ] as Array<{ label: string; value: number; icon: ComponentType<{ className?: string }>; attention?: boolean }>).map((card, index) => (
+              <motion.div
+                key={card.label}
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 6 }}
+                animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1], delay: index * 0.05 }}
+              >
+                <StatCard label={card.label} value={card.value} icon={card.icon} attention={card.attention} />
+              </motion.div>
+            ))}
           </div>
 
-          <Card className="divide-y divide-border rounded-xl py-0 shadow-none">
+          <Card className={cn("divide-y divide-border rounded-xl py-0", CARD_DEF_SHADOW)}>
             {WORKFLOW_TABS.map((tab) => (
               <WorkflowRow key={tab.id} tab={tab} companyId={companyId} />
             ))}
