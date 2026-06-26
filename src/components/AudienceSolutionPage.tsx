@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
+import { EditorialPhotoBand } from "@/components/marketing/EditorialPhotoBand";
 import { MarketingFooter } from "@/components/MarketingFooter";
 import { MarketingNavBar } from "@/components/MarketingNavBar";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,36 @@ import {
   getAudienceSolutionBySlug,
 } from "@/lib/audience-solutions";
 
+type AudiencePhoto = { src: string; alt: string };
+
+// Real desks behind each audience — photographed work, not stock-render filler.
+const AUDIENCE_PHOTO: Record<string, AudiencePhoto> = {
+  "solo-bookkeepers": {
+    src: "/photos/pexels-mikhail-nilov-8297034.jpg",
+    alt: "A bookkeeper working through figures by hand beside a calculator and files",
+  },
+  "accounting-practices": {
+    src: "/photos/austin-distel-mpN7xjKQ_Ns-unsplash.jpg",
+    alt: "A practice team reviewing work together at a shared desk",
+  },
+  "mixed-batch-processing": {
+    src: "/photos/kelly-sikkema-M98NRBuzbpc-unsplash.jpg",
+    alt: "A mixed folder of forms, receipts, and notes ready to be processed as one batch",
+  },
+  "client-intake": {
+    src: "/photos/istockphoto-2246330850-612x612.jpg",
+    alt: "A client document being captured with a phone next to a laptop",
+  },
+};
+
+const DEFAULT_AUDIENCE_PHOTO: AudiencePhoto = {
+  src: "/photos/smiling-young-woman-sitting-on-chair-holding-mobil-2023-11-27-04-52-35-utc.webp",
+  alt: "A bookkeeper at her desk reviewing paperwork",
+};
+
 export function AudienceSolutionPage({ solution }: { solution: AudienceSolution }) {
+  const photo = AUDIENCE_PHOTO[solution.slug] ?? DEFAULT_AUDIENCE_PHOTO;
+
   return (
     <div className="ax-marketing-page min-h-screen overflow-hidden bg-[#FDFBF7] text-[#191919]">
       <MarketingNavBar />
@@ -41,6 +71,13 @@ export function AudienceSolutionPage({ solution }: { solution: AudienceSolution 
             </div>
           </div>
         </section>
+
+        <EditorialPhotoBand
+          src={photo.src}
+          alt={photo.alt}
+          caption="Real client paperwork, reviewed by a person before anything reaches the books."
+          priority
+        />
 
         <section className="px-4 py-20 sm:px-6 lg:py-28">
           <div className="mx-auto max-w-[1120px]">

@@ -18,10 +18,10 @@ export default function JpgToExcelPage() {
       }
       intro="Upload the camera photos together. AxLiner reads the documents, rebuilds the rows, and shows exactly what needs review."
       heroImage={{
-        src: "/landing/hero-poster.png",
-        alt: "JPG accounting documents being extracted into the AxLiner review workflow",
-        width: 1280,
-        height: 720,
+        src: "/photos/istockphoto-2273856415-612x612.jpg",
+        alt: "A JPG document being captured with a phone beside a laptop, ready for AxLiner",
+        width: 612,
+        height: 323,
       }}
       sectionTitle={
         <>

@@ -2,10 +2,54 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
+import { EditorialPhotoBand } from "@/components/marketing/EditorialPhotoBand";
 import { MarketingFooter } from "@/components/MarketingFooter";
 import { MarketingNavBar } from "@/components/MarketingNavBar";
 import { Button } from "@/components/ui/button";
 import { POLIVALENT_SOLUTION_IMAGE, type IndustrySolution } from "@/lib/industry-solutions";
+
+type IndustryPhoto = { src: string; alt: string };
+
+// A real desk per industry — photographed source documents, never a render.
+const INDUSTRY_PHOTO: Record<string, IndustryPhoto> = {
+  accounting: {
+    src: "/photos/centre-for-ageing-better-I-1cKK1-bnY-unsplash.jpg",
+    alt: "An accountant working through paperwork at a desk",
+  },
+  banking: {
+    src: "/photos/kelly-sikkema-SiOW0btU0zk-unsplash.jpg",
+    alt: "Statements and forms laid out beside a coffee",
+  },
+  "backoffice-automation": {
+    src: "/photos/istockphoto-1339827194-612x612.jpg",
+    alt: "Two colleagues reviewing records together over a tablet and printouts",
+  },
+  construction: {
+    src: "/photos/istockphoto-1468252136-612x612.jpg",
+    alt: "A small-business owner doing the books at the counter",
+  },
+  "cpg-brands": {
+    src: "/photos/istockphoto-2185212349-612x612.jpg",
+    alt: "A woman reviewing an invoice beside her laptop",
+  },
+  fintech: {
+    src: "/photos/istockphoto-2273856415-612x612.jpg",
+    alt: "A document being captured with a phone next to a laptop",
+  },
+  healthcare: {
+    src: "/photos/istockphoto-2246330850-612x612.jpg",
+    alt: "A paper record being photographed for digitising",
+  },
+  "real-estate": {
+    src: "/photos/smiling-young-woman-sitting-on-chair-holding-mobil-2023-11-27-04-52-35-utc.webp",
+    alt: "A bookkeeper at her desk reviewing paperwork",
+  },
+};
+
+const DEFAULT_INDUSTRY_PHOTO: IndustryPhoto = {
+  src: "/photos/pexels-mikhail-nilov-8297034.jpg",
+  alt: "A bookkeeper working through figures beside a calculator and files",
+};
 
 function StepCard({
   index,
@@ -32,6 +76,8 @@ function StepCard({
 }
 
 export function IndustrySolutionPage({ solution }: { solution: IndustrySolution }) {
+  const photo = INDUSTRY_PHOTO[solution.slug] ?? DEFAULT_INDUSTRY_PHOTO;
+
   return (
     <div className="ax-marketing-page min-h-screen overflow-hidden bg-[#FDFBF7] text-[#191919]">
       <MarketingNavBar />
@@ -99,6 +145,12 @@ export function IndustrySolutionPage({ solution }: { solution: IndustrySolution 
             </div>
           </div>
         </section>
+
+        <EditorialPhotoBand
+          src={photo.src}
+          alt={photo.alt}
+          caption={`The documents ${solution.title.toLowerCase()} teams handle every week.`}
+        />
 
         <section className="bg-white px-4 py-20 sm:px-6 lg:py-28">
           <div className="mx-auto max-w-[1120px]">
