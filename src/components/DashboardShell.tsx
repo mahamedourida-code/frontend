@@ -3,7 +3,7 @@
 import { ReactNode, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
-import { ChevronLeft, Clock3, Loader2, Search, Upload } from "lucide-react"
+import { ChevronLeft, Clock3, Keyboard, Loader2, Search, Upload } from "lucide-react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -11,6 +11,7 @@ import { WorkspaceSidebar, type WorkspaceSidebarItemKey } from "@/components/Wor
 import { NotificationsBell } from "@/components/NotificationsBell"
 import { MobileNav } from "@/components/MobileNav"
 import { CommandPalette } from "@/components/CommandPalette"
+import { ShortcutCheatsheet } from "@/components/dashboard/ShortcutCheatsheet"
 import { AccountMenu } from "@/components/AccountMenu"
 import { OrgSwitcher } from "@/components/OrgSwitcher"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
@@ -65,6 +66,7 @@ export function DashboardShell({
   const pathname = usePathname()
   const prefersReducedMotion = useReducedMotion()
   const [cmdOpen, setCmdOpen] = useState(false)
+  const [cheatsheetOpen, setCheatsheetOpen] = useState(false)
   const { state: processingState } = useProcessingState()
   const [recoverableJob, setRecoverableJob] = useState<RecoverableJobSummary | null>(null)
   const {
@@ -104,6 +106,15 @@ export function DashboardShell({
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault()
         setCmdOpen(prev => !prev)
+        return
+      }
+      // "?" opens the shortcut cheatsheet — but never while typing.
+      if (e.key === "?" && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        const target = e.target as HTMLElement | null
+        const tag = target?.tagName
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target?.isContentEditable) return
+        e.preventDefault()
+        setCheatsheetOpen(prev => !prev)
       }
     }
     window.addEventListener("keydown", onKey)
@@ -250,6 +261,16 @@ export function DashboardShell({
                 <Upload className="size-6" />
               </button>
 
+              <button
+                type="button"
+                aria-label="Keyboard shortcuts"
+                title="Keyboard shortcuts"
+                onClick={() => setCheatsheetOpen(true)}
+                className="ax-interactive relative hidden size-10 items-center justify-center rounded-full text-white/88 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-white/35 sm:inline-flex"
+              >
+                <Keyboard className="size-5" />
+              </button>
+
               <NotificationsBell />
               <AccountMenu
                 user={user}
@@ -303,6 +324,7 @@ export function DashboardShell({
 
       <MobileNav isAuthenticated={true} user={user} />
       <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
+      <ShortcutCheatsheet open={cheatsheetOpen} onOpenChange={setCheatsheetOpen} />
     </div>
   )
 }
