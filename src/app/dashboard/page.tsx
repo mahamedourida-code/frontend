@@ -7,6 +7,7 @@ import { DashboardShell } from "@/components/DashboardShell"
 import { CompaniesTable } from "@/components/dashboard/companies/CompaniesTable"
 import type { CompanySummary } from "@/components/dashboard/companies/company-types"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
+import { HomeAttention } from "@/components/dashboard/HomeAttention"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { WorkspaceFirstRunGuide } from "@/components/dashboard/WorkspaceFirstRunGuide"
 import { WorkspaceOverview } from "@/components/dashboard/WorkspaceOverview"
@@ -69,6 +70,7 @@ export default function DashboardPage() {
             />
           </>
         ) : null}
+        <HomeAttention companies={companies} />
         <WorkspaceOverview companies={companies} />
         <CompaniesTable
           workspaceId={activeWorkspace?.id}
