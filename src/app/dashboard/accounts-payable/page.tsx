@@ -44,6 +44,7 @@ import { ReviewScoreBadge } from "@/components/dashboard/ReviewScoreBadge"
 import { missingVatCopy, overPoCopy } from "@/lib/anomaly-reasons"
 import { computeReviewScore, REVIEW_LEVEL_WEIGHT } from "@/lib/review-score"
 import { deriveMissingInfo } from "@/lib/missing-info"
+import { validateBill, summarizeBlocking, type BillValidation } from "@/lib/bill-validation"
 import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
 import { MotionButton } from "@/components/ui/motion-button"
@@ -507,6 +508,40 @@ function AccountsPayableContent() {
     [selectedReadyItems],
   )
 
+  // Pre-publish validation — pure checks (balance, required fields, currency)
+  // over the data already on the page. Drives the per-row flag and the publish
+  // gate; computed once over the whole queue.
+  const validations = useMemo(() => {
+    const map = new Map<string, BillValidation>()
+    for (const item of items) {
+      map.set(item.id, validateBill(item, { hasDuplicate: hasActiveDuplicate(item) }))
+    }
+    return map
+  }, [items])
+
+  // Partition the selected (ready) bills into clean vs blocked so the gate can
+  // publish the clean ones while holding the broken ones back.
+  const selectedValidations = useMemo(
+    () => selectedReadyItems.map(item => ({
+      id: item.id,
+      vendor: item.draft_data.vendor || "Vendor missing",
+      validation: validations.get(item.id) ?? validateBill(item, { hasDuplicate: hasActiveDuplicate(item) }),
+    })),
+    [selectedReadyItems, validations],
+  )
+  const blockedSelected = useMemo(
+    () => selectedValidations.filter(entry => !entry.validation.ok),
+    [selectedValidations],
+  )
+  const cleanSelectedIds = useMemo(
+    () => selectedValidations.filter(entry => entry.validation.ok).map(entry => entry.id),
+    [selectedValidations],
+  )
+  const prePublishSummary = useMemo(
+    () => summarizeBlocking(blockedSelected.map(entry => entry.validation)),
+    [blockedSelected],
+  )
+
   // Topic 8 — which priority segment the queue is currently focused on. The
   // three lead segments map 1:1 to the primary queue filters; "more" filters
   // (duplicates / missing info / failed / discarded) leave no segment lit.
@@ -891,10 +926,17 @@ function AccountsPayableContent() {
       toast.error("Resolve duplicate warnings before publishing selected bills.")
       return
     }
+    // Pre-publish gate — only the clean bills go out; broken ones are held back.
+    const publishIds = cleanSelectedIds
+    if (!publishIds.length) {
+      toast.error("These bills have issues to fix before publishing.")
+      return
+    }
+    const blockedIds = new Set(blockedSelected.map(entry => entry.id))
     setPublishing(true)
     setPublishResult(null)
     try {
-      const response = await accountsPayableApi.bulkPublish(selectedReadyIds)
+      const response = await accountsPayableApi.bulkPublish(publishIds)
       const failedIds = new Set(response.failures.map(failure => failure.item_id))
       setItems(current => current.map(item => response.items.find(updated => updated.id === item.id) || item))
       const failedRows = response.failures.map(failure => {
@@ -908,7 +950,8 @@ function AccountsPayableContent() {
         succeeded: response.items.length,
         failed: failedRows,
       })
-      setSelectedReadyIds(current => current.filter(id => failedIds.has(id)))
+      // Keep failed and held-back bills selected; drop the ones that published.
+      setSelectedReadyIds(current => current.filter(id => failedIds.has(id) || blockedIds.has(id)))
       if (response.items.length) {
         toast.success(`${response.items.length} draft bill${response.items.length === 1 ? "" : "s"} published to ${destinationName}.`)
         const anchor = confirmPublishRef.current || publishTriggerRef.current
@@ -1091,6 +1134,20 @@ function AccountsPayableContent() {
           }
         />
 
+        {/* Pre-publish gate — a quiet line when some selected bills won't pass
+            validation, so they're not silently dropped at publish time. */}
+        {selectedReadyIds.length > 0 && blockedSelected.length > 0 ? (
+          <div className="flex flex-wrap items-center gap-2.5 rounded-md border border-[color-mix(in_srgb,var(--text-danger)_30%,transparent)] bg-white px-3 py-2">
+            <StatusBadge tone="error">{blockedSelected.length} need a fix</StatusBadge>
+            <span className="text-xs font-medium text-[var(--text-danger)]">
+              {prePublishSummary} · held back when you publish
+            </span>
+            {cleanSelectedIds.length > 0 ? (
+              <StatusBadge tone="success">{cleanSelectedIds.length} ready to go</StatusBadge>
+            ) : null}
+          </div>
+        ) : null}
+
         {/* Quieter secondary actions — destination plumbing is reachable but no
             longer competes with the queue. */}
         <div className="flex flex-wrap items-center justify-end gap-4">
@@ -1233,6 +1290,7 @@ function AccountsPayableContent() {
                         const isReady = item.status === "ready_to_publish"
                         const hasDuplicate = hasActiveDuplicate(item)
                         const missing = missingInfo.get(item.id)
+                        const validation = validations.get(item.id)
                         return (
                           <motion.tr
                             key={`${filter}-${item.id}`}
@@ -1290,18 +1348,41 @@ function AccountsPayableContent() {
                             <td className="ax-data-money px-4 py-3.5 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.tax_amount)}</td>
                             <td className="ax-data-money px-4 py-3.5 text-right font-mono tabular-nums">{ledgerValue(item.draft_data.total)}</td>
                             <td className="px-4 py-3.5">
-                              <AnimatePresence mode="popLayout" initial={false}>
-                                <motion.span
-                                  key={item.status}
-                                  initial={m.reduced ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
-                                  animate={{ opacity: 1, scale: 1 }}
-                                  exit={m.reduced ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
-                                  transition={m.tFast}
-                                  className="inline-flex"
-                                >
-                                  <StatusBadge tone={tone}>{statusLabel(item.status)}</StatusBadge>
-                                </motion.span>
-                              </AnimatePresence>
+                              <div className="flex flex-col items-start gap-1.5">
+                                <AnimatePresence mode="popLayout" initial={false}>
+                                  <motion.span
+                                    key={item.status}
+                                    initial={m.reduced ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={m.reduced ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
+                                    transition={m.tFast}
+                                    className="inline-flex"
+                                  >
+                                    <StatusBadge tone={tone}>{statusLabel(item.status)}</StatusBadge>
+                                  </motion.span>
+                                </AnimatePresence>
+                                {/* Pre-publish validation flag — quiet per-row read of
+                                    balance + required fields. */}
+                                {validation ? (
+                                  validation.errors.length ? (
+                                    <span title={validation.errors.map(issue => issue.label).join(" · ")}>
+                                      <StatusBadge tone="error" className="h-5 px-2 text-[11px]">
+                                        {validation.errors.length} issue{validation.errors.length === 1 ? "" : "s"}
+                                      </StatusBadge>
+                                    </span>
+                                  ) : validation.warnings.length ? (
+                                    <span title={validation.warnings.map(issue => issue.label).join(" · ")}>
+                                      <StatusBadge tone="warning" className="h-5 px-2 text-[11px]">
+                                        {validation.warnings.length} to check
+                                      </StatusBadge>
+                                    </span>
+                                  ) : item.status === "ready_to_publish" ? (
+                                    <StatusBadge tone="success" className="h-5 px-2 text-[11px]">
+                                      Looks good
+                                    </StatusBadge>
+                                  ) : null
+                                ) : null}
+                              </div>
                             </td>
                           </motion.tr>
                         )
@@ -1357,6 +1438,32 @@ function AccountsPayableContent() {
                             side="bottom"
                           />
                         ) : null
+                      })()}
+                      {(() => {
+                        // Pre-publish validation over the LIVE draft so the flag clears
+                        // as the reviewer fixes the balance / fills required fields.
+                        const live = validateBill({ ...activeItem, draft_data: draft }, { hasDuplicate: activeHasDuplicate })
+                        if (live.errors.length) {
+                          return (
+                            <span title={live.errors.map(issue => issue.label).join(" · ")}>
+                              <StatusBadge tone="error">
+                                {live.errors.length} issue{live.errors.length === 1 ? "" : "s"}
+                              </StatusBadge>
+                            </span>
+                          )
+                        }
+                        if (live.warnings.length) {
+                          return (
+                            <span title={live.warnings.map(issue => issue.label).join(" · ")}>
+                              <StatusBadge tone="warning">
+                                {live.warnings.length} to check
+                              </StatusBadge>
+                            </span>
+                          )
+                        }
+                        return activeItem.status === "ready_to_publish"
+                          ? <StatusBadge tone="success">Looks good</StatusBadge>
+                          : null
                       })()}
                       <span className={cn("text-xs font-medium", statusTextColor[statusTone[activeItem.status]])}>
                         {statusLabel(activeItem.status)}
@@ -2192,12 +2299,14 @@ function AccountsPayableContent() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2.5 text-base font-medium">
               <AccountingDestinationGlyph destination={accountingDestination} className="size-6" iconClassName="size-4" />
-              {publishResult ? "Publish complete" : `Publish ${selectedReadyIds.length} ${selectedReadyIds.length === 1 ? "bill" : "bills"} to ${destinationName}`}
+              {publishResult ? "Publish complete" : `Publish ${cleanSelectedIds.length} ${cleanSelectedIds.length === 1 ? "bill" : "bills"} to ${destinationName}`}
             </DialogTitle>
             <DialogDescription className="text-sm font-normal leading-6 text-foreground">
               {publishResult
                 ? "The bulk publish finished. Failed items remain in the queue and can be retried."
-                : `You are publishing ${selectedReadyIds.length} draft ${selectedReadyIds.length === 1 ? "bill" : "bills"} to ${destinationName}. This cannot be undone.`}
+                : blockedSelected.length > 0
+                  ? `${cleanSelectedIds.length} draft ${cleanSelectedIds.length === 1 ? "bill" : "bills"} will publish to ${destinationName}. ${blockedSelected.length} ${blockedSelected.length === 1 ? "is" : "are"} held back to fix first. This cannot be undone.`
+                  : `You are publishing ${cleanSelectedIds.length} draft ${cleanSelectedIds.length === 1 ? "bill" : "bills"} to ${destinationName}. This cannot be undone.`}
             </DialogDescription>
           </DialogHeader>
 
@@ -2238,26 +2347,53 @@ function AccountsPayableContent() {
               ) : null}
             </div>
           ) : (
-            <div className="rounded-md border border-border">
-              <p className={cn("border-b px-3 py-2 text-xs font-medium uppercase tracking-wider text-slate-500", workspacePanel)}>
-                Selected draft bills
-              </p>
-              <ul className="max-h-[260px] divide-y divide-border overflow-y-auto">
-                {selectedReadyIds.map((id) => {
-                  const item = items.find(candidate => candidate.id === id)
-                  if (!item) return null
-                  return (
-                    <li key={id} className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm">
-                      <span className="min-w-0 truncate font-medium text-foreground">
-                        {item.draft_data.vendor || "Vendor missing"}
-                      </span>
-                      <span className="shrink-0 font-mono text-xs tabular-nums text-foreground">
-                        {amountLabel(item)}
-                      </span>
-                    </li>
-                  )
-                })}
-              </ul>
+            <div className="space-y-3">
+              <div className="rounded-md border border-border">
+                <p className={cn("border-b px-3 py-2 text-xs font-medium uppercase tracking-wider text-slate-500", workspacePanel)}>
+                  Will publish ({cleanSelectedIds.length})
+                </p>
+                {cleanSelectedIds.length ? (
+                  <ul className="max-h-[220px] divide-y divide-border overflow-y-auto">
+                    {cleanSelectedIds.map((id) => {
+                      const item = items.find(candidate => candidate.id === id)
+                      if (!item) return null
+                      return (
+                        <li key={id} className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm">
+                          <span className="min-w-0 truncate font-medium text-foreground">
+                            {item.draft_data.vendor || "Vendor missing"}
+                          </span>
+                          <span className="shrink-0 font-mono text-xs tabular-nums text-foreground">
+                            {amountLabel(item)}
+                          </span>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                ) : (
+                  <p className="px-3 py-3 text-sm font-medium text-foreground">
+                    Nothing is ready yet — fix the held-back bills below.
+                  </p>
+                )}
+              </div>
+              {/* Pre-publish gate — broken bills listed with their reason and held back. */}
+              {blockedSelected.length > 0 ? (
+                <div className="rounded-md border border-[color-mix(in_srgb,var(--text-danger)_30%,transparent)]">
+                  <div className={cn("flex flex-wrap items-center gap-2 border-b px-3 py-2", workspacePanel)}>
+                    <StatusBadge tone="error">Held back ({blockedSelected.length})</StatusBadge>
+                    <span className="text-xs font-medium text-[var(--text-danger)]">{prePublishSummary}</span>
+                  </div>
+                  <ul className="max-h-[180px] divide-y divide-border overflow-y-auto">
+                    {blockedSelected.map((entry) => (
+                      <li key={entry.id} className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm">
+                        <span className="min-w-0 truncate font-medium text-foreground">{entry.vendor}</span>
+                        <span className="shrink-0 text-xs font-medium text-[var(--text-danger)]">
+                          {entry.validation.errors.map(issue => issue.label).join(" · ")}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
             </div>
           )}
 
@@ -2275,8 +2411,8 @@ function AccountsPayableContent() {
                   ref={confirmPublishRef}
                   variant="glossy"
                   onClick={() => void confirmPublishSelected()}
-                  disabled={publishing || !accountingConnection?.connected || !selectedReadyIds.length || selectedDuplicateCount > 0}
-                  title={selectedDuplicateCount > 0 ? "Resolve duplicate warnings before publishing" : undefined}
+                  disabled={publishing || !accountingConnection?.connected || !cleanSelectedIds.length || selectedDuplicateCount > 0}
+                  title={selectedDuplicateCount > 0 ? "Resolve duplicate warnings before publishing" : !cleanSelectedIds.length ? "Fix the held-back bills first" : undefined}
                   className={cn("h-9 px-4", workspacePrimaryButton)}
                 >
                   {publishing ? (
@@ -2287,7 +2423,7 @@ function AccountsPayableContent() {
                   ) : (
                     <>
                       <AccountingDestinationGlyph destination={accountingDestination} />
-                      Confirm publish
+                      Publish {cleanSelectedIds.length} {cleanSelectedIds.length === 1 ? "bill" : "bills"}
                     </>
                   )}
                 </MotionButton>
