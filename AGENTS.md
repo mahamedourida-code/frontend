@@ -144,8 +144,8 @@ Frontend/                         ← working dir (Next.js frontend → Vercel)
 
 ## 📖 Naming & scope notes
 
-- The repo's old name was "OlmOCR"; the **product is AxLiner**. Internal plan keys `max` / `mega`
-  display as "Pro Plan" / "Max Plan" **on purpose** — don't "fix" the mismatch ([billing](docs/billing.md)).
+- The repo's old name was "OlmOCR"; the **product is AxLiner**. Internal plan key `max`
+  displays as "Pro Plan"; legacy `mega` is treated as Enterprise ([billing](docs/billing.md)).
 - **QuickBooks Online AND Xero are both shipped, production destinations** — present them equally
   everywhere a publishing/accounting destination is mentioned (it's "QuickBooks or Xero", never
   QuickBooks alone). The backend ships `quickbooks_service.py` and `xero_service.py`; the UI already

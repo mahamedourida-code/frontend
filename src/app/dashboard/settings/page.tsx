@@ -761,7 +761,7 @@ function SettingsContent() {
                   >
                     <span>
                       <span className="block text-sm font-semibold">Enterprise · Contact sales</span>
-                      <span className="mt-1 block text-xs font-medium text-foreground">Custom processing volume and onboarding</span>
+                      <span className="mt-1 block text-xs font-medium text-foreground">50,000+ documents/month and onboarding</span>
                     </span>
                     <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--workspace-primary)]" />
                   </button>

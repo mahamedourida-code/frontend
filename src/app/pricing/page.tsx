@@ -54,7 +54,7 @@ const fallbackPlans: BillingPlan[] = [
     price_formatted: "$0",
     currency: "USD",
     credits: 30,
-    included_volume: "30 credits after account creation",
+    included_volume: "30 documents after account creation",
     max_files_per_batch: 5,
     daily_image_limit: 30,
     daily_run_limit: 3,
@@ -71,10 +71,10 @@ const fallbackPlans: BillingPlan[] = [
     price_cents: 5900,
     price_formatted: "$59",
     currency: "USD",
-    credits: 1000,
-    included_volume: "1,000 credits/month",
-    max_files_per_batch: 30,
-    daily_image_limit: 1000,
+    credits: 3000,
+    included_volume: "3,000 documents/month",
+    max_files_per_batch: 75,
+    daily_image_limit: 3000,
     daily_run_limit: 0,
     max_file_size_mb: 10,
     annual_discount_percent: 0,
@@ -89,10 +89,10 @@ const fallbackPlans: BillingPlan[] = [
     price_cents: 59000,
     price_formatted: "$590",
     currency: "USD",
-    credits: 12000,
-    included_volume: "12,000 credits/year",
-    max_files_per_batch: 30,
-    daily_image_limit: 1000,
+    credits: 36000,
+    included_volume: "36,000 documents/year",
+    max_files_per_batch: 75,
+    daily_image_limit: 3000,
     daily_run_limit: 0,
     max_file_size_mb: 10,
     annual_discount_percent: 17,
@@ -107,10 +107,10 @@ const fallbackPlans: BillingPlan[] = [
     price_cents: 14900,
     price_formatted: "$149",
     currency: "USD",
-    credits: 2500,
-    included_volume: "2,500 credits/month",
-    max_files_per_batch: 50,
-    daily_image_limit: 2500,
+    credits: 12000,
+    included_volume: "12,000 documents/month",
+    max_files_per_batch: 200,
+    daily_image_limit: 12000,
     daily_run_limit: 0,
     max_file_size_mb: 10,
     annual_discount_percent: 0,
@@ -125,10 +125,10 @@ const fallbackPlans: BillingPlan[] = [
     price_cents: 149000,
     price_formatted: "$1,490",
     currency: "USD",
-    credits: 30000,
-    included_volume: "30,000 credits/year",
-    max_files_per_batch: 50,
-    daily_image_limit: 2500,
+    credits: 144000,
+    included_volume: "144,000 documents/year",
+    max_files_per_batch: 200,
+    daily_image_limit: 12000,
     daily_run_limit: 0,
     max_file_size_mb: 10,
     annual_discount_percent: 17,
@@ -143,10 +143,10 @@ const fallbackPlans: BillingPlan[] = [
     price_cents: 0,
     price_formatted: "Contact sales",
     currency: "USD",
-    credits: 0,
-    included_volume: "Custom processing volume",
-    max_files_per_batch: 100,
-    daily_image_limit: 7000,
+    credits: 50000,
+    included_volume: "50,000+ documents/month",
+    max_files_per_batch: 250,
+    daily_image_limit: 50000,
     daily_run_limit: 0,
     max_file_size_mb: 10,
     annual_discount_percent: 0,
@@ -162,24 +162,24 @@ const planCopyByPlan: Record<string, {
   pro: {
     name: "Standard",
     description: "For solo bookkeepers turning recurring client paperwork into reviewed exports.",
-    included: ["Mixed document batches", "Batch Review Board", "Excel and CSV exports"],
+    included: ["3,000 documents/month", "75-file runs", "Batch Review Board"],
   },
   max: {
     name: "Pro",
     description: "For practices processing supplier invoices, receipts, and statements every week.",
-    included: ["Everything in Standard", "Vendor memory", "AP draft handoff"],
+    included: ["12,000 documents/month", "200-file runs", "Vendor memory and AP handoff"],
   },
   enterprise: {
     name: "Enterprise",
     description: "For firms with dense client folders, controlled rollout needs, and higher-volume review workflows.",
-    included: ["Everything in Pro", "Custom batch capacity", "Sales-led onboarding"],
+    included: ["50,000+ documents/month", "250-file runs", "Sales-led onboarding"],
   },
 }
 
 const faqs = [
   {
-    question: "What counts as a credit?",
-    answer: "One processed page or image uses one credit. A batch can contain mixed files; AxLiner classifies them before review.",
+    question: "What counts as a document?",
+    answer: "One processed page or image uses one document credit. A batch can contain mixed files; AxLiner classifies them before review.",
   },
   {
     question: "Can I review before exporting?",
@@ -207,11 +207,10 @@ function formatCents(cents: number) {
 }
 
 function creditsLabel(plan: BillingPlan) {
-  if (plan.plan === "enterprise" || plan.interval === "custom") return plan.included_volume || "Custom processing volume"
-  if (!plan.checkout_key) return plan.included_volume || `${plan.credits.toLocaleString()} credits`
+  if (plan.included_volume) return plan.included_volume
   return plan.interval === "year"
-    ? `${plan.credits.toLocaleString()} credits/year`
-    : `${plan.credits.toLocaleString()} credits/month`
+    ? `${plan.credits.toLocaleString()} documents/year`
+    : `${plan.credits.toLocaleString()} documents/month`
 }
 
 function priceSubtext(plan: BillingPlan) {
@@ -461,7 +460,7 @@ function PricingContent() {
       title: "Volume and limits",
       rows: [
         {
-          label: "Included credits",
+          label: "Included documents",
           values: paidPlans.map((plan) => creditsLabel(plan)),
           emphasis: true,
         },
@@ -557,7 +556,7 @@ function PricingContent() {
               Pricing
             </h1>
             <p className="mx-auto mt-5 max-w-[720px] text-[18px] font-semibold leading-7 text-neutral-700">
-              Processing capacity for full client folders, reviewed exports, and approved accounting handoff. Start free with {freePlan.credits.toLocaleString()} credits.
+              Processing capacity for full client folders, reviewed exports, and approved accounting handoff. Start free with {freePlan.credits.toLocaleString()} document credits.
             </p>
           </div>
 
