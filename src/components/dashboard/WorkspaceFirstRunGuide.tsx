@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { AnimatePresence, motion } from "framer-motion"
 import {
   ArrowRight,
   Building2,
@@ -15,6 +16,7 @@ import {
 import { AddCompanyDialog } from "@/components/dashboard/companies/AddCompanyDialog"
 import { WorkspaceArt } from "@/components/dashboard/WorkspaceArt"
 import { Button } from "@/components/ui/button"
+import { useMotionTokens } from "@/lib/motion"
 
 type WorkspaceFirstRunGuideProps = {
   userId?: string | null
@@ -41,6 +43,7 @@ export function WorkspaceFirstRunGuide({
   onClientCreated,
 }: WorkspaceFirstRunGuideProps) {
   const storageKey = userId && workspaceId ? guideStorageKey(userId, workspaceId) : null
+  const m = useMotionTokens()
   const [guideState, setGuideState] = useState<{ key: string | null; dismissed: boolean }>({
     key: null,
     dismissed: false,
@@ -70,13 +73,19 @@ export function WorkspaceFirstRunGuide({
     setGuideState({ key: storageKey, dismissed: true })
   }
 
-  if (!storageKey || guideState.key !== storageKey || guideState.dismissed) return null
+  if (!storageKey || guideState.key !== storageKey) return null
 
   return (
-    <section
-      aria-labelledby="workspace-first-run-title"
-      className="relative -mx-4 border-y border-[var(--workspace-border)] bg-[#f5f8fc] px-4 py-5 sm:-mx-5 sm:px-5 lg:-mx-6 lg:px-6"
-    >
+    <AnimatePresence initial={false}>
+      {!guideState.dismissed ? (
+        <motion.section
+          aria-labelledby="workspace-first-run-title"
+          variants={m.panel}
+          initial="hidden"
+          animate="show"
+          exit="exit"
+          className="relative -mx-4 border-y border-[var(--workspace-border)] bg-[#f5f8fc] px-4 py-5 sm:-mx-5 sm:px-5 lg:-mx-6 lg:px-6"
+        >
       <button
         type="button"
         onClick={dismiss}
@@ -97,14 +106,21 @@ export function WorkspaceFirstRunGuide({
         <WorkspaceArt name="bot-welcome" className="hidden h-28 w-auto shrink-0 sm:block" />
       </div>
 
-      <ol className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4" aria-label="Workspace workflow">
+      <motion.ol
+        className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4"
+        aria-label="Workspace workflow"
+        variants={m.staggerParent(0.05)}
+        initial="hidden"
+        animate="show"
+      >
         {steps.map((step, index) => {
           const Icon = step.icon
           const complete = index === 0 && hasClients
 
           return (
-            <li
+            <motion.li
               key={step.title}
+              variants={m.listItem}
               className="relative flex min-w-0 gap-3 pr-3"
               data-workspace-tour-fallback={["clients", "upload", "review", "outputs"][index]}
             >
@@ -126,10 +142,10 @@ export function WorkspaceFirstRunGuide({
               {index < steps.length - 1 ? (
                 <ArrowRight className="absolute -right-1 top-2.5 hidden size-4 text-slate-300 xl:block" aria-hidden="true" />
               ) : null}
-            </li>
+            </motion.li>
           )
         })}
-      </ol>
+      </motion.ol>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
         {hasClients ? (
@@ -172,6 +188,8 @@ export function WorkspaceFirstRunGuide({
           </>
         )}
       </div>
-    </section>
+        </motion.section>
+      ) : null}
+    </AnimatePresence>
   )
 }

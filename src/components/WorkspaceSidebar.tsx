@@ -25,10 +25,11 @@ import {
   Upload,
   type LucideIcon,
 } from "lucide-react"
-import { motion, useReducedMotion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { AxMark } from "@/components/AppIcon"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { useCurrentHash } from "@/hooks/useCurrentHash"
+import { useMotionTokens } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 export type WorkspaceSidebarItemKey =
@@ -170,7 +171,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
     : shellActiveItem === "review" && currentHash === "#reviewed-outputs"
       ? "exports"
       : shellActiveItem
-  const prefersReducedMotion = useReducedMotion()
+  const m = useMotionTokens()
   const [collapsed, setCollapsed] = useState(false)
   const [openGroups, setOpenGroups] = useState<Record<SidebarGroupKey, boolean>>({
     collect: true,
@@ -228,9 +229,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
     const isActive = normalizedActiveItem === item.key
     const showDot = Boolean(notifications?.[item.key])
     const count = item.key === "review" ? reviewCount : item.key === "inbox" ? unreadCount : 0
-    const activeSpring = prefersReducedMotion
-      ? { duration: 0 }
-      : { type: "spring" as const, stiffness: 500, damping: 40 }
+    const activeSpring = m.reduced ? { duration: 0 } : m.springSnappy
 
     return (
       <MotionLink
@@ -249,8 +248,9 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         }
         aria-current={isActive ? "page" : undefined}
         title={collapsed ? item.label : undefined}
-        whileHover={prefersReducedMotion ? undefined : { x: 2 }}
-        transition={prefersReducedMotion ? { duration: 0 } : { type: "spring", stiffness: 600, damping: 30 }}
+        whileHover={m.reduced ? undefined : { x: nested ? 1 : 2 }}
+        whileTap={m.reduced ? undefined : { scale: 0.985 }}
+        transition={m.reduced ? { duration: 0 } : m.springSnappy}
         className={cn(
           "ax-interactive relative flex items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-black/25",
           collapsed
@@ -349,14 +349,21 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
             aria-hidden="true"
           />
         </button>
-        {isOpen ? (
-          <div
-            id={`sidebar-group-${group.key}`}
-            className="ml-5 space-y-0.5 border-l border-[var(--workspace-border)] pl-2"
-          >
-            {group.items.map((item) => renderItem(item, true))}
-          </div>
-        ) : null}
+        <AnimatePresence initial={false}>
+          {isOpen ? (
+            <motion.div
+              id={`sidebar-group-${group.key}`}
+              key="items"
+              initial={m.reduced ? false : { height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={m.reduced ? { opacity: 0 } : { height: 0, opacity: 0 }}
+              transition={m.reduced ? { duration: 0 } : { duration: m.dur.fast, ease: m.ease }}
+              className="ml-5 overflow-hidden border-l border-[var(--workspace-border)] pl-2"
+            >
+              <div className="space-y-0.5 py-0.5">{group.items.map((item) => renderItem(item, true))}</div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
       </div>
     )
   }
@@ -367,19 +374,30 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
       aria-label="Workspace navigation"
       initial={false}
       animate={{ width: collapsed ? COLLAPSED_W : EXPANDED_W }}
-      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: [0.2, 0, 0, 1] }}
+      transition={m.reduced ? { duration: 0 } : { duration: m.dur.slow, ease: m.ease }}
     >
       <div className="flex h-14 shrink-0 items-center gap-2.5 bg-[var(--workspace-topbar)] px-3 text-white">
-        {!collapsed && (
-          <Link
-            href="/dashboard"
-            aria-label="AxLiner home"
-            className="ax-interactive flex min-w-0 flex-1 items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-white/30"
-          >
-            <AxMark className="h-9 w-auto invert" />
-            <span className="truncate text-[19px] font-semibold tracking-normal">AxLiner</span>
-          </Link>
-        )}
+        <AnimatePresence initial={false}>
+          {!collapsed && (
+            <motion.div
+              key="brand"
+              initial={m.reduced ? false : { opacity: 0, x: -6 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={m.reduced ? { opacity: 0 } : { opacity: 0, x: -6 }}
+              transition={m.reduced ? { duration: 0 } : m.tFast}
+              className="min-w-0 flex-1"
+            >
+              <Link
+                href="/dashboard"
+                aria-label="AxLiner home"
+                className="ax-interactive flex min-w-0 items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+              >
+                <AxMark className="h-9 w-auto invert" />
+                <span className="truncate text-[19px] font-semibold tracking-normal">AxLiner</span>
+              </Link>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <button
           type="button"
           onClick={() => setCollapsed((value) => !value)}
@@ -398,9 +416,9 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
       <motion.nav
         aria-label="Sections"
         onClick={handleRailClick}
-        initial={prefersReducedMotion ? false : { opacity: 0, y: 4 }}
+        initial={m.reduced ? false : { opacity: 0, y: 4 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        transition={m.reduced ? { duration: 0 } : m.tBase}
         className={cn("flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-3", collapsed && "cursor-pointer")}
       >
         {PRIMARY_ITEMS.map((item) => renderItem(item))}

@@ -734,7 +734,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── Scroll-grow cinematic section (white) — last section after FAQ ── */}
+        {/* ── Scroll-grow workflow section (white) — last section after FAQ ── */}
         <ScrollGrowSection />
       </main>
 

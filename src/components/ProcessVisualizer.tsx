@@ -5,7 +5,7 @@ import { useState } from "react";
 
 const assetPaths = {
   chaos: "/what-is/chaos-invoices.svg",
-  cpu: "/what-is/axliner-cpu.svg",
+  cpu: "/workspace-art/processing.webp",
   output: "/what-is/chill-output.svg",
 };
 

@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { ChevronLeft, Clock3, Keyboard, Loader2, Search, Upload } from "lucide-react"
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { WorkspaceSidebar, type WorkspaceSidebarItemKey } from "@/components/WorkspaceSidebar"
@@ -17,6 +17,7 @@ import { OrgSwitcher } from "@/components/OrgSwitcher"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { useProcessingState } from "@/contexts/ProcessingStateContext"
 import { ocrApi, type RecoverableJobSummary } from "@/lib/api-client"
+import { useMotionTokens } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 type DashboardItemKey = WorkspaceSidebarItemKey
@@ -64,7 +65,7 @@ export function DashboardShell({
 }: DashboardShellProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const prefersReducedMotion = useReducedMotion()
+  const m = useMotionTokens()
   const [cmdOpen, setCmdOpen] = useState(false)
   const [cheatsheetOpen, setCheatsheetOpen] = useState(false)
   const { state: processingState } = useProcessingState()
@@ -162,10 +163,10 @@ export function DashboardShell({
 
       <div className="ax-dashboard-content relative z-10 min-w-0">
         <motion.header
-          initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
-          animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-          transition={prefersReducedMotion ? { duration: 0.15 } : { duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="sticky top-0 z-40 h-14 border-b border-[#1a2d3d] bg-[var(--workspace-topbar)] text-white"
+          initial={m.reduced ? { opacity: 0 } : { opacity: 0, y: -10 }}
+          animate={m.reduced ? { opacity: 1 } : { opacity: 1, y: 0 }}
+          transition={m.reduced ? m.tFast : { duration: m.dur.base, ease: m.ease }}
+          className="sticky top-0 z-40 h-14 border-b border-[#1a2d3d] bg-[var(--workspace-topbar)] text-white will-change-transform"
         >
           <div className="relative flex h-full items-center gap-2.5 px-3 sm:gap-3.5">
             {showBack && (
@@ -195,7 +196,7 @@ export function DashboardShell({
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive group inline-flex h-10 w-full max-w-[420px] cursor-pointer items-center gap-2.5 rounded-md border border-white/18 bg-white/8 px-3.5 text-[15px] font-medium text-white/68 transition-colors hover:border-white/35 hover:bg-white/12 hover:text-white"
+                className="ax-interactive group inline-flex h-10 w-full max-w-[420px] cursor-pointer items-center gap-2.5 rounded-md border border-white/18 bg-white/8 px-3.5 text-[15px] font-medium text-white/68 hover:-translate-y-0.5 hover:border-white/35 hover:bg-white/12 hover:text-white active:translate-y-0"
               >
                 <Search className="size-5 shrink-0 text-white/88" />
                 <span className="truncate">Search clients, documents, pages...</span>
@@ -211,7 +212,7 @@ export function DashboardShell({
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive inline-flex size-10 cursor-pointer items-center justify-center rounded-md border border-white/18 bg-white/8 text-white hover:bg-white/12 md:hidden"
+                className="ax-interactive inline-flex size-10 cursor-pointer items-center justify-center rounded-md border border-white/18 bg-white/8 text-white hover:-translate-y-0.5 hover:bg-white/12 active:translate-y-0 md:hidden"
               >
                 <Search className="size-5" />
               </button>
@@ -295,26 +296,10 @@ export function DashboardShell({
             <motion.div
               key={pathname}
               className="flex flex-1 flex-col min-h-0"
-              initial={
-                prefersReducedMotion
-                  ? { opacity: 0 }
-                  : { opacity: 0, y: 8, filter: "blur(2px)" }
-              }
-              animate={
-                prefersReducedMotion
-                  ? { opacity: 1 }
-                  : { opacity: 1, y: 0, filter: "blur(0px)" }
-              }
-              exit={
-                prefersReducedMotion
-                  ? { opacity: 0 }
-                  : { opacity: 0, y: -6, filter: "blur(1px)" }
-              }
-              transition={
-                prefersReducedMotion
-                  ? { duration: 0.1 }
-                  : { duration: 0.2, ease: [0.16, 1, 0.3, 1] }
-              }
+              variants={m.route}
+              initial="hidden"
+              animate="show"
+              exit="exit"
             >
               {children}
             </motion.div>

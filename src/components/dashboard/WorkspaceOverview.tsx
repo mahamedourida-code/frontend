@@ -1,10 +1,11 @@
 "use client"
 
-import { motion, useReducedMotion } from "framer-motion"
+import { motion } from "framer-motion"
 
 import type { CompanySummary } from "@/components/dashboard/companies/company-types"
 import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
 import { WorkspaceArt } from "@/components/dashboard/WorkspaceArt"
+import { useMotionTokens } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 type OverviewCell = {
@@ -36,7 +37,7 @@ export function WorkspaceOverview({
   companies: CompanySummary[]
   className?: string
 }) {
-  const reduceMotion = useReducedMotion()
+  const m = useMotionTokens()
 
   if (companies.length === 0) return null
 
@@ -85,13 +86,16 @@ export function WorkspaceOverview({
   ]
 
   return (
-    <div
+    <motion.div
       className={cn(
         "grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4",
         className,
       )}
+      variants={m.staggerParent(0.045)}
+      initial="hidden"
+      animate="show"
     >
-      {cells.map((cell, index) => {
+      {cells.map((cell) => {
         const body = (
           <>
             <div className="flex items-start justify-between gap-2">
@@ -117,29 +121,18 @@ export function WorkspaceOverview({
           cell.accent ? "bg-[color-mix(in_srgb,var(--text-attention)_5%,white)]" : "bg-white",
         )
 
-        const entrance = reduceMotion
-          ? undefined
-          : {
-              initial: { opacity: 0, y: 10 },
-              animate: { opacity: 1, y: 0 },
-              transition: {
-                duration: 0.3,
-                delay: index * 0.05,
-                ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-              },
-            }
-
         if (cell.href) {
           return (
             <motion.a
               key={cell.key}
               href={cell.href}
-              {...entrance}
-              whileHover={reduceMotion ? undefined : { y: -3 }}
-              whileTap={reduceMotion ? undefined : { scale: 0.99 }}
+              variants={m.listItem}
+              whileHover={m.reduced ? undefined : { y: -2 }}
+              whileTap={m.reduced ? undefined : { scale: 0.99 }}
+              transition={m.springSnappy}
               className={cn(
                 cardClass,
-                "outline-none transition-shadow hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_2px_4px_0_rgba(16,24,40,0.08),0_10px_24px_-6px_rgba(16,24,40,0.18)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]",
+                "outline-none will-change-transform transition-shadow hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_2px_4px_0_rgba(16,24,40,0.08),0_10px_24px_-6px_rgba(16,24,40,0.18)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]",
               )}
             >
               {body}
@@ -148,12 +141,12 @@ export function WorkspaceOverview({
         }
 
         return (
-          <motion.div key={cell.key} {...entrance} className={cardClass}>
+          <motion.div key={cell.key} variants={m.listItem} className={cardClass}>
             {body}
           </motion.div>
         )
       })}
-    </div>
+    </motion.div>
   )
 }
 

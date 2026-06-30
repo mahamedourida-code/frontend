@@ -59,3 +59,4 @@ backend/
 .playwright-mcp/
 
 .claude/worktrees/
+.codex/

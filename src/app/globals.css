@@ -480,14 +480,14 @@
     }
   }
 
-  /* Calm interaction language — Linear-style 180ms transitions + 0.98 active scale */
+  /* Calm interaction language — fast real feedback, slower context motion. */
   .ax-interactive {
     transition-property: color, background-color, border-color, box-shadow, transform, opacity;
     transition-duration: var(--ax-motion-fast);
     transition-timing-function: var(--ax-motion-ease);
   }
   .ax-interactive:active {
-    transform: scale(0.98);
+    transform: scale(0.97);
   }
   .ax-interactive[data-slot="button"]:active {
     transform: none;
@@ -784,10 +784,13 @@
   --status-review-fg: hsl(258 70% 38%);
   --status-processing-bg: hsl(217 91% 94%);
   --status-processing-fg: hsl(217 91% 36%);
-  --ax-motion-fast: 180ms;
-  --ax-motion-base: 320ms;
+  --ax-motion-press: 120ms;
+  --ax-motion-fast: 160ms;
+  --ax-motion-base: 280ms;
+  --ax-motion-slow: 520ms;
   --ax-motion-enter: 720ms;
-  --ax-motion-ease: cubic-bezier(0.2, 0, 0, 1);
+  --ax-motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ax-motion-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --text-xs: 11px;
   --text-xs-lh: 1.45;
   --text-sm: 13px;

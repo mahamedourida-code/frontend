@@ -4,10 +4,14 @@ import { useCallback, useEffect, useReducer, useState } from "react"
 import Link from "next/link"
 import { format } from "date-fns"
 import { ArrowRight, FileText } from "lucide-react"
+import { AnimatePresence, motion } from "framer-motion"
 import { ocrApi } from "@/lib/api-client"
 import { isHistoryItemDeleted, reconcileHistoryDeletions, subscribeHistoryDeletions } from "@/lib/recent-files-store"
 import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
 import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
+import { useMotionTokens } from "@/lib/motion"
+
+const MotionLink = motion.create(Link)
 
 type WorkspaceFile = {
   id: string
@@ -53,6 +57,7 @@ function normalizeFiles(response: any): WorkspaceFile[] {
 }
 
 export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
+  const m = useMotionTokens()
   const [files, setFiles] = useState<WorkspaceFile[]>([])
   const [loading, setLoading] = useState(true)
   const [, forceRender] = useReducer((tick: number) => tick + 1, 0)
@@ -106,7 +111,7 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
     .slice(0, 5)
 
   return (
-    <section className="mt-8 border-t border-border px-1 pb-5 pt-5">
+    <motion.section className="mt-8 border-t border-border px-1 pb-5 pt-5" variants={m.fadeUp} initial="hidden" animate="show">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-bold text-foreground">Recent files</h2>
@@ -118,39 +123,61 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
         </Link>
       </div>
 
-      {loading ? (
-        <WorkspaceActivityIndicator
-          title="Refreshing recent documents"
-          detail="Checking the latest stacks and their review status."
-        />
-      ) : recentFiles.length === 0 ? (
-        <div className="rounded-md border border-dashed border-border bg-card px-4 py-5 text-sm font-medium text-foreground">
-          No documents yet
-        </div>
-      ) : (
-        <div className="divide-y divide-border overflow-hidden rounded-md border border-border bg-card">
-          {recentFiles.map((file) => (
-            <Link
-              key={file.id}
-              href={`/dashboard/client?job_id=${file.id}`}
-              className="ax-interactive flex items-center gap-3 px-3 py-3 hover:bg-accent/50"
-            >
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
-                <FileText className="size-4" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-semibold text-foreground">{file.filename}</span>
-                <span className="ax-data-date mt-0.5 block text-xs">
-                  {format(new Date(file.createdAt), "MMM d, yyyy")}
+      <AnimatePresence mode="wait" initial={false}>
+        {loading ? (
+          <motion.div key="loading" variants={m.fadeScale} initial="hidden" animate="show" exit="exit">
+            <WorkspaceActivityIndicator
+              title="Refreshing recent documents"
+              detail="Checking the latest stacks and their review status."
+            />
+          </motion.div>
+        ) : recentFiles.length === 0 ? (
+          <motion.div
+            key="empty"
+            variants={m.fadeScale}
+            initial="hidden"
+            animate="show"
+            exit="exit"
+            className="rounded-md border border-dashed border-border bg-card px-4 py-5 text-sm font-medium text-foreground"
+          >
+            No documents yet
+          </motion.div>
+        ) : (
+          <motion.div
+            key="files"
+            variants={m.staggerParent(0.035)}
+            initial="hidden"
+            animate="show"
+            exit="exit"
+            className="divide-y divide-border overflow-hidden rounded-md border border-border bg-card"
+          >
+            {recentFiles.map((file) => (
+              <MotionLink
+                key={file.id}
+                href={`/dashboard/client?job_id=${file.id}`}
+                variants={m.listItem}
+                whileHover={m.reduced ? undefined : { x: 2 }}
+                whileTap={m.reduced ? undefined : { scale: 0.992 }}
+                transition={m.springSnappy}
+                className="ax-interactive flex items-center gap-3 px-3 py-3 hover:bg-accent/50"
+              >
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                  <FileText className="size-4" />
                 </span>
-              </span>
-              <StatusBadge tone={fileStatusTone(file.status)} className="hidden shrink-0 sm:inline-flex">
-                {fileStatusLabel(file.status)}
-              </StatusBadge>
-            </Link>
-          ))}
-        </div>
-      )}
-    </section>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold text-foreground">{file.filename}</span>
+                  <span className="ax-data-date mt-0.5 block text-xs">
+                    {format(new Date(file.createdAt), "MMM d, yyyy")}
+                  </span>
+                </span>
+                <StatusBadge tone={fileStatusTone(file.status)} className="hidden shrink-0 sm:inline-flex">
+                  {fileStatusLabel(file.status)}
+                </StatusBadge>
+              </MotionLink>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.section>
   )
 }

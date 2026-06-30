@@ -1,10 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { ChevronDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { useMotionTokens } from "@/lib/motion"
 import { Symbol } from "@/components/dashboard/Symbol"
 
 type SectionTone = "default" | "active" | "muted"
@@ -69,7 +70,7 @@ export function WorkspaceSection({
   contentClassName,
   id,
 }: WorkspaceSectionProps) {
-  const prefersReducedMotion = useReducedMotion()
+  const m = useMotionTokens()
   const [open, setOpen] = React.useState(defaultOpen)
   const isOpen = collapsible ? open : true
 
@@ -134,10 +135,10 @@ export function WorkspaceSection({
         {isOpen ? (
           <motion.div
             key="content"
-            initial={prefersReducedMotion ? false : { height: 0, opacity: 0 }}
+            initial={m.reduced ? false : { height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
-            exit={prefersReducedMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            exit={m.reduced ? { opacity: 0 } : { height: 0, opacity: 0 }}
+            transition={m.reduced ? { duration: 0 } : { duration: m.dur.route, ease: m.ease }}
             className="overflow-hidden"
           >
             <div className={cn("px-5 py-5 sm:px-6", contentClassName)}>{children}</div>

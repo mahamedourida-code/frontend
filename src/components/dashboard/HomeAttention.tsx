@@ -2,11 +2,12 @@
 
 import { useMemo, type ReactNode } from "react"
 import Link from "next/link"
-import { motion, useReducedMotion } from "framer-motion"
+import { motion } from "framer-motion"
 
 import type { CompanySummary } from "@/components/dashboard/companies/company-types"
 import { Button } from "@/components/ui/button"
 import { WorkspaceArt } from "@/components/dashboard/WorkspaceArt"
+import { useMotionTokens } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
 /**
@@ -48,7 +49,7 @@ export function HomeAttention({
   companies: CompanySummary[]
   className?: string
 }) {
-  const reduceMotion = useReducedMotion()
+  const m = useMotionTokens()
 
   const model = useMemo(() => {
     const now = Date.now()
@@ -85,16 +86,8 @@ export function HomeAttention({
   const { totalNeedsReview, totalDrafts, oldest, agingItems, busiest, lead, hasDates } = model
   const clear = totalNeedsReview === 0
 
-  const entrance = reduceMotion
-    ? undefined
-    : {
-        initial: { opacity: 0, y: 12 },
-        animate: { opacity: 1, y: 0 },
-        transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
-      }
-
   const shellClass = cn(
-    "relative overflow-hidden rounded-xl border p-5 sm:p-6",
+    "relative overflow-hidden rounded-xl border p-5 will-change-transform sm:p-6",
     "shadow-[0_1px_2px_0_rgba(16,24,40,0.04),0_1px_3px_0_rgba(16,24,40,0.06)]",
     clear
       ? "border-[color-mix(in_srgb,var(--text-success)_28%,var(--workspace-border))] bg-[color-mix(in_srgb,var(--text-success)_5%,white)]"
@@ -105,7 +98,7 @@ export function HomeAttention({
   // ---- Clear state -------------------------------------------------------
   if (clear) {
     return (
-      <motion.section {...entrance} className={shellClass} aria-label="Review status">
+      <motion.section variants={m.panel} initial="hidden" animate="show" className={shellClass} aria-label="Review status">
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
             <Eyebrow tone="success">All clear</Eyebrow>
@@ -194,7 +187,7 @@ export function HomeAttention({
   }
 
   return (
-    <motion.section {...entrance} className={shellClass} aria-label="Needs attention">
+    <motion.section variants={m.panel} initial="hidden" animate="show" className={shellClass} aria-label="Needs attention">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         {/* Lead — what needs me */}
         <div className="flex min-w-0 items-start gap-4">
@@ -222,18 +215,23 @@ export function HomeAttention({
 
         {/* Facts — what's aging */}
         {facts.length ? (
-          <div className="grid shrink-0 grid-cols-3 gap-px overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-border)] lg:w-auto">
+          <motion.div
+            variants={m.staggerParent(0.04)}
+            initial="hidden"
+            animate="show"
+            className="grid shrink-0 grid-cols-3 gap-px overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-border)] lg:w-auto"
+          >
             {facts.map((fact) => (
-              <div key={fact.key} className="flex min-w-0 flex-col gap-1 bg-white px-4 py-3 sm:px-5">
+              <motion.div key={fact.key} variants={m.listItem} className="flex min-w-0 flex-col gap-1 bg-white px-4 py-3 sm:px-5">
                 <span className="text-[11px] font-semibold uppercase tracking-wide text-foreground">
                   {fact.label}
                 </span>
                 <span className="block max-w-[8rem] truncate text-lg font-semibold leading-tight sm:text-xl">
                   {fact.node}
                 </span>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         ) : null}
       </div>
     </motion.section>
