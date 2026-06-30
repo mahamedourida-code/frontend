@@ -60,7 +60,10 @@ shouldn't have to be asked to use them.
    research, visual QA), use the MCP/CLI directly; never tell the user to "run it yourself." Confirm
    before destructive ops (db drops, force pushes, deletes); otherwise just execute. See
    [docs/tooling.md](docs/tooling.md).
-5. **Don't deploy unless asked.** The user controls when things ship.
+5. **Push/deploy by default after code changes.** When the user asks for code changes, commit and push
+   the touched deploy target before finishing unless they explicitly say not to push. Frontend changes
+   push to GitHub (`mahamedourida-code/frontend`, Vercel auto-builds); backend changes push to the
+   backend remote and deploy with Fly CLI.
 6. **`framer-motion` only — NEVER `motion/react`.**
 7. **No QA by default.** When the user asks to push / ship / deploy, just commit and push. Do not run
    local QA, Playwright checks, smoke tests, or post-deploy verification unless the user explicitly asks.

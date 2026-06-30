@@ -56,6 +56,8 @@ import { Symbol } from "@/components/dashboard/Symbol"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
+const selfServiceBillingKeys = new Set<string>(["pro_monthly", "pro_yearly", "max_monthly", "max_yearly"])
+
 type SettingsSection = 'account' | 'billing' | 'accounting' | 'vendors' | 'preferences'
 
 // Soft inset surface for nested stat tiles (credits / limits). Uses workspace
@@ -260,7 +262,7 @@ function SettingsContent() {
     if (!plan) return "Free"
     if (plan === "pro") return "Standard"
     if (plan === "max" || plan === "business") return "Pro"
-    if (plan === "mega" || plan === "enterprise") return "Max"
+    if (plan === "mega" || plan === "enterprise") return "Enterprise"
     return plan.charAt(0).toUpperCase() + plan.slice(1)
   }
 
@@ -733,7 +735,7 @@ function SettingsContent() {
 
                 <WorkspaceSection title="Upgrade path" icon={<PlanSwitch />} contentClassName="space-y-3">
                   {billingPlans
-                    .filter((plan) => plan.checkout_key)
+                    .filter((plan) => plan.checkout_key && selfServiceBillingKeys.has(plan.checkout_key))
                     .map((plan) => (
                     <button
                       key={plan.key}
@@ -751,6 +753,18 @@ function SettingsContent() {
                       <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--workspace-primary)]" />
                     </button>
                   ))}
+
+                  <button
+                    type="button"
+                    onClick={() => router.push("/contact?topic=enterprise")}
+                    className="ax-interactive group flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card p-4 text-left text-foreground shadow-none hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)]"
+                  >
+                    <span>
+                      <span className="block text-sm font-semibold">Enterprise · Contact sales</span>
+                      <span className="mt-1 block text-xs font-medium text-foreground">Custom processing volume and onboarding</span>
+                    </span>
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--workspace-primary)]" />
+                  </button>
 
                   <div className={cn("p-4 text-sm font-medium text-foreground", softPanel)}>
                     Stack limits:

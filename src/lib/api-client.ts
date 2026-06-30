@@ -797,7 +797,7 @@ export interface UploadBatchMultipartOptions {
 }
 
 export interface AppLimits {
-  plan: 'anonymous' | 'free' | 'pro' | 'max' | 'mega'
+  plan: 'anonymous' | 'free' | 'pro' | 'max' | 'mega' | 'enterprise'
   max_files_per_batch: number
   absolute_max_files_per_batch: number
   max_file_size_mb: number
@@ -819,14 +819,15 @@ export interface AppLimits {
   } | null
 }
 
-export type BillingPlanKey = 'pro_monthly' | 'pro_yearly' | 'max_monthly' | 'max_yearly' | 'mega_monthly' | 'mega_yearly'
+export type BillingPlanKey = 'pro_monthly' | 'pro_yearly' | 'max_monthly' | 'max_yearly'
+export type LegacyBillingPlanKey = BillingPlanKey | 'mega_monthly' | 'mega_yearly'
 
 export interface BillingPlan {
-  key: 'free' | BillingPlanKey
+  key: 'free' | 'enterprise' | LegacyBillingPlanKey
   checkout_key?: BillingPlanKey | null
   name: string
-  plan: 'anonymous' | 'free' | 'pro' | 'max' | 'mega'
-  interval: 'forever' | 'month' | 'year'
+  plan: 'anonymous' | 'free' | 'pro' | 'max' | 'mega' | 'enterprise'
+  interval: 'forever' | 'month' | 'year' | 'custom'
   price_cents: number
   price_formatted: string
   currency: string
@@ -850,7 +851,7 @@ export interface BillingCheckoutResponse {
   checkout_id?: string
   checkout_url: string
   plan_key: BillingPlanKey
-  plan: 'pro' | 'max' | 'mega'
+  plan: 'pro' | 'max' | 'mega' | 'enterprise'
   credits: number
 }
 
@@ -862,7 +863,7 @@ export interface BillingSubscription {
   cancelled?: boolean
   customer_portal_url?: string | null
   metadata?: {
-    plan_key?: BillingPlanKey
+    plan_key?: LegacyBillingPlanKey
     [key: string]: unknown
   } | null
 }

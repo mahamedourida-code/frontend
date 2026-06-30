@@ -39,7 +39,7 @@ function formatPlan(plan?: string | null) {
   if (!plan) return "Free"
   if (plan === "pro") return "Standard"
   if (plan === "max" || plan === "business") return "Pro"
-  if (plan === "mega" || plan === "enterprise") return "Max"
+  if (plan === "mega" || plan === "enterprise") return "Enterprise"
   return plan.charAt(0).toUpperCase() + plan.slice(1)
 }
 

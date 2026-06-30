@@ -34,15 +34,13 @@ type ComparisonGroup = {
   }>
 }
 
-const paidPlanKeys: BillingPlanKey[] = ["pro_monthly", "pro_yearly", "max_monthly", "max_yearly", "mega_monthly", "mega_yearly"]
+const paidPlanKeys: BillingPlanKey[] = ["pro_monthly", "pro_yearly", "max_monthly", "max_yearly"]
 
 const displayPriceCentsByKey: Record<BillingPlanKey, number> = {
-  pro_monthly: 1900,
-  pro_yearly: 19000,
-  max_monthly: 3900,
-  max_yearly: 39000,
-  mega_monthly: 7900,
-  mega_yearly: 79000,
+  pro_monthly: 5900,
+  pro_yearly: 59000,
+  max_monthly: 14900,
+  max_yearly: 149000,
 }
 
 const fallbackPlans: BillingPlan[] = [
@@ -70,8 +68,8 @@ const fallbackPlans: BillingPlan[] = [
     name: "Standard Plan",
     plan: "pro",
     interval: "month",
-    price_cents: 1900,
-    price_formatted: "$19",
+    price_cents: 5900,
+    price_formatted: "$59",
     currency: "USD",
     credits: 1000,
     included_volume: "1,000 credits/month",
@@ -88,8 +86,8 @@ const fallbackPlans: BillingPlan[] = [
     name: "Standard Plan",
     plan: "pro",
     interval: "year",
-    price_cents: 19000,
-    price_formatted: "$190",
+    price_cents: 59000,
+    price_formatted: "$590",
     currency: "USD",
     credits: 12000,
     included_volume: "12,000 credits/year",
@@ -106,8 +104,8 @@ const fallbackPlans: BillingPlan[] = [
     name: "Pro Plan",
     plan: "max",
     interval: "month",
-    price_cents: 3900,
-    price_formatted: "$39",
+    price_cents: 14900,
+    price_formatted: "$149",
     currency: "USD",
     credits: 2500,
     included_volume: "2,500 credits/month",
@@ -124,8 +122,8 @@ const fallbackPlans: BillingPlan[] = [
     name: "Pro Plan",
     plan: "max",
     interval: "year",
-    price_cents: 39000,
-    price_formatted: "$390",
+    price_cents: 149000,
+    price_formatted: "$1,490",
     currency: "USD",
     credits: 30000,
     included_volume: "30,000 credits/year",
@@ -137,39 +135,21 @@ const fallbackPlans: BillingPlan[] = [
     checkout_available: false,
   },
   {
-    key: "mega_monthly",
-    checkout_key: "mega_monthly",
-    name: "Max Plan",
-    plan: "mega",
-    interval: "month",
-    price_cents: 7900,
-    price_formatted: "$79",
+    key: "enterprise",
+    checkout_key: null,
+    name: "Enterprise",
+    plan: "enterprise",
+    interval: "custom",
+    price_cents: 0,
+    price_formatted: "Contact sales",
     currency: "USD",
-    credits: 7000,
-    included_volume: "7,000 credits/month",
+    credits: 0,
+    included_volume: "Custom processing volume",
     max_files_per_batch: 100,
     daily_image_limit: 7000,
     daily_run_limit: 0,
     max_file_size_mb: 10,
     annual_discount_percent: 0,
-    checkout_available: false,
-  },
-  {
-    key: "mega_yearly",
-    checkout_key: "mega_yearly",
-    name: "Max Plan",
-    plan: "mega",
-    interval: "year",
-    price_cents: 79000,
-    price_formatted: "$790",
-    currency: "USD",
-    credits: 84000,
-    included_volume: "84,000 credits/year",
-    max_files_per_batch: 100,
-    daily_image_limit: 7000,
-    daily_run_limit: 0,
-    max_file_size_mb: 10,
-    annual_discount_percent: 17,
     checkout_available: false,
   },
 ]
@@ -181,18 +161,18 @@ const planCopyByPlan: Record<string, {
 }> = {
   pro: {
     name: "Standard",
-    description: "Everything a solo bookkeeper needs to turn regular client paperwork into clean exports.",
+    description: "For solo bookkeepers turning recurring client paperwork into reviewed exports.",
     included: ["Mixed document batches", "Batch Review Board", "Excel and CSV exports"],
   },
   max: {
     name: "Pro",
-    description: "More room for practices processing supplier invoices, receipts, and statements every week.",
+    description: "For practices processing supplier invoices, receipts, and statements every week.",
     included: ["Everything in Standard", "Vendor memory", "AP draft handoff"],
   },
-  mega: {
-    name: "Max",
-    description: "Higher-volume capacity for cleanup projects, monthly close pressure, and dense client folders.",
-    included: ["Everything in Pro", "High-volume batches", "Lowest unit cost"],
+  enterprise: {
+    name: "Enterprise",
+    description: "For firms with dense client folders, controlled rollout needs, and higher-volume review workflows.",
+    included: ["Everything in Pro", "Custom batch capacity", "Sales-led onboarding"],
   },
 }
 
@@ -227,6 +207,7 @@ function formatCents(cents: number) {
 }
 
 function creditsLabel(plan: BillingPlan) {
+  if (plan.plan === "enterprise" || plan.interval === "custom") return plan.included_volume || "Custom processing volume"
   if (!plan.checkout_key) return plan.included_volume || `${plan.credits.toLocaleString()} credits`
   return plan.interval === "year"
     ? `${plan.credits.toLocaleString()} credits/year`
@@ -234,6 +215,7 @@ function creditsLabel(plan: BillingPlan) {
 }
 
 function priceSubtext(plan: BillingPlan) {
+  if (plan.plan === "enterprise" || plan.interval === "custom") return "Custom agreement"
   if (plan.interval === "forever") return "No card required"
   if (plan.interval === "year") return "per month, billed annually"
   return "per month"
@@ -246,24 +228,29 @@ function planRunPolicy(plan: BillingPlan) {
 
 function displayPlanPriceCents(plan: BillingPlan) {
   if (plan.key === "free") return plan.price_cents || 0
-  return displayPriceCentsByKey[plan.key] ?? plan.price_cents ?? 0
+  if (plan.key in displayPriceCentsByKey) return displayPriceCentsByKey[plan.key as BillingPlanKey]
+  return plan.price_cents ?? 0
 }
 
 function displayMonthlyCents(plan: BillingPlan) {
   const displayCents = displayPlanPriceCents(plan)
+  if (plan.interval === "custom") return displayCents
   if (plan.interval === "year") return Math.floor(displayCents / 12)
   return displayCents
 }
 
 function priceNumber(plan: BillingPlan) {
+  if (plan.plan === "enterprise" || plan.interval === "custom") return "Custom"
   return Math.floor(displayMonthlyCents(plan) / 100).toLocaleString()
 }
 
 function comparePriceLabel(plan: BillingPlan) {
+  if (plan.plan === "enterprise" || plan.interval === "custom") return "Contact sales"
   return `$${priceNumber(plan)}/mo`
 }
 
 function compareBillingLabel(plan: BillingPlan) {
+  if (plan.plan === "enterprise" || plan.interval === "custom") return "Custom agreement"
   return plan.interval === "year"
     ? `${formatCents(displayPlanPriceCents(plan))} billed annually`
     : "Billed monthly"
@@ -332,8 +319,9 @@ function PricingContent() {
   const paidPlans = useMemo(() => {
     const standard = catalogPlans.find((plan) => plan.plan === "pro" && plan.interval === billingMode)
     const pro = catalogPlans.find((plan) => plan.plan === "max" && plan.interval === billingMode)
-    const max = catalogPlans.find((plan) => plan.plan === "mega" && plan.interval === billingMode)
-    return [standard, pro, max].filter(Boolean) as BillingPlan[]
+    const enterprise = catalogPlans.find((plan) => plan.plan === "enterprise" || plan.key === "enterprise")
+      || fallbackPlans.find((plan) => plan.key === "enterprise")
+    return [standard, pro, enterprise].filter(Boolean) as BillingPlan[]
   }, [billingMode, catalogPlans])
 
   const yearlyDiscountPercent = useMemo(() => {
@@ -350,6 +338,11 @@ function PricingContent() {
   }
 
   const startCheckout = async (plan: BillingPlan) => {
+    if (plan.plan === "enterprise" || plan.interval === "custom") {
+      router.push("/contact?topic=enterprise")
+      return
+    }
+
     const checkoutKey = plan.checkout_key
 
     if (!checkoutKey) {
@@ -630,6 +623,7 @@ function PricingContent() {
               paidPlans.map((plan) => {
                 const copy = planCopyByPlan[plan.plan] || planCopyByPlan.pro
                 const isPopular = plan.plan === "max"
+                const isContactSales = plan.plan === "enterprise" || plan.interval === "custom"
                 const isLoading = Boolean(plan.checkout_key && checkoutLoading === plan.checkout_key)
 
                 return (
@@ -656,10 +650,16 @@ function PricingContent() {
                           </span>
                         )}
                       </div>
-                      <div className={cn("mt-8 flex items-end gap-2", "text-neutral-950")}>
-                        <span className="pb-3 text-3xl font-semibold">$</span>
-                        <span className="text-[88px] font-medium leading-none tracking-tight">{priceNumber(plan)}</span>
-                      </div>
+                      {isContactSales ? (
+                        <div className="mt-8 flex min-h-[104px] items-end text-neutral-950">
+                          <span className="text-[42px] font-medium leading-[1.04] tracking-tight">Contact sales</span>
+                        </div>
+                      ) : (
+                        <div className={cn("mt-8 flex items-end gap-2", "text-neutral-950")}>
+                          <span className="pb-3 text-3xl font-semibold">$</span>
+                          <span className="text-[88px] font-medium leading-none tracking-tight">{priceNumber(plan)}</span>
+                        </div>
+                      )}
                       <p className={cn("mt-2 text-base font-semibold", "text-neutral-500")}>
                         {priceSubtext(plan)}
                       </p>
@@ -683,11 +683,11 @@ function PricingContent() {
 
                     <Button
                       variant="glossy"
-                      className="h-12 w-full rounded-lg text-base font-bold"
+                      className="h-12 w-full rounded-full text-base font-bold"
                       disabled={isLoading}
                       onClick={() => startCheckout(plan)}
                     >
-                      {isLoading ? "Opening checkout..." : "Buy now"}
+                      {isLoading ? "Opening checkout..." : isContactSales ? "Contact sales" : "Buy now"}
                       {!isLoading && <ArrowRight aria-hidden="true" className="h-4 w-4" />}
                     </Button>
                   </article>
@@ -794,7 +794,7 @@ function PricingContent() {
         <Button
           asChild
           variant="glossy"
-          className="mt-10 h-12 min-w-[300px] rounded-lg text-base font-bold"
+          className="mt-10 h-12 min-w-[300px] rounded-full text-base font-bold"
         >
           <Link href="/dashboard/client">Start now</Link>
         </Button>
