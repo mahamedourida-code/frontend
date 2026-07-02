@@ -415,7 +415,7 @@ export default function EmailInboxPage() {
       <div className="max-w-7xl space-y-6 text-black">
         <PageHeader
           title="Inbox"
-          description="Collect client uploads, email-in documents, and watched-folder imports before they move to review."
+          description="Collect uploads, forwarded documents, and watched-folder imports before review."
           actions={
             <Button variant="ghost" size="sm" onClick={() => void loadInbox()} disabled={loading}>
               <RefreshCw className="size-4" />
@@ -436,13 +436,28 @@ export default function EmailInboxPage() {
           <div className="grid gap-6 lg:grid-cols-2">
 
             {/* Client upload links */}
-            <WorkspaceSection id="client-upload-links" icon={<Link2 />} title="Client upload links">
-              <div className="flex gap-2.5">
-                <Input value={linkLabel} onChange={event => setLinkLabel(event.target.value)} placeholder="Client documents" className="flex-1" />
-                <Button variant="glossy" size="sm" onClick={() => void createClientLink()} disabled={actionBusy === "link"}>
-                  <Link2 className="size-3.5" />
-                  Create link
-                </Button>
+            <WorkspaceSection
+              id="client-upload-links"
+              icon={<Link2 />}
+              title="Upload links"
+              hint="Share a client-safe drop zone for a batch."
+              className="shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+            >
+              <div className="rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-soft)] p-3.5">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-black">Client upload portal</p>
+                    <p className="mt-0.5 text-xs font-medium text-[var(--workspace-muted)]">New files land in Client submissions.</p>
+                  </div>
+                  <StatusBadge tone={links.length ? "success" : "neutral"}>{links.length} link{links.length === 1 ? "" : "s"}</StatusBadge>
+                </div>
+                <div className="mt-3 flex flex-col gap-2.5 sm:flex-row">
+                  <Input value={linkLabel} onChange={event => setLinkLabel(event.target.value)} placeholder="Client documents" className="flex-1" />
+                  <Button variant="glossy" size="sm" onClick={() => void createClientLink()} disabled={actionBusy === "link"}>
+                    <Link2 className="size-3.5" />
+                    Create link
+                  </Button>
+                </div>
               </div>
 
               {newUploadUrl ? (
@@ -612,11 +627,31 @@ export default function EmailInboxPage() {
 
         {/* Email-in address */}
         {activeWorkspace?.role === "owner" ? (
-          <WorkspaceSection id="email-in-address" icon={<AtSign />} title="Email-in address">
-            <Field label="Forward documents to" icon={<Mail />}>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <WorkspaceSection
+            id="email-in-address"
+            icon={<AtSign />}
+            title="Email intake"
+            hint="Forward supplier documents to one workspace address."
+            className="shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+          >
+            <div className="rounded-lg border border-[var(--workspace-border)] bg-white p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-sky-200 bg-sky-50 text-sky-700">
+                    <Mail className="size-4.5" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-black">Forwarding address</p>
+                    <p className="mt-0.5 text-xs font-medium text-[var(--workspace-muted)]">Accepted attachments appear below.</p>
+                  </div>
+                </div>
+                <StatusBadge tone={address?.address ? "success" : "processing"}>
+                  {address?.address ? "Ready" : "Provisioning"}
+                </StatusBadge>
+              </div>
+              <div className="mt-4 flex flex-col gap-3 rounded-md border border-[#d8dde6] bg-[#f8fafc] px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
                 <p className="min-w-0 break-all font-mono text-sm text-black">
-                  {address?.address || "Provisioning address…"}
+                  {address?.address || "Provisioning address..."}
                 </p>
                 <InlineAction onClick={() => void copyAddress()} disabled={!address} className="shrink-0">
                   <AnimatePresence mode="popLayout" initial={false}>
@@ -634,7 +669,7 @@ export default function EmailInboxPage() {
                   </AnimatePresence>
                 </InlineAction>
               </div>
-            </Field>
+            </div>
             {loadError ? (
               <p className="mt-3 text-sm text-destructive">{loadError}</p>
             ) : null}
@@ -643,33 +678,50 @@ export default function EmailInboxPage() {
 
         {/* P6 — Connected sources (Google Drive / Dropbox watch folders) */}
         {activeWorkspace?.role === "owner" ? (
-          <WorkspaceSection icon={<FolderSync />} title="Connected sources">
+          <WorkspaceSection
+            icon={<FolderSync />}
+            title="Watched folders"
+            hint="Connect a cloud folder and choose where AxLiner should collect new files."
+            className="shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+          >
             <div className="grid gap-3 sm:grid-cols-2">
               {(["google_drive", "dropbox"] as ConnectedSourceProvider[]).map((provider) => {
                 const source = connectedSources.find(item => item.provider === provider && item.status !== "disconnected")
                 const configured = providersConfigured[provider]
                 const label = provider === "google_drive" ? "Google Drive" : "Dropbox"
                 return (
-                  <div key={provider} className="rounded-md border border-border bg-[#f8fafc] p-4">
+                  <div
+                    key={provider}
+                    className={cn(
+                      "rounded-lg border p-4 shadow-[0_1px_2px_rgba(15,23,42,0.03)]",
+                      source?.status === "connected"
+                        ? "border-emerald-200 bg-emerald-50/60"
+                        : "border-[var(--workspace-border)] bg-white",
+                    )}
+                  >
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5">
                         <span className="inline-flex size-9 items-center justify-center rounded-md bg-[#eff6ff] text-[var(--workspace-blue)]">
                           {provider === "google_drive" ? <FolderInput className="size-4.5" /> : <Cloud className="size-4.5" />}
                         </span>
                         <div>
-                          <p className="text-sm font-medium text-black">{label}</p>
+                          <p className="text-sm font-semibold text-black">{label}</p>
                           {source?.account_email ? (
                             <p className="truncate text-xs text-black">{source.account_email}</p>
-                          ) : null}
+                          ) : (
+                            <p className="truncate text-xs font-medium text-[var(--workspace-muted)]">
+                              {configured ? "Ready to connect" : "Provider setup pending"}
+                            </p>
+                          )}
                         </div>
                       </div>
                       {source ? (
                         <StatusBadge tone={source.status === "connected" ? "success" : source.status === "error" ? "error" : "neutral"}>
-                          <BadgeValue value={source.status} />
+                          <BadgeValue value={source.status === "connected" ? "Watching" : source.status === "error" ? "Needs attention" : "Paused"} />
                         </StatusBadge>
                       ) : (
                         <StatusBadge tone={configured ? "info" : "neutral"}>
-                          {configured ? "Not connected" : "Not connected"}
+                          {configured ? "Available" : "Setup pending"}
                         </StatusBadge>
                       )}
                     </div>
@@ -709,12 +761,12 @@ export default function EmailInboxPage() {
                             )}
                           </Field>
                         </div>
-                        <div className="mt-3 flex items-center justify-between gap-3">
+                        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                           <span className="inline-flex items-center gap-1.5 text-xs text-black">
                             <Clock className="size-3.5 text-[var(--workspace-blue)]" />
                             {source.last_synced_at ? formatReceivedAt(source.last_synced_at) : "Never synced"}
                           </span>
-                          <div className="flex items-center gap-4">
+                          <div className="flex flex-wrap items-center gap-4">
                             <InlineAction className="text-xs [&_svg]:size-3" onClick={() => void triggerSync(source.id)} disabled={actionBusy === source.id}>
                               <RefreshCw className={cn("size-3", actionBusy === source.id && "animate-spin")} />
                               Sync now
@@ -760,17 +812,13 @@ export default function EmailInboxPage() {
             <EmptyState
               art="upload-stack"
               icon={<Inbox />}
-              title="No files yet"
-              description="Send clients a link or upload a stack yourself. New files land here before review."
-              steps={[
-                "Create an upload link for the client.",
-                "Client drops receipts, invoices, PDFs, or photos.",
-                "Open the stack in the review board.",
-              ]}
+              title="No client files yet"
+              description="Upload links and direct uploads appear here before review."
+              compact
               action={(
                 <Button asChild variant="surface" size="sm">
                   <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox#client-upload-links" : "/dashboard/client#upload-files"}>
-                    {activeWorkspace?.role === "owner" ? "Create an upload link" : "Upload documents"}
+                    {activeWorkspace?.role === "owner" ? "Create upload link" : "Upload files"}
                   </Link>
                 </Button>
               )}
@@ -778,7 +826,7 @@ export default function EmailInboxPage() {
           ) : (
             <>
               {/* Desktop table */}
-              <div className="hidden sm:block">
+              <div className="hidden overflow-hidden rounded-lg border border-[var(--workspace-border)] sm:block">
                 <Table className="ax-table">
                   <TableHeader>
                     <TableRow className="bg-[#f3f4f6] hover:bg-[#f3f4f6]">
@@ -867,13 +915,9 @@ export default function EmailInboxPage() {
             <EmptyState
               art="all-clear"
               icon={<Mail />}
-              title="No emails yet"
-              description="Forward client documents to the workspace email address. Accepted attachments appear here with review links."
-              steps={[
-                "Copy the email-in address.",
-                "Forward invoices, receipts, or statements.",
-                "Review accepted attachments from this list.",
-              ]}
+              title="No forwarded files yet"
+              description="Forward documents to the workspace address; accepted attachments appear here."
+              compact
               action={(
                 <Button asChild variant="surface" size="sm">
                   <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox#email-in-address" : "/dashboard/guide"}>
@@ -884,7 +928,7 @@ export default function EmailInboxPage() {
             />
           ) : (
             <>
-              <div className="hidden sm:block">
+              <div className="hidden overflow-hidden rounded-lg border border-[var(--workspace-border)] sm:block">
                 <Table className="ax-table">
                   <TableHeader>
                     <TableRow className="bg-[#f3f4f6] hover:bg-[#f3f4f6]">

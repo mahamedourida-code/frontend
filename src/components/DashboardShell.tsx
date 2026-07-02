@@ -166,20 +166,20 @@ export function DashboardShell({
           initial={m.reduced ? { opacity: 0 } : { opacity: 0, y: -10 }}
           animate={m.reduced ? { opacity: 1 } : { opacity: 1, y: 0 }}
           transition={m.reduced ? m.tFast : { duration: m.dur.base, ease: m.ease }}
-          className="sticky top-0 z-40 h-14 border-b border-[#1a2d3d] bg-[var(--workspace-topbar)] text-white will-change-transform"
+          className="sticky top-0 z-40 h-16 border-b border-white/10 bg-[#213445] text-white shadow-[0_1px_0_rgba(255,255,255,0.05)] will-change-transform"
         >
-          <div className="relative flex h-full items-center gap-2.5 px-3 sm:gap-3.5">
+          <div className="relative flex h-full items-center gap-3 px-3.5 sm:px-4 lg:px-5">
             {showBack && (
               <>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => router.back()}
-                  className="size-10 text-white hover:bg-white/10 hover:text-white"
+                  className="size-9 text-white/88 hover:bg-white/10 hover:text-white"
                 >
-                  <ChevronLeft className="size-5" />
+                  <ChevronLeft className="size-[18px]" />
                 </Button>
-                <Separator orientation="vertical" className="h-7 bg-white/15" />
+                <Separator orientation="vertical" className="h-7 bg-white/12" />
               </>
             )}
 
@@ -192,27 +192,27 @@ export function DashboardShell({
             </div>
 
             {/* CENTER (the bar's main element): global ⌘K search */}
-            <div className="me-auto hidden min-w-0 flex-1 justify-start px-2 md:flex">
+            <div className="me-auto hidden min-w-0 flex-1 justify-start px-2 md:flex lg:px-5">
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive group inline-flex h-10 w-full max-w-[420px] cursor-pointer items-center gap-2.5 rounded-full border border-white/18 bg-white/8 px-4 text-[15px] font-medium text-white/68 hover:-translate-y-0.5 hover:border-white/35 hover:bg-white/12 hover:text-white active:translate-y-0"
+                className="ax-interactive group inline-flex h-10 w-full max-w-[520px] cursor-pointer items-center gap-2.5 rounded-full border border-white/14 bg-white/[0.07] px-4 text-[15px] font-medium text-white/68 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] hover:-translate-y-0.5 hover:border-white/28 hover:bg-white/[0.11] hover:text-white active:translate-y-0"
               >
-                <Search className="size-5 shrink-0 text-white/88" />
+                <Search className="size-[18px] shrink-0 text-white/78" />
                 <span className="truncate">Search clients, documents, pages...</span>
-                <kbd className="ms-auto hidden h-6 shrink-0 items-center rounded-full border border-white/15 bg-white/8 px-2 font-sans text-[11px] font-semibold text-white/60 sm:inline-flex">
+                <kbd className="ms-auto hidden h-6 shrink-0 items-center rounded-full border border-white/12 bg-black/10 px-2 font-sans text-[11px] font-semibold text-white/56 sm:inline-flex">
                   ⌘K
                 </kbd>
               </button>
             </div>
 
             {/* RIGHT: calm cluster — job pill, notifications, help, upgrade, account */}
-            <div className="ms-auto flex min-w-0 items-center gap-3">
+            <div className="ms-auto flex min-w-0 items-center gap-2 sm:gap-2.5">
               {/* Mobile: compact ⌘K search trigger (full bar lives on md+) */}
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive inline-flex size-10 cursor-pointer items-center justify-center rounded-full border border-white/18 bg-white/8 text-white hover:-translate-y-0.5 hover:bg-white/12 active:translate-y-0 md:hidden"
+                className="ax-interactive inline-flex size-10 cursor-pointer items-center justify-center rounded-full border border-white/14 bg-white/[0.07] text-white hover:-translate-y-0.5 hover:bg-white/12 active:translate-y-0 md:hidden"
               >
                 <Search className="size-5" />
               </button>
@@ -221,19 +221,19 @@ export function DashboardShell({
                 <Link
                   href={activeJob.href}
                   className={cn(
-                    "ax-interactive hidden h-10 cursor-pointer items-center gap-2.5 rounded-full border px-3.5 text-sm font-semibold shadow-none sm:inline-flex",
+                    "ax-interactive hidden h-8 cursor-pointer items-center gap-1.5 rounded-full border px-2.5 text-[12px] font-semibold shadow-none sm:inline-flex",
                     activeJob.tone === "ready"
-                      ? "border-white/20 bg-white/10 text-white hover:bg-white/16"
-                      : "border-white/20 bg-white/10 text-white hover:bg-white/16"
+                      ? "border-white/14 bg-white/[0.07] text-white/86 hover:border-white/24 hover:bg-white/12 hover:text-white"
+                      : "border-white/14 bg-white/[0.07] text-white/86 hover:border-white/24 hover:bg-white/12 hover:text-white"
                   )}
                 >
                   {activeJob.tone === "ready" ? (
-                    <Clock3 className="size-5" />
+                    <Clock3 className="size-3.5" />
                   ) : (
-                    <Loader2 className="size-5 animate-spin" />
+                    <Loader2 className="size-3.5 animate-spin" />
                   )}
-                  <span>{activeJob.label}</span>
-                  <span className="text-sm opacity-75">{activeJob.progress}</span>
+                  <span className="hidden max-w-[8.5rem] truncate lg:inline">{activeJob.label}</span>
+                  <span className="tabular-nums opacity-75">{activeJob.progress}</span>
                 </Link>
               )}
 
@@ -257,9 +257,9 @@ export function DashboardShell({
                     (typeof window !== "undefined" ? window.localStorage.getItem("axliner:selectedCompanyId") || "" : "")
                   router.push(`/dashboard/client${companyId ? `?company_id=${encodeURIComponent(companyId)}` : ""}#upload-files`)
                 }}
-                className="ax-interactive relative inline-flex size-10 items-center justify-center rounded-full text-white/88 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-white/35"
+                className="ax-interactive relative inline-flex size-10 items-center justify-center rounded-full text-white/82 outline-none transition-colors hover:bg-white/8 hover:text-white focus-visible:ring-2 focus-visible:ring-white/35"
               >
-                <Upload className="size-6" />
+                <Upload className="size-5" />
               </button>
 
               <button
@@ -267,7 +267,7 @@ export function DashboardShell({
                 aria-label="Keyboard shortcuts"
                 title="Keyboard shortcuts"
                 onClick={() => setCheatsheetOpen(true)}
-                className="ax-interactive relative hidden size-10 items-center justify-center rounded-full text-white/88 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-white/35 sm:inline-flex"
+                className="ax-interactive relative hidden size-10 items-center justify-center rounded-full text-white/82 outline-none transition-colors hover:bg-white/8 hover:text-white focus-visible:ring-2 focus-visible:ring-white/35 sm:inline-flex"
               >
                 <Keyboard className="size-5" />
               </button>
@@ -290,7 +290,7 @@ export function DashboardShell({
           </div>
         </motion.header>
 
-        <main className={cn("mx-auto w-full max-w-[1440px] px-4 py-5 pb-24 sm:px-5 lg:px-6", contentClassName)}>
+        <main className={cn("mx-auto min-h-[calc(100svh-4rem)] w-full max-w-[1480px] border-x border-slate-200/70 bg-white/[0.82] px-4 py-6 pb-24 shadow-[inset_1px_0_0_rgba(255,255,255,0.72),inset_-1px_0_0_rgba(255,255,255,0.72)] sm:px-5 lg:px-7", contentClassName)}>
           {(eyebrow || title) && (
             <div className="sr-only">
               {eyebrow && <span>{eyebrow}</span>}

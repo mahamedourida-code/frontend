@@ -21,7 +21,6 @@ import { BillingSeal, CreditStack, PlanSwitch } from "@/components/BillingGlyphs
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { accountApi, accountsPayableApi, billingApi, vendorMemoryApi, workspaceApi, type BillingPlanKey, type VendorRule, type VendorRuleAutoMode, type VendorRuleFields } from "@/lib/api-client"
 import { InlineAction } from "@/components/ui/inline-action"
-import { SettingRow } from "@/components/dashboard/SettingRow"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { Field } from "@/components/dashboard/Field"
 import { DangerZone } from "@/components/dashboard/DangerZone"
@@ -53,12 +52,18 @@ import {
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { Symbol } from "@/components/dashboard/Symbol"
-import { StatusBadge } from "@/components/dashboard/StatusBadge"
+import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 const selfServiceBillingKeys = new Set<string>(["pro_monthly", "pro_yearly", "max_monthly", "max_yearly"])
 
 type SettingsSection = 'account' | 'billing' | 'accounting' | 'vendors' | 'preferences'
+type SettingsNavItem = {
+  id: SettingsSection
+  label: string
+  short: string
+  icon: React.ComponentType<{ className?: string }>
+}
 
 // Soft inset surface for nested stat tiles (credits / limits). Uses workspace
 // tokens so it never theme-flips.
@@ -68,7 +73,7 @@ const softPanel =
 const accountingTextAction = "ax-text-action"
 
 const accountingPanel =
-  "ax-workspace-panel rounded-lg border border-slate-200 bg-white shadow-none dark:border-slate-800 dark:bg-slate-950"
+  "ax-workspace-panel rounded-lg border border-[var(--workspace-border)] bg-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.75),0_1px_2px_0_rgba(16,24,40,0.04)] dark:border-slate-800 dark:bg-slate-950"
 
 const accountingSubPanel =
   "rounded-lg border border-slate-200 bg-slate-50/80 shadow-none dark:border-slate-800 dark:bg-slate-900/40"
@@ -460,17 +465,28 @@ function SettingsContent() {
   const noCredits = !billingLoading && creditAvailable <= 0
   const currentSubscription = billingStatus?.subscription
   const hasBillingPortal = Boolean(currentSubscription?.customer_portal_url || billingStatus?.customer?.portal_url)
+  const planStatusLabel = checkoutSyncState === "pending"
+    ? "Confirming"
+    : currentSubscription?.status || (billingStatus?.plan === "free" ? "Free" : "Active")
+  const planStatusTone: StatusTone =
+    checkoutSyncState === "pending"
+      ? "processing"
+      : (currentSubscription?.status || (billingStatus?.plan === "free" ? "free" : "active")) === "active"
+        ? "success"
+        : billingStatus?.plan === "free"
+          ? "info"
+          : "neutral"
 
   const sidebarSections = [
     {
-      title: "Settings",
+      title: "Sections",
       items: [
-        { id: 'account', label: 'Account', icon: User },
-        { id: 'billing', label: 'Billing', icon: BillingSeal },
-        { id: 'accounting', label: 'Accounting connections', icon: DownloadCloud },
-        ...(isOwner ? [{ id: 'vendors', label: 'Vendor memory', icon: FileSpreadsheet }] : []),
-        { id: 'preferences', label: 'Preferences', icon: SlidersHorizontal },
-      ] as Array<{ id: SettingsSection; label: string; icon: React.ComponentType<{ className?: string }> }>
+        { id: 'account', label: 'Account', short: 'Profile and access', icon: User },
+        { id: 'billing', label: 'Billing', short: 'Plan, credits, limits', icon: BillingSeal },
+        { id: 'accounting', label: 'Accounting', short: 'Connections and POs', icon: DownloadCloud },
+        ...(isOwner ? [{ id: 'vendors', label: 'Vendor memory', short: 'Coding defaults', icon: FileSpreadsheet }] : []),
+        { id: 'preferences', label: 'Preferences', short: 'Review defaults', icon: SlidersHorizontal },
+      ] as SettingsNavItem[]
     }
   ]
 
@@ -484,12 +500,13 @@ function SettingsContent() {
 
   return (
     <DashboardShell activeItem="settings" title="Settings" user={user}>
-        <PageHeader title="Settings" />
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+      <div className="space-y-5">
+        <PageHeader title="Settings" className="mb-0" />
+        <div className="grid gap-4 lg:grid-cols-[17rem_minmax(0,1fr)] lg:items-start">
           {/* Mobile Section Selector */}
           <div className="lg:hidden">
             <Select value={activeSection} onValueChange={(value) => setActiveSection(value as SettingsSection)}>
-              <SelectTrigger className="w-full h-10">
+              <SelectTrigger className="h-11 w-full rounded-full bg-white px-4">
                 <SelectValue placeholder="Select a section" />
               </SelectTrigger>
               <SelectContent>
@@ -497,9 +514,12 @@ function SettingsContent() {
                   <div key={section.title}>
                     {section.items.map((item) => (
                       <SelectItem key={item.id} value={item.id}>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2.5">
                           <item.icon className="h-4 w-4" />
-                          <span>{item.label}</span>
+                          <span className="flex flex-col">
+                            <span>{item.label}</span>
+                            <span className="text-xs text-[var(--workspace-muted)]">{item.short}</span>
+                          </span>
                         </div>
                       </SelectItem>
                     ))}
@@ -510,12 +530,12 @@ function SettingsContent() {
           </div>
 
           {/* Sidebar Navigation */}
-          <nav className="hidden lg:block w-64 shrink-0">
-            <div className="rounded-xl border border-border bg-card p-2.5 shadow-none">
+          <nav className="hidden lg:block">
+            <div className="sticky top-20 rounded-lg border border-[var(--workspace-border)] bg-white p-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.75),0_1px_2px_0_rgba(16,24,40,0.04)]">
               <div className="space-y-1">
                 {sidebarSections.map((section) => (
                   <div key={section.title} className="space-y-1">
-                    <p className="px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground">
+                    <p className="px-3 pb-2 pt-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--workspace-muted)]">
                       {section.title}
                     </p>
                     {section.items.map((item) => {
@@ -525,18 +545,20 @@ function SettingsContent() {
                         <button
                           key={item.id}
                           onClick={() => setActiveSection(item.id as SettingsSection)}
+                          title={item.short}
                           className={cn(
-                            "ax-interactive relative w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground",
+                            "ax-interactive relative flex h-10 w-full items-center gap-3 rounded-full border border-transparent px-3 text-sm font-semibold text-foreground outline-none focus-visible:ring-2 focus-visible:ring-black/15",
                             isActive
-                              ? "bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]"
-                              : "hover:bg-[var(--workspace-soft)]"
+                              ? "border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]"
+                              : "hover:border-[var(--workspace-border)] hover:bg-[var(--workspace-soft)]"
                           )}
                         >
                           {isActive && (
-                            <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-[var(--workspace-primary)]" />
+                            <span className="absolute inset-y-2 left-1 w-[3px] rounded-full bg-[var(--workspace-primary)]" />
                           )}
                           <Icon className={cn("h-4 w-4 shrink-0", isActive && "text-[var(--workspace-primary)]")} />
-                          <span>{item.label}</span>
+                          <span className="min-w-0 truncate">{item.label}</span>
+                          <span className="sr-only">{item.short}</span>
                         </button>
                       )
                     })}
@@ -547,12 +569,17 @@ function SettingsContent() {
           </nav>
 
           {/* Main Content */}
-          <div className="flex-1 max-w-3xl">
+          <div className="min-w-0 max-w-4xl">
             {/* Account Settings */}
             {activeSection === 'account' && (
-              <div className="space-y-6">
+              <div className="space-y-5">
                 {/* Profile Information */}
-                <WorkspaceSection title="Account" icon={<User />} contentClassName="space-y-4">
+                <WorkspaceSection
+                  title="Profile"
+                  icon={<User />}
+                  hint="Name and sign-in email for this workspace."
+                  contentClassName="space-y-4"
+                >
                   <Field label="Full name" htmlFor="fullname">
                     <Input
                       id="fullname"
@@ -596,7 +623,7 @@ function SettingsContent() {
                 {/* Danger zone — account */}
                 <DangerZone
                   title="Delete account"
-                  description="Permanent and cannot be undone."
+                  description="Permanent deletion."
                 >
                   <Button
                     variant="dangerOutline"
@@ -664,32 +691,32 @@ function SettingsContent() {
             )}
 
             {activeSection === 'billing' && (
-              <div className="space-y-6">
+              <div className="space-y-5">
                 <WorkspaceSection
                   title={billingLoading ? "Loading plan" : `${formatPlan(billingStatus?.plan)} workspace`}
                   icon={<CreditCard />}
-                  actions={<BillingSeal className="h-7 w-7 shrink-0 text-[var(--workspace-primary)]" />}
+                  actions={<StatusBadge tone={planStatusTone}>{planStatusLabel}</StatusBadge>}
                   contentClassName="space-y-4"
                 >
-                  <div className="divide-y divide-border">
-                    <SettingRow label="Status">
-                      <StatusBadge
-                        tone={
-                          checkoutSyncState === "pending"
-                            ? "processing"
-                            : (currentSubscription?.status || (billingStatus?.plan === "free" ? "free" : "active")) === "active"
-                              ? "success"
-                              : billingStatus?.plan === "free"
-                                ? "info"
-                                : "neutral"
-                        }
-                      >
-                        {checkoutSyncState === "pending"
-                          ? "Confirming"
-                          : currentSubscription?.status || (billingStatus?.plan === "free" ? "Free" : "Active")}
-                      </StatusBadge>
-                    </SettingRow>
-                    <SettingRow label="Renew date" value={formatDate(currentSubscription?.renews_at || currentSubscription?.ends_at)} />
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <div className={cn("p-4", softPanel)}>
+                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--workspace-muted)]">Plan</p>
+                      <p className="mt-2 text-lg font-semibold text-foreground">
+                        {billingLoading ? "Loading" : formatPlan(billingStatus?.plan)}
+                      </p>
+                    </div>
+                    <div className={cn("p-4", softPanel)}>
+                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--workspace-muted)]">Renewal</p>
+                      <p className="mt-2 text-lg font-semibold text-foreground">
+                        {formatDate(currentSubscription?.renews_at || currentSubscription?.ends_at)}
+                      </p>
+                    </div>
+                    <div className={cn("p-4", softPanel)}>
+                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--workspace-muted)]">Batch limit</p>
+                      <p className="mt-2 text-lg font-semibold text-foreground">
+                        {limits ? `${limits.max_files_per_batch} files` : "Loading"}
+                      </p>
+                    </div>
                   </div>
 
                   <div className={cn("p-4", softPanel)}>
@@ -698,13 +725,13 @@ function SettingsContent() {
                         <CreditStack className="h-6 w-6 shrink-0 text-[var(--workspace-primary)]" />
                         <div>
                           <p className="text-sm font-semibold text-foreground">Credits</p>
-                          <p className="text-xs font-medium text-foreground">{creditAvailable} available of {creditTotal}</p>
+                          <p className="text-xs font-medium text-foreground">{creditUsed} used of {creditTotal}</p>
                         </div>
                       </div>
                       {noCredits ? (
                         <StatusBadge tone="error">No credits left</StatusBadge>
                       ) : (
-                        <p className="text-sm font-semibold text-[var(--workspace-primary)]">{creditUsed} used</p>
+                        <p className="text-sm font-semibold text-[var(--workspace-primary)]">{creditAvailable} left</p>
                       )}
                     </div>
                     <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted">
@@ -733,7 +760,13 @@ function SettingsContent() {
                   </div>
                 </WorkspaceSection>
 
-                <WorkspaceSection title="Upgrade path" icon={<PlanSwitch />} contentClassName="space-y-3">
+                <WorkspaceSection
+                  title="Plan changes"
+                  icon={<PlanSwitch />}
+                  hint="Self-serve upgrades and current upload limits."
+                  contentClassName="space-y-4"
+                >
+                  <div className="grid gap-3 sm:grid-cols-2">
                   {billingPlans
                     .filter((plan) => plan.checkout_key && selfServiceBillingKeys.has(plan.checkout_key))
                     .map((plan) => (
@@ -742,34 +775,40 @@ function SettingsContent() {
                       type="button"
                       onClick={() => startCheckout(plan.checkout_key as BillingPlanKey)}
                       disabled={billingAction === plan.checkout_key || !plan.checkout_available}
-                      className="ax-interactive group flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card p-4 text-left text-foreground shadow-none hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] disabled:cursor-wait disabled:opacity-70"
+                      className="ax-interactive group flex min-h-24 w-full cursor-pointer flex-col justify-between rounded-lg border border-[var(--workspace-border)] bg-white p-4 text-left text-foreground shadow-none outline-none hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] focus-visible:ring-2 focus-visible:ring-black/15 disabled:cursor-wait disabled:opacity-70"
                     >
                       <span>
                         <span className="block text-sm font-semibold">
-                          {plan.name} {plan.interval === "year" ? "annual" : "monthly"} · {plan.price_formatted}
+                          {plan.name} {plan.interval === "year" ? "annual" : "monthly"} - {plan.price_formatted}
                         </span>
-                        <span className="mt-1 block text-xs font-medium text-foreground">{plan.included_volume}</span>
+                        <span className="mt-1 block text-xs font-medium text-[var(--workspace-muted)]">{plan.included_volume}</span>
                       </span>
-                      <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--workspace-primary)]" />
+                      <span className="mt-3 inline-flex h-7 w-fit items-center rounded-full border border-[var(--workspace-primary)] px-3 text-xs font-semibold text-[var(--workspace-primary)]">
+                        Select plan
+                      </span>
                     </button>
                   ))}
 
                   <button
                     type="button"
                     onClick={() => router.push("/contact?topic=enterprise")}
-                    className="ax-interactive group flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card p-4 text-left text-foreground shadow-none hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)]"
+                    className="ax-interactive group flex min-h-24 w-full cursor-pointer flex-col justify-between rounded-lg border border-[var(--workspace-border)] bg-white p-4 text-left text-foreground shadow-none outline-none hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] focus-visible:ring-2 focus-visible:ring-black/15"
                   >
                     <span>
-                      <span className="block text-sm font-semibold">Enterprise · Contact sales</span>
-                      <span className="mt-1 block text-xs font-medium text-foreground">50,000+ documents/month and onboarding</span>
+                      <span className="block text-sm font-semibold">Enterprise</span>
+                      <span className="mt-1 block text-xs font-medium text-[var(--workspace-muted)]">50,000+ documents/month and onboarding</span>
                     </span>
-                    <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--workspace-primary)]" />
+                    <span className="mt-3 inline-flex h-7 w-fit items-center rounded-full border border-[var(--workspace-primary)] px-3 text-xs font-semibold text-[var(--workspace-primary)]">
+                      Contact sales
+                    </span>
                   </button>
 
-                  <div className={cn("p-4 text-sm font-medium text-foreground", softPanel)}>
-                    Stack limits:
-                    <span className="ml-1 font-semibold text-foreground">
-                      {limits ? `${limits.max_files_per_batch} files, ${limits.max_file_size_mb} MB each` : "loading live limits"}
+                  </div>
+
+                  <div className={cn("flex flex-wrap items-center justify-between gap-2 p-4 text-sm font-medium text-foreground", softPanel)}>
+                    <span>Current stack limits</span>
+                    <span className="font-semibold text-foreground">
+                      {limits ? `${limits.max_files_per_batch} files, ${limits.max_file_size_mb} MB each` : "Loading live limits"}
                     </span>
                   </div>
                 </WorkspaceSection>
@@ -777,12 +816,18 @@ function SettingsContent() {
             )}
 
             {activeSection === 'vendors' && isOwner && (
-              <div className="space-y-6">
+              <div className="space-y-5">
                 <WorkspaceSection
                   title="Vendor memory"
                   icon={<Store />}
-                  actions={<StatusBadge tone="warning">Owner only</StatusBadge>}
-                  contentClassName={vendorRules.length === 0 ? "p-0 sm:p-0" : "space-y-4"}
+                  hint="Approved supplier defaults reused in Review."
+                  actions={(
+                    <>
+                      <StatusBadge tone="warning">Owner only</StatusBadge>
+                      {vendorRules.length > 0 ? <StatusBadge tone="info">{vendorRules.length} saved</StatusBadge> : null}
+                    </>
+                  )}
+                  contentClassName={vendorRules.length === 0 ? "p-0 sm:p-0" : "space-y-3"}
                 >
                   {vendorRulesLoading ? (
                     <EmptyState
@@ -791,30 +836,30 @@ function SettingsContent() {
                       title="Loading vendors"
                     />
                   ) : vendorRules.length === 0 ? (
-                    <div className="flex flex-col items-center gap-5 px-6 py-10 text-center">
+                    <div className="flex flex-col items-center gap-4 px-6 py-8 text-center">
                       <Symbol
                         name="firstsight-vendors-empty"
                         size="hero"
-                        className="h-56 w-56 sm:h-64 sm:w-64"
+                        className="h-32 w-32 sm:h-36 sm:w-36"
                         alt=""
                       />
-                      <div className="max-w-sm space-y-2">
-                        <h3 className="text-lg font-semibold tracking-tight text-foreground">
-                          No remembered suppliers yet
+                      <div className="max-w-sm space-y-1.5">
+                        <h3 className="text-base font-semibold tracking-tight text-foreground">
+                          No supplier defaults yet
                         </h3>
-                        <p className="text-sm leading-relaxed text-foreground">
-                          Confirm an invoice or receipt in Review to save coding defaults.
+                        <p className="text-sm leading-6 text-[var(--workspace-muted)]">
+                          Confirm an invoice or receipt in Review to save coding.
                         </p>
                       </div>
                     </div>
                   ) : vendorRules.map(rule => (
-                    <section key={rule.id} className={cn("p-4", softPanel)}>
-                      <div className="flex flex-wrap items-start justify-between gap-3">
+                    <section key={rule.id} className={cn("p-3.5 sm:p-4", softPanel)}>
+                      <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="flex items-start gap-3">
                           <Symbol
                             name="success-vendor-remembered"
                             size="badge"
-                            className="mt-0.5 h-12 w-12"
+                            className="mt-0.5 h-10 w-10"
                             alt=""
                           />
                           <div>
@@ -827,12 +872,12 @@ function SettingsContent() {
                               {rule.enabled ? 'Enabled' : 'Disabled'}
                             </StatusBadge>
                           </div>
-                          <p className="mt-1 text-xs text-foreground">
+                          <p className="mt-1 text-xs font-medium text-[var(--workspace-muted)]">
                             Approved {formatDate(rule.approved_at)}
                           </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-5">
+                        <div className="flex items-center gap-4">
                           <InlineAction
                             tone={rule.enabled ? "warning" : "success"}
                             disabled={vendorRuleAction === rule.id}
@@ -850,7 +895,7 @@ function SettingsContent() {
                         </div>
                       </div>
 
-                      <div className="mt-4">
+                      <div className="mt-4 rounded-lg border border-[var(--workspace-border)] bg-white p-3">
                         <Field
                           label="Auto-apply mode"
                           icon={<SlidersHorizontal />}
@@ -888,7 +933,7 @@ function SettingsContent() {
                         </Field>
                       </div>
 
-                      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                      <div className="mt-3 grid gap-3 sm:grid-cols-2">
                         {([
                           ['category_account', 'Category / account', 'Office supplies'],
                           ['tax_code', 'Tax code', 'VAT 20%'],
@@ -909,14 +954,14 @@ function SettingsContent() {
                           </Field>
                         ))}
                       </div>
-                      <div className="mt-4 flex items-center justify-end gap-4 border-t border-border pt-4">
+                      <div className="mt-4 flex items-center justify-end gap-4 border-t border-border pt-3">
                         <Button
                           variant="glossy"
                           size="sm"
                           disabled={vendorRuleAction === rule.id}
                           onClick={() => void saveVendorRule(rule)}
                         >
-                          {vendorRuleAction === rule.id ? 'Saving…' : 'Save changes'}
+                          {vendorRuleAction === rule.id ? 'Saving...' : 'Save changes'}
                         </Button>
                       </div>
                     </section>
@@ -928,20 +973,20 @@ function SettingsContent() {
             {activeSection === 'accounting' && (
               <div className="space-y-5">
                 <Card className={cn(accountingPanel, "overflow-hidden")}>
-                  <CardHeader className="p-5 sm:p-6">
+                  <CardHeader className="p-4 sm:p-5">
                     <div className="flex items-start gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--workspace-blue-soft)] dark:bg-blue-950/40">
                         <DownloadCloud className="h-5 w-5 text-[var(--workspace-blue)]" />
                       </div>
                       <div>
-                        <CardTitle className="text-lg font-medium">Accounting connections</CardTitle>
+                        <CardTitle className="text-base font-semibold">Accounting connections</CardTitle>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="border-t border-border p-5 sm:p-6">
-                    <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                      <p className="max-w-md text-sm font-normal leading-relaxed text-slate-700 dark:text-slate-300">
-                        Reviewed draft bills publish to QuickBooks or Xero. AxLiner never pays them.
+                  <CardContent className="border-t border-border p-4 sm:p-5">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="max-w-md text-sm leading-6 text-[var(--workspace-muted)]">
+                        Publish reviewed, unpaid draft bills to QuickBooks or Xero.
                       </p>
                       <InlineAction asChild className={cn("shrink-0", accountingTextAction)}>
                         <Link href="/dashboard/integrations">
@@ -954,20 +999,20 @@ function SettingsContent() {
                 </Card>
 
                 <Card className={cn(accountingPanel, "overflow-hidden")}>
-                  <CardHeader className="p-5 sm:p-6">
+                  <CardHeader className="p-4 sm:p-5">
                     <div className="flex items-start gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--workspace-blue-soft)] dark:bg-blue-950/40">
                         <FileSpreadsheet className="h-5 w-5 text-[var(--workspace-blue)]" />
                       </div>
                       <div>
-                        <CardTitle className="text-lg font-medium">Purchase order import</CardTitle>
-                        <CardDescription className="mt-1 max-w-xl font-normal leading-5 text-slate-600 dark:text-slate-400">
-                          Import open purchase orders for AP matching.
+                        <CardTitle className="text-base font-semibold">Purchase order import</CardTitle>
+                        <CardDescription className="mt-1 max-w-xl leading-5 text-[var(--workspace-muted)]">
+                          Open POs for AP matching.
                         </CardDescription>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4 border-t border-border p-5 sm:p-6">
+                  <CardContent className="space-y-4 border-t border-border p-4 sm:p-5">
                     {!isOwner ? (
                       <p className={cn("px-4 py-3 text-sm font-normal text-slate-700 dark:text-slate-300", accountingSubPanel)}>
                         Ask the workspace owner to import purchase orders.
@@ -976,7 +1021,7 @@ function SettingsContent() {
                       <>
                         <div>
                           <Label htmlFor="purchase-orders-csv">Purchase orders CSV</Label>
-                          <p className="mt-1 text-xs font-normal leading-5 text-slate-600 dark:text-slate-400">
+                          <p className="mt-1 text-xs leading-5 text-[var(--workspace-muted)]">
                             Columns: <span className="font-mono text-slate-900 dark:text-slate-100">po_number, vendor, date, total, remaining, currency</span>
                           </p>
                         </div>
@@ -985,10 +1030,10 @@ function SettingsContent() {
                           value={poCsv}
                           onChange={(event) => setPoCsv(event.target.value)}
                           placeholder={"po_number,vendor,date,total,remaining,currency\nPO-1001,Acme Ltd,2026-05-01,1200.00,1200.00,USD"}
-                          rows={7}
+                          rows={6}
                           className="w-full rounded-lg border border-slate-200 bg-white p-3 font-mono text-xs outline-none transition focus:border-[var(--workspace-primary)]/40 focus:ring-2 focus:ring-black/15 dark:border-slate-800 dark:bg-slate-950"
                         />
-                        <div className="flex justify-end border-t border-border pt-4">
+                        <div className="flex justify-end border-t border-border pt-3">
                           <Button
                             variant="glossy"
                             size="sm"
@@ -1009,23 +1054,23 @@ function SettingsContent() {
 
             {/* Preferences */}
             {activeSection === 'preferences' && (
-              <div className="space-y-6">
+              <div className="space-y-5">
                 {/* Processing Settings */}
                 <Card className={accountingPanel}>
-                  <CardHeader className="p-5">
+                  <CardHeader className="p-4 sm:p-5">
                     <div className="flex items-center gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--workspace-blue-soft)] dark:bg-blue-950/40">
                         <Settings2 className="h-5 w-5 text-[var(--workspace-blue)]" />
                       </div>
                       <div>
-                        <CardTitle className="font-medium">Processing Settings</CardTitle>
+                        <CardTitle className="font-semibold">Processing defaults</CardTitle>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4 p-5">
+                  <CardContent className="space-y-4 border-t border-border p-4 sm:p-5">
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label htmlFor="auto-download">Auto Download</Label>
+                        <Label htmlFor="auto-download">Auto download</Label>
                       </div>
                       <Switch
                         id="auto-download"
@@ -1040,7 +1085,7 @@ function SettingsContent() {
                     <Separator />
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label htmlFor="auto-save">Auto Save to History</Label>
+                        <Label htmlFor="auto-save">Save to history</Label>
                       </div>
                       <Switch
                         id="auto-save"
@@ -1057,8 +1102,8 @@ function SettingsContent() {
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="invoice-language">Invoice language</Label>
-                        <p className="text-xs font-normal text-slate-600 dark:text-slate-400">
-                          Review-board labels only; OCR language stays separate.
+                        <p className="text-xs text-[var(--workspace-muted)]">
+                          Review labels only; OCR stays separate.
                         </p>
                       </div>
                       <Select
@@ -1102,19 +1147,19 @@ function SettingsContent() {
 
                 {/* OCR Detection Language */}
                 <Card className={accountingPanel}>
-                  <CardHeader className="p-5">
+                  <CardHeader className="p-4 sm:p-5">
                     <div className="flex items-center gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--workspace-blue-soft)] dark:bg-blue-950/40">
                         <Languages className="h-5 w-5 text-[var(--workspace-blue)]" />
                       </div>
                       <div>
-                        <CardTitle className="font-medium">OCR Detection Language</CardTitle>
+                        <CardTitle className="font-semibold">OCR language</CardTitle>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4 p-5">
+                  <CardContent className="space-y-4 border-t border-border p-4 sm:p-5">
                     <div className="space-y-2">
-                      <Label htmlFor="language">OCR Language</Label>
+                      <Label htmlFor="language">Detection language</Label>
                       <Select value={language} onValueChange={handleLanguageChange}>
                         <SelectTrigger id="language">
                           <SelectValue />
@@ -1177,6 +1222,7 @@ function SettingsContent() {
             )}
           </div>
         </div>
+      </div>
     </DashboardShell>
   )
 }

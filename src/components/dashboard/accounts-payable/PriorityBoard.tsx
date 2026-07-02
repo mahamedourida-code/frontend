@@ -2,31 +2,15 @@
 
 import * as React from "react"
 import { motion, useReducedMotion } from "framer-motion"
-import { AlertTriangle, ArrowRight, CircleCheck, Send } from "lucide-react"
+import { AlertTriangle, ArrowRight, CircleCheck, Clock, Send } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
 /**
- * Topic 8 — the calm priority summary that now LEADS the Draft bills page.
- *
- * Instead of dropping a busy accountant straight into a 12-column table and a
- * power editor, the page opens with three plain-English segments answering
- * "what do I do next":
- *
- *   1. Needs attention  (amber, FIRST + visually distinct) — the count of bills
- *      that still need a human: coding / review, duplicates, missing info, or an
- *      over-PO match. Clicking it focuses the queue on that group.
- *   2. Ready to publish  (emerald, the obvious next action) — coded bills one
- *      keystroke from the books, carrying the one calm primary action.
- *   3. Published          (quiet) — the done pile, for reassurance.
- *
- * Everything here is presentation over data the page ALREADY computes. No API
- * calls, no new derivations — counts and the publish handler are passed in.
- * Reuses the workspace tokens + the page's brown primary so it reads as one
- * product with the queue below it.
+ * Presentation-only priority summary over counts computed by the AP page.
  */
 
-export type PrioritySegmentKey = "needs_attention" | "ready_to_publish" | "published"
+export type PrioritySegmentKey = "needs_attention" | "pending_approval" | "ready_to_publish" | "published"
 
 interface PriorityBoardProps {
   /** Items still needing a human — coding/review, duplicates, missing info, over-PO. */
@@ -53,32 +37,37 @@ interface PriorityBoardProps {
 type Segment = {
   key: PrioritySegmentKey
   label: string
+  caption: string
   count: number
   icon: React.ReactNode
   /** Lead segment reads in amber; the rest stay calm. */
-  tone: "attention" | "ready" | "done"
+  tone: "attention" | "approval" | "ready" | "done"
 }
 
 const TONE_RING: Record<Segment["tone"], string> = {
   attention: "border-[color-mix(in_srgb,var(--text-attention)_38%,transparent)] bg-[color-mix(in_srgb,var(--text-attention)_8%,white)] hover:border-[color-mix(in_srgb,var(--text-attention)_58%,transparent)]",
+  approval: "border-[color-mix(in_srgb,var(--text-review)_30%,transparent)] bg-[color-mix(in_srgb,var(--text-review)_7%,white)] hover:border-[color-mix(in_srgb,var(--text-review)_48%,transparent)]",
   ready: "border-[color-mix(in_srgb,var(--text-success)_30%,transparent)] bg-[color-mix(in_srgb,var(--text-success)_7%,white)] hover:border-[color-mix(in_srgb,var(--text-success)_48%,transparent)]",
   done: "border-[var(--workspace-border)] bg-card hover:border-[var(--workspace-button-border)]",
 }
 
 const TONE_ACTIVE: Record<Segment["tone"], string> = {
   attention: "ring-2 ring-amber-400/60",
+  approval: "ring-2 ring-violet-400/50",
   ready: "ring-2 ring-emerald-400/60",
   done: "ring-2 ring-[var(--workspace-primary)]/40",
 }
 
 const TONE_ICON: Record<Segment["tone"], string> = {
   attention: "bg-amber-100 text-amber-700",
+  approval: "bg-violet-100 text-violet-700",
   ready: "bg-emerald-100 text-emerald-700",
   done: "bg-[var(--workspace-soft)] text-[var(--workspace-primary)]",
 }
 
 const TONE_COUNT: Record<Segment["tone"], string> = {
   attention: "text-amber-900",
+  approval: "text-violet-900",
   ready: "text-emerald-900",
   done: "text-foreground",
 }
@@ -101,13 +90,23 @@ export function PriorityBoard({
     {
       key: "needs_attention",
       label: "Needs attention",
+      caption: "Code, fix, or return",
       count: needsAttention,
       icon: <AlertTriangle aria-hidden="true" />,
       tone: "attention",
     },
     {
+      key: "pending_approval",
+      label: "Awaiting approval",
+      caption: "Owner review gate",
+      count: pendingApproval,
+      icon: <Clock aria-hidden="true" />,
+      tone: "approval",
+    },
+    {
       key: "ready_to_publish",
       label: "Ready to publish",
+      caption: "Clean drafts for export",
       count: ready,
       icon: <Send aria-hidden="true" />,
       tone: "ready",
@@ -115,6 +114,7 @@ export function PriorityBoard({
     {
       key: "published",
       label: "Published",
+      caption: "Sent to accounting",
       count: published,
       icon: <CircleCheck aria-hidden="true" />,
       tone: "done",
@@ -122,17 +122,25 @@ export function PriorityBoard({
   ]
 
   const attentionChips = [
-    pendingApproval > 0 ? { label: `${pendingApproval} awaiting approval`, key: "approval" } : null,
     duplicates > 0 ? { label: duplicates === 1 ? "1 duplicate" : `${duplicates} duplicates`, key: "dup" } : null,
     missingInfo > 0 ? { label: `${missingInfo} missing info`, key: "missing" } : null,
   ].filter(Boolean) as Array<{ label: string; key: string }>
 
   return (
     <div className="space-y-4">
-      {/* Compact destination chip (QuickBooks OR Xero), never a heavy panel. */}
-      <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end">{destinationChip}</div>
+      <div className="flex flex-col gap-3 rounded-lg border border-[var(--workspace-border)] bg-white px-4 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--workspace-muted)]">
+            AP operations
+          </p>
+          <p className="mt-1 text-sm font-semibold text-foreground">
+            Prioritize exceptions, approvals, and publish-ready drafts.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">{destinationChip}</div>
+      </div>
 
-      <div className="grid gap-2 sm:grid-cols-3 sm:gap-3">
+      <div className="grid gap-2 sm:grid-cols-2 sm:gap-3 xl:grid-cols-4">
         {segments.map((segment, index) => {
           const active = activeSegment === segment.key
           const lead = segment.tone === "attention" && segment.count > 0
@@ -150,8 +158,6 @@ export function PriorityBoard({
                 "ax-interactive group relative flex min-h-[92px] flex-col gap-2 rounded-md border p-3 text-left transition-colors sm:min-h-0 sm:gap-3 sm:p-4",
                 TONE_RING[segment.tone],
                 active && TONE_ACTIVE[segment.tone],
-                // The lead segment with work waiting carries a touch more
-                // presence so the eye lands on it first.
                 lead && "sm:scale-[1.01]",
               )}
             >
@@ -176,6 +182,7 @@ export function PriorityBoard({
                   </span>
                   <span className="truncate text-sm font-semibold text-foreground">{segment.label}</span>
                 </div>
+                <p className="mt-1 truncate text-xs font-medium text-foreground/65">{segment.caption}</p>
               </div>
 
               {/* Attention sub-breakdown as quiet chips — duplicates / missing

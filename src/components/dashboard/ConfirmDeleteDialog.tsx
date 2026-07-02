@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { CircleAlert } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -13,14 +14,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 
-/**
- * Typed-confirmation modal for irreversible actions. The confirm button stays
- * disabled until the user types `confirmText` exactly (when provided), so a
- * "delete account / delete workspace / delete client" can't fire by accident.
- *
- * Controlled: parent owns `open`. `onConfirm` may be async; the button shows a
- * busy state while it resolves and the dialog stays open on throw.
- */
+/** Controlled typed-confirmation modal for irreversible workspace actions. */
 export function ConfirmDeleteDialog({
   open,
   onOpenChange,
@@ -66,17 +60,28 @@ export function ConfirmDeleteDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-foreground">{title}</DialogTitle>
-          {description ? (
-            <DialogDescription className="text-foreground">{description}</DialogDescription>
-          ) : null}
+      <DialogContent className="overflow-hidden p-0 sm:max-w-[420px]">
+        <DialogHeader className="border-b border-[var(--workspace-border)] px-5 pb-4 pr-12 pt-5 text-left">
+          <div className="flex items-start gap-3">
+            <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-600">
+              <CircleAlert className="size-4" aria-hidden="true" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <DialogTitle className="text-[15px] font-semibold leading-6 text-foreground">
+                {title}
+              </DialogTitle>
+              {description ? (
+                <DialogDescription className="mt-1 text-[13px] leading-5 text-[var(--workspace-muted)]">
+                  {description}
+                </DialogDescription>
+              ) : null}
+            </div>
+          </div>
         </DialogHeader>
 
         {confirmText ? (
-          <div className="space-y-2">
-            <p className="text-sm font-semibold text-foreground">
+          <div className="space-y-2 px-5 py-4">
+            <p className="text-[13px] font-semibold leading-5 text-foreground">
               Type <span className="font-bold">{confirmText}</span> to confirm.
             </p>
             <Input
@@ -84,6 +89,7 @@ export function ConfirmDeleteDialog({
               onChange={(e) => setValue(e.target.value)}
               autoFocus
               placeholder={confirmText}
+              className="h-9 rounded-lg border-[var(--workspace-border)] bg-white text-sm"
               onKeyDown={(e) => {
                 if (e.key === "Enter") void handleConfirm()
               }}
@@ -91,7 +97,7 @@ export function ConfirmDeleteDialog({
           </div>
         ) : null}
 
-        <DialogFooter>
+        <DialogFooter className="border-t border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-5 py-3">
           <Button variant="surface" size="sm" onClick={() => onOpenChange(false)} disabled={busy}>
             Cancel
           </Button>

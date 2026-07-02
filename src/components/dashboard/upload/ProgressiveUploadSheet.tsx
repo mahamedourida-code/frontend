@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils"
 import { useMotionTokens } from "@/lib/motion"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
 import { companyApi, type CompanySummary } from "@/lib/api-client"
+import { Symbol } from "@/components/dashboard/Symbol"
 
 type OutputMode = "table" | "text" | "csv"
 
@@ -35,6 +36,7 @@ type ProgressiveUploadSheetProps = {
   workspaceId?: string
   selectedCompanyId: string
   onSelectedCompanyIdChange: (companyId: string) => void
+  filePreviewUrls: Record<number, string>
   pdfPageCounts: Record<number, number>
   isDragging: boolean
   isUploading: boolean
@@ -64,6 +66,12 @@ function fileSize(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`
 }
 
+const intakeVisuals = [
+  { src: "/workspace/client-chat-intake.png", label: "Chat photos" },
+  { src: "/workspace/drive-finance-folders.png", label: "Drive folder" },
+  { src: "/workspace/sample-receipt.png", label: "Receipt scan" },
+]
+
 export function ProgressiveUploadSheet({
   open,
   onOpenChange,
@@ -71,6 +79,7 @@ export function ProgressiveUploadSheet({
   workspaceId,
   selectedCompanyId,
   onSelectedCompanyIdChange,
+  filePreviewUrls,
   pdfPageCounts,
   isDragging,
   isUploading,
@@ -108,10 +117,12 @@ export function ProgressiveUploadSheet({
   const needsClientChoice = !selectedCompanyId && companies.length > 1
   const canProcess = Boolean(workspaceId && selectedCompanyId)
   const processButtonLabel = busy
-    ? "Reading documents…"
+    ? "Reading documents..."
     : !selectedCompanyId
       ? "Select client first"
-      : processLabel
+      : uploadedFiles.length
+        ? `Read ${uploadedFiles.length} document${uploadedFiles.length === 1 ? "" : "s"}`
+        : processLabel
 
   useEffect(() => {
     if (isProcessing) onOpenChange(false)
@@ -172,17 +183,22 @@ export function ProgressiveUploadSheet({
     <Sheet open={open} onOpenChange={(nextOpen) => {
       if (!busy) onOpenChange(nextOpen)
     }}>
-      <SheetContent className="w-full gap-0 bg-[var(--workspace-popout-bg)] sm:max-w-[760px]">
+      <SheetContent className="w-full gap-0 bg-[var(--workspace-popout-bg)] sm:max-w-[800px]">
         <SheetHeader className="border-b border-[var(--workspace-popout-border)] px-6 py-5 pr-12">
-          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--workspace-primary)]">New stack</p>
-          <SheetTitle className="text-xl font-bold tracking-tight">
-            {selectedCompany ? `Upload to ${selectedCompany.name}` : "Upload documents"}
-          </SheetTitle>
+          <div className="flex items-start gap-3">
+            <Symbol name="upload-tray" size="inline" className="mt-0.5 h-11 w-11 rounded-xl" alt="" />
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--workspace-primary)]">Client stack</p>
+              <SheetTitle className="mt-1 text-xl font-bold tracking-tight">
+                {selectedCompany ? selectedCompany.name : "Upload documents"}
+              </SheetTitle>
+            </div>
+          </div>
           <SheetDescription className="sr-only">Upload documents for review.</SheetDescription>
         </SheetHeader>
 
-        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-6">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="block">
               <span className="mb-1.5 block text-xs font-semibold text-foreground">Client</span>
               <select
@@ -264,6 +280,28 @@ export function ProgressiveUploadSheet({
             </div>
           ) : null}
 
+          {!uploadedFiles.length ? (
+            <div className="grid grid-cols-3 gap-2">
+              {intakeVisuals.map((visual) => (
+                <div
+                  key={visual.src}
+                  className="group overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white"
+                >
+                  <div className="aspect-[4/3] overflow-hidden bg-[var(--workspace-soft)]">
+                    <img
+                      src={visual.src}
+                      alt=""
+                      className="h-full w-full object-cover object-top transition-transform duration-200 ease-out group-hover:scale-[1.02]"
+                    />
+                  </div>
+                  <p className="border-t border-[var(--workspace-border)] px-2.5 py-1.5 text-[11px] font-semibold text-[var(--workspace-muted)]">
+                    {visual.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : null}
+
           <motion.div
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
@@ -276,22 +314,30 @@ export function ProgressiveUploadSheet({
             }}
             transition={m.spring}
             className={cn(
-              "rounded-lg border border-dashed px-4 py-10 text-center transition-colors",
+              "relative overflow-hidden rounded-lg border border-dashed px-4 py-8 text-center transition-colors",
               isDragging ? "border-[var(--workspace-primary)] bg-[var(--workspace-blue-soft)]" : "border-[var(--workspace-border)] bg-white hover:border-[var(--workspace-primary)]"
             )}
           >
-            <FolderUp className="mx-auto size-7 text-[var(--workspace-blue)]" />
-            <p className="mt-2 text-sm font-bold text-foreground">
-              {isDragging ? "Drop documents here" : "Drop files here"}
+            <div className="mx-auto flex max-w-sm items-center justify-center gap-2">
+              {(["invoice", "receipt", "bank-statement", "spreadsheet"] as const).map((name) => (
+                <Symbol key={name} name={name} size="inline" className="h-12 w-12 rounded-xl" alt="" />
+              ))}
+            </div>
+            <p className="mt-4 text-base font-bold text-foreground">
+              {isDragging ? "Drop the stack" : "Drop a client stack"}
+            </p>
+            <p className="mt-1 text-xs font-semibold text-[var(--workspace-muted)]">
+              Invoices, receipts, statements and tables.
             </p>
             <label
               htmlFor="progressive-upload-input"
               className={cn(
                 buttonVariants({ variant: "surface", size: "sm" }),
-                "mt-3 cursor-pointer",
+                "mt-4 cursor-pointer",
                 busy && "pointer-events-none opacity-50"
               )}
             >
+              <FolderUp className="size-4" />
               Browse files
             </label>
             <input
@@ -307,11 +353,17 @@ export function ProgressiveUploadSheet({
 
           {uploadedFiles.length ? (
             <div className="overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white">
-              <div className="flex items-center justify-between border-b border-[var(--workspace-border)] px-3 py-2">
-                <p className="text-xs font-semibold text-foreground">
-                  {uploadedFiles.length} of {maxUploadFiles} files
-                  {hasPdfs ? ` · ${pdfPages} PDF page${pdfPages === 1 ? "" : "s"} split for review` : ""}
-                </p>
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--workspace-border)] bg-[var(--workspace-table-header)] px-3 py-2.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex h-7 items-center rounded-full border border-[var(--workspace-border)] bg-white px-2.5 text-[11px] font-semibold text-[var(--workspace-ink)]">
+                    {uploadedFiles.length}/{maxUploadFiles} files
+                  </span>
+                  {hasPdfs ? (
+                    <span className="inline-flex h-7 items-center rounded-full border border-[var(--workspace-border)] bg-white px-2.5 text-[11px] font-semibold text-[var(--workspace-muted)]">
+                      {pdfPages} PDF page{pdfPages === 1 ? "" : "s"}
+                    </span>
+                  ) : null}
+                </div>
                 <Button type="button" variant="ghost" size="sm" onClick={onClearFiles} disabled={busy} className="h-7 px-2 text-xs">
                   Clear
                 </Button>
@@ -326,6 +378,7 @@ export function ProgressiveUploadSheet({
                   {uploadedFiles.map((file, index) => {
                     const pdf = isPdfFile(file)
                     const pageCount = pdfPageCounts[index]
+                    const previewUrl = filePreviewUrls[index]
                     return (
                       <motion.div
                         key={`${file.name}-${file.size}-${index}`}
@@ -334,13 +387,19 @@ export function ProgressiveUploadSheet({
                         exit="exit"
                         className="flex items-center gap-3 px-3 py-2.5"
                       >
-                        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
-                          {pdf ? <FileText className="size-4" /> : <FileImage className="size-4" />}
+                        <span className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
+                          {previewUrl ? (
+                            <img src={previewUrl} alt="" className="h-full w-full object-cover" />
+                          ) : pdf ? (
+                            <FileText className="size-5" />
+                          ) : (
+                            <FileImage className="size-5" />
+                          )}
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-sm font-semibold text-foreground">{file.name}</span>
-                          <span className="block truncate text-xs font-medium text-foreground/70">
-                            {pdf ? `${pageCount || 1} page${pageCount === 1 ? "" : "s"}` : "Image"} · {fileSize(file.size)}
+                          <span className="mt-0.5 block truncate text-xs font-medium text-foreground/70">
+                            {pdf ? `${pageCount || 1} page${pageCount === 1 ? "" : "s"}` : "Image"} - {fileSize(file.size)}
                           </span>
                         </span>
                         <Button

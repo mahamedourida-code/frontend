@@ -95,34 +95,36 @@ type SidebarGroup = {
   key: SidebarGroupKey
   label: string
   icon: LucideIcon
+  step?: string
   items: SidebarItem[]
 }
 
 // framer-motion-wrapped Link so nav items can carry quiet hover micro-motion.
 const MotionLink = motion.create(Link)
 
-const EXPANDED_W = 220
-const COLLAPSED_W = 68
+const EXPANDED_W = 236
+const COLLAPSED_W = 72
 const STORAGE_KEY = "axliner:sidebarCollapsed"
+const CORE_FLOW_GROUPS = new Set<SidebarGroupKey>(["collect", "review", "output"])
 
 // "Clients" is the one name everywhere (sidebar, mobile, command palette).
 const PRIMARY_ITEMS: SidebarItem[] = [
   { key: "companies", label: "Clients", href: "/dashboard", icon: Building2 },
-  { key: "guide", label: "Getting started", href: "/dashboard/guide", icon: BookOpenText },
+  { key: "guide", label: "Guide", href: "/dashboard/guide", icon: BookOpenText },
 ]
 
 const COLLECT_ITEMS: SidebarItem[] = [
   { key: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
-  { key: "upload", label: "Upload documents", href: "/dashboard/client#upload-files", icon: Upload },
+  { key: "upload", label: "Upload", href: "/dashboard/client#upload-files", icon: Upload },
 ]
 
 const REVIEW_ITEMS: SidebarItem[] = [
   { key: "batches", label: "Stacks", href: "/dashboard/batches", icon: Layers },
-  { key: "review", label: "Review board", href: "/dashboard/client", icon: BookCheck },
+  { key: "review", label: "Review", href: "/dashboard/client", icon: BookCheck },
 ]
 
 const OUTPUT_ITEMS: SidebarItem[] = [
-  { key: "exports", label: "Export Excel / CSV", href: "/dashboard/client#reviewed-outputs", icon: FileOutput },
+  { key: "exports", label: "Exports", href: "/dashboard/client#reviewed-outputs", icon: FileOutput },
   { key: "accounts_payable", label: "Draft bills", href: "/dashboard/accounts-payable", icon: ReceiptText },
   { key: "integrations", label: "Integrations", href: "/dashboard/integrations", icon: PlugZap },
 ]
@@ -131,7 +133,7 @@ const UPLOAD_AS_ITEMS: SidebarItem[] = [
   { key: "auto_detect", label: "Auto-detect", href: "/dashboard/auto-detect", icon: ScanSearch },
   { key: "invoices", label: "Invoices", href: "/dashboard/invoices", icon: FileText },
   { key: "receipts", label: "Receipts", href: "/dashboard/receipts", icon: Receipt },
-  { key: "bank_statements", label: "Bank statements", href: "/dashboard/bank-statements", icon: Landmark },
+  { key: "bank_statements", label: "Statements", href: "/dashboard/bank-statements", icon: Landmark },
   { key: "notes", label: "Notes", href: "/dashboard/notes", icon: NotebookText },
 ]
 
@@ -142,9 +144,9 @@ const MANAGE_ITEMS: SidebarItem[] = [
 ]
 
 const SIDEBAR_GROUPS: SidebarGroup[] = [
-  { key: "collect", label: "1. Collect", icon: Inbox, items: COLLECT_ITEMS },
-  { key: "review", label: "2. Review", icon: BookCheck, items: REVIEW_ITEMS },
-  { key: "output", label: "3. Output", icon: ReceiptText, items: OUTPUT_ITEMS },
+  { key: "collect", label: "Collect", icon: Inbox, step: "1", items: COLLECT_ITEMS },
+  { key: "review", label: "Review", icon: BookCheck, step: "2", items: REVIEW_ITEMS },
+  { key: "output", label: "Output", icon: ReceiptText, step: "3", items: OUTPUT_ITEMS },
   { key: "uploadAs", label: "Upload as", icon: Upload, items: UPLOAD_AS_ITEMS },
   { key: "manage", label: "Manage", icon: SlidersHorizontal, items: MANAGE_ITEMS },
 ]
@@ -175,8 +177,8 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
   const [collapsed, setCollapsed] = useState(false)
   const [openGroups, setOpenGroups] = useState<Record<SidebarGroupKey, boolean>>({
     collect: true,
-    review: false,
-    output: false,
+    review: true,
+    output: true,
     uploadAs: false,
     manage: false,
   })
@@ -252,22 +254,22 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         whileTap={m.reduced ? undefined : { scale: 0.985 }}
         transition={m.reduced ? { duration: 0 } : m.springSnappy}
         className={cn(
-          "ax-interactive relative flex items-center rounded-full border border-transparent outline-none focus-visible:ring-2 focus-visible:ring-black/25",
+          "ax-interactive relative flex items-center overflow-hidden rounded-full border border-transparent outline-none focus-visible:ring-2 focus-visible:ring-black/25",
           collapsed
-            ? "h-10 justify-center px-0 text-[15px]"
+            ? "h-10 justify-center px-0"
             : nested
-              ? "h-9 gap-2 px-2.5 text-[14px]"
+              ? "h-9 gap-2.5 px-3 text-[14px]"
               : "h-10 gap-2.5 px-3 text-[15px]",
           isActive
-            ? "border-[var(--workspace-selection-border)] font-semibold text-[var(--workspace-ink)]"
-            : "font-medium text-[var(--workspace-ink)] hover:border-[var(--workspace-border)] hover:bg-white hover:text-[var(--workspace-primary)]",
+            ? "border-[var(--workspace-selection-border)] bg-white font-semibold text-[var(--workspace-ink)] shadow-[0_1px_2px_rgba(16,24,40,0.06)]"
+            : "font-medium text-slate-700 hover:border-[var(--workspace-border)] hover:bg-white/80 hover:text-[var(--workspace-primary)]",
         )}
       >
         {isActive ? (
           <motion.span
             layoutId="sidebar-active"
             transition={activeSpring}
-            className="absolute inset-0 rounded-full bg-[var(--workspace-blue-soft)]"
+            className="absolute inset-0 rounded-full bg-white"
             aria-hidden="true"
           />
         ) : null}
@@ -275,15 +277,23 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
           <motion.span
             layoutId="sidebar-active-bar"
             transition={activeSpring}
-            className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-[var(--workspace-primary)]"
+            className="absolute left-1.5 top-1/2 h-4 w-1 -translate-y-1/2 rounded-full bg-[var(--workspace-primary)]"
+            aria-hidden="true"
+          />
+        ) : null}
+        {isActive && collapsed ? (
+          <motion.span
+            layoutId="sidebar-active-dot"
+            transition={activeSpring}
+            className="absolute right-1.5 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-[var(--workspace-primary)]"
             aria-hidden="true"
           />
         ) : null}
         <span className="relative z-10 flex shrink-0 items-center justify-center">
           <Icon
             className={cn(
-              nested && !collapsed ? "size-[15px]" : "size-[17px]",
-              isActive ? "text-[var(--workspace-primary)]" : "text-slate-700",
+              nested && !collapsed ? "size-4" : "size-[18px]",
+              isActive ? "text-[var(--workspace-primary)]" : "text-slate-600",
             )}
           />
           {(showDot || (collapsed && count > 0)) && (
@@ -309,41 +319,80 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
   }
 
   const renderGroup = (group: SidebarGroup) => {
+    const GroupIcon = group.icon
+    const containsActiveItem = group.items.some((item) => item.key === normalizedActiveItem)
+
     if (collapsed) {
       return (
-        <div key={group.key} className="space-y-1">
-          <div className="mx-auto my-2 h-px w-6 bg-[var(--workspace-border)]" aria-hidden="true" />
+        <div key={group.key} className="space-y-1.5">
+          <div
+            className={cn(
+              "mx-auto mt-2 flex h-6 w-10 items-center justify-center rounded-full text-[11px] font-semibold",
+              group.step
+                ? "border border-[var(--workspace-border)] bg-white text-slate-500"
+                : "text-slate-500",
+            )}
+            title={group.label}
+            aria-hidden="true"
+          >
+            {group.step ? group.step : <GroupIcon className="size-3.5" />}
+          </div>
           {group.items.map((item) => renderItem(item))}
         </div>
       )
     }
 
-    const GroupIcon = group.icon
+    if (CORE_FLOW_GROUPS.has(group.key)) {
+      return (
+        <div key={group.key} className="space-y-1.5">
+          <div
+            className={cn(
+              "flex h-7 items-center gap-2 px-3 pt-1 text-[12px] font-semibold text-slate-500",
+              containsActiveItem && "text-[var(--workspace-ink)]",
+            )}
+          >
+            <span
+              className={cn(
+                "inline-flex size-5 shrink-0 items-center justify-center rounded-full border text-[11px] tabular-nums",
+                containsActiveItem
+                  ? "border-[var(--workspace-selection-border)] bg-white text-[var(--workspace-primary)]"
+                  : "border-[var(--workspace-border)] bg-white/70 text-slate-500",
+              )}
+            >
+              {group.step}
+            </span>
+            <span>{group.label}</span>
+            <span className="h-px flex-1 bg-[var(--workspace-border)]" aria-hidden="true" />
+          </div>
+          <div className="space-y-0.5">{group.items.map((item) => renderItem(item, true))}</div>
+        </div>
+      )
+    }
+
     const isOpen = openGroups[group.key]
-    const containsActiveItem = group.items.some((item) => item.key === normalizedActiveItem)
 
     return (
-      <div key={group.key} className="space-y-1">
+      <div key={group.key} className="space-y-1.5">
         <button
           type="button"
           aria-expanded={isOpen}
           aria-controls={`sidebar-group-${group.key}`}
           onClick={() => setOpenGroups((current) => ({ ...current, [group.key]: !current[group.key] }))}
           className={cn(
-            "ax-interactive flex h-10 w-full items-center gap-2.5 rounded-full border border-transparent px-3 text-[15px] font-semibold text-[var(--workspace-ink)] outline-none hover:border-[var(--workspace-border)] hover:bg-white focus-visible:ring-2 focus-visible:ring-black/25",
-            containsActiveItem && "border-[var(--workspace-selection-border)] bg-white/70",
+            "ax-interactive flex h-9 w-full items-center gap-2.5 rounded-full border border-transparent px-3 text-[13px] font-semibold text-slate-600 outline-none hover:border-[var(--workspace-border)] hover:bg-white/80 hover:text-[var(--workspace-ink)] focus-visible:ring-2 focus-visible:ring-black/25",
+            containsActiveItem && "border-[var(--workspace-selection-border)] bg-white text-[var(--workspace-ink)]",
           )}
         >
           <GroupIcon
             className={cn(
-              "size-[17px]",
-              containsActiveItem ? "text-[var(--workspace-primary)]" : "text-slate-700",
+              "size-4",
+              containsActiveItem ? "text-[var(--workspace-primary)]" : "text-slate-500",
             )}
           />
           <span className="flex-1 text-left">{group.label}</span>
           <ChevronDown
             className={cn(
-              "size-4 text-slate-500 transition-transform duration-150 ease-out",
+              "size-3.5 text-slate-400 transition-transform duration-150 ease-out",
               isOpen && "rotate-180",
             )}
             aria-hidden="true"
@@ -358,7 +407,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
               animate={{ height: "auto", opacity: 1 }}
               exit={m.reduced ? { opacity: 0 } : { height: 0, opacity: 0 }}
               transition={m.reduced ? { duration: 0 } : { duration: m.dur.fast, ease: m.ease }}
-              className="ml-5 overflow-hidden border-l border-[var(--workspace-border)] pl-2"
+              className="ml-4 overflow-hidden border-l border-[var(--workspace-border)] pl-2"
             >
               <div className="space-y-0.5 py-0.5">{group.items.map((item) => renderItem(item, true))}</div>
             </motion.div>
@@ -370,15 +419,36 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
 
   return (
     <motion.aside
-      className="fixed inset-y-0 start-0 z-30 hidden overflow-hidden bg-[var(--workspace-sidebar)] text-[var(--workspace-ink)] md:flex md:flex-col"
+      className="fixed inset-y-0 start-0 z-30 hidden overflow-hidden border-r border-[var(--workspace-border)] bg-[var(--workspace-sidebar)] text-[var(--workspace-ink)] md:flex md:flex-col"
       aria-label="Workspace navigation"
       initial={false}
       animate={{ width: collapsed ? COLLAPSED_W : EXPANDED_W }}
       transition={m.reduced ? { duration: 0 } : { duration: m.dur.slow, ease: m.ease }}
     >
-      <div className="flex h-14 shrink-0 items-center gap-2.5 bg-[var(--workspace-topbar)] px-3 text-white">
-        <AnimatePresence initial={false}>
-          {!collapsed && (
+      <div
+        className={cn(
+          "flex h-16 shrink-0 items-center border-b border-white/10 bg-[#213445] px-3 text-white",
+          collapsed ? "justify-center gap-1.5 px-2" : "gap-2.5",
+        )}
+      >
+        <AnimatePresence initial={false} mode="popLayout">
+          {collapsed ? (
+            <motion.div
+              key="mark"
+              initial={m.reduced ? false : { opacity: 0, x: -4 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={m.reduced ? { opacity: 0 } : { opacity: 0, x: -4 }}
+              transition={m.reduced ? { duration: 0 } : m.tFast}
+            >
+              <Link
+                href="/dashboard"
+                aria-label="AxLiner home"
+                className="ax-interactive flex size-9 items-center justify-center rounded-full outline-none hover:bg-white/8 focus-visible:ring-2 focus-visible:ring-white/30"
+              >
+                <AxMark className="h-8 w-auto invert" />
+              </Link>
+            </motion.div>
+          ) : (
             <motion.div
               key="brand"
               initial={m.reduced ? false : { opacity: 0, x: -6 }}
@@ -404,12 +474,9 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-expanded={!collapsed}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className={cn(
-            "ax-interactive flex size-10 items-center justify-center rounded-full text-white/80 outline-none hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white/30",
-            collapsed && "mx-auto",
-          )}
+          className="ax-interactive flex size-9 items-center justify-center rounded-full text-white/76 outline-none hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white/30"
         >
-          <PanelLeft className="size-5" />
+          <PanelLeft className="size-[18px]" />
         </button>
       </div>
 
@@ -419,11 +486,15 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         initial={m.reduced ? false : { opacity: 0, y: 4 }}
         animate={{ opacity: 1, y: 0 }}
         transition={m.reduced ? { duration: 0 } : m.tBase}
-        className={cn("flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-3", collapsed && "cursor-pointer")}
+        className={cn("flex flex-1 flex-col gap-3 overflow-y-auto px-2.5 py-3", collapsed && "cursor-pointer px-2")}
       >
-        {PRIMARY_ITEMS.map((item) => renderItem(item))}
-        {SIDEBAR_GROUPS.slice(0, -1).map((group) => renderGroup(group))}
-        <div className="mt-auto border-t border-[var(--workspace-border)] pt-2">
+        <div className="space-y-1 border-b border-[var(--workspace-border)] pb-3">
+          {PRIMARY_ITEMS.map((item) => renderItem(item))}
+        </div>
+        <div className="space-y-3">
+          {SIDEBAR_GROUPS.slice(0, -1).map((group) => renderGroup(group))}
+        </div>
+        <div className="mt-auto border-t border-[var(--workspace-border)] pt-3">
           {renderGroup(SIDEBAR_GROUPS[SIDEBAR_GROUPS.length - 1])}
         </div>
       </motion.nav>

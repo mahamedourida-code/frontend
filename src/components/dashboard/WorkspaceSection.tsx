@@ -12,7 +12,7 @@ type SectionTone = "default" | "active" | "muted"
 
 const toneAccent: Record<SectionTone, string> = {
   default: "",
-  active: "border-[var(--workspace-selection-border)] bg-[color-mix(in_srgb,var(--workspace-blue-soft)_46%,white)]",
+  active: "border-[var(--workspace-selection-border)] bg-[color-mix(in_srgb,var(--workspace-blue-soft)_72%,white)]",
   muted: "bg-[var(--workspace-soft)]",
 }
 
@@ -23,7 +23,7 @@ interface WorkspaceSectionProps {
   icon?: React.ReactNode
   /** Optional step chip rendered before the title, e.g. "2". */
   step?: React.ReactNode
-  /** One calm line under the title. Use sparingly — most sections need none. */
+  /** One calm line under the title. Use sparingly; most sections need none. */
   hint?: React.ReactNode
   /** Optional shared contextual vector symbol. */
   symbol?: string
@@ -38,21 +38,16 @@ interface WorkspaceSectionProps {
   className?: string
   headerClassName?: string
   contentClassName?: string
+  actionsClassName?: string
+  titleClassName?: string
+  hintClassName?: string
+  compact?: boolean
   id?: string
 }
 
 /**
- * The shared "box" used across the workspace and the AP queue. A calm,
- * bordered card with a labelled header (optional leading icon, step number, or
- * hint) and a roomy content well. Built only on existing brand tokens (card /
- * border / muted / brand-green / workspace-primary) so it never theme-flips and
- * never reads as generic AI-gradient filler. One primitive, used on every
- * review surface, so they feel like one product.
- *
- * Premium structure cues, inspired by Tables: a soft `rounded-xl` shell,
- * generous `px-6` padding, an optional icon tile leading the title, and an
- * optional collapse so secondary density can be tucked away instead of
- * crowding the page.
+ * Shared workspace panel: compact header, calm border, optional icon/step/hint,
+ * and a content well that callers can tighten with `compact` or class hooks.
  */
 export function WorkspaceSection({
   title,
@@ -68,6 +63,10 @@ export function WorkspaceSection({
   className,
   headerClassName,
   contentClassName,
+  actionsClassName,
+  titleClassName,
+  hintClassName,
+  compact = false,
   id,
 }: WorkspaceSectionProps) {
   const m = useMotionTokens()
@@ -75,24 +74,50 @@ export function WorkspaceSection({
   const isOpen = collapsible ? open : true
 
   const heading = (
-    <div className="flex min-w-0 flex-1 items-start gap-3">
+    <div className={cn("flex min-w-0 flex-1 items-start", compact ? "gap-2.5" : "gap-3")}>
       {icon ? (
-        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-md border border-[color-mix(in_srgb,var(--workspace-primary)_16%,var(--workspace-border))] bg-[color-mix(in_srgb,var(--workspace-primary)_7%,white)] text-[var(--workspace-primary)] [&_svg]:size-[17px]">
+        <span
+          className={cn(
+            "inline-flex shrink-0 items-center justify-center rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]",
+            compact ? "size-7 [&_svg]:size-3.5" : "size-8 [&_svg]:size-4",
+          )}
+        >
           {icon}
         </span>
       ) : null}
-      {symbol ? <Symbol name={symbol} size="badge" className="-my-1" /> : null}
+      {symbol ? <Symbol name={symbol} size="badge" className={cn("-my-1", compact && "scale-90")} /> : null}
       <div className="min-w-0 flex-1">
-        <div className="flex min-w-0 items-center gap-2.5">
+        <div className="flex min-w-0 items-center gap-2">
           {step !== undefined && step !== null ? (
-            <span className="inline-flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full border border-[var(--workspace-border)] bg-white px-2 font-mono text-[12px] font-semibold tabular-nums text-[var(--workspace-primary)]">
+            <span
+              className={cn(
+                "inline-flex shrink-0 items-center justify-center rounded-full border border-[var(--workspace-border)] bg-white font-mono font-semibold tabular-nums text-[var(--workspace-primary)]",
+                compact ? "h-5 min-w-5 px-1.5 text-[11px]" : "h-6 min-w-6 px-2 text-[12px]",
+              )}
+            >
               {step}
             </span>
           ) : null}
-          <h2 className="truncate text-[15px] font-semibold tracking-normal text-foreground">{title}</h2>
+          <h2
+            className={cn(
+              "truncate font-semibold tracking-normal text-foreground",
+              compact ? "text-[13px]" : "text-[14px]",
+              titleClassName,
+            )}
+          >
+            {title}
+          </h2>
         </div>
         {hint ? (
-          <p className="mt-1 max-w-3xl text-[13px] leading-5 text-[var(--workspace-muted)]">{hint}</p>
+          <p
+            className={cn(
+              "mt-1 max-w-2xl text-pretty text-[12px] leading-5 text-[var(--workspace-muted)]",
+              compact && "max-w-xl leading-4",
+              hintClassName,
+            )}
+          >
+            {hint}
+          </p>
         ) : null}
       </div>
       {collapsible ? (
@@ -110,14 +135,15 @@ export function WorkspaceSection({
     <section
       id={id}
       className={cn(
-        "relative overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white",
+        "relative overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white shadow-[0_1px_2px_0_rgba(16,24,40,0.035)]",
         toneAccent[tone],
         className,
       )}
     >
       <header
         className={cn(
-          "flex items-start justify-between gap-3 px-4 py-3.5 sm:px-5",
+          "flex items-start justify-between gap-3",
+          compact ? "px-3 py-2.5 sm:px-4" : "px-4 py-3 sm:px-5",
           isOpen && "border-b border-[var(--workspace-border)]",
           headerClassName,
         )}
@@ -127,14 +153,18 @@ export function WorkspaceSection({
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={isOpen}
-            className="ax-interactive -m-1 flex min-w-0 flex-1 items-start rounded-md p-1 text-left hover:bg-[var(--workspace-soft)]"
+            className="ax-interactive -m-1 flex min-w-0 flex-1 items-start rounded-lg p-1 text-left hover:bg-[var(--workspace-soft)]"
           >
             {heading}
           </button>
         ) : (
           heading
         )}
-        {actions ? <div className="flex shrink-0 flex-wrap items-center justify-end gap-2.5">{actions}</div> : null}
+        {actions ? (
+          <div className={cn("flex shrink-0 flex-wrap items-center justify-end gap-2", actionsClassName)}>
+            {actions}
+          </div>
+        ) : null}
       </header>
       <AnimatePresence initial={false}>
         {isOpen ? (
@@ -146,7 +176,9 @@ export function WorkspaceSection({
             transition={m.reduced ? { duration: 0 } : { duration: m.dur.route, ease: m.ease }}
             className="overflow-hidden"
           >
-            <div className={cn("px-4 py-4 sm:px-5", contentClassName)}>{children}</div>
+            <div className={cn(compact ? "px-3 py-3 sm:px-4" : "px-4 py-4 sm:px-5", contentClassName)}>
+              {children}
+            </div>
           </motion.div>
         ) : null}
       </AnimatePresence>

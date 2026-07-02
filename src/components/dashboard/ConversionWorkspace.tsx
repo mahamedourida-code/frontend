@@ -598,13 +598,13 @@ function ExtractedTable({ rows }: { rows: any[][] }) {
 }
 
 const reviewBoardActionBarClass =
-  "scroll-mt-20 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-md border border-[var(--workspace-border)] bg-white px-4 py-2.5 shadow-none"
+  "scroll-mt-20 flex flex-col gap-3 rounded-lg border border-[var(--workspace-border)] bg-white px-4 py-3 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.85),0_1px_2px_0_rgba(16,24,40,0.04),0_10px_24px_-18px_rgba(16,24,40,0.32)] sm:flex-row sm:items-center sm:justify-between"
 const reviewBoardShellClass =
-  "overflow-hidden rounded-md border border-[var(--workspace-border)] bg-white shadow-none"
+  "overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.85),0_1px_2px_0_rgba(16,24,40,0.04),0_12px_30px_-22px_rgba(16,24,40,0.38)]"
 const reviewBoardTopbarClass =
   "flex min-h-12 flex-col gap-2 border-b border-[var(--workspace-border)] bg-white px-4 sm:flex-row sm:items-center sm:justify-between"
 const reviewBoardBandClass =
-  "flex min-h-10 items-center justify-between gap-3 border-b border-[var(--workspace-border)] bg-[var(--workspace-table-header)] px-4 py-2 text-[12px] text-[var(--workspace-muted)]"
+  "border-b border-[var(--workspace-border)] bg-[var(--workspace-table-header)] px-4 py-3 text-[12px] text-[var(--workspace-muted)]"
 const reviewBoardTableClass =
   "ax-table w-full min-w-[1120px] text-left text-[13px]"
 const reviewBoardHeadCellClass =
@@ -617,6 +617,8 @@ const reviewBoardMenuClass =
   "absolute right-0 top-11 z-30 space-y-1.5 rounded-md border border-[var(--workspace-border)] bg-white p-2 shadow-[0_8px_30px_rgba(0,0,0,0.12)]"
 const reviewBoardMobileCardClass =
   "border-b border-[var(--workspace-border)] bg-white p-3 last:border-b-0"
+const reviewBoardMetricClass =
+  "inline-flex h-7 items-center rounded-full border border-[var(--workspace-border)] bg-white px-2.5 text-[11px] font-semibold text-[var(--workspace-muted)]"
 const reviewBoardDash =
   <span className="text-[var(--workspace-muted)]/60">-</span>
 
@@ -1172,6 +1174,12 @@ export function ResultActions({
   ] as Array<{ value: ResultFilter; label: string; count: number }>).filter((tab) => (
     tab.value === "all" || tab.count > 0 || tab.value === resultFilter
   ))
+  const reviewMetrics = [
+    { label: "Needs review", value: filterCounts.needs_review },
+    { label: "Ready", value: filterCounts.ready },
+    { label: "Edited", value: filterCounts.edited },
+    { label: "Duplicates", value: unresolvedDuplicateCount },
+  ] as const
   const filteredResultEntries = resultEntries.filter((entry) => {
     if (resultFilter === "all") return true
     if (resultFilter === "edited") return entry.edited
@@ -1464,13 +1472,23 @@ export function ResultActions({
     <div className="space-y-2.5">
       {isComplete ? (
         <div id="reviewed-outputs" className={reviewBoardActionBarClass}>
-          <span className="text-sm font-semibold text-[var(--workspace-ink)]">Reviewed stack</span>
-          {editedCount > 0 && !isTextOutput ? (
-            <span className="inline-flex h-7 items-center rounded-full border border-[var(--workspace-border)] bg-white px-2.5 text-xs font-semibold text-[var(--workspace-muted)] shadow-none">
-              {editedCount} edited
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
+              <ListChecks className="size-4" />
             </span>
-          ) : null}
-          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-[var(--workspace-ink)]">Review board</p>
+              <p className="mt-0.5 truncate text-xs font-medium text-[var(--workspace-muted)]">
+                Check exceptions, mark clean documents ready, then export reviewed files.
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+            {editedCount > 0 && !isTextOutput ? (
+              <span className="inline-flex h-7 items-center rounded-full border border-[var(--workspace-border)] bg-white px-2.5 text-xs font-semibold text-[var(--workspace-muted)] shadow-none">
+                {editedCount} edited
+              </span>
+            ) : null}
             <details className="group relative">
               <summary className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-9 cursor-pointer list-none gap-2 px-3 text-xs [&::-webkit-details-marker]:hidden", workspaceNormalControlClass)}>
                 More actions
@@ -1526,7 +1544,7 @@ export function ResultActions({
             <details className="group relative">
               <summary className={cn(buttonVariants({ variant: "glossy", size: "default" }), "h-9 cursor-pointer list-none gap-2 px-4 text-sm [&::-webkit-details-marker]:hidden", workspacePrimaryControlClass)}>
                 <Send className="h-4 w-4" />
-                Send / export
+                Export / draft bills
                 <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
               </summary>
               <div className={cn(reviewBoardMenuClass, "w-64")}>
@@ -1579,8 +1597,8 @@ export function ResultActions({
       ) : null}
 
       <div className="pt-2">
-        <div className="overflow-hidden rounded-[4px] border border-[#c8ced6] bg-white shadow-none">
-          <div className="flex min-h-12 flex-col gap-2 border-b border-[#cfd4da] bg-white px-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className={reviewBoardShellClass}>
+          <div className={reviewBoardTopbarClass}>
             <div className="flex min-h-12 flex-wrap items-stretch gap-4">
               {resultFilterTabs.map((tab) => {
                 const active = resultFilter === tab.value
@@ -1626,11 +1644,21 @@ export function ResultActions({
               className="rounded-none border-x-0 border-t-0"
             />
           ) : (
-            <div className="flex min-h-10 items-center justify-between gap-3 border-b border-[#d9dde3] bg-[#f6f7fb] px-4 py-2 text-[12px] text-[#475467]">
-              <span className="font-semibold text-[#344054]">Review results</span>
-              <span className="tabular-nums">
-                {filteredResultEntries.length}/{filterCounts.all} shown
-              </span>
+            <div className={reviewBoardBandClass}>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <span className="font-semibold text-[var(--workspace-ink)]">Review results</span>
+                <span className="tabular-nums">
+                  {filteredResultEntries.length}/{filterCounts.all} shown
+                </span>
+              </div>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {reviewMetrics.map((metric) => (
+                  <span key={metric.label} className={reviewBoardMetricClass}>
+                    <span className="mr-1.5 text-[var(--workspace-ink)] tabular-nums">{metric.value}</span>
+                    {metric.label}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
 
@@ -2793,76 +2821,100 @@ function BatchStagingBoard({
   const tabLabel = mode === "idle" ? "Recent" : mode === "staged" ? "Staged" : "Documents"
   const bandLabel = mode === "idle" ? "Recent files" : mode === "staged" ? "Ready to read" : "Reading documents"
   const countLabel = mode === "idle" ? `${rowCount} shown` : `${rowCount} file${rowCount === 1 ? "" : "s"}`
+  const stagedPdfCount = uploadedFiles.filter(isPdfFile).length
+  const stagedPageCount = uploadedFiles.reduce((total, file, index) => (
+    total + (isPdfFile(file) ? (pdfPageCounts[index] || 1) : 0)
+  ), 0)
   const dash = <span className="text-[#98a2b3]">–</span>
 
   return (
     <div className="space-y-2.5">
       {mode !== "processing" ? (
-      <div className="flex flex-wrap items-center gap-2 rounded-[4px] border border-[#c8ced6] bg-white px-3 py-2 shadow-none">
-        {mode === "staged" ? (
-          <>
-            {/* Context leads on the left; actions group on the right, primary last. */}
-            <span className="inline-flex h-9 items-center rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#475467]">
-              {stagedCount} staged
-            </span>
-            <div className="ml-auto flex flex-wrap items-center gap-2">
-              <Button
-                variant="surface"
-                onClick={onClearFiles}
-                className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}
-              >
-                <RotateCcw className="h-4 w-4" />
-                New stack
-              </Button>
-              <Button
-                variant="surface"
-                onClick={onOpenUpload}
-                className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}
-              >
-                <FolderUp className="h-4 w-4" />
-                Add more
-              </Button>
-              <Button
-                variant="glossy"
-                onClick={onConvert}
-                disabled={noCredits}
-                className={cn("h-9 gap-2 px-4", workspacePrimaryControlClass)}
-              >
-                <ArrowRight className="h-4 w-4" />
-                Process {stagedCount} file{stagedCount === 1 ? "" : "s"}
-              </Button>
-            </div>
-          </>
-        ) : (
-          <>
-            <Button
-              variant="glossy"
-              onClick={onOpenUpload}
-              className={cn("h-9 gap-2 px-5", workspacePrimaryControlClass)}
-            >
-              <Upload className="h-4 w-4" />
-              Upload
-            </Button>
-            <Button asChild variant="surface" className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}>
-              <a href="/dashboard/inbox">
-                <Inbox className="h-4 w-4" />
-                Open inbox
-              </a>
-            </Button>
-            <Button asChild variant="ghost" className="ml-auto h-9 gap-2 px-3 text-xs text-[#475467] hover:text-[#111827]">
-              <a href="/dashboard/guide">
-                <BookOpen className="h-4 w-4" />
-                Guide
-              </a>
-            </Button>
-          </>
-        )}
-      </div>
+        <div className={reviewBoardActionBarClass}>
+          {mode === "staged" ? (
+            <>
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
+                  <FolderUp className="size-4" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-[var(--workspace-ink)]">Stack ready to read</p>
+                  <p className="mt-0.5 truncate text-xs font-medium text-[var(--workspace-muted)]">
+                    {stagedCount} document{stagedCount === 1 ? "" : "s"} staged for review.
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                <Button
+                  variant="surface"
+                  onClick={onClearFiles}
+                  className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  New stack
+                </Button>
+                <Button
+                  variant="surface"
+                  onClick={onOpenUpload}
+                  className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}
+                >
+                  <FolderUp className="h-4 w-4" />
+                  Add more
+                </Button>
+                <Button
+                  variant="glossy"
+                  onClick={onConvert}
+                  disabled={noCredits}
+                  className={cn("h-9 gap-2 px-4", workspacePrimaryControlClass)}
+                >
+                  <ArrowRight className="h-4 w-4" />
+                  Read {stagedCount} document{stagedCount === 1 ? "" : "s"}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
+                  <Inbox className="size-4" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-[var(--workspace-ink)]">Client workspace</p>
+                  <p className="mt-0.5 truncate text-xs font-medium text-[var(--workspace-muted)]">
+                    Upload a stack or reopen recent review work.
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                <Button
+                  variant="glossy"
+                  onClick={onOpenUpload}
+                  className={cn("h-9 gap-2 px-5", workspacePrimaryControlClass)}
+                >
+                  <Upload className="h-4 w-4" />
+                  Upload
+                </Button>
+                <Button asChild variant="surface" className={cn("h-9 gap-2 px-3 text-xs", workspaceNormalControlClass)}>
+                  <a href="/dashboard/inbox">
+                    <Inbox className="h-4 w-4" />
+                    Open inbox
+                  </a>
+                </Button>
+                <Button asChild variant="ghost" className="h-9 gap-2 px-3 text-xs text-[#475467] hover:text-[#111827]">
+                  <a href="/dashboard/guide">
+                    <BookOpen className="h-4 w-4" />
+                    Guide
+                  </a>
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
       ) : null}
 
       <div className="pt-2">
-        <div className="overflow-hidden rounded-[4px] border border-[#c8ced6] bg-white shadow-none">
-          <div className="flex min-h-12 flex-col gap-2 border-b border-[#cfd4da] bg-white px-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className={reviewBoardShellClass}>
+          <div className={reviewBoardTopbarClass}>
             <div className="flex min-h-12 flex-wrap items-stretch gap-4">
               <span className="relative inline-flex h-12 items-center gap-1.5 border-b-2 border-[var(--workspace-primary)] px-0 text-[13px] font-semibold text-[var(--workspace-primary)]">
                 <span>{tabLabel}</span>
@@ -2880,9 +2932,28 @@ function BatchStagingBoard({
               className="rounded-none border-x-0 border-t-0"
             />
           ) : (
-            <div className="flex min-h-10 items-center justify-between gap-3 border-b border-[#d9dde3] bg-[#f6f7fb] px-4 py-2 text-[12px] text-[#475467]">
-              <span className="font-semibold text-[#344054]">{bandLabel}</span>
-              <span className="tabular-nums">{countLabel}</span>
+            <div className={reviewBoardBandClass}>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <span className="font-semibold text-[var(--workspace-ink)]">{bandLabel}</span>
+                <span className="tabular-nums">{countLabel}</span>
+              </div>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <span className={reviewBoardMetricClass}>
+                  <span className="mr-1.5 text-[var(--workspace-ink)] tabular-nums">{rowCount}</span>
+                  {mode === "idle" ? "Recent stacks" : "Staged"}
+                </span>
+                {mode !== "idle" && stagedPdfCount > 0 ? (
+                  <span className={reviewBoardMetricClass}>
+                    <span className="mr-1.5 text-[var(--workspace-ink)] tabular-nums">{stagedPageCount}</span>
+                    PDF pages
+                  </span>
+                ) : null}
+                {mode === "staged" ? (
+                  <span className={reviewBoardMetricClass}>
+                    {noCredits ? "Credits needed" : "Ready for review"}
+                  </span>
+                ) : null}
+              </div>
             </div>
           )}
 
@@ -2968,8 +3039,20 @@ function BatchStagingBoard({
                   ) : (
                     <tr>
                       <td colSpan={12} className="border-b border-[#e4e7ef] px-4 py-14 text-center">
-                        <div className="mx-auto flex max-w-3xl flex-col items-center gap-4">
-                          <p className="text-[14px] font-semibold text-[#111827]">Start with a mixed batch</p>
+                        <div className="mx-auto flex max-w-sm flex-col items-center gap-4">
+                          <div className="overflow-hidden rounded-lg border border-[#d8dde6] bg-white shadow-[0_10px_30px_-24px_rgba(15,23,42,0.45)]">
+                            <img
+                              src="/workspace/document-stack.png"
+                              alt=""
+                              className="h-28 w-40 object-cover object-center"
+                            />
+                          </div>
+                          <div>
+                            <p className="text-[14px] font-semibold text-[#111827]">No stack open</p>
+                            <p className="mt-1 text-xs font-medium text-[#475467]">
+                              Upload client documents to build the review board.
+                            </p>
+                          </div>
                           <Button
                             type="button"
                             variant="glossy"
@@ -3190,6 +3273,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
         workspaceId={workspaceId}
         selectedCompanyId={selectedCompanyId}
         onSelectedCompanyIdChange={onSelectedCompanyIdChange}
+        filePreviewUrls={filePreviewUrls}
         pdfPageCounts={pdfPageCounts}
         isDragging={isDragging}
         isUploading={isUploading}
