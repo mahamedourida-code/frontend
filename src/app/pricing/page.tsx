@@ -258,8 +258,16 @@ function compareBillingLabel(plan: BillingPlan) {
 // Blue circle with white check for included comparison features.
 function CompareTick() {
   return (
-    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[var(--landing-blue)] text-white">
-      <Check aria-hidden="true" className="h-3.5 w-3.5 stroke-[3]" />
+    <span className="inline-flex size-5 items-center justify-center rounded-full bg-[var(--landing-blue)] text-white">
+      <Check aria-hidden="true" className="size-3 stroke-[3]" />
+    </span>
+  )
+}
+
+function PlanFeatureTick() {
+  return (
+    <span className="mt-1 inline-flex size-[18px] shrink-0 items-center justify-center rounded-full bg-[var(--landing-blue)] text-white">
+      <Check aria-hidden="true" className="size-2.5 stroke-[3]" />
     </span>
   )
 }
@@ -674,7 +682,7 @@ function PricingContent() {
                     <ul className="flex-1 space-y-3">
                       {copy.included.map((feature) => (
                         <li key={feature} className="flex items-start gap-3 text-base font-semibold leading-7">
-                          <Check aria-hidden="true" className={cn("mt-1 h-4 w-4 shrink-0", "text-[var(--landing-blue)]")} />
+                          <PlanFeatureTick />
                           <span className="text-neutral-900">{feature}</span>
                         </li>
                       ))}
