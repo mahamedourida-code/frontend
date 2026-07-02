@@ -98,6 +98,8 @@ type QueueFilter =
 
 type MoreFilter = Extract<QueueFilter, "duplicates" | "missing_info" | "failed" | "discarded">
 
+type PendingConfirmationAction = "discard" | "submit" | "publish" | "publish_over_po" | "retry_attachment"
+
 const queueStatuses: Array<{ value: AccountsPayableStatus; label: string }> = [
   { value: "needs_coding", label: "Needs coding" },
   { value: "needs_review", label: "Needs review" },
@@ -169,12 +171,6 @@ const moreFilters: Array<{ value: MoreFilter; label: string }> = [
   { value: "failed", label: "Failed" },
   { value: "discarded", label: "Discarded" },
 ]
-
-const workspacePrimaryButton =
-  "!rounded-lg !border-[var(--btn-primary-bg)] !bg-[var(--btn-primary-bg)] !text-[var(--btn-primary-fg)] !shadow-none hover:!bg-[var(--btn-primary-bg-hover)] hover:!text-[var(--btn-primary-fg-hover)]"
-
-const workspaceSurfaceButton =
-  "!rounded-lg !border-[var(--btn-secondary-border)] !bg-[var(--btn-secondary-bg)] !text-[var(--btn-secondary-fg)] !shadow-none hover:!bg-[var(--btn-secondary-bg-hover)] hover:!text-[var(--btn-secondary-fg-hover)]"
 
 const workspacePanel = "ax-workspace-panel border-slate-200 bg-slate-50/70"
 
@@ -362,6 +358,7 @@ function AccountsPayableContent() {
   const [dismissDraft, setDismissDraft] = useState<{ warningId: string; reason: string } | null>(null)
   const [dismissing, setDismissing] = useState(false)
   const [discarding, setDiscarding] = useState(false)
+  const [pendingConfirmationAction, setPendingConfirmationAction] = useState<PendingConfirmationAction | null>(null)
   // C8 — calm publish moment for the single-Bill flow (the bulk flow already
   // confirms in its own dialog). Holds the entry kind + attachment + burst origin.
   const [publishConfirmation, setPublishConfirmation] = useState<PublishConfirmationState | null>(null)
@@ -875,7 +872,6 @@ function AccountsPayableContent() {
    */
   const discardActive = async () => {
     if (!activeItem) return
-    if (!window.confirm("Discard this draft bill? It will be marked as a confirmed duplicate.")) return
     setDiscarding(true)
     try {
       const response = await accountsPayableApi.discard(activeItem.id, "duplicate_confirmed")
@@ -891,6 +887,11 @@ function AccountsPayableContent() {
     } finally {
       setDiscarding(false)
     }
+  }
+
+  const requestDiscardActive = () => {
+    if (!activeItem) return
+    setPendingConfirmationAction("discard")
   }
 
   const toggleSelection = (itemId: string, checked: boolean) => {
@@ -974,19 +975,9 @@ function AccountsPayableContent() {
 
   const publishActive = async () => {
     if (!activeItem || !["ready_to_publish", "published"].includes(activeItem.status)) return
-    // P9 — confirm before publishing an invoice that exceeds its matched PO.
-    if (activeItem.po_match_status === "exceeds" && activeItem.matched_po) {
-      const over = activeItem.matched_po.over_by ? ` by ${activeItem.matched_po.over_by}` : ""
-      if (!window.confirm(`This invoice exceeds PO ${activeItem.matched_po.po_number}${over}. Publish anyway?`)) return
-    }
     const retryAttachment = activeItem.status === "published" && activeAccountingPublication?.attachment_status === "failed"
     if (!retryAttachment && hasActiveDuplicate(activeItem)) {
       toast.error("Resolve or dismiss the duplicate warning before publishing this draft bill.")
-      return
-    }
-    if (retryAttachment) {
-      if (!window.confirm(`Retry attaching the source document to the existing ${destinationName} draft bill?`)) return
-    } else if (!window.confirm(`Publish one reviewed draft bill to ${destinationName}?`)) {
       return
     }
     setSaving(true)
@@ -1022,6 +1013,21 @@ function AccountsPayableContent() {
     }
   }
 
+  const requestPublishActive = () => {
+    if (!activeItem || !["ready_to_publish", "published"].includes(activeItem.status)) return
+    const retryAttachment = activeItem.status === "published" && activeAccountingPublication?.attachment_status === "failed"
+    // P9 — confirm before publishing an invoice that exceeds its matched PO.
+    if (activeItem.po_match_status === "exceeds" && activeItem.matched_po) {
+      setPendingConfirmationAction("publish_over_po")
+      return
+    }
+    if (!retryAttachment && hasActiveDuplicate(activeItem)) {
+      toast.error("Resolve or dismiss the duplicate warning before publishing this draft bill.")
+      return
+    }
+    setPendingConfirmationAction(retryAttachment ? "retry_attachment" : "publish")
+  }
+
   // Approval gate — preparer submits the coded bill for approval.
   const submitActive = async () => {
     if (!activeItem) return
@@ -1042,6 +1048,37 @@ function AccountsPayableContent() {
       toast.error(error?.detail || error?.message || "Could not submit this draft bill.")
     } finally {
       setSaving(false)
+    }
+  }
+
+  const requestSubmitActive = () => {
+    if (!activeItem) return
+    if (hasActiveDuplicate(activeItem)) {
+      toast.error("Resolve or dismiss the duplicate warning before submitting.")
+      return
+    }
+    setPendingConfirmationAction("submit")
+  }
+
+  const confirmPendingAction = async () => {
+    if (!pendingConfirmationAction) return
+    const action = pendingConfirmationAction
+
+    if (action === "publish_over_po") {
+      const retryAttachment = activeItem?.status === "published" && activeAccountingPublication?.attachment_status === "failed"
+      if (retryAttachment) {
+        setPendingConfirmationAction("retry_attachment")
+        return
+      }
+    }
+
+    setPendingConfirmationAction(null)
+    if (action === "discard") {
+      await discardActive()
+    } else if (action === "submit") {
+      await submitActive()
+    } else {
+      await publishActive()
     }
   }
 
@@ -1075,6 +1112,63 @@ function AccountsPayableContent() {
     }
   }
 
+  const pendingConfirmationBusy = saving || discarding
+  const pendingConfirmationDetails = (() => {
+    if (!pendingConfirmationAction || !activeItem) return null
+    const vendor = activeItem.draft_data.vendor || "this draft bill"
+    const amount = amountLabel(activeItem)
+    const amountSuffix = amount && amount !== "-" ? ` (${amount})` : ""
+
+    if (pendingConfirmationAction === "discard") {
+      return {
+        title: "Discard duplicate draft",
+        description: `This marks ${vendor} as a confirmed duplicate and removes it from the active review queue.`,
+        actionLabel: "Discard draft",
+        actionVariant: "destructive" as const,
+        icon: <Trash2 className="size-4" aria-hidden="true" />,
+      }
+    }
+
+    if (pendingConfirmationAction === "submit") {
+      return {
+        title: "Submit for approval",
+        description: `This saves the coded draft bill for ${vendor} and sends it to the approval queue.`,
+        actionLabel: "Submit for approval",
+        actionVariant: "glossy" as const,
+        icon: <CheckCheck className="size-4" aria-hidden="true" />,
+      }
+    }
+
+    if (pendingConfirmationAction === "publish_over_po" && activeItem.matched_po) {
+      const over = activeItem.matched_po.over_by ? ` by ${activeItem.matched_po.over_by}` : ""
+      return {
+        title: "Invoice exceeds purchase order",
+        description: `This invoice exceeds PO ${activeItem.matched_po.po_number}${over}. Publishing will still create a draft bill in ${destinationName}.`,
+        actionLabel: "Publish anyway",
+        actionVariant: "glossy" as const,
+        icon: <AlertTriangle className="size-4" aria-hidden="true" />,
+      }
+    }
+
+    if (pendingConfirmationAction === "retry_attachment") {
+      return {
+        title: "Retry source attachment",
+        description: `Attach the source document to the existing ${destinationName} draft bill for ${vendor}.`,
+        actionLabel: "Retry attachment",
+        actionVariant: "surface" as const,
+        icon: <AccountingDestinationGlyph destination={accountingDestination} />,
+      }
+    }
+
+    return {
+      title: `Publish draft bill to ${destinationName}`,
+      description: `This saves the current coding and publishes ${vendor}${amountSuffix} as a draft bill in ${destinationName}. This cannot be undone.`,
+      actionLabel: `Publish to ${destinationName}`,
+      actionVariant: "glossy" as const,
+      icon: <AccountingDestinationGlyph destination={accountingDestination} />,
+    }
+  })()
+
   if (authLoading || !user) return <DashboardRouteLoader label="Loading draft bills" />
 
   return (
@@ -1089,7 +1183,7 @@ function AccountsPayableContent() {
               onClick={openPublishDialog}
               disabled={saving || !accountingConnection?.connected || selectedDuplicateCount > 0}
               title={selectedDuplicateCount > 0 ? "Resolve duplicate warnings before publishing" : undefined}
-              className={cn("h-9 px-4", workspacePrimaryButton)}
+              className="h-9 px-4"
             >
               <AccountingDestinationGlyph destination={accountingDestination} className="mr-1" />
               Publish {selectedReadyIds.length} {selectedReadyIds.length === 1 ? "bill" : "bills"}
@@ -1223,7 +1317,161 @@ function AccountsPayableContent() {
               </details>
             </div>
 
-            <div className="overflow-x-auto border-t border-border">
+            <div className="border-t border-border">
+              <div className="lg:hidden">
+                {loading ? (
+                  <div className="p-4">
+                    <WorkspaceActivityIndicator
+                      title="Retrieving draft bills"
+                      detail="Checking supplier coding, VAT, due dates, and publishing status."
+                    />
+                  </div>
+                ) : visibleItems.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center px-4 py-12 text-center">
+                    <Symbol
+                      name="firstsight-draft-bills-empty"
+                      size="hero"
+                      className="h-24 w-24"
+                      alt=""
+                    />
+                    <h3 className="mt-4 text-lg font-medium tracking-tight text-slate-950">
+                      {items.length ? "Nothing in this view" : "No draft bills yet"}
+                    </h3>
+                    {!items.length ? (
+                      <div className="mt-4 flex w-full max-w-xs flex-col items-stretch gap-2">
+                        <Button asChild variant="glossy" size="sm">
+                          <Link href="/dashboard/client#upload-files">
+                            Upload an invoice batch
+                          </Link>
+                        </Button>
+                        <Button asChild variant="surface" size="sm">
+                          <Link href="/dashboard/integrations">Connect QuickBooks or Xero</Link>
+                        </Button>
+                      </div>
+                    ) : null}
+                  </div>
+                ) : (
+                  <div className="divide-y divide-border">
+                    <AnimatePresence initial={false}>
+                      {visibleItems.map(item => {
+                        const tone = statusTone[item.status]
+                        const isActive = activeId === item.id
+                        const isReady = item.status === "ready_to_publish"
+                        const hasDuplicate = hasActiveDuplicate(item)
+                        const missing = missingInfo.get(item.id)
+                        const validation = validations.get(item.id)
+                        const issueBadges = [
+                          hasDuplicate ? { label: "Duplicate", tone: "warning" as const } : null,
+                          missing?.missing ? { label: "Missing info", tone: "error" as const } : null,
+                          validation?.errors.length ? { label: `${validation.errors.length} issue${validation.errors.length === 1 ? "" : "s"}`, tone: "error" as const } : null,
+                          !validation?.errors.length && validation?.warnings.length ? { label: `${validation.warnings.length} to check`, tone: "warning" as const } : null,
+                        ].filter(Boolean) as Array<{ label: string; tone: "warning" | "error" }>
+                        return (
+                          <motion.div
+                            key={`mobile-${filter}-${item.id}`}
+                            layout
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={m.tFast}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`Open ${item.draft_data.vendor || item.source_filename || "draft bill"}`}
+                            onClick={() => setActiveId(item.id)}
+                            onKeyDown={event => {
+                              if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault()
+                                setActiveId(item.id)
+                              }
+                            }}
+                            data-state={isActive ? "selected" : undefined}
+                            className={cn(
+                              "ax-interactive cursor-pointer bg-white p-4 text-left text-sm text-slate-900",
+                              isActive && "bg-[var(--workspace-soft)]/70",
+                            )}
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <span className="ax-data-entity truncate text-[15px] font-semibold text-slate-950">
+                                    {item.draft_data.vendor || "Supplier missing"}
+                                  </span>
+                                  {hasDuplicate ? <span className="size-1.5 shrink-0 rounded-full bg-amber-500" title="Possible duplicate" /> : null}
+                                  {missing?.missing ? <span className="size-1.5 shrink-0 rounded-full bg-rose-500" title="Missing information" /> : null}
+                                </div>
+                                <p className="mt-1 truncate text-xs font-medium text-foreground/70">{item.source_filename}</p>
+                              </div>
+                              <div className="shrink-0 text-right">
+                                <p className="font-mono text-sm tabular-nums text-slate-950">{amountLabel(item)}</p>
+                                <StatusBadge tone={tone} className="mt-1 h-5 px-2 text-[11px]">
+                                  {statusLabel(item.status)}
+                                </StatusBadge>
+                              </div>
+                            </div>
+
+                            <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                              <div className="rounded-md border border-border bg-background px-2.5 py-2">
+                                <p className="font-medium text-foreground/60">Bill</p>
+                                <p className="mt-0.5 truncate font-mono text-slate-950">{ledgerValue(item.draft_data.invoice_number)}</p>
+                              </div>
+                              <div className="rounded-md border border-border bg-background px-2.5 py-2">
+                                <p className="font-medium text-foreground/60">Due</p>
+                                <p className="mt-0.5 text-slate-950">{shortDate(item.draft_data.due_date)}</p>
+                              </div>
+                              <div className="col-span-2 rounded-md border border-border bg-background px-2.5 py-2">
+                                <p className="font-medium text-foreground/60">Account</p>
+                                <p className="mt-0.5 truncate text-slate-950">{ledgerValue(item.draft_data.account_category)}</p>
+                              </div>
+                            </div>
+
+                            {issueBadges.length ? (
+                              <div className="mt-3 flex flex-wrap gap-1.5">
+                                {issueBadges.map((badge) => (
+                                  <StatusBadge key={`${item.id}-${badge.label}`} tone={badge.tone} className="h-5 px-2 text-[11px]">
+                                    {badge.label}
+                                  </StatusBadge>
+                                ))}
+                              </div>
+                            ) : null}
+
+                            <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                              {isReady ? (
+                                <div
+                                  className="flex min-h-8 items-center gap-2 rounded-full border border-border bg-background px-2.5"
+                                  onClick={event => event.stopPropagation()}
+                                >
+                                  <Checkbox
+                                    checked={selectedReadyIds.includes(item.id)}
+                                    onCheckedChange={checked => toggleSelection(item.id, checked === true)}
+                                    disabled={hasDuplicate}
+                                    aria-label={`Select ${item.source_filename}`}
+                                  />
+                                  <span className="text-xs font-medium text-foreground">Select to publish</span>
+                                </div>
+                              ) : (
+                                <span className="text-xs font-medium text-foreground/70">Tap to open in the editor</span>
+                              )}
+                              <Button
+                                variant="surface"
+                                size="sm"
+                                className="h-8 px-3 text-xs"
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                  setActiveId(item.id)
+                                }}
+                              >
+                                Open
+                              </Button>
+                            </div>
+                          </motion.div>
+                        )
+                      })}
+                    </AnimatePresence>
+                  </div>
+                )}
+              </div>
+
+              <div className="hidden overflow-x-auto lg:block">
               <table className={cn("w-full min-w-[1320px] text-left text-xs", workspaceTable)}>
                 <thead className="border-b border-slate-200 bg-slate-50">
                   <tr>
@@ -1266,12 +1514,12 @@ function AccountsPayableContent() {
                           </h3>
                           {!items.length ? (
                             <div className="mt-4 flex w-full max-w-2xl flex-col items-center gap-4">
-                              <Button asChild variant="glossy" size="sm" className={workspacePrimaryButton}>
+                              <Button asChild variant="glossy" size="sm">
                                 <Link href="/dashboard/client#upload-files">
                                   Upload an invoice batch
                                 </Link>
                               </Button>
-                              <Button asChild variant="surface" size="sm" className={workspaceSurfaceButton}>
+                              <Button asChild variant="surface" size="sm">
                                 <Link href="/dashboard/integrations">Connect QuickBooks or Xero</Link>
                               </Button>
                               <InlineAction asChild className="text-xs">
@@ -1391,6 +1639,7 @@ function AccountsPayableContent() {
                   )}
                 </tbody>
               </table>
+              </div>
             </div>
           </WorkspaceSection>
 
@@ -1521,7 +1770,7 @@ function AccountsPayableContent() {
                           </InlineAction>
                           <InlineAction
                             tone="danger"
-                            onClick={() => void discardActive()}
+                            onClick={requestDiscardActive}
                             disabled={dismissing || discarding || activeLocked}
                           >
                             Discard this one
@@ -2211,7 +2460,7 @@ function AccountsPayableContent() {
                                 variant="glossy"
                                 onClick={() => void approveActive()}
                                 disabled={saving}
-                                className={cn("h-9", workspacePrimaryButton)}
+                                className="h-9"
                               >
                                 <Symbol name="approved-stamp" size="inline" className="mr-1 size-4" alt="" />
                                 Approve
@@ -2237,10 +2486,10 @@ function AccountsPayableContent() {
                                   <MotionButton
                                     ref={activePublishRef}
                                     variant="glossy"
-                                    onClick={() => void publishActive()}
+                                    onClick={requestPublishActive}
                                     disabled={saving || !accountingConnection?.connected || activeHasDuplicate}
                                     title={activeHasDuplicate ? "Resolve duplicate warnings before publishing" : undefined}
-                                    className={cn("h-9", workspacePrimaryButton)}
+                                    className="h-9"
                                   >
                                     Publish to {destinationName}
                                   </MotionButton>
@@ -2261,10 +2510,10 @@ function AccountsPayableContent() {
                               // Reviewer (preparer) submits into the approval gate.
                               <MotionButton
                                 variant="glossy"
-                                onClick={() => void submitActive()}
+                                onClick={requestSubmitActive}
                                 disabled={saving || activeHasDuplicate}
                                 title={activeHasDuplicate ? "Resolve duplicate warnings before submitting" : undefined}
-                                className={cn("h-9", workspacePrimaryButton)}
+                                className="h-9"
                               >
                                 Submit
                               </MotionButton>
@@ -2275,7 +2524,7 @@ function AccountsPayableContent() {
                     ) : null}
                     <div className="flex flex-wrap gap-2">
                       {canRetryAttachment ? (
-                        <Button variant="surface" onClick={() => void publishActive()} disabled={saving || !accountingConnection?.connected} className={cn("h-9", workspaceSurfaceButton)}>
+                        <Button variant="surface" onClick={requestPublishActive} disabled={saving || !accountingConnection?.connected} className="h-9">
                           Retry attachment
                         </Button>
                       ) : null}
@@ -2413,7 +2662,7 @@ function AccountsPayableContent() {
                   onClick={() => void confirmPublishSelected()}
                   disabled={publishing || !accountingConnection?.connected || !cleanSelectedIds.length || selectedDuplicateCount > 0}
                   title={selectedDuplicateCount > 0 ? "Resolve duplicate warnings before publishing" : !cleanSelectedIds.length ? "Fix the held-back bills first" : undefined}
-                  className={cn("h-9 px-4", workspacePrimaryButton)}
+                  className="h-9 px-4"
                 >
                   {publishing ? (
                     <>
@@ -2431,6 +2680,66 @@ function AccountsPayableContent() {
             )}
           </DialogFooter>
         </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={Boolean(pendingConfirmationDetails)}
+        onOpenChange={(open) => {
+          if (!open && !pendingConfirmationBusy) setPendingConfirmationAction(null)
+        }}
+      >
+        {pendingConfirmationDetails ? (
+          <DialogContent className="gap-5 rounded-md sm:max-w-md" showCloseButton={!pendingConfirmationBusy}>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2.5 text-base font-medium">
+                <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-white text-slate-950">
+                  {pendingConfirmationDetails.icon}
+                </span>
+                {pendingConfirmationDetails.title}
+              </DialogTitle>
+              <DialogDescription className="text-sm font-normal leading-6 text-foreground">
+                {pendingConfirmationDetails.description}
+              </DialogDescription>
+            </DialogHeader>
+
+            {activeItem ? (
+              <div className={cn("flex items-center justify-between gap-3 rounded-md border px-3 py-2.5", workspacePanel)}>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-slate-950">{activeItem.draft_data.vendor || "Supplier missing"}</p>
+                  <p className="mt-0.5 truncate text-xs font-medium text-foreground/70">{activeItem.source_filename}</p>
+                </div>
+                <span className="shrink-0 font-mono text-xs tabular-nums text-foreground">
+                  {amountLabel(activeItem)}
+                </span>
+              </div>
+            ) : null}
+
+            <DialogFooter>
+              <InlineAction
+                onClick={() => setPendingConfirmationAction(null)}
+                disabled={pendingConfirmationBusy}
+                className="px-2"
+              >
+                Cancel
+              </InlineAction>
+              <MotionButton
+                variant={pendingConfirmationDetails.actionVariant}
+                onClick={() => void confirmPendingAction()}
+                disabled={pendingConfirmationBusy}
+                className="h-9 px-4"
+              >
+                {pendingConfirmationBusy ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    Working...
+                  </>
+                ) : (
+                  pendingConfirmationDetails.actionLabel
+                )}
+              </MotionButton>
+            </DialogFooter>
+          </DialogContent>
+        ) : null}
       </Dialog>
 
       {/* P9 — Match PO dialog */}

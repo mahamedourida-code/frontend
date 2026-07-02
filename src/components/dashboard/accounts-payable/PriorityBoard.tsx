@@ -60,9 +60,9 @@ type Segment = {
 }
 
 const TONE_RING: Record<Segment["tone"], string> = {
-  attention: "border-amber-300 bg-amber-50 hover:border-amber-400",
-  ready: "border-emerald-200 bg-emerald-50 hover:border-emerald-300",
-  done: "border-[var(--workspace-border)] bg-white hover:border-[var(--workspace-button-border)]",
+  attention: "border-[color-mix(in_srgb,var(--text-attention)_38%,transparent)] bg-[color-mix(in_srgb,var(--text-attention)_8%,white)] hover:border-[color-mix(in_srgb,var(--text-attention)_58%,transparent)]",
+  ready: "border-[color-mix(in_srgb,var(--text-success)_30%,transparent)] bg-[color-mix(in_srgb,var(--text-success)_7%,white)] hover:border-[color-mix(in_srgb,var(--text-success)_48%,transparent)]",
+  done: "border-[var(--workspace-border)] bg-card hover:border-[var(--workspace-button-border)]",
 }
 
 const TONE_ACTIVE: Record<Segment["tone"], string> = {
@@ -130,9 +130,9 @@ export function PriorityBoard({
   return (
     <div className="space-y-4">
       {/* Compact destination chip (QuickBooks OR Xero), never a heavy panel. */}
-      <div className="flex flex-wrap items-center justify-end gap-2">{destinationChip}</div>
+      <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end">{destinationChip}</div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-2 sm:grid-cols-3 sm:gap-3">
         {segments.map((segment, index) => {
           const active = activeSegment === segment.key
           const lead = segment.tone === "attention" && segment.count > 0
@@ -147,7 +147,7 @@ export function PriorityBoard({
               transition={{ duration: 0.28, delay: index * 0.05, ease: [0.16, 1, 0.3, 1] }}
               whileTap={prefersReducedMotion ? undefined : { scale: 0.99 }}
               className={cn(
-                "ax-interactive group relative flex flex-col gap-3 rounded-xl border p-4 text-left transition-colors",
+                "ax-interactive group relative flex min-h-[92px] flex-col gap-2 rounded-md border p-3 text-left transition-colors sm:min-h-0 sm:gap-3 sm:p-4",
                 TONE_RING[segment.tone],
                 active && TONE_ACTIVE[segment.tone],
                 // The lead segment with work waiting carries a touch more
@@ -158,7 +158,7 @@ export function PriorityBoard({
               <div className="flex items-center justify-between gap-2">
                 <span
                   className={cn(
-                    "inline-flex size-9 shrink-0 items-center justify-center rounded-lg [&_svg]:size-[18px]",
+                    "inline-flex size-8 shrink-0 items-center justify-center rounded-md sm:size-9 [&_svg]:size-4 sm:[&_svg]:size-[18px]",
                     TONE_ICON[segment.tone],
                   )}
                 >
@@ -171,7 +171,7 @@ export function PriorityBoard({
               </div>
               <div className="min-w-0">
                 <div className="flex items-baseline gap-2">
-                  <span className={cn("text-[28px] font-semibold leading-none tabular-nums", TONE_COUNT[segment.tone])}>
+                  <span className={cn("text-2xl font-semibold leading-none tabular-nums sm:text-[28px]", TONE_COUNT[segment.tone])}>
                     {segment.count}
                   </span>
                   <span className="truncate text-sm font-semibold text-foreground">{segment.label}</span>

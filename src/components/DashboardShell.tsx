@@ -158,7 +158,7 @@ export function DashboardShell({
   }, [processingState, recoverableJob])
 
   return (
-    <div className="min-h-svh bg-white text-foreground">
+    <div className="ax-page-bg min-h-svh text-foreground">
       <WorkspaceSidebar activeItem={activeItem} user={user} />
 
       <div className="ax-dashboard-content relative z-10 min-w-0">
@@ -196,11 +196,11 @@ export function DashboardShell({
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive group inline-flex h-10 w-full max-w-[420px] cursor-pointer items-center gap-2.5 rounded-md border border-white/18 bg-white/8 px-3.5 text-[15px] font-medium text-white/68 hover:-translate-y-0.5 hover:border-white/35 hover:bg-white/12 hover:text-white active:translate-y-0"
+                className="ax-interactive group inline-flex h-10 w-full max-w-[420px] cursor-pointer items-center gap-2.5 rounded-full border border-white/18 bg-white/8 px-4 text-[15px] font-medium text-white/68 hover:-translate-y-0.5 hover:border-white/35 hover:bg-white/12 hover:text-white active:translate-y-0"
               >
                 <Search className="size-5 shrink-0 text-white/88" />
                 <span className="truncate">Search clients, documents, pages...</span>
-                <kbd className="ms-auto hidden shrink-0 rounded border border-white/15 bg-white/8 px-2 py-0.5 font-sans text-[11px] font-semibold text-white/60 sm:inline-flex">
+                <kbd className="ms-auto hidden h-6 shrink-0 items-center rounded-full border border-white/15 bg-white/8 px-2 font-sans text-[11px] font-semibold text-white/60 sm:inline-flex">
                   ⌘K
                 </kbd>
               </button>
@@ -212,7 +212,7 @@ export function DashboardShell({
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive inline-flex size-10 cursor-pointer items-center justify-center rounded-md border border-white/18 bg-white/8 text-white hover:-translate-y-0.5 hover:bg-white/12 active:translate-y-0 md:hidden"
+                className="ax-interactive inline-flex size-10 cursor-pointer items-center justify-center rounded-full border border-white/18 bg-white/8 text-white hover:-translate-y-0.5 hover:bg-white/12 active:translate-y-0 md:hidden"
               >
                 <Search className="size-5" />
               </button>
@@ -221,7 +221,7 @@ export function DashboardShell({
                 <Link
                   href={activeJob.href}
                   className={cn(
-                    "ax-interactive hidden h-10 cursor-pointer items-center gap-2.5 rounded-md border px-3 text-sm font-semibold shadow-none sm:inline-flex",
+                    "ax-interactive hidden h-10 cursor-pointer items-center gap-2.5 rounded-full border px-3.5 text-sm font-semibold shadow-none sm:inline-flex",
                     activeJob.tone === "ready"
                       ? "border-white/20 bg-white/10 text-white hover:bg-white/16"
                       : "border-white/20 bg-white/10 text-white hover:bg-white/16"
@@ -273,6 +273,11 @@ export function DashboardShell({
               </button>
 
               <NotificationsBell />
+              {!isPaid && (
+                <Button asChild variant="lime" size="default" className="hidden h-10 px-5 sm:inline-flex">
+                  <Link href="/pricing">Upgrade</Link>
+                </Button>
+              )}
               <AccountMenu
                 user={user}
                 planLabel={billingLoading && !billingStatus ? "Plan" : formatPlan(plan)}

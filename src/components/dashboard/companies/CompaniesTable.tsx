@@ -168,6 +168,12 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
               art="bot-add-client"
               icon={<Building2 />}
               title="Add a client"
+              description="Create a client workspace so uploads, review queues, draft bills, and accounting connections stay separated."
+              steps={[
+                "Add the client name.",
+                "Upload their first mixed document stack.",
+                "Review exceptions before export or publishing.",
+              ]}
               action={<AddCompanyDialog workspaceId={workspaceId} onCreated={() => void load()} />}
               className="min-h-[340px]"
               compact

@@ -31,17 +31,17 @@ export function SettingRow({
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-4",
-        align === "start" && "items-start",
+        "flex flex-col gap-3 py-4 sm:flex-row sm:justify-between sm:gap-x-6",
+        align === "center" ? "sm:items-center" : "sm:items-start",
         bordered && "border-t border-border",
         className,
       )}
     >
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold leading-tight text-foreground">{label}</p>
         {value ? <p className="mt-1 text-sm leading-snug text-foreground">{value}</p> : null}
       </div>
-      {children ? <div className="flex shrink-0 items-center gap-5">{children}</div> : null}
+      {children ? <div className="flex w-full items-center gap-5 sm:w-auto sm:shrink-0">{children}</div> : null}
     </div>
   )
 }

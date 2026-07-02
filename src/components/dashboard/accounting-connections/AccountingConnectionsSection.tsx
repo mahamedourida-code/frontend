@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation"
 import { Check, Cloud, Landmark, Plug2, RefreshCw, ShieldCheck, Target, type LucideIcon } from "lucide-react"
 import { toast } from "sonner"
 
+import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
@@ -52,9 +53,13 @@ const providers: Array<{
 ]
 
 const workspacePrimaryButton =
-  "!rounded-lg !border-[var(--btn-primary-bg)] !bg-[var(--btn-primary-bg)] !text-[var(--btn-primary-fg)] !shadow-none hover:!bg-[var(--btn-primary-bg-hover)] hover:!text-[var(--btn-primary-fg-hover)]"
+  "!border-[var(--btn-primary-bg)] !bg-[var(--btn-primary-bg)] !text-[var(--btn-primary-fg)] !shadow-none hover:!bg-[var(--btn-primary-bg-hover)] hover:!text-[var(--btn-primary-fg-hover)]"
 
 const workspaceWarmPanel = "border-[var(--workspace-border)] bg-[var(--workspace-soft)]"
+
+function providerName(provider: Provider) {
+  return providers.find(({ id }) => id === provider)?.name || provider
+}
 
 function formatSynced(value?: string | null) {
   if (!value) return "Not synced yet"
@@ -75,9 +80,11 @@ function referenceCount(connection: AccountingConnectionStatus) {
 export function AccountingConnectionsSection({
   isOwner,
   workspaceId,
+  workspaceName,
 }: {
   isOwner: boolean
   workspaceId?: string
+  workspaceName?: string
 }) {
   const params = useSearchParams()
   const callbackHandled = useRef(false)
@@ -88,6 +95,9 @@ export function AccountingConnectionsSection({
   const [destination, setDestination] = useState<AccountingDestination>("quickbooks")
   const [action, setAction] = useState<Action>(null)
   const [loading, setLoading] = useState(true)
+  const [disconnectTarget, setDisconnectTarget] = useState<Provider | null>(null)
+  const workspaceLabel = workspaceName ? `"${workspaceName}"` : "this workspace"
+  const disconnectTargetName = disconnectTarget ? providerName(disconnectTarget) : "accounting software"
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -122,10 +132,10 @@ export function AccountingConnectionsSection({
       const api = providers.find(({ id }) => id === provider)!.api
       api.sync(workspaceId)
         .then(() => load())
-        .then(() => toast.success(`${provider === "xero" ? "Xero" : "QuickBooks"} connected.`))
+        .then(() => toast.success(`${providerName(provider)} connected to this workspace.`))
         .catch(() => {
           void load()
-          toast.success(`${provider === "xero" ? "Xero" : "QuickBooks"} connected. Refresh lists when ready.`)
+          toast.success(`${providerName(provider)} connected to this workspace. Refresh lists when ready.`)
         })
         .finally(() => setAction(null))
       return
@@ -142,7 +152,7 @@ export function AccountingConnectionsSection({
       window.location.assign(response.authorization_url)
     } catch {
       setAction(null)
-      toast.error(`${provider === "xero" ? "Xero" : "QuickBooks"} connection is not available.`)
+      toast.error(`${providerName(provider)} connection is not available.`)
     }
   }
 
@@ -152,7 +162,7 @@ export function AccountingConnectionsSection({
       const api = providers.find(({ id }) => id === provider)!.api
       const status = await api.sync(workspaceId)
       setConnections(current => ({ ...current, [provider]: status }))
-      toast.success(`${provider === "xero" ? "Xero" : "QuickBooks"} lists refreshed.`)
+      toast.success(`${providerName(provider)} lists refreshed.`)
     } catch {
       toast.error("Could not refresh accounting lists.")
     } finally {
@@ -161,8 +171,7 @@ export function AccountingConnectionsSection({
   }
 
   const disconnect = async (provider: Provider) => {
-    const name = provider === "xero" ? "Xero" : "QuickBooks"
-    if (!window.confirm(`Disconnect ${name} from this workspace?`)) return
+    const name = providerName(provider)
     setAction(`${provider}:disconnect`)
     try {
       const api = providers.find(({ id }) => id === provider)!.api
@@ -181,7 +190,7 @@ export function AccountingConnectionsSection({
     setAction("destination")
     try {
       setDestination(await accountingDestinationApi.set(provider, workspaceId))
-      toast.success(`Draft bills will publish to ${provider === "xero" ? "Xero" : "QuickBooks"}.`)
+      toast.success(`Workspace draft bills will publish to ${providerName(provider)}.`)
     } catch {
       toast.error("Could not update the publishing destination.")
     } finally {
@@ -195,7 +204,7 @@ export function AccountingConnectionsSection({
     <div className="space-y-5">
       <WorkspaceSection
         icon={<Target />}
-        title="Publishing destination"
+        title="Workspace publishing destination"
       >
         <div className="grid gap-4 sm:grid-cols-2">
           {providers.map(provider => {
@@ -221,7 +230,7 @@ export function AccountingConnectionsSection({
                 <span className="min-w-0">
                   <span className="block text-sm font-bold text-foreground">{provider.name}</span>
                   <span className="mt-1 block text-xs font-normal text-foreground">
-                    {selected ? "Selected for draft bills" : "Choose as destination"}
+                    {selected ? "Selected for this workspace" : "Use for this workspace"}
                   </span>
                 </span>
                 {selected ? <Check className="ms-auto size-4 shrink-0 text-[var(--workspace-success)]" /> : null}
@@ -233,14 +242,14 @@ export function AccountingConnectionsSection({
 
       {!hasConnection ? (
         <div className="rounded-xl border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-5 py-4">
-          <p className="text-sm font-bold text-foreground">Connect QuickBooks or Xero</p>
+          <p className="text-sm font-bold text-foreground">Connect workspace accounting</p>
           <p className="mt-2 text-sm font-normal text-foreground">
-            Connect the destination you use, then sync suppliers, accounts, and VAT codes before publishing.
+            Connections apply to this workspace. Connect QuickBooks Online or Xero, then sync vendors, accounts, and tax codes before publishing reviewed draft bills.
           </p>
         </div>
       ) : null}
 
-      <WorkspaceSection icon={<Plug2 />} title="Accounting software" contentClassName="p-0">
+      <WorkspaceSection icon={<Plug2 />} title="Workspace accounting software" contentClassName="p-0">
         {loading ? (
           <WorkspaceActivityIndicator
             title="Checking accounting connections"
@@ -267,10 +276,10 @@ export function AccountingConnectionsSection({
                         {connection.connected ? "Connected" : "Not connected"}
                       </StatusBadge>
                     </div>
-                    <p className="mt-1.5 truncate text-xs font-normal text-foreground">
+                    <p className="mt-1.5 text-xs font-normal leading-5 text-foreground">
                       {connection.connected
-                        ? `${connection.company_name || "Company connected"} · ${referenceCount(connection)} synced references · ${formatSynced(connection.last_synced_at)}`
-                        : "Sync suppliers, accounts, and VAT codes for draft bills."}
+                        ? `${connection.company_name || "Company connected"} - workspace connection - ${referenceCount(connection)} synced references - ${formatSynced(connection.last_synced_at)}`
+                        : "Connect this workspace before publishing reviewed draft bills."}
                     </p>
                   </div>
                 </div>
@@ -283,13 +292,13 @@ export function AccountingConnectionsSection({
                           <RefreshCw className={cn("size-4", action === `${provider.id}:sync` && "animate-spin")} />
                           Sync lists
                         </InlineAction>
-                        <InlineAction tone="danger" onClick={() => void disconnect(provider.id)} disabled={Boolean(action)}>
+                        <InlineAction tone="danger" onClick={() => setDisconnectTarget(provider.id)} disabled={Boolean(action)}>
                           Disconnect
                         </InlineAction>
                       </>
                     ) : (
                       <Button variant="glossy" size="sm" className={workspacePrimaryButton} onClick={() => void connect(provider.id)} disabled={Boolean(action) || loading}>
-                        {action === `${provider.id}:connect` ? "Connecting..." : `Connect ${provider.id === "xero" ? "Xero" : "QuickBooks"}`}
+                        {action === `${provider.id}:connect` ? "Connecting..." : `Connect ${provider.name}`}
                       </Button>
                     )}
                   </div>
@@ -305,10 +314,25 @@ export function AccountingConnectionsSection({
         <div>
           <h3 className="text-sm font-semibold text-foreground">Controlled publishing</h3>
           <p className="mt-1.5 text-sm font-normal leading-6 text-foreground">
-            AxLiner creates reviewed, unpaid draft bills in QuickBooks or Xero. It does not approve or pay bills.
+            Workspace connections create reviewed, unpaid draft bills in the selected QuickBooks or Xero company. AxLiner does not approve, pay, reconcile, or delete bills.
           </p>
         </div>
       </div>
+
+      <ConfirmDeleteDialog
+        open={Boolean(disconnectTarget)}
+        onOpenChange={(open) => {
+          if (!open) setDisconnectTarget(null)
+        }}
+        title={`Disconnect ${disconnectTargetName}`}
+        description={`This removes the workspace-level ${disconnectTargetName} connection for ${workspaceLabel}. Reviewed data stays in AxLiner, but new draft bills will not publish there until an owner reconnects it.`}
+        confirmLabel={`Disconnect ${disconnectTargetName}`}
+        busyLabel="Disconnecting..."
+        onConfirm={async () => {
+          if (!disconnectTarget) return
+          await disconnect(disconnectTarget)
+        }}
+      />
     </div>
   )
 }

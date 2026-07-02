@@ -16,6 +16,14 @@ import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Input } from "@/components/ui/input"
 import {
@@ -43,9 +51,6 @@ import {
   type WorkspaceMember,
 } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
-
-const workspacePrimaryButton =
-  "!rounded-lg !border-[var(--btn-primary-bg)] !bg-[var(--btn-primary-bg)] !text-[var(--btn-primary-fg)] !shadow-none hover:!bg-[var(--btn-primary-bg-hover)] hover:!text-[var(--btn-primary-fg-hover)]"
 
 // The shared ui Table cells/rows, wrapped so the existing stagger /
 // AnimatePresence / layout animations still play on every row.
@@ -188,6 +193,7 @@ export default function EmailInboxPage() {
   const [copied, setCopied] = useState(false)
   const [copiedLink, setCopiedLink] = useState<"upload" | "status" | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [disconnectDraft, setDisconnectDraft] = useState<ConnectedSource | null>(null)
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -355,11 +361,11 @@ export default function EmailInboxPage() {
   }
 
   const disconnectSource = async (sourceId: string) => {
-    if (!window.confirm("Disconnect this folder watch? Files already pulled stay in the inbox.")) return
     setActionBusy(sourceId)
     try {
       await connectedSourcesApi.disconnect(sourceId)
       setConnectedSources(current => current.map(source => source.id === sourceId ? { ...source, status: "disconnected" } : source))
+      setDisconnectDraft(null)
       toast.success("Disconnected.")
     } catch (error: any) {
       toast.error(error?.detail || "Could not disconnect.")
@@ -409,6 +415,7 @@ export default function EmailInboxPage() {
       <div className="max-w-7xl space-y-6 text-black">
         <PageHeader
           title="Inbox"
+          description="Collect client uploads, email-in documents, and watched-folder imports before they move to review."
           actions={
             <Button variant="ghost" size="sm" onClick={() => void loadInbox()} disabled={loading}>
               <RefreshCw className="size-4" />
@@ -432,7 +439,7 @@ export default function EmailInboxPage() {
             <WorkspaceSection id="client-upload-links" icon={<Link2 />} title="Client upload links">
               <div className="flex gap-2.5">
                 <Input value={linkLabel} onChange={event => setLinkLabel(event.target.value)} placeholder="Client documents" className="flex-1" />
-                <Button variant="glossy" size="sm" onClick={() => void createClientLink()} disabled={actionBusy === "link"} className={workspacePrimaryButton}>
+                <Button variant="glossy" size="sm" onClick={() => void createClientLink()} disabled={actionBusy === "link"}>
                   <Link2 className="size-3.5" />
                   Create link
                 </Button>
@@ -499,7 +506,7 @@ export default function EmailInboxPage() {
                 <>
                   {/* Desktop table */}
                   <div className="mt-4 hidden overflow-hidden rounded-md border border-border sm:block">
-                    <Table>
+                    <Table className="ax-table">
                       <TableHeader>
                         <TableRow className="bg-[#f3f4f6] hover:bg-[#f3f4f6]">
                           <TableHead className={cell}>Label</TableHead>
@@ -570,7 +577,6 @@ export default function EmailInboxPage() {
                   size="sm"
                   onClick={() => void inviteReviewer()}
                   disabled={actionBusy === "reviewer" || !reviewerEmail.trim()}
-                  className={workspacePrimaryButton}
                 >
                   <Users className="size-3.5" />
                   Add reviewer
@@ -713,7 +719,7 @@ export default function EmailInboxPage() {
                               <RefreshCw className={cn("size-3", actionBusy === source.id && "animate-spin")} />
                               Sync now
                             </InlineAction>
-                            <InlineAction tone="danger" className="text-xs" onClick={() => void disconnectSource(source.id)} disabled={actionBusy === source.id}>
+                            <InlineAction tone="danger" className="text-xs" onClick={() => setDisconnectDraft(source)} disabled={actionBusy === source.id}>
                               Disconnect
                             </InlineAction>
                           </div>
@@ -755,6 +761,12 @@ export default function EmailInboxPage() {
               art="upload-stack"
               icon={<Inbox />}
               title="No files yet"
+              description="Send clients a link or upload a stack yourself. New files land here before review."
+              steps={[
+                "Create an upload link for the client.",
+                "Client drops receipts, invoices, PDFs, or photos.",
+                "Open the stack in the review board.",
+              ]}
               action={(
                 <Button asChild variant="surface" size="sm">
                   <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox#client-upload-links" : "/dashboard/client#upload-files"}>
@@ -767,7 +779,7 @@ export default function EmailInboxPage() {
             <>
               {/* Desktop table */}
               <div className="hidden sm:block">
-                <Table>
+                <Table className="ax-table">
                   <TableHeader>
                     <TableRow className="bg-[#f3f4f6] hover:bg-[#f3f4f6]">
                       <TableHead className={cn(cell, "pl-6")}>Filename</TableHead>
@@ -856,6 +868,12 @@ export default function EmailInboxPage() {
               art="all-clear"
               icon={<Mail />}
               title="No emails yet"
+              description="Forward client documents to the workspace email address. Accepted attachments appear here with review links."
+              steps={[
+                "Copy the email-in address.",
+                "Forward invoices, receipts, or statements.",
+                "Review accepted attachments from this list.",
+              ]}
               action={(
                 <Button asChild variant="surface" size="sm">
                   <Link href={activeWorkspace?.role === "owner" ? "/dashboard/inbox#email-in-address" : "/dashboard/guide"}>
@@ -867,7 +885,7 @@ export default function EmailInboxPage() {
           ) : (
             <>
               <div className="hidden sm:block">
-                <Table>
+                <Table className="ax-table">
                   <TableHeader>
                     <TableRow className="bg-[#f3f4f6] hover:bg-[#f3f4f6]">
                       <TableHead className={cn(cell, "pl-6")}>Sender</TableHead>
@@ -960,6 +978,40 @@ export default function EmailInboxPage() {
           )}
         </WorkspaceSection>
       </div>
+
+      <Dialog open={Boolean(disconnectDraft)} onOpenChange={(open) => !open && setDisconnectDraft(null)}>
+        <DialogContent className="gap-5 rounded-md sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Disconnect folder watch</DialogTitle>
+            <DialogDescription className="text-sm leading-6 text-foreground">
+              AxLiner will stop pulling new files from this source. Files already collected stay in the inbox and review board.
+            </DialogDescription>
+          </DialogHeader>
+          {disconnectDraft ? (
+            <div className="rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-3 py-2 text-sm">
+              <p className="font-semibold text-foreground">
+                {disconnectDraft.provider === "google_drive" ? "Google Drive" : "Dropbox"}
+              </p>
+              {disconnectDraft.account_email ? (
+                <p className="mt-0.5 truncate text-xs text-foreground">{disconnectDraft.account_email}</p>
+              ) : null}
+            </div>
+          ) : null}
+          <DialogFooter className="items-center gap-3">
+            <InlineAction onClick={() => setDisconnectDraft(null)} disabled={Boolean(disconnectDraft && actionBusy === disconnectDraft.id)}>
+              Cancel
+            </InlineAction>
+            <Button
+              variant="dangerOutline"
+              size="sm"
+              onClick={() => disconnectDraft && void disconnectSource(disconnectDraft.id)}
+              disabled={Boolean(disconnectDraft && actionBusy === disconnectDraft.id)}
+            >
+              Disconnect
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardShell>
   )
 }

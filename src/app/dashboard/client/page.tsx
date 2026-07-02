@@ -20,6 +20,7 @@ import type {
 import { getApiErrorUi, showApiErrorToast, showBatchLimitToast } from "@/lib/api-error-ui"
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
+import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog"
 import { useBillingStatus } from "@/hooks/useBillingStatus"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import {
@@ -28,6 +29,14 @@ import {
 } from "@/components/dashboard/ConversionWorkspace"
 import { PublishConfirmation, type PublishConfirmationState } from "@/components/dashboard/PublishConfirmation"
 import { ShareDialog } from "@/components/dashboard/review/ShareDialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import {
   downloadBlob,
   filenameStem,
@@ -51,6 +60,13 @@ import {
   isAcceptedUploadFile,
   isPdfFile,
 } from "@/lib/upload-files"
+
+type PendingReceiptPublish = {
+  file: any
+  request: ReceiptQuickBooksPublishRequest
+  origin: { x: number; y: number } | null
+  resolve: (value: boolean) => void
+}
 
 function ProcessImagesFallback() {
   return <DashboardRouteLoader label="Loading conversion workspace" />
@@ -117,6 +133,10 @@ export function ProcessImagesContent() {
   const [workspaceBanner, setWorkspaceBanner] = useState<WorkspaceBanner | null>(null)
   // C8 — calm publish moment after a receipt is posted to QuickBooks.
   const [publishConfirmation, setPublishConfirmation] = useState<PublishConfirmationState | null>(null)
+  const [pendingDeleteDocument, setPendingDeleteDocument] = useState<any | null>(null)
+  const [deleteBatchOpen, setDeleteBatchOpen] = useState(false)
+  const [pendingReceiptPublish, setPendingReceiptPublish] = useState<PendingReceiptPublish | null>(null)
+  const [receiptPublishBusy, setReceiptPublishBusy] = useState(false)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [selectedFileToShare, setSelectedFileToShare] = useState<any>(null)
   const [selectedFilesForBatch, setSelectedFilesForBatch] = useState<any[]>([])
@@ -1495,10 +1515,6 @@ Best regards`
 
   const handleDeleteStoredDocument = async (file: any) => {
     if (!jobId || !file?.document_id) return
-    const confirmed = window.confirm(
-      "Permanently delete this stored document, its extracted values, reviewed edits, and generated files? Existing accounting records are not removed.",
-    )
-    if (!confirmed) return
     try {
       const result = await ocrApi.deleteStoredDocument(jobId, file.document_id)
       if (result.remaining_documents === 0) {
@@ -1516,12 +1532,13 @@ Best regards`
     }
   }
 
+  const requestDeleteStoredDocument = (file: any) => {
+    if (!jobId || !file?.document_id) return
+    setPendingDeleteDocument(file)
+  }
+
   const handleDeleteStoredBatch = async () => {
     if (!jobId) return
-    const confirmed = window.confirm(
-      "Permanently delete this stack, including source files, outputs, extracted values, and review edits? Existing accounting records are not removed.",
-    )
-    if (!confirmed) return
     try {
       await ocrApi.deleteStoredBatch(jobId)
       handleReset()
@@ -1705,18 +1722,32 @@ Best regards`
     request: ReceiptQuickBooksPublishRequest,
   ): Promise<boolean> => {
     if (!jobId || !file?.document_id) return false
-    const isExpense = request.destination === "expense"
-    const confirmation = window.confirm(
-      isExpense
-        ? "Publish this reviewed receipt as an already-paid QuickBooks expense? This creates a Purchase transaction."
-        : "Publish this reviewed receipt as an unpaid QuickBooks bill? This creates a Bill transaction.",
-    )
-    if (!confirmation) return false
     // Anchor the paired success burst on the Publish button the reviewer just clicked.
     const trigger = document.activeElement as HTMLElement | null
     const origin = trigger && typeof trigger.getBoundingClientRect === "function"
       ? (() => { const r = trigger.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 } })()
       : null
+
+    return new Promise<boolean>((resolve) => {
+      setPendingReceiptPublish({ file, request, origin, resolve })
+    })
+  }, [jobId])
+
+  const closePendingReceiptPublish = useCallback(() => {
+    if (receiptPublishBusy) return
+    pendingReceiptPublish?.resolve(false)
+    setPendingReceiptPublish(null)
+  }, [pendingReceiptPublish, receiptPublishBusy])
+
+  const executePendingReceiptPublish = useCallback(async () => {
+    if (!pendingReceiptPublish || !jobId || !pendingReceiptPublish.file?.document_id) {
+      pendingReceiptPublish?.resolve(false)
+      setPendingReceiptPublish(null)
+      return
+    }
+    const { file, request, origin, resolve } = pendingReceiptPublish
+    const isExpense = request.destination === "expense"
+    setReceiptPublishBusy(true)
     try {
       const response = await ocrApi.publishReceiptToQuickBooks(jobId, file.document_id, request)
       mergeReviewedDocument(response.document)
@@ -1729,16 +1760,19 @@ Best regards`
         attached: response.document.quickbooks_receipt_publication?.attachment_status === "attached",
         origin,
       })
-      return true
+      resolve(true)
     } catch (error: any) {
       setWorkspaceBanner({
         title: "Receipt was not published",
         description: error?.detail || error?.message || "Review the QuickBooks selections and try again.",
         tone: "error",
       })
-      return false
+      resolve(false)
+    } finally {
+      setReceiptPublishBusy(false)
+      setPendingReceiptPublish(null)
     }
-  }, [jobId, mergeReviewedDocument, reloadDurableDocuments])
+  }, [jobId, mergeReviewedDocument, pendingReceiptPublish, reloadDurableDocuments])
 
   
 
@@ -1913,8 +1947,8 @@ Best regards`
         onDownloadFile={handleDownloadResultFile}
         onDownloadAll={handleDownloadAll}
         onDownloadReviewedBatch={handleDownloadReviewedBatch}
-        onDeleteDocument={handleDeleteStoredDocument}
-        onDeleteBatch={handleDeleteStoredBatch}
+        onDeleteDocument={requestDeleteStoredDocument}
+        onDeleteBatch={() => setDeleteBatchOpen(true)}
         onEditFile={handleEditResultFile}
         onPersistCellEdit={handlePersistCellEdit}
         onPersistStructuredEdit={handlePersistStructuredEdit}
@@ -1934,6 +1968,67 @@ Best regards`
         state={publishConfirmation}
         onClose={() => setPublishConfirmation(null)}
       />
+
+      <ConfirmDeleteDialog
+        open={Boolean(pendingDeleteDocument)}
+        onOpenChange={(open) => {
+          if (!open) setPendingDeleteDocument(null)
+        }}
+        title="Delete document"
+        description="This permanently deletes the stored document, extracted values, reviewed edits, and generated files. Existing accounting records are not removed."
+        confirmLabel="Delete document"
+        onConfirm={async () => {
+          if (!pendingDeleteDocument) return
+          await handleDeleteStoredDocument(pendingDeleteDocument)
+        }}
+      />
+
+      <ConfirmDeleteDialog
+        open={deleteBatchOpen}
+        onOpenChange={setDeleteBatchOpen}
+        title="Delete stack"
+        description="This permanently deletes the stack, including source files, outputs, extracted values, and review edits. Existing accounting records are not removed."
+        confirmLabel="Delete stack"
+        onConfirm={handleDeleteStoredBatch}
+      />
+
+      <Dialog
+        open={Boolean(pendingReceiptPublish)}
+        onOpenChange={(open) => {
+          if (!open) closePendingReceiptPublish()
+        }}
+      >
+        {pendingReceiptPublish ? (
+          <DialogContent className="gap-5 rounded-md sm:max-w-md" showCloseButton={!receiptPublishBusy}>
+            <DialogHeader>
+              <DialogTitle className="text-base font-medium">
+                Publish reviewed receipt to QuickBooks
+              </DialogTitle>
+              <DialogDescription className="text-sm leading-6 text-foreground">
+                {pendingReceiptPublish.request.destination === "expense"
+                  ? "This creates an already-paid Purchase transaction from the reviewed receipt."
+                  : "This creates an unpaid Bill from the reviewed receipt."}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-3 py-2 text-sm">
+              <p className="truncate font-semibold text-foreground">
+                {pendingReceiptPublish.file?.original_filename || pendingReceiptPublish.file?.filename || "Reviewed receipt"}
+              </p>
+              <p className="mt-0.5 text-xs text-foreground">
+                AxLiner publishes the reviewed draft only. It does not approve, pay, reconcile, or delete anything.
+              </p>
+            </div>
+            <DialogFooter className="items-center gap-3">
+              <Button variant="surface" size="sm" onClick={closePendingReceiptPublish} disabled={receiptPublishBusy}>
+                Cancel
+              </Button>
+              <Button variant="glossy" size="sm" onClick={() => void executePendingReceiptPublish()} disabled={receiptPublishBusy}>
+                {receiptPublishBusy ? "Publishing..." : "Publish receipt"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        ) : null}
+      </Dialog>
 
       <ShareDialog
         open={shareDialogOpen}

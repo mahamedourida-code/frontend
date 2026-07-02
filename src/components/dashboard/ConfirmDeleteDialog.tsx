@@ -28,6 +28,7 @@ export function ConfirmDeleteDialog({
   description,
   confirmText,
   confirmLabel = "Delete",
+  busyLabel = "Deleting...",
   onConfirm,
 }: {
   open: boolean
@@ -37,6 +38,7 @@ export function ConfirmDeleteDialog({
   /** When set, the user must type this exact string to enable the confirm button. */
   confirmText?: string
   confirmLabel?: string
+  busyLabel?: string
   onConfirm: () => void | Promise<void>
 }) {
   const [value, setValue] = React.useState("")
@@ -99,7 +101,7 @@ export function ConfirmDeleteDialog({
             onClick={() => void handleConfirm()}
             disabled={!ready || busy}
           >
-            {busy ? "Deleting…" : confirmLabel}
+            {busy ? busyLabel : confirmLabel}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -49,7 +49,7 @@ export function SegmentedTabs({
       role="tablist"
       aria-label={rest["aria-label"]}
       className={cn(
-        "inline-flex items-center gap-1 rounded-full border border-border bg-[var(--workspace-soft)] p-1",
+        "inline-flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-[var(--workspace-border)] bg-[var(--workspace-soft)] p-1",
         className,
       )}
     >
@@ -63,7 +63,7 @@ export function SegmentedTabs({
             aria-selected={active}
             onClick={() => onValueChange(tab.value)}
             className={cn(
-              "ax-interactive relative inline-flex items-center justify-center gap-2 rounded-full font-medium whitespace-nowrap",
+              "ax-interactive relative inline-flex shrink-0 items-center justify-center gap-2 rounded-full font-medium whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/25",
               size === "sm" ? "h-8 px-3 text-[13px]" : "h-9 px-4 text-sm",
               active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
             )}
@@ -76,7 +76,7 @@ export function SegmentedTabs({
                     ? { duration: 0 }
                     : { type: "spring", stiffness: 480, damping: 38 }
                 }
-                className="absolute inset-0 rounded-full border border-[var(--workspace-border)] bg-white shadow-[0_1px_2px_0_rgba(16,24,40,0.06)]"
+                className="absolute inset-0 rounded-full border border-[var(--workspace-border)] bg-white"
               />
             ) : null}
             {tab.icon ? (
@@ -88,7 +88,7 @@ export function SegmentedTabs({
                 className={cn(
                   "relative z-10 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1.5 text-[11px] font-semibold tabular-nums",
                   active
-                    ? "bg-[color-mix(in_srgb,var(--workspace-primary)_12%,transparent)] text-[var(--workspace-primary)]"
+                    ? "bg-[color-mix(in_srgb,var(--workspace-primary)_10%,white)] text-[var(--workspace-primary)]"
                     : "bg-[color-mix(in_srgb,var(--workspace-ink)_8%,transparent)] text-foreground",
                 )}
               >

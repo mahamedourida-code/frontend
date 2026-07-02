@@ -252,22 +252,22 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         whileTap={m.reduced ? undefined : { scale: 0.985 }}
         transition={m.reduced ? { duration: 0 } : m.springSnappy}
         className={cn(
-          "ax-interactive relative flex items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-black/25",
+          "ax-interactive relative flex items-center rounded-full border border-transparent outline-none focus-visible:ring-2 focus-visible:ring-black/25",
           collapsed
-            ? "h-[41px] justify-center px-0 text-[15px]"
+            ? "h-10 justify-center px-0 text-[15px]"
             : nested
               ? "h-9 gap-2 px-2.5 text-[14px]"
-              : "h-[41px] gap-2.5 px-3 text-[15px]",
+              : "h-10 gap-2.5 px-3 text-[15px]",
           isActive
-            ? "font-semibold text-[var(--workspace-ink)]"
-            : "font-medium text-[var(--workspace-ink)] hover:bg-white hover:text-[var(--workspace-primary)]",
+            ? "border-[var(--workspace-selection-border)] font-semibold text-[var(--workspace-ink)]"
+            : "font-medium text-[var(--workspace-ink)] hover:border-[var(--workspace-border)] hover:bg-white hover:text-[var(--workspace-primary)]",
         )}
       >
         {isActive ? (
           <motion.span
             layoutId="sidebar-active"
             transition={activeSpring}
-            className="absolute inset-0 rounded-md bg-[var(--workspace-blue-soft)]"
+            className="absolute inset-0 rounded-full bg-[var(--workspace-blue-soft)]"
             aria-hidden="true"
           />
         ) : null}
@@ -330,8 +330,8 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
           aria-controls={`sidebar-group-${group.key}`}
           onClick={() => setOpenGroups((current) => ({ ...current, [group.key]: !current[group.key] }))}
           className={cn(
-            "ax-interactive flex h-[41px] w-full items-center gap-2.5 rounded-md px-3 text-[15px] font-semibold text-[var(--workspace-ink)] outline-none hover:bg-white focus-visible:ring-2 focus-visible:ring-black/25",
-            containsActiveItem && "bg-white/70",
+            "ax-interactive flex h-10 w-full items-center gap-2.5 rounded-full border border-transparent px-3 text-[15px] font-semibold text-[var(--workspace-ink)] outline-none hover:border-[var(--workspace-border)] hover:bg-white focus-visible:ring-2 focus-visible:ring-black/25",
+            containsActiveItem && "border-[var(--workspace-selection-border)] bg-white/70",
           )}
         >
           <GroupIcon
@@ -405,7 +405,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
           aria-expanded={!collapsed}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           className={cn(
-            "ax-interactive flex size-10 items-center justify-center rounded-md text-white/80 outline-none hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white/30",
+            "ax-interactive flex size-10 items-center justify-center rounded-full text-white/80 outline-none hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white/30",
             collapsed && "mx-auto",
           )}
         >

@@ -557,7 +557,7 @@ function ExtractedTable({ rows }: { rows: any[][] }) {
   if (!rows.length) return null
   const [header, ...body] = rows
   return (
-    <table className="w-full border-collapse text-sm text-[var(--workspace-ink)]">
+    <table className="ax-table w-full text-sm">
       <thead>
         <tr className="bg-[var(--workspace-table-header)]">
           {header.map((cell, cellIndex) => (
@@ -596,6 +596,29 @@ function ExtractedTable({ rows }: { rows: any[][] }) {
     </table>
   )
 }
+
+const reviewBoardActionBarClass =
+  "scroll-mt-20 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-md border border-[var(--workspace-border)] bg-white px-4 py-2.5 shadow-none"
+const reviewBoardShellClass =
+  "overflow-hidden rounded-md border border-[var(--workspace-border)] bg-white shadow-none"
+const reviewBoardTopbarClass =
+  "flex min-h-12 flex-col gap-2 border-b border-[var(--workspace-border)] bg-white px-4 sm:flex-row sm:items-center sm:justify-between"
+const reviewBoardBandClass =
+  "flex min-h-10 items-center justify-between gap-3 border-b border-[var(--workspace-border)] bg-[var(--workspace-table-header)] px-4 py-2 text-[12px] text-[var(--workspace-muted)]"
+const reviewBoardTableClass =
+  "ax-table w-full min-w-[1120px] text-left text-[13px]"
+const reviewBoardHeadCellClass =
+  "border-b border-[var(--workspace-border)] px-3 py-2.5"
+const reviewBoardCellClass =
+  "border-b border-[var(--workspace-border)] px-3 py-2 align-middle"
+const reviewBoardRowClass =
+  "group h-12 bg-white transition-colors hover:bg-[var(--workspace-row-hover)]"
+const reviewBoardMenuClass =
+  "absolute right-0 top-11 z-30 space-y-1.5 rounded-md border border-[var(--workspace-border)] bg-white p-2 shadow-[0_8px_30px_rgba(0,0,0,0.12)]"
+const reviewBoardMobileCardClass =
+  "border-b border-[var(--workspace-border)] bg-white p-3 last:border-b-0"
+const reviewBoardDash =
+  <span className="text-[var(--workspace-muted)]/60">-</span>
 
 export function ResultPreviewPanel({
   isComplete,
@@ -899,6 +922,7 @@ export function ResultActions({
   const [resultFilter, setResultFilter] = useState<ResultFilter>("needs_review")
   const [bulkReadyBusy, setBulkReadyBusy] = useState(false)
   const [reviewedDownloadBusy, setReviewedDownloadBusy] = useState(false)
+  const [batchApBusy, setBatchApBusy] = useState(false)
   const [vendorDrafts, setVendorDrafts] = useState<Record<string, VendorRuleFields>>({})
   const [vendorRuleSavingId, setVendorRuleSavingId] = useState<string | null>(null)
   const [receiptDestination, setReceiptDestination] = useState<ReceiptPublishingDestination | "">("")
@@ -1121,6 +1145,14 @@ export function ResultActions({
 
     return { file, index, fileKey, badge, edited, duplicateWarning }
   })
+  const readyInvoiceEntries = resultEntries.filter(({ file }) =>
+    file.document_type === "invoice" && ["ready", "published"].includes(file.review_status || "")
+  )
+  const unsentReadyInvoiceEntries = readyInvoiceEntries.filter(({ file }) => !file.draft_bill_item_id)
+  const draftBillInvoiceCount = readyInvoiceEntries.length - unsentReadyInvoiceEntries.length
+  const readyReceiptEntries = resultEntries.filter(({ file }) =>
+    file.document_type === "receipt" && ["ready", "published"].includes(file.review_status || "")
+  )
   const filterCounts = resultEntries.reduce(
     (counts, entry) => {
       counts.all += 1
@@ -1345,6 +1377,18 @@ export function ResultActions({
     }
   }
 
+  const sendReadyInvoicesToDraftBills = async () => {
+    if (!onSendToAccountsPayable || !unsentReadyInvoiceEntries.length || unresolvedDuplicateCount > 0) return
+    setBatchApBusy(true)
+    try {
+      for (const entry of unsentReadyInvoiceEntries) {
+        await onSendToAccountsPayable(entry.file)
+      }
+    } finally {
+      setBatchApBusy(false)
+    }
+  }
+
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       // ⌘/Ctrl+Enter — confirm: mark the open document ready.
@@ -1419,10 +1463,10 @@ export function ResultActions({
     <>
     <div className="space-y-2.5">
       {isComplete ? (
-        <div id="reviewed-outputs" className="scroll-mt-20 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[4px] border border-[#c8ced6] bg-white px-4 py-2.5 shadow-none">
-          <span className="text-sm font-semibold text-[#111827]">Reviewed stack</span>
+        <div id="reviewed-outputs" className={reviewBoardActionBarClass}>
+          <span className="text-sm font-semibold text-[var(--workspace-ink)]">Reviewed stack</span>
           {editedCount > 0 && !isTextOutput ? (
-            <span className="inline-flex h-7 items-center rounded-full border border-[#cfd4d9] bg-white px-2.5 text-xs font-semibold text-[#475467] shadow-none">
+            <span className="inline-flex h-7 items-center rounded-full border border-[var(--workspace-border)] bg-white px-2.5 text-xs font-semibold text-[var(--workspace-muted)] shadow-none">
               {editedCount} edited
             </span>
           ) : null}
@@ -1432,7 +1476,7 @@ export function ResultActions({
                 More actions
                 <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
               </summary>
-              <div className="absolute right-0 top-11 z-30 w-56 space-y-2 rounded-[8px] border border-[#c8ced6] bg-white p-2 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+              <div className={cn(reviewBoardMenuClass, "w-56 space-y-2")}>
                 {!isSaved ? (
                   <Button
                     onClick={onSaveToHistory}
@@ -1454,12 +1498,12 @@ export function ResultActions({
                   <Share2 className="h-4 w-4" />
                   Share
                 </Button>
-                <label className="block px-1 pt-1 text-xs font-semibold text-[#475467]">
+                <label className="block px-1 pt-1 text-xs font-semibold text-[var(--workspace-muted)]">
                   Download format
                   <select
                     value={outputMode}
                     onChange={(event) => onOutputModeChange(event.target.value as OutputMode)}
-                    className="mt-1.5 h-9 w-full rounded-full border border-[#cfd4d9] bg-white px-3 text-xs font-semibold text-[#111827] shadow-none outline-none focus:border-[var(--workspace-primary)] focus:ring-2 focus:ring-black/15"
+                    className="mt-1.5 h-9 w-full rounded-full border border-[var(--workspace-button-border)] bg-white px-3 text-xs font-semibold text-[var(--workspace-ink)] shadow-none outline-none focus:border-[var(--workspace-primary)] focus:ring-2 focus:ring-[var(--workspace-primary)]/20"
                   >
                     {reviewedExportOptions.map(format => (
                       <option key={format.value} value={format.value}>{format.label}</option>
@@ -1482,10 +1526,10 @@ export function ResultActions({
             <details className="group relative">
               <summary className={cn(buttonVariants({ variant: "glossy", size: "default" }), "h-9 cursor-pointer list-none gap-2 px-4 text-sm [&::-webkit-details-marker]:hidden", workspacePrimaryControlClass)}>
                 <Send className="h-4 w-4" />
-                Publish
+                Send / export
                 <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
               </summary>
-              <div className="absolute right-0 top-11 z-30 w-52 space-y-1.5 rounded-[8px] border border-[#c8ced6] bg-white p-2 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+              <div className={cn(reviewBoardMenuClass, "w-64")}>
                 <Button
                   size="sm"
                   variant="surface"
@@ -1494,17 +1538,40 @@ export function ResultActions({
                   className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspaceNormalControlClass)}
                 >
                   {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-                  {unresolvedDuplicateCount > 0 ? "Resolve duplicates" : "Download"}
+                  {unresolvedDuplicateCount > 0 ? "Resolve duplicates" : "Download reviewed files"}
                 </Button>
-                <Button
-                  size="sm"
-                  variant="glossy"
-                  onClick={() => toast.success("Published to QuickBooks or Xero")}
-                  className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspacePrimaryControlClass)}
-                >
-                  <Send className="h-4 w-4" />
-                  To software
-                </Button>
+                {onSendToAccountsPayable && unsentReadyInvoiceEntries.length ? (
+                  <Button
+                    size="sm"
+                    variant="glossy"
+                    onClick={() => void sendReadyInvoicesToDraftBills()}
+                    disabled={batchApBusy || unresolvedDuplicateCount > 0}
+                    className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspacePrimaryControlClass)}
+                  >
+                    {batchApBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    {unresolvedDuplicateCount > 0
+                      ? "Resolve duplicates first"
+                      : `Send ${unsentReadyInvoiceEntries.length} invoice${unsentReadyInvoiceEntries.length === 1 ? "" : "s"} to draft bills`}
+                  </Button>
+                ) : null}
+                {draftBillInvoiceCount > 0 ? (
+                  <Button asChild size="sm" variant="surface" className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspaceNormalControlClass)}>
+                    <a href="/dashboard/accounts-payable">
+                      <Inbox className="h-4 w-4" />
+                      Open draft bills
+                    </a>
+                  </Button>
+                ) : null}
+                {readyReceiptEntries.length ? (
+                  <p className="px-2 py-1 text-[11px] font-medium leading-snug text-[var(--workspace-muted)]">
+                    Open a reviewed receipt to choose its QuickBooks destination before publishing.
+                  </p>
+                ) : null}
+                {!unsentReadyInvoiceEntries.length && !draftBillInvoiceCount && !readyReceiptEntries.length ? (
+                  <p className="px-2 py-1 text-[11px] font-medium leading-snug text-[var(--workspace-muted)]">
+                    Review and mark documents ready before sending them to accounting.
+                  </p>
+                ) : null}
               </div>
             </details>
           </div>
@@ -1711,14 +1778,22 @@ export function ResultActions({
                             </button>
                           ) : (
                             <>
-                              {isReadyToPublish ? (
+                              {isReadyToPublish && file.document_type === "invoice" && onSendToAccountsPayable && !file.draft_bill_item_id ? (
                                 <button
                                   type="button"
-                                  onClick={() => toast.success("Published to QuickBooks or Xero")}
+                                  onClick={() => void onSendToAccountsPayable(file)}
                                   className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#16a34a] bg-[#16a34a] px-2.5 text-[11px] font-semibold text-white shadow-none transition-colors hover:border-[#15803d] hover:bg-[#15803d] focus-visible:ring-2 focus-visible:ring-[#16a34a]/30"
                                 >
-                                  Publish
+                                  Draft bill
                                 </button>
+                              ) : null}
+                              {isReadyToPublish && file.draft_bill_item_id ? (
+                                <Link
+                                  href="/dashboard/accounts-payable"
+                                  className={cn("ax-interactive inline-flex h-7 items-center px-2.5 text-[11px] font-semibold transition-colors", workspaceNormalControlClass)}
+                                >
+                                  Draft bill
+                                </Link>
                               ) : null}
                               {docHref ? (
                                 <Link
@@ -1834,17 +1909,6 @@ export function ResultActions({
                 >
                   <Check className="h-3.5 w-3.5" />
                   Mark ready
-                </Button>
-              ) : null}
-              {comparisonFile.document_id && ["ready", "published"].includes(comparisonFile.review_status || "") ? (
-                <Button
-                  size="sm"
-                  variant="glossy"
-                  onClick={() => toast.success("Published to QuickBooks or Xero")}
-                  className={cn("h-9 gap-1.5 px-4 text-xs", workspacePrimaryControlClass)}
-                >
-                  <Send className="h-3.5 w-3.5" />
-                  Publish
                 </Button>
               ) : null}
               {/* Close stands apart from the action cluster. */}
