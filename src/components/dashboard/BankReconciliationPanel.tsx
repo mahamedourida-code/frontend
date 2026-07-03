@@ -79,27 +79,19 @@ export function BankReconciliationPanel({ data, className }: BankReconciliationP
       return {
         icon: <CheckCircle2 className="size-4" />,
         label: "Balanced",
-        sub: "Extracted transactions match the statement's closing balance.",
         tone: "balanced" as const,
       }
     }
     if (result.status === "off") {
-      const missing = result.estimatedMissingRows
-      const sub =
-        missing && missing > 0
-          ? `${missing} row${missing === 1 ? "" : "s"} may be missing or misread.`
-          : "Review transactions — the extracted total doesn't match the statement."
       return {
         icon: <AlertTriangle className="size-4" />,
         label: `${formatAmount(result.difference, result.currency)} off`,
-        sub,
         tone: "off" as const,
       }
     }
     return {
       icon: <Info className="size-4" />,
       label: "Reconciliation pending",
-      sub: "Need opening balance, closing balance, and at least one row to verify.",
       tone: "info" as const,
     }
   })()
@@ -163,9 +155,6 @@ export function BankReconciliationPanel({ data, className }: BankReconciliationP
             </div>
           </div>
         </div>
-        <p className="max-w-md text-xs font-medium leading-5">
-          {headerCopy.sub}
-        </p>
       </header>
 
       <dl className="grid grid-cols-2 divide-x divide-border border-b border-border sm:grid-cols-3 lg:grid-cols-6">
@@ -196,13 +185,6 @@ export function BankReconciliationPanel({ data, className }: BankReconciliationP
         ))}
       </dl>
 
-      {result.status === "off" ? (
-        <p className="px-4 py-2 text-[11px] font-medium leading-5 text-gray-600">
-          Tip: open the source image and look for transactions in margins, on
-          continuation pages, or hand-written annotations that may have been
-          missed.
-        </p>
-      ) : null}
     </section>
   )
 }

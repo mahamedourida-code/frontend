@@ -46,7 +46,7 @@ function SetupContent() {
       <PageHeader
         title="Setup"
       />
-      <div className="max-w-3xl text-black">
+      <div className="max-w-2xl text-foreground">
         <SetupChecklist workspace={activeWorkspace} />
       </div>
     </DashboardShell>

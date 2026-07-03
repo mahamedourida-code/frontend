@@ -12,8 +12,8 @@ type SectionTone = "default" | "active" | "muted"
 
 const toneAccent: Record<SectionTone, string> = {
   default: "",
-  active: "border-[var(--workspace-selection-border)] bg-[color-mix(in_srgb,var(--workspace-blue-soft)_72%,white)]",
-  muted: "bg-[var(--workspace-soft)]",
+  active: "border-[color-mix(in_srgb,var(--workspace-selection-border)_58%,transparent)] bg-[color-mix(in_srgb,var(--workspace-blue-soft)_44%,white)]",
+  muted: "bg-[color-mix(in_srgb,var(--workspace-soft)_62%,white)]",
 }
 
 interface WorkspaceSectionProps {
@@ -78,7 +78,7 @@ export function WorkspaceSection({
       {icon ? (
         <span
           className={cn(
-            "inline-flex shrink-0 items-center justify-center rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]",
+            "inline-flex shrink-0 items-center justify-center rounded-md bg-[var(--workspace-soft)] text-[var(--workspace-ink)]",
             compact ? "size-7 [&_svg]:size-3.5" : "size-8 [&_svg]:size-4",
           )}
         >
@@ -91,7 +91,7 @@ export function WorkspaceSection({
           {step !== undefined && step !== null ? (
             <span
               className={cn(
-                "inline-flex shrink-0 items-center justify-center rounded-full border border-[var(--workspace-border)] bg-white font-mono font-semibold tabular-nums text-[var(--workspace-primary)]",
+                "inline-flex shrink-0 items-center justify-center rounded-full bg-[var(--workspace-soft)] font-mono font-semibold tabular-nums text-[var(--workspace-primary)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--workspace-border)_64%,transparent)]",
                 compact ? "h-5 min-w-5 px-1.5 text-[11px]" : "h-6 min-w-6 px-2 text-[12px]",
               )}
             >
@@ -111,7 +111,7 @@ export function WorkspaceSection({
         {hint ? (
           <p
             className={cn(
-              "mt-1 max-w-2xl text-pretty text-[12px] leading-5 text-[var(--workspace-muted)]",
+              "mt-1 max-w-[56ch] text-pretty text-[12px] leading-5 text-[var(--workspace-muted)]",
               compact && "max-w-xl leading-4",
               hintClassName,
             )}
@@ -135,16 +135,16 @@ export function WorkspaceSection({
     <section
       id={id}
       className={cn(
-        "relative overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white shadow-[0_1px_2px_0_rgba(16,24,40,0.035)]",
+        "relative overflow-hidden rounded-lg border border-[color-mix(in_srgb,var(--workspace-border)_62%,transparent)] bg-white/[0.74] shadow-none",
         toneAccent[tone],
         className,
       )}
     >
       <header
         className={cn(
-          "flex items-start justify-between gap-3",
-          compact ? "px-3 py-2.5 sm:px-4" : "px-4 py-3 sm:px-5",
-          isOpen && "border-b border-[var(--workspace-border)]",
+          "flex items-start justify-between gap-4",
+          compact ? "px-3.5 py-3 sm:px-4" : "px-5 py-4 sm:px-6",
+          isOpen && "border-b border-[color-mix(in_srgb,var(--workspace-border)_48%,transparent)]",
           headerClassName,
         )}
       >
@@ -153,7 +153,7 @@ export function WorkspaceSection({
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={isOpen}
-            className="ax-interactive -m-1 flex min-w-0 flex-1 items-start rounded-lg p-1 text-left hover:bg-[var(--workspace-soft)]"
+            className="ax-interactive -m-1 flex min-w-0 flex-1 items-start rounded-md p-1 text-left hover:bg-[var(--workspace-soft)]"
           >
             {heading}
           </button>
@@ -176,7 +176,7 @@ export function WorkspaceSection({
             transition={m.reduced ? { duration: 0 } : { duration: m.dur.route, ease: m.ease }}
             className="overflow-hidden"
           >
-            <div className={cn(compact ? "px-3 py-3 sm:px-4" : "px-4 py-4 sm:px-5", contentClassName)}>
+            <div className={cn(compact ? "px-3.5 py-3.5 sm:px-4" : "px-5 py-5 sm:px-6", contentClassName)}>
               {children}
             </div>
           </motion.div>

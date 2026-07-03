@@ -290,7 +290,7 @@ export function DashboardShell({
           </div>
         </motion.header>
 
-        <main className={cn("mx-auto min-h-[calc(100svh-4rem)] w-full max-w-[1480px] border-x border-slate-200/70 bg-white/[0.82] px-4 py-6 pb-24 shadow-[inset_1px_0_0_rgba(255,255,255,0.72),inset_-1px_0_0_rgba(255,255,255,0.72)] sm:px-5 lg:px-7", contentClassName)}>
+        <main className={cn("mx-auto min-h-[calc(100svh-4rem)] w-full max-w-[1400px] bg-white/[0.68] px-5 py-8 pb-24 sm:px-6 lg:px-9 xl:px-10", contentClassName)}>
           {(eyebrow || title) && (
             <div className="sr-only">
               {eyebrow && <span>{eyebrow}</span>}

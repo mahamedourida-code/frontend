@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -71,12 +70,6 @@ const softPanel =
   "rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-soft)] shadow-none"
 
 const accountingTextAction = "ax-text-action"
-
-const accountingPanel =
-  "ax-workspace-panel rounded-lg border border-[var(--workspace-border)] bg-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.75),0_1px_2px_0_rgba(16,24,40,0.04)] dark:border-slate-800 dark:bg-slate-950"
-
-const accountingSubPanel =
-  "rounded-lg border border-slate-200 bg-slate-50/80 shadow-none dark:border-slate-800 dark:bg-slate-900/40"
 
 const accountingPrimaryButton =
   "!border-[var(--btn-primary-bg)] !bg-[var(--btn-primary-bg)] !text-[var(--btn-primary-fg)] !shadow-none hover:!bg-[var(--btn-primary-bg-hover)] hover:!text-[var(--btn-primary-fg-hover)] focus-visible:!ring-[var(--btn-primary-bg)]/30"
@@ -577,7 +570,6 @@ function SettingsContent() {
                 <WorkspaceSection
                   title="Profile"
                   icon={<User />}
-                  hint="Name and sign-in email for this workspace."
                   contentClassName="space-y-4"
                 >
                   <Field label="Full name" htmlFor="fullname">
@@ -714,7 +706,7 @@ function SettingsContent() {
                     <div className={cn("p-4", softPanel)}>
                       <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--workspace-muted)]">Batch limit</p>
                       <p className="mt-2 text-lg font-semibold text-foreground">
-                        {limits ? `${limits.max_files_per_batch} files` : "Loading"}
+                        {limits ? `${limits.max_files_per_batch} files, ${limits.max_file_size_mb} MB` : "Loading"}
                       </p>
                     </div>
                   </div>
@@ -763,7 +755,6 @@ function SettingsContent() {
                 <WorkspaceSection
                   title="Plan changes"
                   icon={<PlanSwitch />}
-                  hint="Self-serve upgrades and current upload limits."
                   contentClassName="space-y-4"
                 >
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -805,12 +796,6 @@ function SettingsContent() {
 
                   </div>
 
-                  <div className={cn("flex flex-wrap items-center justify-between gap-2 p-4 text-sm font-medium text-foreground", softPanel)}>
-                    <span>Current stack limits</span>
-                    <span className="font-semibold text-foreground">
-                      {limits ? `${limits.max_files_per_batch} files, ${limits.max_file_size_mb} MB each` : "Loading live limits"}
-                    </span>
-                  </div>
                 </WorkspaceSection>
               </div>
             )}
@@ -820,7 +805,6 @@ function SettingsContent() {
                 <WorkspaceSection
                   title="Vendor memory"
                   icon={<Store />}
-                  hint="Approved supplier defaults reused in Review."
                   actions={(
                     <>
                       <StatusBadge tone="warning">Owner only</StatusBadge>
@@ -847,9 +831,6 @@ function SettingsContent() {
                         <h3 className="text-base font-semibold tracking-tight text-foreground">
                           No supplier defaults yet
                         </h3>
-                        <p className="text-sm leading-6 text-[var(--workspace-muted)]">
-                          Confirm an invoice or receipt in Review to save coding.
-                        </p>
                       </div>
                     </div>
                   ) : vendorRules.map(rule => (
@@ -895,7 +876,7 @@ function SettingsContent() {
                         </div>
                       </div>
 
-                      <div className="mt-4 rounded-lg border border-[var(--workspace-border)] bg-white p-3">
+                      <div className="mt-4">
                         <Field
                           label="Auto-apply mode"
                           icon={<SlidersHorizontal />}
@@ -972,102 +953,68 @@ function SettingsContent() {
 
             {activeSection === 'accounting' && (
               <div className="space-y-5">
-                <Card className={cn(accountingPanel, "overflow-hidden")}>
-                  <CardHeader className="p-4 sm:p-5">
-                    <div className="flex items-start gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--workspace-blue-soft)] dark:bg-blue-950/40">
-                        <DownloadCloud className="h-5 w-5 text-[var(--workspace-blue)]" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-base font-semibold">Accounting connections</CardTitle>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="border-t border-border p-4 sm:p-5">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                      <p className="max-w-md text-sm leading-6 text-[var(--workspace-muted)]">
-                        Publish reviewed, unpaid draft bills to QuickBooks or Xero.
-                      </p>
-                      <InlineAction asChild className={cn("shrink-0", accountingTextAction)}>
-                        <Link href="/dashboard/integrations">
-                          Open integrations
-                          <ExternalLink className="size-4" />
-                        </Link>
-                      </InlineAction>
-                    </div>
-                  </CardContent>
-                </Card>
+                <WorkspaceSection
+                  title="Accounting connections"
+                  icon={<DownloadCloud />}
+                  contentClassName="py-3 sm:py-3"
+                >
+                  <InlineAction asChild className={cn("shrink-0", accountingTextAction)}>
+                    <Link href="/dashboard/integrations">
+                      Open integrations
+                      <ExternalLink className="size-4" />
+                    </Link>
+                  </InlineAction>
+                </WorkspaceSection>
 
-                <Card className={cn(accountingPanel, "overflow-hidden")}>
-                  <CardHeader className="p-4 sm:p-5">
-                    <div className="flex items-start gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--workspace-blue-soft)] dark:bg-blue-950/40">
-                        <FileSpreadsheet className="h-5 w-5 text-[var(--workspace-blue)]" />
-                      </div>
+                <WorkspaceSection
+                  title="Purchase order import"
+                  icon={<FileSpreadsheet />}
+                  contentClassName="space-y-4"
+                >
+                  {!isOwner ? (
+                    <StatusBadge tone="warning">Owner required</StatusBadge>
+                  ) : (
+                    <>
                       <div>
-                        <CardTitle className="text-base font-semibold">Purchase order import</CardTitle>
-                        <CardDescription className="mt-1 max-w-xl leading-5 text-[var(--workspace-muted)]">
-                          Open POs for AP matching.
-                        </CardDescription>
+                        <Label htmlFor="purchase-orders-csv">Purchase orders CSV</Label>
+                        <p className="mt-1 text-xs leading-5 text-[var(--workspace-muted)]">
+                          Columns: <span className="font-mono text-slate-900 dark:text-slate-100">po_number, vendor, date, total, remaining, currency</span>
+                        </p>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4 border-t border-border p-4 sm:p-5">
-                    {!isOwner ? (
-                      <p className={cn("px-4 py-3 text-sm font-normal text-slate-700 dark:text-slate-300", accountingSubPanel)}>
-                        Ask the workspace owner to import purchase orders.
-                      </p>
-                    ) : (
-                      <>
-                        <div>
-                          <Label htmlFor="purchase-orders-csv">Purchase orders CSV</Label>
-                          <p className="mt-1 text-xs leading-5 text-[var(--workspace-muted)]">
-                            Columns: <span className="font-mono text-slate-900 dark:text-slate-100">po_number, vendor, date, total, remaining, currency</span>
-                          </p>
-                        </div>
-                        <textarea
-                          id="purchase-orders-csv"
-                          value={poCsv}
-                          onChange={(event) => setPoCsv(event.target.value)}
-                          placeholder={"po_number,vendor,date,total,remaining,currency\nPO-1001,Acme Ltd,2026-05-01,1200.00,1200.00,USD"}
-                          rows={6}
-                          className="w-full rounded-lg border border-slate-200 bg-white p-3 font-mono text-xs outline-none transition focus:border-[var(--workspace-primary)]/40 focus:ring-2 focus:ring-black/15 dark:border-slate-800 dark:bg-slate-950"
-                        />
-                        <div className="flex justify-end border-t border-border pt-3">
-                          <Button
-                            variant="glossy"
-                            size="sm"
-                            onClick={() => void importPurchaseOrders()}
-                            disabled={poImportBusy || !poCsv.trim()}
-                            className={accountingPrimaryButton}
-                          >
-                            {poImportBusy ? <Loader2 className="size-4 animate-spin" /> : null}
-                            {poImportBusy ? "Importing..." : "Import purchase orders"}
-                          </Button>
-                        </div>
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
+                      <textarea
+                        id="purchase-orders-csv"
+                        value={poCsv}
+                        onChange={(event) => setPoCsv(event.target.value)}
+                        placeholder={"po_number,vendor,date,total,remaining,currency\nPO-1001,Acme Ltd,2026-05-01,1200.00,1200.00,USD"}
+                        rows={6}
+                        className="w-full rounded-lg border border-slate-200 bg-white p-3 font-mono text-xs outline-none transition focus:border-[var(--workspace-primary)]/40 focus:ring-2 focus:ring-black/15 dark:border-slate-800 dark:bg-slate-950"
+                      />
+                      <div className="flex justify-end border-t border-border pt-3">
+                        <Button
+                          variant="glossy"
+                          size="sm"
+                          onClick={() => void importPurchaseOrders()}
+                          disabled={poImportBusy || !poCsv.trim()}
+                          className={accountingPrimaryButton}
+                        >
+                          {poImportBusy ? <Loader2 className="size-4 animate-spin" /> : null}
+                          {poImportBusy ? "Importing..." : "Import purchase orders"}
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </WorkspaceSection>
               </div>
             )}
 
-            {/* Preferences */}
             {activeSection === 'preferences' && (
               <div className="space-y-5">
                 {/* Processing Settings */}
-                <Card className={accountingPanel}>
-                  <CardHeader className="p-4 sm:p-5">
-                    <div className="flex items-center gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--workspace-blue-soft)] dark:bg-blue-950/40">
-                        <Settings2 className="h-5 w-5 text-[var(--workspace-blue)]" />
-                      </div>
-                      <div>
-                        <CardTitle className="font-semibold">Processing defaults</CardTitle>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4 border-t border-border p-4 sm:p-5">
+                <WorkspaceSection
+                  title="Processing defaults"
+                  icon={<Settings2 />}
+                  contentClassName="space-y-4"
+                >
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="auto-download">Auto download</Label>
@@ -1102,9 +1049,6 @@ function SettingsContent() {
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="invoice-language">Invoice language</Label>
-                        <p className="text-xs text-[var(--workspace-muted)]">
-                          Review labels only; OCR stays separate.
-                        </p>
                       </div>
                       <Select
                         value={invoiceLanguage}
@@ -1142,22 +1086,14 @@ function SettingsContent() {
                         }}
                       />
                     </div>
-                  </CardContent>
-                </Card>
+                </WorkspaceSection>
 
                 {/* OCR Detection Language */}
-                <Card className={accountingPanel}>
-                  <CardHeader className="p-4 sm:p-5">
-                    <div className="flex items-center gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--workspace-blue-soft)] dark:bg-blue-950/40">
-                        <Languages className="h-5 w-5 text-[var(--workspace-blue)]" />
-                      </div>
-                      <div>
-                        <CardTitle className="font-semibold">OCR language</CardTitle>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4 border-t border-border p-4 sm:p-5">
+                <WorkspaceSection
+                  title="OCR language"
+                  icon={<Languages />}
+                  contentClassName="space-y-4"
+                >
                     <div className="space-y-2">
                       <Label htmlFor="language">Detection language</Label>
                       <Select value={language} onValueChange={handleLanguageChange}>
@@ -1216,8 +1152,7 @@ function SettingsContent() {
                         </SelectContent>
                       </Select>
                     </div>
-                  </CardContent>
-                </Card>
+                </WorkspaceSection>
               </div>
             )}
           </div>

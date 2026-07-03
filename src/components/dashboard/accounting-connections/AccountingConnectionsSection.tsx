@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useSearchParams } from "next/navigation"
-import { Check, Cloud, Landmark, Plug2, RefreshCw, ShieldCheck, Target, type LucideIcon } from "lucide-react"
+import { Check, Cloud, Landmark, Plug2, RefreshCw, Target, type LucideIcon } from "lucide-react"
 import { toast } from "sonner"
 
 import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog"
@@ -54,8 +54,6 @@ const providers: Array<{
 
 const workspacePrimaryButton =
   "!border-[var(--btn-primary-bg)] !bg-[var(--btn-primary-bg)] !text-[var(--btn-primary-fg)] !shadow-none hover:!bg-[var(--btn-primary-bg-hover)] hover:!text-[var(--btn-primary-fg-hover)]"
-
-const workspaceWarmPanel = "border-[var(--workspace-border)] bg-[var(--workspace-soft)]"
 
 function providerName(provider: Provider) {
   return providers.find(({ id }) => id === provider)?.name || provider
@@ -198,8 +196,6 @@ export function AccountingConnectionsSection({
     }
   }
 
-  const hasConnection = providers.some(({ id }) => connections[id].connected)
-
   return (
     <div className="space-y-5">
       <WorkspaceSection
@@ -240,20 +236,10 @@ export function AccountingConnectionsSection({
         </div>
       </WorkspaceSection>
 
-      {!hasConnection ? (
-        <div className="rounded-xl border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-5 py-4">
-          <p className="text-sm font-bold text-foreground">Connect workspace accounting</p>
-          <p className="mt-2 text-sm font-normal text-foreground">
-            Connections apply to this workspace. Connect QuickBooks Online or Xero, then sync vendors, accounts, and tax codes before publishing reviewed draft bills.
-          </p>
-        </div>
-      ) : null}
-
       <WorkspaceSection icon={<Plug2 />} title="Workspace accounting software" contentClassName="p-0">
         {loading ? (
           <WorkspaceActivityIndicator
             title="Checking accounting connections"
-            detail="Retrieving QuickBooks and Xero company and reference-list status."
             className="m-4 w-auto"
           />
         ) : providers.map((provider, index) => {
@@ -276,11 +262,11 @@ export function AccountingConnectionsSection({
                         {connection.connected ? "Connected" : "Not connected"}
                       </StatusBadge>
                     </div>
-                    <p className="mt-1.5 text-xs font-normal leading-5 text-foreground">
-                      {connection.connected
-                        ? `${connection.company_name || "Company connected"} - workspace connection - ${referenceCount(connection)} synced references - ${formatSynced(connection.last_synced_at)}`
-                        : "Connect this workspace before publishing reviewed draft bills."}
-                    </p>
+                    {connection.connected ? (
+                      <p className="mt-1.5 text-xs font-normal leading-5 text-foreground">
+                        {`${connection.company_name || "Company connected"} - ${referenceCount(connection)} references - ${formatSynced(connection.last_synced_at)}`}
+                      </p>
+                    ) : null}
                   </div>
                 </div>
 
@@ -309,23 +295,13 @@ export function AccountingConnectionsSection({
         })}
       </WorkspaceSection>
 
-      <div className={cn("flex items-start gap-3 rounded-xl border px-5 py-4", workspaceWarmPanel)}>
-        <ShieldCheck className="mt-0.5 size-5 shrink-0 text-[var(--workspace-blue)]" />
-        <div>
-          <h3 className="text-sm font-semibold text-foreground">Controlled publishing</h3>
-          <p className="mt-1.5 text-sm font-normal leading-6 text-foreground">
-            Workspace connections create reviewed, unpaid draft bills in the selected QuickBooks or Xero company. AxLiner does not approve, pay, reconcile, or delete bills.
-          </p>
-        </div>
-      </div>
-
       <ConfirmDeleteDialog
         open={Boolean(disconnectTarget)}
         onOpenChange={(open) => {
           if (!open) setDisconnectTarget(null)
         }}
         title={`Disconnect ${disconnectTargetName}`}
-        description={`This removes the workspace-level ${disconnectTargetName} connection for ${workspaceLabel}. Reviewed data stays in AxLiner, but new draft bills will not publish there until an owner reconnects it.`}
+        description={`New draft bills will not publish to ${disconnectTargetName} until an owner reconnects ${workspaceLabel}.`}
         confirmLabel={`Disconnect ${disconnectTargetName}`}
         busyLabel="Disconnecting..."
         onConfirm={async () => {

@@ -1,32 +1,15 @@
 "use client"
 
-import { motion } from "framer-motion"
-
 import type { CompanySummary } from "@/components/dashboard/companies/company-types"
-import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
-import { WorkspaceArt } from "@/components/dashboard/WorkspaceArt"
-import { useMotionTokens } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 
-type OverviewCell = {
+type Kpi = {
   key: string
   label: string
   value: number
-  art: string
-  valueClass: string
-  href?: string
-  accent?: boolean
-  badge?: { tone: StatusTone; label: string }
+  meta?: string
 }
 
-/**
- * Quiet reference counts for the dashboard home. Counts are aggregated from the
- * client list already loaded by CompaniesTable, so there's no extra request.
- *
- * Each card carries a caricature visual in the black / slate-footer / landing-
- * blue palette. The lucide glyphs below are placeholders — swap them for the
- * generated art in `/public/workspace-art/*` (specs in `pp.md`) when ready.
- */
 export function WorkspaceOverview({
   companies,
   className,
@@ -34,114 +17,108 @@ export function WorkspaceOverview({
   companies: CompanySummary[]
   className?: string
 }) {
-  const m = useMotionTokens()
-
   if (companies.length === 0) return null
 
+  const purchases = companies.reduce((sum, company) => sum + company.purchases, 0)
+  const receipts = companies.reduce((sum, company) => sum + company.receipts, 0)
+  const bankStatements = companies.reduce((sum, company) => sum + company.bankStatements, 0)
+  const other = companies.reduce((sum, company) => sum + company.other, 0)
   const needsReview = companies.reduce((sum, company) => sum + company.needsReview, 0)
   const draftBills = companies.reduce((sum, company) => sum + company.bills, 0)
-  const documents = companies.reduce(
-    (sum, company) => sum + company.purchases + company.receipts + company.bankStatements + company.other,
-    0,
-  )
+  const documents = purchases + receipts + bankStatements + other
   const connected = companies.filter((company) => company.accountingConnected).length
 
-  const cells: OverviewCell[] = [
-    {
-      key: "review",
-      label: "To review",
-      value: needsReview,
-      art: "review",
-      valueClass: "text-foreground",
-      href: "#clients",
-    },
-    {
-      key: "drafts",
-      label: "Draft bills",
-      value: draftBills,
-      art: "draft-bills",
-      valueClass: draftBills ? "text-[var(--data-money)]" : "text-foreground",
-      href: "#clients",
-    },
-    {
-      key: "documents",
-      label: "Documents",
-      value: documents,
-      art: "documents",
-      valueClass: "text-foreground",
-    },
+  const kpis: Kpi[] = [
     {
       key: "clients",
       label: "Clients",
       value: companies.length,
-      art: "clients",
-      valueClass: "text-foreground",
-      badge: connected > 0 ? { tone: "success", label: `${connected} connected` } : undefined,
+      meta: connected > 0 ? `${formatCount(connected)} linked` : "No links",
+    },
+    {
+      key: "review",
+      label: "To review",
+      value: needsReview,
+      meta: "Exceptions",
+    },
+    {
+      key: "bills",
+      label: "Draft bills",
+      value: draftBills,
+      meta: "Ready drafts",
     },
   ]
 
+  const segments = [
+    { key: "purchases", label: "Purchases", value: purchases, className: "bg-[var(--data-reference)]" },
+    { key: "receipts", label: "Receipts", value: receipts, className: "bg-[var(--data-money)]" },
+    { key: "bank", label: "Bank", value: bankStatements, className: "bg-[var(--data-date)]" },
+    { key: "other", label: "Other", value: other, className: "bg-slate-300" },
+  ]
+  const activeSegments = segments.filter((segment) => segment.value > 0)
+
   return (
-    <motion.div
+    <section
       className={cn(
-        "grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4",
+        "grid gap-3 sm:grid-cols-3 xl:grid-cols-[repeat(3,minmax(0,0.72fr))_minmax(280px,1.35fr)]",
         className,
       )}
-      variants={m.staggerParent(0.045)}
-      initial="hidden"
-      animate="show"
+      aria-label="Client workspace overview"
     >
-      {cells.map((cell) => {
-        const body = (
-          <>
-            <div className="flex items-start justify-between gap-2">
-              <span className="min-w-0 truncate pt-0.5 text-xs font-semibold text-foreground">{cell.label}</span>
-              {cell.badge ? (
-                <StatusBadge tone={cell.badge.tone} className="shrink-0">
-                  {cell.badge.label}
-                </StatusBadge>
-              ) : null}
-            </div>
-            <div className="mt-3 flex items-end justify-between gap-3">
-              <span className={cn("block text-2xl font-semibold tabular-nums sm:text-3xl", cell.valueClass)}>
-                {formatCount(cell.value)}
-              </span>
-              <WorkspaceArt name={cell.art} className="size-14 shrink-0" />
-            </div>
-          </>
-        )
+      {kpis.map((kpi) => (
+        <article
+          key={kpi.key}
+          className="rounded-lg border border-[var(--workspace-border)] bg-white px-4 py-3 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]"
+        >
+          <p className="truncate text-[12px] font-semibold text-[var(--workspace-muted)]">{kpi.label}</p>
+          <div className="mt-2 flex items-end justify-between gap-3">
+            <p className="text-2xl font-semibold leading-none tracking-normal text-[var(--workspace-ink)] tabular-nums">
+              {formatCount(kpi.value)}
+            </p>
+            {kpi.meta ? (
+              <p className="truncate text-[12px] font-semibold text-[var(--workspace-muted)]">{kpi.meta}</p>
+            ) : null}
+          </div>
+        </article>
+      ))}
 
-        const cardClass = cn(
-          "block rounded-xl border border-[var(--workspace-border)] p-4 sm:p-5",
-          "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.8),0_1px_2px_0_rgba(16,24,40,0.06),0_2px_8px_-2px_rgba(16,24,40,0.10)]",
-          cell.accent ? "bg-[color-mix(in_srgb,var(--text-attention)_5%,white)]" : "bg-white",
-        )
-
-        if (cell.href) {
-          return (
-            <motion.a
-              key={cell.key}
-              href={cell.href}
-              variants={m.listItem}
-              whileHover={m.reduced ? undefined : { y: -2 }}
-              whileTap={m.reduced ? undefined : { scale: 0.99 }}
-              transition={m.springSnappy}
-              className={cn(
-                cardClass,
-                "outline-none will-change-transform transition-shadow hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_2px_4px_0_rgba(16,24,40,0.08),0_10px_24px_-6px_rgba(16,24,40,0.18)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]",
-              )}
+      <article className="rounded-lg border border-[var(--workspace-border)] bg-white px-4 py-3 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)] sm:col-span-3 xl:col-span-1">
+        <div className="flex items-center justify-between gap-3">
+          <p className="truncate text-[12px] font-semibold text-[var(--workspace-muted)]">Document mix</p>
+          <p className="shrink-0 text-[12px] font-semibold text-[var(--workspace-ink)] tabular-nums">
+            {formatCount(documents)}
+          </p>
+        </div>
+        <div
+          className="mt-3 flex h-2 overflow-hidden rounded-full bg-[var(--workspace-soft)]"
+          role="img"
+          aria-label={`Document mix: ${formatCount(purchases)} purchases, ${formatCount(receipts)} receipts, ${formatCount(bankStatements)} bank, ${formatCount(other)} other`}
+        >
+          {activeSegments.length > 0 ? (
+            activeSegments.map((segment) => (
+              <span
+                key={segment.key}
+                className={cn("h-full min-w-[4px]", segment.className)}
+                style={{ flexGrow: segment.value, flexBasis: 0 }}
+              />
+            ))
+          ) : (
+            <span className="h-full w-full bg-slate-200" />
+          )}
+        </div>
+        <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5">
+          {segments.map((segment) => (
+            <span
+              key={segment.key}
+              className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[var(--workspace-muted)]"
             >
-              {body}
-            </motion.a>
-          )
-        }
-
-        return (
-          <motion.div key={cell.key} variants={m.listItem} className={cardClass}>
-            {body}
-          </motion.div>
-        )
-      })}
-    </motion.div>
+              <span className={cn("size-1.5 rounded-full", segment.className)} aria-hidden="true" />
+              {segment.label}
+            </span>
+          ))}
+        </div>
+      </article>
+    </section>
   )
 }
 

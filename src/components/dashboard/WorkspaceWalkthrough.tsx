@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 export type WorkspaceWalkthroughStep = {
   target: string
   title: string
-  body: string
+  body?: string
   placement?: "top" | "right" | "bottom" | "left"
 }
 
@@ -41,26 +41,22 @@ type CoachmarkPosition = {
 export const WORKSPACE_WALKTHROUGH_STEPS = [
   {
     target: '[data-workspace-tour="clients"], [data-workspace-tour-fallback="clients"]',
-    title: "Create your first client",
-    body: "Keep each company and its document batches in one clear workspace.",
+    title: "Create a client",
     placement: "right",
   },
   {
     target: '[data-workspace-tour="upload"], [data-workspace-tour-fallback="upload"]',
     title: "Upload a document stack",
-    body: "Add PDFs, scans, and photos together. AxLiner sorts the batch for review.",
     placement: "right",
   },
   {
     target: '[data-workspace-tour="review"], [data-workspace-tour-fallback="review"]',
-    title: "Review flagged exceptions",
-    body: "Check low-confidence fields and correct only the items that need attention.",
+    title: "Review exceptions",
     placement: "right",
   },
   {
     target: '[data-workspace-tour="outputs"], [data-workspace-tour-fallback="outputs"]',
-    title: "Send reviewed output",
-    body: "Export Excel or CSV, or create draft bills in QuickBooks or Xero.",
+    title: "Export or publish",
     placement: "right",
   },
 ] as const satisfies readonly WorkspaceWalkthroughStep[]
@@ -440,7 +436,7 @@ export function WorkspaceWalkthrough({
             role="dialog"
             aria-modal="true"
             aria-labelledby="workspace-walkthrough-title"
-            aria-describedby="workspace-walkthrough-body"
+            aria-describedby={currentStep.body ? "workspace-walkthrough-body" : undefined}
             tabIndex={-1}
             className="pointer-events-auto fixed rounded-[10px] border border-white/10 bg-[#202432] p-4 text-white shadow-[0_18px_50px_rgba(15,23,42,0.32)] outline-none"
             style={coachmarkPosition}
@@ -465,12 +461,14 @@ export function WorkspaceWalkthrough({
             <h2 id="workspace-walkthrough-title" className="mt-3 text-lg font-semibold">
               {currentStep.title}
             </h2>
-            <p
-              id="workspace-walkthrough-body"
-              className="mt-1.5 text-sm leading-6 text-white/70"
-            >
-              {currentStep.body}
-            </p>
+            {currentStep.body ? (
+              <p
+                id="workspace-walkthrough-body"
+                className="mt-1.5 text-sm leading-6 text-white/70"
+              >
+                {currentStep.body}
+              </p>
+            ) : null}
 
             <div className="mt-5 flex items-center justify-between gap-3">
               <Button

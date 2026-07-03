@@ -248,29 +248,29 @@ export function UploadDropzone({
       }
       transition={m.spring}
       className={cn(
-        "relative overflow-hidden rounded-md border border-dashed transition-colors duration-200",
-        isDragging ? "border-[var(--brand-brown-fg)] bg-[var(--brand-clay)]" : "border-[var(--button-warm-ring)] bg-[var(--button-warm)] hover:border-black"
+        "relative overflow-hidden rounded-lg border border-dashed transition-colors duration-200",
+        isDragging ? "border-[var(--brand-brown-fg)] bg-[var(--brand-clay)]" : "border-[var(--workspace-border)] bg-white hover:border-[#98a2b3]"
       )}
     >
-      <div className={cn("px-4 py-5 text-center sm:px-6", uploadedFiles.length ? "min-h-[240px]" : "flex min-h-[420px] flex-col items-center justify-center")}>
+      <div className={cn("px-5 py-7 text-center sm:px-8", uploadedFiles.length ? "min-h-[220px]" : "flex min-h-[360px] flex-col items-center justify-center")}>
         {!uploadedFiles.length ? (
           <Symbol
             name="firstsight-workspace-launcher"
             size="hero"
-            className="mx-auto mb-5 h-56 w-56 sm:h-72 sm:w-72"
+            className="mx-auto mb-4 h-40 w-40 sm:h-52 sm:w-52"
             alt=""
           />
         ) : (
-          <FolderUp className="mx-auto mb-3 h-7 w-7 text-[var(--workspace-primary)]" />
+          <FolderUp className="mx-auto mb-4 h-7 w-7 text-[var(--workspace-primary)]" />
         )}
-        <h3 className="text-xl font-semibold tracking-tight text-foreground">
-          {isDragging ? "Drop documents to upload" : uploadedFiles.length ? "Add more documents" : "Upload documents"}
+        <h3 className="text-lg font-semibold tracking-tight text-foreground">
+          {isDragging ? "Drop to upload" : uploadedFiles.length ? "Add files" : "Upload documents"}
         </h3>
         <p className="mt-1.5 text-sm font-medium text-muted-foreground">
-          Drag in a folder, or select scans, photos and PDFs.
+          Drop files here or browse.
         </p>
         {!uploadedFiles.length ? (
-          <div className="mt-4 flex flex-col items-center gap-1.5">
+          <div className="hidden">
             <div className="flex items-center justify-center gap-4 sm:gap-6">
               {(["invoice", "receipt", "bank-statement", "spreadsheet", "handwritten-note"] as const).map((n) => (
                 <Symbol key={n} name={n} size="medium" className="h-16 w-16 sm:h-20 sm:w-20" alt="" />
@@ -281,7 +281,7 @@ export function UploadDropzone({
             </span>
           </div>
         ) : null}
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
           <label
             htmlFor="workspace-file-upload"
             className={cn(
@@ -322,7 +322,7 @@ export function UploadDropzone({
             variants={m.staggerParent()}
             initial="hidden"
             animate="show"
-            className="mx-auto mt-5 max-w-3xl divide-y divide-[var(--button-warm-ring)] overflow-hidden rounded-md border border-[var(--button-warm-ring)] bg-white text-left"
+            className="mx-auto mt-6 max-w-2xl divide-y divide-[var(--workspace-border)] overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white text-left"
           >
             <AnimatePresence initial={false}>
             {uploadedFiles.map((file, index) => {
@@ -438,9 +438,9 @@ export function SelectedFilesTray({
 
   return (
     <>
-    <div className={cn("rounded-md border p-3 backdrop-blur-xl", workspacePanelSurfaceClass)}>
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="text-sm font-semibold text-foreground">Selected files</p>
+    <div className="rounded-lg border border-[var(--workspace-border)] bg-white p-4">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <p className="text-sm font-semibold text-foreground">Files</p>
         <Button
           size="sm"
           variant="surface"
@@ -451,7 +451,7 @@ export function SelectedFilesTray({
           Clear
         </Button>
       </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
         {uploadedFiles.map((file, index) => {
           const pdf = isPdfFile(file)
           const pageCount = pdfPageCounts[index]
@@ -473,13 +473,13 @@ export function SelectedFilesTray({
                 }
               }}
               className={cn(
-                "group rounded-lg border border-[var(--button-warm-ring)] bg-white p-2 outline-none transition-colors",
+                "group rounded-md border border-[var(--workspace-border)] bg-white p-2.5 outline-none transition-colors",
                 canPreview
                   ? "cursor-pointer hover:border-black hover:bg-[var(--button-warm)] focus-visible:ring-2 focus-visible:ring-black/20"
                   : "cursor-default"
               )}
             >
-              <div className="relative mb-2 aspect-[4/3] overflow-hidden rounded-lg border border-border bg-white">
+              <div className="relative mb-2 aspect-[4/3] overflow-hidden rounded-md border border-border bg-white">
                 {previewUrl ? (
                   <img src={previewUrl} alt="" className="h-full w-full object-cover" />
                 ) : (
@@ -598,13 +598,13 @@ function ExtractedTable({ rows }: { rows: any[][] }) {
 }
 
 const reviewBoardActionBarClass =
-  "scroll-mt-20 flex flex-col gap-3 rounded-lg border border-[var(--workspace-border)] bg-white px-4 py-3 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.85),0_1px_2px_0_rgba(16,24,40,0.04),0_10px_24px_-18px_rgba(16,24,40,0.32)] sm:flex-row sm:items-center sm:justify-between"
+  "scroll-mt-20 flex flex-col gap-4 rounded-lg border border-[var(--workspace-border)] bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
 const reviewBoardShellClass =
-  "overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.85),0_1px_2px_0_rgba(16,24,40,0.04),0_12px_30px_-22px_rgba(16,24,40,0.38)]"
+  "overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white"
 const reviewBoardTopbarClass =
-  "flex min-h-12 flex-col gap-2 border-b border-[var(--workspace-border)] bg-white px-4 sm:flex-row sm:items-center sm:justify-between"
+  "flex min-h-12 flex-col gap-2 border-b border-[var(--workspace-border)] bg-white px-5 sm:flex-row sm:items-center sm:justify-between"
 const reviewBoardBandClass =
-  "border-b border-[var(--workspace-border)] bg-[var(--workspace-table-header)] px-4 py-3 text-[12px] text-[var(--workspace-muted)]"
+  "border-b border-[var(--workspace-border)] bg-white px-5 py-4 text-[12px] text-[var(--workspace-muted)]"
 const reviewBoardTableClass =
   "ax-table w-full min-w-[1120px] text-left text-[13px]"
 const reviewBoardHeadCellClass =
@@ -618,7 +618,7 @@ const reviewBoardMenuClass =
 const reviewBoardMobileCardClass =
   "border-b border-[var(--workspace-border)] bg-white p-3 last:border-b-0"
 const reviewBoardMetricClass =
-  "inline-flex h-7 items-center rounded-full border border-[var(--workspace-border)] bg-white px-2.5 text-[11px] font-semibold text-[var(--workspace-muted)]"
+  "inline-flex h-6 items-center text-[11px] font-semibold text-[var(--workspace-muted)]"
 const reviewBoardDash =
   <span className="text-[var(--workspace-muted)]/60">-</span>
 
@@ -707,7 +707,7 @@ export function ResultPreviewPanel({
                 flexShrink: 0,
               }}
             >
-              <p className="mb-2 text-[13px] font-semibold text-foreground">Source document</p>
+              <p className="mb-2 text-[13px] font-semibold text-foreground">Source</p>
               <div
                 role="button"
                 tabIndex={0}
@@ -745,17 +745,17 @@ export function ResultPreviewPanel({
 
             {/* After pane */}
             <div className="hidden min-w-0 flex-1 xl:block">
-              <p className="mb-2 text-[13px] font-semibold text-foreground">Extracted data</p>
+              <p className="mb-2 text-[13px] font-semibold text-foreground">Data</p>
               <div className="max-h-[420px] min-h-[260px] overflow-auto rounded-lg border border-border bg-white">
                 {isTextOutput || textPreview ? (
                   <pre className="min-h-[260px] whitespace-pre-wrap p-4 text-sm font-medium leading-6 text-gray-950">
-                    {textPreview || "Preparing document preview..."}
+                    {textPreview || "Preparing preview..."}
                   </pre>
                 ) : tablePreviewData.length ? (
                   <ExtractedTable rows={tablePreviewData} />
                 ) : (
                   <div className="flex min-h-[260px] items-center justify-center p-4 text-sm font-semibold text-muted-foreground">
-                    Preparing document preview
+                    Preparing preview
                   </div>
                 )}
               </div>
@@ -764,17 +764,17 @@ export function ResultPreviewPanel({
         ) : (
           /* No image — full-width after pane */
           <div className="flex-1">
-            <p className="mb-2 text-[13px] font-semibold text-foreground">Extracted data</p>
+            <p className="mb-2 text-[13px] font-semibold text-foreground">Data</p>
             <div className="max-h-[420px] min-h-[260px] overflow-auto rounded-lg border border-border bg-white">
               {isTextOutput || textPreview ? (
                 <pre className="min-h-[260px] whitespace-pre-wrap p-4 text-sm font-medium leading-6 text-gray-950">
-                  {textPreview || "Preparing document preview..."}
+                  {textPreview || "Preparing preview..."}
                 </pre>
               ) : tablePreviewData.length ? (
                 <ExtractedTable rows={tablePreviewData} />
               ) : (
                 <div className="flex min-h-[260px] items-center justify-center p-4 text-sm font-semibold text-muted-foreground">
-                  Preparing document preview
+                  Preparing preview
                 </div>
               )}
             </div>
@@ -785,17 +785,17 @@ export function ResultPreviewPanel({
       {/* After pane stacked below Before on small screens */}
       {firstImageUrl && (
         <div className="mt-3 xl:hidden">
-          <p className="mb-2 text-[13px] font-semibold text-foreground">Extracted data</p>
+          <p className="mb-2 text-[13px] font-semibold text-foreground">Data</p>
           <div className="max-h-[420px] min-h-[260px] overflow-auto rounded-lg border border-border bg-white">
             {isTextOutput || textPreview ? (
               <pre className="min-h-[260px] whitespace-pre-wrap p-4 text-sm font-medium leading-6 text-gray-950">
-                {textPreview || "Preparing document preview..."}
+                {textPreview || "Preparing preview..."}
               </pre>
             ) : tablePreviewData.length ? (
               <ExtractedTable rows={tablePreviewData} />
             ) : (
               <div className="flex min-h-[260px] items-center justify-center p-4 text-sm font-semibold text-muted-foreground">
-                Preparing document preview
+                Preparing preview
               </div>
             )}
           </div>
@@ -1472,16 +1472,8 @@ export function ResultActions({
     <div className="space-y-2.5">
       {isComplete ? (
         <div id="reviewed-outputs" className={reviewBoardActionBarClass}>
-          <div className="flex min-w-0 items-center gap-3">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
-              <ListChecks className="size-4" />
-            </span>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-[var(--workspace-ink)]">Review board</p>
-              <p className="mt-0.5 truncate text-xs font-medium text-[var(--workspace-muted)]">
-                Fix. Ready. Export.
-              </p>
-            </div>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-[var(--workspace-ink)]">Review board</p>
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:justify-end">
             {editedCount > 0 && !isTextOutput ? (
@@ -1517,7 +1509,7 @@ export function ResultActions({
                   Share
                 </Button>
                 <label className="block px-1 pt-1 text-xs font-semibold text-[var(--workspace-muted)]">
-                  Download format
+                  Format
                   <select
                     value={outputMode}
                     onChange={(event) => onOutputModeChange(event.target.value as OutputMode)}
@@ -1582,12 +1574,12 @@ export function ResultActions({
                 ) : null}
                 {readyReceiptEntries.length ? (
                   <p className="px-2 py-1 text-[11px] font-medium leading-snug text-[var(--workspace-muted)]">
-                    Open a reviewed receipt to choose its QuickBooks destination before publishing.
+                    Open a receipt to publish.
                   </p>
                 ) : null}
                 {!unsentReadyInvoiceEntries.length && !draftBillInvoiceCount && !readyReceiptEntries.length ? (
                   <p className="px-2 py-1 text-[11px] font-medium leading-snug text-[var(--workspace-muted)]">
-                    Review and mark documents ready before sending them to accounting.
+                    Mark documents ready first.
                   </p>
                 ) : null}
               </div>
@@ -1596,7 +1588,7 @@ export function ResultActions({
         </div>
       ) : null}
 
-      <div className="pt-2">
+      <div className="pt-3">
         <div className={reviewBoardShellClass}>
           <div className={reviewBoardTopbarClass}>
             <div className="flex min-h-12 flex-wrap items-stretch gap-4">
@@ -1646,7 +1638,7 @@ export function ResultActions({
           ) : (
             <div className={reviewBoardBandClass}>
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="font-semibold text-[var(--workspace-ink)]">Review results</span>
+                <span className="font-semibold text-[var(--workspace-ink)]">Results</span>
                 <span className="tabular-nums">
                   {filteredResultEntries.length}/{filterCounts.all} shown
                 </span>
@@ -2065,7 +2057,7 @@ export function ResultActions({
                       <div>
                         <p className="text-xs font-semibold text-foreground">QuickBooks destination</p>
                         <p className="mt-1 max-w-xl text-[11px] text-muted-foreground">
-                          Choose how this reviewed receipt is recorded. Expense records an already-paid purchase; Bill records an unpaid payable.
+                          Expense for paid receipts; Bill for payables.
                         </p>
                       </div>
                       {receiptPublication ? (
@@ -2080,7 +2072,7 @@ export function ResultActions({
                         {receiptPublication.attachment_status === "attached" ? " Source attached." : " Source attachment pending review."}
                       </p>
                     ) : !["ready", "published"].includes(comparisonFile.review_status || "") ? (
-                      <p className="mt-3 text-xs text-muted-foreground">Mark this receipt Ready after review to publish it.</p>
+                      <p className="mt-3 text-xs text-muted-foreground">Mark ready to publish.</p>
                     ) : !quickBooksConnection?.connected ? (
                       <div className="mt-3 flex flex-wrap items-center gap-2">
                         <p className="text-xs text-muted-foreground">Connect QuickBooks before publishing receipts.</p>
@@ -2298,7 +2290,7 @@ export function ResultActions({
                             ) : (
                               <>
                                 <Symbol name="success-fields-verified" size="inline" className="h-12 w-12 shrink-0 sm:h-14 sm:w-14" alt="" />
-                                Every field reads cleanly
+                                Fields clean
                               </>
                             )}
                           </span>
@@ -2423,7 +2415,7 @@ export function ResultActions({
                           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-4 py-2.5">
                             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground">
                               <Check className="size-3.5 shrink-0 text-[var(--workspace-success)]" />
-                              Nothing left to check on this document.
+                              Nothing left to check.
                             </span>
                             {comparisonFile.document_id && !["ready", "published", "failed", "deleted"].includes(comparisonFile.review_status || "") ? (
                               <Button
@@ -2819,7 +2811,7 @@ function BatchStagingBoard({
   const stagedCount = uploadedFiles.length
   const rowCount = mode === "idle" ? recent.length : stagedCount
   const tabLabel = mode === "idle" ? "Recent" : mode === "staged" ? "Staged" : "Documents"
-  const bandLabel = mode === "idle" ? "Recent files" : mode === "staged" ? "Ready to read" : "Reading documents"
+  const bandLabel = mode === "idle" ? "Recent" : mode === "staged" ? "Ready" : "Reading"
   const countLabel = mode === "idle" ? `${rowCount} shown` : `${rowCount} file${rowCount === 1 ? "" : "s"}`
   const stagedPdfCount = uploadedFiles.filter(isPdfFile).length
   const stagedPageCount = uploadedFiles.reduce((total, file, index) => (
@@ -2833,16 +2825,10 @@ function BatchStagingBoard({
         <div className={reviewBoardActionBarClass}>
           {mode === "staged" ? (
             <>
-              <div className="flex min-w-0 items-center gap-3">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
-                  <FolderUp className="size-4" />
-                </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[var(--workspace-ink)]">Stack ready to read</p>
-                  <p className="mt-0.5 truncate text-xs font-medium text-[var(--workspace-muted)]">
-                    {stagedCount} document{stagedCount === 1 ? "" : "s"} staged for review.
-                  </p>
-                </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-[var(--workspace-ink)]">
+                  {stagedCount} document{stagedCount === 1 ? "" : "s"} staged
+                </p>
               </div>
               <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                 <Button
@@ -2874,16 +2860,8 @@ function BatchStagingBoard({
             </>
           ) : (
             <>
-              <div className="flex min-w-0 items-center gap-3">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
-                  <Inbox className="size-4" />
-                </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[var(--workspace-ink)]">Client workspace</p>
-                  <p className="mt-0.5 truncate text-xs font-medium text-[var(--workspace-muted)]">
-                    Upload a stack or reopen recent review work.
-                  </p>
-                </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-[var(--workspace-ink)]">Workspace</p>
               </div>
               <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                 <Button
@@ -2912,7 +2890,7 @@ function BatchStagingBoard({
         </div>
       ) : null}
 
-      <div className="pt-2">
+      <div className="pt-3">
         <div className={reviewBoardShellClass}>
           <div className={reviewBoardTopbarClass}>
             <div className="flex min-h-12 flex-wrap items-stretch gap-4">
@@ -2940,7 +2918,7 @@ function BatchStagingBoard({
               <div className="mt-2 flex flex-wrap gap-2">
                 <span className={reviewBoardMetricClass}>
                   <span className="mr-1.5 text-[var(--workspace-ink)] tabular-nums">{rowCount}</span>
-                  {mode === "idle" ? "Recent stacks" : "Staged"}
+                  {mode === "idle" ? "Stacks" : "Staged"}
                 </span>
                 {mode !== "idle" && stagedPdfCount > 0 ? (
                   <span className={reviewBoardMetricClass}>
@@ -2950,7 +2928,7 @@ function BatchStagingBoard({
                 ) : null}
                 {mode === "staged" ? (
                   <span className={reviewBoardMetricClass}>
-                    {noCredits ? "Credits needed" : "Ready for review"}
+                    {noCredits ? "Credits needed" : "Ready"}
                   </span>
                 ) : null}
               </div>
@@ -3259,7 +3237,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
   }, [openFreshUpload])
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <ResumeBatchBanner
         latestRecoverableJob={latestRecoverableJob}
         recoveryLoading={recoveryLoading}
@@ -3295,8 +3273,8 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
         onCancel={onCancel}
       />
 
-      <div className="space-y-3">
-        <div className="grid gap-4">
+      <div className="space-y-5">
+        <div className="grid gap-6">
           {!hasResults ? (
             <BatchStagingBoard
               uploadedFiles={uploadedFiles}
@@ -3317,7 +3295,7 @@ export function ConversionWorkspace(props: ConversionWorkspaceProps) {
           {/* P3 — the verify-extraction board. It only mounts once the batch has
               review content, so idle / staged / processing show the single
               BatchStagingBoard table above and never a second table beneath it. */}
-          <div className={cn("space-y-4", hasResults ? "" : "hidden")}>
+          <div className={cn("space-y-6", hasResults ? "" : "hidden")}>
             <ResultActions
               jobId={jobId}
               resultFiles={resultFiles}

@@ -49,8 +49,6 @@ interface ChecklistItem {
   id: string
   /** Short, calm label. */
   label: string
-  /** One plain line under the label. */
-  description: string
   icon: React.ReactNode
   href: string
   state: ItemState
@@ -61,16 +59,9 @@ interface ChecklistItem {
 }
 
 /**
- * Soft inset surface used by the progress header — mirrors the settings page's
- * `softPanel` so the page reads as one product. Built only on workspace tokens.
- */
-const softPanel = "rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-soft)] shadow-none"
-
-/**
  * The setup checklist surface. Loads every important configuration signal in
  * parallel, derives a live done / todo / neutral state per row, and renders a
- * progress header plus grouped checklist rows. Mirrors the Inbox / Settings
- * data-loading and visual patterns so it feels native to the dashboard.
+ * compact action list that mirrors the Inbox / Settings patterns.
  */
 export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) {
   const m = useMotionTokens()
@@ -172,7 +163,6 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
         {
           id: "accounting",
           label: "Connect QuickBooks or Xero",
-          description: "Publish reviewed draft bills to your accounting system.",
           icon: <Plug />,
           href: "/dashboard/integrations",
           state: accountingDone ? "done" : "todo",
@@ -182,7 +172,6 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
         {
           id: "email",
           label: "Email-in address",
-          description: "Forward invoices and receipts straight into the inbox.",
           icon: <AtSign />,
           href: "/dashboard/inbox",
           state: emailDone ? "done" : "todo",
@@ -192,7 +181,6 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
         {
           id: "client-links",
           label: "Client upload links",
-          description: "Share a secure link so clients can drop documents in.",
           icon: <Link2 />,
           href: "/dashboard/inbox",
           state: activeLinks.length > 0 ? "done" : "todo",
@@ -202,7 +190,6 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
         {
           id: "reviewer",
           label: "Invite a reviewer",
-          description: "Add a teammate to review exceptions before export.",
           icon: <Users />,
           href: "/dashboard/inbox",
           state: activeReviewers.length > 0 ? "done" : "todo",
@@ -215,7 +202,6 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
         {
           id: "sources",
           label: "Connect Drive or Dropbox",
-          description: "Watch a cloud folder and pull new files automatically.",
           icon: <FolderSync />,
           href: "/dashboard/inbox",
           state: sourceDone ? "done" : "todo",
@@ -224,7 +210,6 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
         {
           id: "vendor-memory",
           label: "Vendor memory",
-          description: "Remember coding defaults after a confirmed review.",
           icon: <Store />,
           href: "/dashboard/settings?section=vendors",
           state: enabledVendorRules.length > 0 ? "done" : "todo",
@@ -234,7 +219,6 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
         {
           id: "purchase-orders",
           label: "Import purchase orders",
-          description: "Bring in open POs for AP matching.",
           icon: <Receipt />,
           href: "/dashboard/settings?section=accounting",
           state: poCount > 0 ? "done" : "todo",
@@ -244,7 +228,6 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
         {
           id: "billing",
           label: "Billing & plan",
-          description: "Review your plan, credits, and renewal date.",
           icon: <CreditCard />,
           href: "/dashboard/settings?section=billing",
           // Free workspaces have nothing "wrong" — this is a calm review row.
@@ -255,7 +238,6 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
         {
           id: "preferences",
           label: "Preferences",
-          description: "Set OCR language, invoice schema, and download defaults.",
           icon: <SlidersHorizontal />,
           href: "/dashboard/settings?section=preferences",
           // No durable server signal — keep this a neutral, optional review.
@@ -274,71 +256,29 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
     }
   }, [workspaceId, isOwner])
 
-  const requiredItems = items.filter((item) => item.state !== "neutral")
-  const doneCount = requiredItems.filter((item) => item.state === "done").length
-  const totalCount = requiredItems.length
-  const percent = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0
-  const allDone = totalCount > 0 && doneCount === totalCount
-
   if (loading) {
     return (
       <WorkspaceSection icon={<Check />} title="Setup checklist">
-        <WorkspaceActivityIndicator
-          title="Checking workspace setup"
-          detail="Reviewing intake, accounting connections, supplier defaults, and billing access."
-        />
+        <WorkspaceActivityIndicator title="Checking workspace setup" />
       </WorkspaceSection>
     )
   }
 
   return (
-    <div className="space-y-6">
-      {/* Progress header */}
-      <section className={cn("p-5 sm:p-6", softPanel)}>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="min-w-0">
-            <h2 className="text-[15px] font-semibold tracking-tight text-foreground">
-              {allDone ? "Setup complete" : "Finish setting up"}
-            </h2>
-          </div>
-          <StatusBadge tone={allDone ? "success" : "info"}>
-            {doneCount} of {totalCount} done
-          </StatusBadge>
-        </div>
-
-        <div
-          className="mt-4 h-2 overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--workspace-primary)_14%,transparent)]"
-          role="progressbar"
-          aria-valuenow={percent}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label="Setup completion"
-        >
-          <motion.div
-            className="h-full rounded-full bg-[var(--workspace-primary)]"
-            initial={{ width: 0 }}
-            animate={{ width: `${percent}%` }}
-            transition={m.reduced ? { duration: 0.001 } : { duration: 0.5, ease: [0.2, 0, 0, 1] }}
-          />
-        </div>
-      </section>
-
-      {/* Checklist rows */}
-      <WorkspaceSection icon={<Check />} title="Setup checklist" contentClassName="p-0">
-        <motion.ul
-          className="divide-y divide-border"
-          variants={m.staggerParent()}
-          initial="hidden"
-          animate="show"
-        >
-          <AnimatePresence initial={false}>
-            {items.map((item) => (
-              <ChecklistRow key={item.id} item={item} />
-            ))}
-          </AnimatePresence>
-        </motion.ul>
-      </WorkspaceSection>
-    </div>
+    <WorkspaceSection icon={<Check />} title="Setup checklist" contentClassName="p-0">
+      <motion.ul
+        className="divide-y divide-border"
+        variants={m.staggerParent()}
+        initial="hidden"
+        animate="show"
+      >
+        <AnimatePresence initial={false}>
+          {items.map((item) => (
+            <ChecklistRow key={item.id} item={item} />
+          ))}
+        </AnimatePresence>
+      </motion.ul>
+    </WorkspaceSection>
   )
 }
 
@@ -388,9 +328,11 @@ function ChecklistRow({ item }: { item: ChecklistItem }) {
               <StatusBadge tone="info">To do</StatusBadge>
             )}
           </div>
-          <p className="mt-1 truncate text-sm leading-snug text-foreground">
-            {isDone && item.doneNote ? item.doneNote : item.description}
-          </p>
+          {isDone && item.doneNote ? (
+            <p className="mt-1 truncate text-sm leading-snug text-foreground">
+              {item.doneNote}
+            </p>
+          ) : null}
         </div>
       </div>
 

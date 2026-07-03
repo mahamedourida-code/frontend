@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -68,9 +67,6 @@ export function AddCompanyDialog({ workspaceId, onCreated, trigger }: AddCompany
             <Building2 className="size-5" />
           </div>
           <DialogTitle>Add client</DialogTitle>
-          <DialogDescription className="font-normal text-foreground">
-            A home for their stacks, review board, and draft bills.
-          </DialogDescription>
         </DialogHeader>
         <form className="space-y-5" onSubmit={submit}>
           <Input

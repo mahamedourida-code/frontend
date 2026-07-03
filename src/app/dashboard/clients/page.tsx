@@ -30,7 +30,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -299,9 +298,6 @@ export default function ClientsPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-foreground">Add a client</DialogTitle>
-            <DialogDescription className="text-foreground">
-              Name this client. You can connect QuickBooks or Xero next.
-            </DialogDescription>
           </DialogHeader>
           <Input
             value={newName}
@@ -336,8 +332,7 @@ export default function ClientsPage() {
         title="Delete client"
         description={
           <>
-            This removes <span className="font-bold">{deleteTarget?.name}</span> as a client label. Existing documents and bills are kept but detached. This
-            cannot be undone.
+            Removes <span className="font-bold">{deleteTarget?.name}</span> as a client label. Existing documents and bills stay.
           </>
         }
         confirmText={deleteTarget?.name}

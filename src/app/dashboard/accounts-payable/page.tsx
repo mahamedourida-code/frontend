@@ -22,7 +22,6 @@ import {
   Percent,
   Plus,
   ReceiptText,
-  Sparkles,
   SlidersHorizontal,
   Table as TableIcon,
   Tag,
@@ -47,11 +46,9 @@ import { validateBill, summarizeBlocking, type BillValidation } from "@/lib/bill
 import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
 import { MotionButton } from "@/components/ui/motion-button"
-import { CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { PublishSuccessBurst } from "@/components/dashboard/PublishSuccessBurst"
 import { PublishConfirmation, type PublishConfirmationState } from "@/components/dashboard/PublishConfirmation"
-import { SpotlightCard } from "@/components/dashboard/SpotlightCard"
 import {
   Dialog,
   DialogContent,
@@ -224,8 +221,6 @@ const MEMORY_FIELD_LABELS: Record<string, string> = {
   vendor_ref_id: "vendor",
 }
 
-const LEARNED_HINT_STORAGE_KEY = "axliner.ap.vendor-memory-learned-seen"
-
 const inlineFieldClass =
   "h-9 rounded-lg transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-0"
 
@@ -358,9 +353,6 @@ function AccountsPayableContent() {
   // C8 — calm publish moment for the single-Bill flow (the bulk flow already
   // confirms in its own dialog). Holds the entry kind + attachment + burst origin.
   const [publishConfirmation, setPublishConfirmation] = useState<PublishConfirmationState | null>(null)
-  // C9 — show the gentle "AxLiner learned this" affordance only the first time a
-  // reviewer ever sees a rule auto-apply. Persisted in localStorage so it never nags.
-  const [showLearnedHint, setShowLearnedHint] = useState(false)
   const publishTriggerRef = useRef<HTMLButtonElement | null>(null)
   const confirmPublishRef = useRef<HTMLButtonElement | null>(null)
   const activePublishRef = useRef<HTMLButtonElement | null>(null)
@@ -669,21 +661,6 @@ function AccountsPayableContent() {
       learnedLabels,
     }
   })()
-
-  // C9 — the very first time a reviewer opens an item where memory auto-applied a
-  // rule, reveal the gentle "AxLiner learned this" hint once, then remember we've
-  // shown it (localStorage) so it never reappears.
-  const hasAutoApplied = Boolean(autoAppliedRule)
-  useEffect(() => {
-    if (!hasAutoApplied) {
-      setShowLearnedHint(false)
-      return
-    }
-    if (typeof window === "undefined") return
-    if (window.localStorage.getItem(LEARNED_HINT_STORAGE_KEY)) return
-    window.localStorage.setItem(LEARNED_HINT_STORAGE_KEY, "1")
-    setShowLearnedHint(true)
-  }, [hasAutoApplied, activeId])
 
   const mergeItem = (item: AccountsPayableItem) => {
     setItems(current => current.map(existing => existing.id === item.id ? item : existing))
@@ -1108,7 +1085,7 @@ function AccountsPayableContent() {
     if (pendingConfirmationAction === "discard") {
       return {
         title: "Discard duplicate draft",
-        description: `This marks ${vendor} as a confirmed duplicate and removes it from the active review queue.`,
+        description: `Remove ${vendor} from the active queue.`,
         actionLabel: "Discard draft",
         actionVariant: "destructive" as const,
         icon: <Trash2 className="size-4" aria-hidden="true" />,
@@ -1118,7 +1095,7 @@ function AccountsPayableContent() {
     if (pendingConfirmationAction === "submit") {
       return {
         title: "Submit for approval",
-        description: `This saves the coded draft bill for ${vendor} and sends it to the approval queue.`,
+        description: `Send ${vendor} to approval.`,
         actionLabel: "Submit for approval",
         actionVariant: "glossy" as const,
         icon: <CheckCheck className="size-4" aria-hidden="true" />,
@@ -1129,7 +1106,7 @@ function AccountsPayableContent() {
       const over = activeItem.matched_po.over_by ? ` by ${activeItem.matched_po.over_by}` : ""
       return {
         title: "Invoice exceeds purchase order",
-        description: `This invoice exceeds PO ${activeItem.matched_po.po_number}${over}. Publishing will still create a draft bill in ${destinationName}.`,
+        description: `PO ${activeItem.matched_po.po_number}${over}. Publish anyway to ${destinationName}.`,
         actionLabel: "Publish anyway",
         actionVariant: "glossy" as const,
         icon: <AlertTriangle className="size-4" aria-hidden="true" />,
@@ -1139,7 +1116,7 @@ function AccountsPayableContent() {
     if (pendingConfirmationAction === "retry_attachment") {
       return {
         title: "Retry source attachment",
-        description: `Attach the source document to the existing ${destinationName} draft bill for ${vendor}.`,
+        description: `Attach the source document to ${vendor}.`,
         actionLabel: "Retry attachment",
         actionVariant: "surface" as const,
         icon: <AccountingDestinationGlyph destination={accountingDestination} />,
@@ -1148,7 +1125,7 @@ function AccountsPayableContent() {
 
     return {
       title: `Publish draft bill to ${destinationName}`,
-      description: `This saves the current coding and publishes ${vendor}${amountSuffix} as a draft bill in ${destinationName}. This cannot be undone.`,
+      description: `Publish ${vendor}${amountSuffix} to ${destinationName}. Cannot be undone.`,
       actionLabel: `Publish to ${destinationName}`,
       actionVariant: "glossy" as const,
       icon: <AccountingDestinationGlyph destination={accountingDestination} />,
@@ -1162,7 +1139,6 @@ function AccountsPayableContent() {
       <div className="space-y-6">
         <PageHeader
           title="Draft bills"
-          description="Review exceptions, approve coded bills, and publish clean drafts to QuickBooks or Xero."
           actions={selectedReadyIds.length ? (
             <MotionButton
               ref={publishTriggerRef}
@@ -1214,7 +1190,6 @@ function AccountsPayableContent() {
           <WorkspaceSection
             icon={<TableIcon />}
             title="Draft bill queue"
-            hint="Open exceptions, approval items, or clean drafts."
             contentClassName="p-0"
           >
             <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 sm:px-6">
@@ -1274,7 +1249,6 @@ function AccountsPayableContent() {
                   <div className="p-4">
                     <WorkspaceActivityIndicator
                       title="Retrieving draft bills"
-                      detail="Checking supplier coding, VAT, due dates, and publishing status."
                     />
                   </div>
                 ) : visibleItems.length === 0 ? (
@@ -1595,14 +1569,13 @@ function AccountsPayableContent() {
           </WorkspaceSection>
 
           {activeItem ? (
-          <SpotlightCard className="rounded-md">
             <WorkspaceSection
               tone="active"
               symbol="code-map-to-account"
               title="Prepare draft bill"
               contentClassName="p-0"
             >
-            <CardContent className="p-4 sm:p-5">
+              <div className="p-4 sm:p-5">
                 <div className="space-y-5">
                   <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
                     <div className="min-w-0">
@@ -1773,9 +1746,6 @@ function AccountsPayableContent() {
                         </p>
                         {autoAppliedRule.learnedLabels.length ? (
                           <>
-                            <p className="mt-1 text-xs text-foreground/70">
-                              Remembered from your past invoices — {autoAppliedRule.learnedLabels.join(", ")}.
-                            </p>
                             <div className="mt-2 flex flex-wrap gap-1.5">
                               {autoAppliedRule.learnedLabels.map((label) => (
                                 <span
@@ -1788,20 +1758,6 @@ function AccountsPayableContent() {
                             </div>
                           </>
                         ) : null}
-                        <AnimatePresence>
-                          {showLearnedHint ? (
-                            <motion.div
-                              initial={{ opacity: 0, y: 4 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -4 }}
-                              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                              className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-emerald-700"
-                            >
-                              <Sparkles className="size-3" />
-                              Saved for this supplier. Future invoices can use the same coding.
-                            </motion.div>
-                          ) : null}
-                        </AnimatePresence>
                       </div>
                       <InlineAction
                         tone="warning"
@@ -1821,32 +1777,6 @@ function AccountsPayableContent() {
                             {key.replaceAll("_", " ")}: <span className="font-medium text-foreground">{value}</span>
                           </span>
                         ))}
-                      </div>
-                    </div>
-                  ) : null}
-
-                  {!activeLocked ? (
-                    <div className="flex flex-wrap items-center gap-x-9 gap-y-5 py-1">
-                      <div className="flex items-center gap-3">
-                        <Symbol name="code-account-tag" size="inline" className="h-14 w-14" alt="" />
-                        <div>
-                          <p className="text-sm font-medium text-slate-950">Pick the account</p>
-                          <p className="text-xs text-foreground/70">Where this spend lands in the ledger.</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Symbol name="code-coa-tree" size="inline" className="h-14 w-14" alt="" />
-                        <div>
-                          <p className="text-sm font-medium text-slate-950">Map to your chart</p>
-                          <p className="text-xs text-foreground/70">Match it to a GL account number.</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Symbol name="code-vat-chip" size="inline" className="h-14 w-14" alt="" />
-                        <div>
-                          <p className="text-sm font-medium text-slate-950">Set the VAT code</p>
-                          <p className="text-xs text-foreground/70">Apply the right tax rate.</p>
-                        </div>
                       </div>
                     </div>
                   ) : null}
@@ -2122,9 +2052,6 @@ function AccountsPayableContent() {
                       <Symbol name="code-aging-timeline" size="medium" className="h-24 w-24 sm:h-28 sm:w-28" alt="" />
                       <div>
                         <p className="text-sm font-medium text-slate-950">Payment due {shortDate(draft.due_date)}</p>
-                        <p className="mt-0.5 max-w-sm text-xs leading-relaxed text-foreground/70">
-                          This bill carries through to your aging once it&apos;s published — current today, overdue after the due date.
-                        </p>
                       </div>
                     </div>
                   ) : null}
@@ -2382,9 +2309,6 @@ function AccountsPayableContent() {
                       <Symbol name="success-bill-ready" size="medium" className="h-28 w-28 sm:h-32 sm:w-32" alt="" />
                       <div className="space-y-1">
                         <p className="text-base font-medium text-slate-950">Coded and ready</p>
-                        <p className="max-w-sm text-sm leading-relaxed text-foreground/70">
-                          Every field is filled in. Publish it to {destinationName} as a draft bill, or send it back for another look.
-                        </p>
                         {activeItem.approved_by_email ? (
                           <p className="text-xs font-medium text-slate-950">Approved by {activeItem.approved_by_email}</p>
                         ) : null}
@@ -2482,9 +2406,8 @@ function AccountsPayableContent() {
                     </div>
                   </div>
                 </div>
-            </CardContent>
+              </div>
             </WorkspaceSection>
-          </SpotlightCard>
           ) : null}
         </div>
       </div>
@@ -2503,10 +2426,10 @@ function AccountsPayableContent() {
             </DialogTitle>
             <DialogDescription className="text-sm font-normal leading-6 text-foreground">
               {publishResult
-                ? "The bulk publish finished. Failed items remain in the queue and can be retried."
+                ? "Failed items stay in the queue."
                 : blockedSelected.length > 0
-                  ? `${cleanSelectedIds.length} draft ${cleanSelectedIds.length === 1 ? "bill" : "bills"} will publish to ${destinationName}. ${blockedSelected.length} ${blockedSelected.length === 1 ? "is" : "are"} held back to fix first. This cannot be undone.`
-                  : `You are publishing ${cleanSelectedIds.length} draft ${cleanSelectedIds.length === 1 ? "bill" : "bills"} to ${destinationName}. This cannot be undone.`}
+                  ? `${cleanSelectedIds.length} will publish to ${destinationName}. ${blockedSelected.length} held back.`
+                  : `${cleanSelectedIds.length} draft ${cleanSelectedIds.length === 1 ? "bill" : "bills"} will publish to ${destinationName}. Cannot be undone.`}
             </DialogDescription>
           </DialogHeader>
 
@@ -2571,7 +2494,7 @@ function AccountsPayableContent() {
                   </ul>
                 ) : (
                   <p className="px-3 py-3 text-sm font-medium text-foreground">
-                    Nothing is ready yet — fix the held-back bills below.
+                    Nothing ready yet.
                   </p>
                 )}
               </div>
@@ -2704,7 +2627,7 @@ function AccountsPayableContent() {
               Match a purchase order
             </DialogTitle>
             <DialogDescription className="text-sm font-normal leading-6 text-foreground">
-              Open POs{draft.vendor ? ` for ${draft.vendor}` : ""}. Selecting one links it to this invoice.
+              Open POs{draft.vendor ? ` for ${draft.vendor}` : ""}.
             </DialogDescription>
           </DialogHeader>
 

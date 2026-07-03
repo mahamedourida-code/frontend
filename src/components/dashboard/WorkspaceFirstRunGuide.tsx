@@ -4,17 +4,12 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { AnimatePresence, motion } from "framer-motion"
 import {
-  ArrowRight,
   Building2,
-  Check,
-  FileCheck2,
-  FileOutput,
   FolderUp,
   X,
 } from "lucide-react"
 
 import { AddCompanyDialog } from "@/components/dashboard/companies/AddCompanyDialog"
-import { WorkspaceArt } from "@/components/dashboard/WorkspaceArt"
 import { Button } from "@/components/ui/button"
 import { useMotionTokens } from "@/lib/motion"
 
@@ -24,13 +19,6 @@ type WorkspaceFirstRunGuideProps = {
   hasClients: boolean
   onClientCreated: () => void
 }
-
-const steps = [
-  { title: "Add a client", icon: Building2 },
-  { title: "Upload a stack", icon: FolderUp },
-  { title: "Review", icon: FileCheck2 },
-  { title: "Export", icon: FileOutput },
-]
 
 function guideStorageKey(userId: string, workspaceId: string) {
   return `axliner:first-run-guide:${userId}:${workspaceId}`
@@ -84,110 +72,64 @@ export function WorkspaceFirstRunGuide({
           initial="hidden"
           animate="show"
           exit="exit"
-          className="relative -mx-4 border-y border-[var(--workspace-border)] bg-[#f5f8fc] px-4 py-5 sm:-mx-5 sm:px-5 lg:-mx-6 lg:px-6"
+          className="relative -mx-4 border-y border-[var(--workspace-border)] bg-white/[0.78] px-4 py-4 shadow-none sm:-mx-5 sm:px-5 lg:-mx-6 lg:px-6"
         >
-      <button
-        type="button"
-        onClick={dismiss}
-        aria-label="Dismiss workspace guide"
-        title="Dismiss workspace guide"
-        className="ax-interactive absolute right-3 top-3 flex size-8 items-center justify-center rounded-full text-muted-foreground outline-none hover:bg-white hover:text-foreground focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)] sm:right-5"
-      >
-        <X className="size-4" />
-      </button>
+          <button
+            type="button"
+            onClick={dismiss}
+            aria-label="Dismiss workspace guide"
+            title="Dismiss workspace guide"
+            className="ax-interactive absolute right-3 top-3 flex size-8 items-center justify-center rounded-full text-muted-foreground outline-none hover:bg-white hover:text-foreground focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)] sm:right-5"
+          >
+            <X className="size-4" />
+          </button>
 
-      <div className="flex items-start justify-between gap-4 pr-10">
-        <div>
-          <p className="text-xs font-semibold uppercase text-[var(--workspace-primary)]">Start here</p>
-          <h2 id="workspace-first-run-title" className="mt-1 text-lg font-semibold text-[var(--workspace-ink)]">
-            Your first stack
-          </h2>
-        </div>
-        <WorkspaceArt name="bot-welcome" className="hidden h-28 w-auto shrink-0 sm:block" />
-      </div>
-
-      <motion.ol
-        className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4"
-        aria-label="Workspace workflow"
-        variants={m.staggerParent(0.05)}
-        initial="hidden"
-        animate="show"
-      >
-        {steps.map((step, index) => {
-          const Icon = step.icon
-          const complete = index === 0 && hasClients
-
-          return (
-            <motion.li
-              key={step.title}
-              variants={m.listItem}
-              className="relative flex min-w-0 gap-3 pr-3"
-              data-workspace-tour-fallback={["clients", "upload", "review", "outputs"][index]}
-            >
-              <span className={complete
-                ? "flex size-9 shrink-0 items-center justify-center rounded-md border border-emerald-200 bg-emerald-50 text-emerald-700"
-                : "flex size-9 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-white text-[var(--workspace-primary)]"
-              }>
-                {complete ? <Check className="size-[18px]" aria-hidden="true" /> : <Icon className="size-[18px]" aria-hidden="true" />}
-              </span>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-[var(--workspace-ink)]">
-                  <span className="mr-1.5 font-mono text-xs font-semibold text-[var(--workspace-primary)]">
-                    {index + 1}
-                  </span>
-                  {step.title}
-                  {complete ? <span className="sr-only"> (Completed)</span> : null}
-                </p>
-              </div>
-              {index < steps.length - 1 ? (
-                <ArrowRight className="absolute -right-1 top-2.5 hidden size-4 text-slate-300 xl:block" aria-hidden="true" />
-              ) : null}
-            </motion.li>
-          )
-        })}
-      </motion.ol>
-
-      <div className="mt-5 flex flex-wrap items-center gap-3">
-        {hasClients ? (
-          <>
-            <Button asChild variant="glossy" size="sm">
-              <Link href="/dashboard/client#upload-files" data-workspace-tour="upload">
-                <FolderUp className="size-4" />
-                Upload a stack
-              </Link>
-            </Button>
-            <AddCompanyDialog
-              workspaceId={workspaceId ?? undefined}
-              onCreated={onClientCreated}
-              trigger={
-                <Button variant="surface" size="sm" disabled={!workspaceId} data-workspace-tour="clients">
-                  <Building2 className="size-4" />
-                  Add another client
-                </Button>
-              }
-            />
-          </>
-        ) : (
-          <>
-            <AddCompanyDialog
-              workspaceId={workspaceId ?? undefined}
-              onCreated={onClientCreated}
-              trigger={
-                <Button variant="glossy" size="sm" disabled={!workspaceId} data-workspace-tour="clients">
-                  <Building2 className="size-4" />
-                  Add a client
-                </Button>
-              }
-            />
-            <Button asChild variant="surface" size="sm">
-              <Link href="/dashboard/client#upload-files" data-workspace-tour="upload">
-                <FolderUp className="size-4" />
-                Upload for an existing client
-              </Link>
-            </Button>
-          </>
-        )}
-      </div>
+          <div className="flex flex-col gap-3 pr-10 sm:flex-row sm:items-center sm:justify-between">
+            <h2 id="workspace-first-run-title" className="text-[15px] font-semibold text-[var(--workspace-ink)]">
+              Workspace actions
+            </h2>
+            <div className="flex flex-wrap items-center gap-2">
+              {hasClients ? (
+                <>
+                  <Button asChild variant="glossy" size="sm">
+                    <Link href="/dashboard/client#upload-files" data-workspace-tour="upload">
+                      <FolderUp className="size-4" />
+                      Upload a stack
+                    </Link>
+                  </Button>
+                  <AddCompanyDialog
+                    workspaceId={workspaceId ?? undefined}
+                    onCreated={onClientCreated}
+                    trigger={
+                      <Button variant="surface" size="sm" disabled={!workspaceId} data-workspace-tour="clients">
+                        <Building2 className="size-4" />
+                        Add client
+                      </Button>
+                    }
+                  />
+                </>
+              ) : (
+                <>
+                  <AddCompanyDialog
+                    workspaceId={workspaceId ?? undefined}
+                    onCreated={onClientCreated}
+                    trigger={
+                      <Button variant="glossy" size="sm" disabled={!workspaceId} data-workspace-tour="clients">
+                        <Building2 className="size-4" />
+                        Add a client
+                      </Button>
+                    }
+                  />
+                  <Button asChild variant="surface" size="sm">
+                    <Link href="/dashboard/client#upload-files" data-workspace-tour="upload">
+                      <FolderUp className="size-4" />
+                      Upload files
+                    </Link>
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
         </motion.section>
       ) : null}
     </AnimatePresence>

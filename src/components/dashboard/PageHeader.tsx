@@ -29,8 +29,8 @@ function PageHeader({
   return (
     <div
       className={cn(
-        "mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between",
-        compact && "mb-4 gap-2.5",
+        "mb-7 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between",
+        compact && "mb-5 gap-3",
         className,
       )}
     >
@@ -38,7 +38,7 @@ function PageHeader({
         {breadcrumb ? (
           <div
             className={cn(
-              "mb-2 inline-flex max-w-full items-center gap-1.5 rounded-full border border-[var(--workspace-border)] bg-white px-2.5 py-1 text-[12px] font-medium text-[var(--workspace-muted)] shadow-[0_1px_1px_0_rgba(16,24,40,0.03)]",
+              "mb-2 flex max-w-full items-center gap-1.5 text-[13px] font-medium text-[var(--workspace-muted)]",
               breadcrumbClassName,
             )}
           >
@@ -47,13 +47,13 @@ function PageHeader({
         ) : null}
         <AnimatedPageTitle
           title={title}
-          className={compact ? "text-[22px] sm:text-[24px]" : "text-[26px] sm:text-[28px]"}
+          className={compact ? "text-[21px] sm:text-[23px]" : "text-[24px] sm:text-[26px]"}
         />
         {description ? (
           <p
             className={cn(
-              "mt-2 max-w-2xl text-pretty text-[14px] leading-5 text-[var(--workspace-muted)]",
-              compact && "mt-1.5 max-w-xl text-[13px]",
+              "mt-2 max-w-[56ch] text-pretty text-[13px] leading-5 text-[var(--workspace-muted)]",
+              compact && "mt-1.5 max-w-[48ch] text-[12px]",
               descriptionClassName,
             )}
           >
@@ -62,7 +62,7 @@ function PageHeader({
         ) : null}
       </div>
       {actions ? (
-        <div className={cn("flex flex-wrap items-center gap-2 sm:shrink-0 sm:pt-1", actionsClassName)}>
+        <div className={cn("flex flex-wrap items-center gap-2 sm:shrink-0 sm:pt-0.5", actionsClassName)}>
           {actions}
         </div>
       ) : null}

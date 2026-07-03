@@ -9,6 +9,7 @@ import type { CompanySummary } from "@/components/dashboard/companies/company-ty
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { WorkspaceFirstRunGuide } from "@/components/dashboard/WorkspaceFirstRunGuide"
+import { WorkspaceOverview } from "@/components/dashboard/WorkspaceOverview"
 import { WorkspaceWalkthrough } from "@/components/dashboard/WorkspaceWalkthrough"
 import { useAuth } from "@/hooks/useAuth"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
@@ -68,6 +69,7 @@ export default function DashboardPage() {
             />
           </>
         ) : null}
+        <WorkspaceOverview companies={companies} />
         <CompaniesTable
           workspaceId={activeWorkspace?.id}
           refreshKey={clientsRefreshKey}
