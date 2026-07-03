@@ -59,30 +59,6 @@ function totalDocuments(company: CompanySummary) {
   return company.purchases + company.receipts + company.bankStatements + company.other
 }
 
-function DocumentMixBar({ company }: { company: CompanySummary }) {
-  const total = totalDocuments(company)
-  const segments = [
-    { key: "purchases", value: company.purchases, className: "bg-[var(--data-reference)]" },
-    { key: "receipts", value: company.receipts, className: "bg-[var(--data-money)]" },
-    { key: "bank", value: company.bankStatements, className: "bg-[var(--data-date)]" },
-    { key: "other", value: company.other, className: "bg-[var(--workspace-muted)]" },
-  ].filter((segment) => segment.value > 0)
-
-  return (
-    <span className="mt-2 flex h-1.5 w-full max-w-[170px] overflow-hidden rounded-full bg-[var(--workspace-soft)]">
-      {segments.length ? segments.map((segment) => (
-        <span
-          key={segment.key}
-          className={segment.className}
-          style={{ width: `${Math.max(8, (segment.value / total) * 100)}%` }}
-        />
-      )) : (
-        <span className="w-2 bg-[var(--workspace-border)]" />
-      )}
-    </span>
-  )
-}
-
 function WorkCell({ company }: { company: CompanySummary }) {
   if (company.needsReview > 0) {
     return (
@@ -346,7 +322,6 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="ax-data-entity block truncate group-hover:text-[var(--workspace-blue)]">{company.name}</span>
-                          <DocumentMixBar company={company} />
                         </span>
                         <ChevronRight className="ms-auto size-4 shrink-0 text-muted-foreground" />
                       </Link>
