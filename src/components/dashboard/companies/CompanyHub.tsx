@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState, type ComponentType } from "react"
+import { useCallback, useEffect, useState, type ComponentType, type ReactNode } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { motion, useReducedMotion } from "framer-motion"
@@ -8,8 +8,11 @@ import {
   ArrowRight,
   BookCheck,
   Building2,
+  CheckCircle2,
+  CircleAlert,
   FileText,
   Inbox,
+  Landmark,
   PlugZap,
   ReceiptText,
   RefreshCw,
@@ -62,32 +65,32 @@ const WORKFLOW_TABS: WorkflowTab[] = [
   {
     id: "inbox",
     label: "Inbox",
-    description: "Open submissions and collected source documents for this client.",
-    action: "Open client inbox",
+    description: "Client files and source docs.",
+    action: "Open",
     href: (companyId) => `/dashboard/inbox?company_id=${encodeURIComponent(companyId)}`,
     icon: Inbox,
   },
   {
     id: "review",
     label: "Review",
-    description: "Work through mixed stacks and correct the exceptions before export.",
-    action: "Open review board",
+    description: "Fix exceptions before export.",
+    action: "Review",
     href: (companyId) => `/dashboard/client?company_id=${encodeURIComponent(companyId)}`,
     icon: BookCheck,
   },
   {
     id: "bills",
     label: "Draft bills",
-    description: "Code reviewed supplier invoices, then publish them to QuickBooks or Xero.",
-    action: "Open draft bills",
+    description: "AP drafts ready for books.",
+    action: "Bills",
     href: (companyId) => `/dashboard/accounts-payable?company_id=${encodeURIComponent(companyId)}`,
     icon: ReceiptText,
   },
   {
     id: "accounting",
     label: "Accounting",
-    description: "Manage the accounting connection used for this client's reviewed drafts.",
-    action: "Open accounting setup",
+    description: "QuickBooks or Xero link.",
+    action: "Manage",
     href: (companyId) => `/dashboard/integrations?company_id=${encodeURIComponent(companyId)}`,
     icon: PlugZap,
   },
@@ -105,58 +108,279 @@ function formatDate(value: string | null) {
 const CARD_DEF_SHADOW =
   "shadow-[0_1px_2px_0_rgba(16,24,40,0.04),0_1px_3px_0_rgba(16,24,40,0.06)]"
 
-function StatCard({
+type MetricTone = "default" | "attention" | "success" | "finance"
+
+const metricToneClasses: Record<MetricTone, string> = {
+  default: "border-[var(--workspace-border)] bg-card",
+  attention:
+    "border-[color-mix(in_srgb,var(--text-attention)_28%,var(--workspace-border))] bg-[color-mix(in_srgb,var(--text-attention)_5%,white)]",
+  success:
+    "border-[color-mix(in_srgb,var(--text-success)_24%,var(--workspace-border))] bg-[color-mix(in_srgb,var(--text-success)_5%,white)]",
+  finance:
+    "border-[color-mix(in_srgb,var(--workspace-blue)_24%,var(--workspace-border))] bg-[color-mix(in_srgb,var(--workspace-blue)_5%,white)]",
+}
+
+const metricIconClasses: Record<MetricTone, string> = {
+  default: "bg-[var(--workspace-soft)] text-[var(--workspace-muted)]",
+  attention: "bg-[color-mix(in_srgb,var(--text-attention)_10%,white)] text-[var(--text-attention)]",
+  success: "bg-[color-mix(in_srgb,var(--text-success)_10%,white)] text-[var(--text-success)]",
+  finance: "bg-[color-mix(in_srgb,var(--workspace-blue)_10%,white)] text-[var(--workspace-blue)]",
+}
+
+function providerLabel(company: CompanySummary) {
+  return company.accountingProvider === "xero" ? "Xero" : "QuickBooks"
+}
+
+function documentTotal(company: CompanySummary) {
+  return company.purchases + company.receipts + company.bankStatements + company.other
+}
+
+function countLabel(value: number, singular: string, plural = `${singular}s`) {
+  return `${value} ${value === 1 ? singular : plural}`
+}
+
+function documentMix(company: CompanySummary) {
+  if (documentTotal(company) === 0) return "No source docs"
+
+  const parts = [
+    company.purchases ? countLabel(company.purchases, "purchase") : null,
+    company.receipts ? countLabel(company.receipts, "receipt") : null,
+    company.bankStatements ? countLabel(company.bankStatements, "statement") : null,
+    company.other ? countLabel(company.other, "other", "other") : null,
+  ].filter(Boolean)
+
+  return parts.join(" / ")
+}
+
+function accountingDetail(company: CompanySummary) {
+  if (!company.accountingConnected) return `Connect ${providerLabel(company)}`
+  return company.accountingCompanyName || `${providerLabel(company)} connected`
+}
+
+function MetricCard({
   label,
   value,
   icon: Icon,
-  attention = false,
+  detail,
+  badge,
+  tone = "default",
 }: {
   label: string
-  value: number
+  value: number | string
   icon: ComponentType<{ className?: string }>
-  attention?: boolean
+  detail: string
+  badge?: ReactNode
+  tone?: MetricTone
 }) {
-  const needsAttention = attention && value > 0
   return (
-    <div className={cn("rounded-xl border border-border bg-card p-5", CARD_DEF_SHADOW)}>
+    <div className={cn("min-h-[148px] rounded-xl border p-4", metricToneClasses[tone])}>
       <div className="flex items-start justify-between gap-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground">{label}</p>
-        {attention ? (
-          <StatusBadge tone={needsAttention ? "warning" : "success"}>
-            {needsAttention ? "Review" : "Clear"}
-          </StatusBadge>
-        ) : (
-          <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-[var(--workspace-primary)]">
-            <Icon className="size-[18px]" />
-          </span>
-        )}
+        <span className={cn("inline-flex size-9 shrink-0 items-center justify-center rounded-lg", metricIconClasses[tone])}>
+          <Icon className="size-[18px]" />
+        </span>
+        {badge}
       </div>
-      <p className={cn("mt-3 text-2xl font-semibold tabular-nums text-foreground sm:text-3xl", needsAttention && "text-[var(--text-attention)]")}>
+      <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground">{label}</p>
+      <p
+        className={cn(
+          "mt-1 truncate font-semibold text-foreground",
+          typeof value === "number" ? "text-2xl tabular-nums sm:text-3xl" : "text-xl",
+          tone === "attention" && "text-[var(--text-attention)]",
+          tone === "success" && typeof value === "number" && "text-[var(--text-success)]",
+        )}
+      >
         {value}
       </p>
+      <p className="mt-1 truncate text-[13px] text-foreground">{detail}</p>
     </div>
   )
 }
 
-function WorkflowRow({ tab, companyId }: { tab: WorkflowTab; companyId: string }) {
-  const Icon = tab.icon
+function WorkflowBadge({ tab, company }: { tab: WorkflowTab; company: CompanySummary }) {
+  if (tab.id === "review") {
+    const hasExceptions = company.needsReview > 0
+    return (
+      <StatusBadge tone={hasExceptions ? "warning" : "success"} size="sm">
+        {hasExceptions ? countLabel(company.needsReview, "fix", "fixes") : "Clear"}
+      </StatusBadge>
+    )
+  }
+
+  if (tab.id === "bills") {
+    return (
+      <StatusBadge tone={company.bills > 0 ? "processing" : "neutral"} size="sm">
+        {company.bills > 0 ? countLabel(company.bills, "draft") : "No drafts"}
+      </StatusBadge>
+    )
+  }
+
+  if (tab.id === "accounting") {
+    return (
+      <StatusBadge tone={company.accountingConnected ? "success" : "neutral"} size="sm">
+        {company.accountingConnected ? providerLabel(company) : "Setup"}
+      </StatusBadge>
+    )
+  }
 
   return (
-    <div className="flex flex-col items-start gap-3 px-5 py-4 sm:flex-row sm:items-center">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-[var(--workspace-primary)]">
-        <Icon className="size-[18px]" />
-      </span>
-      <div className="min-w-0 flex-1">
-        <h2 className="text-sm font-bold text-foreground">{tab.label}</h2>
-        <p className="mt-0.5 max-w-2xl text-sm text-foreground">{tab.description}</p>
+    <StatusBadge tone={documentTotal(company) > 0 ? "info" : "neutral"} size="sm">
+      {countLabel(documentTotal(company), "doc")}
+    </StatusBadge>
+  )
+}
+
+function WorkflowCard({ tab, company, companyId }: { tab: WorkflowTab; company: CompanySummary; companyId: string }) {
+  const Icon = tab.icon
+  const needsReview = tab.id === "review" && company.needsReview > 0
+  const actionLabel = tab.id === "accounting" && !company.accountingConnected ? "Connect" : tab.action
+
+  return (
+    <Card className="group h-full gap-0 rounded-xl border-[var(--workspace-border)] bg-card py-0 transition-colors hover:border-[color-mix(in_srgb,var(--workspace-blue)_34%,var(--workspace-border))]">
+      <div className="flex h-full flex-col p-4">
+        <div className="flex items-start justify-between gap-3">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-ink)] transition-colors group-hover:bg-white">
+            <Icon className="size-5" />
+          </span>
+          <WorkflowBadge tab={tab} company={company} />
+        </div>
+        <div className="mt-5 min-w-0 flex-1">
+          <h2 className="text-base font-semibold text-foreground">{tab.label}</h2>
+          <p className="mt-1 text-[13px] text-foreground">{tab.description}</p>
+        </div>
+        <Button asChild variant={needsReview ? "glossy" : "surface"} size="sm" className="mt-5 w-fit">
+          <Link href={tab.href(companyId)}>
+            {actionLabel}
+            <ArrowRight className="size-3.5" />
+          </Link>
+        </Button>
       </div>
-      <Button asChild variant="surface" size="sm">
-        <Link href={tab.href(companyId)}>
-          {tab.action}
-          <ArrowRight className="size-3.5" />
-        </Link>
-      </Button>
-    </div>
+    </Card>
+  )
+}
+
+function CommandCenter({ company, companyId }: { company: CompanySummary; companyId: string }) {
+  const docsTotal = documentTotal(company)
+  const reviewClear = company.needsReview === 0
+  const ProviderIcon = company.accountingConnected ? CheckCircle2 : CircleAlert
+  const nextAction = company.needsReview > 0
+    ? {
+        label: "Review",
+        detail: "Clear exceptions.",
+        href: `/dashboard/client?company_id=${encodeURIComponent(companyId)}`,
+        icon: BookCheck,
+        primary: true,
+      }
+    : company.bills > 0
+      ? {
+          label: "Bills",
+          detail: "Open AP drafts.",
+          href: `/dashboard/accounts-payable?company_id=${encodeURIComponent(companyId)}`,
+          icon: ReceiptText,
+          primary: false,
+        }
+      : {
+          label: "Upload",
+          detail: "Add source docs.",
+          href: `/dashboard/client?company_id=${encodeURIComponent(companyId)}#upload-files`,
+          icon: Upload,
+          primary: true,
+        }
+  const NextIcon = nextAction.icon
+
+  return (
+    <Card className={cn("overflow-hidden rounded-xl border-[var(--workspace-border)] bg-card py-0", CARD_DEF_SHADOW)}>
+      <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_18rem]">
+        <div className="p-5 sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex min-w-0 gap-3">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-ink)]">
+                <Building2 className="size-5" />
+              </span>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground">Client hub</p>
+                  <StatusBadge tone={company.accountingConnected ? "success" : "neutral"} size="sm">
+                    {company.accountingConnected ? "Books connected" : "Books pending"}
+                  </StatusBadge>
+                </div>
+                <h2 className="mt-1 truncate text-xl font-semibold text-foreground">{company.name}</h2>
+                <p className="mt-1 text-[13px] text-foreground">Docs, review, bills, books.</p>
+              </div>
+            </div>
+            <Button asChild variant={nextAction.primary ? "glossy" : "surface"} size="sm" className="w-fit">
+              <Link href={nextAction.href}>
+                <NextIcon className="size-4" />
+                {nextAction.label}
+              </Link>
+            </Button>
+          </div>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <MetricCard
+              label="Docs"
+              value={docsTotal}
+              icon={FileText}
+              detail={documentMix(company) || "No source docs"}
+              badge={<StatusBadge tone={docsTotal > 0 ? "info" : "neutral"} size="sm">{docsTotal > 0 ? "Filed" : "Empty"}</StatusBadge>}
+              tone="default"
+            />
+            <MetricCard
+              label="Review"
+              value={company.needsReview}
+              icon={BookCheck}
+              detail={reviewClear ? "No exceptions" : "Exceptions queue"}
+              badge={<StatusBadge tone={reviewClear ? "success" : "warning"} size="sm">{reviewClear ? "Clear" : "Fix"}</StatusBadge>}
+              tone={reviewClear ? "success" : "attention"}
+            />
+            <MetricCard
+              label="Bills"
+              value={company.bills}
+              icon={ReceiptText}
+              detail="AP drafts"
+              badge={<StatusBadge tone={company.bills > 0 ? "processing" : "neutral"} size="sm">{company.bills > 0 ? "Drafts" : "None"}</StatusBadge>}
+              tone="finance"
+            />
+            <MetricCard
+              label="Books"
+              value={providerLabel(company)}
+              icon={Landmark}
+              detail={accountingDetail(company)}
+              badge={<StatusBadge tone={company.accountingConnected ? "success" : "neutral"} size="sm">{company.accountingConnected ? "Live" : "Setup"}</StatusBadge>}
+              tone={company.accountingConnected ? "success" : "default"}
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-[var(--workspace-border)] bg-[var(--workspace-soft)] p-5 lg:border-l lg:border-t-0">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground">Next move</p>
+          <div className="mt-3 flex items-start gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white text-[var(--workspace-ink)]">
+              <NextIcon className="size-4" />
+            </span>
+            <div className="min-w-0">
+              <h3 className="text-base font-semibold text-foreground">{nextAction.label}</h3>
+              <p className="mt-0.5 text-[13px] text-foreground">{nextAction.detail}</p>
+            </div>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            <div className="rounded-lg border border-[var(--workspace-border)] bg-white p-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground">Last upload</p>
+              <p className="mt-1 truncate text-[13px] font-semibold text-foreground">{formatDate(company.lastUploadAt)}</p>
+            </div>
+            <div className="rounded-lg border border-[var(--workspace-border)] bg-white p-3">
+              <div className="flex items-start gap-2">
+                <ProviderIcon className={cn("mt-0.5 size-4 shrink-0", company.accountingConnected ? "text-[var(--text-success)]" : "text-[var(--text-attention)]")} />
+                <div className="min-w-0">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground">Destination</p>
+                  <p className="mt-1 truncate text-[13px] font-semibold text-foreground">{accountingDetail(company)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Card>
   )
 }
 
@@ -247,11 +471,10 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
               asChild
               variant="glossy"
               size="sm"
-              className="!rounded-lg !border-[var(--btn-primary-bg)] !bg-[var(--btn-primary-bg)] !text-[var(--btn-primary-fg)] !shadow-none hover:!bg-[var(--btn-primary-bg-hover)] hover:!text-[var(--btn-primary-fg-hover)]"
             >
               <Link href={`/dashboard/client?company_id=${encodeURIComponent(companyId)}#upload-files`}>
                 <Upload className="size-4" />
-                Upload documents
+                Upload
               </Link>
             </Button>
             <InlineAction onClick={openRename}>Rename</InlineAction>
@@ -282,29 +505,26 @@ export function CompanyHub({ companyId }: CompanyHubProps) {
         </Card>
       ) : (
         <div className="space-y-5">
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {([
-              { label: "Purchases", value: company.purchases, icon: FileText },
-              { label: "Receipts", value: company.receipts, icon: ReceiptText },
-              { label: "Needs review", value: company.needsReview, icon: BookCheck, attention: true },
-              { label: "Draft bills", value: company.bills, icon: ReceiptText },
-            ] as Array<{ label: string; value: number; icon: ComponentType<{ className?: string }>; attention?: boolean }>).map((card, index) => (
+          <motion.div
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 6 }}
+            animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <CommandCenter company={company} companyId={companyId} />
+          </motion.div>
+
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {WORKFLOW_TABS.map((tab, index) => (
               <motion.div
-                key={card.label}
+                key={tab.id}
                 initial={prefersReducedMotion ? false : { opacity: 0, y: 6 }}
                 animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1], delay: index * 0.05 }}
+                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1], delay: 0.05 + index * 0.05 }}
               >
-                <StatCard label={card.label} value={card.value} icon={card.icon} attention={card.attention} />
+                <WorkflowCard tab={tab} company={company} companyId={companyId} />
               </motion.div>
             ))}
           </div>
-
-          <Card className={cn("divide-y divide-border rounded-xl py-0", CARD_DEF_SHADOW)}>
-            {WORKFLOW_TABS.map((tab) => (
-              <WorkflowRow key={tab.id} tab={tab} companyId={companyId} />
-            ))}
-          </Card>
 
           <DangerZone description="Deleting a client removes it as a label. Its documents and bills are kept but detached.">
             <Button variant="dangerOutline" size="sm" onClick={() => setDeleteOpen(true)}>

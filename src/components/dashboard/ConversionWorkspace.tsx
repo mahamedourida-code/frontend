@@ -1166,7 +1166,7 @@ export function ResultActions({
   )
   const resultFilterTabs = ([
     { value: "all", label: "All", count: filterCounts.all },
-    { value: "needs_review", label: "Needs review", count: filterCounts.needs_review },
+    { value: "needs_review", label: "Review", count: filterCounts.needs_review },
     { value: "ready", label: "Ready", count: filterCounts.ready },
     { value: "edited", label: "Edited", count: filterCounts.edited },
     { value: "published", label: "Published", count: filterCounts.published },
@@ -1175,10 +1175,10 @@ export function ResultActions({
     tab.value === "all" || tab.count > 0 || tab.value === resultFilter
   ))
   const reviewMetrics = [
-    { label: "Needs review", value: filterCounts.needs_review },
+    { label: "Review", value: filterCounts.needs_review },
     { label: "Ready", value: filterCounts.ready },
     { label: "Edited", value: filterCounts.edited },
-    { label: "Duplicates", value: unresolvedDuplicateCount },
+    { label: "Dupes", value: unresolvedDuplicateCount },
   ] as const
   const filteredResultEntries = resultEntries.filter((entry) => {
     if (resultFilter === "all") return true
@@ -1479,7 +1479,7 @@ export function ResultActions({
             <div className="min-w-0">
               <p className="text-sm font-semibold text-[var(--workspace-ink)]">Review board</p>
               <p className="mt-0.5 truncate text-xs font-medium text-[var(--workspace-muted)]">
-                Check exceptions, mark clean documents ready, then export reviewed files.
+                Fix. Ready. Export.
               </p>
             </div>
           </div>
@@ -1491,7 +1491,7 @@ export function ResultActions({
             ) : null}
             <details className="group relative">
               <summary className={cn(buttonVariants({ variant: "surface", size: "sm" }), "h-9 cursor-pointer list-none gap-2 px-3 text-xs [&::-webkit-details-marker]:hidden", workspaceNormalControlClass)}>
-                More actions
+                More
                 <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
               </summary>
               <div className={cn(reviewBoardMenuClass, "w-56 space-y-2")}>
@@ -1544,7 +1544,7 @@ export function ResultActions({
             <details className="group relative">
               <summary className={cn(buttonVariants({ variant: "glossy", size: "default" }), "h-9 cursor-pointer list-none gap-2 px-4 text-sm [&::-webkit-details-marker]:hidden", workspacePrimaryControlClass)}>
                 <Send className="h-4 w-4" />
-                Export / draft bills
+                Export
                 <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
               </summary>
               <div className={cn(reviewBoardMenuClass, "w-64")}>
@@ -1556,7 +1556,7 @@ export function ResultActions({
                   className={cn("h-9 w-full justify-start gap-2 px-3 text-xs", workspaceNormalControlClass)}
                 >
                   {reviewedDownloadBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-                  {unresolvedDuplicateCount > 0 ? "Resolve duplicates" : "Download reviewed files"}
+                  {unresolvedDuplicateCount > 0 ? "Resolve dupes" : "Download"}
                 </Button>
                 {onSendToAccountsPayable && unsentReadyInvoiceEntries.length ? (
                   <Button
@@ -1568,8 +1568,8 @@ export function ResultActions({
                   >
                     {batchApBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                     {unresolvedDuplicateCount > 0
-                      ? "Resolve duplicates first"
-                      : `Send ${unsentReadyInvoiceEntries.length} invoice${unsentReadyInvoiceEntries.length === 1 ? "" : "s"} to draft bills`}
+                      ? "Resolve dupes"
+                      : `Draft ${unsentReadyInvoiceEntries.length} invoice${unsentReadyInvoiceEntries.length === 1 ? "" : "s"}`}
                   </Button>
                 ) : null}
                 {draftBillInvoiceCount > 0 ? (
@@ -1675,8 +1675,8 @@ export function ResultActions({
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5">Date</th>
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5">Due date</th>
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5 text-right">Total</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Issue</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Certainty</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Check</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Trust</th>
                   <th className="w-28 border-b border-[#cfd4d9] px-3 py-2.5 text-right">Action</th>
                 </tr>
               </thead>
@@ -2312,7 +2312,7 @@ export function ResultActions({
                                 aria-label="Jump to the next field that needs a check"
                               >
                                 <ArrowRight className="size-3.5" />
-                                Check next
+                                Next field
                               </button>
                             ) : null}
                             {uncertainCount > 0 || collapseConfident ? (
@@ -2324,10 +2324,10 @@ export function ResultActions({
                                 {collapseConfident ? (
                                   <>
                                     <Eye className="size-3.5" />
-                                    Review full document
+                                    Full view
                                   </>
                                 ) : (
-                                  "Only fields that need you"
+                                  "Only exceptions"
                                 )}
                               </button>
                             ) : null}
@@ -2406,7 +2406,7 @@ export function ResultActions({
                                       aria-label={`Confirm ${field.label}`}
                                     >
                                       <Check className="size-3.5" />
-                                      Looks right
+                                      Confirm
                                     </InlineAction>
                                   ) : confirmedFields[field.path] ? (
                                     <Symbol name="code-confidence-tick" size="inline" className="h-12 w-12 shrink-0" alt="Confirmed" />
@@ -2604,7 +2604,7 @@ export function ResultActions({
                         aria-label="Jump to the next cell that needs a check"
                       >
                         <ArrowRight className="size-3.5" />
-                        Check next
+                        Next field
                       </button>
                     </div>
                   ) : null}
@@ -2970,8 +2970,8 @@ function BatchStagingBoard({
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5">Date</th>
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5">Due date</th>
                   <th className="border-b border-[#cfd4d9] px-3 py-2.5 text-right">Total</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Issue</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Certainty</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Check</th>
+                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Trust</th>
                   <th className="w-28 border-b border-[#cfd4d9] px-3 py-2.5 text-right">Action</th>
                 </tr>
               </thead>
