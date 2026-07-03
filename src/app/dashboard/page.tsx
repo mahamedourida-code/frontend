@@ -8,7 +8,6 @@ import { CompaniesTable } from "@/components/dashboard/companies/CompaniesTable"
 import type { CompanySummary } from "@/components/dashboard/companies/company-types"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { PageHeader } from "@/components/dashboard/PageHeader"
-import { WorkspaceCommandCenter } from "@/components/dashboard/WorkspaceCommandCenter"
 import { WorkspaceFirstRunGuide } from "@/components/dashboard/WorkspaceFirstRunGuide"
 import { WorkspaceWalkthrough } from "@/components/dashboard/WorkspaceWalkthrough"
 import { useAuth } from "@/hooks/useAuth"
@@ -47,11 +46,10 @@ export default function DashboardPage() {
   }
 
   return (
-    <DashboardShell activeItem="companies" title="Workspace" user={user} showBack={false}>
+    <DashboardShell activeItem="companies" title="Clients" user={user} showBack={false}>
       <div className="space-y-8">
         <PageHeader
-          title="Workspace"
-          description="Review, draft, publish."
+          title="Clients"
           className="mb-0"
         />
         {hasClients !== null ? (
@@ -70,7 +68,6 @@ export default function DashboardPage() {
             />
           </>
         ) : null}
-        <WorkspaceCommandCenter companies={companies} />
         <CompaniesTable
           workspaceId={activeWorkspace?.id}
           refreshKey={clientsRefreshKey}
