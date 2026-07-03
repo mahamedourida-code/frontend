@@ -20,11 +20,8 @@ type OverviewCell = {
 }
 
 /**
- * Quiet reference counts for the dashboard home — the secondary strip that sits
- * BELOW the HomeAttention lead band. HomeAttention owns the amber "what needs me
- * / what's aging" hero now, so these cards stay calm on purpose (foreground
- * values, no amber accent) and never compete with it. Counts are aggregated from
- * the client list already loaded by CompaniesTable, so there's no extra request.
+ * Quiet reference counts for the dashboard home. Counts are aggregated from the
+ * client list already loaded by CompaniesTable, so there's no extra request.
  *
  * Each card carries a caricature visual in the black / slate-footer / landing-
  * blue palette. The lucide glyphs below are placeholders — swap them for the
@@ -51,8 +48,6 @@ export function WorkspaceOverview({
 
   const cells: OverviewCell[] = [
     {
-      // Quiet on purpose — HomeAttention above owns the amber "what needs me /
-      // what's aging" hero, so this stays a calm reference count.
       key: "review",
       label: "To review",
       value: needsReview,

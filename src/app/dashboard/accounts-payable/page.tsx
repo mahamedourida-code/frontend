@@ -17,7 +17,6 @@ import {
   FolderTree,
   Hash,
   Landmark,
-  Link2,
   ListChecks,
   Loader2,
   Percent,
@@ -53,7 +52,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { PublishSuccessBurst } from "@/components/dashboard/PublishSuccessBurst"
 import { PublishConfirmation, type PublishConfirmationState } from "@/components/dashboard/PublishConfirmation"
 import { SpotlightCard } from "@/components/dashboard/SpotlightCard"
-import { PriorityBoard, type PrioritySegmentKey } from "@/components/dashboard/accounts-payable/PriorityBoard"
 import {
   Dialog,
   DialogContent,
@@ -330,7 +328,6 @@ function AccountsPayableContent() {
   const { activeWorkspace } = useWorkspaces(user)
   const m = useMotionTokens()
   const clientId = searchParams.get("client")
-  const clientName = searchParams.get("clientName")
   const companyId = searchParams.get("company_id")
   const [clientJobIds, setClientJobIds] = useState<Set<string> | null>(null)
   const [items, setItems] = useState<AccountsPayableItem[]>([])
@@ -344,7 +341,6 @@ function AccountsPayableContent() {
   const [accountingDestination, setAccountingDestination] = useState<AccountingDestination | null>(null)
   const [accountingConnection, setAccountingConnection] = useState<AccountingConnectionStatus | null>(null)
   const [accountingReferences, setAccountingReferences] = useState<AccountingReferenceItem[]>([])
-  const [accountingConnectionLoading, setAccountingConnectionLoading] = useState(true)
   const [poDialogOpen, setPoDialogOpen] = useState(false)
   const [poList, setPoList] = useState<PurchaseOrder[]>([])
   const [poLoading, setPoLoading] = useState(false)
@@ -402,7 +398,6 @@ function AccountsPayableContent() {
   }, [user?.id, companyId])
 
   const loadAccountingDestination = async (sync = false) => {
-    setAccountingConnectionLoading(true)
     if (!sync) {
       setAccountingDestination(null)
       setAccountingConnection(null)
@@ -428,7 +423,6 @@ function AccountsPayableContent() {
       if (sync) toast.error("Could not refresh accounting lists.")
     } finally {
       setSyncingReferences(false)
-      setAccountingConnectionLoading(false)
     }
   }
 
@@ -538,14 +532,6 @@ function AccountsPayableContent() {
     () => summarizeBlocking(blockedSelected.map(entry => entry.validation)),
     [blockedSelected],
   )
-
-  // Topic 8 - which priority segment the queue is currently focused on. The
-  // four lead segments map 1:1 to the primary queue filters; "more" filters
-  // (duplicates / missing info / failed / discarded) leave no segment lit.
-  const activeSegment: PrioritySegmentKey | null =
-    filter === "needs_attention" || filter === "pending_approval" || filter === "ready_to_publish" || filter === "published"
-      ? filter
-      : null
 
   // C10 — "Missing information" derived per item (no due date, no VAT where
   // expected, no total, unreadable field). Pure derivation over draft_data;
@@ -1190,50 +1176,6 @@ function AccountsPayableContent() {
               Publish {selectedReadyIds.length} {selectedReadyIds.length === 1 ? "bill" : "bills"}
             </MotionButton>
           ) : undefined}
-        />
-
-        {/* Priority summary over the counts the page already computes. */}
-        <PriorityBoard
-          needsAttention={counts.needs_coding + counts.needs_review}
-          ready={counts.ready_to_publish}
-          published={counts.published}
-          duplicates={duplicateCount}
-          missingInfo={missingInfoCount}
-          pendingApproval={counts.pending_approval}
-          activeSegment={activeSegment}
-          onSelectSegment={(key) => setFilter(key)}
-          selectedCount={selectedReadyIds.length}
-          destinationChip={
-            <>
-              {accountingConnectionLoading ? (
-                <span className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-sm font-semibold text-sky-900">
-                  <AccountingDestinationGlyph destination={accountingDestination} />
-                  {destinationName} checking
-                  <StatusBadge tone="processing" className="h-5 px-2 text-[11px]">Syncing</StatusBadge>
-                </span>
-              ) : accountingConnection?.connected ? (
-                <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-950">
-                  <AccountingDestinationGlyph destination={accountingDestination} />
-                  Connected to {destinationName}
-                  <span className="max-w-[220px] truncate text-xs font-medium text-emerald-800">
-                    {accountingConnection.company_name || "Ready for draft bills"}
-                  </span>
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-sm font-semibold text-amber-950">
-                  <Link2 className="size-4" aria-hidden="true" />
-                  QuickBooks or Xero required
-                  <StatusBadge tone="warning" className="h-5 px-2 text-[11px]">Publishing locked</StatusBadge>
-                </span>
-              )}
-              {clientId ? (
-                <StatusBadge tone="info">
-                  {clientName || "Client"}
-                  {clientJobIds ? ` · ${visibleItems.length}` : ""}
-                </StatusBadge>
-              ) : null}
-            </>
-          }
         />
 
         {/* Pre-publish gate — a quiet line when some selected bills won't pass
