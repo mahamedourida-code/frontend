@@ -387,13 +387,13 @@ export function ProgressiveUploadSheet({
                         exit="exit"
                         className="flex items-center gap-3 px-3 py-2.5"
                       >
-                        <span className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]">
+                        <span className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-blue-soft)] text-black">
                           {previewUrl ? (
                             <img src={previewUrl} alt="" className="h-full w-full object-cover" />
                           ) : pdf ? (
-                            <FileText className="size-5" />
+                            <FileText className="size-5 text-black" />
                           ) : (
-                            <FileImage className="size-5" />
+                            <FileImage className="size-5 text-black" />
                           )}
                         </span>
                         <span className="min-w-0 flex-1">

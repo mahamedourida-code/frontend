@@ -288,7 +288,7 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
           >
             {/* Search row */}
             <div className="flex items-center gap-3 border-b border-border px-4 py-3">
-              <Search className="size-4 shrink-0 text-muted-foreground" />
+              <Search className="size-4 shrink-0 text-black" />
               <input
                 ref={inputRef}
                 value={query}
@@ -345,10 +345,10 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
                                 <span className={cn(
                                   "flex size-8 shrink-0 items-center justify-center rounded-lg border",
                                   isActive
-                                    ? "border-primary/30 bg-primary/10 text-primary"
-                                    : "border-border bg-muted/50 text-muted-foreground"
+                                    ? "border-primary/30 bg-primary/10 text-black"
+                                    : "border-border bg-muted/50 text-black"
                                 )}>
-                                  <Icon className="size-4" />
+                                  <Icon className="size-4 text-black" />
                                 </span>
                                 <span className="flex-1 truncate text-[15px] font-semibold">{item.label}</span>
                                 <span className="shrink-0 text-[13px] font-medium text-muted-foreground">{item.hint}</span>

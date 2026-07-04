@@ -75,7 +75,7 @@ export function SegmentedTabs({
               />
             ) : null}
             {tab.icon ? (
-              <span className="relative z-10 inline-flex shrink-0 [&_svg]:size-3.5">{tab.icon}</span>
+              <span className="relative z-10 inline-flex shrink-0 text-black [&_svg]:size-3.5 [&_svg]:text-black">{tab.icon}</span>
             ) : null}
             <span className={cn("relative z-10", labelClassName)}>{tab.label}</span>
             {tab.count !== undefined && tab.count !== null ? (

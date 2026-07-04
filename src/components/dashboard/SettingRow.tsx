@@ -52,7 +52,7 @@ export function SettingRow({
         {icon ? (
           <span
             className={cn(
-              "mt-0.5 inline-flex shrink-0 items-center justify-center rounded-lg border border-[var(--workspace-border)] bg-white text-[var(--workspace-ink)]",
+              "mt-0.5 inline-flex shrink-0 items-center justify-center rounded-lg border border-[var(--workspace-border)] bg-white text-black [&_svg]:text-black",
               compact ? "size-6 [&_svg]:size-3.5" : "size-7 [&_svg]:size-4",
             )}
           >

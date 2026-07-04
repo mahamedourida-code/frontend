@@ -64,15 +64,15 @@ type SymbolTone =
   | "slate"
 
 const toneClasses: Record<SymbolTone, string> = {
-  emerald: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  sky: "border-sky-200 bg-sky-50 text-sky-700",
-  violet: "border-violet-200 bg-violet-50 text-violet-700",
-  amber: "border-amber-200 bg-amber-50 text-amber-700",
-  rose: "border-rose-200 bg-rose-50 text-rose-700",
-  cyan: "border-cyan-200 bg-cyan-50 text-cyan-700",
-  indigo: "border-indigo-200 bg-indigo-50 text-indigo-700",
-  teal: "border-teal-200 bg-teal-50 text-teal-700",
-  slate: "border-slate-200 bg-slate-50 text-slate-700",
+  emerald: "border-emerald-200 bg-emerald-50 text-black",
+  sky: "border-sky-200 bg-sky-50 text-black",
+  violet: "border-violet-200 bg-violet-50 text-black",
+  amber: "border-amber-200 bg-amber-50 text-black",
+  rose: "border-rose-200 bg-rose-50 text-black",
+  cyan: "border-cyan-200 bg-cyan-50 text-black",
+  indigo: "border-indigo-200 bg-indigo-50 text-black",
+  teal: "border-teal-200 bg-teal-50 text-black",
+  slate: "border-slate-200 bg-slate-50 text-black",
 }
 
 type SymbolMeta = {
@@ -215,7 +215,7 @@ export function Symbol({ name, size = "medium", className, alt = "" }: SymbolPro
         className,
       )}
     >
-      <Icon className="size-[56%]" strokeWidth={2.1} aria-hidden="true" />
+      <Icon className="size-[56%] text-black" strokeWidth={2.1} aria-hidden="true" />
     </span>
   )
 }

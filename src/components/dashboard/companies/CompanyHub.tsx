@@ -119,7 +119,7 @@ function SummaryCell({
     <div className="min-w-0 p-4 sm:p-5">
       <div className="flex items-center justify-between gap-3">
         <span className="inline-flex min-w-0 items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground">
-          <Icon className="size-3.5 shrink-0 text-[var(--workspace-muted)]" />
+          <Icon className="size-3.5 shrink-0 text-black" />
           <span className="truncate">{label}</span>
         </span>
         {badge}

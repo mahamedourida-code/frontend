@@ -293,7 +293,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
           <Icon
             className={cn(
               nested && !collapsed ? "size-4" : "size-[18px]",
-              isActive ? "text-[var(--workspace-primary)]" : "text-slate-600",
+              "text-black",
             )}
           />
           {(showDot || (collapsed && count > 0)) && (
@@ -335,7 +335,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
             title={group.label}
             aria-hidden="true"
           >
-            {group.step ? group.step : <GroupIcon className="size-3.5" />}
+            {group.step ? group.step : <GroupIcon className="size-3.5 text-black" />}
           </div>
           {group.items.map((item) => renderItem(item))}
         </div>
@@ -355,8 +355,8 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
               className={cn(
                 "inline-flex size-5 shrink-0 items-center justify-center rounded-full border text-[11px] tabular-nums",
                 containsActiveItem
-                  ? "border-[var(--workspace-selection-border)] bg-white text-[var(--workspace-primary)]"
-                  : "border-[var(--workspace-border)] bg-white/70 text-slate-500",
+                  ? "border-[var(--workspace-selection-border)] bg-white text-black"
+                  : "border-[var(--workspace-border)] bg-white/70 text-black",
               )}
             >
               {group.step}
@@ -385,14 +385,13 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
         >
           <GroupIcon
             className={cn(
-              "size-4",
-              containsActiveItem ? "text-[var(--workspace-primary)]" : "text-slate-500",
+              "size-4 text-black",
             )}
           />
           <span className="flex-1 text-left">{group.label}</span>
           <ChevronDown
             className={cn(
-              "size-3.5 text-slate-400 transition-transform duration-150 ease-out",
+              "size-3.5 text-black transition-transform duration-150 ease-out",
               isOpen && "rotate-180",
             )}
             aria-hidden="true"
@@ -445,7 +444,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
                 aria-label="AxLiner home"
                 className="ax-interactive flex size-9 items-center justify-center rounded-full outline-none hover:bg-white/8 focus-visible:ring-2 focus-visible:ring-white/30"
               >
-                <AxMark className="h-8 w-auto invert" />
+                <AxMark className="h-8 w-auto" />
               </Link>
             </motion.div>
           ) : (
@@ -462,7 +461,7 @@ export function WorkspaceSidebar({ activeItem, unreadCount = 0, notifications }:
                 aria-label="AxLiner home"
                 className="ax-interactive flex min-w-0 items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-white/30"
               >
-                <AxMark className="h-9 w-auto invert" />
+                <AxMark className="h-9 w-auto" />
                 <span className="truncate text-[19px] font-semibold tracking-normal">AxLiner</span>
               </Link>
             </motion.div>

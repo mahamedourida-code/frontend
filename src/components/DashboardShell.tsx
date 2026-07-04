@@ -175,9 +175,9 @@ export function DashboardShell({
                   variant="ghost"
                   size="icon"
                   onClick={() => router.back()}
-                  className="size-9 text-white/88 hover:bg-white/10 hover:text-white"
+                  className="size-9 text-black hover:bg-white/10 hover:text-black"
                 >
-                  <ChevronLeft className="size-[18px]" />
+                  <ChevronLeft className="size-[18px] text-black" />
                 </Button>
                 <Separator orientation="vertical" className="h-7 bg-white/12" />
               </>
@@ -198,7 +198,7 @@ export function DashboardShell({
                 aria-label="Open command palette"
                 className="ax-interactive group inline-flex h-10 w-full max-w-[520px] cursor-pointer items-center gap-2.5 rounded-full border border-white/14 bg-white/[0.07] px-4 text-[15px] font-medium text-white/68 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] hover:-translate-y-0.5 hover:border-white/28 hover:bg-white/[0.11] hover:text-white active:translate-y-0"
               >
-                <Search className="size-[18px] shrink-0 text-white/78" />
+                <Search className="size-[18px] shrink-0 text-black" />
                 <span className="truncate">Search clients, documents, pages...</span>
                 <kbd className="ms-auto hidden h-6 shrink-0 items-center rounded-full border border-white/12 bg-black/10 px-2 font-sans text-[11px] font-semibold text-white/56 sm:inline-flex">
                   ⌘K
@@ -212,9 +212,9 @@ export function DashboardShell({
               <button
                 onClick={() => setCmdOpen(true)}
                 aria-label="Open command palette"
-                className="ax-interactive inline-flex size-10 cursor-pointer items-center justify-center rounded-full border border-white/14 bg-white/[0.07] text-white hover:-translate-y-0.5 hover:bg-white/12 active:translate-y-0 md:hidden"
+                className="ax-interactive inline-flex size-10 cursor-pointer items-center justify-center rounded-full border border-white/14 bg-white/[0.07] text-black hover:-translate-y-0.5 hover:bg-white/12 active:translate-y-0 md:hidden"
               >
-                <Search className="size-5" />
+                <Search className="size-5 text-black" />
               </button>
 
               {activeJob && pathname !== "/dashboard/client" && (
@@ -228,9 +228,9 @@ export function DashboardShell({
                   )}
                 >
                   {activeJob.tone === "ready" ? (
-                    <Clock3 className="size-3.5" />
+                    <Clock3 className="size-3.5 text-black" />
                   ) : (
-                    <Loader2 className="size-3.5 animate-spin" />
+                    <Loader2 className="size-3.5 animate-spin text-black" />
                   )}
                   <span className="hidden max-w-[8.5rem] truncate lg:inline">{activeJob.label}</span>
                   <span className="tabular-nums opacity-75">{activeJob.progress}</span>
@@ -257,9 +257,9 @@ export function DashboardShell({
                     (typeof window !== "undefined" ? window.localStorage.getItem("axliner:selectedCompanyId") || "" : "")
                   router.push(`/dashboard/client${companyId ? `?company_id=${encodeURIComponent(companyId)}` : ""}#upload-files`)
                 }}
-                className="ax-interactive relative inline-flex size-10 items-center justify-center rounded-full text-white/82 outline-none transition-colors hover:bg-white/8 hover:text-white focus-visible:ring-2 focus-visible:ring-white/35"
+                className="ax-interactive relative inline-flex size-10 items-center justify-center rounded-full text-black outline-none transition-colors hover:bg-white/8 hover:text-black focus-visible:ring-2 focus-visible:ring-white/35"
               >
-                <Upload className="size-5" />
+                <Upload className="size-5 text-black" />
               </button>
 
               <button
@@ -267,9 +267,9 @@ export function DashboardShell({
                 aria-label="Keyboard shortcuts"
                 title="Keyboard shortcuts"
                 onClick={() => setCheatsheetOpen(true)}
-                className="ax-interactive relative hidden size-10 items-center justify-center rounded-full text-white/82 outline-none transition-colors hover:bg-white/8 hover:text-white focus-visible:ring-2 focus-visible:ring-white/35 sm:inline-flex"
+                className="ax-interactive relative hidden size-10 items-center justify-center rounded-full text-black outline-none transition-colors hover:bg-white/8 hover:text-black focus-visible:ring-2 focus-visible:ring-white/35 sm:inline-flex"
               >
-                <Keyboard className="size-5" />
+                <Keyboard className="size-5 text-black" />
               </button>
 
               <NotificationsBell />

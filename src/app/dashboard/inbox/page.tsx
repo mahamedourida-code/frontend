@@ -632,7 +632,7 @@ export default function EmailInboxPage() {
             <div className="space-y-3.5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-2.5">
-                  <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-sky-200 bg-sky-50 text-sky-700">
+                  <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-sky-200 bg-sky-50 text-black">
                     <Mail className="size-4.5" />
                   </span>
                   <div className="min-w-0">
@@ -689,7 +689,7 @@ export default function EmailInboxPage() {
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5">
-                        <span className="inline-flex size-9 items-center justify-center rounded-md bg-[#eff6ff] text-[var(--workspace-blue)]">
+                        <span className="inline-flex size-9 items-center justify-center rounded-md bg-[#eff6ff] text-black">
                           {provider === "google_drive" ? <FolderInput className="size-4.5" /> : <Cloud className="size-4.5" />}
                         </span>
                         <div>
@@ -751,7 +751,7 @@ export default function EmailInboxPage() {
                         </div>
                         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                           <span className="inline-flex items-center gap-1.5 text-xs text-black">
-                            <Clock className="size-3.5 text-[var(--workspace-blue)]" />
+                            <Clock className="size-3.5 text-black" />
                             {source.last_synced_at ? formatReceivedAt(source.last_synced_at) : "Never synced"}
                           </span>
                           <div className="flex flex-wrap items-center gap-4">

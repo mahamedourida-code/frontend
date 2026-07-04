@@ -182,7 +182,7 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
         <div className="flex flex-col gap-3 border-b border-[var(--workspace-border)] bg-white px-4 py-3 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex min-w-0 flex-1 flex-col gap-3 lg:flex-row lg:items-center">
             <div className="relative w-full lg:max-w-sm">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-black" />
               <Input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
@@ -317,13 +317,13 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
                         className="group flex items-center gap-3"
                         onClick={(event) => event.stopPropagation()}
                       >
-                        <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-muted)]">
-                          <Building2 className="size-4" />
+                        <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-black">
+                          <Building2 className="size-4 text-black" />
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="ax-data-entity block truncate group-hover:text-[var(--workspace-blue)]">{company.name}</span>
                         </span>
-                        <ChevronRight className="ms-auto size-4 shrink-0 text-muted-foreground" />
+                        <ChevronRight className="ms-auto size-4 shrink-0 text-black" />
                       </Link>
                     </TableCell>
                     <TableCell>

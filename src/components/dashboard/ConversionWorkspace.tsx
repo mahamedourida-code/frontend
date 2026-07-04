@@ -261,7 +261,7 @@ export function UploadDropzone({
             alt=""
           />
         ) : (
-          <FolderUp className="mx-auto mb-4 h-7 w-7 text-[var(--workspace-primary)]" />
+          <FolderUp className="mx-auto mb-4 h-7 w-7 text-black" />
         )}
         <h3 className="text-lg font-semibold tracking-tight text-foreground">
           {isDragging ? "Drop to upload" : uploadedFiles.length ? "Add files" : "Upload documents"}
@@ -345,7 +345,7 @@ export function UploadDropzone({
                     disabled={!previewUrl}
                     className="ax-interactive flex min-w-0 flex-1 items-center gap-3 text-left disabled:cursor-default"
                   >
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-[var(--button-warm)] text-[var(--brand-brown-fg)]">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-[var(--button-warm)] text-black">
                       {pdf ? <FileText className="h-4 w-4" /> : <FileImage className="h-4 w-4" />}
                     </span>
                     <span className="min-w-0">
@@ -484,7 +484,7 @@ export function SelectedFilesTray({
                   <img src={previewUrl} alt="" className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center">
-                    {pdf ? <FileText className="h-5 w-5 text-[var(--brand-brown-fg)]" /> : <FileImage className="h-5 w-5 text-[var(--brand-brown-fg)]" />}
+                    {pdf ? <FileText className="h-5 w-5 text-black" /> : <FileImage className="h-5 w-5 text-black" />}
                   </div>
                 )}
                 <Button
@@ -1992,7 +1992,7 @@ export function ResultActions({
                   <div className="border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-4 py-4">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <span className="flex items-center gap-2.5">
-                        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-purple)_10%,transparent)] text-[var(--workspace-purple)] [&_svg]:size-[18px]">
+                        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-purple)_10%,transparent)] text-black [&_svg]:size-[18px] [&_svg]:text-black">
                           <ReceiptText />
                         </span>
                         <span className="text-[15px] font-semibold tracking-tight text-foreground">Vendor memory</span>
@@ -2007,7 +2007,7 @@ export function ResultActions({
                           const value = comparisonFile.vendor_suggestion?.suggested_fields[field.key]
                           return value ? (
                             <span key={field.key} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--button-warm-ring)] bg-white px-2.5 py-1 text-[12px] font-medium text-foreground">
-                              <span className="inline-flex shrink-0 text-[var(--workspace-purple)] [&_svg]:size-[14px]">{field.icon}</span>
+                              <span className="inline-flex shrink-0 text-black [&_svg]:size-[14px] [&_svg]:text-black">{field.icon}</span>
                               {value}
                             </span>
                           ) : null
@@ -2414,7 +2414,7 @@ export function ResultActions({
                         {collapseConfident && uncertainCount === 0 ? (
                           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--button-warm-ring)] bg-[var(--button-warm)] px-4 py-2.5">
                             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                              <Check className="size-3.5 shrink-0 text-[var(--workspace-success)]" />
+                              <Check className="size-3.5 shrink-0 text-black" />
                               Nothing left to check.
                             </span>
                             {comparisonFile.document_id && !["ready", "published", "failed", "deleted"].includes(comparisonFile.review_status || "") ? (
@@ -2699,7 +2699,7 @@ export function ResultActions({
                   </>
                 ) : (
                   <div className="flex min-h-[420px] items-center justify-center gap-2 text-sm font-semibold text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin text-[var(--brand-brown-fg)]" />
+                    <Loader2 className="h-4 w-4 animate-spin text-black" />
                     Preparing preview
                   </div>
                 )}
@@ -3061,8 +3061,8 @@ function BatchStagingBoard({
                           className="group h-12 bg-white transition-colors hover:bg-[#f7f8fc]"
                         >
                           <td className={cn("border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", processing ? "border-l-[var(--workspace-blue)]" : "border-l-transparent")}>
-                            <span className="inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#94a3b8]">
-                              {pdf ? <FileText className={cn("size-3.5", processing && "text-[var(--text-working)]")} /> : <FileImage className={cn("size-3.5", processing && "text-[var(--text-working)]")} />}
+                            <span className="inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-black">
+                              {pdf ? <FileText className="size-3.5 text-black" /> : <FileImage className="size-3.5 text-black" />}
                             </span>
                           </td>
                           <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">

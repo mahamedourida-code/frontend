@@ -40,14 +40,14 @@ const providers: Array<{
     id: "quickbooks",
     name: "QuickBooks Online",
     Icon: Landmark,
-    iconClassName: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    iconClassName: "border-emerald-200 bg-emerald-50 text-black",
     api: quickBooksApi,
   },
   {
     id: "xero",
     name: "Xero",
     Icon: Cloud,
-    iconClassName: "border-sky-200 bg-sky-50 text-sky-700",
+    iconClassName: "border-sky-200 bg-sky-50 text-black",
     api: xeroApi,
   },
 ]
@@ -221,7 +221,7 @@ export function AccountingConnectionsSection({
                 )}
               >
                 <span className={cn("inline-flex size-12 shrink-0 items-center justify-center rounded-xl border", provider.iconClassName)}>
-                  <ProviderIcon className="size-6" strokeWidth={2.2} aria-hidden="true" />
+                  <ProviderIcon className="size-6 text-black" strokeWidth={2.2} aria-hidden="true" />
                 </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-bold text-foreground">{provider.name}</span>
@@ -229,7 +229,7 @@ export function AccountingConnectionsSection({
                     {selected ? "Selected for this workspace" : "Use for this workspace"}
                   </span>
                 </span>
-                {selected ? <Check className="ms-auto size-4 shrink-0 text-[var(--workspace-success)]" /> : null}
+                {selected ? <Check className="ms-auto size-4 shrink-0 text-black" /> : null}
               </button>
             )
           })}
@@ -253,7 +253,7 @@ export function AccountingConnectionsSection({
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
                 <div className="flex min-w-0 flex-1 items-center gap-4">
                   <span className={cn("inline-flex size-14 shrink-0 items-center justify-center rounded-xl border", provider.iconClassName)}>
-                    <ProviderIcon className="size-7" strokeWidth={2.1} aria-hidden="true" />
+                    <ProviderIcon className="size-7 text-black" strokeWidth={2.1} aria-hidden="true" />
                   </span>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">

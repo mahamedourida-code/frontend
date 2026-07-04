@@ -161,8 +161,8 @@ export function WorkspaceFilesPanel({ refreshKey }: { refreshKey?: string }) {
                 transition={m.springSnappy}
                 className="ax-interactive flex items-center gap-3 px-3 py-3 hover:bg-accent/50"
               >
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
-                  <FileText className="size-4" />
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-black">
+                  <FileText className="size-4 text-black" />
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-semibold text-foreground">{file.filename}</span>

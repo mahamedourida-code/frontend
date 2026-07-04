@@ -101,14 +101,14 @@ export default function GuidePage() {
                   className="ax-interactive flex items-center justify-between gap-4 px-5 py-4 outline-none transition-colors hover:bg-[var(--workspace-soft)] focus-visible:bg-[var(--workspace-soft)] sm:px-6"
                 >
                   <div className="flex min-w-0 items-start gap-4">
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-primary)]">
-                      <Icon className="size-[18px]" />
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-black">
+                      <Icon className="size-[18px] text-black" />
                     </span>
                     <h3 className="min-w-0 text-[15px] font-semibold text-[var(--workspace-ink)]">{action.title}</h3>
                   </div>
                   <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-[var(--workspace-blue)]">
                     {action.action}
-                    <ArrowRight className="size-4" />
+                    <ArrowRight className="size-4 text-black" />
                   </span>
                 </Link>
               )

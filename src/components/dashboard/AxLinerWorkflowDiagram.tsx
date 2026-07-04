@@ -70,9 +70,9 @@ const accountingStep: WorkflowStep = {
 }
 
 const toneClasses: Record<WorkflowTone, string> = {
-  blue: "text-sky-500",
-  red: "text-rose-500",
-  green: "text-emerald-500",
+  blue: "text-black",
+  red: "text-black",
+  green: "text-black",
 }
 
 function StepNode({ step, className }: { step: WorkflowStep; className?: string }) {
@@ -90,7 +90,7 @@ function StepNode({ step, className }: { step: WorkflowStep; className?: string 
         className={cn("flex size-9 shrink-0 items-center justify-center", toneClasses[step.tone])}
         aria-hidden="true"
       >
-        <Icon className="size-7" strokeWidth={1.6} />
+        <Icon className="size-7 text-black" strokeWidth={1.6} />
       </span>
       <span className="min-w-0">
         <span className="block text-[13px] font-semibold leading-5 text-foreground">

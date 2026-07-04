@@ -92,8 +92,8 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
               "ax-interactive group hidden h-10 max-w-[285px] cursor-pointer items-center gap-2.5 rounded-md border border-white/18 bg-white/8 px-3 text-white outline-none transition-colors hover:border-white/35 hover:bg-white/12 focus-visible:ring-2 focus-visible:ring-white/30 md:inline-flex",
             )}
           >
-            <span className="flex size-6 shrink-0 items-center justify-center rounded bg-white/12 text-white">
-              {busy ? <Loader2 className="size-4 animate-spin" /> : <Building2 className="size-4" />}
+            <span className="flex size-6 shrink-0 items-center justify-center rounded bg-white/12 text-black">
+              {busy ? <Loader2 className="size-4 animate-spin text-black" /> : <Building2 className="size-4 text-black" />}
             </span>
             <span className="flex min-w-0 flex-col items-start leading-none">
               <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/60">
@@ -103,7 +103,7 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
                 {activeName}
               </span>
             </span>
-            <ChevronsUpDown className="ms-auto size-4 shrink-0 text-white/60 group-hover:text-white/85" />
+            <ChevronsUpDown className="ms-auto size-4 shrink-0 text-black group-hover:text-black" />
           </button>
         </DropdownMenuTrigger>
 
@@ -126,11 +126,11 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
                   className={cn(
                     "flex size-7 shrink-0 items-center justify-center rounded-md",
                     isActive
-                      ? "bg-[var(--workspace-primary)] text-white"
-                      : "bg-[var(--workspace-soft)] text-[var(--workspace-primary)]",
+                      ? "bg-[var(--workspace-primary)] text-black"
+                      : "bg-[var(--workspace-soft)] text-black",
                   )}
                 >
-                  <Building2 className="size-4" />
+                  <Building2 className="size-4 text-black" />
                 </span>
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate text-[13px] font-semibold text-[var(--workspace-ink)]">
@@ -140,7 +140,7 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
                     {workspace.role}
                   </span>
                 </span>
-                {isActive && <Check className="ms-auto size-4 shrink-0 text-[var(--workspace-primary)]" />}
+                {isActive && <Check className="ms-auto size-4 shrink-0 text-black" />}
               </DropdownMenuItem>
             )
           })}
@@ -154,8 +154,8 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
             }}
             className="gap-2.5 py-2 font-semibold text-[var(--workspace-blue)] focus:text-[var(--workspace-blue)]"
           >
-            <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-dashed border-[var(--workspace-button-border)] text-[var(--workspace-blue)]">
-              <Plus className="size-4" />
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-dashed border-[var(--workspace-button-border)] text-black">
+              <Plus className="size-4 text-black" />
             </span>
             New workspace
           </DropdownMenuItem>
@@ -200,7 +200,7 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
               onClick={() => void handleCreate()}
               disabled={creating || newName.trim().length < 2}
             >
-              {creating ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
+              {creating ? <Loader2 className="size-4 animate-spin text-black" /> : <Plus className="size-4 text-black" />}
               Create workspace
             </Button>
           </DialogFooter>

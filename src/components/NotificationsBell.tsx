@@ -31,7 +31,7 @@ const GROUP_META: Record<
   document_ready: {
     label: "Ready to review",
     icon: CheckCircle2,
-    iconClass: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+    iconClass: "bg-emerald-50 text-black ring-emerald-200",
     rowClass: "border-emerald-200 bg-emerald-50/70 hover:bg-emerald-50",
     lineClass: "bg-emerald-500",
     activeClass: "text-emerald-700",
@@ -39,7 +39,7 @@ const GROUP_META: Record<
   job_finished: {
     label: "Stack finished",
     icon: CheckCheck,
-    iconClass: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+    iconClass: "bg-emerald-50 text-black ring-emerald-200",
     rowClass: "border-emerald-200 bg-emerald-50/70 hover:bg-emerald-50",
     lineClass: "bg-emerald-500",
     activeClass: "text-emerald-700",
@@ -47,7 +47,7 @@ const GROUP_META: Record<
   duplicate_detected: {
     label: "Duplicate detected",
     icon: Copy,
-    iconClass: "bg-orange-50 text-orange-700 ring-orange-200",
+    iconClass: "bg-orange-50 text-black ring-orange-200",
     rowClass: "border-orange-200 bg-orange-50/80 hover:bg-orange-50",
     lineClass: "bg-orange-500",
     activeClass: "text-orange-700",
@@ -55,7 +55,7 @@ const GROUP_META: Record<
   quickbooks_token: {
     label: "Accounting attention",
     icon: KeyRound,
-    iconClass: "bg-rose-50 text-rose-700 ring-rose-200",
+    iconClass: "bg-rose-50 text-black ring-rose-200",
     rowClass: "border-rose-200 bg-rose-50/80 hover:bg-rose-50",
     lineClass: "bg-rose-500",
     activeClass: "text-rose-700",
@@ -63,7 +63,7 @@ const GROUP_META: Record<
   client_uploaded: {
     label: "Client upload",
     icon: Upload,
-    iconClass: "bg-sky-50 text-sky-700 ring-sky-200",
+    iconClass: "bg-sky-50 text-black ring-sky-200",
     rowClass: "border-sky-200 bg-sky-50/80 hover:bg-sky-50",
     lineClass: "bg-sky-500",
     activeClass: "text-sky-700",
@@ -112,10 +112,10 @@ function NotificationRow({
       <span
         className={cn(
           "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full ring-1",
-          item.read ? "bg-white text-foreground/60 ring-[var(--workspace-border)]" : meta.iconClass,
+          item.read ? "bg-white text-black ring-[var(--workspace-border)]" : meta.iconClass,
         )}
       >
-        <Icon className="size-4" strokeWidth={2.5} />
+        <Icon className="size-4 text-black" strokeWidth={2.5} />
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-2">
@@ -157,7 +157,7 @@ function GroupedList({
     return (
       <div className="flex flex-col items-center justify-center gap-2.5 px-6 py-14 text-center">
         <span className="flex size-12 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-200">
-          <CheckCheck className="size-5 text-emerald-700" strokeWidth={2.5} />
+          <CheckCheck className="size-5 text-black" strokeWidth={2.5} />
         </span>
         <p className="text-[15px] font-bold text-foreground">{emptyLabel}</p>
       </div>
@@ -248,9 +248,9 @@ export function NotificationsBell() {
                 onClick={markAllRead}
                 disabled={unreadCount === 0}
                 aria-label="Mark all notifications read"
-                className="ax-interactive inline-flex size-8 items-center justify-center rounded-full border border-[var(--workspace-border)] bg-white text-emerald-700 transition-colors hover:border-emerald-200 hover:bg-emerald-50 disabled:pointer-events-none disabled:opacity-40"
+                className="ax-interactive inline-flex size-8 items-center justify-center rounded-full border border-[var(--workspace-border)] bg-white text-black transition-colors hover:border-emerald-200 hover:bg-emerald-50 disabled:pointer-events-none disabled:opacity-40"
               >
-                <CheckCheck className="size-4" strokeWidth={2.5} />
+                <CheckCheck className="size-4 text-black" strokeWidth={2.5} />
               </button>
             </div>
           </div>

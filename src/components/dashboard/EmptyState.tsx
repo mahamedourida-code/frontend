@@ -80,7 +80,7 @@ function EmptyState({
       ) : (
         <div
           className={cn(
-            "inline-flex items-center justify-center rounded-full bg-[var(--workspace-soft)] text-[var(--workspace-ink)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--workspace-border)_58%,transparent)]",
+            "inline-flex items-center justify-center rounded-full bg-[var(--workspace-soft)] text-black ring-1 ring-inset ring-[color-mix(in_srgb,var(--workspace-border)_58%,transparent)] [&_svg]:text-black",
             compact ? "size-9 [&_svg]:size-[18px]" : "size-10 [&_svg]:size-5",
             iconClassName,
           )}
@@ -129,7 +129,7 @@ function EmptyState({
                 compact && "text-[12px] leading-5",
               )}
             >
-              <span className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-[var(--workspace-soft)] font-mono text-[10px] font-semibold tabular-nums text-[var(--workspace-primary)]">
+              <span className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-[var(--workspace-soft)] font-mono text-[10px] font-semibold tabular-nums text-black">
                 {index + 1}
               </span>
               <span className="min-w-0">{step}</span>

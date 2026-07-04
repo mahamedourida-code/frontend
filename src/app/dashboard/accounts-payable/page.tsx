@@ -182,7 +182,7 @@ function AccountingDestinationGlyph({
 }) {
   if (destination === "xero") {
     return (
-      <span className={cn("inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-sky-200 bg-sky-50 text-sky-700", className)}>
+      <span className={cn("inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-sky-200 bg-sky-50 text-black", className)}>
         <Cloud className={cn("size-3.5", iconClassName)} strokeWidth={2.3} aria-hidden="true" />
       </span>
     )
@@ -190,7 +190,7 @@ function AccountingDestinationGlyph({
 
   if (destination === "quickbooks") {
     return (
-      <span className={cn("inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700", className)}>
+      <span className={cn("inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-black", className)}>
         <Landmark className={cn("size-3.5", iconClassName)} strokeWidth={2.3} aria-hidden="true" />
       </span>
     )
@@ -2621,7 +2621,7 @@ function AccountsPayableContent() {
         <DialogContent className="gap-4 rounded-md sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base font-medium">
-              <span className="inline-flex size-6 items-center justify-center rounded-md bg-[var(--workspace-blue-soft)] text-[var(--workspace-blue)]">
+              <span className="inline-flex size-6 items-center justify-center rounded-md bg-[var(--workspace-blue-soft)] text-black">
                 <FileText className="size-3.5" />
               </span>
               Match a purchase order

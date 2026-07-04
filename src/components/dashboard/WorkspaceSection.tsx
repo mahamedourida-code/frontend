@@ -78,7 +78,7 @@ export function WorkspaceSection({
       {icon ? (
         <span
           className={cn(
-            "inline-flex shrink-0 items-center justify-center rounded-md bg-[var(--workspace-soft)] text-[var(--workspace-ink)]",
+            "inline-flex shrink-0 items-center justify-center rounded-md bg-[var(--workspace-soft)] text-black [&_svg]:text-black",
             compact ? "size-7 [&_svg]:size-3.5" : "size-8 [&_svg]:size-4",
           )}
         >
@@ -91,7 +91,7 @@ export function WorkspaceSection({
           {step !== undefined && step !== null ? (
             <span
               className={cn(
-                "inline-flex shrink-0 items-center justify-center rounded-full bg-[var(--workspace-soft)] font-mono font-semibold tabular-nums text-[var(--workspace-primary)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--workspace-border)_64%,transparent)]",
+                "inline-flex shrink-0 items-center justify-center rounded-full bg-[var(--workspace-soft)] font-mono font-semibold tabular-nums text-black ring-1 ring-inset ring-[color-mix(in_srgb,var(--workspace-border)_64%,transparent)]",
                 compact ? "h-5 min-w-5 px-1.5 text-[11px]" : "h-6 min-w-6 px-2 text-[12px]",
               )}
             >
@@ -123,7 +123,7 @@ export function WorkspaceSection({
       {collapsible ? (
         <ChevronDown
           className={cn(
-            "ml-1 size-4 shrink-0 text-muted-foreground transition-transform duration-200",
+            "ml-1 size-4 shrink-0 text-black transition-transform duration-200",
             isOpen ? "rotate-180" : "rotate-0",
           )}
         />

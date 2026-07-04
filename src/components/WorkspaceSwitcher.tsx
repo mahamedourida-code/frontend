@@ -134,7 +134,7 @@ export function WorkspaceSwitcher({ user, onSignOut, menuSide = "right" }: Works
             </span>
             <ChevronDown
               className={cn(
-                "size-4 shrink-0 text-muted-foreground transition-transform duration-[var(--ax-motion-fast,180ms)]",
+                "size-4 shrink-0 text-black transition-transform duration-[var(--ax-motion-fast,180ms)]",
                 menuOpen && "rotate-180",
               )}
             />
@@ -207,7 +207,7 @@ export function WorkspaceSwitcher({ user, onSignOut, menuSide = "right" }: Works
                           <RoleBadge role={workspace.role} />
                           <CheckCircle2
                             className={cn(
-                              "size-4 shrink-0 text-primary transition-opacity",
+                              "size-4 shrink-0 text-black transition-opacity",
                               isActive ? "opacity-100" : "opacity-0",
                             )}
                           />
@@ -230,7 +230,7 @@ export function WorkspaceSwitcher({ user, onSignOut, menuSide = "right" }: Works
               setDialogOpen(true)
             }}
           >
-            <span className="inline-flex size-6 items-center justify-center rounded-full border border-dashed border-border text-muted-foreground">
+            <span className="inline-flex size-6 items-center justify-center rounded-full border border-dashed border-border text-black">
               <Plus className="size-3.5" />
             </span>
             Create workspace

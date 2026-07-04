@@ -266,6 +266,18 @@
   .ax-dashboard-content .font-semibold { font-weight: 500; }
   .ax-dashboard-content .font-medium,
   .ax-dashboard-content .font-normal { font-weight: 400; }
+  body.ax-workspace svg {
+    color: #000000 !important;
+    stroke: #000000 !important;
+  }
+  body.ax-workspace svg[fill="currentColor"],
+  body.ax-workspace svg [fill="currentColor"] {
+    fill: #000000 !important;
+  }
+  body.ax-workspace svg[fill="none"],
+  body.ax-workspace svg [fill="none"] {
+    fill: none !important;
+  }
 
   /* Workspace text colour grammar: colour data and state, never ordinary prose. */
   .ax-text-action { color: var(--text-action); font-weight: 600; }

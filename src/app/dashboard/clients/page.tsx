@@ -63,8 +63,8 @@ function StatCard({
             {needsAttention ? "Review" : "Clear"}
           </StatusBadge>
         ) : (
-          <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-[var(--workspace-primary)]">
-            <Icon className="size-[18px]" />
+          <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-black">
+            <Icon className="size-[18px] text-black" />
           </span>
         )}
       </div>
@@ -239,8 +239,8 @@ export default function ClientsPage() {
                         className="group flex items-center gap-3"
                         onClick={event => event.stopPropagation()}
                       >
-                        <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-muted)]">
-                          <Building2 className="size-4" />
+                        <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-black">
+                          <Building2 className="size-4 text-black" />
                         </span>
                         <span className="ax-data-entity truncate group-hover:text-[var(--workspace-blue)]">{client.name}</span>
                       </Link>
@@ -260,9 +260,9 @@ export default function ClientsPage() {
                               href={`/dashboard/companies/${client.id}`}
                               onClick={event => event.stopPropagation()}
                               aria-label={`Open ${client.name}`}
-                              className="ax-interactive inline-flex size-8 items-center justify-center rounded-md text-[var(--workspace-blue)] hover:bg-[var(--workspace-blue-soft)]"
+                              className="ax-interactive inline-flex size-8 items-center justify-center rounded-md text-black hover:bg-[var(--workspace-blue-soft)]"
                             >
-                              <ArrowRight className="size-4" />
+                              <ArrowRight className="size-4 text-black" />
                             </Link>
                           </TooltipTrigger>
                           <TooltipContent>Open</TooltipContent>
@@ -276,9 +276,9 @@ export default function ClientsPage() {
                                 setDeleteTarget(client)
                               }}
                               aria-label={`Delete ${client.name}`}
-                              className="ax-interactive inline-flex size-8 items-center justify-center rounded-md text-[var(--workspace-danger)] hover:bg-red-50"
+                              className="ax-interactive inline-flex size-8 items-center justify-center rounded-md text-black hover:bg-red-50"
                             >
-                              <Trash2 className="size-4" />
+                              <Trash2 className="size-4 text-black" />
                             </button>
                           </TooltipTrigger>
                           <TooltipContent>Delete</TooltipContent>

@@ -341,7 +341,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                       : "text-foreground hover:bg-accent hover:text-accent-foreground"
                 )}
               >
-                <Icon className="h-5 w-5 shrink-0" />
+                <Icon className="h-5 w-5 shrink-0 text-black" />
                 <span className="w-full truncate leading-none">{item.label}</span>
               </Button>
             )
@@ -363,7 +363,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                       : "text-foreground hover:bg-accent hover:text-accent-foreground"
                 )}
               >
-                <Menu className="h-5 w-5" />
+                <Menu className="h-5 w-5 text-black" />
                 <span className="w-full truncate leading-none">Menu</span>
               </Button>
             </SheetTrigger>
@@ -404,7 +404,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                     className="mx-auto h-10 w-[11.25rem] justify-center font-bold"
                     onClick={() => handleNavigation("/dashboard/client#upload-files")}
                   >
-                    <Upload className="h-4 w-4" />
+                    <Upload className="h-4 w-4 text-black" />
                     Upload documents
                   </Button>
                 </div>
@@ -433,7 +433,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                           isDashboardRouteActive(pathname, "/dashboard", currentHash) && "bg-accent text-accent-foreground",
                         )}
                       >
-                        <Building2 className="h-5 w-5" />
+                        <Building2 className="h-5 w-5 text-black" />
                         <span className="flex-1 text-left text-base font-semibold">Clients</span>
                       </Button>
 
@@ -446,7 +446,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                           isDashboardRouteActive(pathname, "/dashboard/guide", currentHash) && "bg-accent text-accent-foreground",
                         )}
                       >
-                        <BookOpenText className="h-5 w-5" />
+                        <BookOpenText className="h-5 w-5 text-black" />
                         <span className="flex-1 text-left text-base font-semibold">Getting started</span>
                       </Button>
 
@@ -473,11 +473,11 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                   containsActiveItem && "bg-accent/60",
                                 )}
                               >
-                                <GroupIcon className="h-5 w-5" />
+                                <GroupIcon className="h-5 w-5 text-black" />
                                 <span className="flex-1 text-left text-base font-semibold">{group.label}</span>
                                 <ChevronRight
                                   className={cn(
-                                    "h-4 w-4 text-muted-foreground transition-transform duration-150 ease-out",
+                                    "h-4 w-4 text-black transition-transform duration-150 ease-out",
                                     groupOpen && "rotate-90",
                                   )}
                                   aria-hidden="true"
@@ -505,7 +505,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                       aria-current={isActive ? "page" : undefined}
                                       onClick={() => setIsOpen(false)}
                                     >
-                                      <ItemIcon className="h-4 w-4 text-muted-foreground" />
+                                      <ItemIcon className="h-4 w-4 text-black" />
                                       <span className="truncate">{item.label}</span>
                                     </Link>
                                   </Button>
@@ -532,7 +532,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                   variant="ghost"
                                   className="ax-interactive h-11 w-full justify-start gap-3 rounded-2xl px-3 text-foreground hover:bg-accent hover:text-accent-foreground"
                                 >
-                                  {item.icon && <item.icon className="h-5 w-5" />}
+                                  {item.icon && <item.icon className="h-5 w-5 text-black" />}
                                   <span className="flex-1 text-left text-sm md:text-base">{item.label}</span>
                                   <ChevronRight
                                     className={cn(
@@ -567,7 +567,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                         <Link href={child.href} onClick={() => setIsOpen(false)}>
                                           <div className="flex w-full items-center gap-2">
                                             {child.icon && (
-                                              <child.icon className="h-4 w-4 text-muted-foreground" />
+                                              <child.icon className="h-4 w-4 text-black" />
                                             )}
                                             <p className="flex-1 text-left text-sm font-medium leading-none">
                                               {child.label}
@@ -593,7 +593,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                               pathname === item.href && "bg-accent"
                             )}
                           >
-                            {item.icon && <item.icon className="h-5 w-5" />}
+                            {item.icon && <item.icon className="h-5 w-5 text-black" />}
                             <span className="flex-1 text-left text-sm md:text-base">{item.label}</span>
                           </Button>
                         )

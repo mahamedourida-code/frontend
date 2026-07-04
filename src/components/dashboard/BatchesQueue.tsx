@@ -144,7 +144,7 @@ function BatchRow({ batch, index }: { batch: Batch; index: number }) {
       transition={{ duration: 0.18, delay: index * 0.03, ease: [0.16, 1, 0.3, 1] }}
       className="ax-interactive group flex w-full items-center gap-3 rounded-lg border border-transparent px-3 py-2.5 text-left transition-colors hover:border-[var(--workspace-border)] hover:bg-[var(--workspace-row-hover)]"
     >
-      <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-[var(--workspace-primary)] [&_svg]:size-[18px]">
+      <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-black [&_svg]:size-[18px] [&_svg]:text-black">
         <Layers />
       </span>
       <div className="min-w-0 flex-1">
@@ -156,7 +156,7 @@ function BatchRow({ batch, index }: { batch: Batch; index: number }) {
       <StatusBadge tone={batchStatusTone(batch.status)} className="hidden sm:inline-flex">
         {statusLabel(batch.status)}
       </StatusBadge>
-      <ArrowUpRight className="size-4 shrink-0 text-[var(--workspace-blue)] opacity-0 transition-opacity group-hover:opacity-100" />
+      <ArrowUpRight className="size-4 shrink-0 text-black opacity-0 transition-opacity group-hover:opacity-100" />
     </motion.button>
   )
 }

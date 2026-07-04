@@ -170,7 +170,7 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
 
           <DropdownMenuItem asChild className="h-9 gap-2 rounded-lg px-2 text-[13px] font-medium">
             <Link href="/dashboard/settings?section=billing" onClick={() => setOpen(false)}>
-              <CreditCard className="size-4 text-[var(--workspace-primary)]" />
+              <CreditCard className="size-4 text-black" />
               Manage billing
             </Link>
           </DropdownMenuItem>
@@ -209,7 +209,7 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
                       >
                         <span className="min-w-0 flex-1 truncate text-foreground">{workspace.name}</span>
                         <RoleBadge role={workspace.role} />
-                        <CheckCircle2 className={cn("size-4 shrink-0 text-[var(--workspace-success)]", isActive ? "opacity-100" : "opacity-0")} />
+                        <CheckCircle2 className={cn("size-4 shrink-0 text-black", isActive ? "opacity-100" : "opacity-0")} />
                       </DropdownMenuItem>
                     )
                   })
@@ -226,7 +226,7 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
               setDialogOpen(true)
             }}
           >
-            <span className="inline-flex size-5 items-center justify-center rounded-full border border-dashed border-border text-muted-foreground">
+            <span className="inline-flex size-5 items-center justify-center rounded-full border border-dashed border-border text-black">
               <Plus className="size-3" />
             </span>
             Create workspace
@@ -237,13 +237,13 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
           {/* Help */}
           <DropdownMenuItem asChild className="h-9 gap-2 rounded-lg px-2 text-[13px] font-medium">
             <Link href="/dashboard/guide" onClick={() => setOpen(false)}>
-              <BookOpen className="size-4 text-[var(--workspace-success)]" />
+              <BookOpen className="size-4 text-black" />
               Docs &amp; guides
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild className="h-9 gap-2 rounded-lg px-2 text-[13px] font-medium">
             <Link href="/contact" onClick={() => setOpen(false)}>
-              <LifeBuoy className="size-4 text-[var(--workspace-warning)]" />
+              <LifeBuoy className="size-4 text-black" />
               Contact support
             </Link>
           </DropdownMenuItem>

@@ -549,7 +549,7 @@ function SettingsContent() {
                           {isActive && (
                             <span className="absolute inset-y-2 left-1 w-[3px] rounded-full bg-[var(--workspace-primary)]" />
                           )}
-                          <Icon className={cn("h-4 w-4 shrink-0", isActive && "text-[var(--workspace-primary)]")} />
+                          <Icon className="h-4 w-4 shrink-0 text-black" />
                           <span className="min-w-0 truncate">{item.label}</span>
                           <span className="sr-only">{item.short}</span>
                         </button>
@@ -714,7 +714,7 @@ function SettingsContent() {
                   <div className={cn("p-4", softPanel)}>
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <CreditStack className="h-6 w-6 shrink-0 text-[var(--workspace-primary)]" />
+                        <CreditStack className="h-6 w-6 shrink-0 text-black" />
                         <div>
                           <p className="text-sm font-semibold text-foreground">Credits</p>
                           <p className="text-xs font-medium text-foreground">{creditUsed} used of {creditTotal}</p>
