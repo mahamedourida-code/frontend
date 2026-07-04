@@ -6,10 +6,12 @@ import { AnimatePresence, motion } from "framer-motion"
 import {
   Building2,
   FolderUp,
+  ListChecks,
   X,
 } from "lucide-react"
 
 import { AddCompanyDialog } from "@/components/dashboard/companies/AddCompanyDialog"
+import { WorkspaceVisualCard } from "@/components/dashboard/WorkspaceVisualCard"
 import { Button } from "@/components/ui/button"
 import { useMotionTokens } from "@/lib/motion"
 
@@ -72,7 +74,7 @@ export function WorkspaceFirstRunGuide({
           initial="hidden"
           animate="show"
           exit="exit"
-          className="relative -mx-4 border-y border-[var(--workspace-border)] bg-white/[0.78] px-4 py-4 shadow-none sm:-mx-5 sm:px-5 lg:-mx-6 lg:px-6"
+          className="relative -mx-4 border-y border-[var(--workspace-border)] bg-white/[0.78] px-4 py-5 shadow-none sm:-mx-5 sm:px-5 lg:-mx-6 lg:px-6"
         >
           <button
             type="button"
@@ -84,48 +86,107 @@ export function WorkspaceFirstRunGuide({
             <X className="size-4" />
           </button>
 
-          <div className="flex flex-col gap-3 pr-10 sm:flex-row sm:items-center sm:justify-between">
-            <h2 id="workspace-first-run-title" className="text-[15px] font-semibold text-[var(--workspace-ink)]">
-              Workspace actions
-            </h2>
-            <div className="flex flex-wrap items-center gap-2">
+          <div className="grid gap-4 pr-10 lg:grid-cols-[0.72fr_1.6fr] lg:items-stretch">
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--workspace-muted)]">
+                Workspace
+              </p>
+              <h2 id="workspace-first-run-title" className="mt-1 text-[15px] font-semibold text-[var(--workspace-ink)]">
+                Actions
+              </h2>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
               {hasClients ? (
                 <>
-                  <Button asChild variant="glossy" size="sm">
-                    <Link href="/dashboard/client#upload-files" data-workspace-tour="upload">
-                      <FolderUp className="size-4" />
-                      Upload a stack
-                    </Link>
-                  </Button>
-                  <AddCompanyDialog
-                    workspaceId={workspaceId ?? undefined}
-                    onCreated={onClientCreated}
-                    trigger={
-                      <Button variant="surface" size="sm" disabled={!workspaceId} data-workspace-tour="clients">
-                        <Building2 className="size-4" />
-                        Add client
+                  <WorkspaceVisualCard
+                    compact
+                    visual="folderDropSquare"
+                    title="Upload"
+                    action={
+                      <Button asChild variant="glossy" size="sm" className="w-full">
+                        <Link href="/dashboard/client#upload-files" data-workspace-tour="upload">
+                          <FolderUp className="size-4" />
+                          Stack
+                        </Link>
+                      </Button>
+                    }
+                  />
+                  <WorkspaceVisualCard
+                    compact
+                    visual="portalStack"
+                    title="Clients"
+                    action={
+                      <AddCompanyDialog
+                        workspaceId={workspaceId ?? undefined}
+                        onCreated={onClientCreated}
+                        trigger={
+                          <Button variant="surface" size="sm" className="w-full" disabled={!workspaceId} data-workspace-tour="clients">
+                            <Building2 className="size-4" />
+                            Add
+                          </Button>
+                        }
+                      />
+                    }
+                  />
+                  <WorkspaceVisualCard
+                    compact
+                    visual="reviewLensWide"
+                    title="Review"
+                    action={
+                      <Button asChild variant="surface" size="sm" className="w-full">
+                        <Link href="/dashboard/guide">
+                          <ListChecks className="size-4" />
+                          Guide
+                        </Link>
                       </Button>
                     }
                   />
                 </>
               ) : (
                 <>
-                  <AddCompanyDialog
-                    workspaceId={workspaceId ?? undefined}
-                    onCreated={onClientCreated}
-                    trigger={
-                      <Button variant="glossy" size="sm" disabled={!workspaceId} data-workspace-tour="clients">
-                        <Building2 className="size-4" />
-                        Add a client
+                  <WorkspaceVisualCard
+                    compact
+                    visual="portalStack"
+                    title="Clients"
+                    action={
+                      <AddCompanyDialog
+                        workspaceId={workspaceId ?? undefined}
+                        onCreated={onClientCreated}
+                        trigger={
+                          <Button variant="glossy" size="sm" className="w-full" disabled={!workspaceId} data-workspace-tour="clients">
+                            <Building2 className="size-4" />
+                            Add
+                          </Button>
+                        }
+                      />
+                    }
+                  />
+                  <WorkspaceVisualCard
+                    compact
+                    visual="folderDropSquare"
+                    title="Upload"
+                    action={
+                      <Button asChild variant="surface" size="sm" className="w-full">
+                        <Link href="/dashboard/client#upload-files" data-workspace-tour="upload">
+                          <FolderUp className="size-4" />
+                          Files
+                        </Link>
                       </Button>
                     }
                   />
-                  <Button asChild variant="surface" size="sm">
-                    <Link href="/dashboard/client#upload-files" data-workspace-tour="upload">
-                      <FolderUp className="size-4" />
-                      Upload files
-                    </Link>
-                  </Button>
+                  <WorkspaceVisualCard
+                    compact
+                    visual="reviewLensWide"
+                    title="Review"
+                    action={
+                      <Button asChild variant="surface" size="sm" className="w-full">
+                        <Link href="/dashboard/guide">
+                          <ListChecks className="size-4" />
+                          Guide
+                        </Link>
+                      </Button>
+                    }
+                  />
                 </>
               )}
             </div>

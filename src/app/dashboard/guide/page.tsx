@@ -10,11 +10,14 @@ import {
   ListStart,
   PlugZap,
   ScanSearch,
+  type LucideIcon,
 } from "lucide-react"
 
 import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { PageHeader } from "@/components/dashboard/PageHeader"
+import { WorkspaceVisualCard } from "@/components/dashboard/WorkspaceVisualCard"
+import type { WorkspaceVisualName } from "@/components/dashboard/workspace-visuals"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/useAuth"
 
@@ -22,28 +25,38 @@ const guideActions = [
   {
     title: "Clients",
     href: "/dashboard#clients",
-    action: "Open clients",
+    action: "Open",
     icon: Building2,
+    visual: "portalStack",
   },
   {
-    title: "Upload documents",
+    title: "Upload",
     href: "/dashboard/client#upload-files",
-    action: "Open upload",
+    action: "Open",
     icon: FolderUp,
+    visual: "folderDropSquare",
   },
   {
-    title: "Review exceptions",
+    title: "Review",
     href: "/dashboard/client",
-    action: "Open review",
+    action: "Open",
     icon: ScanSearch,
+    visual: "reviewLensWide",
   },
   {
     title: "Outputs",
     href: "/dashboard/client#reviewed-outputs",
-    action: "Open outputs",
+    action: "Open",
     icon: PlugZap,
+    visual: "publishBridgeWide",
   },
-]
+] satisfies Array<{
+  title: string
+  href: string
+  action: string
+  icon: LucideIcon
+  visual: WorkspaceVisualName
+}>
 
 export default function GuidePage() {
   const router = useRouter()
@@ -79,38 +92,35 @@ export default function GuidePage() {
         }
       />
 
-      <div className="max-w-2xl pb-10">
+      <div className="max-w-6xl pb-10">
         <section
           aria-labelledby="guide-actions-title"
-          className="overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-card shadow-none"
+          className="space-y-3"
         >
-          <div className="border-b border-[var(--workspace-border)] px-5 py-4 sm:px-6">
-            <h2 id="guide-actions-title" className="text-sm font-semibold text-[var(--workspace-ink)]">
-              Actions
-            </h2>
-          </div>
-
-          <div className="divide-y divide-[var(--workspace-border)]">
+          <h2 id="guide-actions-title" className="sr-only">
+            Actions
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {guideActions.map((action) => {
               const Icon = action.icon
 
               return (
-                <Link
+                <WorkspaceVisualCard
                   key={action.title}
-                  href={action.href}
-                  className="ax-interactive flex items-center justify-between gap-4 px-5 py-4 outline-none transition-colors hover:bg-[var(--workspace-soft)] focus-visible:bg-[var(--workspace-soft)] sm:px-6"
-                >
-                  <div className="flex min-w-0 items-start gap-4">
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-black">
-                      <Icon className="size-[18px] text-black" />
-                    </span>
-                    <h3 className="min-w-0 text-[15px] font-semibold text-[var(--workspace-ink)]">{action.title}</h3>
-                  </div>
-                  <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-[var(--workspace-blue)]">
-                    {action.action}
-                    <ArrowRight className="size-4 text-black" />
-                  </span>
-                </Link>
+                  visual={action.visual}
+                  title={action.title}
+                  action={
+                    <Button asChild variant="surface" size="sm" className="w-full justify-between">
+                      <Link href={action.href}>
+                        <span className="inline-flex items-center gap-1.5">
+                          <Icon className="size-3.5" />
+                          {action.action}
+                        </span>
+                        <ArrowRight className="size-3.5" />
+                      </Link>
+                    </Button>
+                  }
+                />
               )
             })}
           </div>

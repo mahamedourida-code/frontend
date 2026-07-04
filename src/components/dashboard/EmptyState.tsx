@@ -1,6 +1,8 @@
 import * as React from "react"
 
 import { WorkspaceArt } from "@/components/dashboard/WorkspaceArt"
+import { WorkspaceVisualImage } from "@/components/dashboard/WorkspaceVisualCard"
+import type { WorkspaceVisualName } from "@/components/dashboard/workspace-visuals"
 import { cn } from "@/lib/utils"
 
 const descriptionLineClasses: Record<1 | 2 | 3, string> = {
@@ -27,6 +29,11 @@ interface EmptyStateProps {
    * a big raw illustration replaces the small `icon` glyph.
    */
   art?: string
+  /**
+   * Optional premium workspace visual (from `/public/workspace/liked`). When set,
+   * it replaces the small `icon` glyph with an image-rich dashboard treatment.
+   */
+  likedArt?: WorkspaceVisualName
   /**
    * Optional small kicker shown above the title (e.g. "Get started"). Renders
    * as a quiet emerald-tinted label so onboarding states feel guided, not bare.
@@ -56,6 +63,7 @@ function EmptyState({
   descriptionLines,
   eyebrow,
   art,
+  likedArt,
   steps,
   showSteps = false,
 }: EmptyStateProps) {
@@ -72,7 +80,13 @@ function EmptyState({
         className,
       )}
     >
-      {art ? (
+      {likedArt ? (
+        <WorkspaceVisualImage
+          visual={likedArt}
+          className={cn(compact ? "h-[5.5rem] w-[8rem]" : "h-[8rem] w-[12rem]", artClassName)}
+          sizes={compact ? "128px" : "192px"}
+        />
+      ) : art ? (
         <WorkspaceArt
           name={art}
           className={cn(compact ? "h-[5.5rem] w-auto" : "h-[7.5rem] w-auto", artClassName)}

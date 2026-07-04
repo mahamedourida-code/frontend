@@ -26,6 +26,8 @@ import { useMotionTokens } from "@/lib/motion"
 import { acceptedUploadMimeTypes, isPdfFile } from "@/lib/upload-files"
 import { companyApi, type CompanySummary } from "@/lib/api-client"
 import { Symbol } from "@/components/dashboard/Symbol"
+import { WorkspaceVisualImage } from "@/components/dashboard/WorkspaceVisualCard"
+import type { WorkspaceVisualName } from "@/components/dashboard/workspace-visuals"
 
 type OutputMode = "table" | "text" | "csv"
 
@@ -66,10 +68,10 @@ function fileSize(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`
 }
 
-const intakeVisuals = [
-  { src: "/workspace/client-chat-intake.png", label: "Chat photos" },
-  { src: "/workspace/drive-finance-folders.png", label: "Drive folder" },
-  { src: "/workspace/sample-receipt.png", label: "Receipt scan" },
+const intakeVisuals: Array<{ visual: WorkspaceVisualName; label: string }> = [
+  { visual: "cloudIntakeWide", label: "Inbox" },
+  { visual: "folderDropSquare", label: "Folder" },
+  { visual: "receiptCometSquare", label: "Receipt" },
 ]
 
 export function ProgressiveUploadSheet({
@@ -284,16 +286,15 @@ export function ProgressiveUploadSheet({
             <div className="grid grid-cols-3 gap-2">
               {intakeVisuals.map((visual) => (
                 <div
-                  key={visual.src}
-                  className="group overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white"
+                  key={visual.visual}
+                  className="group overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white shadow-[0_16px_36px_-30px_rgba(15,23,42,0.5)]"
                 >
-                  <div className="aspect-[4/3] overflow-hidden bg-[var(--workspace-soft)]">
-                    <img
-                      src={visual.src}
-                      alt=""
-                      className="h-full w-full object-cover object-top transition-transform duration-200 ease-out group-hover:scale-[1.02]"
-                    />
-                  </div>
+                  <WorkspaceVisualImage
+                    visual={visual.visual}
+                    className="aspect-[4/3] rounded-none border-0 shadow-none"
+                    imageClassName="object-cover object-center transition-transform duration-200 ease-out group-hover:scale-[1.02]"
+                    sizes="180px"
+                  />
                   <p className="border-t border-[var(--workspace-border)] px-2.5 py-1.5 text-[11px] font-semibold text-[var(--workspace-muted)]">
                     {visual.label}
                   </p>

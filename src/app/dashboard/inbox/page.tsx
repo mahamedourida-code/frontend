@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
-import { AtSign, Check, Clock, Cloud, Copy, FolderInput, FolderSync, Inbox, Link2, Mail, Mailbox, Plug, PlugZap, RefreshCw, Users, X } from "lucide-react"
+import { ArrowRight, AtSign, Check, Clock, Cloud, Copy, FolderInput, FolderSync, Inbox, Link2, Mail, Mailbox, Plug, PlugZap, RefreshCw, Users, X, type LucideIcon } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { DashboardShell } from "@/components/DashboardShell"
@@ -15,6 +15,8 @@ import { PageHeader } from "@/components/dashboard/PageHeader"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
+import { WorkspaceVisualCard } from "@/components/dashboard/WorkspaceVisualCard"
+import type { WorkspaceVisualName } from "@/components/dashboard/workspace-visuals"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -97,6 +99,36 @@ const SOURCE_TINT: Record<"direct_upload" | "email" | "client_link" | "google_dr
   google_drive: "border-border bg-muted/50 text-foreground",
   dropbox: "border-border bg-muted/50 text-foreground",
 }
+
+const inboxEntryCards = [
+  {
+    title: "Links",
+    href: "#client-upload-links",
+    action: "Manage",
+    icon: Link2,
+    visual: "portalStack",
+  },
+  {
+    title: "Email",
+    href: "#email-in-address",
+    action: "Copy",
+    icon: AtSign,
+    visual: "cloudIntakeWide",
+  },
+  {
+    title: "Folders",
+    href: "#watched-folders",
+    action: "Connect",
+    icon: FolderSync,
+    visual: "darkFolderWide",
+  },
+] satisfies Array<{
+  title: string
+  href: string
+  action: string
+  icon: LucideIcon
+  visual: WorkspaceVisualName
+}>
 
 function SourceBadge({ kind }: { kind: keyof typeof SOURCE_LABEL }) {
   return (
@@ -429,6 +461,34 @@ export default function EmailInboxPage() {
           />
         ) : null}
 
+        {activeWorkspace?.role === "owner" ? (
+          <section aria-label="Inbox routes" className="grid gap-4 md:grid-cols-3">
+            {inboxEntryCards.map((card) => {
+              const Icon = card.icon
+
+              return (
+                <WorkspaceVisualCard
+                  key={card.title}
+                  compact
+                  visual={card.visual}
+                  title={card.title}
+                  action={
+                    <Button asChild variant="surface" size="sm" className="w-full justify-between">
+                      <Link href={card.href}>
+                        <span className="inline-flex items-center gap-1.5">
+                          <Icon className="size-3.5" />
+                          {card.action}
+                        </span>
+                        <ArrowRight className="size-3.5" />
+                      </Link>
+                    </Button>
+                  }
+                />
+              )
+            })}
+          </section>
+        ) : null}
+
         {/* Management cards — stack on mobile, side-by-side on lg */}
         {activeWorkspace?.role === "owner" ? (
           <div className="grid gap-6 lg:grid-cols-2">
@@ -673,6 +733,7 @@ export default function EmailInboxPage() {
         {/* P6 — Connected sources (Google Drive / Dropbox watch folders) */}
         {activeWorkspace?.role === "owner" ? (
           <WorkspaceSection
+            id="watched-folders"
             icon={<FolderSync />}
             title="Watched folders"
             className="shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
@@ -798,7 +859,7 @@ export default function EmailInboxPage() {
         >
           {loading ? null : submissions.length === 0 ? (
             <EmptyState
-              art="upload-stack"
+              likedArt="intakeTrayWide"
               icon={<Inbox />}
               title="No client files yet"
               compact
@@ -900,7 +961,7 @@ export default function EmailInboxPage() {
         >
           {loading ? null : messages.length === 0 ? (
             <EmptyState
-              art="all-clear"
+              likedArt="cleanSweepSquare"
               icon={<Mail />}
               title="No forwarded files yet"
               compact
