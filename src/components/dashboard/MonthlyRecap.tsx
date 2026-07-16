@@ -186,7 +186,7 @@ function RecapStat({ block, animate }: { block: StatBlock; animate: boolean }) {
     <motion.div
       variants={CARD_ITEM}
       className={cn(
-        "relative overflow-hidden rounded-xl border border-[var(--workspace-popout-border)] bg-card p-5 shadow-[0_1px_2px_0_rgba(16,24,40,0.04),0_1px_3px_0_rgba(16,24,40,0.06)]",
+        "relative overflow-hidden rounded-lg border border-[var(--workspace-popout-border)] bg-card p-5 shadow-none",
         block.hero && "sm:col-span-2",
       )}
     >
@@ -375,7 +375,7 @@ export function MonthlyRecapCard({ className }: { className?: string }) {
         type="button"
         onClick={() => handleOpenChange(true)}
         className={cn(
-          "ax-interactive group relative flex w-full items-center gap-4 overflow-hidden rounded-xl border border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)] p-5 text-left shadow-[0_1px_2px_0_rgba(16,24,40,0.04),0_1px_3px_0_rgba(16,24,40,0.06)] transition-[background-color,box-shadow] hover:bg-[var(--workspace-popout-hover)] hover:shadow-[0_2px_4px_0_rgba(16,24,40,0.06),0_8px_20px_-6px_rgba(16,24,40,0.14)]",
+          "ax-interactive group relative flex w-full items-center gap-4 overflow-hidden rounded-lg border border-[var(--workspace-popout-border)] bg-[var(--workspace-popout-bg)] p-5 text-left shadow-none hover:bg-[var(--workspace-popout-hover)]",
           className,
         )}
       >

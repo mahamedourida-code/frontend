@@ -75,9 +75,9 @@ export function ProcessingStages({ progress, isComplete, className }: Processing
               className={cn(
                 "flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors",
                 isDone
-                  ? "border-[var(--brand-green-ring)] bg-[var(--brand-green)] text-[var(--brand-green-fg)]"
+                  ? "border-[var(--workspace-primary)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]"
                   : isActive
-                    ? "border-[var(--brand-green-ring)] text-primary"
+                    ? "border-[var(--workspace-selection-border)] text-[var(--workspace-primary)]"
                     : "border-border text-muted-foreground/50",
               )}
             >

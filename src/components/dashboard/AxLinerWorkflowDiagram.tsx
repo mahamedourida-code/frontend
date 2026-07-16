@@ -82,7 +82,7 @@ function StepNode({ step, className }: { step: WorkflowStep; className?: string 
     <Link
       href={step.href}
       className={cn(
-        "flex min-h-20 w-full items-center gap-3 rounded-lg border border-sky-500/60 bg-card px-3.5 py-3 text-left shadow-[0_1px_2px_rgba(15,23,42,0.06)] outline-none hover:border-sky-500 hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-sky-500/35",
+        "flex min-h-20 w-full items-center gap-3 rounded-lg border border-[var(--workspace-border)] bg-card px-3.5 py-3 text-left shadow-none outline-none hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-row-hover)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/25",
         className,
       )}
     >

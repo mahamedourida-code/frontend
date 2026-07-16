@@ -117,7 +117,7 @@ function StatCard({
   sparkData,
 }: CardConfig & { sparkData: { count: number }[] }) {
   return (
-    <div className="group relative flex overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_2px_0_rgba(16,24,40,0.04),0_1px_3px_0_rgba(16,24,40,0.06)] transition-shadow duration-200 hover:shadow-[0_2px_4px_0_rgba(16,24,40,0.06),0_8px_20px_-6px_rgba(16,24,40,0.14)]">
+    <div className="group relative flex overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-card shadow-none">
       {/* Left accent bar */}
       <div className={`w-1 shrink-0 self-stretch ${accentClass}`} />
 
@@ -200,9 +200,9 @@ export function DashboardMiniCharts({
       label: "Active batches",
       value: activeJobs,
       delta: "waiting or reading",
-      accentClass: "bg-amber-400",
+      accentClass: "bg-[var(--workspace-warning)]",
       valueClass: activeJobs > 0 ? "text-[var(--text-attention)]" : "text-foreground",
-      sparkColor: "#f59e0b",
+      sparkColor: "var(--workspace-warning)",
       sparkFillId: "fill-active",
       chartType: "bar",
       badge: activeJobs > 0 ? { tone: "processing", label: "Active" } : { tone: "neutral", label: "Idle" },
@@ -211,9 +211,9 @@ export function DashboardMiniCharts({
       label: "Failed",
       value: failedJobs,
       delta: `of ${totalJobs.toLocaleString()} total batches`,
-      accentClass: "bg-rose-500",
+      accentClass: "bg-[var(--workspace-danger)]",
       valueClass: failedJobs > 0 ? "text-[var(--text-danger)]" : "text-foreground",
-      sparkColor: "#f43f5e",
+      sparkColor: "var(--workspace-danger)",
       sparkFillId: "fill-failed",
       chartType: "area",
       badge: failedJobs > 0 ? { tone: "error", label: "Attention" } : { tone: "success", label: "Clean" },
