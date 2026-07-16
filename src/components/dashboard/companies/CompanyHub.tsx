@@ -131,7 +131,7 @@ function ClientWorkQueue({ company, companyId }: { company: CompanySummary; comp
         label="Document intake"
         value={`${documents} filed`}
         detail={`Last intake ${formatDate(company.lastUploadAt)}.`}
-        href={`/dashboard/inbox?company_id=${encodedId}`}
+        href={`/dashboard/client?company_id=${encodedId}#upload-files`}
         status={<StatusBadge tone={documents ? "info" : "neutral"} size="sm">{documents ? "Active" : "Empty"}</StatusBadge>}
       />
       <QueueRow
