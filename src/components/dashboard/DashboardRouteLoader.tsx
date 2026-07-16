@@ -2,8 +2,10 @@ import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActi
 
 export function DashboardRouteLoader({ label }: { label?: string }) {
   return (
-    <div className="flex min-h-svh items-center justify-center bg-background px-5">
-      <WorkspaceActivityIndicator title={label || "Loading"} scope="page" />
+    <div className="min-h-svh bg-background px-5 pt-24">
+      <div className="mx-auto max-w-4xl">
+        <WorkspaceActivityIndicator title={label || "Loading workspace"} scope="page" />
+      </div>
     </div>
   )
 }

@@ -47,6 +47,7 @@ import {
   Settings2,
   Lock,
   Info,
+  ChevronDown,
 } from "lucide-react"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
@@ -493,8 +494,8 @@ function SettingsContent() {
 
   return (
     <DashboardShell activeItem="settings" title="Settings" user={user}>
-      <div className="space-y-5">
-        <PageHeader title="Settings" className="mb-0" />
+      <div className="space-y-4">
+        <PageHeader title="Settings" description="Workspace access, billing, accounting defaults, and review preferences." className="mb-0" compact />
         <div className="grid gap-4 lg:grid-cols-[17rem_minmax(0,1fr)] lg:items-start">
           {/* Mobile Section Selector */}
           <div className="lg:hidden">
@@ -524,7 +525,7 @@ function SettingsContent() {
 
           {/* Sidebar Navigation */}
           <nav className="hidden lg:block">
-            <div className="sticky top-20 rounded-lg border border-[var(--workspace-border)] bg-white p-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.75),0_1px_2px_0_rgba(16,24,40,0.04)]">
+            <div className="sticky top-14 rounded-lg border border-[var(--workspace-border)] bg-white p-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.75),0_1px_2px_0_rgba(16,24,40,0.04)]">
               <div className="space-y-1">
                 {sidebarSections.map((section) => (
                   <div key={section.title} className="space-y-1">
@@ -690,26 +691,26 @@ function SettingsContent() {
                   actions={<StatusBadge tone={planStatusTone}>{planStatusLabel}</StatusBadge>}
                   contentClassName="space-y-4"
                 >
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    <div className={cn("p-4", softPanel)}>
+                  <dl className="grid overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white sm:grid-cols-3 sm:divide-x sm:divide-[var(--workspace-border)]">
+                    <div className="border-b border-[var(--workspace-border)] px-4 py-3 sm:border-b-0">
                       <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--workspace-muted)]">Plan</p>
                       <p className="mt-2 text-lg font-semibold text-foreground">
                         {billingLoading ? "Loading" : formatPlan(billingStatus?.plan)}
                       </p>
                     </div>
-                    <div className={cn("p-4", softPanel)}>
+                    <div className="border-b border-[var(--workspace-border)] px-4 py-3 sm:border-b-0">
                       <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--workspace-muted)]">Renewal</p>
                       <p className="mt-2 text-lg font-semibold text-foreground">
                         {formatDate(currentSubscription?.renews_at || currentSubscription?.ends_at)}
                       </p>
                     </div>
-                    <div className={cn("p-4", softPanel)}>
+                    <div className="px-4 py-3">
                       <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--workspace-muted)]">Batch limit</p>
                       <p className="mt-2 text-lg font-semibold text-foreground">
                         {limits ? `${limits.max_files_per_batch} files, ${limits.max_file_size_mb} MB` : "Loading"}
                       </p>
                     </div>
-                  </div>
+                  </dl>
 
                   <div className={cn("p-4", softPanel)}>
                     <div className="flex items-center justify-between gap-3">
@@ -756,6 +757,8 @@ function SettingsContent() {
                   title="Plan changes"
                   icon={<PlanSwitch />}
                   contentClassName="space-y-4"
+                  collapsible
+                  defaultOpen={false}
                 >
                   <div className="grid gap-3 sm:grid-cols-2">
                   {billingPlans
@@ -834,8 +837,8 @@ function SettingsContent() {
                       </div>
                     </div>
                   ) : vendorRules.map(rule => (
-                    <section key={rule.id} className={cn("p-3.5 sm:p-4", softPanel)}>
-                      <div className="flex flex-wrap items-start justify-between gap-4">
+                    <details key={rule.id} className={cn("group overflow-hidden", softPanel)}>
+                      <summary className="ax-interactive flex cursor-pointer list-none flex-wrap items-start justify-between gap-4 p-3.5 outline-none [&::-webkit-details-marker]:hidden sm:p-4">
                         <div className="flex items-start gap-3">
                           <Symbol
                             name="success-vendor-remembered"
@@ -858,25 +861,11 @@ function SettingsContent() {
                           </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4">
-                          <InlineAction
-                            tone={rule.enabled ? "warning" : "success"}
-                            disabled={vendorRuleAction === rule.id}
-                            onClick={() => void toggleVendorRule(rule)}
-                          >
-                            {rule.enabled ? 'Disable' : 'Enable'}
-                          </InlineAction>
-                          <InlineAction
-                            tone="danger"
-                            disabled={vendorRuleAction === rule.id}
-                            onClick={() => void deleteVendorRule(rule)}
-                          >
-                            Delete
-                          </InlineAction>
-                        </div>
-                      </div>
+                        <ChevronDown className="mt-2 size-4 shrink-0 text-black transition-transform group-open:rotate-180" />
+                      </summary>
 
-                      <div className="mt-4">
+                      <div className="border-t border-border p-3.5 sm:p-4">
+                      <div>
                         <Field
                           label="Auto-apply mode"
                           icon={<SlidersHorizontal />}
@@ -935,7 +924,21 @@ function SettingsContent() {
                           </Field>
                         ))}
                       </div>
-                      <div className="mt-4 flex items-center justify-end gap-4 border-t border-border pt-3">
+                      <div className="mt-4 flex flex-wrap items-center justify-end gap-4 border-t border-border pt-3">
+                        <InlineAction
+                          tone={rule.enabled ? "warning" : "success"}
+                          disabled={vendorRuleAction === rule.id}
+                          onClick={() => void toggleVendorRule(rule)}
+                        >
+                          {rule.enabled ? 'Disable' : 'Enable'}
+                        </InlineAction>
+                        <InlineAction
+                          tone="danger"
+                          disabled={vendorRuleAction === rule.id}
+                          onClick={() => void deleteVendorRule(rule)}
+                        >
+                          Delete
+                        </InlineAction>
                         <Button
                           variant="glossy"
                           size="sm"
@@ -945,7 +948,8 @@ function SettingsContent() {
                           {vendorRuleAction === rule.id ? 'Saving...' : 'Save changes'}
                         </Button>
                       </div>
-                    </section>
+                      </div>
+                    </details>
                   ))}
                 </WorkspaceSection>
               </div>

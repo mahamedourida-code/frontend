@@ -46,8 +46,10 @@ function IntegrationsContent() {
     <DashboardShell activeItem="integrations" title="Integrations" user={user}>
       <PageHeader
         title="Integrations"
+        description="Choose where reviewed draft bills are published."
+        compact
       />
-      <div className="max-w-3xl space-y-6">
+      <div className="max-w-4xl">
         <AccountingConnectionsSection isOwner={isOwner} workspaceId={activeWorkspace?.id} />
       </div>
     </DashboardShell>

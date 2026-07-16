@@ -1,10 +1,10 @@
-'use client'
+"use client"
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { AlertTriangle, RefreshCw } from 'lucide-react'
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { AlertTriangle, ArrowLeft, RefreshCw } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
 
 export default function DashboardError({
   error,
@@ -16,58 +16,34 @@ export default function DashboardError({
   const router = useRouter()
 
   useEffect(() => {
-    // Log the error to console for debugging
-
-    // Clear any stuck processing state
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('wasProcessing')
-      sessionStorage.removeItem('uploadedFilesCache')
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("wasProcessing")
+      sessionStorage.removeItem("uploadedFilesCache")
     }
   }, [error])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 p-4">
-      <Card className="max-w-md w-full border-destructive/50">
-        <CardContent className="p-6">
-          <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
-              <AlertTriangle className="w-8 h-8 text-destructive" />
-            </div>
-
-            <h2 className="text-xl font-bold text-foreground mb-2">
-              Something went wrong
-            </h2>
-
-            <p className="text-sm text-muted-foreground mb-6">
-              {error.message || 'An unexpected error occurred. Please try refreshing the page.'}
-            </p>
-
-            <div className="flex gap-3 w-full">
-              <Button
-                onClick={() => router.push('/dashboard')}
-                variant="outline"
-                className="flex-1"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Reload Page
-              </Button>
-
-              <Button
-                onClick={() => reset()}
-                className="flex-1"
-              >
-                Try Again
-              </Button>
-            </div>
-
-            {error.digest && (
-              <p className="text-xs text-muted-foreground mt-4">
-                Error ID: {error.digest}
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <main className="min-h-svh bg-background px-5 py-20">
+      <section className="mx-auto max-w-lg border-t-2 border-red-300 pt-6">
+        <span className="inline-flex size-9 items-center justify-center rounded-md bg-red-50 text-red-700">
+          <AlertTriangle className="size-4.5" />
+        </span>
+        <h1 className="mt-4 text-xl font-bold text-foreground">Workspace unavailable</h1>
+        <p className="mt-2 max-w-md text-[13px] leading-5 text-[var(--workspace-muted)]">
+          This view did not finish loading. Retry it, or return to the client queue.
+        </p>
+        <div className="mt-5 flex flex-wrap items-center gap-2">
+          <Button variant="glossy" size="sm" onClick={reset}>
+            <RefreshCw className="size-4" />
+            Try again
+          </Button>
+          <Button variant="surface" size="sm" onClick={() => router.push("/dashboard")}>
+            <ArrowLeft className="size-4" />
+            Back to clients
+          </Button>
+        </div>
+        {error.digest ? <p className="mt-5 font-mono text-[10px] text-[var(--workspace-muted)]">Reference {error.digest}</p> : null}
+      </section>
+    </main>
   )
 }

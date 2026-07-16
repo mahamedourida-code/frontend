@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
-import { ArrowRight, AtSign, Check, Clock, Cloud, Copy, FolderInput, FolderSync, Inbox, Link2, Mail, Mailbox, Plug, PlugZap, RefreshCw, Users, X, type LucideIcon } from "lucide-react"
+import { AtSign, Check, Clock, Cloud, Copy, FolderInput, FolderSync, Inbox, Link2, Mail, Mailbox, Plug, PlugZap, RefreshCw, Users, X } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { DashboardShell } from "@/components/DashboardShell"
@@ -12,6 +12,7 @@ import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoade
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { Field } from "@/components/dashboard/Field"
 import { PageHeader } from "@/components/dashboard/PageHeader"
+import { SegmentedTabs } from "@/components/dashboard/SegmentedTabs"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
@@ -52,10 +53,6 @@ import {
 } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
 
-// The shared ui Table cells/rows, wrapped so the existing stagger /
-// AnimatePresence / layout animations still play on every row.
-const MotionTableRow = motion.create(TableRow)
-const MotionTableCell = motion.create(TableCell)
 const cell = "px-4 py-3"
 
 function formatReceivedAt(value: string) {
@@ -98,31 +95,7 @@ const SOURCE_TINT: Record<"direct_upload" | "email" | "client_link" | "google_dr
   dropbox: "border-border bg-muted/50 text-foreground",
 }
 
-const inboxEntryCards = [
-  {
-    title: "Links",
-    href: "#client-upload-links",
-    action: "Manage",
-    icon: Link2,
-  },
-  {
-    title: "Email",
-    href: "#email-in-address",
-    action: "Copy",
-    icon: AtSign,
-  },
-  {
-    title: "Folders",
-    href: "#watched-folders",
-    action: "Connect",
-    icon: FolderSync,
-  },
-] satisfies Array<{
-  title: string
-  href: string
-  action: string
-  icon: LucideIcon
-}>
+type InboxView = "activity" | "channels" | "access"
 
 function SourceBadge({ kind }: { kind: keyof typeof SOURCE_LABEL }) {
   return (
@@ -180,16 +153,15 @@ function MobileRow({
   trailing?: React.ReactNode
   children?: React.ReactNode
 }) {
-  const m = useMotionTokens()
   return (
-    <motion.div layout variants={m.fadeUp} exit="exit" className="flex items-center justify-between gap-3 px-4 py-3">
+    <div className="flex items-center justify-between gap-3 px-4 py-3">
       <div className="min-w-0 space-y-1">
         <p className="truncate text-sm font-medium text-black">{title}</p>
         {meta ? <div className="flex flex-wrap items-center gap-2 text-xs text-black">{meta}</div> : null}
         {children}
       </div>
       {trailing ? <div className="flex shrink-0 items-center gap-3">{trailing}</div> : null}
-    </motion.div>
+    </div>
   )
 }
 
@@ -220,6 +192,7 @@ export default function EmailInboxPage() {
   const [copiedLink, setCopiedLink] = useState<"upload" | "status" | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [disconnectDraft, setDisconnectDraft] = useState<ConnectedSource | null>(null)
+  const [view, setView] = useState<InboxView>("activity")
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -438,9 +411,11 @@ export default function EmailInboxPage() {
 
   return (
     <DashboardShell activeItem="inbox" title="Inbox" user={user} showBack={false}>
-      <div className="max-w-7xl space-y-6 text-black">
+      <div className="max-w-6xl space-y-4 text-black">
         <PageHeader
           title="Inbox"
+          description="Incoming client files, forwarded documents, and watched folders."
+          compact
           actions={
             <Button variant="ghost" size="sm" onClick={() => void loadInbox()} disabled={loading}>
               <RefreshCw className="size-4" />
@@ -456,42 +431,31 @@ export default function EmailInboxPage() {
         ) : null}
 
         {activeWorkspace?.role === "owner" ? (
-          <section aria-label="Inbox routes" className="grid gap-4 md:grid-cols-3">
-            {inboxEntryCards.map((card) => {
-              const Icon = card.icon
+          <div className="sticky top-14 z-20 -mx-2 border-y border-[color-mix(in_srgb,var(--workspace-border)_70%,transparent)] bg-[color-mix(in_srgb,var(--background)_92%,transparent)] px-2 py-2 backdrop-blur-md">
+            <SegmentedTabs
+              aria-label="Inbox view"
+              size="sm"
+              value={view}
+              onValueChange={(value) => setView(value as InboxView)}
+              tabs={[
+                { value: "activity", label: "Incoming", count: submissionFileCount + importCount },
+                { value: "channels", label: "Intake channels", count: links.filter((link) => link.enabled).length + connectedSources.filter((source) => source.status === "connected").length + (address?.address ? 1 : 0) },
+                { value: "access", label: "Review access", count: members.filter((member) => member.role === "reviewer" && member.status !== "revoked").length },
+              ]}
+            />
+          </div>
+        ) : null}
 
-              return (
-                <article
-                  key={card.title}
-                  className="flex min-w-0 flex-col rounded-lg bg-white p-4 shadow-[0_18px_42px_-34px_rgba(15,23,42,0.5)]"
-                >
-                  <span className="inline-flex size-10 items-center justify-center rounded-full bg-[var(--workspace-soft)] text-black ring-1 ring-inset ring-[color-mix(in_srgb,var(--workspace-border)_58%,transparent)]">
-                    <Icon className="size-5 text-black" />
-                  </span>
-                  <h3 className="mt-3 text-[15px] font-semibold tracking-normal text-foreground">{card.title}</h3>
-                  <div className="mt-4">
-                    <Button asChild variant="surface" size="sm" className="w-full justify-between">
-                      <Link href={card.href}>
-                        <span className="inline-flex items-center gap-1.5">
-                          <Icon className="size-3.5" />
-                          {card.action}
-                        </span>
-                        <ArrowRight className="size-3.5" />
-                      </Link>
-                    </Button>
-                  </div>
-                </article>
-              )
-            })}
-          </section>
+        {loadError ? (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-800">{loadError}</div>
         ) : null}
 
         {/* Management cards — stack on mobile, side-by-side on lg */}
-        {activeWorkspace?.role === "owner" ? (
+        {activeWorkspace?.role === "owner" && (view === "channels" || view === "access") ? (
           <div className="grid gap-6 lg:grid-cols-2">
 
             {/* Client upload links */}
-            <WorkspaceSection
+            {view === "channels" ? <WorkspaceSection
               id="client-upload-links"
               icon={<Link2 />}
               title="Upload links"
@@ -583,14 +547,13 @@ export default function EmailInboxPage() {
                           <TableHead className="w-16 px-4 py-3" />
                         </TableRow>
                       </TableHeader>
-                      <motion.tbody variants={m.staggerParent()} initial="hidden" animate="show" className="[&_tr:last-child]:border-0">
-                        <AnimatePresence initial={false}>
+                      <TableBody className="[&_tr:last-child]:border-0">
                         {links.slice(0, 5).map(link => (
-                          <MotionTableRow key={link.id} layout variants={m.fadeUp} exit="exit">
-                            <MotionTableCell className={cn(cell, "font-medium text-black")}>{link.label}</MotionTableCell>
-                            <MotionTableCell className={cn(cell, "tabular-nums text-black")}>{link.submission_count}/{link.max_submissions}</MotionTableCell>
-                            <MotionTableCell className={cn(cell, "text-black")}>{formatExpiry(link.expires_at)}</MotionTableCell>
-                            <MotionTableCell className="px-4 py-3">
+                          <TableRow key={link.id}>
+                            <TableCell className={cn(cell, "font-medium text-black")}>{link.label}</TableCell>
+                            <TableCell className={cn(cell, "tabular-nums text-black")}>{link.submission_count}/{link.max_submissions}</TableCell>
+                            <TableCell className={cn(cell, "text-black")}>{formatExpiry(link.expires_at)}</TableCell>
+                            <TableCell className="px-4 py-3">
                               {link.enabled ? (
                                 <InlineAction tone="danger" className="text-xs" onClick={() => void revokeClientLink(link.id)} disabled={actionBusy === link.id}>
                                   Revoke
@@ -598,17 +561,15 @@ export default function EmailInboxPage() {
                               ) : (
                                 <StatusBadge tone="neutral">Revoked</StatusBadge>
                               )}
-                            </MotionTableCell>
-                          </MotionTableRow>
+                            </TableCell>
+                          </TableRow>
                         ))}
-                        </AnimatePresence>
-                      </motion.tbody>
+                      </TableBody>
                     </Table>
                   </div>
 
                   {/* Mobile cards */}
-                  <motion.div className="mt-4 space-y-3 sm:hidden" variants={m.staggerParent()} initial="hidden" animate="show">
-                    <AnimatePresence initial={false}>
+                  <div className="mt-4 space-y-3 sm:hidden">
                     {links.slice(0, 5).map(link => (
                       <div key={link.id} className="rounded-md border border-border bg-white">
                         <MobileRow
@@ -630,14 +591,13 @@ export default function EmailInboxPage() {
                         />
                       </div>
                     ))}
-                    </AnimatePresence>
-                  </motion.div>
+                  </div>
                 </>
               ) : null}
-            </WorkspaceSection>
+            </WorkspaceSection> : null}
 
             {/* Reviewers */}
-            <WorkspaceSection icon={<Users />} title="Reviewers">
+            {view === "access" ? <WorkspaceSection icon={<Users />} title="Reviewers" hint="Reviewers can correct exceptions but cannot change billing or accounting connections." compact>
               <div className="flex gap-2.5">
                 <Input type="email" value={reviewerEmail} onChange={event => setReviewerEmail(event.target.value)} placeholder="reviewer@firm.com" className="flex-1" />
                 <Button
@@ -651,8 +611,7 @@ export default function EmailInboxPage() {
                 </Button>
               </div>
 
-              <motion.div className="mt-4 space-y-3" variants={m.staggerParent()} initial="hidden" animate="show">
-                <AnimatePresence initial={false}>
+              <div className="mt-4 space-y-3">
                 {members.filter(member => member.role === "reviewer").map(member => (
                   <div key={member.id} className="rounded-md border border-border bg-white">
                     <MobileRow
@@ -672,14 +631,13 @@ export default function EmailInboxPage() {
                     />
                   </div>
                 ))}
-                </AnimatePresence>
-              </motion.div>
-            </WorkspaceSection>
+              </div>
+            </WorkspaceSection> : null}
           </div>
         ) : null}
 
         {/* Email-in address */}
-        {activeWorkspace?.role === "owner" ? (
+        {activeWorkspace?.role === "owner" && view === "channels" ? (
           <WorkspaceSection
             id="email-in-address"
             icon={<AtSign />}
@@ -728,7 +686,7 @@ export default function EmailInboxPage() {
         ) : null}
 
         {/* P6 — Connected sources (Google Drive / Dropbox watch folders) */}
-        {activeWorkspace?.role === "owner" ? (
+        {activeWorkspace?.role === "owner" && view === "channels" ? (
           <WorkspaceSection
             id="watched-folders"
             icon={<FolderSync />}
@@ -847,6 +805,7 @@ export default function EmailInboxPage() {
           </WorkspaceSection>
         ) : null}
 
+        {view === "activity" ? <>
         {/* Client submissions */}
         <WorkspaceSection
           icon={<Inbox />}
@@ -882,41 +841,38 @@ export default function EmailInboxPage() {
                       <TableHead className={cell} />
                     </TableRow>
                   </TableHeader>
-                  <motion.tbody variants={m.staggerParent()} initial="hidden" animate="show" className="[&_tr:last-child]:border-0">
-                    <AnimatePresence initial={false}>
+                  <TableBody className="[&_tr:last-child]:border-0">
                     {submissions.map(submission => {
                       const filename = submission.documents[0]?.original_filename || `${submission.file_count} submitted files`
                       return (
-                        <MotionTableRow key={submission.id} layout variants={m.fadeUp} exit="exit">
-                          <MotionTableCell className={cn(cell, "max-w-[220px] truncate pl-6 font-medium text-black")}>{filename}</MotionTableCell>
-                          <MotionTableCell className={cell}>
+                        <TableRow key={submission.id}>
+                          <TableCell className={cn(cell, "max-w-[220px] truncate pl-6 font-medium text-black")}>{filename}</TableCell>
+                          <TableCell className={cell}>
                             <SourceBadge kind="client_link" />
-                          </MotionTableCell>
-                           <MotionTableCell className={cn(cell, "ax-data-date")}>{formatReceivedAt(submission.created_at)}</MotionTableCell>
-                          <MotionTableCell className={cn(cell, "tabular-nums text-black")}>{submission.file_count}</MotionTableCell>
-                          <MotionTableCell className={cell}>
+                          </TableCell>
+                           <TableCell className={cn(cell, "ax-data-date")}>{formatReceivedAt(submission.created_at)}</TableCell>
+                          <TableCell className={cn(cell, "tabular-nums text-black")}>{submission.file_count}</TableCell>
+                          <TableCell className={cell}>
                             <StatusBadge tone={submissionTone(submission)}>
                               <BadgeValue value={(submission.job_status || submission.status).replace(/_/g, " ")} />
                             </StatusBadge>
-                          </MotionTableCell>
-                          <MotionTableCell className={cell}>
+                          </TableCell>
+                          <TableCell className={cell}>
                             {submission.job_id ? (
                               <InlineAction asChild>
                                 <Link href={`/dashboard/client?job_id=${encodeURIComponent(submission.job_id)}`}>Review</Link>
                               </InlineAction>
                             ) : null}
-                          </MotionTableCell>
-                        </MotionTableRow>
+                          </TableCell>
+                        </TableRow>
                       )
                     })}
-                    </AnimatePresence>
-                  </motion.tbody>
+                  </TableBody>
                 </Table>
               </div>
 
               {/* Mobile card stack */}
-              <motion.div className="divide-y divide-border sm:hidden" variants={m.staggerParent()} initial="hidden" animate="show">
-                <AnimatePresence initial={false}>
+              <div className="divide-y divide-border sm:hidden">
                 {submissions.map(submission => {
                   const filename = submission.documents[0]?.original_filename || `${submission.file_count} submitted files`
                   return (
@@ -942,8 +898,7 @@ export default function EmailInboxPage() {
                     />
                   )
                 })}
-                </AnimatePresence>
-              </motion.div>
+              </div>
             </>
           )}
         </WorkspaceSection>
@@ -982,29 +937,28 @@ export default function EmailInboxPage() {
                       <TableHead className={cell} />
                     </TableRow>
                   </TableHeader>
-                  <motion.tbody variants={m.staggerParent()} initial="hidden" animate="show" className="[&_tr:last-child]:border-0">
-                    <AnimatePresence initial={false}>
+                  <TableBody className="[&_tr:last-child]:border-0">
                     {messages.map((message) => {
                       const state = messageState(message)
                       const documentNames = message.documents.map(document => document.original_filename).join(", ")
                       const tone = state === "Ready" ? "success" : (state === "Failed" || state === "Rejected") ? "error" : state === "Reading" ? "processing" : "neutral"
                       return (
-                        <MotionTableRow key={message.id} layout variants={m.fadeUp} exit="exit">
-                          <MotionTableCell className={cn(cell, "max-w-[220px] pl-6")}>
+                        <TableRow key={message.id}>
+                          <TableCell className={cn(cell, "max-w-[220px] pl-6")}>
                             <p className="ax-data-entity truncate text-sm">{message.sender || "Unknown sender"}</p>
                             <p className="ax-data-reference mt-1 truncate text-xs">{message.source_email_reference}</p>
-                          </MotionTableCell>
-                          <MotionTableCell className={cn(cell, "max-w-[260px] truncate text-sm text-black")}>
+                          </TableCell>
+                          <TableCell className={cn(cell, "max-w-[260px] truncate text-sm text-black")}>
                             {documentNames || `${message.attachment_count} attachment${message.attachment_count === 1 ? "" : "s"}`}
-                          </MotionTableCell>
-                          <MotionTableCell className={cell}>
+                          </TableCell>
+                          <TableCell className={cell}>
                             <SourceBadge kind="email" />
-                          </MotionTableCell>
-                          <MotionTableCell className={cn(cell, "ax-data-date")}>{formatReceivedAt(message.received_at)}</MotionTableCell>
-                          <MotionTableCell className={cell}>
+                          </TableCell>
+                          <TableCell className={cn(cell, "ax-data-date")}>{formatReceivedAt(message.received_at)}</TableCell>
+                          <TableCell className={cell}>
                             <StatusBadge tone={tone}><BadgeValue value={state} /></StatusBadge>
-                          </MotionTableCell>
-                          <MotionTableCell className={cell}>
+                          </TableCell>
+                          <TableCell className={cell}>
                             {message.job_id ? (
                               <InlineAction asChild>
                                 <Link href={`/dashboard/client?job_id=${encodeURIComponent(message.job_id)}`}>Review</Link>
@@ -1014,17 +968,15 @@ export default function EmailInboxPage() {
                                 {message.rejected_attachments.length ? "Not imported" : "Pending"}
                               </StatusBadge>
                             )}
-                          </MotionTableCell>
-                        </MotionTableRow>
+                          </TableCell>
+                        </TableRow>
                       )
                     })}
-                    </AnimatePresence>
-                  </motion.tbody>
+                  </TableBody>
                 </Table>
               </div>
 
-              <motion.div className="divide-y divide-border sm:hidden" variants={m.staggerParent()} initial="hidden" animate="show">
-                <AnimatePresence initial={false}>
+              <div className="divide-y divide-border sm:hidden">
                 {messages.map((message) => {
                   const state = messageState(message)
                   const documentNames = message.documents.map(document => document.original_filename).join(", ")
@@ -1058,11 +1010,11 @@ export default function EmailInboxPage() {
                     </MobileRow>
                   )
                 })}
-                </AnimatePresence>
-              </motion.div>
+              </div>
             </>
           )}
         </WorkspaceSection>
+        </> : null}
       </div>
 
       <Dialog open={Boolean(disconnectDraft)} onOpenChange={(open) => !open && setDisconnectDraft(null)}>

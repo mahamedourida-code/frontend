@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { motion, useReducedMotion } from "framer-motion"
 import { markHistoryItemsDeleted, unmarkHistoryItemsDeleted, isAnyHistoryItemDeleted, subscribeHistoryDeletions } from "@/lib/recent-files-store"
 import {
   ColumnDef,
@@ -16,11 +15,9 @@ import {
   useReactTable,
   RowSelectionState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Download, RefreshCw, FileSpreadsheet, FileText, FileImage, Calendar, DownloadCloud, Trash2, CalendarIcon } from "lucide-react"
+import { ArrowUpDown, Download, RefreshCw, FileSpreadsheet, FileText, FileImage, DownloadCloud, Trash2, CalendarIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -45,7 +42,6 @@ import { DashboardShell } from "@/components/DashboardShell"
 import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoader"
 import { EmptyState } from "@/components/dashboard/EmptyState"
 import { PageHeader } from "@/components/dashboard/PageHeader"
-import { Symbol } from "@/components/dashboard/Symbol"
 import { SkeletonRows } from "@/components/dashboard/SkeletonTable"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 
@@ -80,7 +76,6 @@ function HistoryContent() {
   const { activeWorkspace } = useWorkspaces(user)
   const { jobs, isLoading, error, refresh } = useHistory()
   const router = useRouter()
-  const prefersReducedMotion = useReducedMotion()
   const searchParams = useSearchParams()
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -146,31 +141,6 @@ function HistoryContent() {
     const issues = filteredJobs.filter((job) => job.status === "failed" || job.status === "cancelled").length
     return { total, ready, working, issues }
   }, [filteredJobs])
-
-  const statTiles: { key: string; label: string; value: number; valueClass: string; badge: React.ReactNode }[] = [
-    { key: "total", label: "Documents", value: stats.total, valueClass: "text-foreground", badge: null },
-    {
-      key: "ready",
-      label: "Ready",
-      value: stats.ready,
-      valueClass: "text-[var(--data-money)]",
-      badge: stats.ready > 0 ? <StatusBadge tone="success">Export</StatusBadge> : null,
-    },
-    {
-      key: "working",
-      label: "In progress",
-      value: stats.working,
-      valueClass: "text-[var(--text-working)]",
-      badge: stats.working > 0 ? <StatusBadge tone="processing">Working</StatusBadge> : null,
-    },
-    {
-      key: "issues",
-      label: "Issues",
-      value: stats.issues,
-      valueClass: "text-[var(--text-danger)]",
-      badge: stats.issues > 0 ? <StatusBadge tone="error">Failed</StatusBadge> : null,
-    },
-  ]
 
   const handleDownload = async (job: HistoryJob) => {
     try {
@@ -273,8 +243,8 @@ function HistoryContent() {
       cell: ({ row }) => {
         const { Icon, bg, fg } = getFileTypeInfo(row.original.filename)
         return (
-          <div className={cn("flex size-10 shrink-0 items-center justify-center rounded-lg", bg)}>
-            <Icon className={cn("size-5", fg)} />
+          <div className={cn("flex size-8 shrink-0 items-center justify-center rounded-md", bg)}>
+            <Icon className={cn("size-4", fg)} />
           </div>
         )
       },
@@ -557,6 +527,8 @@ function HistoryContent() {
     >
         <PageHeader
           title="Documents"
+          description="Saved batch outputs, processing work, and failed runs."
+          compact
           actions={
             <InlineAction onClick={refresh} disabled={isLoading}>
               <RefreshCw className={cn("size-4", isLoading && "animate-spin")} />
@@ -586,46 +558,25 @@ function HistoryContent() {
         )}
 
         {/* Stat tiles — quick scan of the stack at a glance */}
-        {!isLoading && filteredJobs.length > 0 && (
-          <div className="mb-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
-            {statTiles.map((tile) => (
-              <div
-                key={tile.key}
-                className={cn("flex flex-col gap-3 rounded-xl border bg-card p-4", CARD_SHADOW)}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.055em] text-foreground">
-                    {tile.label}
-                  </span>
-                  {tile.badge}
-                </div>
-                <span className={cn("text-2xl font-semibold leading-none tabular-nums sm:text-3xl", tile.valueClass)}>
-                  {tile.value}
-                </span>
+        {!isLoading && filteredJobs.length > 0 ? (
+          <dl className="mb-3 flex max-w-full items-center gap-1 overflow-x-auto rounded-lg border border-[var(--workspace-border)] bg-white px-2 py-2 text-[11px] font-semibold text-[var(--workspace-muted)]">
+            {[
+              ["Documents", stats.total],
+              ["Ready", stats.ready],
+              ["Reading", stats.working],
+              ["Issues", stats.issues],
+            ].map(([label, value], index) => (
+              <div key={label} className={cn("flex shrink-0 items-center gap-1.5 px-2", index > 0 && "border-l border-[var(--workspace-border)]")}>
+                <dt>{label}</dt>
+                <dd className="font-mono font-bold tabular-nums text-foreground">{value}</dd>
               </div>
             ))}
-          </div>
-        )}
+          </dl>
+        ) : null}
 
         {/* Export-ready accent — spreadsheets to download, journals to post */}
-        {!isLoading && filteredJobs.filter(job => job.status === "completed" && job.result_url).length > 0 && (
-          <div className="mb-4 flex items-center gap-4">
-            <Symbol name="success-exported-excel" size="inline" className="h-16 w-16 sm:h-20 sm:w-20" />
-            <div className="min-w-0">
-              <p className="text-[15px] font-bold tracking-tight text-foreground">
-                {filteredJobs.filter(job => job.status === "completed" && job.result_url).length} file
-                {filteredJobs.filter(job => job.status === "completed" && job.result_url).length === 1 ? "" : "s"} ready to export
-              </p>
-              <p className="mt-0.5 text-sm font-normal text-foreground">
-                Download the reviewed spreadsheets, or reopen a stack to post its journal entries.
-              </p>
-            </div>
-            <Symbol name="code-journal-entry" size="inline" className="ml-auto hidden h-16 w-16 sm:block sm:h-20 sm:w-20" />
-          </div>
-        )}
-
         {/* Table Controls */}
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 mb-3 lg:mb-4">
+        <div className="sticky top-14 z-20 -mx-2 mb-3 flex flex-col items-start justify-between gap-2 border-y border-[color-mix(in_srgb,var(--workspace-border)_70%,transparent)] bg-[color-mix(in_srgb,var(--background)_92%,transparent)] px-2 py-2 backdrop-blur-md lg:flex-row lg:items-center">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 lg:gap-4 w-full lg:w-auto">
             {/* Date Filter */}
             <div className="flex items-center gap-1 lg:gap-2 overflow-x-auto w-full sm:w-auto">
@@ -772,13 +723,13 @@ function HistoryContent() {
         </div>
 
         {/* Data Table */}
-        <div className={cn("overflow-hidden rounded-xl border bg-card", CARD_SHADOW)}>
+        <div className={cn("overflow-hidden rounded-lg border bg-card", CARD_SHADOW)}>
           <Table className="ax-table">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id} className="h-10">
+                    <TableHead key={header.id} className="h-9">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -804,14 +755,10 @@ function HistoryContent() {
                   ]}
                 />
               ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row, index) => (
-                  <motion.tr
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
                     key={row.id}
-                    data-slot="table-row"
                     data-state={row.getIsSelected() ? "selected" : undefined}
-                    initial={prefersReducedMotion ? false : { opacity: 0, y: 4 }}
-                    animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1], delay: Math.min(index * 0.03, 0.3) }}
                     className={cn(
                       "ax-interactive cursor-pointer border-b border-[var(--workspace-border)] transition-colors hover:bg-[var(--workspace-row-hover)]",
                       focusedRowId === row.id && "bg-accent/40"
@@ -822,14 +769,14 @@ function HistoryContent() {
                     }}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} className="py-2.5">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
                         )}
                       </TableCell>
                     ))}
-                  </motion.tr>
+                  </TableRow>
                 ))
               ) : (
                 <TableRow>

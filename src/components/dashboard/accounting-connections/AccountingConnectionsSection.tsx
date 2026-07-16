@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useSearchParams } from "next/navigation"
-import { Check, Cloud, Landmark, Plug2, RefreshCw, Target, type LucideIcon } from "lucide-react"
+import { Cloud, Landmark, Plug2, RefreshCw, type LucideIcon } from "lucide-react"
 import { toast } from "sonner"
 
 import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog"
@@ -51,9 +51,6 @@ const providers: Array<{
     api: xeroApi,
   },
 ]
-
-const workspacePrimaryButton =
-  "!border-[var(--btn-primary-bg)] !bg-[var(--btn-primary-bg)] !text-[var(--btn-primary-fg)] !shadow-none hover:!bg-[var(--btn-primary-bg-hover)] hover:!text-[var(--btn-primary-fg-hover)]"
 
 function providerName(provider: Provider) {
   return providers.find(({ id }) => id === provider)?.name || provider
@@ -197,46 +194,13 @@ export function AccountingConnectionsSection({
   }
 
   return (
-    <div className="space-y-5">
-      <WorkspaceSection
-        icon={<Target />}
-        title="Workspace publishing destination"
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          {providers.map(provider => {
-            const selected = destination === provider.id
-            const ProviderIcon = provider.Icon
-            return (
-              <button
-                key={provider.id}
-                type="button"
-                onClick={() => void selectDestination(provider.id)}
-                disabled={!isOwner || Boolean(action)}
-                aria-pressed={selected}
-                className={cn(
-                  "ax-interactive flex min-h-20 items-center gap-4 rounded-xl border px-5 py-4 text-left transition disabled:cursor-default disabled:opacity-70",
-                  selected
-                    ? "border-[var(--workspace-primary)] bg-[var(--workspace-blue-soft)]"
-                    : "border-border bg-background hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)]",
-                )}
-              >
-                <span className={cn("inline-flex size-12 shrink-0 items-center justify-center rounded-xl border", provider.iconClassName)}>
-                  <ProviderIcon className="size-6 text-black" strokeWidth={2.2} aria-hidden="true" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-sm font-bold text-foreground">{provider.name}</span>
-                  <span className="mt-1 block text-xs font-normal text-foreground">
-                    {selected ? "Selected for this workspace" : "Use for this workspace"}
-                  </span>
-                </span>
-                {selected ? <Check className="ms-auto size-4 shrink-0 text-black" /> : null}
-              </button>
-            )
-          })}
-        </div>
-      </WorkspaceSection>
-
-      <WorkspaceSection icon={<Plug2 />} title="Workspace accounting software" contentClassName="p-0">
+    <WorkspaceSection
+      icon={<Plug2 />}
+      title="Accounting destinations"
+      hint="Connect QuickBooks Online or Xero, then choose where reviewed draft bills publish."
+      contentClassName="p-0"
+      compact
+    >
         {loading ? (
           <WorkspaceActivityIndicator
             title="Checking accounting connections"
@@ -245,33 +209,56 @@ export function AccountingConnectionsSection({
         ) : providers.map((provider, index) => {
           const connection = connections[provider.id]
           const ProviderIcon = provider.Icon
+          const selected = destination === provider.id
           return (
             <div
               key={provider.id}
-              className={cn("px-5 py-5 sm:px-6 sm:py-6", index > 0 && "border-t border-border")}
+              className={cn("px-4 py-4 sm:px-5", index > 0 && "border-t border-border")}
             >
-              <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-                <div className="flex min-w-0 flex-1 items-center gap-4">
-                  <span className={cn("inline-flex size-14 shrink-0 items-center justify-center rounded-xl border", provider.iconClassName)}>
-                    <ProviderIcon className="size-7 text-black" strokeWidth={2.1} aria-hidden="true" />
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <span className={cn("inline-flex size-10 shrink-0 items-center justify-center rounded-lg border", provider.iconClassName)}>
+                    <ProviderIcon className="size-5 text-black" strokeWidth={2.1} aria-hidden="true" />
                   </span>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-base font-bold text-foreground">{provider.name}</h2>
-                      <StatusBadge tone={connection.connected ? "success" : "neutral"}>
+                      <h2 className="text-[14px] font-semibold text-foreground">{provider.name}</h2>
+                      <StatusBadge tone={connection.connected ? "success" : "neutral"} size="sm">
                         {connection.connected ? "Connected" : "Not connected"}
                       </StatusBadge>
+                      {selected ? <StatusBadge tone="info" size="sm">Publishing here</StatusBadge> : null}
                     </div>
                     {connection.connected ? (
-                      <p className="mt-1.5 text-xs font-normal leading-5 text-foreground">
-                        {`${connection.company_name || "Company connected"} - ${referenceCount(connection)} references - ${formatSynced(connection.last_synced_at)}`}
+                      <p className="mt-1 truncate text-[11px] leading-5 text-[var(--workspace-muted)]">
+                        {`${connection.company_name || "Company connected"} · ${referenceCount(connection)} list references · synced ${formatSynced(connection.last_synced_at)}`}
                       </p>
-                    ) : null}
+                    ) : (
+                      <p className="mt-1 text-[11px] text-[var(--workspace-muted)]">OAuth connection required before publishing.</p>
+                    )}
                   </div>
                 </div>
 
-                {isOwner ? (
-                  <div className="flex shrink-0 flex-wrap items-center gap-5">
+                <div className="flex flex-wrap items-center gap-3 sm:justify-end">
+                  <label className={cn(
+                    "inline-flex h-8 cursor-pointer items-center gap-2 rounded-full border px-3 text-[12px] font-semibold",
+                    selected
+                      ? "border-[var(--workspace-primary)] bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]"
+                      : "border-[var(--workspace-border)] bg-white text-[var(--workspace-muted)]",
+                    (!isOwner || Boolean(action)) && "cursor-default opacity-65",
+                  )}>
+                    <input
+                      type="radio"
+                      name="accounting-destination"
+                      value={provider.id}
+                      checked={selected}
+                      onChange={() => void selectDestination(provider.id)}
+                      disabled={!isOwner || Boolean(action)}
+                      className="size-3.5 accent-[var(--workspace-primary)]"
+                    />
+                    Draft bill destination
+                  </label>
+                  {isOwner ? (
+                    <>
                     {connection.connected ? (
                       <>
                         <InlineAction onClick={() => void sync(provider.id)} disabled={Boolean(action) || loading}>
@@ -283,17 +270,23 @@ export function AccountingConnectionsSection({
                         </InlineAction>
                       </>
                     ) : (
-                      <Button variant="glossy" size="sm" className={workspacePrimaryButton} onClick={() => void connect(provider.id)} disabled={Boolean(action) || loading}>
+                      <Button variant="glossy" size="sm" onClick={() => void connect(provider.id)} disabled={Boolean(action) || loading}>
                         {action === `${provider.id}:connect` ? "Connecting..." : `Connect ${provider.name}`}
                       </Button>
                     )}
-                  </div>
-                ) : null}
+                    </>
+                  ) : null}
+                </div>
               </div>
             </div>
           )
         })}
-      </WorkspaceSection>
+
+        {!loading ? (
+          <p className="border-t border-border bg-[var(--workspace-soft)] px-4 py-2.5 text-[11px] leading-5 text-[var(--workspace-muted)] sm:px-5">
+            AxLiner publishes reviewed drafts only. Payments remain in QuickBooks Online or Xero.
+          </p>
+        ) : null}
 
       <ConfirmDeleteDialog
         open={Boolean(disconnectTarget)}
@@ -309,6 +302,6 @@ export function AccountingConnectionsSection({
           await disconnect(disconnectTarget)
         }}
       />
-    </div>
+    </WorkspaceSection>
   )
 }

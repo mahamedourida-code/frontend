@@ -2,38 +2,28 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { motion, useReducedMotion } from "framer-motion"
+import { formatDistanceToNow } from "date-fns"
 import {
-  ArrowUpRight,
-  CircleCheck,
+  ArrowRight,
+  CircleAlert,
   Inbox,
   Layers,
   LoaderCircle,
   RefreshCw,
+  Search,
   Upload,
 } from "lucide-react"
-import { formatDistanceToNow, isToday } from "date-fns"
 
 import { EmptyState } from "@/components/dashboard/EmptyState"
+import { SegmentedTabs } from "@/components/dashboard/SegmentedTabs"
 import { SkeletonList } from "@/components/dashboard/SkeletonTable"
-import { Button } from "@/components/ui/button"
-import { InlineAction } from "@/components/ui/inline-action"
 import { StatusBadge, type StatusTone } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
+import { Button } from "@/components/ui/button"
+import { InlineAction } from "@/components/ui/inline-action"
+import { Input } from "@/components/ui/input"
 import { ocrApi } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
-
-/**
- * The calm "today's batches" triage queue. A read-only inbox of recent batches
- * grouped by status — accountants land here first, scan what needs attention,
- * and click one row to drop into the deep Review board
- * (`/dashboard/client?job_id=…`). It never re-implements review, export, or
- * publish; it's the quiet front door to those flows.
- *
- * Built only on existing dashboard primitives (WorkspaceSection, StatusBadge,
- * EmptyState) and `--workspace-*` tokens so it reads as the same product.
- */
 
 type Batch = {
   jobId: string
@@ -43,39 +33,15 @@ type Batch = {
   createdAt: string | null
 }
 
-type Bucket = "processing" | "review" | "today" | "earlier"
-
-const BUCKET_META: Record<
-  Bucket,
-  { title: string; icon: React.ReactNode; tone: "default" | "active" }
-> = {
-  processing: {
-    title: "Reading",
-    icon: <LoaderCircle />,
-    tone: "active",
-  },
-  review: {
-    title: "Needs review",
-    icon: <Layers />,
-    tone: "default",
-  },
-  today: {
-    title: "Done today",
-    icon: <CircleCheck />,
-    tone: "default",
-  },
-  earlier: {
-    title: "Earlier",
-    icon: <Inbox />,
-    tone: "default",
-  },
-}
+type QueueFilter = "all" | "review" | "active" | "issues"
 
 const ACTIVE_STATUSES = new Set(["queued", "processing"])
 const REVIEW_STATUSES = new Set(["completed", "partially_completed"])
+const ISSUE_STATUSES = new Set(["failed", "cancelled"])
 
 function batchStatusTone(status: string): StatusTone {
-  if (status === "completed" || status === "partially_completed") return "success"
+  if (status === "completed") return "success"
+  if (status === "partially_completed") return "warning"
   if (status === "failed") return "error"
   if (status === "cancelled") return "neutral"
   if (status === "processing") return "processing"
@@ -85,10 +51,10 @@ function batchStatusTone(status: string): StatusTone {
 
 function statusLabel(status: string): string {
   if (status === "completed") return "Ready"
-  if (status === "partially_completed") return "Partial"
-  if (status === "queued") return "Waiting"
+  if (status === "partially_completed") return "Check partial"
+  if (status === "queued") return "Queued"
   if (status === "processing") return "Reading"
-  return status.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase())
+  return status.replace(/_/g, " ").replace(/^\w/, (character) => character.toUpperCase())
 }
 
 function pickCount(metadata: Record<string, any> | null | undefined): number {
@@ -109,55 +75,53 @@ function toBatch(job: Record<string, any>): Batch | null {
   if (!jobId) return null
   return {
     jobId: String(jobId),
-    title: job.filename || "Untitled stack",
+    title: job.filename || "Untitled batch",
     status: job.status || "unknown",
     count: pickCount(job.metadata ?? job.processing_metadata),
     createdAt: job.created_at || job.updated_at || job.saved_at || null,
   }
 }
 
-function bucketFor(batch: Batch): Bucket {
-  if (ACTIVE_STATUSES.has(batch.status)) return "processing"
-  if (REVIEW_STATUSES.has(batch.status)) {
-    if (batch.createdAt && isToday(new Date(batch.createdAt))) return "today"
-    return "review"
-  }
-  return "earlier"
+function matchesFilter(batch: Batch, filter: QueueFilter) {
+  if (filter === "review") return REVIEW_STATUSES.has(batch.status)
+  if (filter === "active") return ACTIVE_STATUSES.has(batch.status)
+  if (filter === "issues") return ISSUE_STATUSES.has(batch.status)
+  return true
 }
 
-const BUCKET_ORDER: Bucket[] = ["processing", "review", "today", "earlier"]
+function nextAction(status: string) {
+  if (REVIEW_STATUSES.has(status)) return "Review"
+  if (ISSUE_STATUSES.has(status)) return "Inspect"
+  return "Open"
+}
 
-function BatchRow({ batch, index }: { batch: Batch; index: number }) {
-  const router = useRouter()
-  const prefersReducedMotion = useReducedMotion()
-  const open = () => router.push(`/dashboard/client?job_id=${batch.jobId}`)
+function BatchRow({ batch }: { batch: Batch }) {
   const relative = batch.createdAt
     ? formatDistanceToNow(new Date(batch.createdAt), { addSuffix: true })
-    : "—"
+    : "Time unavailable"
 
   return (
-    <motion.button
-      type="button"
-      onClick={open}
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.18, delay: index * 0.03, ease: [0.16, 1, 0.3, 1] }}
-      className="ax-interactive group flex w-full items-center gap-3 rounded-lg border border-transparent px-3 py-2.5 text-left transition-colors hover:border-[var(--workspace-border)] hover:bg-[var(--workspace-row-hover)]"
+    <Link
+      href={`/dashboard/client?job_id=${encodeURIComponent(batch.jobId)}`}
+      className="ax-interactive group grid min-h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 border-b border-[var(--workspace-border)] px-4 py-2.5 outline-none last:border-b-0 hover:bg-[var(--workspace-row-hover)] focus-visible:bg-[var(--workspace-row-hover)] sm:grid-cols-[auto_minmax(0,1fr)_auto_auto]"
     >
-      <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-black [&_svg]:size-[18px] [&_svg]:text-black">
-        <Layers />
+      <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-soft)] text-black">
+        {ISSUE_STATUSES.has(batch.status) ? <CircleAlert className="size-4" /> : <Layers className="size-4" />}
       </span>
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-foreground">{batch.title}</p>
-        <p className="mt-0.5 truncate text-xs text-muted-foreground">
-          {batch.count} {batch.count === 1 ? "doc" : "docs"} · {relative}
-        </p>
-      </div>
-      <StatusBadge tone={batchStatusTone(batch.status)} className="hidden sm:inline-flex">
+      <span className="min-w-0">
+        <span className="block truncate text-[13px] font-semibold text-foreground">{batch.title}</span>
+        <span className="mt-0.5 block truncate text-[11px] text-[var(--workspace-muted)]">
+          {batch.count} {batch.count === 1 ? "document" : "documents"} · {relative}
+        </span>
+      </span>
+      <StatusBadge tone={batchStatusTone(batch.status)} size="sm" className="hidden sm:inline-flex">
         {statusLabel(batch.status)}
       </StatusBadge>
-      <ArrowUpRight className="size-4 shrink-0 text-black opacity-0 transition-opacity group-hover:opacity-100" />
-    </motion.button>
+      <span className="inline-flex items-center gap-1 text-[12px] font-semibold text-foreground">
+        {nextAction(batch.status)}
+        <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+      </span>
+    </Link>
   )
 }
 
@@ -165,6 +129,8 @@ export function BatchesQueue() {
   const [batches, setBatches] = React.useState<Batch[] | null>(null)
   const [error, setError] = React.useState<string | null>(null)
   const [refreshing, setRefreshing] = React.useState(false)
+  const [filter, setFilter] = React.useState<QueueFilter>("review")
+  const [query, setQuery] = React.useState("")
 
   const load = React.useCallback(async () => {
     setRefreshing(true)
@@ -174,9 +140,9 @@ export function BatchesQueue() {
       const rows: Record<string, any>[] = Array.isArray(response)
         ? response
         : response.jobs || response.history || response.items || response.data || []
-      setBatches(rows.map(toBatch).filter((b): b is Batch => b !== null))
-    } catch (err: any) {
-      setError(err?.detail || err?.message || "Could not load stacks")
+      setBatches(rows.map(toBatch).filter((batch): batch is Batch => batch !== null))
+    } catch (loadError: any) {
+      setError(loadError?.detail || loadError?.message || "Could not load batches")
       setBatches([])
     } finally {
       setRefreshing(false)
@@ -187,85 +153,93 @@ export function BatchesQueue() {
     void load()
   }, [load])
 
-  const grouped = React.useMemo(() => {
-    const groups: Record<Bucket, Batch[]> = {
-      processing: [],
-      review: [],
-      today: [],
-      earlier: [],
-    }
-    for (const batch of batches ?? []) {
-      groups[bucketFor(batch)].push(batch)
-    }
-    return groups
-  }, [batches])
+  const counts = React.useMemo(() => ({
+    all: batches?.length ?? 0,
+    review: batches?.filter((batch) => REVIEW_STATUSES.has(batch.status)).length ?? 0,
+    active: batches?.filter((batch) => ACTIVE_STATUSES.has(batch.status)).length ?? 0,
+    issues: batches?.filter((batch) => ISSUE_STATUSES.has(batch.status)).length ?? 0,
+  }), [batches])
 
-  const total = batches?.length ?? 0
+  const visibleBatches = React.useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase()
+    return (batches ?? []).filter((batch) => (
+      matchesFilter(batch, filter) &&
+      (!normalizedQuery || batch.title.toLowerCase().includes(normalizedQuery))
+    ))
+  }, [batches, filter, query])
+
   const isLoading = batches === null
 
   return (
-    <div className="max-w-3xl space-y-6">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-foreground">
-          {isLoading ? "Batch register" : `${total} ${total === 1 ? "stack" : "stacks"} to review`}
-        </p>
-        <InlineAction onClick={load} disabled={refreshing}>
-          <RefreshCw className="size-4" />
-          Refresh
-        </InlineAction>
+    <div className="max-w-4xl space-y-4">
+      <div className="sticky top-14 z-20 -mx-2 flex flex-col gap-2 border-y border-[color-mix(in_srgb,var(--workspace-border)_70%,transparent)] bg-[color-mix(in_srgb,var(--background)_92%,transparent)] px-2 py-2 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between">
+        <SegmentedTabs
+          aria-label="Filter batch register"
+          size="sm"
+          value={filter}
+          onValueChange={(value) => setFilter(value as QueueFilter)}
+          tabs={[
+            { value: "review", label: "Review", count: counts.review },
+            { value: "active", label: "In progress", count: counts.active },
+            { value: "issues", label: "Issues", count: counts.issues },
+            { value: "all", label: "All", count: counts.all },
+          ]}
+        />
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="relative min-w-0 flex-1 sm:w-56 sm:flex-none">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-black" />
+            <Input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Find a batch"
+              aria-label="Find a batch"
+              className="h-8 rounded-full bg-white pl-8 text-[12px]"
+            />
+          </div>
+          <InlineAction onClick={load} disabled={refreshing} aria-label="Refresh batch register">
+            <RefreshCw className={cn("size-3.5", refreshing && "animate-spin")} />
+            <span className="hidden sm:inline">Refresh</span>
+          </InlineAction>
+        </div>
       </div>
 
       {error ? (
-        <div className="rounded-lg border border-[color-mix(in_srgb,var(--workspace-danger)_44%,transparent)] bg-white px-4 py-3 text-sm text-[var(--workspace-danger)]">
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-800">
           {error}
         </div>
       ) : null}
 
-      {isLoading || refreshing ? (
-        <WorkspaceSection title="Your stacks" icon={<Layers />} contentClassName="px-2 py-2 sm:px-2">
-          <SkeletonList rows={5} />
-        </WorkspaceSection>
-      ) : total === 0 ? (
-        <WorkspaceSection title="Your stacks" icon={<Layers />}>
+      <WorkspaceSection
+        title="Batch register"
+        icon={isLoading ? <LoaderCircle className="animate-spin" /> : <Layers />}
+        hint={filter === "review" ? "Completed extraction waiting for a human check." : undefined}
+        actions={!isLoading ? <span className="text-[12px] font-semibold tabular-nums text-foreground">{visibleBatches.length} shown</span> : undefined}
+        contentClassName="p-0"
+        compact
+      >
+        {isLoading ? (
+          <div className="px-2 py-2"><SkeletonList rows={6} /></div>
+        ) : visibleBatches.length === 0 ? (
           <EmptyState
             icon={<Inbox />}
-            title="No stacks yet"
-            action={(
+            title={query ? "No matching batches" : filter === "all" ? "No batches yet" : `No ${filter === "active" ? "batches in progress" : filter}`}
+            description={query ? "Clear the search or switch the register filter." : undefined}
+            action={counts.all === 0 ? (
               <Button asChild variant="glossy" size="sm">
                 <Link href="/dashboard/client#upload-files">
                   <Upload className="size-3.5" />
-                  Upload your first batch
+                  Upload batch
                 </Link>
               </Button>
-            )}
+            ) : undefined}
+            compact
           />
-        </WorkspaceSection>
-      ) : (
-        BUCKET_ORDER.filter((bucket) => grouped[bucket].length > 0).map((bucket) => {
-          const meta = BUCKET_META[bucket]
-          const rows = grouped[bucket]
-          return (
-            <WorkspaceSection
-              key={bucket}
-              title={meta.title}
-              icon={meta.icon}
-              tone={meta.tone}
-              actions={
-                <span className="font-mono text-[13px] font-semibold tabular-nums text-[var(--workspace-primary)]">
-                  {rows.length}
-                </span>
-              }
-              contentClassName="px-2 py-2 sm:px-2"
-            >
-              <div className="flex flex-col gap-0.5">
-                {rows.map((batch, index) => (
-                  <BatchRow key={batch.jobId} batch={batch} index={index} />
-                ))}
-              </div>
-            </WorkspaceSection>
-          )
-        })
-      )}
+        ) : (
+          <div>
+            {visibleBatches.map((batch) => <BatchRow key={batch.jobId} batch={batch} />)}
+          </div>
+        )}
+      </WorkspaceSection>
     </div>
   )
 }

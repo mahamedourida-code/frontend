@@ -45,8 +45,10 @@ function SetupContent() {
     <DashboardShell activeItem="setup" title="Setup" user={user}>
       <PageHeader
         title="Setup"
+        description="Finish the connections that remove manual intake and handoffs."
+        compact
       />
-      <div className="max-w-2xl text-foreground">
+      <div className="max-w-3xl text-foreground">
         <SetupChecklist workspace={activeWorkspace} />
       </div>
     </DashboardShell>

@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { AnimatePresence, motion } from "framer-motion"
 import {
   ArrowRight,
   AtSign,
@@ -20,8 +19,8 @@ import {
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { WorkspaceSection } from "@/components/dashboard/WorkspaceSection"
 import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
+import { Button } from "@/components/ui/button"
 import { InlineAction } from "@/components/ui/inline-action"
-import { useMotionTokens } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 import {
   accountsPayableApi,
@@ -64,7 +63,6 @@ interface ChecklistItem {
  * compact action list that mirrors the Inbox / Settings patterns.
  */
 export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) {
-  const m = useMotionTokens()
   const [loading, setLoading] = React.useState(true)
   const [items, setItems] = React.useState<ChecklistItem[]>([])
 
@@ -258,78 +256,61 @@ export function SetupChecklist({ workspace }: { workspace?: Workspace | null }) 
 
   if (loading) {
     return (
-      <WorkspaceSection icon={<Check />} title="Setup checklist">
+      <WorkspaceSection icon={<Check />} title="Workspace readiness" compact>
         <WorkspaceActivityIndicator title="Checking workspace setup" />
       </WorkspaceSection>
     )
   }
 
   return (
-    <WorkspaceSection icon={<Check />} title="Setup checklist" contentClassName="p-0">
-      <motion.ul
-        className="divide-y divide-border"
-        variants={m.staggerParent()}
-        initial="hidden"
-        animate="show"
-      >
-        <AnimatePresence initial={false}>
-          {items.map((item) => (
-            <ChecklistRow key={item.id} item={item} />
-          ))}
-        </AnimatePresence>
-      </motion.ul>
+    <WorkspaceSection
+      icon={<Check />}
+      title="Workspace readiness"
+      hint="Connect the intake and review handoffs your firm will use every week."
+      actions={<StatusBadge tone="info">{items.filter((item) => item.state === "done").length}/{items.filter((item) => item.state !== "neutral").length} ready</StatusBadge>}
+      contentClassName="p-0"
+      compact
+    >
+      <ul className="divide-y divide-border">
+        {[...items]
+          .sort((left, right) => (left.state === "todo" ? -1 : right.state === "todo" ? 1 : 0))
+          .map((item) => <ChecklistRow key={item.id} item={item} />)}
+      </ul>
     </WorkspaceSection>
   )
 }
 
 function ChecklistRow({ item }: { item: ChecklistItem }) {
-  const m = useMotionTokens()
   const isDone = item.state === "done"
 
   return (
-    <motion.li
-      layout
-      variants={m.fadeUp}
-      exit="exit"
-      className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-4 sm:px-6"
-    >
-      <div className="flex min-w-0 items-center gap-4">
+    <li className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 px-4 py-3">
+      <div className="flex min-w-0 items-center gap-3">
         {/* Status marker — a quietly satisfying check when done. */}
         <span
           className={cn(
-            "inline-flex size-9 shrink-0 items-center justify-center rounded-full [&_svg]:size-[18px]",
+            "inline-flex size-8 shrink-0 items-center justify-center rounded-md [&_svg]:size-4",
             isDone
               ? "bg-[color-mix(in_srgb,var(--workspace-success)_14%,transparent)] text-[var(--workspace-success)]"
               : "bg-[color-mix(in_srgb,var(--workspace-primary)_10%,transparent)] text-[var(--workspace-blue)]",
           )}
         >
-          {isDone ? (
-            <motion.span
-              initial={m.reduced ? false : { scale: 0.6, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={m.reduced ? { duration: 0.001 } : { type: "spring", stiffness: 360, damping: 22 }}
-              className="inline-flex"
-            >
-              <Check strokeWidth={2.5} />
-            </motion.span>
-          ) : (
-            item.icon
-          )}
+          {isDone ? <Check strokeWidth={2.5} /> : item.icon}
         </span>
 
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="text-sm font-semibold leading-tight text-foreground">{item.label}</p>
+            <p className="text-[13px] font-semibold leading-tight text-foreground">{item.label}</p>
             {isDone ? (
-              <StatusBadge tone="success">Done</StatusBadge>
+              <StatusBadge tone="success" size="sm">Ready</StatusBadge>
             ) : item.state === "neutral" ? (
-              <StatusBadge tone="neutral">Optional</StatusBadge>
+              <StatusBadge tone="neutral" size="sm">Optional</StatusBadge>
             ) : (
-              <StatusBadge tone="info">To do</StatusBadge>
+              <StatusBadge tone="info" size="sm">Set up</StatusBadge>
             )}
           </div>
           {isDone && item.doneNote ? (
-            <p className="mt-1 truncate text-sm leading-snug text-foreground">
+            <p className="mt-1 truncate text-[11px] leading-snug text-[var(--workspace-muted)]">
               {item.doneNote}
             </p>
           ) : null}
@@ -342,15 +323,14 @@ function ChecklistRow({ item }: { item: ChecklistItem }) {
             <Link href={item.href}>Manage</Link>
           </InlineAction>
         ) : (
-          <Link
-            href={item.href}
-            className="ax-interactive inline-flex h-9 items-center gap-1.5 rounded-lg border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] px-4 text-sm font-semibold text-white shadow-none transition-colors hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)]"
-          >
-            {item.cta}
-            <ArrowRight className="size-4" />
-          </Link>
+          <Button asChild variant="surface" size="sm">
+            <Link href={item.href}>
+              {item.cta}
+              <ArrowRight className="size-3.5" />
+            </Link>
+          </Button>
         )}
       </div>
-    </motion.li>
+    </li>
   )
 }
