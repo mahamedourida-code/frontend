@@ -1,42 +1,23 @@
 "use client"
 
 import { Suspense, useCallback, useEffect, useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import {
-  AlertTriangle,
-  ArrowLeft,
-  Check,
-  Download,
-  FileText,
-  Loader2,
-  Receipt,
-  ScanLine,
-} from "lucide-react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
+
 import { DashboardShell } from "@/components/DashboardShell"
+import {
+  DocumentReviewWorkspace,
+  type ReviewField,
+  type ReviewTable,
+  type ReviewTotal,
+} from "@/components/dashboard/document/DocumentReviewWorkspace"
 import { WorkspaceActivityIndicator } from "@/components/dashboard/WorkspaceActivityIndicator"
+import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/useAuth"
 import { accountsPayableApi, ocrApi, type JobDocumentRecord } from "@/lib/api-client"
-import { cn } from "@/lib/utils"
 
-type FieldDef = { label: string; path: string; tone?: string }
-type LineItemConfig = {
-  root: string
-  columns: Array<[string, string]>
-  rows: Record<string, any>[]
-  numericFrom: number
-}
-
-const STATUS_STYLE: Record<string, string> = {
-  ready: "border-green-200 bg-white text-[var(--text-success)]",
-  published: "border-green-200 bg-white text-[var(--text-success)]",
-  edited: "border-violet-200 bg-white text-[var(--text-review)]",
-  failed: "border-red-200 bg-white text-[var(--text-danger)]",
-  needs_review: "border-amber-200 bg-white text-[var(--text-attention)]",
-  deleted: "border-[#e5e5e5] bg-white text-[#475467]",
-}
 const STATUS_LABEL: Record<string, string> = {
   ready: "Ready",
   published: "Published",
@@ -45,21 +26,7 @@ const STATUS_LABEL: Record<string, string> = {
   needs_review: "Needs review",
   deleted: "Deleted",
 }
-const TYPE_TONE: Record<string, string> = {
-  invoice: "text-[var(--workspace-muted)]",
-  receipt: "text-[var(--workspace-muted)]",
-  bank_statement: "text-[var(--workspace-muted)]",
-  notes: "text-[var(--workspace-muted)]",
-  table: "text-[var(--workspace-muted)]",
-}
-const TYPE_ACCENT: Record<string, string> = {
-  invoice: "#166534",
-  receipt: "#b45309",
-  bank_statement: "#3730a3",
-  notes: "#5b21b6",
-  table: "#0f766e",
-  auto: "#475467",
-}
+
 const TYPE_LABEL: Record<string, string> = {
   auto: "Auto-detect",
   table: "Table",
@@ -80,7 +47,7 @@ function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url)
 }
 
-function csvToGrid(csvText: unknown): any[][] | null {
+function csvToGrid(csvText: unknown): unknown[][] | null {
   if (typeof csvText !== "string" || !csvText.trim()) return null
 
   const rows: string[][] = []
@@ -116,10 +83,10 @@ function csvToGrid(csvText: unknown): any[][] | null {
   return rows.length ? rows : null
 }
 
-function gridFromPayload(payload: unknown): any[][] | null {
+function gridFromPayload(payload: unknown): unknown[][] | null {
   if (!payload || typeof payload !== "object") return null
-  const record = payload as Record<string, any>
-  if (Array.isArray(record.review_grid)) return record.review_grid
+  const record = payload as Record<string, unknown>
+  if (Array.isArray(record.review_grid)) return record.review_grid as unknown[][]
   return csvToGrid(record.csv)
 }
 
@@ -133,48 +100,6 @@ function FullLoader({ label = "Opening document" }: { label?: string }) {
         className="max-w-xl"
       />
     </div>
-  )
-}
-
-function fieldValueClass(label: string) {
-  const normalized = label.toLowerCase()
-  if (normalized.includes("due")) return "ax-data-due"
-  if (normalized.includes("date") || normalized.includes("period")) return "ax-data-date"
-  if (normalized.includes("number") || normalized.includes("reference") || normalized.includes("ref")) return "ax-data-reference"
-  if (normalized.includes("total") || normalized.includes("amount") || normalized.includes("balance") || normalized.includes("price")) return "ax-data-money"
-  if (normalized.includes("vendor") || normalized.includes("supplier") || normalized.includes("merchant") || normalized.includes("account holder")) return "ax-data-entity"
-  return "text-[var(--workspace-ink)]"
-}
-
-function FormField({
-  label,
-  value,
-  onSave,
-  saving,
-  labelTone,
-}: {
-  label: string
-  value: string
-  onSave: (next: string) => void
-  saving?: boolean
-  labelTone?: string
-}) {
-  return (
-    <label className="block">
-      <span className={cn("mb-1 flex items-center gap-1.5 text-[12px] font-bold tracking-normal", labelTone || "text-[#111827]")}>
-        {label}
-        {saving ? <Loader2 className="size-3 animate-spin text-[var(--brand-brown-fg)]" /> : null}
-      </span>
-      <input
-        key={`${label}-${value}`}
-        defaultValue={value}
-        onBlur={(event) => {
-          if (event.target.value !== value) onSave(event.target.value)
-        }}
-        className={cn("h-9 w-full rounded-md border border-[#d4d4d4] bg-white px-3 text-[13px] font-semibold outline-none transition focus:border-[var(--workspace-blue)] focus:ring-2 focus:ring-black/15", fieldValueClass(label))}
-        placeholder="—"
-      />
-    </label>
   )
 }
 
@@ -208,16 +133,12 @@ function DocumentReviewContent() {
       setLoading(false)
       return
     }
+
     try {
-      // Use the batch documents endpoint (same source as the review board): it
-      // returns SIGNED source/preview URLs and the full extraction payload
-      // (reviewed_data, line_items, review_grid). The single /review endpoint
-      // returns an unsigned, leaner document — which left the preview and line
-      // items empty.
       const response = await ocrApi.getJobDocuments(jobId)
       const found = response.documents.find((item) => item.id === documentId) || null
       if (!found) {
-        setError("This document is no longer part of the stack.")
+        setError("This document is no longer part of the batch.")
         setDoc(null)
       } else {
         setDoc(found)
@@ -240,52 +161,69 @@ function DocumentReviewContent() {
     }
   }, [authLoading, user, router, jobId, documentId])
 
-  if (authLoading || (loading && !doc)) return <FullLoader />
+  if (authLoading || (loading && !doc) || !user) return <FullLoader />
 
   if (error || !doc) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-6 text-center">
-        <p className="text-base font-bold text-[#111827]">{error || "Document not found"}</p>
-        <Button asChild variant="surface" className="h-10 px-4 text-sm">
-          <Link href="/dashboard/client">
-            <ArrowLeft className="size-4" />
-            Back to review
-          </Link>
-        </Button>
-      </div>
+      <DashboardShell
+        activeItem="process"
+        title="Review document"
+        eyebrow="Review"
+        user={user}
+        showBack={false}
+      >
+        <div className="flex min-h-[55vh] flex-col items-center justify-center gap-4 px-6 text-center">
+          <p className="text-[15px] font-medium text-[var(--workspace-ink)]">{error || "Document not found"}</p>
+          <Button
+            asChild
+            variant="surface"
+            className="h-9 px-4 text-[13px] shadow-none hover:translate-y-0 hover:shadow-none active:translate-y-0 active:shadow-none"
+          >
+            <Link href="/dashboard/client">
+              <ArrowLeft className="size-4" />
+              Back to batch
+            </Link>
+          </Button>
+        </div>
+      </DashboardShell>
     )
   }
 
-  const extraction = doc.extractions?.find((item) => item.reviewed_data || item.raw_structured_data) || doc.extractions?.[0]
-  const reviewedPayload = (extraction?.reviewed_data || null) as Record<string, any> | null
-  const rawPayload = (extraction?.raw_structured_data || null) as Record<string, any> | null
+  const extraction =
+    doc.extractions?.find((item) => item.reviewed_data || item.raw_structured_data)
+    || doc.extractions?.[0]
+  const reviewedPayload = (extraction?.reviewed_data || null) as Record<string, unknown> | null
+  const rawPayload = (extraction?.raw_structured_data || null) as Record<string, unknown> | null
   const data = (reviewedPayload || rawPayload || {}) as Record<string, any>
   const reviewGrid = gridFromPayload(reviewedPayload) || gridFromPayload(rawPayload)
   const uncertainCellsRaw = (reviewedPayload?.uncertain_cells || rawPayload?.uncertain_cells) as number[][] | undefined
-  const uncertainSet = new Set<string>(
-    Array.isArray(uncertainCellsRaw)
-      ? uncertainCellsRaw.map(([r, c]) => `${r}:${c}`)
-      : []
-  )
+  const uncertainCells = Array.isArray(uncertainCellsRaw)
+    ? uncertainCellsRaw.map(([row, column]) => `${row}:${column}`)
+    : []
   const docType = doc.resolved_mode || doc.detected_mode || doc.selected_mode || "auto"
   const status = doc.review_status || extraction?.review_status || "needs_review"
   const sourceUrl = extraction?.source_preview_url || doc.source_access_url || ""
+  const sourceContentType = extraction?.source_preview_url ? "image/*" : doc.source_content_type
   const processingUnitId = extraction?.processing_unit_id || ""
-  const accent = TYPE_ACCENT[docType] || TYPE_ACCENT.auto
 
-  // Only treat `currency` as a real currency token (code/symbol). Bad extractions
-  // sometimes dump a list of amounts into this field — never prefix that onto values.
   const currencyLabel =
-    typeof data.currency === "string" && data.currency.trim().length > 0 && data.currency.trim().length <= 4
+    typeof data.currency === "string"
+    && data.currency.trim().length > 0
+    && data.currency.trim().length <= 4
       ? data.currency.trim()
       : ""
-  const money = (value: any) => (value === undefined || value === null || value === "" ? "—" : [currencyLabel, value].filter(Boolean).join(" "))
+  const money = (value: unknown) => (
+    value === undefined || value === null || value === ""
+      ? "-"
+      : [currencyLabel, value].filter(Boolean).join(" ")
+  )
 
   const persist = async (fieldPath: Array<string | number>, value: string) => {
     if (!processingUnitId) {
-      toast.error("This document is missing edit metadata. Reopen the stack and try again.")
+      toast.error("Edit metadata is missing. Reopen the batch and try again.")
       return
     }
+
     setSavingPath(fieldPath.join("."))
     try {
       await ocrApi.updateDocumentReviewValue(jobId, documentId, {
@@ -332,76 +270,86 @@ function DocumentReviewContent() {
     try {
       await accountsPayableApi.createFromDocument(jobId, documentId)
       setSentToBills(true)
-      toast.success("Invoice sent to draft bills.")
+      toast.success("Draft bill created.")
     } catch (err: any) {
-      toast.error(err?.detail || err?.message || "Could not send this invoice to draft bills.")
+      toast.error(err?.detail || err?.message || "Could not create the draft bill.")
     } finally {
       setSendingBill(false)
     }
   }
 
-  const headerFields: FieldDef[] =
+  const fields: ReviewField[] =
     docType === "invoice"
       ? [
-          { label: "From", path: "vendor_name" },
-          { label: "Invoice no.", path: "invoice_number" },
-          { label: "Invoice date", path: "invoice_date" },
-          { label: "Due date", path: "due_date" },
+          { label: "From", path: "vendor_name", value: String(data.vendor_name ?? "") },
+          { label: "Invoice no.", path: "invoice_number", value: String(data.invoice_number ?? "") },
+          { label: "Invoice date", path: "invoice_date", value: String(data.invoice_date ?? "") },
+          { label: "Due date", path: "due_date", value: String(data.due_date ?? "") },
         ]
       : docType === "receipt"
         ? [
-            { label: "Merchant", path: "merchant" },
-            { label: "Date", path: "date" },
-            { label: "Payment method", path: "payment_method" },
+            { label: "Merchant", path: "merchant", value: String(data.merchant ?? "") },
+            { label: "Date", path: "date", value: String(data.date ?? "") },
+            { label: "Payment method", path: "payment_method", value: String(data.payment_method ?? "") },
           ]
         : docType === "bank_statement"
           ? [
-              { label: "Account holder", path: "account_holder" },
-              { label: "Bank", path: "bank_name" },
-              { label: "Period", path: "period" },
+              { label: "Account holder", path: "account_holder", value: String(data.account_holder ?? "") },
+              { label: "Bank", path: "bank_name", value: String(data.bank_name ?? "") },
+              { label: "Period", path: "period", value: String(data.period ?? "") },
             ]
           : []
 
-  const lineItems: LineItemConfig | null =
+  const lineItems: ReviewTable | null =
     docType === "invoice" || docType === "receipt"
       ? {
           root: "line_items",
           columns: [
-            ["Description", "description"],
-            ["Qty", "quantity"],
-            ["Unit price", "unit_price"],
-            ["Tax rate", "tax_rate"],
-            ["Amount", "line_total"],
+            { label: "Description", key: "description" },
+            { label: "Qty", key: "quantity", numeric: true },
+            { label: "Unit price", key: "unit_price", numeric: true },
+            { label: "Tax rate", key: "tax_rate", numeric: true },
+            { label: "Amount", key: "line_total", numeric: true, amount: true },
           ],
           rows: Array.isArray(data.line_items) ? data.line_items : [],
-          numericFrom: 1,
         }
       : docType === "bank_statement"
         ? {
             root: "transactions",
             columns: [
-              ["Date", "date"],
-              ["Description", "description"],
-              ["Reference", "reference"],
-              ["Debit", "debit"],
-              ["Credit", "credit"],
-              ["Balance", "balance"],
+              { label: "Date", key: "date" },
+              { label: "Description", key: "description" },
+              { label: "Reference", key: "reference" },
+              { label: "Debit", key: "debit", numeric: true, amount: true },
+              { label: "Credit", key: "credit", numeric: true, amount: true },
+              { label: "Balance", key: "balance", numeric: true, amount: true },
             ],
             rows: Array.isArray(data.transactions) ? data.transactions : [],
-            numericFrom: 3,
           }
         : null
 
   const showInvoiceTotals = docType === "invoice" || docType === "receipt"
-  const totalDisplay =
+  const summaryValue =
     docType === "bank_statement"
       ? money(data.closing_balance)
       : showInvoiceTotals
         ? money(data.total)
         : reviewGrid
           ? String(Math.max(reviewGrid.length - 1, 0))
-          : "—"
-  const totalLabel = docType === "bank_statement" ? "Closing balance" : showInvoiceTotals ? "Total" : "Rows"
+          : "-"
+  const summaryLabel =
+    docType === "bank_statement"
+      ? "Closing balance"
+      : showInvoiceTotals
+        ? "Total"
+        : "Rows"
+  const totals: ReviewTotal[] | undefined = showInvoiceTotals
+    ? [
+        { label: "Subtotal", value: money(data.subtotal) },
+        { label: "VAT", value: money(data.tax_vat_amount) },
+        { label: "Total", value: money(data.total), emphasis: true },
+      ]
+    : undefined
 
   const canMarkReady = !["ready", "published", "failed", "deleted"].includes(status)
   const canSendToBills = docType === "invoice" && ["ready", "published"].includes(status)
@@ -415,264 +363,42 @@ function DocumentReviewContent() {
       contentClassName="max-w-none px-3 py-3 sm:px-5 lg:px-6"
       showBack={false}
     >
-      <div className="min-h-[calc(100svh-5rem)] bg-background text-[#111827]">
-        <header className="sticky top-14 z-30 -mx-3 mb-3 border-y border-[#e5e5e5] bg-white/[0.95] shadow-[0_8px_22px_-22px_rgba(15,23,42,0.55)] backdrop-blur supports-[backdrop-filter]:bg-white/[0.88] sm:-mx-5 lg:-mx-6">
-          <div className="mx-auto flex max-w-[1560px] flex-wrap items-center gap-2.5 px-3 py-2 sm:px-5 lg:px-6">
-          <Button asChild variant="surface" size="sm" className="h-8 px-3 text-xs">
-            <Link href={`/dashboard/client?job_id=${jobId}`}>
-              <ArrowLeft className="size-4" />
-              Batch
-            </Link>
-          </Button>
-          <span
-            className="flex size-8 shrink-0 items-center justify-center rounded-full"
-            style={{ backgroundColor: `${accent}14`, color: accent }}
-          >
-            {docType === "receipt" ? <Receipt className="size-4" /> : docType === "table" ? <ScanLine className="size-4" /> : <FileText className="size-4" />}
-          </span>
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className={cn("inline-flex h-5 items-center whitespace-nowrap rounded-full border px-2 text-[11px] font-semibold leading-none", STATUS_STYLE[status] || STATUS_STYLE.needs_review)}>
-                {STATUS_LABEL[status] || status}
-              </span>
-              <span className={cn("text-[11px] font-bold uppercase tracking-normal", TYPE_TONE[docType] || "text-[#475467]")}>
-                {TYPE_LABEL[docType] || "Document"}
-              </span>
-              {uncertainSet.size > 0 ? (
-                <span className="text-[11px] font-semibold text-[var(--text-attention)]">
-                  {uncertainSet.size} field{uncertainSet.size === 1 ? "" : "s"} to check
-                </span>
-              ) : null}
-            </div>
-            <p className="mt-0.5 max-w-[42ch] truncate text-[14px] font-bold tracking-normal">{doc.original_filename}</p>
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <Button
-              type="button"
-              variant="surface"
-              onClick={() => void download()}
-              disabled={downloading}
-              className="h-8 px-3 text-xs"
-            >
-              {downloading ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
-              XLSX
-            </Button>
-            {canSendToBills ? (
-              <Button
-                type="button"
-                variant="glossy"
-                onClick={() => void sendToBills()}
-                disabled={sendingBill || sentToBills}
-                className="h-8 px-3 text-xs"
-              >
-                {sendingBill ? <Loader2 className="size-4 animate-spin" /> : null}
-                {sentToBills ? "Draft bill created" : "Create draft bill"}
-              </Button>
-            ) : null}
-            {canMarkReady ? (
-              <Button
-                type="button"
-                variant="glossy"
-                onClick={() => void markReady()}
-                disabled={markingReady}
-                className="h-8 px-4 text-xs"
-              >
-                {markingReady ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
-                Mark ready
-              </Button>
-            ) : null}
-          </div>
-          </div>
-        </header>
-
-      <main className="mx-auto grid max-w-[1560px] gap-3 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]">
-        {/* Source preview — sticky on desktop */}
-        <div className="lg:sticky lg:top-[8.25rem] lg:self-start">
-          <div className="overflow-hidden rounded-lg border border-[#e5e5e5] bg-white shadow-sm">
-            <div className="border-b border-[#e5e5e5] px-4 py-2.5 text-[11px] font-bold uppercase tracking-normal text-[#475467]">
-              Source document
-            </div>
-            <div className="flex max-h-[78vh] items-center justify-center overflow-auto bg-[#f5f5f5] p-4">
-              {sourceUrl ? (
-                <img src={sourceUrl} alt={doc.original_filename} className="max-h-[74vh] w-full rounded-lg object-contain" />
-              ) : (
-                <div className="flex min-h-[320px] flex-col items-center justify-center gap-2 text-[13px] font-semibold text-[#475467]">
-                  <FileText className="size-6 text-[#94a3b8]" />
-                  No preview
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="overflow-hidden rounded-lg border border-[#e5e5e5] bg-white shadow-sm">
-          <div className="border-b border-[#e5e5e5] px-4 py-4 sm:px-5">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
-              <div className="grid min-w-0 flex-1 grid-cols-2 gap-x-4 gap-y-3 lg:grid-cols-3">
-                {headerFields.length ? (
-                  headerFields.map((field) => (
-                    <FormField
-                      key={field.path}
-                      label={field.label}
-                      value={String(data[field.path] ?? "")}
-                      saving={savingPath === field.path}
-                      onSave={(next) => void persist([field.path], next)}
-                    />
-                  ))
-                ) : (
-                  <div className="col-span-2 lg:col-span-3">
-                    <span className="mb-2 block text-[12px] font-bold tracking-normal text-[#475467]">Document</span>
-                    <p className="ax-data-entity truncate text-[15px] font-bold tracking-normal">
-                      {data.vendor_name || data.merchant || data.account_holder || data.bank_name || doc.original_filename}
-                    </p>
-                  </div>
-                )}
-              </div>
-              <div className="w-full shrink-0 lg:w-44">
-                <p className="text-[12px] font-bold tracking-normal text-[#475467] lg:text-right">{totalLabel}</p>
-                <div className="mt-1 flex h-10 items-center justify-end rounded-md border border-[#d4d4d4] bg-[#f5f5f5] px-3">
-                  <span className="ax-data-money truncate text-[18px] font-extrabold" title={totalDisplay}>{totalDisplay}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Line items */}
-          {lineItems ? (
-            lineItems.rows.length ? (
-              <div className="max-h-[58svh] overflow-auto">
-                <table className="w-full min-w-[720px] border-collapse">
-                  <thead className="sticky top-0 z-[2]">
-                    <tr className="border-b border-[#e5e5e5] bg-[#f5f5f5]">
-                      {lineItems.columns.map(([label], index) => (
-                        <th
-                          key={label}
-                          className={cn(
-                            "px-4 py-3 text-[12px] font-bold tracking-normal text-[#475467]",
-                            index >= lineItems.numericFrom ? "text-right" : "text-left",
-                          )}
-                        >
-                          {label}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {lineItems.rows.map((row, rowIndex) => (
-                      <tr key={rowIndex} className="border-b border-[#e5e5e5] transition-colors hover:bg-[#f5f5f5]">
-                        {lineItems.columns.map(([, key], colIndex) => {
-                          const numeric = colIndex >= lineItems.numericFrom
-                          const isAmount = colIndex === lineItems.columns.length - 1
-                          const isUncertain = uncertainSet.has(`${rowIndex + 1}:${colIndex}`)
-                          return (
-                            <td key={key} className="px-1.5 py-1.5 align-middle">
-                              <div className={cn(isUncertain && "flex items-center gap-1")}>
-                                <input
-                                  key={`${rowIndex}-${key}-${row[key] ?? ""}`}
-                                  defaultValue={String(row[key] ?? "")}
-                                  onBlur={(event) => {
-                                    if (event.target.value !== String(row[key] ?? "")) {
-                                      void persist([lineItems.root, rowIndex, key], event.target.value)
-                                    }
-                                  }}
-                                  className={cn(
-                                    "h-9 w-full min-w-[80px] rounded-md border bg-white px-2.5 text-[13px] text-[#111827] outline-none transition focus:border-[var(--brand-brown-fg)] focus:ring-2 focus:ring-black/15",
-                                    isUncertain ? "border-rose-400 ring-1 ring-rose-300/60" : "border-[#e5e5e5]",
-                                    numeric && "text-right tabular-nums",
-                                    isAmount && "ax-data-money font-bold",
-                                  )}
-                                />
-                                {isUncertain && (
-                                  <>
-                                    <span title="Needs review" className="inline-flex shrink-0"><AlertTriangle size={12} className="text-rose-400" aria-label="Needs review" /></span>
-                                    <span className="sr-only">Needs review</span>
-                                  </>
-                                )}
-                              </div>
-                            </td>
-                          )
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p className="px-7 py-8 text-center text-[13px] font-semibold text-[#475467]">No line items.</p>
-            )
-          ) : null}
-
-          {/* Raw extracted table (table / notes documents) — clean spreadsheet */}
-          {!lineItems && reviewGrid ? (
-            <div className="max-h-[58svh] overflow-auto">
-              <table className="w-full min-w-[640px] border-collapse text-[13px]">
-                <tbody>
-                  {reviewGrid.map((row, rowIndex) => (
-                    <tr key={rowIndex} className={rowIndex === 0 ? "sticky top-0 z-[2] bg-[#f5f5f5] font-semibold" : "bg-white transition-colors hover:bg-[#f5f5f5]"}>
-                      {row.map((cell, cellIndex) => {
-                        const isUncertain = rowIndex !== 0 && uncertainSet.has(`${rowIndex}:${cellIndex}`)
-                        return (
-                          <td
-                            key={cellIndex}
-                            className={cn(
-                              "border border-[#e5e5e5] px-2 py-1",
-                              rowIndex === 0 && "border-[#d4d4d4]",
-                            )}
-                          >
-                            <div className={cn(isUncertain && "flex items-center gap-1")}>
-                              <input
-                                key={`${rowIndex}-${cellIndex}-${cell ?? ""}`}
-                                defaultValue={String(cell ?? "")}
-                                onBlur={(event) => {
-                                  if (event.target.value !== String(cell ?? "")) {
-                                    void persist(["review_grid", rowIndex, cellIndex], event.target.value)
-                                  }
-                                }}
-                                className={cn(
-                                  "h-9 w-full min-w-[110px] rounded-md border px-2.5 text-[13px] outline-none transition focus:border-[var(--brand-brown-fg)] focus:bg-white focus:ring-2 focus:ring-black/15",
-                                  isUncertain ? "border-rose-400 bg-white ring-1 ring-rose-300/60" : "border-transparent bg-transparent",
-                                  rowIndex === 0 ? "text-[12px] font-bold tracking-normal text-[#475467]" : "font-medium text-[#111827]",
-                                )}
-                              />
-                              {isUncertain && (
-                                <>
-                                  <span title="Needs review" className="inline-flex shrink-0"><AlertTriangle size={12} className="text-rose-400" aria-label="Needs review" /></span>
-                                  <span className="sr-only">Needs review</span>
-                                </>
-                              )}
-                            </div>
-                          </td>
-                        )
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : null}
-
-          {/* Totals block */}
-          {showInvoiceTotals ? (
-            <div className="px-4 py-4 sm:px-5">
-              <div className="ml-auto w-full max-w-[320px]">
-                <div className="flex items-center justify-between gap-4 py-2 text-[14px]">
-                  <span className="shrink-0 font-semibold text-[#475467]">Subtotal</span>
-                  <span className="ax-data-money min-w-0 truncate text-right" title={money(data.subtotal)}>{money(data.subtotal)}</span>
-                </div>
-                <div className="flex items-center justify-between gap-4 border-t border-[#e5e5e5] py-2 text-[14px]">
-                  <span className="shrink-0 font-semibold text-[#475467]">VAT</span>
-                  <span className="ax-data-tax min-w-0 truncate text-right" title={money(data.tax_vat_amount)}>{money(data.tax_vat_amount)}</span>
-                </div>
-                <div className="flex items-center justify-between gap-4 border-t-2 border-[#111827] pt-3">
-                  <span className="shrink-0 text-[18px] font-extrabold tracking-normal text-[#111827]">TOTAL</span>
-                  <span className="ax-data-money min-w-0 truncate text-right text-[22px] font-extrabold" title={money(data.total)}>{money(data.total)}</span>
-                </div>
-              </div>
-            </div>
-          ) : null}
-        </div>
-      </main>
-      </div>
+      <DocumentReviewWorkspace
+        backHref={`/dashboard/client?job_id=${jobId}`}
+        filename={doc.original_filename || "Review document"}
+        documentType={docType}
+        documentTypeLabel={TYPE_LABEL[docType] || "Document"}
+        status={status}
+        statusLabel={STATUS_LABEL[status] || status}
+        sourceUrl={sourceUrl}
+        sourceContentType={sourceContentType}
+        exceptionCount={uncertainCells.length}
+        fields={fields}
+        identity={
+          data.vendor_name
+          || data.merchant
+          || data.account_holder
+          || data.bank_name
+          || doc.original_filename
+        }
+        summaryLabel={summaryLabel}
+        summaryValue={summaryValue}
+        lineItems={lineItems}
+        reviewGrid={reviewGrid}
+        uncertainCells={uncertainCells}
+        totals={totals}
+        savingPath={savingPath}
+        downloading={downloading}
+        markingReady={markingReady}
+        creatingDraftBill={sendingBill}
+        draftBillCreated={sentToBills}
+        canMarkReady={canMarkReady}
+        canCreateDraftBill={canSendToBills}
+        onSave={(path, value) => void persist(path, value)}
+        onDownload={() => void download()}
+        onMarkReady={() => void markReady()}
+        onCreateDraftBill={() => void sendToBills()}
+      />
     </DashboardShell>
   )
 }
