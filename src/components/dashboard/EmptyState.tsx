@@ -26,10 +26,7 @@ interface EmptyStateProps {
    * do not turn into illustration cards.
    */
   art?: string
-  /**
-   * Optional small kicker shown above the title (e.g. "Get started"). Renders
-   * as a quiet emerald-tinted label so onboarding states feel guided, not bare.
-   */
+  /** Optional small kicker shown above the title (e.g. "Get started"). */
   eyebrow?: string
   /**
    * Optional "how it works" affordance: a short, ordered list of plain-language
@@ -71,7 +68,7 @@ function EmptyState({
     >
       <div
         className={cn(
-          "inline-flex items-center justify-center rounded-full bg-[var(--workspace-soft)] text-black ring-1 ring-inset ring-[color-mix(in_srgb,var(--workspace-border)_58%,transparent)] [&_svg]:text-black",
+          "inline-flex items-center justify-center rounded-lg bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)] ring-1 ring-inset ring-[var(--workspace-selection-border)] [&_svg]:text-[var(--workspace-primary)]",
           compact ? "size-9 [&_svg]:size-[18px]" : "size-10 [&_svg]:size-5",
           iconClassName,
         )}
@@ -119,7 +116,7 @@ function EmptyState({
                 compact && "text-[12px] leading-5",
               )}
             >
-              <span className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-[var(--workspace-soft)] font-mono text-[10px] font-semibold tabular-nums text-black">
+              <span className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-blue-soft)] font-mono text-[10px] font-semibold tabular-nums text-[var(--workspace-primary)]">
                 {index + 1}
               </span>
               <span className="min-w-0">{step}</span>
