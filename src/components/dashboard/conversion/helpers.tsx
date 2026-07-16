@@ -273,8 +273,8 @@ export function statusChipClass(state: ReturnType<typeof getOutputBadge>["state"
   const classes: Record<ReturnType<typeof getOutputBadge>["state"], string> = {
     failed: "border-red-200 bg-white text-[var(--text-danger)]",
     needs_review: "border-amber-200 bg-white text-[var(--text-attention)]",
-    ready: "border-green-200 bg-white text-[var(--text-success)]",
-    published: "border-green-200 bg-white text-[var(--text-success)]",
+    ready: "border-[var(--workspace-selection-border)] bg-white text-[var(--workspace-primary)]",
+    published: "border-[var(--workspace-selection-border)] bg-white text-[var(--workspace-primary)]",
     edited: "border-violet-200 bg-white text-[var(--text-review)]",
   }
   return classes[state]
@@ -282,23 +282,23 @@ export function statusChipClass(state: ReturnType<typeof getOutputBadge>["state"
 
 export function statusDotClass(state: ReturnType<typeof getOutputBadge>["state"]) {
   const classes: Record<ReturnType<typeof getOutputBadge>["state"], string> = {
-    failed: "bg-[#ef4444]",
-    needs_review: "bg-[#f59e0b]",
-    ready: "bg-[#16a34a]",
-    published: "bg-[#1d4ed8]",
-    edited: "bg-[#7c3aed]",
+    failed: "bg-[var(--text-danger)]",
+    needs_review: "bg-[var(--text-attention)]",
+    ready: "bg-[var(--workspace-primary)]",
+    published: "bg-[var(--workspace-primary)]",
+    edited: "bg-[var(--text-review)]",
   }
   return classes[state]
 }
 
 export function rowAccentClass(state: ReturnType<typeof getOutputBadge>["state"], duplicateWarning?: DocumentDuplicateWarning) {
-  if (duplicateWarning) return "border-l-[#f59e0b]"
+  if (duplicateWarning) return "border-l-[var(--text-attention)]"
   const classes: Record<ReturnType<typeof getOutputBadge>["state"], string> = {
-    failed: "border-l-[#ef4444]",
-    needs_review: "border-l-[#f59e0b]",
-    ready: "border-l-[#16a34a]",
-    published: "border-l-[#1d4ed8]",
-    edited: "border-l-[#7c3aed]",
+    failed: "border-l-[var(--text-danger)]",
+    needs_review: "border-l-[var(--text-attention)]",
+    ready: "border-l-[var(--workspace-primary)]",
+    published: "border-l-[var(--workspace-primary)]",
+    edited: "border-l-[var(--text-review)]",
   }
   return classes[state]
 }
@@ -426,5 +426,5 @@ export function recentStatusChip(status: string): { label: string; chip: string 
     return { label: "Failed", chip: "border-red-200 bg-white text-[var(--text-danger)]" }
   if (status === "requires_review")
     return { label: "Needs review", chip: "border-amber-200 bg-white text-[var(--text-attention)]" }
-  return { label: "Ready", chip: "border-green-200 bg-white text-[var(--text-success)]" }
+  return { label: "Ready", chip: "border-[var(--workspace-selection-border)] bg-white text-[var(--workspace-primary)]" }
 }

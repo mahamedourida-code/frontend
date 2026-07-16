@@ -249,7 +249,7 @@ export function UploadDropzone({
       transition={m.spring}
       className={cn(
         "relative overflow-hidden rounded-lg border border-dashed transition-colors duration-200",
-        isDragging ? "border-[var(--brand-brown-fg)] bg-[var(--brand-clay)]" : "border-[var(--workspace-border)] bg-white hover:border-[#98a2b3]"
+        isDragging ? "border-[var(--workspace-primary)] bg-[var(--workspace-blue-soft)]" : "border-[var(--workspace-border)] bg-white hover:border-[var(--workspace-muted)]"
       )}
     >
       <div className={cn("px-5 py-7 text-center sm:px-8", uploadedFiles.length ? "min-h-[220px]" : "flex min-h-[360px] flex-col items-center justify-center")}>
@@ -598,7 +598,7 @@ function ExtractedTable({ rows }: { rows: any[][] }) {
 }
 
 const reviewBoardActionBarClass =
-  "sticky top-14 z-20 scroll-mt-20 flex flex-col gap-2 border-y border-[var(--workspace-border)] bg-white/[0.95] px-3 py-2.5 shadow-[0_8px_22px_-20px_rgba(15,23,42,0.55)] backdrop-blur supports-[backdrop-filter]:bg-white/[0.88] sm:flex-row sm:items-center sm:justify-between sm:px-4"
+  "sticky top-14 z-20 scroll-mt-20 flex flex-col gap-2 border-y border-[var(--workspace-border)] bg-white/[0.96] px-3 py-2.5 shadow-none backdrop-blur supports-[backdrop-filter]:bg-white/[0.92] sm:flex-row sm:items-center sm:justify-between sm:px-4"
 const reviewBoardShellClass =
   "relative rounded-lg border border-[var(--workspace-border)] bg-white"
 const reviewBoardTopbarClass =
@@ -614,7 +614,7 @@ const reviewBoardCellClass =
 const reviewBoardRowClass =
   "group h-12 bg-white transition-colors hover:bg-[var(--workspace-row-hover)]"
 const reviewBoardMenuClass =
-  "absolute right-0 top-11 z-30 space-y-1.5 rounded-md border border-[var(--workspace-border)] bg-white p-2 shadow-[0_8px_30px_rgba(0,0,0,0.12)]"
+  "absolute right-0 top-11 z-30 space-y-1.5 rounded-lg border border-[var(--workspace-border)] bg-white p-2 shadow-none"
 const reviewBoardMobileCardClass =
   "border-b border-[var(--workspace-border)] bg-white px-3 py-3 last:border-b-0"
 const reviewBoardMetricClass =
@@ -1630,11 +1630,11 @@ export function ResultActions({
                       "ax-interactive relative inline-flex h-11 shrink-0 items-center gap-1.5 border-b-2 px-0 text-[13px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/20",
                       active
                         ? "border-[var(--workspace-primary)] text-[var(--workspace-primary)]"
-                        : "border-transparent text-[#475467] hover:text-[#111827]",
+                        : "border-transparent text-[var(--workspace-muted)] hover:text-[var(--workspace-ink)]",
                     )}
                   >
                     <span>{tab.label}</span>
-                    {tab.count > 0 ? <span className="tabular-nums text-[#667085]">{tab.count}</span> : null}
+                    {tab.count > 0 ? <span className="tabular-nums text-[var(--workspace-muted)]">{tab.count}</span> : null}
                   </button>
                 )
               })}
@@ -1744,21 +1744,21 @@ export function ResultActions({
           </div>
 
           <div className="hidden max-h-[calc(100svh-15rem)] overflow-auto lg:block">
-            <table className="w-full min-w-[1120px] border-separate border-spacing-0 text-left text-[13px] text-[#111827]">
-              <thead className="sticky top-0 z-[5] bg-[#f8f9fa] text-[11px] font-semibold uppercase text-[#475467]">
+            <table className={cn(reviewBoardTableClass, "border-separate border-spacing-0")}>
+              <thead className="sticky top-0 z-[5]">
                 <tr>
-                  <th className="w-14 border-b border-[#cfd4d9] px-3 py-2.5">View</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Document</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Type</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Status</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">From</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Reference</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Date</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Due date</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5 text-right">Total</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Exception</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Confidence</th>
-                  <th className="w-28 border-b border-[#cfd4d9] px-3 py-2.5 text-right">Action</th>
+                  <th className={cn(reviewBoardHeadCellClass, "w-14")} aria-label="Open" />
+                  <th className={reviewBoardHeadCellClass}>Document</th>
+                  <th className={reviewBoardHeadCellClass}>Type</th>
+                  <th className={reviewBoardHeadCellClass}>Status</th>
+                  <th className={reviewBoardHeadCellClass}>From</th>
+                  <th className={reviewBoardHeadCellClass}>Reference</th>
+                  <th className={reviewBoardHeadCellClass}>Date</th>
+                  <th className={reviewBoardHeadCellClass}>Due date</th>
+                  <th className={cn(reviewBoardHeadCellClass, "text-right")}>Total</th>
+                  <th className={reviewBoardHeadCellClass}>Exception</th>
+                  <th className={reviewBoardHeadCellClass}>Confidence</th>
+                  <th className={cn(reviewBoardHeadCellClass, "w-28 text-right")} aria-label="Actions" />
                 </tr>
               </thead>
               <tbody>
@@ -1780,11 +1780,8 @@ export function ResultActions({
                     : null
 
                   return (
-                    <tr
-                      key={fileKey}
-                      className="group h-12 bg-white transition-colors hover:bg-[#f7f8fc]"
-                    >
-                      <td className={cn("border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", rowAccentClass(displayState, duplicateWarning))}>
+                    <tr key={fileKey} className={reviewBoardRowClass}>
+                      <td className={cn(reviewBoardCellClass, "border-l-[3px]", rowAccentClass(displayState, duplicateWarning))}>
                         {docHref ? (
                           <Button asChild variant="surface" size="icon" className={cn("!size-7", workspaceNormalControlClass)}>
                             <Link
@@ -1807,11 +1804,11 @@ export function ResultActions({
                           </Button>
                         )}
                       </td>
-                      <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                      <td className={cn(reviewBoardCellClass, "max-w-[260px]")}>
                         {docHref ? (
                           <Link
                             href={docHref}
-                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[var(--workspace-primary)]"
+                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[var(--workspace-ink)] hover:text-[var(--workspace-primary)]"
                           >
                             {file.filename || `Result ${index + 1}`}
                           </Link>
@@ -1819,42 +1816,42 @@ export function ResultActions({
                           <button
                             type="button"
                             onClick={() => openComparison(index)}
-                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[var(--workspace-primary)]"
+                            className="block max-w-full truncate text-left text-[14px] font-semibold text-[var(--workspace-ink)] hover:text-[var(--workspace-primary)]"
                           >
                             {file.filename || `Result ${index + 1}`}
                           </button>
                         )}
                         {isHandwrittenDocument(file) ? (
-                          <span className="mt-1 inline-flex text-[11px] font-medium text-[#5b21b6]">Handwritten</span>
+                          <span className="mt-1 inline-flex text-[11px] font-medium text-[var(--workspace-muted)]">Handwritten</span>
                         ) : null}
                       </td>
-                      <td className={cn("border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold", documentTypeToneClass(file.document_type))}>
+                      <td className={cn(reviewBoardCellClass, "font-semibold", documentTypeToneClass(file.document_type))}>
                         {formatDocumentType(file.document_type)}
                       </td>
-                      <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                      <td className={reviewBoardCellClass}>
                         <span className={cn("inline-flex h-5 items-center whitespace-nowrap rounded-full border px-2 text-[11px] font-semibold leading-none", statusChipClass(displayState))}>
                           {statusLabel}
                         </span>
                       </td>
-                      <td className="ax-data-entity max-w-[180px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                      <td className={cn(reviewBoardCellClass, "ax-data-entity max-w-[180px]")}>
                         <span className="block truncate">{formatCellValue(summary.identity)}</span>
                       </td>
-                      <td className="ax-data-reference max-w-[150px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                      <td className={cn(reviewBoardCellClass, "ax-data-reference max-w-[150px]")}>
                         <span className="block truncate">{resultReference(file)}</span>
                       </td>
-                      <td className="ax-data-date border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                      <td className={cn(reviewBoardCellClass, "ax-data-date")}>
                         {resultDate(file)}
                       </td>
-                      <td className="ax-data-due border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                      <td className={cn(reviewBoardCellClass, "ax-data-due")}>
                         {resultDueDate(file, summary)}
                       </td>
-                      <td className="ax-data-money border-b border-[#e4e7ef] px-3 py-2 text-right align-middle">
+                      <td className={cn(reviewBoardCellClass, "ax-data-money text-right")}>
                         {formatCellValue(summary.amount)}
                       </td>
-                      <td className={cn("border-b border-[#e4e7ef] px-3 py-2 align-middle text-[12px] font-semibold", issue.className)}>
+                      <td className={cn(reviewBoardCellClass, "text-[12px] font-semibold", issue.className)}>
                         {issue.label}
                       </td>
-                      <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                      <td className={reviewBoardCellClass}>
                         {(() => {
                           const confidence = resultConfidence(file)
                           return (
@@ -1866,13 +1863,13 @@ export function ResultActions({
                           )
                         })()}
                       </td>
-                      <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                      <td className={reviewBoardCellClass}>
                         <div className="flex justify-end gap-1.5">
                           {duplicateWarning ? (
                             <button
                               type="button"
                               onClick={() => void onOverrideDuplicateWarning?.(file, duplicateWarning.id)}
-                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#fed7aa] bg-[#fff7ed] px-2.5 text-[11px] font-semibold text-[#92400e] shadow-none transition-colors hover:border-[#f59e0b] hover:bg-[#ffedd5] focus-visible:ring-2 focus-visible:ring-[#f59e0b]/20"
+                              className="ax-interactive inline-flex h-7 items-center rounded-md border border-amber-200 bg-amber-50 px-2.5 text-[11px] font-semibold text-[var(--text-attention)] shadow-none transition-colors hover:border-[var(--text-attention)] hover:bg-amber-100 focus-visible:ring-2 focus-visible:ring-amber-200"
                             >
                               Separate
                             </button>
@@ -1880,7 +1877,7 @@ export function ResultActions({
                             <button
                               type="button"
                               onClick={() => void onMarkDocumentReady?.(file)}
-                              className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#bbf7d0] bg-[#ecfdf3] px-2.5 text-[11px] font-semibold text-[#166534] shadow-none transition-colors hover:border-[#16a34a] hover:bg-[#dcfce7] focus-visible:ring-2 focus-visible:ring-[#16a34a]/20"
+                              className="ax-interactive inline-flex h-7 items-center rounded-md border border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] px-2.5 text-[11px] font-semibold text-[var(--workspace-primary)] shadow-none transition-colors hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-primary)] hover:text-white focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/20"
                             >
                               Ready
                             </button>
@@ -1890,7 +1887,7 @@ export function ResultActions({
                                 <button
                                   type="button"
                                   onClick={() => void onSendToAccountsPayable(file)}
-                                  className="ax-interactive inline-flex h-7 items-center rounded-full border border-[#16a34a] bg-[#16a34a] px-2.5 text-[11px] font-semibold text-white shadow-none transition-colors hover:border-[#15803d] hover:bg-[#15803d] focus-visible:ring-2 focus-visible:ring-[#16a34a]/30"
+                                  className="ax-interactive inline-flex h-7 items-center rounded-md border border-[var(--workspace-primary)] bg-[var(--workspace-primary)] px-2.5 text-[11px] font-semibold text-white shadow-none transition-colors hover:border-[var(--workspace-primary-hover)] hover:bg-[var(--workspace-primary-hover)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/30"
                                 >
                                   Draft bill
                                 </button>
@@ -1927,9 +1924,9 @@ export function ResultActions({
                   )
                 }) : (
                   <tr>
-                    <td colSpan={12} className="border-b border-[#e4e7ef] px-4 py-10 text-center">
+                    <td colSpan={12} className={cn(reviewBoardCellClass, "px-4 py-10 text-center")}>
                       <div className="flex flex-col items-center gap-3">
-                        <span className="text-[13px] font-medium text-[#475467]">No documents in this view.</span>
+                        <span className="text-[13px] font-medium text-[var(--workspace-muted)]">No documents in this view.</span>
                         <Button
                           type="button"
                           size="sm"
@@ -2966,7 +2963,7 @@ function BatchStagingBoard({
                     Open inbox
                   </a>
                 </Button>
-                <Button asChild variant="ghost" className="h-9 gap-2 px-3 text-xs text-[#475467] hover:text-[#111827]">
+                <Button asChild variant="ghost" className="h-9 gap-2 px-3 text-xs text-[var(--workspace-muted)] hover:text-[var(--workspace-ink)]">
                   <a href="/dashboard/guide">
                     <BookOpen className="h-4 w-4" />
                     Guide
@@ -2984,7 +2981,7 @@ function BatchStagingBoard({
             <div className="flex min-h-12 flex-wrap items-stretch gap-4">
               <span className="relative inline-flex h-12 items-center gap-1.5 border-b-2 border-[var(--workspace-primary)] px-0 text-[13px] font-semibold text-[var(--workspace-primary)]">
                 <span>{tabLabel}</span>
-                {rowCount > 0 ? <span className="tabular-nums text-[#667085]">{rowCount}</span> : null}
+                {rowCount > 0 ? <span className="tabular-nums text-[var(--workspace-muted)]">{rowCount}</span> : null}
               </span>
             </div>
           </div>
@@ -3024,28 +3021,28 @@ function BatchStagingBoard({
           )}
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1120px] border-separate border-spacing-0 text-left text-[13px] text-[#111827]">
-              <thead className="bg-[#f8f9fa] text-[11px] font-semibold uppercase text-[#475467]">
+            <table className={cn(reviewBoardTableClass, "border-separate border-spacing-0")}>
+              <thead>
                 <tr>
-                  <th className="w-14 border-b border-[#cfd4d9] px-3 py-2.5">View</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Document</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Type</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Status</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">From</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Reference</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Date</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Due date</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5 text-right">Total</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Check</th>
-                  <th className="border-b border-[#cfd4d9] px-3 py-2.5">Trust</th>
-                  <th className="w-28 border-b border-[#cfd4d9] px-3 py-2.5 text-right">Action</th>
+                  <th className={cn(reviewBoardHeadCellClass, "w-14")} aria-label="Open" />
+                  <th className={reviewBoardHeadCellClass}>Document</th>
+                  <th className={reviewBoardHeadCellClass}>Type</th>
+                  <th className={reviewBoardHeadCellClass}>Status</th>
+                  <th className={reviewBoardHeadCellClass}>From</th>
+                  <th className={reviewBoardHeadCellClass}>Reference</th>
+                  <th className={reviewBoardHeadCellClass}>Date</th>
+                  <th className={reviewBoardHeadCellClass}>Due date</th>
+                  <th className={cn(reviewBoardHeadCellClass, "text-right")}>Total</th>
+                  <th className={reviewBoardHeadCellClass}>Check</th>
+                  <th className={reviewBoardHeadCellClass}>Trust</th>
+                  <th className={cn(reviewBoardHeadCellClass, "w-28 text-right")} aria-label="Actions" />
                 </tr>
               </thead>
               <tbody>
                 {mode === "idle" ? (
                   (recentLoading || latestRecentId) ? (
                     <tr>
-                      <td colSpan={12} className="border-b border-[#e4e7ef] p-4">
+                      <td colSpan={12} className={cn(reviewBoardCellClass, "p-4")}>
                         <WorkspaceActivityIndicator
                           title="Refreshing recent documents"
                           detail="Retrieving the latest batches and review status."
@@ -3056,8 +3053,8 @@ function BatchStagingBoard({
                     recent.map((file) => {
                       const st = recentStatusChip(file.status)
                       return (
-                        <tr key={file.id} className="group h-12 bg-white transition-colors hover:bg-[#f7f8fc]">
-                          <td className="border-b border-l-[3px] border-b-[#e4e7ef] border-l-transparent px-3 py-2 align-middle">
+                        <tr key={file.id} className={reviewBoardRowClass}>
+                          <td className={cn(reviewBoardCellClass, "border-l-[3px] border-l-transparent")}>
                             <Link
                               href={`/dashboard/client?job_id=${file.id}`}
                               className={cn("ax-interactive inline-flex size-7 items-center justify-center transition-colors", workspaceNormalControlClass)}
@@ -3066,30 +3063,30 @@ function BatchStagingBoard({
                               <Eye className="size-3.5" />
                             </Link>
                           </td>
-                          <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                          <td className={cn(reviewBoardCellClass, "max-w-[260px]")}>
                             <Link
                               href={`/dashboard/client?job_id=${file.id}`}
-                              className="block max-w-full truncate text-left text-[14px] font-semibold text-[#111827] hover:text-[var(--workspace-primary)]"
+                              className="block max-w-full truncate text-left text-[14px] font-semibold text-[var(--workspace-ink)] hover:text-[var(--workspace-primary)]"
                             >
                               {file.filename}
                             </Link>
                           </td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#0f766e]">Stack</td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                          <td className={cn(reviewBoardCellClass, "font-semibold text-[var(--workspace-primary)]")}>Stack</td>
+                          <td className={reviewBoardCellClass}>
                             <span className={cn("inline-flex h-5 items-center whitespace-nowrap rounded-full border px-2 text-[11px] font-semibold leading-none", st.chip)}>
                               {st.label}
                             </span>
                           </td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle text-[#475467] tabular-nums">
+                          <td className={reviewBoardCellClass}>{dash}</td>
+                          <td className={reviewBoardCellClass}>{dash}</td>
+                          <td className={cn(reviewBoardCellClass, "text-[var(--workspace-muted)] tabular-nums")}>
                             {format(new Date(file.createdAt), "MMM d, yyyy")}
                           </td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 text-right align-middle">{dash}</td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                          <td className={reviewBoardCellClass}>{dash}</td>
+                          <td className={cn(reviewBoardCellClass, "text-right")}>{dash}</td>
+                          <td className={reviewBoardCellClass}>{dash}</td>
+                          <td className={reviewBoardCellClass}>{dash}</td>
+                          <td className={reviewBoardCellClass}>
                             <div className="flex justify-end">
                               <Link
                                 href={`/dashboard/client?job_id=${file.id}`}
@@ -3104,9 +3101,9 @@ function BatchStagingBoard({
                     })
                   ) : (
                     <tr>
-                      <td colSpan={12} className="border-b border-[#e4e7ef] px-4 py-14 text-center">
+                      <td colSpan={12} className={cn(reviewBoardCellClass, "px-4 py-14 text-center")}>
                         <div className="mx-auto flex max-w-sm flex-col items-center gap-4">
-                          <div className="overflow-hidden rounded-lg border border-[#d8dde6] bg-white shadow-[0_10px_30px_-24px_rgba(15,23,42,0.45)]">
+                          <div className="overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white shadow-none">
                             <img
                               src="/workspace/document-stack.png"
                               alt=""
@@ -3114,9 +3111,9 @@ function BatchStagingBoard({
                             />
                           </div>
                           <div>
-                            <p className="text-[14px] font-semibold text-[#111827]">No stack open</p>
-                            <p className="mt-1 text-xs font-medium text-[#475467]">
-                              Upload client documents to build the review board.
+                            <p className="text-[14px] font-semibold text-[var(--workspace-ink)]">No documents yet</p>
+                            <p className="mt-1 text-xs font-medium text-[var(--workspace-muted)]">
+                              Upload a client stack to begin.
                             </p>
                           </div>
                           <Button
@@ -3146,47 +3143,47 @@ function BatchStagingBoard({
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0 }}
                           transition={m.tFast}
-                          className="group h-12 bg-white transition-colors hover:bg-[#f7f8fc]"
+                          className={reviewBoardRowClass}
                         >
-                          <td className={cn("border-b border-l-[3px] border-b-[#e4e7ef] px-3 py-2 align-middle", processing ? "border-l-[var(--workspace-blue)]" : "border-l-transparent")}>
-                            <span className="inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-black">
+                          <td className={cn(reviewBoardCellClass, "border-l-[3px]", processing ? "border-l-[var(--workspace-blue)]" : "border-l-transparent")}>
+                            <span className="inline-flex size-7 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-white text-black">
                               {pdf ? <FileText className="size-3.5 text-black" /> : <FileImage className="size-3.5 text-black" />}
                             </span>
                           </td>
-                          <td className="max-w-[260px] border-b border-[#e4e7ef] px-3 py-2 align-middle">
-                            <span className="block max-w-full truncate text-[14px] font-semibold text-[#111827]">{file.name}</span>
-                            <span className="mt-0.5 block truncate text-[11px] font-medium text-[#475467]">
+                          <td className={cn(reviewBoardCellClass, "max-w-[260px]")}>
+                            <span className="block max-w-full truncate text-[14px] font-semibold text-[var(--workspace-ink)]">{file.name}</span>
+                            <span className="mt-0.5 block truncate text-[11px] font-medium text-[var(--workspace-muted)]">
                               {pdf ? `${pageCount ? `${pageCount} page${pageCount === 1 ? "" : "s"}` : "PDF"} · ` : ""}{formatBytes(file.size)}
                             </span>
                           </td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle font-semibold text-[#111827]">Auto-detect</td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                          <td className={cn(reviewBoardCellClass, "font-semibold text-[var(--workspace-ink)]")}>Auto-detect</td>
+                          <td className={reviewBoardCellClass}>
                             {processing ? (
                               <span className="ax-text-working inline-flex h-5 items-center px-2 text-[11px]">
                                 In review
                               </span>
                             ) : (
-                              <span className="inline-flex h-5 items-center rounded-full border border-[#cfd4d9] bg-white px-2 text-[11px] font-semibold text-[#475467]">
+                              <span className="inline-flex h-5 items-center rounded-md border border-[var(--workspace-border)] bg-white px-2 text-[11px] font-semibold text-[var(--workspace-muted)]">
                                 Staged
                               </span>
                             )}
                           </td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 text-right align-middle">{dash}</td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                          <td className={reviewBoardCellClass}>{dash}</td>
+                          <td className={reviewBoardCellClass}>{dash}</td>
+                          <td className={reviewBoardCellClass}>{dash}</td>
+                          <td className={reviewBoardCellClass}>{dash}</td>
+                          <td className={cn(reviewBoardCellClass, "text-right")}>{dash}</td>
+                          <td className={reviewBoardCellClass}>
                             {processing ? <span className="ax-text-working text-[12px]">Queued</span> : dash}
                           </td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">{dash}</td>
-                          <td className="border-b border-[#e4e7ef] px-3 py-2 align-middle">
+                          <td className={reviewBoardCellClass}>{dash}</td>
+                          <td className={reviewBoardCellClass}>
                             <div className="flex justify-end">
                               {processing ? dash : (
                                 <button
                                   type="button"
                                   onClick={() => onRemoveFile(index)}
-                                  className="ax-interactive inline-flex size-7 items-center justify-center rounded-full border border-[#cfd4d9] bg-white text-[#475467] shadow-none transition-colors hover:border-[#ef4444] hover:bg-[#fff1f2] hover:text-[#b42318] focus-visible:ring-2 focus-visible:ring-[#ef4444]/20"
+                                  className="ax-interactive inline-flex size-7 items-center justify-center rounded-md border border-[var(--workspace-button-border)] bg-white text-[var(--workspace-muted)] shadow-none transition-colors hover:border-[var(--text-danger)] hover:bg-red-50 hover:text-[var(--text-danger)] focus-visible:ring-2 focus-visible:ring-red-200"
                                   aria-label={`Remove ${file.name}`}
                                 >
                                   <Trash2 className="h-3.5 w-3.5" />
