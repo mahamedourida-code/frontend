@@ -1616,26 +1616,24 @@ body {
    rounded-full mint-on-emerald with the Tella "definition" shadow (inset highlight +
    coloured ring + soft drop). Colours are hardcoded so toasts never theme-flip, exactly
    like the brand buttons. Type drives --ax-toast-* so success stays mint, errors stay red. */
+/* Current treatment: flat AxLiner blue for success, amber/red for exceptions. */
 [data-sonner-toast].ax-toast {
-  --ax-toast-bg: #d1fae5;
-  --ax-toast-fg: #064e3b;
-  --ax-toast-ring: #10b981;
-  border: none;
-  border-radius: 9999px;
+  --ax-toast-bg: var(--workspace-blue-soft);
+  --ax-toast-fg: var(--workspace-primary-hover);
+  --ax-toast-ring: var(--workspace-primary);
+  border: 1px solid color-mix(in srgb, var(--ax-toast-ring) 30%, transparent);
+  border-radius: var(--workspace-control-radius);
   padding: 0.7rem 1.1rem;
   font-family: var(--font-sans);
   font-weight: 600;
   background: var(--ax-toast-bg);
   color: var(--ax-toast-fg);
-  box-shadow:
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.65),
-    0 0 0 1px var(--ax-toast-ring),
-    0 8px 24px -10px color-mix(in srgb, var(--ax-toast-ring) 70%, transparent);
+  box-shadow: none;
 }
 [data-sonner-toast].ax-toast[data-type="success"] {
-  --ax-toast-bg: #d1fae5;
-  --ax-toast-fg: #064e3b;
-  --ax-toast-ring: #10b981;
+  --ax-toast-bg: var(--workspace-blue-soft);
+  --ax-toast-fg: var(--workspace-primary-hover);
+  --ax-toast-ring: var(--workspace-primary);
 }
 [data-sonner-toast].ax-toast[data-type="error"] {
   --ax-toast-bg: #fee2e2;

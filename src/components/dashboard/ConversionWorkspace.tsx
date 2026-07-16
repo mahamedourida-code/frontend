@@ -385,7 +385,7 @@ export function UploadDropzone({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={m.tFast}
-          className="fixed inset-0 z-[90] flex items-center justify-center bg-[#111827]/50 p-4 backdrop-blur-xl"
+          className="fixed inset-0 z-[90] flex items-center justify-center bg-[var(--workspace-ink)]/50 p-4 backdrop-blur-xl"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) setSelectedPreview(null)
           }}
@@ -514,7 +514,7 @@ export function SelectedFilesTray({
     </div>
       {selectedPreview ? (
         <div
-          className="fixed inset-0 z-[90] flex items-center justify-center bg-[#111827]/50 p-4 backdrop-blur-xl"
+          className="fixed inset-0 z-[90] flex items-center justify-center bg-[var(--workspace-ink)]/50 p-4 backdrop-blur-xl"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) setSelectedPreview(null)
           }}
@@ -827,7 +827,7 @@ export function ResultPreviewPanel({
     </WorkspaceSection>
       {imagePreviewOpen && firstImageUrl ? (
         <div
-          className="fixed inset-0 z-[90] flex items-center justify-center bg-[#111827]/50 p-4 backdrop-blur-xl"
+          className="fixed inset-0 z-[90] flex items-center justify-center bg-[var(--workspace-ink)]/50 p-4 backdrop-blur-xl"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) setImagePreviewOpen(false)
           }}
@@ -1948,7 +1948,7 @@ export function ResultActions({
     </div>
       {comparisonFile ? (
         <div
-          className="fixed inset-0 z-[90] flex items-center justify-center bg-[#111827]/50 p-3 backdrop-blur-xl sm:p-5"
+          className="fixed inset-0 z-[90] flex items-center justify-center bg-[var(--workspace-ink)]/50 p-3 backdrop-blur-xl sm:p-5"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
               setComparisonIndex(null)
@@ -2297,7 +2297,7 @@ export function ResultActions({
                   <div className="text-gray-950">
                     {/* Xero-style document-form header: status + type on the left,
                         the document total set large on the right. */}
-                    <div className="sticky top-0 z-[1] border-b border-[#e4e7ef] bg-white px-5 py-4">
+                    <div className="sticky top-0 z-[1] border-b border-[var(--workspace-border)] bg-white px-5 py-4">
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
@@ -2309,7 +2309,7 @@ export function ResultActions({
                             </span>
                             {isHandwrittenDocument(comparisonFile) ? <HandwrittenBadge variant="label" /> : null}
                             {invoiceLanguage !== "en" ? (
-                              <span className="inline-flex items-center gap-1 rounded-full border border-[#ddd6fe] bg-[#f5f3ff] px-2 py-0.5 text-[10px] font-bold text-[#5b21b6]">
+                              <span className="inline-flex items-center gap-1 rounded-full border border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] px-2 py-0.5 text-[10px] font-bold text-[var(--workspace-primary)]">
                                 <Languages className="size-2.5" />
                                 {invoiceLanguageName(invoiceLanguage)} schema
                               </span>
@@ -2319,12 +2319,12 @@ export function ResultActions({
                             {comparisonSummary?.identity || comparisonFile.filename || "Document"}
                           </p>
                           {comparisonSummary?.identityLabel ? (
-                            <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-normal text-[#475467]">{comparisonSummary.identityLabel}</p>
+                            <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-normal text-[var(--workspace-muted)]">{comparisonSummary.identityLabel}</p>
                           ) : null}
                         </div>
                         {comparisonSummary?.amount && comparisonSummary.amount !== "-" ? (
                           <div className="shrink-0 text-right">
-                            <p className="text-[11px] font-semibold uppercase tracking-normal text-[#475467]">{comparisonSummary.amountLabel || "Total"}</p>
+                            <p className="text-[11px] font-semibold uppercase tracking-normal text-[var(--workspace-muted)]">{comparisonSummary.amountLabel || "Total"}</p>
                             <p className="mt-0.5 text-2xl font-bold tabular-nums text-[var(--data-money)]">{comparisonSummary.amount}</p>
                           </div>
                         ) : null}
@@ -2521,25 +2521,25 @@ export function ResultActions({
                     {comparisonRows?.rows.length ? (
                       <>
                         {comparisonHandwritten ? (
-                          <ConfidenceLegend className="border-b border-[#e4e7ef] bg-[#f8f9fa] px-4 py-2" />
+                          <ConfidenceLegend className="border-b border-[var(--workspace-border)] bg-[var(--workspace-table-header)] px-4 py-2" />
                         ) : null}
-                        <div className="border-y border-[#e4e7ef] bg-white px-5 py-2 text-[11px] font-bold uppercase tracking-normal text-[#475467]">Line items</div>
+                        <div className="border-y border-[var(--workspace-border)] bg-white px-5 py-2 text-[11px] font-bold uppercase tracking-normal text-[var(--workspace-muted)]">Line items</div>
                         <table className="w-full min-w-[640px] border-collapse text-[13px]">
-                          <thead className="sticky top-[72px] z-[1] bg-[#f8f9fa] text-[11px] font-semibold uppercase tracking-normal text-[#475467]">
+                          <thead className="sticky top-[72px] z-[1] bg-[var(--workspace-table-header)] text-[11px] font-semibold uppercase tracking-normal text-[var(--workspace-table-head)]">
                             <tr>
                               {comparisonHandwritten ? (
-                                <th className="w-7 border-b border-[#e4e7ef] px-2 py-2.5" aria-label="Confidence" />
+                                <th className="w-7 border-b border-[var(--workspace-border)] px-2 py-2.5" aria-label="Confidence" />
                               ) : null}
                               {comparisonRows.columns.map((column, columnIndex) => (
-                                <th key={column} className={cn("border-b border-[#e4e7ef] px-3 py-2.5 font-semibold", columnIndex === 0 ? "text-left" : "text-left")}>{column}</th>
+                                <th key={column} className={cn("border-b border-[var(--workspace-border)] px-3 py-2.5 font-semibold", columnIndex === 0 ? "text-left" : "text-left")}>{column}</th>
                               ))}
                             </tr>
                           </thead>
                           <tbody>
                             {comparisonRows.rows.map((row, rowIndex) => (
-                              <tr key={rowIndex} className="bg-white transition-colors hover:bg-[#f7f8fc]">
+                              <tr key={rowIndex} className="bg-white transition-colors hover:bg-[var(--workspace-row-hover)]">
                                 {comparisonHandwritten ? (
-                                  <td className="border-b border-[#eef1f6] px-2 py-1.5 text-center align-middle">
+                                  <td className="border-b border-[var(--workspace-border)] px-2 py-1.5 text-center align-middle">
                                     <ConfidenceDot tier={getRowConfidenceTier(comparisonFile, rowIndex + 1)} size={8} withRing />
                                   </td>
                                 ) : null}
@@ -2554,7 +2554,7 @@ export function ResultActions({
                                   <td
                                     key={cellIndex}
                                     className={cn(
-                                      "border-b border-[#eef1f6] px-2 py-1.5",
+                                      "border-b border-[var(--workspace-border)] px-2 py-1.5",
                                       cellInfo.uncertain && "border-l-2 border-l-[var(--text-attention)]",
                                     )}
                                     onMouseEnter={showCellSource}
@@ -2574,7 +2574,7 @@ export function ResultActions({
                                             )
                                           }
                                         }}
-                                        className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-[13px] text-[#111827] outline-none focus:border-[var(--workspace-primary)] focus:bg-white focus:ring-2 focus:ring-black/15"
+                                        className="ax-interactive h-8 w-full min-w-[90px] rounded-md border border-transparent bg-transparent px-1.5 text-[13px] text-[var(--workspace-ink)] outline-none focus:border-[var(--workspace-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--workspace-primary)]/15"
                                       />
                                       {cellInfo.uncertain ? (
                                         <AnomalyDot
@@ -2615,19 +2615,19 @@ export function ResultActions({
                       const bk = comparisonSummary.bookkeeper
                       const money = (value: any) => (value === undefined || value === null || value === "" ? "–" : [bk.currency, value].filter(Boolean).join(" "))
                       return (
-                        <div className="border-t border-[#e4e7ef] bg-[#fbfbfd] px-5 py-4">
+                        <div className="border-t border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-5 py-4">
                           <div className="ml-auto w-full max-w-[280px] space-y-2 text-[13px]">
                             <div className="flex items-center justify-between">
-                              <span className="font-medium text-[#475467]">Subtotal</span>
-                              <span className="font-semibold tabular-nums text-[#111827]">{money(bk.subtotal)}</span>
+                              <span className="font-medium text-[var(--workspace-muted)]">Subtotal</span>
+                              <span className="font-semibold tabular-nums text-[var(--workspace-ink)]">{money(bk.subtotal)}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                              <span className="font-medium text-[#475467]">VAT</span>
-                              <span className="font-semibold tabular-nums text-[#0f766e]">{money(bk.vat)}</span>
+                              <span className="font-medium text-[var(--workspace-muted)]">VAT</span>
+                              <span className="font-semibold tabular-nums text-[var(--text-tax)]">{money(bk.vat)}</span>
                             </div>
-                            <div className="mt-1 flex items-center justify-between border-t-2 border-[#111827] pt-2">
-                              <span className="text-[15px] font-bold text-[#111827]">Total</span>
-                              <span className="text-[15px] font-bold tabular-nums text-[#111827]">{money(bk.total)}</span>
+                            <div className="mt-1 flex items-center justify-between border-t-2 border-[var(--workspace-ink)] pt-2">
+                              <span className="text-[15px] font-bold text-[var(--workspace-ink)]">Total</span>
+                              <span className="text-[15px] font-bold tabular-nums text-[var(--workspace-ink)]">{money(bk.total)}</span>
                             </div>
                           </div>
                         </div>
@@ -2644,7 +2644,7 @@ export function ResultActions({
                 ) : comparisonTable.length ? (
                   <>
                   {/* Xero-style document-form header for extracted tables. */}
-                  <div className="sticky top-0 z-[1] border-b border-[#e4e7ef] bg-white px-5 py-4">
+                  <div className="sticky top-0 z-[1] border-b border-[var(--workspace-border)] bg-white px-5 py-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
@@ -2659,16 +2659,16 @@ export function ResultActions({
                         <p className="mt-1.5 truncate text-[15px] font-bold tracking-normal text-[var(--data-entity)]">{comparisonFile.filename || "Extracted table"}</p>
                       </div>
                       <div className="shrink-0 text-right">
-                        <p className="text-[11px] font-semibold uppercase tracking-normal text-[#475467]">Rows</p>
-                        <p className="mt-0.5 text-2xl font-bold tabular-nums text-[#111827]">{Math.max(comparisonTable.length - 1, 0)}</p>
+                        <p className="text-[11px] font-semibold uppercase tracking-normal text-[var(--workspace-muted)]">Rows</p>
+                        <p className="mt-0.5 text-2xl font-bold tabular-nums text-[var(--workspace-ink)]">{Math.max(comparisonTable.length - 1, 0)}</p>
                       </div>
                     </div>
                   </div>
                   {comparisonHandwritten ? (
-                    <ConfidenceLegend className="border-b border-[#e4e7ef] bg-[#f8f9fa] px-4 py-2" />
+                    <ConfidenceLegend className="border-b border-[var(--workspace-border)] bg-[var(--workspace-table-header)] px-4 py-2" />
                   ) : null}
                   {uncertainRawCellCount > 0 ? (
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#e4e7ef] bg-[var(--button-warm)] px-4 py-2.5">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--workspace-border)] bg-[var(--button-warm)] px-4 py-2.5">
                       <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground">
                         <span className="inline-block size-1.5 shrink-0 rounded-full bg-[var(--text-attention)]" />
                         {uncertainRawCellCount} cell{uncertainRawCellCount === 1 ? "" : "s"} to check
@@ -2685,23 +2685,23 @@ export function ResultActions({
                       </button>
                     </div>
                   ) : null}
-                  <table className="w-full min-w-[680px] border-collapse text-[13px] text-[#111827]">
+                  <table className="w-full min-w-[680px] border-collapse text-[13px] text-[var(--workspace-ink)]">
                     <tbody>
                       {comparisonTable.map((row, rowIndex) => {
                         const isHandwrittenRow = isHandwrittenDocument(comparisonFile) && rowIndex > 0
                         const rowTier = isHandwrittenRow ? getRowConfidenceTier(comparisonFile, rowIndex) : null
                         return (
-                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-[#f8f9fa] font-semibold" : "bg-white transition-colors hover:bg-[#f7f8fc]"}>
+                        <tr key={rowIndex} className={rowIndex === 0 ? "bg-[var(--workspace-table-header)] font-semibold" : "bg-white transition-colors hover:bg-[var(--workspace-row-hover)]"}>
                           {isHandwrittenDocument(comparisonFile) ? (
                             <td
                               className={cn(
-                                "w-7 border border-[#eef1f6] px-1.5 text-center align-middle",
-                                rowIndex === 0 ? "border-[#e4e7ef]" : "",
+                                "w-7 border border-[var(--workspace-border)] px-1.5 text-center align-middle",
+                                rowIndex === 0 ? "border-[var(--workspace-border)]" : "",
                               )}
                               aria-hidden={rowIndex === 0}
                             >
                               {rowIndex === 0 ? (
-                                <span className="text-[10px] font-bold uppercase tracking-normal text-[#94a3b8]">·</span>
+                                <span className="text-[10px] font-bold uppercase tracking-normal text-[var(--workspace-muted)]/70">·</span>
                               ) : (
                                 <ConfidenceDot tier={rowTier} size={8} withRing />
                               )}
@@ -2736,10 +2736,10 @@ export function ResultActions({
                                 }}
                                 className={cn(
                                   "min-w-[120px] border px-3 py-2 text-left outline-none",
-                                  rowIndex === 0 ? "border-[#e4e7ef] text-[11px] font-bold uppercase tracking-normal text-[#475467]" : "font-medium",
+                                  rowIndex === 0 ? "border-[var(--workspace-border)] text-[11px] font-bold uppercase tracking-normal text-[var(--workspace-table-head)]" : "font-medium",
                                   isUncertain
-                                    ? "border-[#eef1f6] border-l-2 border-l-[var(--text-attention)] focus-visible:ring-2 focus-visible:ring-black/15"
-                                    : "border-[#eef1f6]",
+                                    ? "border-[var(--workspace-border)] border-l-2 border-l-[var(--text-attention)] focus-visible:ring-2 focus-visible:ring-[var(--workspace-primary)]/15"
+                                    : "border-[var(--workspace-border)]",
                                 )}
                               >
                                 {isEditing ? (
@@ -2755,10 +2755,10 @@ export function ResultActions({
                                         event.currentTarget.blur()
                                       }
                                     }}
-                                    className="ax-interactive w-full rounded-md border border-[var(--workspace-primary)] bg-white px-2 py-1 text-[13px] text-[#111827] outline-none ring-2 ring-black/15"
+                                    className="ax-interactive w-full rounded-md border border-[var(--workspace-primary)] bg-white px-2 py-1 text-[13px] text-[var(--workspace-ink)] outline-none ring-2 ring-[var(--workspace-primary)]/15"
                                   />
                                 ) : (
-                                  <span className={cn("inline-flex items-center gap-1", !value && "text-[#98a2b3]")}>
+                                  <span className={cn("inline-flex items-center gap-1", !value && "text-[var(--workspace-muted)]/70")}>
                                     {value || " "}
                                     {isUncertain ? (
                                       <AnomalyDot
@@ -2902,7 +2902,7 @@ function BatchStagingBoard({
   const stagedPageCount = uploadedFiles.reduce((total, file, index) => (
     total + (isPdfFile(file) ? (pdfPageCounts[index] || 1) : 0)
   ), 0)
-  const dash = <span className="text-[#98a2b3]">–</span>
+  const dash = reviewBoardDash
 
   return (
     <div className="space-y-2.5">

@@ -45,7 +45,7 @@ export function PublishConfirmation({ state, onClose }: PublishConfirmationProps
           <div className="flex items-start gap-3">
             <div className="relative flex size-10 shrink-0 items-center justify-center rounded-full border border-[var(--workspace-border)] bg-[var(--workspace-soft)] text-[var(--workspace-primary)]">
               <Check className="size-7" strokeWidth={2.75} />
-              <span className="absolute -bottom-0.5 -right-0.5 inline-flex size-5 items-center justify-center rounded-full border border-white bg-[#171717] text-white">
+              <span className="absolute -bottom-0.5 -right-0.5 inline-flex size-5 items-center justify-center rounded-full border border-white bg-[var(--workspace-ink)] text-white">
                 <Landmark className="size-3" strokeWidth={2.4} aria-hidden="true" />
               </span>
             </div>
