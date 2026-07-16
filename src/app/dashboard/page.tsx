@@ -91,15 +91,13 @@ export default function DashboardPage() {
           />
         ) : null}
         <WorkspaceOverview companies={companies} activity={activity} />
-        {hasClients !== false ? (
-          <CompaniesTable
-            workspaceId={activeWorkspace?.id}
-            refreshKey={clientsRefreshKey}
-            onCompanyCountChange={handleCompanyCountChange}
-            onCompaniesLoaded={setCompanies}
-            mode="home"
-          />
-        ) : null}
+        <CompaniesTable
+          workspaceId={activeWorkspace?.id}
+          refreshKey={clientsRefreshKey}
+          onCompanyCountChange={handleCompanyCountChange}
+          onCompaniesLoaded={setCompanies}
+          mode="home"
+        />
       </div>
     </DashboardShell>
   )

@@ -205,9 +205,7 @@ export function CompaniesTable({
   const load = useCallback(async () => {
     if (!workspaceId) {
       setCompanies([])
-      onCompanyCountChange?.(0)
       onCompaniesLoaded?.([])
-      setLoading(false)
       return
     }
 
@@ -363,6 +361,7 @@ export function CompaniesTable({
               <EmptyState
                 icon={<Building2 />}
                 title="No clients yet"
+                action={<AddCompanyDialog workspaceId={workspaceId} onCreated={() => void load()} />}
                 className="min-h-52"
                 compact
               />
