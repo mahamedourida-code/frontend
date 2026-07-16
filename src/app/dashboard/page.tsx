@@ -63,15 +63,14 @@ export default function DashboardPage() {
   }, [user?.id])
 
   if (loading || !user) {
-    return <DashboardRouteLoader label="Loading clients" />
+    return <DashboardRouteLoader label="Loading workspace" />
   }
 
   return (
-    <DashboardShell activeItem="companies" title="Clients" user={user} showBack={false}>
-      <div className="space-y-5">
+    <DashboardShell activeItem="companies" title="Workspace" user={user} showBack={false}>
+      <div className="space-y-3">
         <PageHeader
-          title="Clients"
-          description={activeWorkspace?.name ? `Review queues and draft bills across ${activeWorkspace.name}.` : "Review queues and draft bills across this workspace."}
+          title={activeWorkspace?.name ?? "Workspace"}
           compact
           className="mb-0"
         />
@@ -86,6 +85,7 @@ export default function DashboardPage() {
             <WorkspaceWalkthrough
               userId={user.id}
               workspaceId={activeWorkspace?.id}
+              enabled={Boolean(tourRequest)}
               restartToken={tourRequest}
               onFinish={handleTourFinish}
             />
@@ -97,6 +97,7 @@ export default function DashboardPage() {
           refreshKey={clientsRefreshKey}
           onCompanyCountChange={handleCompanyCountChange}
           onCompaniesLoaded={setCompanies}
+          mode="home"
         />
       </div>
     </DashboardShell>

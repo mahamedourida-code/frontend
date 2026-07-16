@@ -6,12 +6,16 @@ import { useRouter } from "next/navigation"
 import {
   BookCheck,
   Building2,
+  Check,
+  ChevronDown,
   ChevronRight,
+  Filter,
   Plus,
   ReceiptText,
   RefreshCw,
   Search,
   Upload,
+  X,
 } from "lucide-react"
 
 import { AddCompanyDialog } from "@/components/dashboard/companies/AddCompanyDialog"
@@ -22,6 +26,14 @@ import { SkeletonTable } from "@/components/dashboard/SkeletonTable"
 import { StatusBadge } from "@/components/dashboard/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { InlineAction } from "@/components/ui/inline-action"
 import { Input } from "@/components/ui/input"
 import {
@@ -40,6 +52,7 @@ type CompaniesTableProps = {
   refreshKey?: number
   onCompanyCountChange?: (count: number) => void
   onCompaniesLoaded?: (companies: CompanySummary[]) => void
+  mode?: "full" | "home"
 }
 
 type CompanyApi = {
@@ -131,11 +144,62 @@ function ActionLink({ company }: { company: CompanySummary }) {
   )
 }
 
-export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChange, onCompaniesLoaded }: CompaniesTableProps) {
+function HomeQueueState({ company }: { company: CompanySummary }) {
+  if (company.needsReview > 0) {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[var(--workspace-primary)]">
+        <BookCheck className="size-3.5" />
+        {formatCount(company.needsReview)}
+        <span className="hidden sm:inline">review</span>
+      </span>
+    )
+  }
+
+  if (company.bills > 0) {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[var(--workspace-ink)]">
+        <ReceiptText className="size-3.5" />
+        {formatCount(company.bills)}
+        <span className="hidden sm:inline">drafts</span>
+      </span>
+    )
+  }
+
+  return (
+    <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[var(--workspace-muted)]">
+      <Check className="size-3.5" />
+      Clear
+    </span>
+  )
+}
+
+function HomeTableSkeleton() {
+  return (
+    <div className="divide-y divide-[var(--workspace-border)]" aria-label="Loading clients">
+      {Array.from({ length: 4 }).map((_, index) => (
+        <div key={index} className="flex items-center gap-3 px-4 py-3">
+          <span className="size-8 animate-pulse rounded-md bg-[var(--workspace-soft)]" />
+          <span className="h-3.5 w-36 animate-pulse rounded-full bg-[var(--workspace-soft)]" />
+          <span className="ms-auto h-3 w-16 animate-pulse rounded-full bg-[var(--workspace-soft)]" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export function CompaniesTable({
+  workspaceId,
+  refreshKey = 0,
+  onCompanyCountChange,
+  onCompaniesLoaded,
+  mode = "full",
+}: CompaniesTableProps) {
   const router = useRouter()
   const [companies, setCompanies] = useState<CompanySummary[]>([])
   const [query, setQuery] = useState("")
   const [filter, setFilter] = useState<QueueFilter>("all")
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [showAll, setShowAll] = useState(false)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
 
@@ -169,6 +233,10 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
     void load()
   }, [load, refreshKey])
 
+  useEffect(() => {
+    setShowAll(false)
+  }, [filter, query])
+
   const visibleCompanies = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
     return companies
@@ -186,6 +254,183 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
     { value: "unconnected", label: "No books", count: companies.filter((company) => !company.accountingConnected).length },
     { value: "inactive", label: "No intake", count: companies.filter((company) => !company.lastUploadAt || totalDocuments(company) === 0).length },
   ]), [companies])
+
+  if (mode === "home") {
+    const displayedCompanies = showAll ? visibleCompanies : visibleCompanies.slice(0, 5)
+    const activeFilter = queueFilters.find((item) => item.value === filter) ?? queueFilters[0]
+
+    return (
+      <Card id="clients" className="ax-workspace-panel scroll-mt-20 overflow-hidden rounded-lg py-0">
+        <CardContent className="p-0">
+          <div className="flex min-h-12 items-center gap-3 border-b border-[var(--workspace-border)] px-3 sm:px-4">
+            <div className={cn("flex min-w-0 items-center gap-2", searchOpen && "max-sm:hidden")}>
+              <h2 className="text-[14px] font-semibold text-[var(--workspace-ink)]">Clients</h2>
+              <span className="text-[11px] font-medium tabular-nums text-[var(--workspace-muted)]">
+                {formatCount(companies.length)}
+              </span>
+            </div>
+
+            <div className="ms-auto flex min-w-0 items-center gap-1">
+              {searchOpen ? (
+                <div className="relative w-[min(15rem,44vw)]">
+                  <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-black" />
+                  <Input
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder="Find client"
+                    aria-label="Find a client"
+                    autoFocus
+                    className="h-8 rounded-full bg-white pl-8 pr-3 text-[12px]"
+                  />
+                </div>
+              ) : null}
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  setSearchOpen((current) => !current)
+                  if (searchOpen) setQuery("")
+                }}
+                aria-label={searchOpen ? "Close client search" : "Search clients"}
+                title={searchOpen ? "Close search" : "Search"}
+                className="size-8 hover:bg-[var(--workspace-soft)]"
+              >
+                {searchOpen ? <X className="size-4" /> : <Search className="size-4" />}
+              </Button>
+
+              <span className={cn(searchOpen && "max-sm:hidden")}>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label={`Filter clients: ${activeFilter.label}`}
+                      title={`Filter: ${activeFilter.label}`}
+                      className={cn(
+                        "relative size-8 hover:bg-[var(--workspace-soft)]",
+                        filter !== "all" && "bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)]",
+                      )}
+                    >
+                      <Filter className="size-4" />
+                      {filter !== "all" ? <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-[var(--workspace-primary)]" /> : null}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuLabel>Client view</DropdownMenuLabel>
+                    <DropdownMenuRadioGroup value={filter} onValueChange={(value) => setFilter(value as QueueFilter)}>
+                      {queueFilters.map((item) => (
+                        <DropdownMenuRadioItem key={item.value} value={item.value}>
+                          <span>{item.label}</span>
+                          <span className="ms-auto text-[11px] tabular-nums text-[var(--workspace-muted)]">{item.count}</span>
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </span>
+
+              <span className={cn(searchOpen && "max-sm:hidden")}>
+                <AddCompanyDialog
+                  workspaceId={workspaceId}
+                  onCreated={() => void load()}
+                  trigger={(
+                    <Button
+                      variant="surface"
+                      size="icon"
+                      disabled={!workspaceId}
+                      aria-label="Add client"
+                      title="Add client"
+                      className="size-8"
+                    >
+                      <Plus className="size-4" />
+                    </Button>
+                  )}
+                />
+              </span>
+            </div>
+          </div>
+
+          {loadError ? (
+            <EmptyState
+              art="bot-error"
+              icon={<RefreshCw />}
+              title="Clients unavailable"
+              description={loadError}
+              action={(
+                <InlineAction onClick={() => void load()} disabled={loading}>
+                  <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
+                  Retry
+                </InlineAction>
+              )}
+              className="min-h-40"
+              compact
+            />
+          ) : loading ? (
+            <HomeTableSkeleton />
+          ) : visibleCompanies.length === 0 ? (
+            query || companies.length > 0 ? (
+              <EmptyState
+                icon={<Building2 />}
+                title="No matching clients"
+                description="Change the search or filter."
+                className="min-h-40"
+                compact
+              />
+            ) : (
+              <EmptyState
+                icon={<Building2 />}
+                title="Add a client"
+                description="Create a client before uploading documents."
+                action={<AddCompanyDialog workspaceId={workspaceId} onCreated={() => void load()} />}
+                className="min-h-52"
+                compact
+              />
+            )
+          ) : (
+            <>
+              <div className="divide-y divide-[var(--workspace-border)]">
+                {displayedCompanies.map((company) => (
+                  <Link
+                    key={company.id}
+                    href={`/dashboard/companies/${encodeURIComponent(company.id)}`}
+                    className="ax-interactive grid min-h-12 grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 px-3 py-2.5 outline-none hover:bg-[var(--workspace-row-hover)] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--workspace-primary)]/25 sm:px-4"
+                  >
+                    <span className="flex min-w-0 items-center gap-3">
+                      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-soft)]">
+                        <Building2 className="size-3.5 text-black" />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="ax-data-entity block truncate text-[13px] font-semibold">{company.name}</span>
+                        <span className="block truncate text-[10px] text-[var(--workspace-muted)]">
+                          {company.accountingConnected
+                            ? company.accountingProvider === "xero" ? "Xero" : "QuickBooks"
+                            : "Books not linked"}
+                        </span>
+                      </span>
+                    </span>
+                    <HomeQueueState company={company} />
+                    <ChevronRight className="size-4 text-black" />
+                  </Link>
+                ))}
+              </div>
+              {visibleCompanies.length > 5 ? (
+                <button
+                  type="button"
+                  onClick={() => setShowAll((current) => !current)}
+                  className="ax-interactive flex h-9 w-full items-center justify-center gap-1.5 border-t border-[var(--workspace-border)] text-[11px] font-semibold text-[var(--workspace-muted)] hover:bg-[var(--workspace-row-hover)] hover:text-[var(--workspace-ink)]"
+                >
+                  {showAll ? "Show less" : `Show ${formatCount(visibleCompanies.length - 5)} more`}
+                  <ChevronDown className={cn("size-3.5 transition-transform duration-150", showAll && "rotate-180")} />
+                </button>
+              ) : null}
+            </>
+          )}
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card id="clients" className="ax-workspace-panel scroll-mt-20 overflow-visible rounded-lg py-0">
@@ -335,4 +580,8 @@ export function CompaniesTable({ workspaceId, refreshKey = 0, onCompanyCountChan
       </CardContent>
     </Card>
   )
+}
+
+function formatCount(count: number) {
+  return new Intl.NumberFormat().format(count)
 }
