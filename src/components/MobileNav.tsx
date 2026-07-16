@@ -42,6 +42,7 @@ import {
   FileText,
   ReceiptText,
   Building2,
+  ChartSpline,
   Inbox,
   Layers,
   PlugZap,
@@ -79,6 +80,7 @@ const AUTHENTICATED_NAV_ITEMS: Array<{
   href: string
   icon: NavIcon
 }> = [
+  { label: "Overview", href: "/dashboard/overview", icon: ChartSpline },
   { label: "Clients", href: "/dashboard", icon: Building2 },
   { label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
   { label: "Review", href: "/dashboard/client", icon: BookCheck },

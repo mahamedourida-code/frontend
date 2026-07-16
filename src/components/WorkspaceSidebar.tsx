@@ -6,6 +6,7 @@ import {
   Activity,
   BookCheck,
   Building2,
+  ChartSpline,
   CircleHelp,
   Inbox,
   Layers3,
@@ -53,6 +54,7 @@ interface WorkspaceSidebarProps {
 }
 
 type VisibleItemKey =
+  | "overview"
   | "companies"
   | "inbox"
   | "review"
@@ -75,6 +77,7 @@ const COLLAPSED_W = 64
 const STORAGE_KEY = "axliner:sidebarCollapsed"
 
 const WORK_ITEMS: SidebarItem[] = [
+  { key: "overview", label: "Overview", href: "/dashboard/overview", icon: ChartSpline },
   { key: "companies", label: "Clients", href: "/dashboard", icon: Building2 },
   { key: "inbox", label: "Inbox", href: "/dashboard/inbox", icon: Inbox },
   { key: "review", label: "Review", href: "/dashboard/client", icon: BookCheck },
@@ -103,7 +106,8 @@ const BATCH_ENTRY_ITEMS = new Set<WorkspaceSidebarItemKey>([
 
 function normalizedActiveItem(activeItem: WorkspaceSidebarItemKey, hash: string): VisibleItemKey | null {
   if (BATCH_ENTRY_ITEMS.has(activeItem) || hash === "#upload-files") return null
-  if (activeItem === "overview" || activeItem === "clients") return "companies"
+  if (activeItem === "overview") return "overview"
+  if (activeItem === "clients") return "companies"
   if (activeItem === "process") return "review"
   if (activeItem === "history") return "activity"
   if (activeItem === "exports" || hash === "#reviewed-outputs") return "review"

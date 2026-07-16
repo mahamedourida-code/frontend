@@ -7,6 +7,7 @@ import {
   BookOpen,
   BookCheck,
   Building2,
+  ChartSpline,
   FileSpreadsheet,
   FileText,
   Inbox,
@@ -82,6 +83,7 @@ const GROUP_ORDER: CommandGroup[] = [
 
 // Navigate: every accountant workspace route (mirrors WorkspaceSidebar).
 const NAVIGATE_ITEMS: CommandItem[] = [
+  { id: "nav-overview", group: "workspace", label: "Overview", hint: "Documents and bill flow", keywords: "analytics curve chart volume drafted published", icon: ChartSpline, href: "/dashboard/overview" },
   { id: "nav-companies", group: "workspace", label: "Clients", hint: "Workspace", keywords: "companies customers home", icon: Building2, href: "/dashboard" },
   { id: "nav-guide", group: "workspace", label: "Start here", hint: "Getting started", keywords: "guide help onboarding workflow docs", icon: BookOpen, href: "/dashboard/guide" },
   { id: "nav-inbox", group: "collect", label: "Inbox", hint: "Incoming files", keywords: "intake client submissions", icon: Inbox, href: "/dashboard/inbox" },
