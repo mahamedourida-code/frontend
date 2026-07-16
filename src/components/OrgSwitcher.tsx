@@ -73,7 +73,7 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
 
   if (isLoading && !activeWorkspace) {
     return (
-      <div className="hidden size-9 items-center justify-center rounded-full border border-white/15 bg-white/5 md:flex">
+      <div className="hidden size-9 items-center justify-center rounded-md border border-white/15 bg-white/5 md:flex">
         <Loader2 className="size-4 animate-spin text-white/70" />
         <span className="sr-only">Loading workspace</span>
       </div>
@@ -90,10 +90,10 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
             aria-label="Switch workspace"
             title={`Workspace: ${activeName}`}
             className={cn(
-              "ax-interactive group hidden size-9 cursor-pointer items-center justify-center rounded-full border border-white/16 bg-white/[0.07] text-white outline-none hover:border-white/30 hover:bg-white/[0.11] focus-visible:ring-2 focus-visible:ring-white/30 md:inline-flex xl:h-9 xl:w-auto xl:max-w-[210px] xl:justify-start xl:gap-2 xl:px-2.5",
+              "ax-interactive group hidden size-9 cursor-pointer items-center justify-center rounded-md border border-white/16 bg-white/[0.07] text-white outline-none hover:border-white/30 hover:bg-white/[0.11] focus-visible:ring-2 focus-visible:ring-white/30 md:inline-flex xl:h-9 xl:w-auto xl:max-w-[210px] xl:justify-start xl:gap-2 xl:px-2.5",
             )}
           >
-            <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-white">
+            <span className="flex size-5 shrink-0 items-center justify-center rounded-md bg-white/10 text-white">
               {busy ? <Loader2 className="size-4 animate-spin text-white" /> : <Building2 className="size-4 text-white" />}
             </span>
             <span className="hidden max-w-[142px] truncate text-[13px] font-semibold text-white xl:inline">{activeName}</span>
@@ -120,11 +120,11 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
                   className={cn(
                     "flex size-7 shrink-0 items-center justify-center rounded-md",
                     isActive
-                      ? "bg-[var(--workspace-primary)] text-black"
-                      : "bg-[var(--workspace-soft)] text-black",
+                      ? "bg-[var(--workspace-primary)] text-white"
+                      : "bg-[var(--workspace-soft)] text-[var(--workspace-icon)]",
                   )}
                 >
-                  <Building2 className="size-4 text-black" />
+                  <Building2 className="size-4" />
                 </span>
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate text-[13px] font-semibold text-[var(--workspace-ink)]">
@@ -134,7 +134,7 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
                     {workspace.role}
                   </span>
                 </span>
-                {isActive && <Check className="ms-auto size-4 shrink-0 text-black" />}
+                {isActive && <Check className="ms-auto size-4 shrink-0 text-[var(--workspace-primary)]" />}
               </DropdownMenuItem>
             )
           })}
@@ -148,8 +148,8 @@ export function OrgSwitcher({ user }: OrgSwitcherProps) {
             }}
             className="gap-2.5 py-2 font-semibold text-[var(--workspace-blue)] focus:text-[var(--workspace-blue)]"
           >
-            <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-dashed border-[var(--workspace-button-border)] text-black">
-              <Plus className="size-4 text-black" />
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-dashed border-[var(--workspace-button-border)] text-[var(--workspace-primary)]">
+              <Plus className="size-4" />
             </span>
             New workspace
           </DropdownMenuItem>

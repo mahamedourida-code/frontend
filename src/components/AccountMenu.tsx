@@ -77,7 +77,7 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="w-64 rounded-lg border-[var(--workspace-border)] bg-white p-1.5 text-[var(--workspace-ink)] shadow-[0_16px_44px_rgba(15,23,42,0.14)]"
+        className="w-64 rounded-lg border-[var(--workspace-border)] bg-white p-1.5 text-[var(--workspace-ink)] shadow-none"
       >
         <div className="flex items-center gap-2.5 px-2 py-2">
           <Avatar className="size-8">
@@ -93,12 +93,12 @@ export function AccountMenu({ user, planLabel, credits, billingLoading }: Accoun
         </div>
 
         <div className="grid grid-cols-2 gap-1.5 px-1.5 pb-2">
-          <span className="inline-flex h-7 min-w-0 items-center justify-center gap-1 rounded-full border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-2 text-[11px] font-semibold">
-            <BillingSeal className="size-3.5 text-black" />
+          <span className="inline-flex h-7 min-w-0 items-center justify-center gap-1 rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-2 text-[11px] font-semibold">
+            <BillingSeal className="size-3.5 text-[var(--workspace-icon)]" />
             <span className="truncate">{billingLoading ? "Plan" : planLabel}</span>
           </span>
-          <span className="inline-flex h-7 min-w-0 items-center justify-center gap-1 rounded-full border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-2 text-[11px] font-semibold tabular-nums">
-            <CreditStack className="size-3.5 text-black" />
+          <span className="inline-flex h-7 min-w-0 items-center justify-center gap-1 rounded-md border border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-2 text-[11px] font-semibold tabular-nums">
+            <CreditStack className="size-3.5 text-[var(--workspace-icon)]" />
             {typeof credits === "number" ? credits.toLocaleString() : billingLoading ? "..." : "-"}
           </span>
         </div>

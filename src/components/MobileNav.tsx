@@ -237,8 +237,8 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
           "fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur-xl",
           isAuthenticated ? "md:hidden" : "lg:hidden",
           isAuthenticated
-            ? "border-border bg-background/95 shadow-sm"
-            : "border-border bg-background/95 shadow-sm"
+            ? "border-border bg-background/95 shadow-none"
+            : "border-border bg-background/95 shadow-none"
         )}
         style={{ paddingBottom: "max(0.35rem, env(safe-area-inset-bottom))" }}
       >
@@ -254,19 +254,26 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 data-workspace-tour={isAuthenticated && item.label === "Upload" ? "upload" : undefined}
                 onClick={item.onClick}
                 className={cn(
-                  "ax-interactive h-14 min-w-0 flex-col gap-1 rounded-full px-1.5 text-[10px] font-semibold",
+                  "ax-interactive h-14 min-w-0 flex-col gap-1 rounded-lg px-1.5 text-[10px] font-semibold",
                   isAuthenticated
                     ? item.label === "Upload"
-                      ? "ax-mobile-upload bg-[#1877f2] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.24),0_0_0_1px_#1264d8,0_2px_4px_rgba(15,23,42,0.16)] hover:bg-[#166fe5] hover:text-white active:scale-[0.97]"
+                      ? "ax-mobile-upload bg-[var(--workspace-primary)] text-white shadow-none hover:bg-[var(--workspace-primary-hover)] hover:text-white active:scale-[0.97]"
                       : item.active
-                        ? "bg-accent text-accent-foreground shadow-sm hover:bg-accent hover:text-accent-foreground"
+                        ? "bg-accent text-accent-foreground shadow-none hover:bg-accent hover:text-accent-foreground"
                         : "text-foreground hover:bg-accent hover:text-accent-foreground"
                     : item.active
-                      ? "bg-accent text-accent-foreground shadow-sm hover:bg-accent hover:text-accent-foreground"
+                      ? "bg-accent text-accent-foreground shadow-none hover:bg-accent hover:text-accent-foreground"
                       : "text-foreground hover:bg-accent hover:text-accent-foreground"
                 )}
               >
-                <Icon className="h-5 w-5 shrink-0 text-black" />
+                <Icon
+                  className={cn(
+                    "h-5 w-5 shrink-0",
+                    isAuthenticated && item.label === "Upload"
+                      ? "text-white"
+                      : "text-[var(--workspace-icon)]",
+                  )}
+                />
                 <span className="w-full truncate leading-none">{item.label}</span>
               </Button>
             )
@@ -278,7 +285,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                 variant="ghost"
                 size="sm" 
                 className={cn(
-                  "ax-interactive h-14 min-w-0 flex-col gap-1 rounded-full px-1.5 text-[10px] font-semibold",
+                  "ax-interactive h-14 min-w-0 flex-col gap-1 rounded-lg px-1.5 text-[10px] font-semibold",
                   isAuthenticated
                     ? isOpen
                       ? "bg-accent text-accent-foreground"
@@ -288,7 +295,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                       : "text-foreground hover:bg-accent hover:text-accent-foreground"
                 )}
               >
-                <Menu className="h-5 w-5 text-black" />
+                <Menu className="h-5 w-5 text-[var(--workspace-icon)]" />
                 <span className="w-full truncate leading-none">More</span>
               </Button>
             </SheetTrigger>
@@ -386,7 +393,7 @@ export function MobileNav({ isAuthenticated = false, onSectionClick, onSignInCli
                                   return (
                                     <React.Fragment key={child.href}>
                                       {showGroup && (
-                                        <p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-normal text-emerald-800">
+                                        <p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-normal text-[var(--landing-blue)]">
                                           {child.group}
                                         </p>
                                       )}

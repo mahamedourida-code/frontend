@@ -605,16 +605,16 @@ export function DocumentReviewWorkspace({
                 {statusLabel}
               </StatusBadge>
             </div>
-            <div className="mt-0.5 flex min-w-0 items-center gap-2 text-[11px] text-[var(--workspace-muted)]">
-              <span className="sm:hidden">{statusLabel}</span>
-              <span className="sm:hidden" aria-hidden="true">/</span>
-              <span className="truncate">{documentTypeLabel}</span>
+            <div className="mt-0.5 flex min-w-0 items-center gap-1.5 overflow-hidden text-[11px] text-[var(--workspace-muted)]">
+              {exceptionCount === 0 ? <span className="truncate sm:hidden">{statusLabel}</span> : null}
+              <span className="hidden truncate sm:inline">{documentTypeLabel}</span>
               {exceptionCount > 0 ? (
                 <>
-                  <span aria-hidden="true">/</span>
-                  <span className="inline-flex items-center gap-1 text-[var(--text-attention)]">
+                  <span className="hidden sm:inline" aria-hidden="true">/</span>
+                  <span className="inline-flex shrink-0 items-center gap-1 text-[var(--text-attention)]">
                     <AlertCircle className="size-3" />
-                    {exceptionCount} to check
+                    <span className="sm:hidden">{exceptionCount} checks</span>
+                    <span className="hidden sm:inline">{exceptionCount} to check</span>
                   </span>
                 </>
               ) : null}

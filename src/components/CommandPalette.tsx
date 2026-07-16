@@ -274,7 +274,7 @@ function CommandPaletteBody({ onOpenChange }: { onOpenChange: (open: boolean) =>
         event.preventDefault()
         inputRef.current?.focus()
       }}
-      className="top-[12vh] max-w-[31rem] translate-y-0 gap-0 overflow-hidden border-[var(--workspace-border)] bg-white p-0 shadow-[0_20px_60px_rgba(15,23,42,0.22)] sm:top-[16vh] sm:max-w-[31rem]"
+      className="top-[12vh] max-w-[31rem] translate-y-0 gap-0 overflow-hidden border-[var(--workspace-border)] bg-white p-0 shadow-none sm:top-[16vh] sm:max-w-[31rem]"
     >
           <DialogTitle className="sr-only">Find in workspace</DialogTitle>
           <DialogDescription className="sr-only">

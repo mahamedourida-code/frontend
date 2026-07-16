@@ -31,18 +31,18 @@ const GROUP_META: Record<
   document_ready: {
     label: "Ready to review",
     icon: CheckCircle2,
-    iconClass: "bg-emerald-50 text-black ring-emerald-200",
-    rowClass: "border-emerald-200 bg-emerald-50/70 hover:bg-emerald-50",
-    lineClass: "bg-emerald-500",
-    activeClass: "text-emerald-700",
+    iconClass: "bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)] ring-[var(--workspace-selection-border)]",
+    rowClass: "border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] hover:bg-[var(--workspace-blue-soft-hover)]",
+    lineClass: "bg-[var(--workspace-primary)]",
+    activeClass: "text-[var(--workspace-primary)]",
   },
   job_finished: {
     label: "Stack finished",
     icon: CheckCheck,
-    iconClass: "bg-emerald-50 text-black ring-emerald-200",
-    rowClass: "border-emerald-200 bg-emerald-50/70 hover:bg-emerald-50",
-    lineClass: "bg-emerald-500",
-    activeClass: "text-emerald-700",
+    iconClass: "bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)] ring-[var(--workspace-selection-border)]",
+    rowClass: "border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] hover:bg-[var(--workspace-blue-soft-hover)]",
+    lineClass: "bg-[var(--workspace-primary)]",
+    activeClass: "text-[var(--workspace-primary)]",
   },
   duplicate_detected: {
     label: "Duplicate detected",
@@ -63,10 +63,10 @@ const GROUP_META: Record<
   client_uploaded: {
     label: "Client upload",
     icon: Upload,
-    iconClass: "bg-sky-50 text-black ring-sky-200",
-    rowClass: "border-sky-200 bg-sky-50/80 hover:bg-sky-50",
-    lineClass: "bg-sky-500",
-    activeClass: "text-sky-700",
+    iconClass: "bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)] ring-[var(--workspace-selection-border)]",
+    rowClass: "border-[var(--workspace-selection-border)] bg-[var(--workspace-blue-soft)] hover:bg-[var(--workspace-blue-soft-hover)]",
+    lineClass: "bg-[var(--workspace-primary)]",
+    activeClass: "text-[var(--workspace-primary)]",
   },
 }
 
@@ -111,11 +111,11 @@ function NotificationRow({
       <span className={cn("absolute inset-y-0 left-0 w-1", meta.lineClass)} aria-hidden="true" />
       <span
         className={cn(
-          "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full ring-1",
-          item.read ? "bg-white text-black ring-[var(--workspace-border)]" : meta.iconClass,
+          "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-md ring-1",
+          item.read ? "bg-white text-[var(--workspace-icon)] ring-[var(--workspace-border)]" : meta.iconClass,
         )}
       >
-        <Icon className="size-4 text-black" strokeWidth={2.5} />
+        <Icon className="size-4" strokeWidth={2.5} />
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-2">
@@ -156,8 +156,8 @@ function GroupedList({
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-2.5 px-6 py-14 text-center">
-        <span className="flex size-12 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-200">
-          <CheckCheck className="size-5 text-black" strokeWidth={2.5} />
+        <span className="flex size-12 items-center justify-center rounded-lg bg-[var(--workspace-blue-soft)] text-[var(--workspace-primary)] ring-1 ring-[var(--workspace-selection-border)]">
+          <CheckCheck className="size-5" strokeWidth={2.5} />
         </span>
         <p className="text-[15px] font-bold text-foreground">{emptyLabel}</p>
       </div>
@@ -198,7 +198,7 @@ export function NotificationsBell() {
           aria-label={
             unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"
           }
-          className="ax-interactive relative inline-flex size-10 items-center justify-center rounded-full text-white/88 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-white/35 data-[state=open]:text-white [&_svg]:text-white"
+          className="ax-interactive relative inline-flex size-9 items-center justify-center rounded-md text-white/88 outline-none transition-colors hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white/35 data-[state=open]:bg-white/10 data-[state=open]:text-white [&_svg]:text-white"
         >
           <Bell className="size-6" />
           <AnimatePresence>
@@ -222,7 +222,7 @@ export function NotificationsBell() {
       <PopoverContent
         align="end"
         sideOffset={10}
-        className="w-[29rem] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl border-[var(--workspace-border)] bg-white p-0 text-[var(--workspace-ink)] shadow-[0_18px_50px_rgba(15,23,42,0.16)]"
+        className="w-[29rem] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-lg border-[var(--workspace-border)] bg-white p-0 text-[var(--workspace-ink)] shadow-none"
       >
         <Tabs defaultValue="all" className="gap-0">
           <div className="flex items-center justify-between gap-3 border-b border-[var(--workspace-border)] px-4 py-4">
@@ -230,16 +230,16 @@ export function NotificationsBell() {
               <span className="block text-[17px] font-bold leading-6 text-foreground">Notifications</span>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              <TabsList className="h-8 rounded-full bg-[var(--workspace-soft)] p-0.5">
+              <TabsList className="h-8 rounded-lg bg-[var(--workspace-soft)] p-0.5">
                 <TabsTrigger
                   value="all"
-                  className="h-7 rounded-full px-3 text-[12px] font-bold data-[state=active]:bg-white data-[state=active]:text-[var(--workspace-blue)]"
+                  className="h-7 rounded-md px-3 text-[12px] font-bold data-[state=active]:bg-white data-[state=active]:text-[var(--workspace-blue)]"
                 >
                   All
                 </TabsTrigger>
                 <TabsTrigger
                   value="unread"
-                  className="h-7 rounded-full px-3 text-[12px] font-bold data-[state=active]:bg-white data-[state=active]:text-[var(--workspace-blue)]"
+                  className="h-7 rounded-md px-3 text-[12px] font-bold data-[state=active]:bg-white data-[state=active]:text-[var(--workspace-blue)]"
                 >
                   Unread{unreadCount > 0 ? ` ${unreadCount}` : ""}
                 </TabsTrigger>
@@ -248,9 +248,9 @@ export function NotificationsBell() {
                 onClick={markAllRead}
                 disabled={unreadCount === 0}
                 aria-label="Mark all notifications read"
-                className="ax-interactive inline-flex size-8 items-center justify-center rounded-full border border-[var(--workspace-border)] bg-white text-black transition-colors hover:border-emerald-200 hover:bg-emerald-50 disabled:pointer-events-none disabled:opacity-40"
+                className="ax-interactive inline-flex size-8 items-center justify-center rounded-md border border-[var(--workspace-border)] bg-white text-[var(--workspace-icon)] transition-colors hover:border-[var(--workspace-primary)] hover:bg-[var(--workspace-blue-soft)] hover:text-[var(--workspace-primary)] disabled:pointer-events-none disabled:opacity-40"
               >
-                <CheckCheck className="size-4 text-black" strokeWidth={2.5} />
+                <CheckCheck className="size-4" strokeWidth={2.5} />
               </button>
             </div>
           </div>
@@ -276,7 +276,7 @@ export function NotificationsBell() {
             <Link
               href="/history"
               onClick={() => setOpen(false)}
-              className="ax-interactive block rounded-full py-2 text-center text-[13px] font-bold text-[var(--workspace-blue)] transition-colors hover:text-[var(--workspace-blue-hover)]"
+              className="ax-interactive block rounded-md py-2 text-center text-[13px] font-bold text-[var(--workspace-blue)] transition-colors hover:bg-[var(--workspace-soft)] hover:text-[var(--workspace-blue-hover)]"
             >
               View activity history
             </Link>
