@@ -1,15 +1,16 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useRef, useState, type KeyboardEvent } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { AnimatePresence, motion } from "framer-motion"
 import {
   ArrowRight,
+  BookOpenCheck,
   Building2,
   FolderUp,
-  ListStart,
-  PlugZap,
-  ScanSearch,
+  ListChecks,
+  Play,
   type LucideIcon,
 } from "lucide-react"
 
@@ -18,48 +19,89 @@ import { DashboardRouteLoader } from "@/components/dashboard/DashboardRouteLoade
 import { PageHeader } from "@/components/dashboard/PageHeader"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/useAuth"
+import { useMotionTokens } from "@/lib/motion"
+import { cn } from "@/lib/utils"
 
-const guideActions = [
+const guideSteps = [
   {
-    title: "Clients",
+    id: "client",
+    label: "Client",
+    title: "Add a client",
+    description: "Keep each batch under the right business.",
+    action: "Open clients",
     href: "/dashboard#clients",
-    action: "Open",
     icon: Building2,
   },
   {
-    title: "Upload",
+    id: "upload",
+    label: "Upload",
+    title: "Upload a batch",
+    description: "Invoices, receipts, and bank statements.",
+    action: "Upload files",
     href: "/dashboard/client#upload-files",
-    action: "Open",
     icon: FolderUp,
   },
   {
-    title: "Review",
+    id: "review",
+    label: "Review",
+    title: "Clear exceptions",
+    description: "Check flagged fields before export or publish.",
+    action: "Open review",
     href: "/dashboard/client",
-    action: "Open",
-    icon: ScanSearch,
+    icon: ListChecks,
   },
   {
-    title: "Outputs",
-    href: "/dashboard/client#reviewed-outputs",
-    action: "Open",
-    icon: PlugZap,
+    id: "publish",
+    label: "QuickBooks or Xero",
+    title: "Publish drafts",
+    description: "Send reviewed draft bills to QuickBooks or Xero.",
+    action: "Open draft bills",
+    href: "/dashboard/accounts-payable",
+    icon: BookOpenCheck,
   },
 ] satisfies Array<{
+  id: string
+  label: string
   title: string
-  href: string
+  description: string
   action: string
+  href: string
   icon: LucideIcon
 }>
 
 export default function GuidePage() {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
+  const m = useMotionTokens()
+  const [activeStepIndex, setActiveStepIndex] = useState(0)
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
+  const activeStep = guideSteps[activeStepIndex]
 
   useEffect(() => {
     if (!authLoading && !user) {
       router.replace("/sign-in?next=%2Fdashboard%2Fguide")
     }
   }, [authLoading, router, user])
+
+  const moveToStep = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    let nextIndex: number | null = null
+
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      nextIndex = (index + 1) % guideSteps.length
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      nextIndex = (index - 1 + guideSteps.length) % guideSteps.length
+    } else if (event.key === "Home") {
+      nextIndex = 0
+    } else if (event.key === "End") {
+      nextIndex = guideSteps.length - 1
+    }
+
+    if (nextIndex === null) return
+
+    event.preventDefault()
+    setActiveStepIndex(nextIndex)
+    tabRefs.current[nextIndex]?.focus()
+  }
 
   if (authLoading) {
     return <DashboardRouteLoader label="Loading getting started" />
@@ -69,57 +111,119 @@ export default function GuidePage() {
     return null
   }
 
+  const ActiveIcon = activeStep.icon
+
   return (
-    <DashboardShell activeItem="guide" title="Getting started" user={user} showBack={false}>
+    <DashboardShell activeItem="guide" title="Start here" user={user} showBack={false}>
       <PageHeader
-        title="Getting started"
+        title="Start here"
+        description="From client to reviewed draft."
+        compact
         actions={
-          <div className="flex flex-wrap items-center gap-2">
-            <Button asChild variant="surface">
-              <Link href="/dashboard?tour=start">
-                <ListStart className="size-4" />
-                Tour
-              </Link>
-            </Button>
-          </div>
+          <Button asChild variant="surface" size="icon" aria-label="Start workspace tour" title="Start workspace tour">
+            <Link href="/dashboard?tour=start">
+              <Play className="size-4" />
+            </Link>
+          </Button>
         }
       />
 
-      <div className="max-w-6xl pb-10">
+      <div className="max-w-5xl pb-10">
         <section
-          aria-labelledby="guide-actions-title"
-          className="space-y-3"
+          aria-labelledby="guide-flow-title"
+          className="overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-white shadow-[0_22px_55px_-44px_rgba(15,23,42,0.55)]"
         >
-          <h2 id="guide-actions-title" className="sr-only">
-            Actions
+          <h2 id="guide-flow-title" className="sr-only">
+            Accounting setup flow
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {guideActions.map((action) => {
-              const Icon = action.icon
+
+          <div
+            role="tablist"
+            aria-label="Getting started steps"
+            className="grid grid-cols-2 gap-1 border-b border-[var(--workspace-border)] bg-[color-mix(in_srgb,var(--workspace-soft)_55%,white)] p-1.5 lg:grid-cols-4"
+          >
+            {guideSteps.map((step, index) => {
+              const Icon = step.icon
+              const isActive = index === activeStepIndex
 
               return (
-                <article
-                  key={action.title}
-                  className="flex min-w-0 flex-col rounded-lg bg-white p-4 shadow-[0_18px_42px_-34px_rgba(15,23,42,0.5)]"
+                <motion.button
+                  key={step.id}
+                  ref={(node) => {
+                    tabRefs.current[index] = node
+                  }}
+                  id={`guide-step-${step.id}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-controls="guide-step-panel"
+                  tabIndex={isActive ? 0 : -1}
+                  onClick={() => setActiveStepIndex(index)}
+                  onKeyDown={(event) => moveToStep(event, index)}
+                  whileTap={m.reduced ? undefined : { scale: 0.985 }}
+                  transition={m.tPress}
+                  className={cn(
+                    "relative isolate flex min-h-11 min-w-0 items-center gap-2 rounded-md px-3 py-2 text-left outline-none transition-colors duration-[160ms] focus-visible:ring-2 focus-visible:ring-[#1877F2] focus-visible:ring-offset-1",
+                    isActive ? "text-white" : "text-[var(--workspace-muted)] hover:bg-white hover:text-[var(--workspace-ink)]",
+                  )}
                 >
-                  <span className="inline-flex size-10 items-center justify-center rounded-full bg-[var(--workspace-soft)] text-black ring-1 ring-inset ring-[color-mix(in_srgb,var(--workspace-border)_58%,transparent)]">
-                    <Icon className="size-5 text-black" />
+                  {isActive ? (
+                    <motion.span
+                      layoutId="guide-active-step"
+                      className="absolute inset-0 -z-10 rounded-md bg-[#1877F2] shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_1px_3px_rgba(24,119,242,0.24)]"
+                      transition={m.tFast}
+                    />
+                  ) : null}
+                  <Icon className={cn("size-4 shrink-0", isActive && "ax-on-blue-icon")} />
+                  <span className="min-w-0 text-[12px] font-medium leading-4 sm:text-[13px]">
+                    {step.label}
                   </span>
-                  <h3 className="mt-3 text-[15px] font-semibold tracking-normal text-foreground">{action.title}</h3>
-                  <div className="mt-4">
-                    <Button asChild variant="surface" size="sm" className="w-full justify-between">
-                      <Link href={action.href}>
-                        <span className="inline-flex items-center gap-1.5">
-                          <Icon className="size-3.5" />
-                          {action.action}
-                        </span>
-                        <ArrowRight className="size-3.5" />
-                      </Link>
-                    </Button>
-                  </div>
-                </article>
+                </motion.button>
               )
             })}
+          </div>
+
+          <div className="min-h-[190px]">
+            <AnimatePresence initial={false} mode="wait">
+              <motion.div
+                key={activeStep.id}
+                id="guide-step-panel"
+                role="tabpanel"
+                aria-labelledby={`guide-step-${activeStep.id}`}
+                initial={m.reduced ? { opacity: 0 } : { opacity: 0, y: 7 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={m.reduced ? { opacity: 0 } : { opacity: 0, y: -5 }}
+                transition={m.tFast}
+                className="grid min-h-[190px] items-center gap-5 p-5 sm:grid-cols-[64px_minmax(0,1fr)_auto] sm:p-6"
+              >
+                <span className="flex size-14 items-center justify-center rounded-full bg-[#edf4ff] text-[#1877F2] ring-1 ring-inset ring-[#1877F2]/15 sm:size-16">
+                  <ActiveIcon className="ax-blue-icon size-6 sm:size-7" />
+                </span>
+
+                <div className="min-w-0">
+                  <p className="text-[11px] font-medium uppercase text-[var(--workspace-muted)]">
+                    {String(activeStepIndex + 1).padStart(2, "0")} / {String(guideSteps.length).padStart(2, "0")}
+                  </p>
+                  <h3 className="mt-1 text-[21px] font-semibold text-[var(--workspace-ink)]">
+                    {activeStep.title}
+                  </h3>
+                  <p className="mt-1 max-w-[42ch] text-[13px] leading-5 text-[var(--workspace-muted)]">
+                    {activeStep.description}
+                  </p>
+                </div>
+
+                <Button
+                  asChild
+                  variant="blue"
+                  className="w-full border-[#1877F2] bg-[#1877F2] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_1px_2px_rgba(24,119,242,0.22),0_4px_12px_-5px_rgba(24,119,242,0.42)] hover:border-[#166FE5] hover:bg-[#166FE5] hover:text-white sm:w-auto"
+                >
+                  <Link href={activeStep.href}>
+                    {activeStep.action}
+                    <ArrowRight className="ax-on-blue-icon size-4" />
+                  </Link>
+                </Button>
+              </motion.div>
+            </AnimatePresence>
           </div>
         </section>
       </div>
